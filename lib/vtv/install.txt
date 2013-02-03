@@ -1,0 +1,4 @@
+Copy *.bpl to $(BCB)\Bin.
+Copy *.bpi, *.lib, *.res to $(BCB)\Lib.
+Install ThemeManagerC6D.bpl and VirtualTreesC6D.bpl to BCB6.
+(Menu Component -> Install Packages... -> Add...)

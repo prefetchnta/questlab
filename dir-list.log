@@ -1,0 +1,60 @@
+questlab
+├─bin
+│  ├─config
+│  ├─output
+│  ├─plugin
+│  ├─script
+│  │  └─import
+│  │      └─jpn
+│  ├─source
+│  │  └─import
+│  │      └─image
+│  │          └─gainax
+│  └─window
+│      └─1920x1080
+├─doc
+├─inc
+│  ├─arch
+│  ├─chip
+│  ├─comm
+│  ├─conf
+│  ├─fmtz
+│  ├─gfx2
+│  ├─l3rd
+│  │  └─dxsdk
+│  │      └─wm50
+│  └─port
+├─lib
+│  ├─crhack
+│  ├─devil
+│  ├─fi
+│  ├─fmod
+│  ├─gcasdk
+│  └─vtv
+├─src
+│  ├─CrH_FMTZ
+│  │  ├─devil
+│  │  ├─fi
+│  │  ├─fmod
+│  │  └─syn
+│  │      └─gcasdk
+│  ├─CrH_GFX2
+│  │  └─gapi
+│  ├─QstCmdz
+│  ├─QstIndex
+│  ├─QstInfoz
+│  ├─QstLibs
+│  ├─QstMedia
+│  ├─QstMenu
+│  ├─QstMount
+│  ├─QstServ
+│  ├─QstTree
+│  │  └─res
+│  ├─QstView2D
+│  ├─QuestLAB
+│  ├─RunWebIE
+│  ├─xImpScript
+│  ├─xParamSet
+│  └─xSelectDir
+├─tmp
+└─vtv

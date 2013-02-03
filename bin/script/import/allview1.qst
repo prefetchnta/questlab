@@ -1,0 +1,9 @@
+//========================//
+//  导入文件（单个目录）  //
+//========================//
+$call xSelectDir.exe
+$continue?
+$exec script/import/reset.qst
+$exec script/import/allview.ldr
+$call xImpScript.exe
+dir:load

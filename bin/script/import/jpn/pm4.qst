@@ -1,0 +1,25 @@
+//============================//
+//  [PC] 美少女梦工厂4中文版  //
+//============================//
+$call xSelectDir.exe
+$continue?
+$exec script/import/reset.qst
+g2d:ext:load CrH_FMTZ.dll
+g2d:ext:load plugin/zSYN.dll
+pak:ext:load plugin/zSYN.dll
+xmm:ext:load plugin/zFMOD.dll
+xmm:ext:load plugin/zDShow.dll
+$fopen output/__imp__.xml
+<ImpScript>
+    <Import name="movie\\*.mpg" />
+    <Import name="sound\\bgm\\*.ogg" />
+    <Import name="data" memo="kingformation" />
+    <Import name="gd" memo="kingformation" />
+    <Import name="script" memo="kingformation" />
+    <Import name="sound\\se" memo="kingformation" />
+    <Import name="sound\\sys_se" memo="kingformation" />
+    <Import name="sound\\voice" memo="kingformation" />
+</ImpScript>
+$fclose
+$call xImpScript.exe 936 output/__imp__.xml
+dir:load

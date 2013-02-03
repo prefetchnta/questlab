@@ -1,0 +1,14 @@
+//========================//
+//  导入文件（递归目录）  //
+//========================//
+$call xSelectDir.exe
+$continue?
+$exec script/import/reset.qst
+$exec script/import/allview.ldr
+$fopen output/__imp__.xml
+<ImpScript>
+    <Import name="*.*" sub="1" />
+</ImpScript>
+$fclose
+$call xImpScript.exe 0 output/__imp__.xml
+dir:load

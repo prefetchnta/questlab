@@ -1,0 +1,44 @@
+body {
+	font-family: sans-serif;
+}
+img {
+	border: none;
+}
+hr {
+	color: #CCCCCC;
+}
+b {
+	font-size: 200%;
+}
+table {
+	border-width: 2px;
+	border-style: solid;
+	border-color: #000000;
+	word-break: break-all;
+}
+.head td {
+	color: #FFFFFF;
+	text-align: center;
+	background-color: #000000;
+}
+.text td {
+	color: #000000;
+	text-align: center;
+	background-color: #F1F1F1;
+}
+.head a {
+	color: #FFFFFF;
+	text-decoration: none;
+}
+.text a {
+	color: #000000;
+	text-decoration: none;
+}
+.head a:hover {
+	color: #FF0000;
+	text-decoration: underline;
+}
+.text a:hover {
+	color: #0000FF;
+	text-decoration: underline;
+}

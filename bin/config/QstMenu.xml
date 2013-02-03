@@ -1,0 +1,38 @@
+<!-- encoding:65001 -->
+<QstMenu>
+    <MenuItem name="subOper" text="操作(&O)">
+        <MenuItem name="subQstLib" text="导入脚本仓库(&I)..." scut="Ctrl+I" />
+        <MenuItem name="subQstRun" text="打开导入脚本(&O)..." scut="Ctrl+O" />
+        <MenuItem name="subTreeClose" text="关闭导入文件(&C)" scut="Ctrl+C" />
+        <MenuItem name="xxxSepOper1" text="-" />
+        <MenuItem name="subG2dColor" text="显示图片色彩通道(&B)" radio="1" group="1" checked="1" />
+        <MenuItem name="subG2dAlpha" text="显示图片透明通道(&A)" radio="1" group="1" />
+        <MenuItem name="xxxSepOper2" text="-" />
+        <MenuItem name="subWinShow" text="显示所有窗口(&R)" scut="Ctrl+R" />
+        <MenuItem name="subWinLoad" text="加载窗口位置(&L)" scut="Ctrl+L" />
+        <MenuItem name="subWinSave" text="保存窗口位置(&S)" />
+        <MenuItem name="xxxSepOper3" text="-" />
+        <MenuItem name="subExit" text="退出整个系统(&X)" />
+    </MenuItem>
+    <MenuItem name="subParam" text="参数(&P)" />
+    <MenuItem name="subWindow" text="窗口(&W)">
+        <MenuItem name="subOpenQstCmdz" text="打开 QstCmdz 窗口" />
+        <MenuItem name="subOpenQstIndex" text="打开 QstIndex 窗口" />
+        <MenuItem name="subOpenQstInfoz" text="打开 QstInfoz 窗口" />
+        <MenuItem name="subOpenQstMedia" text="打开 QstMedia 窗口" />
+        <MenuItem name="subOpenQstMount" text="打开 QstMount 窗口" />
+        <MenuItem name="subOpenQstServ" text="打开 QstServ 窗口" />
+        <MenuItem name="subOpenQstTree" text="打开 QstTree 窗口" />
+        <MenuItem name="subOpenQstView2D" text="打开 QstView2D 窗口" />
+        <MenuItem name="xxxSepWindow1" text="-" />
+        <MenuItem name="subKillQstCmdz" text="关闭 QstCmdz 窗口" />
+        <MenuItem name="subKillQstIndex" text="关闭 QstIndex 窗口" />
+        <MenuItem name="subKillQstInfoz" text="关闭 QstInfoz 窗口" />
+        <MenuItem name="subKillQstMedia" text="关闭 QstMedia 窗口" />
+        <MenuItem name="subKillQstMount" text="关闭 QstMount 窗口" />
+        <MenuItem name="subKillQstServ" text="关闭 QstServ 窗口" />
+        <MenuItem name="subKillQstTree" text="关闭 QstTree 窗口" />
+        <MenuItem name="subKillQstView2D" text="关闭 QstView2D 窗口" />
+    </MenuItem>
+    <MenuItem name="subAbout" text="关于(&A)" />
+</QstMenu>

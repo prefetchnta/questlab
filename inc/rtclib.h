@@ -1,0 +1,90 @@
+/*****************************************************************************/
+/*                                                  ###                      */
+/*       #####          ###    ###                  ###  CREATE: 2010-01-15  */
+/*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-03  */
+/*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
+/*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
+/*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
+/*  ###        ######## ########## ########  ###### ### ###   | FRAMEWORK |  */
+/*  ###     ## #### ### ########## ###  ### ###     ######    |  FOR ALL  |  */
+/*  ####   ### ###  ### ###    ### ###  ### ###     ######    | PLATFORMS |  */
+/*  ########## ###      ###    ### ######## ####### #######   |  AND ALL  |  */
+/*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
+/*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
+/*  =======================================================================  */
+/*  >>>>>>>>>>>>>>>>>>>>>>>> CrHack 日期时间头文件 <<<<<<<<<<<<<<<<<<<<<<<<  */
+/*  =======================================================================  */
+/*****************************************************************************/
+
+#ifndef __CR_RTCLIB_H__
+#define __CR_RTCLIB_H__ 0xD08E49C4UL
+
+#include "defs.h"
+
+/*****************************************************************************/
+/*                               日期时间计算                                */
+/*****************************************************************************/
+
+/* 日期时间结构 */
+typedef struct
+{
+        uint_t  year;       /* 年 */
+        ufast_t month;      /* 月 */
+        ufast_t day;        /* 日 */
+        ufast_t hour;       /* 时 */
+        ufast_t minute;     /* 分 */
+        ufast_t second;     /* 秒 */
+        ufast_t week;       /* 周 */
+
+} sDATETIME;
+
+/* 日期时间属性 */
+typedef struct
+{
+        bool_t  year_leap;  /* 是否闰年 */
+        uint_t  year_days;  /* 年总天数 */
+        uint_t  days_year;  /* 年内天数 */
+        int32u  days_secs;  /* 天内秒数 */
+        ufast_t month_day;  /* 月总天数 */
+
+} sDATEATTR;
+
+/* 日期时间读写 */
+CR_API bool_t   datetime_get (sDATETIME *datetime);
+CR_API bool_t   datetime_set (const sDATETIME *datetime);
+
+/* 日期时间计算 */
+CR_API ufast_t  date_set_week (sDATETIME *date);
+CR_API ufast_t  date_get_week (const sDATETIME *date);
+CR_API void_t   date_inc (sDATETIME *date, uint_t days);
+CR_API void_t   date_dec (sDATETIME *date, uint_t days);
+CR_API sint_t   date_sub (const sDATETIME *date1, const sDATETIME *date2);
+CR_API bool_t   datetime_chk (const sDATETIME *datetime);
+CR_API maxu_t   datetime_sub (const sDATETIME *datetime1,
+                              const sDATETIME *datetime2);
+CR_API sint_t   datetime_cmp (const sDATETIME *datetime1,
+                              const sDATETIME *datetime2);
+CR_API bool_t   datetime_attr (sDATEATTR *dateattr,
+                               const sDATETIME *datetime);
+CR_API bool_t   str2datetimeA (sDATETIME *datetime, const ansi_t *string,
+                               ansi_t split_char CR_DEFAULT(0x20));
+CR_API bool_t   str2datetimeW (sDATETIME *datetime, const wide_t *string,
+                               wide_t split_char CR_DEFAULT(0x20));
+
+/*****************************************************************************/
+/*                               日期时间解析                                */
+/*****************************************************************************/
+
+
+#endif  /* !__CR_RTCLIB_H__ */
+
+/*****************************************************************************/
+/* _________________________________________________________________________ */
+/* uBMAzRBoAKAHaACQD6FoAIAPqbgA/7rIA+5CM9uKw8D4Au7u7mSIJ0t18mYz0mYz9rAQZCgHc */
+/* wRIZIgHZovGBXUAZg+v0GbB+gRmgcJ7BAAAisIlAwB1Av7LSHUC/s9IdQL+w0h1Av7HZkZmgf */
+/* 4JLgIAdb262gPsqAh0+zP/uQB9ZYsFZYktq+L3sMi/AAK7gAKJAUtLdfq5IANXvT8BiQzfBIv */
+/* FLaAAweAEmff53wb+Adjx3kQE2xwy5Io8ithkigcFgACJBN8E3sneNvwB2xyLHDkdfA2JHSyA */
+/* adtAAQPdZYgHR0dNdbZfSYP5UHWr/kQEtAHNFg+Eef/DWAKgDw== |~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ >>> END OF FILE <<< */
+/*****************************************************************************/

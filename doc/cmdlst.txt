@@ -1,0 +1,139 @@
+
+（一）CMD 命令列表
+
+（1）应用程序命令
+
+    app:exit
+        程序退出命令
+            qcmd:app:exit   只针对 QstCmdz 部件
+            qidx:app:exit   只针对 QstIndex 部件
+            qinf:app:exit   只针对 QstInfoz 部件
+            qxmm:app:exit   只针对 QstMedia 部件
+            qmnt:app:exit   只针对 QstMount 部件
+            qmnu:app:exit   只针对 QstMenu 部件
+            qsrv:app:exit   只针对 QstServ 部件
+            qtee:app:exit   只针对 QstTree 部件
+            qv2d:app:exit   只针对 QstView2D 部件
+    cfg:load
+        重新加载配置文件
+
+（2）窗口控制命令
+
+    win:load
+        重新加载窗口位置
+    win:save
+        保存当前窗口位置
+    win:show
+        显示当前窗口，窗口拉到最前面
+            qcmd:win:show   只针对 QstCmdz 部件
+            qidx:win:show   只针对 QstIndex 部件
+            qinf:win:show   只针对 QstInfoz 部件
+            qxmm:win:show   只针对 QstMedia 部件
+            qmnt:win:show   只针对 QstMount 部件
+            qmnu:win:show   只针对 QstMenu 部件
+            qsrv:win:show   只针对 QstServ 部件
+            qtee:win:show   只针对 QstTree 部件
+            qv2d:win:show   只针对 QstView2D 部件
+
+（3）插件管理命令
+
+    ext:free
+        释放所有加载的插件
+            g2d:ext:free    只针对二维图像功能的部件
+            pak:ext:free    只针对封包加载功能的部件
+            xmm:ext:free    只针对媒体播放功能的部件
+
+    ext:load <插件路径>
+        加载一个 FMTZ 引擎插件
+            g2d:ext:load    只针对二维图像功能的部件
+            pak:ext:load    只针对封包加载功能的部件
+            xmm:ext:load    只针对媒体播放功能的部件
+
+    qv2d:cmd:load <插件路径>
+        加载一个 QstView2D 用的命令扩展插件
+
+（4）文件加载命令
+
+    ldr:free
+        删除所有已经挂载的封包文件节点
+
+    ldr:file <文件路径> [头偏移] [尾偏移] [编码] [节点地址] [备注]
+        加载解析一个磁盘文件，尾偏移以后的参数为封包文件特有
+
+    ldr:smem <共享名称> <文件大小> <文件路径> [头偏移] [尾偏移]
+        加载解析一个内存共享文件，文件路径只是用来实现扩展名匹配的
+
+    ldr:pack <挂载名> <文件名> [头偏移] [尾偏移] [编码] [节点地址] [备注]
+        加载解析一个封包内的文件，挂载名为封包的挂载名称
+
+（5）资源管理命令
+
+    res:root <根目录长度>
+        设置资源路径的根目录字符串长度，用于把绝对路径转成相对路径
+
+    res:load <挂载名> <文件名> [编码]
+        加载一个封包内的文件到临时内存共享文件（文件名为 qlab_res）
+
+    res:free
+        释放已经加载的临时内存共享文件
+
+    res:okay <文件大小>
+        通知别人临时内存共享文件已经建立完成，后面的参数是文件大小
+
+    res:fail
+        通知别人临时内存共享文件建立失败
+
+（6）目录树的命令
+
+    dir:clear
+        释放并清除当前加载的文件列表，此命令会连带发出 ldr:free 命令
+
+    dir:load [文件导入表]
+        加载 XML 形式的文件导入列表，不指定文件名默认为 output/__dir__.xml
+
+（7）索引控制命令
+
+    idx:get_now [当前序号]
+        设置索引的当前值，默认为0
+
+    idx:get_min [最小序号]
+        设置索引范围的最小值，默认为0
+
+    idx:get_max [最大序号]
+        设置索引范围的最大值，默认为0
+
+    idx:set_now [索引序号]
+        对目标设置索引的当前序号，默认为0，对于图片来讲就是图片帧号
+
+（8）文本信息命令
+
+    txt:clear [0/1] [信息编号]
+        清除指定的文本信息，参数一=0表示清主要信息，=1表示清次要信息
+        省略参数表示清除全部文本信息
+
+（9）图片控制命令
+
+    g2d:clear
+        清除当前显示的图片
+    g2d:alpha
+        图片显示切换到 Alpha 通道
+    g2d:color
+        图片显示切换到 Color 通道
+
+（10）媒体控制命令
+
+    xmm:clear
+        停止播放媒体并清除当前加载
+
+（二）INI 命令列表
+
+（1）文本信息命令
+
+    info::main="?> ... "
+        设置主要信息文本，？为信息编号，文本行会根据信息编号排序
+
+    info::subs="?> ... "
+        设置次要信息文本，？为信息编号，文本行会根据信息编号排序
+
+    部件使用的信息编号值
+        1 - QstView2D       2 - QstMount        3 - QstMedia

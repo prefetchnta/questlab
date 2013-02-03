@@ -1,0 +1,15 @@
+//========================//
+//  导入文件前的复位操作  //
+//========================//
+ldr:free
+dir:clear
+txt:clear
+xmm:clear
+g2d:clear
+idx:get_min 0
+idx:get_max 0
+$del output/__dir__.xml
+$del output/__imp__.xml
+xmm:ext:free
+pak:ext:free
+g2d:ext:free
