@@ -324,19 +324,18 @@ qst_draw_image (
     /* 过滤参数 */
     if (parm->draw == NULL)
         return;
-    draw = parm->draw;
-    CR_VCALL(draw)->clear(draw, parm->cfgs.bkcolor, 0);
-    if (parm->image == NULL ||
-        parm->alpha == NULL) {
-        CR_VCALL(draw)->flip(draw, FALSE);
-        return;
-    }
 
     /* 选择绘制哪个通道 */
     if (!parm->trans)
         srce = parm->image;
     else
         srce = parm->alpha;
+    draw = parm->draw;
+    CR_VCALL(draw)->clear(draw, parm->cfgs.bkcolor, 0);
+    if (srce == NULL) {
+        CR_VCALL(draw)->flip(draw, FALSE);
+        return;
+    }
     rect = &draw->__back__.position;
 
     /* X 绘制坐标计算 */
@@ -564,6 +563,9 @@ qst_move_xy (
                 parm->win_x += step;
         }
         spnt = TRUE;
+    }
+    else {
+        parm->win_x = 0;
     }
 
     /* 必须要有高于视口的高度 */

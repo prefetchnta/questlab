@@ -113,52 +113,18 @@ qst_resize_win (
   __CR_IO__ sQstView2D* parm
     )
 {
-    sBLIT   blt;
-    iGFX2*  draw;
-    sIMAGE* copy;
+    bool_t  rett;
 
     if (parm->draw == NULL)
         return (TRUE);
-    draw = (iGFX2*)parm->draw;
     _ENTER_V2D_SINGLE_
-
-    /* 有渲染对象, 重新绘制之 */
-    if (parm->fmtz != NULL) {
-        if (!CR_VCALL(draw)->reset(draw)) {
-            _LEAVE_V2D_SINGLE_
-            return (FALSE);
-        }
+    rett = CR_VCALL(parm->draw)->reset(parm->draw);
+    if (rett) {
         qst_move_xy(parm, 0, 0);
         qst_draw_image(parm);
-        _LEAVE_V2D_SINGLE_
-        return (TRUE);
     }
-
-    /* 没有渲染对象, 复制原有的绘图 */
-    copy = image_new(0, 0, draw->__back__.position.ww,
-            draw->__back__.position.hh, draw->__back__.fmt);
-    if (copy == NULL) {
-        _LEAVE_V2D_SINGLE_
-        return (FALSE);
-    }
-    blt.dx = blt.dy = 0;
-    blt.sx = blt.sy = 0;
-    blt.sw = draw->__back__.position.ww;
-    blt.sh = draw->__back__.position.hh;
-    blit_set_c(copy, CR_VCALL(draw)->lock(draw), &blt, NULL);
-    CR_VCALL(draw)->unlock(draw);
-    if (!CR_VCALL(draw)->reset(draw)) {
-        _LEAVE_V2D_SINGLE_
-        image_del(copy);
-        return (FALSE);
-    }
-    CR_VCALL(draw)->clear(draw, parm->cfgs.bkcolor, 0);
-    blit_set_c(CR_VCALL(draw)->lock(draw), copy, &blt, NULL);
-    CR_VCALL(draw)->unlock(draw);
-    CR_VCALL(draw)->flip(draw, FALSE);
     _LEAVE_V2D_SINGLE_
-    image_del(copy);
-    return (TRUE);
+    return (rett);
 }
 
 /*
