@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-05-07  */
 /*     #######          ###    ###      [PORT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-07-07  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -106,7 +106,6 @@ cvt_i2f (
   __CR_IN__ int32s  i
     )
 {
-#ifdef  _CR_STRICT_ALIAS_
     union {
         fp32_t  f;
         int32s  i;
@@ -114,9 +113,6 @@ cvt_i2f (
 
     tmp.i = i;
     return (tmp.f);
-#else
-    return (*(fp32_t*)(&i));
-#endif
 }
 
 /*
@@ -129,7 +125,6 @@ cvt_f2i (
   __CR_IN__ fp32_t  f
     )
 {
-#ifdef  _CR_STRICT_ALIAS_
     union {
         fp32_t  f;
         int32s  i;
@@ -137,9 +132,6 @@ cvt_f2i (
 
     tmp.f = f;
     return (tmp.i);
-#else
-    return (*(int32s*)(&f));
-#endif
 }
 
 /*
@@ -152,7 +144,6 @@ cvt_i2d (
   __CR_IN__ int64s  i
     )
 {
-#ifdef  _CR_STRICT_ALIAS_
     union {
         fp64_t  d;
         int64s  i;
@@ -160,9 +151,6 @@ cvt_i2d (
 
     tmp.i = i;
     return (tmp.d);
-#else
-    return (*(fp64_t*)(&i));
-#endif
 }
 
 /*
@@ -175,7 +163,6 @@ cvt_d2i (
   __CR_IN__ fp64_t  d
     )
 {
-#ifdef  _CR_STRICT_ALIAS_
     union {
         fp64_t  d;
         int64s  i;
@@ -183,9 +170,6 @@ cvt_d2i (
 
     tmp.d = d;
     return (tmp.i);
-#else
-    return (*(int64s*)(&d));
-#endif
 }
 
 #endif  /* !_CR_NO_FLOAT_ */

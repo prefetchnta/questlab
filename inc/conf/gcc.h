@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-04-17  */
 /*     #######          ###    ###      [PORT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-12-02  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-20  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -45,24 +45,24 @@
     #if     defined(__MINGW64__)
         #define _CR_CC_MINGW_
         #define _CR_CC_MINGW64_
-        #define _CR_CC_STR_     "MinGW64"
+        #define _CR_CC_STR_     "GCC (MinGW64)"
 
     #elif   defined(__MINGW32__)
         #define _CR_CC_MINGW_
         #define _CR_CC_MINGW32_
-        #define _CR_CC_STR_     "MinGW32"
+        #define _CR_CC_STR_     "GCC (MinGW32)"
 
     #elif   defined(__GO32__) || \
             defined(__DJGPP__)
         #define _CR_CC_DJGPP_
-        #define _CR_CC_STR_     "DJGPP"
+        #define _CR_CC_STR_     "GCC (DJGPP)"
 
     #elif   defined(__CYGWIN__)
         #define _CR_CC_CYGWIN_
-        #define _CR_CC_STR_     "Cygwin"
+        #define _CR_CC_STR_     "GCC (Cygwin)"
 
     #else
-        #define _CR_CC_STR_     "GNU CC"
+        #define _CR_CC_STR_     "GCC (GNU)"
     #endif
     /*------------------------------------------------*/
 
@@ -265,12 +265,6 @@
         #define _CR_ASM_ATnT_
     #else
         #define _CR_ASM_SPEC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器支持严格别名 */
-    #if (_CR_CC_VER_ >= 30000)
-        #define _CR_STRICT_ALIAS_
     #endif
     /*------------------------------------------------*/
 

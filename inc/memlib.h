@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-16  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-07-02  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-18  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -42,22 +42,6 @@ CR_API void_t*  mem_calloc32 (int32u num, leng_t size);
 CR_API void_t*  mem_calloc64 (int64u num, leng_t size);
 CR_API void_t*  mem_realloc (void_t *ptr, leng_t new_size);
 CR_API void_t   mem_info (msize_t *total, msize_t *avail);
-
-#if !defined(_CR_SICK_INLINE_)
-/*
-=======================================
-    非 CONST 包装 (移植用)
-=======================================
-*/
-inline void_t
-mem_free_port (
-  __CR_IN__ void_t* ptr
-    )
-{
-    mem_free((const void_t*)ptr);
-}
-
-#endif  /* !_CR_SICK_INLINE_ */
 
 /* 字符串的分配宏 */
 #define str_allocA(len) (ansi_t*)mem_malloc(len)

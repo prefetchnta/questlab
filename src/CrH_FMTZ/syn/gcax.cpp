@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-01-30  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-20  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -43,7 +43,6 @@ typedef struct
         /* 个性部分 */
         CGca*   m_gca;  /* 文件对象 */
         uint_t  m_cnt;  /* 文件个数 */
-        ansi_t* m_str;  /* 包文件名 */
 
 } iPAK_GCA;
 
@@ -74,7 +73,6 @@ iPAK_GCA_release (
     real->m_gca->CloseArchive();
     real->m_gca->Free();
     delete real->m_gca;
-    mem_free(real->m_str);
     mem_free(that);
 }
 
@@ -262,41 +260,35 @@ load_syn_gca (
     if (!gca->Init()) {
         err_set(__CR_GCAX_CPP__, FALSE,
                 "load_syn_gca()", "CGca::Init() failure");
-        return (NULL);
+        goto _failure1;
     }
 
-    ansi_t* str;
+    const ansi_t*   memo;
 
     /* 设置文件路径 */
     if (param->type == CR_LDR_ANSI) {
-        str = str_dupA(param->name.ansi);
-        if (str == NULL) {
-            err_set(__CR_GCAX_CPP__, CR_NULL,
-                    "load_syn_gca()", "str_dupA() failure");
-            goto _failure1;
-        }
+        memo = param->name.ansi;
     }
     else {
-        str = utf16_to_local(CR_LOCAL, param->name.wide);
-        if (str == NULL) {
+        memo = utf16_to_local(CR_LOCAL, param->name.wide);
+        if (memo == NULL) {
             err_set(__CR_GCAX_CPP__, CR_NULL,
                     "load_syn_gca()", "utf16_to_local() failure");
-            goto _failure1;
+            goto _failure2;
         }
     }
-    gca->SetArcFilePath(str);
+    gca->SetArcFilePath(memo);
 
-    bool_t  password;
+    int32u  attrib = 0;
 
     /* 设置密码 (如果有的话) */
     if (param->aprm != NULL &&
         *(byte_t*)param->aprm != 0x00) {
-        password = TRUE;
         gca->SetCrypto(TRUE);
         gca->SetSpell((ansi_t*)param->aprm);
+        attrib = PAK_FILE_ENC;
     }
     else {
-        password = FALSE;
         gca->SetCrypto(FALSE);
     }
 
@@ -304,13 +296,19 @@ load_syn_gca (
 
     /* 支持自解压 EXE 文件 */
     if (mem_cmp(tag, "MZ", 2) == 0) {
-        offset = GetStartOffset(str);
+        offset = GetStartOffset(memo);
+        if (memo != param->name.ansi)
+            mem_free(memo);
         if (offset == 0) {
             err_set(__CR_GCAX_CPP__, offset,
                     "load_syn_gca()", "invalid GCA format");
             goto _failure2;
         }
         gca->SetStartOffset(offset);
+    }
+    else {
+        if (memo != param->name.ansi)
+            mem_free(memo);
     }
 
     /* 打开 GCA 压缩包 */
@@ -320,14 +318,14 @@ load_syn_gca (
         goto _failure2;
     }
 
-    uint_t          type;
     uint_t          cnt, idx = 0;
     sPAK_GCA_FILE*  list = NULL;
 
     /* 加载文件信息表 */
-    type = gca->GetArcType();
     cnt = gca->GetNumFiles();
-    if (cnt != 0) {
+    if (cnt != 0)
+    {
+        /* 分配子文件属性表 */
         list = mem_talloc(cnt, sPAK_GCA_FILE);
         if (list == NULL) {
             err_set(__CR_GCAX_CPP__, CR_NULL,
@@ -335,6 +333,7 @@ load_syn_gca (
             goto _failure3;
         }
         mem_zero(list, cnt * sizeof(sPAK_GCA_FILE));
+        memo = (gca->GetArcType() == CGca::GCA0) ? "GCA0" : "GCA1";
         for (idx = 0; idx < cnt; idx++)
         {
             string  name = gca->GetFileName((int)idx);
@@ -347,6 +346,16 @@ load_syn_gca (
                 goto _failure4;
             }
 
+            /* 设置公用文件属性 (偏移没有实际用处) */
+            list[idx].base.skip = sizeof(sPAK_GCA_FILE);
+            list[idx].base.attr = attrib;
+            list[idx].base.offs = offset;
+            list[idx].base.pack = gca->GetDataSize((int)idx);
+            list[idx].base.size = gca->GetFileSize((int)idx);
+            if (list[idx].base.pack != list[idx].base.size)
+                list[idx].base.attr |= PAK_FILE_CMP;
+            list[idx].base.memo = memo;
+
             FILETIME    ftime = gca->GetFileTime((int)idx);
 
             /* 设置私有文件属性 */
@@ -354,20 +363,6 @@ load_syn_gca (
             list[idx].fattr = gca->GetFileAttributesA((int)idx);
             list[idx].ftime = mk_size(ftime.dwHighDateTime,
                                       ftime.dwLowDateTime);
-            /* 设置公用文件属性 */
-            list[idx].base.skip = sizeof(sPAK_GCA_FILE);
-            list[idx].base.offs = offset;   /* 这里的偏移没有实际用处 */
-            list[idx].base.pack = gca->GetDataSize((int)idx);
-            list[idx].base.size = gca->GetFileSize((int)idx);
-            if (list[idx].base.pack != list[idx].base.size)
-                list[idx].base.attr |= PAK_FILE_CMP;
-            if (password)
-                list[idx].base.attr |= PAK_FILE_ENC;
-            if (type == CGca::GCA0)
-                list[idx].base.memo = "GCA0";
-            else
-            if (type == CGca::GCA1)
-                list[idx].base.memo = "GCA1";
         }
     }
 
@@ -382,7 +377,6 @@ load_syn_gca (
     }
     port->m_gca = gca;
     port->m_cnt = cnt;
-    port->m_str = str;
     port->pack.__filelst__ = (sPAK_FILE*)list;
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
@@ -419,9 +413,8 @@ _failure4:
 _failure3:
     gca->CloseArchive();
 _failure2:
-    mem_free(str);
-_failure1:
     gca->Free();
+_failure1:
     delete gca;
     return (NULL);
 }

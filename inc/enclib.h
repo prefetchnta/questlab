@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-13  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-11-26  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -39,13 +39,13 @@ CR_API uint_t   compr_bzip2 (void_t *dst, uint_t dstlen,
 
 CR_API uint_t   uncompr_bzip2 (void_t *dst, uint_t dstlen,
                                const void_t *src, uint_t srclen);
-/* GZip */
-CR_API uint_t   compr_gzip (void_t *dst, uint_t dstlen,
-                            const void_t *src, uint_t srclen,
-                            uint_t level CR_DEFAULT(9));
+/* PKZip */
+CR_API uint_t   compr_pkzip (void_t *dst, uint_t dstlen,
+                             const void_t *src, uint_t srclen,
+                             uint_t level CR_DEFAULT(9));
 
-CR_API uint_t   uncompr_gzip (void_t *dst, uint_t dstlen,
-                              const void_t *src, uint_t srclen);
+CR_API uint_t   uncompr_pkzip (void_t *dst, uint_t dstlen,
+                               const void_t *src, uint_t srclen);
 /* JCALG1 */
 CR_API uint_t   compr_jcalg1 (void_t *dst, uint_t dstlen,
                               const void_t *src, uint_t srclen,
