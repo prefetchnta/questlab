@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-03  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-25  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -59,9 +59,10 @@ CR_API ufast_t  date_set_week (sDATETIME *date);
 CR_API ufast_t  date_get_week (const sDATETIME *date);
 CR_API void_t   date_inc (sDATETIME *date, uint_t days);
 CR_API void_t   date_dec (sDATETIME *date, uint_t days);
-CR_API sint_t   date_sub (const sDATETIME *date1, const sDATETIME *date2);
+CR_API maxs_t   date_sub (const sDATETIME *date1,
+                          const sDATETIME *date2);
 CR_API bool_t   datetime_chk (const sDATETIME *datetime);
-CR_API maxu_t   datetime_sub (const sDATETIME *datetime1,
+CR_API maxs_t   datetime_sub (const sDATETIME *datetime1,
                               const sDATETIME *datetime2);
 CR_API sint_t   datetime_cmp (const sDATETIME *datetime1,
                               const sDATETIME *datetime2);
