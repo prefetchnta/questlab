@@ -63,7 +63,6 @@ typedef struct
         ansi_t*     name;   /* 挂载节点名 (释放) */
         ansi_t*     show;   /* 节点显示名 (释放) */
         ansi_t*     file;   /* 磁盘文件名 (释放) */
-        leng_t      size;   /* 内存数据文件大小 */
         void_t*     data;   /* 内存数据 (可能释放) */
         sARRAY      info;   /* 文件信息列表 (释放) */
         iPACKAGE*   pack;   /* 封包读取接口 (不释放) */
@@ -458,12 +457,10 @@ _retry:
             goto _func_out;
         }
         if (fmtz == NULL) {
-            node->size = 0;
             node->data = NULL;
         }
         else {
             datz = (sFMT_DAT*)fmtz;
-            node->size = datz->unsz;
             node->data = datz->data;
             mem_free(fmtz);
         }
@@ -517,10 +514,12 @@ qst_load_package (
     sQstMntNode*    find;
 
     /* 检查封包是否已加载 */
-    find = curbead_findT(&parm->list, sQstMntNode, name);
-    if (find != NULL) {
-        qst_send_finfo(&find->info, parm->netw);
-        return;
+    if (type == QST_MOUNT_DISK) {
+        find = curbead_findT(&parm->list, sQstMntNode, name);
+        if (find != NULL) {
+            qst_send_finfo(&find->info, parm->netw);
+            return;
+        }
     }
 
     /* 尝试加载目标数据 */
