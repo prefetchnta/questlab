@@ -206,3 +206,4 @@
 <p>属于 <b>CrHack SDK</b> 本体的跨平台引擎插件，支持的文件格式如下（只支持文件的常见模式）：</p>
  - Windows Bitmap File (BMP)
  - Portable Network Graphics (PNG)
+ - PKZIP Archiver (ZIP)
