@@ -115,6 +115,8 @@ qst_try_load (
 
     /* 一些状态初始化命令 */
     cmd_shl_send(s_wrk_ctx.netw, "txt:clear");
+    cmd_shl_send(s_wrk_ctx.netw, "xmm:clear");
+    cmd_shl_send(s_wrk_ctx.netw, "g2d:clear");
     cmd_shl_send(s_wrk_ctx.netw, "idx:get_min 0");
     cmd_shl_send(s_wrk_ctx.netw, "idx:get_max 0");
 
@@ -548,7 +550,6 @@ qst_free_lst (
     if (parm->busy)
         return;
     parm->busy = TRUE;
-    cmd_shl_send(parm->netw, "ldr:free");
     ((TfrmMain*)(parm->form))->lstTree->BeginUpdate();
     ((TfrmMain*)(parm->form))->lstTree->Clear();
     ((TfrmMain*)(parm->form))->lstTree->EndUpdate();
