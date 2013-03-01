@@ -30,14 +30,16 @@ questlab
 │  ├─fi
 │  ├─fmod
 │  ├─gcasdk
+│  ├─unrar
 │  └─vtv
 ├─src
 │  ├─CrH_FMTZ
 │  │  ├─devil
 │  │  ├─fi
 │  │  ├─fmod
-│  │  └─syn
-│  │      └─gcasdk
+│  │  ├─syn
+│  │  │  └─gcasdk
+│  │  └─unrar
 │  ├─CrH_GFX2
 │  │  └─gapi
 │  ├─QstCmdz
