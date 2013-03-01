@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-19  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-01-29  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -210,8 +210,6 @@ engine_do (
 /*                               读包系统接口                                */
 /*****************************************************************************/
 
-struct  _iPACKAGE;
-
 /* 子文件信息单元 */
 typedef struct
 {
@@ -233,12 +231,8 @@ typedef struct
 #define PAK_FILE_CMP    0x00000001UL    /* 压缩 */
 #define PAK_FILE_ENC    0x00000002UL    /* 加密 */
 
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #define iPACKAGE    struct _iPACKAGE
-#else
-    typedef struct _iPACKAGE    iPACKAGE;
-#endif
+struct  _iPACKAGE;
+#define iPACKAGE    struct _iPACKAGE
 
 /* 读包对象接口表 */
 typedef struct
@@ -255,10 +249,7 @@ typedef struct
                                 int64u index);
 } iPACKAGE_vtbl;
 
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #undef  iPACKAGE
-#endif              /**************** 取消类型简化宏 ****************/
+#undef  iPACKAGE
 
 /* 读包对象接口类 */
 typedef struct  _iPACKAGE
@@ -304,19 +295,29 @@ CR_API bool_t   pack_file_infoW (iPACKAGE *pack, sPAK_FILE **info,
                                  const wide_t *name);
 CR_API bool_t   pack_file_infoA (iPACKAGE *pack, sPAK_FILE **info,
                                  const ansi_t *name, uint_t cpage);
+/* ZIP 文件信息结构 */
+typedef struct
+{
+        /* 公用部分 */
+        sPAK_FILE   base;
+
+        /* 个性部分 */
+        int32u  crc32;  /* 文件校验 */
+        int16u  ftime;  /* 文件时间 (DOS) */
+        int16u  fdate;  /* 文件日期 (DOS) */
+        int16u  ftype;  /* 文件压缩类型 */
+
+} sPAK_ZIP_FILE;
+
+/***** 文件加载 API 组 *****/
+CR_API sFMT_PRT*    load_cr_zip (iDATIN *datin, const sLOADER *param);
 
 /*****************************************************************************/
 /*                               媒体播放接口                                */
 /*****************************************************************************/
 
 struct  _iXMMEDIA;
-
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #define iXMMEDIA    struct _iXMMEDIA
-#else
-    typedef struct _iXMMEDIA    iXMMEDIA;
-#endif
+#define iXMMEDIA    struct _iXMMEDIA
 
 /* 媒体播放接口表 */
 typedef struct
@@ -344,10 +345,7 @@ typedef struct
 
 } iXMMEDIA_vtbl;
 
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #undef  iXMMEDIA
-#endif              /**************** 取消类型简化宏 ****************/
+#undef  iXMMEDIA
 
 /* 媒体播放接口类 */
 typedef struct  _iXMMEDIA
@@ -464,13 +462,7 @@ xmms_adj_volume (
 /*****************************************************************************/
 
 struct  _iPICTURE;
-
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #define iPICTURE    struct _iPICTURE
-#else
-    typedef struct _iPICTURE    iPICTURE;
-#endif
+#define iPICTURE    struct _iPICTURE
 
 /* 多帧图片接口表 */
 typedef struct
@@ -484,10 +476,7 @@ typedef struct
 
 } iPICTURE_vtbl;
 
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #undef  iPICTURE
-#endif              /**************** 取消类型简化宏 ****************/
+#undef  iPICTURE
 
 /* 多帧图片接口类 */
 typedef struct  _iPICTURE

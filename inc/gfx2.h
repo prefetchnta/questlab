@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-19  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-02  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -250,13 +250,7 @@ CR_API void_t*  fontX_l2h (void_t *mask, const void_t *data, uint_t width,
 /*****************************************************************************/
 
 struct  _iGFX2;
-
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #define iGFX2   struct _iGFX2
-#else
-    typedef struct _iGFX2   iGFX2;
-#endif
+#define iGFX2   struct _iGFX2
 
 /* 屏幕绘制接口表 */
 typedef struct
@@ -285,11 +279,9 @@ typedef struct
 
 } iGFX2_vtbl;
 
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #undef  iGFX2
-#endif              /**************** 取消类型简化宏 ****************/
+#undef  iGFX2
 
+/* 屏幕绘制接口类 */
 typedef struct  _iGFX2
 {
         /* 虚函数表 */
@@ -308,13 +300,7 @@ typedef iGFX2*  (*create_gfx2_t) (void_t*, uint_t, uint_t, uint_t,
 /*****************************************************************************/
 
 struct  _iFONT;
-
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #define iFONT   struct _iFONT
-#else
-    typedef struct _iFONT   iFONT;
-#endif
+#define iFONT   struct _iFONT
 
 /* 文字绘制接口表 */
 typedef struct
@@ -352,11 +338,9 @@ typedef struct
                               sRECT *rect, uint_t cpage);
 } iFONT_vtbl;
 
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #undef  iFONT
-#endif              /**************** 取消类型简化宏 ****************/
+#undef  iFONT
 
+/* 文字绘制接口类 */
 typedef struct  _iFONT
 {
         /* 虚函数表 */

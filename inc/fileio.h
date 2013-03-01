@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-23  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-02  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -306,15 +306,8 @@ CR_API bool_t   file_searchW (const wide_t *root, bool_t sub, bool_t hide,
 
 struct  _iDATIN;
 struct  _iDATOT;
-
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #define iDATIN  struct _iDATIN
-    #define iDATOT  struct _iDATOT
-#else
-    typedef struct _iDATIN  iDATIN;
-    typedef struct _iDATOT  iDATOT;
-#endif
+#define iDATIN  struct _iDATIN
+#define iDATOT  struct _iDATOT
 
 /* 文件读取接口表 */
 typedef struct
@@ -405,11 +398,8 @@ typedef struct
 #define putT(that, data, type) \
        write(that, data, sizeof(type)) == sizeof(type)
 
-/* GCC 编译器要出错 */
-#ifndef __cplusplus
-    #undef  iDATIN
-    #undef  iDATOT
-#endif              /**************** 取消类型简化宏 ****************/
+#undef  iDATIN
+#undef  iDATOT
 
 /* 文件读取接口类 */
 typedef struct  _iDATIN

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-12-11  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-12-11  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -47,6 +47,11 @@ static const sMATCHx _rom_ s_findx[] =
         CR_STR("*.png"), CR_STR(".png"),
         CR_VFUNC(load_cr_png)
     },
+    {
+        CR_FMTZ_MASK_PAK,
+        CR_STR("*.zip"), CR_STR(".zip"),
+        CR_VFUNC(load_cr_zip)
+    },
 };
 #endif  /* !s_findx */
 
@@ -56,6 +61,7 @@ static const sTRY_LDR _rom_ s_load[] =
 {
     { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_bmp) },
     { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_png) },
+    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_cr_zip) },
 };
 #endif  /* !_CR_FMTZ_WIDE_ */
 

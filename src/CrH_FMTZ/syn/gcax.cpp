@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-20  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -21,10 +21,11 @@
 #define __CR_GCAX_CPP__ 0xAAA5B9D8UL
 
 #include "strlib.h"
+#include "fmtz/syn.h"
 #include "../fmtint.h"
 
-#include "fmtz/syn.h"
 #if defined(_CR_HAVE_PAK_GCA_)
+
 #include "gcasdk/GcaSDK.h"
 
 /* GcaSDK 导入库 */
@@ -279,7 +280,7 @@ load_syn_gca (
     }
     gca->SetArcFilePath(memo);
 
-    int32u  attrib = 0;
+    int32u  attrib;
 
     /* 设置密码 (如果有的话) */
     if (param->aprm != NULL &&
@@ -289,10 +290,11 @@ load_syn_gca (
         attrib = PAK_FILE_ENC;
     }
     else {
+        attrib = 0;
         gca->SetCrypto(FALSE);
     }
 
-    int32u  offset = 0;
+    int32u  offset;
 
     /* 支持自解压 EXE 文件 */
     if (mem_cmp(tag, "MZ", 2) == 0) {
@@ -309,6 +311,7 @@ load_syn_gca (
     else {
         if (memo != param->name.ansi)
             mem_free(memo);
+        offset = 0;
     }
 
     /* 打开 GCA 压缩包 */
@@ -318,8 +321,9 @@ load_syn_gca (
         goto _failure2;
     }
 
-    uint_t          cnt, idx = 0;
-    sPAK_GCA_FILE*  list = NULL;
+    uint_t          idx;
+    uint_t          cnt;
+    sPAK_GCA_FILE*  list;
 
     /* 加载文件信息表 */
     cnt = gca->GetNumFiles();
@@ -364,6 +368,10 @@ load_syn_gca (
             list[idx].ftime = mk_size(ftime.dwHighDateTime,
                                       ftime.dwLowDateTime);
         }
+    }
+    else {
+        idx = 0;
+        list = NULL;
     }
 
     iPAK_GCA*   port;
