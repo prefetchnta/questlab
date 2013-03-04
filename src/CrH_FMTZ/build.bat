@@ -16,3 +16,5 @@ nmake -fe_fmodex.mak
 rem =====================
 nmake -fe_dshow.mak
 rem =====================
+nmake -fe_rar.mak
+rem =====================
