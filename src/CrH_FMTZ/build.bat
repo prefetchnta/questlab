@@ -18,3 +18,5 @@ nmake -fe_dshow.mak
 rem =====================
 nmake -fe_rar.mak
 rem =====================
+nmake -fe_expand.mak
+rem =====================
