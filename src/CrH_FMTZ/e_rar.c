@@ -523,6 +523,7 @@ load_rar (
                 "load_rar()", "pack_init_list() failure");
         goto _failure4;
     }
+    RARCloseArchive(rar);
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
@@ -548,6 +549,7 @@ _failure2:
     mem_free(port);
 _failure1:
     array_freeT(&list, sPAK_RAR_FILE);
+    RARCloseArchive(rar);
     return (NULL);
 }
 
