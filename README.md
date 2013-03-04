@@ -71,6 +71,17 @@
 
 　　所有插件位于目录 **bin/plugin** 下。字母 **c** 开头的插件为命令扩展插件，用于扩展一些应用程序的消息命令；字母 **z** 开头的插件为 **CrHack/FMTz** 引擎插件，专门负责加载各类输入的数据。
 
+##zExpand (VC10.0 W32 SDK)
+
+<p>支持加载微软 <b>COMPRESS.EXE & EXPAND.EXE</b> 工具相关的几种文件格式：</p>
+ - Microsoft Compressed (SZDD) file
+ - Microsoft Compressed (SZ) file
+
+##zRAR (VC10.0 W32 SDK)
+
+<p>基于 <b>UnRAR</b> 库的 <b>RAR</b> 封包文件读取插件，只支持一种文件格式：</p>
+- Roshal ARchive (RAR)
+
 ##zDShow (VC10.0 W32 SDK)
 
 <p>基于 <b>DirectShow</b> 组件的音频视频播放插件，支持的文件格式取决于系统安装的解码器数量。</p>
@@ -159,7 +170,7 @@
 ##zSYN (VC7.1 W32 SDK)
 
 <p>支持加载 <b>Shin-ichi TSURUTA (SYN)</b> 设计的几种文件格式：</p>
- - G Compression Archiver (GCA)
+ - G Compression Archive (GCA)
  - ARGB Image File (by Shin-ichi TSURUTA)
 
 ##zFreeImage (VC10.0 W32 SDK)
@@ -206,4 +217,4 @@
 <p>属于 <b>CrHack SDK</b> 本体的跨平台引擎插件，支持的文件格式如下（只支持文件的常见模式）：</p>
  - Windows Bitmap File (BMP)
  - Portable Network Graphics (PNG)
- - PKZIP Archiver (ZIP)
+ - Phil Katz's ZIP Archive (PKZIP)
