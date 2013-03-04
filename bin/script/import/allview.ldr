@@ -1,10 +1,13 @@
 //==========================//
 //  加载自匹配文件解析插件  //
 //==========================//
+ext:load plugin/zExpand.dll
 g2d:ext:load CrH_FMTZ.dll
 g2d:ext:load plugin/zDevIL.dll
 g2d:ext:load plugin/zFreeImage.dll
 g2d:ext:load plugin/zSYN.dll
+pak:ext:load CrH_FMTZ.dll
 pak:ext:load plugin/zSYN.dll
+pak:ext:load plugin/zRAR.dll
 xmm:ext:load plugin/zDShow.dll
 xmm:ext:load plugin/zFMOD.dll
