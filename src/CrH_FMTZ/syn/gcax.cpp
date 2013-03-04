@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -206,7 +206,6 @@ static const iPACKAGE_vtbl _rom_ s_pack_vtbl =
     iPAK_GCA_release, iPAK_GCA_getMore,
     iPAK_GCA_getFileNum, iPAK_GCA_getFileData,
     iPAK_GCA_getFileInfo,
-
 };
 
 /*
@@ -407,7 +406,7 @@ load_syn_gca (
     rett->type = CR_FMTZ_PRT;
     rett->port = (iPORT*)port;
     rett->more = "iPACKAGE";
-    rett->infor = "G Compression Archiver (GCA)";
+    rett->infor = "G Compression Archive (GCA)";
     return (rett);
 
 _failure4:

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-02-28  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -179,7 +179,7 @@ iPAK_ZIP_getFileData (
         /* 根据压缩类型解码数据 */
         if (type == 0)
         {
-            /* store */
+            /* Store */
             size = pack;
             data = temp;
         }
@@ -194,7 +194,7 @@ iPAK_ZIP_getFileData (
 
             if (type == 8)
             {
-                /* deflate (32K) */
+                /* Deflate (32K) */
                 if (cut_size(&pksz, (leng_t)pack)) {
                     err_set(__CR_ZIP_C__, pack,
                             "iPACKAGE::getFileData()", "<pack> truncated");
@@ -215,7 +215,7 @@ iPAK_ZIP_getFileData (
             else
             if (type == 12)
             {
-                /* bzip2 */
+                /* BZip2 */
                 if (cut_size(&pksz, (leng_t)pack)) {
                     err_set(__CR_ZIP_C__, pack,
                             "iPACKAGE::getFileData()", "<pack> truncated");
@@ -295,7 +295,6 @@ static const iPACKAGE_vtbl _rom_ s_pack_vtbl =
     iPAK_ZIP_release, iPAK_ZIP_getMore,
     iPAK_ZIP_getFileNum, iPAK_ZIP_getFileData,
     iPAK_ZIP_getFileInfo,
-
 };
 
 /* ZIP 内部结构 (LE) */
@@ -344,7 +343,6 @@ zip_free (
     TRY_FREE(unit->base.find)
     mem_free(unit->base.name);
 }
-
 
 /*
 =======================================
@@ -472,20 +470,22 @@ load_cr_zip (
         temp.ftype =  WORD_LE(unit.compr);
         switch (temp.ftype)
         {
-            case 0:  temp.base.memo = "store";            break;
-            case 1:  temp.base.memo = "shrinking";        break;
-            case 2:  temp.base.memo = "reducing (2)";     break;
-            case 3:  temp.base.memo = "reducing (3)";     break;
-            case 4:  temp.base.memo = "reducing (4)";     break;
-            case 5:  temp.base.memo = "reducing (5)";     break;
-            case 6:  temp.base.memo = "imploding";        break;
-            case 7:  temp.base.memo = "tokenizing";       break;
-            case 8:  temp.base.memo = "deflate (32K)";    break;
-            case 9:  temp.base.memo = "deflate (64K)";    break;
+            case 0:  temp.base.memo = "Store";            break;
+            case 1:  temp.base.memo = "Shrinking";        break;
+            case 2:  temp.base.memo = "Reducing (2)";     break;
+            case 3:  temp.base.memo = "Reducing (3)";     break;
+            case 4:  temp.base.memo = "Reducing (4)";     break;
+            case 5:  temp.base.memo = "Reducing (5)";     break;
+            case 6:  temp.base.memo = "Imploding";        break;
+            case 7:  temp.base.memo = "Tokenizing";       break;
+            case 8:  temp.base.memo = "Deflate (32K)";    break;
+            case 9:  temp.base.memo = "Deflate (64K)";    break;
             case 10: temp.base.memo = "PKWARE imploding"; break;
-            case 11: temp.base.memo = "reserved";         break;
-            case 12: temp.base.memo = "bzip2";            break;
-            default: temp.base.memo = "unknown type";     break;
+            case 11: temp.base.memo = "Reserved";         break;
+            case 12: temp.base.memo = "BZip2";            break;
+            case 14: temp.base.memo = "LZMA";             break;
+            case 98: temp.base.memo = "PPMd";             break;
+            default: temp.base.memo = "Unknown type";     break;
         }
 
         /* 跳过文件数据 */
@@ -542,7 +542,7 @@ load_cr_zip (
     rett->type = CR_FMTZ_PRT;
     rett->port = (iPORT*)port;
     rett->more = "iPACKAGE";
-    rett->infor = "PKZIP Archiver (ZIP)";
+    rett->infor = "Phil Katz's ZIP Archive (PKZIP)";
     return (rett);
 
 _failure:
