@@ -20,9 +20,7 @@
 #ifndef __CR_SZDD_C__
 #define __CR_SZDD_C__ 0x7232133BUL
 
-#include "fmtz.h"
 #include "enclib.h"
-#include "memlib.h"
 #include "fmtz/expand.h"
 
 /* SZDD 内部结构 (LE) */
