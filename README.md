@@ -75,7 +75,7 @@
 
 <p>支持加载微软 <b>COMPRESS.EXE & EXPAND.EXE</b> 工具相关的几种文件格式：</p>
  - Microsoft Compressed (SZDD) file
- - Microsoft Compressed (SZ) file
+ - Microsoft Compressed (SZ20) file
 
 ##zRAR (VC10.0 W32 SDK)
 
