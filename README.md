@@ -85,6 +85,7 @@
 ##zDShow (VC10.0 W32 SDK)
 
 <p>基于 <b>DirectShow</b> 组件的音频视频播放插件，支持的文件格式取决于系统安装的解码器数量。</p>
+- Media file supported by DirectShow
 
 ##zFMOD (VC10.0 W32 SDK)
 
