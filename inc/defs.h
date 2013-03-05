@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-09-07  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -164,17 +164,13 @@ typedef ufast_t bool_t;
 #endif
 
 /* 平台最大类型 */
-#if defined(_CR_SYS16_)
+#if defined(_CR_NO_INT64_)
     typedef int32s  maxs_t;
     typedef int32u  maxu_t;
-
-    #define CR_MAXU64(n)   (-1L)
-
-#else   /* (_CR_SYS32_) */
-        /* (_CR_SYS64_) */
+    #define CR_MAXU64(n)    ((n).lo32)
+#else
     typedef int64s  maxs_t;
     typedef int64u  maxu_t;
-
     #define CR_MAXU64(n)    (n)
 #endif
 
@@ -406,10 +402,9 @@ fmj_xzz2 (
 #endif
 
 /* printf() 最大整数修饰符 */
-#if defined(_CR_SYS16_)
+#if defined(_CR_NO_INT64_)
     #define CR_MX   CR_I32
-#else   /* (_CR_SYS32_) */
-        /* (_CR_SYS64_) */
+#else
     #define CR_MX   CR_I64
 #endif
 
