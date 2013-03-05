@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-03-04  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -32,8 +32,8 @@ CR_API sENGINE*     engine_expand (void_t);
 /*                               数据文件格式                                */
 /*****************************************************************************/
 
-CR_API sFMT_DAT*    load_ms_sz   (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_DAT*    load_ms_szdd (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_DAT*    load_ms_sz20 (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_DAT*    load_ms_kwaj (iDATIN *datin, const sLOADER *param);
 
 #endif  /* !__CR_EXPAND_H__ */

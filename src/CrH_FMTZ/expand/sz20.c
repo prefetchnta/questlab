@@ -1,6 +1,6 @@
 /*****************************************************************************/
 /*                                                  ###                      */
-/*       #####          ###    ###                  ###  CREATE: 2013-03-04  */
+/*       #####          ###    ###                  ###  CREATE: 2013-03-05  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
 /*    ########          ###    ###                  ###  MODIFY: 2013-03-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
@@ -13,30 +13,28 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>> CrHack 微软 SZDD 文件解码函数库 <<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>>>> CrHack 微软 SZ20 文件解码函数库 <<<<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_SZDD_C__
-#define __CR_SZDD_C__ 0x7232133BUL
+#ifndef __CR_SZ20_C__
+#define __CR_SZ20_C__ 0xA31BBBE8UL
 
 #include "enclib.h"
 #include "fmtz/expand.h"
 
-/* SZDD 内部结构 (LE) */
+/* SZ20 内部结构 (LE) */
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (push, 1)
 #endif
 
-/* SZDD 文件头结构 */
+/* SZ20 文件头结构 */
 CR_TYPEDEF struct
 {
-        byte_t  tag[8];     /* "SZDD\x88\xF0\x27\x33" */
-        byte_t  ftype;      /* 文件压缩类型 =0x41 */
-        byte_t  ext_chr;    /* 下划线替换掉的那个字符 */
+        byte_t  tag[8];     /* "SZ\x20\x88\xF0\x27\x33\xD1" */
         int32u  unsize;     /* 文件解压缩后的大小 */
 
-} CR_PACKED sSZDD_HDR;
+} CR_PACKED sSZ20_HDR;
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (pop)
@@ -44,11 +42,11 @@ CR_TYPEDEF struct
 
 /*
 =======================================
-    SZDD 文件读取
+    SZ20 文件读取
 =======================================
 */
 CR_API sFMT_DAT*
-load_ms_szdd (
+load_ms_sz20 (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
     )
@@ -58,37 +56,32 @@ load_ms_szdd (
     void_t*     data;
     void_t*     temp;
     sFMT_DAT*   rett;
-    sSZDD_HDR   head;
+    sSZ20_HDR   head;
 
     /* 这个参数可能为空 */
     if (datin == NULL) {
-        err_set(__CR_SZDD_C__, CR_NULL,
-                "load_ms_szdd()", "invalid param: datin");
+        err_set(__CR_SZ20_C__, CR_NULL,
+                "load_ms_sz20()", "invalid param: datin");
         return (NULL);
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sSZDD_HDR))) {
-        err_set(__CR_SZDD_C__, FALSE,
-                "load_ms_szdd()", "iDATIN::getT() failure");
+    if (!(CR_VCALL(datin)->getT(datin, &head, sSZ20_HDR))) {
+        err_set(__CR_SZ20_C__, FALSE,
+                "load_ms_sz20()", "iDATIN::getT() failure");
         return (NULL);
     }
-    if (mem_cmp(head.tag, "SZDD\x88\xF0\x27\x33", 8) != 0) {
-        err_set(__CR_SZDD_C__, CR_ERROR,
-                "load_ms_szdd()", "invalid SZDD format");
-        return (NULL);
-    }
-    if (head.ftype != 0x41) {
-        err_set(__CR_SZDD_C__, head.ftype,
-                "load_ms_szdd()", "invalid SZDD format");
+    if (mem_cmp(head.tag, "SZ\x20\x88\xF0\x27\x33\xD1", 8) != 0) {
+        err_set(__CR_SZ20_C__, CR_ERROR,
+                "load_ms_sz20()", "invalid SZ format");
         return (NULL);
     }
 
     /* 读取所有后续数据 */
     temp = CR_VCALL(datin)->get(datin, &pksz, FALSE);
     if (temp == NULL) {
-        err_set(__CR_SZDD_C__, CR_NULL,
-                "load_ms_szdd()", "iDATIN::get() failure");
+        err_set(__CR_SZ20_C__, CR_NULL,
+                "load_ms_sz20()", "iDATIN::get() failure");
         return (NULL);
     }
 
@@ -96,25 +89,25 @@ load_ms_szdd (
     head.unsize = DWORD_LE(head.unsize);
     data = mem_malloc32(head.unsize);
     if (data == NULL) {
-        err_set(__CR_SZDD_C__, CR_NULL,
-                "load_ms_szdd()", "mem_malloc32() failure");
+        err_set(__CR_SZ20_C__, CR_NULL,
+                "load_ms_sz20()", "mem_malloc32() failure");
         mem_free(temp);
         return (NULL);
     }
     unsz = (leng_t)(head.unsize);
-    pksz = uncompr_lz32(data, unsz, temp, pksz);
+    pksz = uncompr_lzss(data, unsz, temp, pksz, 0x20);
     mem_free(temp);
     if (pksz != unsz) {
-        err_set(__CR_SZDD_C__, pksz,
-                "load_ms_szdd()", "uncompr_lz32() failure");
+        err_set(__CR_SZ20_C__, pksz,
+                "load_ms_sz20()", "uncompr_lzss() failure");
         goto _failure;
     }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_DAT);
     if (rett == NULL) {
-        err_set(__CR_SZDD_C__, CR_NULL,
-                "load_ms_szdd()", "struct_new() failure");
+        err_set(__CR_SZ20_C__, CR_NULL,
+                "load_ms_sz20()", "struct_new() failure");
         goto _failure;
     }
     CR_NOUSE(param);
@@ -122,7 +115,7 @@ load_ms_szdd (
     rett->unsz = unsz;
     rett->pksz = dati_get_size(datin);
     rett->data = data;
-    rett->infor = "Microsoft Compressed (SZDD) file";
+    rett->infor = "Microsoft Compressed (SZ20) file";
     return (rett);
 
 _failure:
@@ -130,7 +123,7 @@ _failure:
     return (NULL);
 }
 
-#endif  /* !__CR_SZDD_C__ */
+#endif  /* !__CR_SZ20_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

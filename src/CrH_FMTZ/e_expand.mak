@@ -5,11 +5,13 @@ BIN_NAME=$(PROJECT).dll
 
 OBJ_LIST=.$(L)fmtz.$(O) \
          .$(L)szdd.$(O) \
+         .$(L)sz20.$(O) \
          .$(L)e_expand.$(O)
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)e_expand.$(C) \
-         .$(L)expand$(L)szdd.$(C)
+         .$(L)expand$(L)szdd.$(C) \
+         .$(L)expand$(L)sz20.$(C)
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" $(SRC_LIST)
