@@ -377,7 +377,7 @@ qst_try_load (
     ansi_t* info;
     sLOADER copy;
 
-    /* 初始化读包尝试 */
+    /* 初始化加载尝试 */
     fmtz = tmpz = NULL;
     array_initT(&list, ansi_t*);
     list.free = finfo_free;

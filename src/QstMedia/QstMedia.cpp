@@ -307,7 +307,7 @@ qst_try_load (
     /* 释放上次加载 */
     qst_clear(parm);
 
-    /* 初始化渲染尝试 */
+    /* 初始化加载尝试 */
     fmtz = tmpz = NULL;
     array_initT(&list, ansi_t*);
     list.free = finfo_free;
