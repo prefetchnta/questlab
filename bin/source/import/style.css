@@ -3,12 +3,14 @@ body {
 }
 img {
 	border: none;
+	margin: 5px;
 }
-hr {
-	color: #CCCCCC;
+ul {
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 b {
-	font-size: 200%;
+	font-size: 300%;
 }
 table {
 	border-width: 2px;
@@ -21,24 +23,28 @@ table {
 	text-align: center;
 	background-color: #000000;
 }
+.imgs td {
+	text-align: center;
+	background-color: #F1F1F1;
+}
 .text td {
 	color: #000000;
-	text-align: center;
+	text-align: left;
 	background-color: #F1F1F1;
 }
 .head a {
 	color: #FFFFFF;
 	text-decoration: none;
 }
+.head a:hover {
+	color: #FF0000;
+	text-decoration: none;
+}
 .text a {
 	color: #000000;
 	text-decoration: none;
 }
-.head a:hover {
-	color: #FF0000;
-	text-decoration: underline;
-}
 .text a:hover {
 	color: #0000FF;
-	text-decoration: underline;
+	text-decoration: none;
 }
