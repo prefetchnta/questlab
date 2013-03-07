@@ -6,6 +6,8 @@ questlab
 │  ├─script
 │  │  └─import
 │  │      └─jpn
+│  │          ├─gainax
+│  │          └─tgl
 │  ├─source
 │  │  └─import
 │  │      └─image
