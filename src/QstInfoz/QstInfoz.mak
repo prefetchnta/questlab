@@ -18,10 +18,10 @@ OBJFILES = ..\..\tmp\QstInfoz.obj ..\..\tmp\uMain.obj
 RESFILES = QstInfoz.res ..\xp-style.res
 MAINSOURCE = QstInfoz.cpp
 RESDEPEN = $(RESFILES) uMain.dfm
-LIBFILES =
-IDLFILES =
-IDLGENFILES =
-LIBRARIES =
+LIBFILES = 
+IDLFILES = 
+IDLGENFILES = 
+LIBRARIES = 
 PACKAGES = vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi \
     vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi \
     teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi \
@@ -30,8 +30,8 @@ PACKAGES = vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi \
     bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi \
     indy.bpi bcb2kaxserver.bpi
 SPARELIBS = vcl.lib rtl.lib
-DEFFILE =
-OTHERFILES =
+DEFFILE = 
+OTHERFILES = 
 # ---------------------------------------------------------------------------
 DEBUGLIBPATH = $(BCB)\lib\debug
 RELEASELIBPATH = $(BCB)\lib\release
@@ -46,12 +46,12 @@ PATHPAS = .;
 PATHRC = .;
 PATHOBJ = .;$(LIBPATH)
 # ---------------------------------------------------------------------------
-CFLAG1 = -O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -RT- -X- -a8 -6 -b- -k- -vi -c -tW \
-    -tWM -d -dc
+CFLAG1 = -O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -RT- -X- -a8 -6 -b- -d -k- -vi -c \
+    -tW -tWM -dc
 IDLCFLAGS = -I. -I..\..\inc -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp \
     -D_CR_NO_ERROR_SET_ -boa
 PFLAGS = -N2..\..\tmp -N0..\..\tmp -$Y- -$L- -$D- -$A8 -v -JPHNE -M
-RFLAGS =
+RFLAGS = 
 AFLAGS = /mx /w2 /zn
 LFLAGS = -I..\..\tmp -D"" -aa -Tpe -x -Gn
 # ---------------------------------------------------------------------------
