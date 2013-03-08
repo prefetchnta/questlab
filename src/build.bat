@@ -24,6 +24,12 @@ make -fQstMenu.mak
 del ..\..\bin\*.tds /Q
 cd..
 rem =====================
+cd QstText
+del ..\..\tmp\*.obj /Q
+make -fQstText.mak
+del ..\..\bin\*.tds /Q
+cd..
+rem =====================
 cd QstTree
 del ..\..\tmp\*.obj /Q
 make -fQstTree.mak
