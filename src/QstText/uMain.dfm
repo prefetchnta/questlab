@@ -16,4 +16,28 @@ object frmMain: TfrmMain
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
+  object pnlTool: TPanel
+    Left = 0
+    Top = 0
+    Width = 792
+    Height = 50
+    Align = alTop
+    TabOrder = 0
+  end
+  object pnlMain: TPanel
+    Left = 0
+    Top = 50
+    Width = 792
+    Height = 466
+    Align = alClient
+    TabOrder = 1
+  end
+  object pnlFoot: TPanel
+    Left = 0
+    Top = 516
+    Width = 792
+    Height = 50
+    Align = alBottom
+    TabOrder = 2
+  end
 end

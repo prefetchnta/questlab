@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
-#include "uMain.h"
 #include "QstText.h"
+#include "uMain.h"
 #pragma hdrstop
 //---------------------------------------------------------------------------
 USEFORM("uMain.cpp", frmMain);
@@ -233,6 +233,10 @@ WinMain (
 
     /* 读取需要超时, 不然线程无法退出 */
     socket_set_timeout(s_wrk_ctx.netw, -1, QST_TCP_TOUT);
+
+    /* 加载 SCI 控件 (无需释放) */
+    if (sbin_loadA("SciLexer.dll") == NULL)
+        return (QST_ERROR);
 
     thrd_t  thrd;
 

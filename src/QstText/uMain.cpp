@@ -19,6 +19,12 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     /* 使用系统字体 */
     this->Font->Assign(Screen->MenuFont);
 
+    /* 创建 SCI 编辑控件 */
+    m_edit = new TScEdit (this->pnlMain);
+    m_edit->Parent = this->pnlMain;
+    m_edit->Align = alClient;
+    m_edit->setup_call();
+
     /* 加载窗口位置配置 */
     misc_desk_init(WIN_ICONF, &x1, &y1, &ww, &hh,
                    this->Width, this->Height);
