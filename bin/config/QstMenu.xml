@@ -22,6 +22,7 @@
         <MenuItem name="subOpenQstMedia" text="打开 QstMedia 窗口" />
         <MenuItem name="subOpenQstMount" text="打开 QstMount 窗口" />
         <MenuItem name="subOpenQstServ" text="打开 QstServ 窗口" />
+        <MenuItem name="subOpenQstText" text="打开 QstText 窗口" />
         <MenuItem name="subOpenQstTree" text="打开 QstTree 窗口" />
         <MenuItem name="subOpenQstView2D" text="打开 QstView2D 窗口" />
         <MenuItem name="xxxSepWindow1" text="-" />
@@ -31,6 +32,7 @@
         <MenuItem name="subKillQstMedia" text="关闭 QstMedia 窗口" />
         <MenuItem name="subKillQstMount" text="关闭 QstMount 窗口" />
         <MenuItem name="subKillQstServ" text="关闭 QstServ 窗口" />
+        <MenuItem name="subKillQstText" text="关闭 QstText 窗口" />
         <MenuItem name="subKillQstTree" text="关闭 QstTree 窗口" />
         <MenuItem name="subKillQstView2D" text="关闭 QstView2D 窗口" />
     </MenuItem>
