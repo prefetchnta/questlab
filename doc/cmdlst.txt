@@ -6,6 +6,7 @@
     app:exit
         程序退出命令
             qcmd:app:exit   只针对 QstCmdz 部件
+            qedt:app:exit   只针对 QstText 部件
             qidx:app:exit   只针对 QstIndex 部件
             qinf:app:exit   只针对 QstInfoz 部件
             qxmm:app:exit   只针对 QstMedia 部件
@@ -26,6 +27,7 @@
     win:show
         显示当前窗口，窗口拉到最前面
             qcmd:win:show   只针对 QstCmdz 部件
+            qedt:win:show   只针对 QstText 部件
             qidx:win:show   只针对 QstIndex 部件
             qinf:win:show   只针对 QstInfoz 部件
             qxmm:win:show   只针对 QstMedia 部件
@@ -41,12 +43,14 @@
         释放所有加载的插件
             g2d:ext:free    只针对二维图像功能的部件
             pak:ext:free    只针对封包加载功能的部件
+            edt:ext:free    只针对文本加载功能的部件
             xmm:ext:free    只针对媒体播放功能的部件
 
     ext:load <插件路径>
         加载一个 FMTZ 引擎插件
             g2d:ext:load    只针对二维图像功能的部件
             pak:ext:load    只针对封包加载功能的部件
+            edt:ext:load    只针对文本加载功能的部件
             xmm:ext:load    只针对媒体播放功能的部件
 
     qv2d:cmd:load <插件路径>
@@ -124,6 +128,11 @@
 
     xmm:clear
         停止播放媒体并清除当前加载
+
+（11）编辑控制命令
+
+    edt:clear
+        清除文本编辑器里的所有内容
 
 （二）INI 命令列表
 

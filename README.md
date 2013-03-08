@@ -52,6 +52,9 @@
 - **QstMedia (BCB6.0 VCL)**
 <p>音频视频文件播放器。通过各种插件实现音频、视频文件的播放，<b>GameViewer</b> 音频播放部分的加强版。</p>
 
+- **QstText (BCB6.0 VCL + Scintilla)**
+<p>文本浏览执行编辑器。实现文本内容的可视化、执行发起和编辑功能，<b>GameViewer</b> 文本浏览部分的加强版。</p>
+
 - **RunWebIE (BCB6.0 VCL)**
 <p>网页界面容器 (离线)。使用 <b>IE</b> 控件来做 <b>HTML</b> 的渲染，实现一些原生程序很难做到的界面外壳。</p>
 
