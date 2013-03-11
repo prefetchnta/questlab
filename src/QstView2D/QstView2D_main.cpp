@@ -710,11 +710,12 @@ qst_v2d_g2d_clear (
 static const sQST_CMD   s_cmdz[] =
 {
     /***** 公用系统命令 *****/
-    { "app:exit", qst_v2d_app_exit },
-    { "cfg:load", qst_v2d_cfg_load },
-    { "win:load", qst_v2d_win_load },
-    { "win:save", qst_v2d_win_save },
-    { "win:show", qst_v2d_win_show },
+    { "app:exit",  qst_v2d_app_exit  },
+    { "cfg:load",  qst_v2d_cfg_load  },
+    { "win:load",  qst_v2d_win_load  },
+    { "win:save",  qst_v2d_win_save  },
+    { "win:show",  qst_v2d_win_show  },
+    { "app:reset", qst_v2d_g2d_clear },
 
     /***** 公用插件命令 *****/
     { "ext:free", qst_v2d_ext_free },

@@ -113,12 +113,8 @@ qst_try_load (
     ansi_t* memo;
     ansi_t* send;
 
-    /* 一些状态初始化命令 */
-    cmd_shl_send(s_wrk_ctx.netw, "txt:clear");
-    cmd_shl_send(s_wrk_ctx.netw, "xmm:clear");
-    cmd_shl_send(s_wrk_ctx.netw, "g2d:clear");
-    cmd_shl_send(s_wrk_ctx.netw, "idx:get_min 0");
-    cmd_shl_send(s_wrk_ctx.netw, "idx:get_max 0");
+    /* 清除当前内容加载 */
+    cmd_shl_send(s_wrk_ctx.netw, "app:reset");
 
     /* 发送包内文件请求 */
     if (data->attr & QST_FILE_MEM) {

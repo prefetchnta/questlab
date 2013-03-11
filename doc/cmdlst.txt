@@ -17,6 +17,8 @@
             qv2d:app:exit   只针对 QstView2D 部件
     cfg:load
         重新加载配置文件
+    app:reset
+        清除应用程序当前加载的内容
 
 （2）窗口控制命令
 

@@ -283,10 +283,11 @@ qst_inf_ini_main (
 static const sQST_CMD   s_cmdz[] =
 {
     /***** 公用系统命令 *****/
-    { "app:exit", qst_inf_app_exit },
-    { "win:load", qst_inf_win_load },
-    { "win:save", qst_inf_win_save },
-    { "win:show", qst_inf_win_show },
+    { "app:exit",  qst_inf_app_exit  },
+    { "win:load",  qst_inf_win_load  },
+    { "win:save",  qst_inf_win_save  },
+    { "win:show",  qst_inf_win_show  },
+    { "app:reset", qst_inf_txt_clear },
 
     /***** 清除信息命令 *****/
     { "txt:clear", qst_inf_txt_clear },

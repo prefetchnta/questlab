@@ -179,6 +179,38 @@ qst_idx_win_load (
 
 /*
 ---------------------------------------
+    复位序号设置
+---------------------------------------
+*/
+static bool_t
+qst_idx_app_reset (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    TfrmMain*   frm;
+    sQstIndex*  ctx;
+
+    CR_NOUSE(argc);
+    CR_NOUSE(argv);
+
+    ctx = (sQstIndex*)parm;
+    frm = (TfrmMain*)(ctx->form);
+
+    /* 如果正在播放, 停止之 */
+    if (frm->timPlay->Enabled)
+        frm->btnPlayClick(NULL);
+    ctx->send = FALSE;
+    frm->tbrCount->Min = 0;
+    frm->tbrCount->Max = 0;
+    ctx->send = TRUE;
+    qst_refresh_text();
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     设置最小序号
 ---------------------------------------
 */
@@ -207,7 +239,6 @@ qst_idx_get_min (
     if (frm->timPlay->Enabled)
         frm->btnPlayClick(NULL);
     frm->tbrCount->Min = min;
-    frm->tbrCount->Position = min;
     return (TRUE);
 }
 
@@ -241,7 +272,6 @@ qst_idx_get_max (
     if (frm->timPlay->Enabled)
         frm->btnPlayClick(NULL);
     frm->tbrCount->Max = max;
-    frm->tbrCount->Position = frm->tbrCount->Min;
     qst_refresh_text();
     return (TRUE);
 }
@@ -295,10 +325,11 @@ qst_idx_get_now (
 static const sQST_CMD   s_cmdz[] =
 {
     /***** 公用系统命令 *****/
-    { "app:exit", qst_idx_app_exit },
-    { "win:load", qst_idx_win_load },
-    { "win:save", qst_idx_win_save },
-    { "win:show", qst_idx_win_show },
+    { "app:exit",  qst_idx_app_exit  },
+    { "win:load",  qst_idx_win_load  },
+    { "win:save",  qst_idx_win_save  },
+    { "win:show",  qst_idx_win_show  },
+    { "app:reset", qst_idx_app_reset },
 
     /***** 公用序号命令 *****/
     { "idx:get_min", qst_idx_get_min },
