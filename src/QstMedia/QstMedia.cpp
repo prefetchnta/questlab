@@ -665,24 +665,33 @@ qst_xmm_ldr_file (
   __CR_IN__ ansi_t**    argv
     )
 {
+    uint_t  page;
     fdist_t head;
     fdist_t tail;
 
-    /* 参数解析 <文件路径> [头偏移] [尾偏移] */
+    /* 参数解析 <文件路径> [头偏移] [尾偏移] [编码] [节点地址] [备注] */
     if (argc < 2)
         return (FALSE);
+    page = CR_LOCAL;
     head = tail = 0;
     if (argc > 2) {
         head = str2intx64A(argv[2]);
-        if (argc > 3)
+        if (argc > 3) {
             tail = str2intx64A(argv[3]);
+            if (argc > 4)
+                page = str2intxA(argv[4]);
+        }
     }
 
     sLOADER     ldr;
     sQstMedia*  ctx = (sQstMedia*)parm;
 
     /* 附加参数 aprm 不设为空 */
-    set_ldrA(&ldr, argv[1], "", head, tail);
+    if (argc > 6)
+        set_ldrA(&ldr, argv[1], argv[6], head, tail);
+    else
+        set_ldrA(&ldr, argv[1], "", head, tail);
+    ldr.page = page;
 
     /* 尝试加载指定文件 */
     QST_SET_STATE_BUSY
