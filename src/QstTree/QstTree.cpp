@@ -63,6 +63,7 @@ qst_in_package (
 {
     ansi_t*         file;
     ansi_t*         path;
+    ansi_t*         memo;
     ansi_t*         send;
     sQTEE_file*     prev_data;
     PVirtualNode    prev_node;
@@ -85,8 +86,22 @@ qst_in_package (
         mem_free(path);
         return;
     }
-    send = str_fmtA("ldr:pack \"%s\" \"%s\" 0 0 %u 0x%08X",
-                        path, file, data->page, node);
+    if (data->memo == NULL ||
+        data->memo[0] != CR_WC('$'))
+        memo = NULL;
+    else
+        memo = utf16_to_local(data->page, data->memo);
+
+    /* 合成命令行 (必须发送节点的指针) */
+    if (memo == NULL) {
+        send = str_fmtA("ldr:pack \"%s\" \"%s\" 0 0 %u 0x%08X",
+                            path, file, data->page, node);
+    }
+    else {
+        send = str_fmtA("ldr:pack \"%s\" \"%s\" 0 0 %u 0x%08X \"%s\"",
+                            path, file, data->page, node, memo + 1);
+        mem_free(memo);
+    }
     mem_free(file);
     mem_free(path);
 
