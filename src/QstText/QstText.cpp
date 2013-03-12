@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
-#include "QstText.h"
 #include "uMain.h"
+#include "QstText.h"
 #pragma hdrstop
 //---------------------------------------------------------------------------
 USEFORM("uMain.cpp", frmMain);

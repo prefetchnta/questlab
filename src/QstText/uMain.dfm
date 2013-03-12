@@ -16,7 +16,7 @@ object frmMain: TfrmMain
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object pnlTool: TPanel
+  object pnlHead: TPanel
     Left = 0
     Top = 0
     Width = 792
