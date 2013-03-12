@@ -92,6 +92,9 @@ public:         // User declarations
             return (this->m_edit->send(iMsg, wParam, lParam));
         }
 };
+
+/* 简化调用的宏 */
+#define sci_call(msg, wp, lp)   frm->sci(msg, (uptr_t)(wp), (sptr_t)(lp))
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMain *frmMain;
 //---------------------------------------------------------------------------
