@@ -804,7 +804,7 @@ static const sQST_CMD   s_cmdz[] =
     /***** 清除媒体命令 *****/
     { "xmm:clear", qst_xmm_xmm_clear },
 
-    /***** 封包插件命令 *****/
+    /***** 媒体插件命令 *****/
     { "xmm:ext:free", qst_xmm_ext_free },
     { "xmm:ext:load", qst_xmm_ext_load },
 
