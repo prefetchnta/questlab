@@ -60,7 +60,7 @@ plugin_free (
     读入配置文件
 ---------------------------------------
 */
-CR_API void_t
+static void_t
 qst_load_cfg (
   __CR_OT__ sQXMM_conf* cfgs
     )
