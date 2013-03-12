@@ -800,7 +800,6 @@ qst_mnt_ldr_pack (
     uint_t  page;
     int32u  node;
     ansi_t* name;
-    ansi_t* memo;
     fdist_t head;
     fdist_t tail;
 
@@ -808,7 +807,6 @@ qst_mnt_ldr_pack (
     if (argc < 3)
         return (FALSE);
     node = 0UL;
-    memo = NULL;
     page = CR_LOCAL;
     head = tail = 0;
     if (argc > 3) {
@@ -817,11 +815,8 @@ qst_mnt_ldr_pack (
             tail = str2intx64A(argv[4]);
             if (argc > 5) {
                 page = str2intxA(argv[5]);
-                if (argc > 6) {
+                if (argc > 6)
                     node = str2intx32A(argv[6]);
-                    if (argc > 7)
-                        memo = argv[7];
-                }
             }
         }
     }
@@ -879,8 +874,13 @@ qst_mnt_ldr_pack (
     ctx->smem = share_file_open(name, strn, size);
     if (ctx->smem != NULL) {
         if (share_file_fill(ctx->smem, buff.data, size)) {
-            send = str_fmtA("ldr:smem %s %u \"%s\" %I64u %I64u",
-                            strn, size, argv[2], head, tail);
+            if (argc > 7) {
+                send = str_fmtA("ldr:smem %s %u \"%s\" %I64u %I64u %u \"%s\"",
+                            strn, size, argv[2], head, tail, page, argv[7]);
+            } else {
+                send = str_fmtA("ldr:smem %s %u \"%s\" %I64u %I64u %u",
+                            strn, size, argv[2], head, tail, page);
+            }
             if (send != NULL) {
                 cmd_shl_send(ctx->netw, send);
                 mem_free(send);
@@ -920,8 +920,8 @@ qst_mnt_ldr_pack (
     sLOADER ldr;
 
     /* 附加参数 aprm 不设为空 */
-    if (memo != NULL)
-        set_ldrA(&ldr, ftmp, memo, head, tail);
+    if (argc > 7)
+        set_ldrA(&ldr, ftmp, argv[7], head, tail);
     else
         set_ldrA(&ldr, ftmp, "", head, tail);
     ldr.page = page;

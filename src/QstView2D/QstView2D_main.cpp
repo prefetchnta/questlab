@@ -530,20 +530,25 @@ qst_v2d_ldr_smem (
   __CR_IN__ ansi_t**    argv
     )
 {
+    uint_t  page;
     leng_t  size;
     void_t* data;
     fdist_t head;
     fdist_t tail;
 
-    /* 参数解析 <共享名称> <文件大小> <文件路径> [头偏移] [尾偏移] */
+    /* 参数解析 <共享名> <文件大小> <文件名> [头偏移] [尾偏移] [编码] [备注] */
     if (argc < 4)
         return (FALSE);
+    page = CR_LOCAL;
     head = tail = 0;
     size = str2intx32A(argv[2]);
     if (argc > 4) {
         head = str2intx64A(argv[4]);
-        if (argc > 5)
+        if (argc > 5) {
             tail = str2intx64A(argv[5]);
+            if (argc > 6)
+                page = str2intxA(argv[6]);
+        }
     }
 
     sLOADER     ldr;
@@ -556,7 +561,11 @@ qst_v2d_ldr_smem (
 
     /* 附加参数 aprm 不设为空 */
     set_ldrA(&ldr, argv[3], "", head, tail);
-    set_ldrM(&ldr, data, size, "", head, tail);
+    if (argc > 7)
+        set_ldrM(&ldr, data, size, argv[7], head, tail);
+    else
+        set_ldrM(&ldr, data, size, "", head, tail);
+    ldr.page = page;
 
     /* 渲染目标数据 */
     _ENTER_V2D_SINGLE_
