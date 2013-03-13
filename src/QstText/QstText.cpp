@@ -135,8 +135,335 @@ qst_set_editor (
     sci_call(SCI_SETMARGINTYPEN, 2, SC_MARGIN_SYMBOL);
     sci_call(SCI_SETMARGINWIDTHN, 2, 16);
 
+    /* 显示空白字符 */
+    sci_call(SCI_SETREADONLY, FALSE, NULL);
+    sci_call(SCI_SETVIEWWS, SCWS_VISIBLEALWAYS, NULL);
+
     /* 退出临界区 */
     crisec_leave(parm->lock);
+}
+
+/*
+---------------------------------------
+    释放当前浏览文本
+---------------------------------------
+*/
+static void_t
+qst_clear (
+  __CR_IO__ sQstText*   parm
+    )
+{
+    sptr_t      val;
+    TfrmMain*   frm;
+
+    frm = (TfrmMain*)(parm->form);
+    crisec_enter(parm->lock);
+    sci_call(SCI_CLEARALL, NULL, NULL);
+    crisec_leave(parm->lock);
+}
+
+/*
+---------------------------------------
+    发送文件信息
+---------------------------------------
+*/
+static void_t
+qst_send_finfo (
+  __CR_IN__ sARRAY*     list,
+  __CR_IN__ socket_t    netw
+    )
+{
+    leng_t  cnts, idx;
+
+    /* 清除前面的信息 */
+    cmd_shl_send(netw, "txt:clear 0 4");
+
+    /* 逐条发送文件信息 */
+    cnts = array_get_sizeT(list, ansi_t*);
+    for (idx = 0; idx < cnts; idx++)
+    {
+        ansi_t*     temp;
+        ansi_t*     info;
+        ansi_t**    unit;
+
+        /* 转义转换后发给别人 */
+        unit = array_get_unitT(list, ansi_t*, idx);
+        temp = str_esc_makeU(*unit);
+        if (temp == NULL)
+            continue;
+        info = str_fmtA("info::main=\"4> %s\"", temp);
+        mem_free(temp);
+        if (info != NULL) {
+            cmd_ini_send(netw, info);
+            mem_free(info);
+        }
+    }
+}
+
+/*
+---------------------------------------
+    检查是否是 UTF-8
+---------------------------------------
+*/
+static bool_t
+is_utf8_file (
+  __CR_IN__ const ansi_t*   str
+    )
+{
+    leng_t  temp;
+    int32u  ucs4;
+
+    /* 逐个字符检查 */
+    while (*str != NIL) {
+        temp = utf8_to_ucs4(&ucs4, str);
+        if (temp == 0)
+            return (FALSE);
+        str += temp;
+    }
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    尝试加载目标数据
+---------------------------------------
+*/
+static bool_t
+qst_try_load (
+  __CR_IO__ sQstText*   parm,
+  __CR_IO__ sLOADER*    ldrs
+    )
+{
+    leng_t  idx;
+    leng_t  cnts;
+    sFMTZ*  fmtz;
+    sFMTZ*  tmpz;
+    sARRAY  list;
+    bool_t  used;
+    uint_t  page;
+    ansi_t* show;
+    ansi_t* info;
+    ansi_t* text;
+    wide_t* pntr;
+    wide_t* ucs2;
+    fsize_t size;
+    sLOADER copy;
+
+    /* 释放上次加载 */
+    qst_clear(parm);
+
+    /* 初始化加载尝试 */
+    page = ldrs->page;
+    text = show = NULL;
+    fmtz = tmpz = NULL;
+    array_initT(&list, ansi_t*);
+    list.free = finfo_free;
+    struct_cpy(&copy, ldrs, sLOADER);
+    cnts = array_get_sizeT(&parm->extz, sENGINE*);
+
+    sENGINE**   unit;
+    sFMT_DAT*   datz;
+    sFMT_TXT*   txtz;
+
+    /* 尝试到有结果为止 */
+_retry:
+    /* 逐个插件试验加载 */
+    for (unit = NULL, idx = 0; idx < cnts; idx++) {
+        unit = array_get_unitT(&parm->extz, sENGINE*, idx);
+        tmpz = engine_do(*unit, &copy);
+        if (tmpz != NULL)
+            break;
+    }
+
+    /* 无法识别的文本文件 */
+    if (unit == NULL || tmpz == NULL)
+        goto _func_out;
+
+    /* 需要经过二次解码 */
+    if (tmpz->type == CR_FMTZ_NOP ||
+        tmpz->type == CR_FMTZ_DEC)
+    {
+        /* 换成内存解析 */
+        if (fmtz != NULL)
+            fmtz_free(fmtz);
+        fmtz = tmpz;
+        datz = (sFMT_DAT*)tmpz;
+        set_ldrM(&copy, datz->data, datz->unsz, ldrs->aprm, 0, 0);
+        copy.page = ldrs->page;
+
+        /* 压入插件信息 */
+        info = str_fmtA("Plug-in: %s", (*unit)->info);
+        if (info != NULL)
+            array_push_growT(&list, ansi_t*, &info);
+
+        /* 压入文件信息 */
+        info = str_fmtA("+-Decoder: %s", datz->infor);
+        if (info != NULL)
+            array_push_growT(&list, ansi_t*, &info);
+
+        /* 压入大小信息 */
+        info = str_fmtA("+---File size: %I64u Bytes / Real size: %u Bytes",
+                                    datz->pksz, datz->unsz);
+        if (info != NULL)
+            array_push_growT(&list, ansi_t*, &info);
+        goto _retry;
+    }
+
+    /* 得到可以加载的文本文件 */
+    if (tmpz->type == CR_FMTZ_TXT)
+    {
+        txtz = (sFMT_TXT*)tmpz;
+        text = txtz->text;
+
+        /* 压入插件信息 */
+        info = str_fmtA("Plug-in: %s", (*unit)->info);
+        if (info != NULL)
+            array_push_growT(&list, ansi_t*, &info);
+
+        /* 压入文本信息 */
+        info = str_fmtA("+-FormatZ: %s", txtz->infor);
+        if (info != NULL)
+            array_push_growT(&list, ansi_t*, &info);
+
+        /* 发送整个信息列表 */
+        qst_send_finfo(&list, parm->netw);
+    }
+
+_func_out:
+    if (text != NULL)
+    {
+        /* 直接使用插件解码的文本 */
+        txtz = (sFMT_TXT*)tmpz;
+        text = str_allocA(txtz->size + 8);
+        if (text == NULL)
+            goto _func_exit;
+        mem_cpy(text, txtz->text, txtz->size);
+        mem_zero(&text[txtz->size], 8);
+        size = txtz->size;
+        used = TRUE;
+    }
+    else
+    {
+        /* 无法由文本插件加载的通过特定规则匹配 */
+        if (copy.type == CR_LDR_ANSI)
+            size = file_sizeA(copy.name.ansi);
+        else
+        if (copy.type == CR_LDR_BUFF)
+            size = copy.buff.size;
+        else
+            goto _func_exit;
+
+        /* 文件大小过滤 */
+        if (size > parm->cfgs.max_fsize)
+            goto _func_exit;
+
+        /* 文件名匹配过滤 */
+        if (parm->flists != NULL) {
+            for (idx = 0; idx < parm->count; idx++) {
+                if (wildcard_matchIA(ldrs->name.ansi, parm->flists[idx]))
+                    break;
+            }
+            if (idx >= parm->count)
+                goto _func_exit;
+        }
+
+        /* 加载文件到内存 */
+        if (copy.type == CR_LDR_ANSI) {
+            text = file_load_as_strA(copy.name.ansi);
+            if (text == NULL)
+                goto _func_exit;
+        }
+        else {
+            text = str_allocA(copy.buff.size + 8);
+            if (text == NULL)
+                goto _func_exit;
+            mem_cpy(text, copy.buff.data, copy.buff.size);
+            mem_zero(&text[copy.buff.size], 8);
+        }
+        used = FALSE;
+    }
+
+    /* 识别 UTF-16 文本文件 */
+    if (size >= 2 && size % 2 == 0)
+    {
+        /* UTF-16 编码校验过滤 */
+        if (mem_cmp(text, BOM_UTF16LE, 2) == 0) {
+            ucs2 = (wide_t*)(&text[2]);
+            show = utf16_to_utf8(ucs2);
+            mem_free(text);
+            if (show == NULL)
+                goto _func_exit;
+            text = show;
+            page = CR_UTF16;
+        }
+        else
+        if (mem_cmp(text, BOM_UTF16BE, 2) == 0) {
+            ucs2 = (wide_t*)(&text[2]);
+            for (pntr = ucs2; *pntr != NIL; pntr++)
+                *pntr = xchg_int16u(*pntr);
+            show = utf16_to_utf8(ucs2);
+            mem_free(text);
+            if (show == NULL)
+                goto _func_exit;
+            text = show;
+            page = CR_UTF16;
+        }
+    }
+
+    /* 非 UTF-16 文本文件 */
+    if (show == NULL)
+    {
+        /* 过滤掉可能的二进制文件 */
+        if (!used && str_lenA(text) != size) {
+            mem_free(text);
+            goto _func_exit;
+        }
+
+        /* 识别 UTF-8 文本文件 */
+        if (size >= 3 &&
+            mem_cmp(text, BOM_UTF8, 3) == 0) {
+            page = CR_UTF8;
+            show = text + 3;
+        }
+        else {
+            show = text;
+        }
+    }
+
+    /* UTF-8 编码校验过滤 */
+    if (page == CR_UTF8) {
+        if (!is_utf8_file(show)) {
+            mem_free(text);
+            goto _func_exit;
+        }
+    }
+    else
+    if (page != CR_UTF16) {
+        if (is_utf8_file(show))
+            page = CR_UTF8;
+    }
+
+    TfrmMain*   frm;
+
+    /* 文件内容送入编辑器控件 */
+    frm = (TfrmMain*)(parm->form);
+    crisec_enter(parm->lock);
+    if (page == CR_UTF16)
+        sci_call(SCI_SETCODEPAGE, CR_UTF8, NULL);
+    else
+        sci_call(SCI_SETCODEPAGE, page, NULL);
+    sci_call(SCI_SETTEXT, NULL, show);
+    crisec_leave(parm->lock);
+    mem_free(text);
+
+    /* 释放临时的数据 */
+_func_exit:
+    if (fmtz != NULL)
+        fmtz_free(fmtz);
+    if (tmpz != NULL)
+        fmtz_free(tmpz);
+    array_freeT(&list, ansi_t*);
+    return (FALSE);
 }
 
 /*****************************************************************************/
@@ -405,7 +732,7 @@ qst_edt_ldr_file (
 
     /* 尝试加载指定文件 */
     QST_SET_STATE_BUSY
-    //qst_try_load(ctx, &ldr);
+    qst_try_load(ctx, &ldr);
     QST_SET_STATE_FREE
 
     /* 无论成功失败都返回成功 */
@@ -463,7 +790,7 @@ qst_edt_ldr_smem (
 
     /* 尝试加载指定文件 */
     QST_SET_STATE_BUSY
-    //qst_try_load(ctx, &ldr);
+    qst_try_load(ctx, &ldr);
     QST_SET_STATE_FREE
 
     /* 用完后需要释放掉 */
@@ -483,9 +810,9 @@ qst_edt_edt_clear (
   __CR_IN__ ansi_t**    argv
     )
 {
-    CR_NOUSE(parm);
     CR_NOUSE(argc);
     CR_NOUSE(argv);
+    qst_clear((sQstText*)parm);
     return (TRUE);
 }
 

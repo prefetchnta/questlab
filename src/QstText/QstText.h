@@ -37,8 +37,8 @@
 /* 配置参数结构 */
 typedef struct
 {
-        sint_t  font_size;  /* 字体大小 */
-        ansi_t* font_face;  /* 字体名称 */
+        sint_t  font_size;  /* 全局字体大小 */
+        ansi_t* font_face;  /* 全局字体名称 */
         fsize_t max_fsize;  /* 最大文件大小 */
 
 } sQEDT_conf;
