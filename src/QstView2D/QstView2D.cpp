@@ -67,11 +67,8 @@ WindowProc (
         case WM_SIZE:
             ww = LOWORD(lparam);
             hh = HIWORD(lparam);
-            if (ww == 0 || hh == 0) {
-                fw = ww;
-                fh = hh;
+            if (ww == 0 || hh == 0)
                 return (FALSE);
-            }
             if (ww == fw && hh == fh)
                 return (FALSE);
             if (!qst_resize_win(&s_wrk_ctx))

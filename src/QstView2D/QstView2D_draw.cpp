@@ -290,6 +290,9 @@ _retry:
         /* 发送整个信息列表 */
         qst_send_finfo(&list, parm->netw);
         array_freeT(&list, ansi_t*);
+
+        /* 窗口拉到最前面 */
+        misc_bring2top(parm->hwnd, NULL);
         return (TRUE);
     }
 
