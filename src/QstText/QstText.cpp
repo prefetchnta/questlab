@@ -363,9 +363,21 @@ _func_out:
             goto _func_exit;
 
         /* 文件名匹配过滤 */
-        if (parm->flists != NULL) {
+        if (parm->count != 0 && parm->flists != NULL)
+        {
+            /* 去掉文件路径 */
+            info = (ansi_t*)ldrs->name.ansi;
+            cnts = str_lenA(info);
+            while (cnts-- != 0) {
+                if (is_slashA(info[cnts])) {
+                    info += cnts + 1;
+                    break;
+                }
+            }
             for (idx = 0; idx < parm->count; idx++) {
-                if (wildcard_matchIA(ldrs->name.ansi, parm->flists[idx]))
+                if ((parm->flists[idx])[0] == NIL)
+                    continue;
+                if (wildcard_matchIA(info, parm->flists[idx]))
                     break;
             }
             if (idx >= parm->count)
@@ -436,12 +448,9 @@ _func_out:
             ctrl = 0.0f;
             tots = (fp32_t)(cnts * 2);
             for (idx = 0; idx < cnts; idx++) {
-                if (*comp < 0x20 &&
-                    *comp != 0x09 && *comp != 0x0A &&
-                    *comp != 0x0C && *comp != 0x0D)
-                    ctrl += 2.0f;
-                else
-                if (*comp == 0xFF)
+                if ((*comp == 0xFF) || (*comp < 0x20 &&
+                       *comp != 0x09 && *comp != 0x0A &&
+                       *comp != 0x0C && *comp != 0x0D))
                     ctrl += 2.0f;
                 comp += 1;
             }
@@ -481,13 +490,15 @@ _func_out:
     ansi_t* temp;
 
     /* 统一转换到 UTF-8 编码 */
-    if (page == CR_UTF8 || page == CR_UTF16)
-        temp = str_dupA(show);
-    else
+    if (page == CR_UTF8 || page == CR_UTF16) {
+        temp = show;
+    }
+    else {
         temp = local_to_utf8(page, show);
-    if (temp == NULL) {
-        mem_free(text);
-        goto _func_exit;
+        if (temp == NULL) {
+            mem_free(text);
+            goto _func_exit;
+        }
     }
 
     TfrmMain*   frm;
@@ -497,7 +508,8 @@ _func_out:
     crisec_enter(parm->lock);
     sci_call(SCI_SETTEXT, NULL, temp);
     crisec_leave(parm->lock);
-    mem_free(temp);
+    if (temp != show)
+        mem_free(temp);
 
     /* 保存到上下文结构 */
     parm->xbom = xbom;
@@ -710,7 +722,7 @@ qst_edt_ext_free (
     array_freeT(&ctx->extz, sENGINE*);
     ctx->extz.free = plugin_free;
 
-    /* 清过滤列表 */
+    /* 清匹配列表 */
     ctx->count = 0;
     SAFE_FREE(ctx->filter)
     SAFE_FREE(ctx->flists)
@@ -895,6 +907,51 @@ qst_edt_edt_clear (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    设置文本文件名匹配列表
+---------------------------------------
+*/
+static bool_t
+qst_edt_edt_filter (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    leng_t      count;
+    ansi_t*     filter;
+    ansi_t**    flists;
+    sQstText*   ctx = (sQstText*)parm;
+
+    /* 清匹配列表 */
+    ctx->count = 0;
+    SAFE_FREE(ctx->filter)
+    SAFE_FREE(ctx->flists)
+
+    /* 参数解析 [文件名匹配列表] */
+    if (argc > 1) {
+        filter = str_dupA(argv[1]);
+        if (filter == NULL)
+            return (FALSE);
+        flists = str_splitA(filter, CR_AC('|'), &count);
+        if (flists == NULL) {
+            mem_free(filter);
+            return (FALSE);
+        }
+
+        /* 跳过开头的空白 */
+        for (leng_t idx = 0; idx < count; idx++)
+            flists[idx] = skip_spaceA(flists[idx]);
+
+        /* 保存结果 */
+        ctx->count = count;
+        ctx->filter = filter;
+        ctx->flists = flists;
+    }
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -917,8 +974,9 @@ static const sQST_CMD   s_cmdz[] =
     { "ldr:file", qst_edt_ldr_file },
     { "ldr:smem", qst_edt_ldr_smem },
 
-    /***** 清除文本命令 *****/
-    { "edt:clear", qst_edt_edt_clear },
+    /***** 编辑控制命令 *****/
+    { "edt:clear",  qst_edt_edt_clear  },
+    { "edt:filter", qst_edt_edt_filter },
 
     /***** 文本插件命令 *****/
     { "edt:ext:free", qst_edt_ext_free },
