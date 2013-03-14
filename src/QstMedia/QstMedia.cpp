@@ -801,7 +801,7 @@ static const sQST_CMD   s_cmdz[] =
     { "ldr:file", qst_xmm_ldr_file },
     { "ldr:smem", qst_xmm_ldr_smem },
 
-    /***** 清除媒体命令 *****/
+    /***** 媒体控制命令 *****/
     { "xmm:clear", qst_xmm_xmm_clear },
 
     /***** 媒体插件命令 *****/

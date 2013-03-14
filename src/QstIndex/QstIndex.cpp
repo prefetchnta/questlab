@@ -331,7 +331,7 @@ static const sQST_CMD   s_cmdz[] =
     { "win:show",  qst_idx_win_show  },
     { "app:reset", qst_idx_app_reset },
 
-    /***** 公用序号命令 *****/
+    /***** 索引控制命令 *****/
     { "idx:get_min", qst_idx_get_min },
     { "idx:get_max", qst_idx_get_max },
     { "idx:get_now", qst_idx_get_now },

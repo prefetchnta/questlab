@@ -743,10 +743,10 @@ static const sQST_CMD   s_cmdz[] =
     { "ldr:file", qst_v2d_ldr_file },
     { "ldr:smem", qst_v2d_ldr_smem },
 
-    /***** 公用序号命令 *****/
+    /***** 索引控制命令 *****/
     { "idx:set_now", qst_v2d_set_now },
 
-    /***** 通道显示命令 *****/
+    /***** 图片控制命令 *****/
     { "g2d:alpha", qst_v2d_g2d_alpha },
     { "g2d:color", qst_v2d_g2d_color },
     { "g2d:clear", qst_v2d_g2d_clear },

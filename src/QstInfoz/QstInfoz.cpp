@@ -289,7 +289,7 @@ static const sQST_CMD   s_cmdz[] =
     { "win:show",  qst_inf_win_show  },
     { "app:reset", qst_inf_txt_clear },
 
-    /***** 清除信息命令 *****/
+    /***** 文本信息命令 *****/
     { "txt:clear", qst_inf_txt_clear },
 
     /***** 私有命令映射 *****/
