@@ -8,6 +8,7 @@
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
 #include <ExtCtrls.hpp>
+#include <Dialogs.hpp>
 //---------------------------------------------------------------------------
 #include "crhack.h"
 #include "sci/Scintilla.h"
@@ -79,6 +80,24 @@ __published:    // IDE-managed Components
         TPanel *pnlHead;
         TPanel *pnlMain;
         TPanel *pnlFoot;
+        TEdit *edtCPage;
+        TButton *btnCPage;
+        TEdit *edtGoto;
+        TButton *btnGoto;
+        TComboBox *lstType;
+        TButton *btnRefresh;
+        TButton *btnAction;
+        TButton *btnSave;
+        TButton *btnLoad;
+        TOpenDialog *dlgOpen;
+        TSaveDialog *dlgSave;
+        void __fastcall btnCPageClick(TObject *Sender);
+        void __fastcall btnGotoClick(TObject *Sender);
+        void __fastcall btnRefreshClick(TObject *Sender);
+        void __fastcall btnActionClick(TObject *Sender);
+        void __fastcall btnSaveClick(TObject *Sender);
+        void __fastcall btnLoadClick(TObject *Sender);
+        void __fastcall FormResize(TObject *Sender);
 private:        // User declarations
         TScEdit *m_edit;
 public:         // User declarations
@@ -92,8 +111,7 @@ public:         // User declarations
             return (this->m_edit->send(iMsg, wParam, lParam));
         }
 };
-
-/* 简化调用的宏 */
+//---------------------------------------------------------------------------
 #define sci_call(msg, wp, lp)   frm->sci(msg, (uptr_t)(wp), (sptr_t)(lp))
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMain *frmMain;

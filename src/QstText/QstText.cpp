@@ -527,6 +527,9 @@ _func_out:
             info = str_dupA("+-CodePage: UTF-8");
         else
             info = str_dupA("+-CodePage: UTF-8 with BOM");
+        frm->btnCPage->Enabled = false;
+        frm->edtCPage->Enabled = false;
+        frm->edtCPage->Text = "65001";
     }
     else
     if (page == CR_UTF16) {
@@ -534,9 +537,15 @@ _func_out:
             info = str_dupA("+-CodePage: UTF-16LE");
         else
             info = str_dupA("+-CodePage: UTF-16BE");
+        frm->btnCPage->Enabled = false;
+        frm->edtCPage->Enabled = false;
+        frm->edtCPage->Text = "65001";
     }
     else {
         info = str_fmtA("+-CodePage: %u", page);
+        frm->btnCPage->Enabled = true;
+        frm->edtCPage->Enabled = true;
+        frm->edtCPage->Text = AnsiString(page);
     }
     if (info != NULL)
         array_push_growT(&list, ansi_t*, &info);

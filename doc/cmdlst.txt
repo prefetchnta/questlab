@@ -151,3 +151,4 @@
 
     部件使用的信息编号值
         1 - QstView2D       2 - QstMount        3 - QstMedia
+        4 - QstText
