@@ -990,7 +990,7 @@ qst_mnt_res_root (
 
     /* 参数解析 <根目录长度> */
     ctx = (sQstMount*)parm;
-    if (argc <= 1)
+    if (argc < 2)
         return (FALSE);
     ctx->head = str2intxA(argv[1]);
     return (TRUE);
