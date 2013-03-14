@@ -54,6 +54,13 @@ typedef struct
         socket_t    netw;   /* 网络连接 */
         sQEDT_conf  cfgs;   /* 配置参数 */
 
+        /* 保存的原始文本 */
+        bool_t      xbom;   /* 是否带 BOM 头 */
+        bool_t      isbe;   /* 是否为大端格式 */
+        uint_t      page;   /* 原始编码类型值 */
+        ansi_t*     show;   /* 赋值给编辑器的指针 (不释放) */
+        ansi_t*     text;   /* UNICODE 统一使用 UTF-8 保存 */
+
         /* 扩展名过滤列表 */
         leng_t      count;
         ansi_t*     filter;

@@ -135,9 +135,10 @@ qst_set_editor (
     sci_call(SCI_SETMARGINTYPEN, 2, SC_MARGIN_SYMBOL);
     sci_call(SCI_SETMARGINWIDTHN, 2, 16);
 
-    /* 显示空白字符 */
+    /* 显示空白字符并只用 UTF-8 编码显示 */
     sci_call(SCI_SETREADONLY, FALSE, NULL);
     sci_call(SCI_SETVIEWWS, SCWS_VISIBLEALWAYS, NULL);
+    sci_call(SCI_SETCODEPAGE, SC_CP_UTF8, NULL);
 
     /* 退出临界区 */
     crisec_leave(parm->lock);
@@ -153,9 +154,13 @@ qst_clear (
   __CR_IO__ sQstText*   parm
     )
 {
-    sptr_t      val;
     TfrmMain*   frm;
 
+    parm->xbom = FALSE;
+    parm->isbe = FALSE;
+    parm->page = CR_LOCAL;
+    parm->show = NULL;
+    SAFE_FREE(parm->text)
     frm = (TfrmMain*)(parm->form);
     crisec_enter(parm->lock);
     sci_call(SCI_CLEARALL, NULL, NULL);
@@ -240,6 +245,8 @@ qst_try_load (
     sFMTZ*  tmpz;
     sARRAY  list;
     bool_t  used;
+    bool_t  xbom;
+    bool_t  isbe;
     uint_t  page;
     ansi_t* show;
     ansi_t* info;
@@ -255,6 +262,7 @@ qst_try_load (
     /* 初始化加载尝试 */
     page = ldrs->page;
     text = show = NULL;
+    xbom = isbe = FALSE;
     fmtz = tmpz = NULL;
     array_initT(&list, ansi_t*);
     list.free = finfo_free;
@@ -324,9 +332,6 @@ _retry:
         info = str_fmtA("+-FormatZ: %s", txtz->infor);
         if (info != NULL)
             array_push_growT(&list, ansi_t*, &info);
-
-        /* 发送整个信息列表 */
-        qst_send_finfo(&list, parm->netw);
     }
 
 _func_out:
@@ -393,6 +398,7 @@ _func_out:
             mem_free(text);
             if (show == NULL)
                 goto _func_exit;
+            xbom = TRUE;
             text = show;
             page = CR_UTF16;
         }
@@ -405,6 +411,8 @@ _func_out:
             mem_free(text);
             if (show == NULL)
                 goto _func_exit;
+            xbom = TRUE;
+            isbe = TRUE;
             text = show;
             page = CR_UTF16;
         }
@@ -413,15 +421,42 @@ _func_out:
     /* 非 UTF-16 文本文件 */
     if (show == NULL)
     {
-        /* 过滤掉可能的二进制文件 */
-        if (!used && str_lenA(text) != size) {
-            mem_free(text);
-            goto _func_exit;
+        if (!used)
+        {
+            /* 过滤掉可能的二进制文件 */
+            cnts = str_lenA(text);
+            if (cnts != size) {
+                mem_free(text);
+                goto _func_exit;
+            }
+
+            fp32_t  ctrl, tots;
+            byte_t* comp = (byte_t*)text;
+
+            ctrl = 0.0f;
+            tots = (fp32_t)(cnts * 2);
+            for (idx = 0; idx < cnts; idx++) {
+                if (*comp < 0x20 &&
+                    *comp != 0x09 && *comp != 0x0A &&
+                    *comp != 0x0C && *comp != 0x0D)
+                    ctrl += 2.0f;
+                else
+                if (*comp == 0xFF)
+                    ctrl += 2.0f;
+                comp += 1;
+            }
+
+            /* 文本字符必须大于一个比例 */
+            if ((tots - ctrl) / tots < 0.618f) {
+                mem_free(text);
+                goto _func_exit;
+            }
         }
 
         /* 识别 UTF-8 文本文件 */
         if (size >= 3 &&
             mem_cmp(text, BOM_UTF8, 3) == 0) {
+            xbom = TRUE;
             page = CR_UTF8;
             show = text + 3;
         }
@@ -443,18 +478,62 @@ _func_out:
             page = CR_UTF8;
     }
 
+    ansi_t* temp;
+
+    /* 统一转换到 UTF-8 编码 */
+    if (page == CR_UTF8 || page == CR_UTF16)
+        temp = str_dupA(show);
+    else
+        temp = local_to_utf8(page, show);
+    if (temp == NULL) {
+        mem_free(text);
+        goto _func_exit;
+    }
+
     TfrmMain*   frm;
 
     /* 文件内容送入编辑器控件 */
     frm = (TfrmMain*)(parm->form);
     crisec_enter(parm->lock);
-    if (page == CR_UTF16)
-        sci_call(SCI_SETCODEPAGE, CR_UTF8, NULL);
-    else
-        sci_call(SCI_SETCODEPAGE, page, NULL);
-    sci_call(SCI_SETTEXT, NULL, show);
+    sci_call(SCI_SETTEXT, NULL, temp);
     crisec_leave(parm->lock);
-    mem_free(text);
+    mem_free(temp);
+
+    /* 保存到上下文结构 */
+    parm->xbom = xbom;
+    parm->isbe = isbe;
+    parm->page = page;
+    parm->show = show;
+    parm->text = text;
+
+    /* 压入文本信息 */
+    info = str_dupA("QstText: Recognized text file");
+    if (info != NULL)
+        array_push_growT(&list, ansi_t*, &info);
+    if (page == CR_UTF8) {
+        if (!xbom)
+            info = str_dupA("+-CodePage: UTF-8");
+        else
+            info = str_dupA("+-CodePage: UTF-8 with BOM");
+    }
+    else
+    if (page == CR_UTF16) {
+        if (!isbe)
+            info = str_dupA("+-CodePage: UTF-16LE");
+        else
+            info = str_dupA("+-CodePage: UTF-16BE");
+    }
+    else {
+        info = str_fmtA("+-CodePage: %u", page);
+    }
+    if (info != NULL)
+        array_push_growT(&list, ansi_t*, &info);
+
+    /* 发送整个信息列表 */
+    qst_send_finfo(&list, parm->netw);
+
+    /* 窗口拉到最前面 */
+    misc_bring2top(frm->Handle, Application->Handle);
 
     /* 释放临时的数据 */
 _func_exit:
