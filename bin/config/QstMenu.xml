@@ -15,7 +15,7 @@
         <MenuItem name="subExit" text="退出整个系统(&X)" />
     </MenuItem>
     <MenuItem name="subParam" text="参数(&P)" />
-    <MenuItem name="subWindow" text="窗口(&W)">
+    <MenuItem name="subPartShow" text="打开(&S)">
         <MenuItem name="subOpenQstCmdz" text="打开 QstCmdz 窗口" />
         <MenuItem name="subOpenQstIndex" text="打开 QstIndex 窗口" />
         <MenuItem name="subOpenQstInfoz" text="打开 QstInfoz 窗口" />
@@ -25,7 +25,8 @@
         <MenuItem name="subOpenQstText" text="打开 QstText 窗口" />
         <MenuItem name="subOpenQstTree" text="打开 QstTree 窗口" />
         <MenuItem name="subOpenQstView2D" text="打开 QstView2D 窗口" />
-        <MenuItem name="xxxSepWindow1" text="-" />
+    </MenuItem>
+    <MenuItem name="subPartKill" text="关闭(&K)">
         <MenuItem name="subKillQstCmdz" text="关闭 QstCmdz 窗口" />
         <MenuItem name="subKillQstIndex" text="关闭 QstIndex 窗口" />
         <MenuItem name="subKillQstInfoz" text="关闭 QstInfoz 窗口" />
