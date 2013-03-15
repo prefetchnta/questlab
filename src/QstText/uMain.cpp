@@ -10,7 +10,7 @@
 #pragma resource "*.dfm"
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
-CR_API void_t   qst_change_cpage (uint_t cpage);
+CR_API bool_t   qst_change_cpage (uint_t cpage);
 CR_API bool_t   qst_save_file (const ansi_t *name);
 CR_API bool_t   qst_load_file (const ansi_t *name);
 CR_API void_t   qst_file_action (uint_t item_idx);
@@ -43,18 +43,22 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     SetWindowLong(edtCPage->Handle, GWL_STYLE,
         GetWindowLong(edtCPage->Handle, GWL_STYLE) | ES_CENTER);
     edtCPage->Invalidate();
-    edtCPage->Text = AnsiString(get_sys_codepage());
+    edtCPage->Text = IntToStr(get_sys_codepage());
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnCPageClick(TObject *Sender)
 {
-    uint_t  cpage, native;
+    uint_t      cpage, native;
+    AnsiString  xrsave = edtCPage->Text;
 
     /* 切换文字编码 */
     native = get_sys_codepage();
     cpage = StrToIntDef(edtCPage->Text, native);
-    edtCPage->Text = IntToStr(cpage);
-    qst_change_cpage(cpage);
+    if ((sint_t)cpage <= 0) cpage = native;
+    if (qst_change_cpage(cpage))
+        edtCPage->Text = IntToStr(cpage);
+    else
+        edtCPage->Text = xrsave;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnRefreshClick(TObject *Sender)

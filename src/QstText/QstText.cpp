@@ -162,6 +162,7 @@ qst_clear (
     parm->page = get_sys_codepage();
     SAFE_FREE(parm->text)
     frm = (TfrmMain*)(parm->form);
+    frm->edtCPage->Text = IntToStr(parm->page);
     crisec_enter(parm->lock);
     sci_call(SCI_CLEARALL, NULL, NULL);
     crisec_leave(parm->lock);
@@ -528,8 +529,6 @@ _func_out:
             info = str_dupA("+-CodePage: UTF-8");
         else
             info = str_dupA("+-CodePage: UTF-8 with BOM");
-        frm->btnCPage->Enabled = false;
-        frm->edtCPage->Enabled = false;
         frm->edtCPage->Text = "65001";
     }
     else
@@ -538,15 +537,11 @@ _func_out:
             info = str_dupA("+-CodePage: UTF-16LE");
         else
             info = str_dupA("+-CodePage: UTF-16BE");
-        frm->btnCPage->Enabled = false;
-        frm->edtCPage->Enabled = false;
-        frm->edtCPage->Text = "65001";
+        frm->edtCPage->Text = "2";
     }
     else {
         info = str_fmtA("+-CodePage: %u", page);
-        frm->btnCPage->Enabled = true;
-        frm->edtCPage->Enabled = true;
-        frm->edtCPage->Text = AnsiString(page);
+        frm->edtCPage->Text = IntToStr(page);
     }
     if (info != NULL)
         array_push_growT(&list, ansi_t*, &info);
@@ -573,7 +568,7 @@ _func_exit:
     切换文字编码
 =======================================
 */
-CR_API void_t
+CR_API bool_t
 qst_change_cpage (
   __CR_IN__ uint_t  cpage
     )
@@ -581,25 +576,25 @@ qst_change_cpage (
     ansi_t*     str;
     TfrmMain*   frm;
 
-    if (s_wrk_ctx.page == cpage ||
-        s_wrk_ctx.page == CR_UTF8 ||
+    if (s_wrk_ctx.show == NULL)
+        return (TRUE);
+    if (s_wrk_ctx.page == CR_UTF8 ||
         s_wrk_ctx.page == CR_UTF16)
-        return;
+        return (TRUE);
     if (cpage == CR_UTF8 || cpage == CR_UTF16) {
         s_wrk_ctx.xbom = TRUE;
         s_wrk_ctx.isbe = FALSE;
-        s_wrk_ctx.page = cpage;
-        return;
+        return (TRUE);
     }
     str = local_to_utf8(cpage, s_wrk_ctx.show);
     if (str == NULL)
-        return;
+        return (FALSE);
     frm = (TfrmMain*)(s_wrk_ctx.form);
     crisec_enter(s_wrk_ctx.lock);
     sci_call(SCI_SETTEXT, NULL, str);
     crisec_leave(s_wrk_ctx.lock);
-    s_wrk_ctx.page = cpage;
     mem_free(str);
+    return (TRUE);
 }
 
 /*
@@ -630,11 +625,16 @@ qst_save_file (
     sci_call(SCI_GETTEXT, len + 1, str);
     crisec_leave(s_wrk_ctx.lock);
 
+    uint_t  page;
+
+    /* 取编辑框里的编码值 */
+    page = StrToIntDef(frm->edtCPage->Text, s_wrk_ctx.page);
+
     /* 根据原始的格式保存文件 */
     fp = fopen(name, "wb");
     if (fp == NULL)
         goto _failure1;
-    if (s_wrk_ctx.page == CR_UTF8)
+    if (page == CR_UTF8)
     {
         if (s_wrk_ctx.xbom) {
             wrt = fwrite(BOM_UTF8, 1, 3, fp);
@@ -646,7 +646,7 @@ qst_save_file (
             goto _failure2;
     }
     else
-    if (s_wrk_ctx.page == CR_UTF16)
+    if (page == CR_UTF16)
     {
         wide_t* ucs2;
 
@@ -678,7 +678,7 @@ qst_save_file (
     {
         ansi_t* text;
 
-        text = utf8_to_local(s_wrk_ctx.page, str);
+        text = utf8_to_local(page, str);
         if (text == NULL)
             goto _failure2;
         len = str_lenA(text);
