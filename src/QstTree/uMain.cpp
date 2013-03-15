@@ -194,7 +194,7 @@ void __fastcall TfrmMain::lstTreeChange(TBaseVirtualTree *Sender,
         mem_free(text);
     }
 
-    /* 发送请求 */
+    /* 发送文件加载请求 */
     qst_try_load(Node, data, lstTree);
 }
 //---------------------------------------------------------------------------

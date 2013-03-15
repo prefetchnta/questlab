@@ -522,7 +522,7 @@ qst_load_package (
         }
     }
 
-    /* 尝试加载目标数据 */
+    /* 尝试加载文件 */
     if (!qst_try_load(parm, ldrs, &temp, name, type)) {
         if (type == QST_MOUNT_TEMP)
             file_deleteA(ldrs->name.ansi);
@@ -775,7 +775,7 @@ qst_mnt_ldr_file (
         set_ldrA(&ldr, argv[1], "", head, tail);
     ldr.page = page;
 
-    /* 尝试加载封包文件 */
+    /* 尝试加载文件 */
     QST_SET_STATE_BUSY
     qst_load_package(ctx, &ldr, node, name, QST_MOUNT_DISK);
     QST_SET_STATE_FREE
@@ -926,7 +926,7 @@ qst_mnt_ldr_pack (
         set_ldrA(&ldr, ftmp, "", head, tail);
     ldr.page = page;
 
-    /* 尝试加载封包文件 */
+    /* 尝试加载文件 */
     QST_SET_STATE_BUSY
     qst_load_package(ctx, &ldr, node, name, QST_MOUNT_TEMP);
     QST_SET_STATE_FREE

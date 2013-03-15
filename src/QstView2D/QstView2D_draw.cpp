@@ -504,7 +504,7 @@ qst_render_data (
         parm->slide = NULL;
     }
 
-    /* 尝试加载目标数据 */
+    /* 尝试加载文件 */
     qst_try_load(parm, ldrs);
 
     /* 渲染获取的结果 */

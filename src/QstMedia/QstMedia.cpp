@@ -693,7 +693,7 @@ qst_xmm_ldr_file (
         set_ldrA(&ldr, argv[1], "", head, tail);
     ldr.page = page;
 
-    /* 尝试加载指定文件 */
+    /* 尝试加载文件 */
     QST_SET_STATE_BUSY
     qst_try_load(ctx, &ldr);
     QST_SET_STATE_FREE
@@ -751,7 +751,7 @@ qst_xmm_ldr_smem (
         set_ldrM(&ldr, data, size, "", head, tail);
     ldr.page = page;
 
-    /* 尝试加载指定文件 */
+    /* 尝试加载文件 */
     QST_SET_STATE_BUSY
     qst_try_load(ctx, &ldr);
     QST_SET_STATE_FREE
