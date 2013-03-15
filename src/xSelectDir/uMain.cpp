@@ -11,7 +11,6 @@
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
 extern ansi_t*  g_root;
-CR_API void_t   ximp_stop_running (void_t);
 CR_API void_t   ximp_dir_write (const ansi_t *path);
 //---------------------------------------------------------------------------
 __fastcall TfrmMain::TfrmMain(TComponent* Owner)
@@ -39,8 +38,6 @@ void __fastcall TfrmMain::btnOKClick(TObject *Sender)
 void __fastcall TfrmMain::btnCancelClick(TObject *Sender)
 {
     /* 取消按钮 */
-    if (SetCurrentDir(m_curt))
-        ximp_stop_running();
     this->Close();
 }
 //---------------------------------------------------------------------------

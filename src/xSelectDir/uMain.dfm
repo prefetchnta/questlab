@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
   Left = 808
   Top = 397
-  BorderIcons = [biSystemMenu, biMinimize]
+  BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'xSelectDir'
   ClientHeight = 378

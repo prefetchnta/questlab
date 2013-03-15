@@ -11,11 +11,11 @@ USEFORM("uMain.cpp", frmMain);
 //---------------------------------------------------------------------------
 
 /*
-=======================================
+---------------------------------------
     写入停止运行
-=======================================
+---------------------------------------
 */
-CR_API void_t
+static void_t
 ximp_stop_running (void_t)
 {
     FILE*   fp;
@@ -41,6 +41,7 @@ ximp_dir_write (
 
     fp = fopen(QST_SELECT_DIR, "w");
     if (fp != NULL) {
+        file_deleteA(QST_STOPS_NEXT);
         fprintf(fp, "%s", path);
         fclose(fp);
     }
@@ -90,7 +91,7 @@ WinMain (
     CR_NOUSE(cmd_show);
 
     /* 只允许一个例程 */
-    file_deleteA(QST_STOPS_NEXT);
+    ximp_stop_running();
     if (misc_is_running(EXE_XNAME))
         return (QST_ERROR);
 
@@ -158,8 +159,6 @@ WinMain (
         if (pidl != NULL &&
             SHGetPathFromIDListA(pidl, path))
             ximp_dir_write(path);
-        else
-            ximp_stop_running();
         CoUninitialize();
         return (QST_OKAY);
     }
