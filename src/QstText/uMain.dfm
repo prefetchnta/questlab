@@ -21,7 +21,7 @@ object frmMain: TfrmMain
     Left = 0
     Top = 0
     Width = 792
-    Height = 50
+    Height = 45
     Align = alTop
     TabOrder = 0
     object edtCPage: TEdit
@@ -35,95 +35,69 @@ object frmMain: TfrmMain
     object btnCPage: TButton
       Left = 88
       Top = 8
-      Width = 97
+      Width = 89
       Height = 25
-      Caption = '&Code Page'
+      Caption = 'Code Page'
       TabOrder = 1
       OnClick = btnCPageClick
     end
-    object edtGoto: TEdit
-      Left = 192
-      Top = 8
-      Width = 73
-      Height = 21
-      MaxLength = 7
-      TabOrder = 2
-      Text = '1'
-    end
-    object btnGoto: TButton
-      Left = 272
+    object lstType: TComboBox
+      Left = 184
       Top = 8
       Width = 97
-      Height = 25
-      Caption = '&Goto Line'
-      TabOrder = 3
-      OnClick = btnGotoClick
-    end
-    object lstType: TComboBox
-      Left = 376
-      Top = 8
-      Width = 113
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
       ItemIndex = 0
-      TabOrder = 4
-      Text = 'QuestBAT'
+      TabOrder = 2
+      Text = ' QstBat'
       Items.Strings = (
-        'QuestBAT')
+        ' QstBat')
     end
     object btnRefresh: TButton
-      Left = 496
+      Left = 288
       Top = 8
       Width = 89
       Height = 25
-      Caption = '&Refresh'
-      TabOrder = 5
+      Caption = 'Refresh'
+      TabOrder = 3
       OnClick = btnRefreshClick
     end
     object btnAction: TButton
-      Left = 592
+      Left = 384
       Top = 8
       Width = 89
       Height = 25
-      Caption = '&Action'
-      TabOrder = 6
+      Caption = 'Action'
+      TabOrder = 4
       OnClick = btnActionClick
     end
     object btnSave: TButton
-      Left = 688
+      Left = 576
       Top = 8
-      Width = 97
+      Width = 89
       Height = 25
-      Caption = '&Save As'
-      TabOrder = 7
+      Caption = 'Save As'
+      TabOrder = 6
       OnClick = btnSaveClick
+    end
+    object btnLoad: TButton
+      Left = 480
+      Top = 8
+      Width = 89
+      Height = 25
+      Caption = 'Load File'
+      TabOrder = 5
+      OnClick = btnLoadClick
     end
   end
   object pnlMain: TPanel
     Left = 0
-    Top = 50
+    Top = 45
     Width = 792
-    Height = 466
+    Height = 521
     Align = alClient
     TabOrder = 1
-  end
-  object pnlFoot: TPanel
-    Left = 0
-    Top = 516
-    Width = 792
-    Height = 50
-    Align = alBottom
-    TabOrder = 2
-    object btnLoad: TButton
-      Left = 8
-      Top = 8
-      Width = 97
-      Height = 25
-      Caption = '&Load File'
-      TabOrder = 0
-      OnClick = btnLoadClick
-    end
   end
   object dlgOpen: TOpenDialog
     Filter = '*.*|*.*'
@@ -136,7 +110,7 @@ object frmMain: TfrmMain
   object dlgSave: TSaveDialog
     Filter = '*.*|*.*'
     InitialDir = '.\script'
-    Options = [ofHideReadOnly, ofNoChangeDir, ofPathMustExist, ofNoReadOnlyReturn, ofEnableSizing]
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofNoChangeDir, ofPathMustExist, ofNoReadOnlyReturn, ofEnableSizing]
     Title = 'Save TXT file'
     Left = 152
     Top = 104

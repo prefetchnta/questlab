@@ -79,11 +79,8 @@ class TfrmMain : public TForm
 __published:    // IDE-managed Components
         TPanel *pnlHead;
         TPanel *pnlMain;
-        TPanel *pnlFoot;
         TEdit *edtCPage;
         TButton *btnCPage;
-        TEdit *edtGoto;
-        TButton *btnGoto;
         TComboBox *lstType;
         TButton *btnRefresh;
         TButton *btnAction;
@@ -92,7 +89,6 @@ __published:    // IDE-managed Components
         TOpenDialog *dlgOpen;
         TSaveDialog *dlgSave;
         void __fastcall btnCPageClick(TObject *Sender);
-        void __fastcall btnGotoClick(TObject *Sender);
         void __fastcall btnRefreshClick(TObject *Sender);
         void __fastcall btnActionClick(TObject *Sender);
         void __fastcall btnSaveClick(TObject *Sender);

@@ -10,6 +10,11 @@
 #pragma resource "*.dfm"
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
+CR_API void_t   qst_change_cpage (uint_t cpage);
+CR_API bool_t   qst_save_file (const ansi_t *name);
+CR_API bool_t   qst_load_file (const ansi_t *name);
+CR_API void_t   qst_file_action (uint_t item_idx);
+//---------------------------------------------------------------------------
 __fastcall TfrmMain::TfrmMain(TComponent* Owner)
         : TForm(Owner)
 {
@@ -39,19 +44,17 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
         GetWindowLong(edtCPage->Handle, GWL_STYLE) | ES_CENTER);
     edtCPage->Invalidate();
     edtCPage->Text = AnsiString(get_sys_codepage());
-    SetWindowLong(edtGoto->Handle, GWL_STYLE,
-        GetWindowLong(edtGoto->Handle, GWL_STYLE) | ES_CENTER);
-    edtGoto->Invalidate();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnCPageClick(TObject *Sender)
 {
+    uint_t  cpage, native;
+
     /* 切换文字编码 */
-}
-//---------------------------------------------------------------------------
-void __fastcall TfrmMain::btnGotoClick(TObject *Sender)
-{
-    /* 跳转到指定行 */
+    native = get_sys_codepage();
+    cpage = StrToIntDef(edtCPage->Text, native);
+    edtCPage->Text = IntToStr(cpage);
+    qst_change_cpage(cpage);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnRefreshClick(TObject *Sender)
@@ -62,16 +65,37 @@ void __fastcall TfrmMain::btnRefreshClick(TObject *Sender)
 void __fastcall TfrmMain::btnActionClick(TObject *Sender)
 {
     /* 执行文本内容 */
+    if (lstType->ItemIndex < 0)
+        return;
+    qst_file_action(lstType->ItemIndex);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnSaveClick(TObject *Sender)
 {
     /* 另存文本文件 */
+    if (!dlgSave->Execute())
+        return;
+    if (qst_save_file(dlgSave->FileName.c_str())) {
+        MessageBox(this->Handle, "Save file okay!   ",
+                "SUCCESS", MB_OK | MB_ICONINFORMATION);
+    } else {
+        MessageBox(this->Handle, "Save file fail!   ",
+                "FAILURE", MB_OK | MB_ICONSTOP);
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnLoadClick(TObject *Sender)
 {
     /* 加载文本文件 */
+    if (!dlgOpen->Execute())
+        return;
+    if (qst_load_file(dlgOpen->FileName.c_str())) {
+        MessageBox(this->Handle, "Load file okay!   ",
+                "SUCCESS", MB_OK | MB_ICONINFORMATION);
+    } else {
+        MessageBox(this->Handle, "Load file fail!   ",
+                "FAILURE", MB_OK | MB_ICONSTOP);
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormResize(TObject *Sender)
@@ -84,24 +108,17 @@ void __fastcall TfrmMain::FormResize(TObject *Sender)
     sy = (sx - hh) / 2;
     edtCPage->Top   = sy;
     btnCPage->Top   = sy;
-    edtGoto->Top    = sy;
-    btnGoto->Top    = sy;
     lstType->Top    = sy;
     btnRefresh->Top = sy;
     btnAction->Top  = sy;
+    btnLoad->Top    = sy;
     btnSave->Top    = sy;
     edtCPage->Height   = hh;
     btnCPage->Height   = hh;
-    edtGoto->Height    = hh;
-    btnGoto->Height    = hh;
     lstType->Height    = hh;
     btnRefresh->Height = hh;
     btnAction->Height  = hh;
+    btnLoad->Height    = hh;
     btnSave->Height    = hh;
-    /* ------------------ */
-    sx = pnlFoot->Height;
-    sy = (sx - hh) / 2;
-    btnLoad->Top = sy;
-    btnLoad->Height = hh;
 }
 //---------------------------------------------------------------------------

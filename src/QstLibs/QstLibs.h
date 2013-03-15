@@ -73,6 +73,7 @@
 #define QST_SELECT_DIR  ".\\output\\__pos__.txt"    /* 目录选择结果 */
 #define QST_IMPORT_LST  ".\\output\\__dir__.xml"    /* 导入文件列表 */
 #define QST_IMP_SCRIPT  ".\\output\\__imp__.xml"    /* 临时导入脚本 */
+#define QST_TMP_SCRIPT  ".\\output\\__scr__.txt"    /* 临时执行脚本 */
 
 /*****************************************************************************/
 /*                                 公用函数                                  */

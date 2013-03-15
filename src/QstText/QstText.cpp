@@ -156,10 +156,10 @@ qst_clear (
 {
     TfrmMain*   frm;
 
+    parm->show = NULL;
     parm->xbom = FALSE;
     parm->isbe = FALSE;
-    parm->page = CR_LOCAL;
-    parm->show = NULL;
+    parm->page = get_sys_codepage();
     SAFE_FREE(parm->text)
     frm = (TfrmMain*)(parm->form);
     crisec_enter(parm->lock);
@@ -244,6 +244,7 @@ qst_try_load (
     sFMTZ*  fmtz;
     sFMTZ*  tmpz;
     sARRAY  list;
+    bool_t  rett;
     bool_t  used;
     bool_t  xbom;
     bool_t  isbe;
@@ -262,8 +263,8 @@ qst_try_load (
     /* 初始化加载尝试 */
     page = ldrs->page;
     text = show = NULL;
-    xbom = isbe = FALSE;
     fmtz = tmpz = NULL;
+    rett = xbom = isbe = FALSE;
     array_initT(&list, ansi_t*);
     list.free = finfo_free;
     struct_cpy(&copy, ldrs, sLOADER);
@@ -359,7 +360,7 @@ _func_out:
             goto _func_exit;
 
         /* 文件大小过滤 */
-        if (size > parm->cfgs.max_fsize)
+        if (size == 0 || size > parm->cfgs.max_fsize)
             goto _func_exit;
 
         /* 文件名匹配过滤 */
@@ -511,7 +512,7 @@ _func_out:
     if (temp != show)
         mem_free(temp);
 
-    /* 保存到上下文结构 */
+    /* 保存加载结果 */
     parm->xbom = xbom;
     parm->isbe = isbe;
     parm->page = page;
@@ -555,6 +556,7 @@ _func_out:
 
     /* 窗口拉到最前面 */
     misc_bring2top(frm->Handle, Application->Handle);
+    rett = TRUE;
 
     /* 释放临时的数据 */
 _func_exit:
@@ -563,7 +565,180 @@ _func_exit:
     if (tmpz != NULL)
         fmtz_free(tmpz);
     array_freeT(&list, ansi_t*);
+    return (rett);
+}
+
+/*
+=======================================
+    切换文字编码
+=======================================
+*/
+CR_API void_t
+qst_change_cpage (
+  __CR_IN__ uint_t  cpage
+    )
+{
+    ansi_t*     str;
+    TfrmMain*   frm;
+
+    if (s_wrk_ctx.page == cpage ||
+        s_wrk_ctx.page == CR_UTF8 ||
+        s_wrk_ctx.page == CR_UTF16)
+        return;
+    if (cpage == CR_UTF8 || cpage == CR_UTF16) {
+        s_wrk_ctx.xbom = TRUE;
+        s_wrk_ctx.isbe = FALSE;
+        s_wrk_ctx.page = cpage;
+        return;
+    }
+    str = local_to_utf8(cpage, s_wrk_ctx.show);
+    if (str == NULL)
+        return;
+    frm = (TfrmMain*)(s_wrk_ctx.form);
+    crisec_enter(s_wrk_ctx.lock);
+    sci_call(SCI_SETTEXT, NULL, str);
+    crisec_leave(s_wrk_ctx.lock);
+    s_wrk_ctx.page = cpage;
+    mem_free(str);
+}
+
+/*
+=======================================
+    另存文本文件
+=======================================
+*/
+CR_API bool_t
+qst_save_file (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    FILE*       fp;
+    leng_t      wrt;
+    leng_t      len;
+    ansi_t*     str;
+    TfrmMain*   frm;
+
+    /* 从编辑器取当前文本 UTF-8 格式 */
+    frm = (TfrmMain*)(s_wrk_ctx.form);
+    crisec_enter(s_wrk_ctx.lock);
+    len = (leng_t)sci_call(SCI_GETLENGTH, NULL, NULL);
+    str = str_allocA(len + 1);
+    if (str == NULL) {
+        crisec_leave(s_wrk_ctx.lock);
+        return (FALSE);
+    }
+    sci_call(SCI_GETTEXT, len + 1, str);
+    crisec_leave(s_wrk_ctx.lock);
+
+    /* 根据原始的格式保存文件 */
+    fp = fopen(name, "wb");
+    if (fp == NULL)
+        goto _failure1;
+    if (s_wrk_ctx.page == CR_UTF8)
+    {
+        if (s_wrk_ctx.xbom) {
+            wrt = fwrite(BOM_UTF8, 1, 3, fp);
+            if (wrt != 3)
+                goto _failure2;
+        }
+        wrt = fwrite(str, 1, len, fp);
+        if (wrt != len)
+            goto _failure2;
+    }
+    else
+    if (s_wrk_ctx.page == CR_UTF16)
+    {
+        wide_t* ucs2;
+
+        if (s_wrk_ctx.isbe) {
+            wrt = fwrite(BOM_UTF16BE, 1, 2, fp);
+            if (wrt != 2)
+                goto _failure2;
+        }
+        else {
+            wrt = fwrite(BOM_UTF16LE, 1, 2, fp);
+            if (wrt != 2)
+                goto _failure2;
+        }
+        ucs2 = utf8_to_utf16(str);
+        if (ucs2 == NULL)
+            goto _failure2;
+        len = str_lenW(ucs2);
+        if (s_wrk_ctx.isbe) {
+            for (wrt = 0; wrt < len; wrt++)
+                ucs2[wrt] = xchg_int16u(ucs2[wrt]);
+        }
+        len *= 2;
+        wrt = fwrite(ucs2, 1, len, fp);
+        mem_free(ucs2);
+        if (wrt != len)
+            goto _failure2;
+    }
+    else
+    {
+        ansi_t* text;
+
+        text = utf8_to_local(s_wrk_ctx.page, str);
+        if (text == NULL)
+            goto _failure2;
+        len = str_lenA(text);
+        wrt = fwrite(text, 1, len, fp);
+        mem_free(text);
+        if (wrt != len)
+            goto _failure2;
+    }
+    mem_free(str);
+    fclose(fp);
+    return (TRUE);
+
+_failure2:
+    fclose(fp);
+    file_deleteA(name);
+_failure1:
+    mem_free(str);
     return (FALSE);
+}
+
+/*
+=======================================
+    加载文本文件
+=======================================
+*/
+CR_API bool_t
+qst_load_file (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    sLOADER     ldr;
+
+    set_ldrA(&ldr, name, "", 0, 0);
+    ldr.page = get_sys_codepage();
+    return (qst_try_load(&s_wrk_ctx, &ldr));
+}
+
+/* 文本执行类型列表 */
+#define QST_ACT_QSTBAT      0x00    /* QstBat */
+
+/*
+=======================================
+    执行文本内容
+=======================================
+*/
+CR_API void_t
+qst_file_action (
+  __CR_IN__ uint_t  item_idx
+    )
+{
+    /* 先保存到临时文件再执行 */
+    if (!qst_save_file(QST_TMP_SCRIPT))
+        return;
+    switch (item_idx)
+    {
+        default: return;
+        case QST_ACT_QSTBAT:    /* QstBat */
+            misc_call_exe("QstCmdz.exe " QST_TMP_SCRIPT, FALSE, TRUE);
+            break;
+    }
 }
 
 /*****************************************************************************/
@@ -828,6 +1003,8 @@ qst_edt_ldr_file (
         set_ldrA(&ldr, argv[1], argv[6], head, tail);
     else
         set_ldrA(&ldr, argv[1], "", head, tail);
+    if (page == CR_LOCAL)
+        page = get_sys_codepage();
     ldr.page = page;
 
     /* 尝试加载文件 */
@@ -886,6 +1063,8 @@ qst_edt_ldr_smem (
         set_ldrM(&ldr, data, size, argv[7], head, tail);
     else
         set_ldrM(&ldr, data, size, "", head, tail);
+    if (page == CR_LOCAL)
+        page = get_sys_codepage();
     ldr.page = page;
 
     /* 尝试加载文件 */
@@ -1087,6 +1266,7 @@ WinMain (
     if (s_wrk_ctx.lock == NULL)
         return (QST_ERROR);
     qst_load_cfg(&s_wrk_ctx.cfgs);
+    s_wrk_ctx.page = get_sys_codepage();
     thrd = thread_new(0, qst_edt_main, &s_wrk_ctx, TRUE);
     if (thrd == NULL)
         return (QST_ERROR);
