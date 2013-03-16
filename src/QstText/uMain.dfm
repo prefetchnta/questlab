@@ -73,12 +73,12 @@ object frmMain: TfrmMain
       OnClick = btnActionClick
     end
     object btnSave: TButton
-      Left = 576
+      Left = 656
       Top = 8
       Width = 89
       Height = 25
       Caption = 'Save As'
-      TabOrder = 6
+      TabOrder = 7
       OnClick = btnSaveClick
     end
     object btnLoad: TButton
@@ -90,12 +90,20 @@ object frmMain: TfrmMain
       TabOrder = 5
       OnClick = btnLoadClick
     end
+    object edtSPage: TEdit
+      Left = 576
+      Top = 8
+      Width = 73
+      Height = 21
+      MaxLength = 5
+      TabOrder = 6
+    end
   end
   object pnlMain: TPanel
     Left = 0
     Top = 45
     Width = 792
-    Height = 521
+    Height = 525
     Align = alClient
     TabOrder = 1
   end

@@ -122,6 +122,7 @@ qst_set_editor (
         sci_call(SCI_STYLESETFONT, STYLE_DEFAULT, cfg->font_face);
     else
         sci_call(SCI_STYLESETFONT, STYLE_DEFAULT, "Fixedsys");
+    sci_call(SCI_STYLESETCHARACTERSET, STYLE_DEFAULT, SC_CHARSET_DEFAULT);
     sci_call(SCI_STYLESETSIZE, STYLE_DEFAULT, cfg->font_size);
     sci_call(SCI_STYLESETBOLD, STYLE_DEFAULT, FALSE);
     sci_call(SCI_STYLECLEARALL, NULL, NULL);
@@ -529,7 +530,6 @@ _func_out:
             info = str_dupA("+-CodePage: UTF-8");
         else
             info = str_dupA("+-CodePage: UTF-8 with BOM");
-        frm->edtCPage->Text = "65001";
     }
     else
     if (page == CR_UTF16) {
@@ -537,14 +537,13 @@ _func_out:
             info = str_dupA("+-CodePage: UTF-16LE");
         else
             info = str_dupA("+-CodePage: UTF-16BE");
-        frm->edtCPage->Text = "2";
     }
     else {
         info = str_fmtA("+-CodePage: %u", page);
-        frm->edtCPage->Text = IntToStr(page);
     }
     if (info != NULL)
         array_push_growT(&list, ansi_t*, &info);
+    frm->edtCPage->Text = IntToStr(page);
 
     /* 发送整个信息列表 */
     qst_send_finfo(&list, parm->netw);
@@ -604,7 +603,8 @@ qst_change_cpage (
 */
 CR_API bool_t
 qst_save_file (
-  __CR_IN__ const ansi_t*   name
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          page
     )
 {
     FILE*       fp;
@@ -625,12 +625,7 @@ qst_save_file (
     sci_call(SCI_GETTEXT, len + 1, str);
     crisec_leave(s_wrk_ctx.lock);
 
-    uint_t  page;
-
-    /* 取编辑框里的编码值 */
-    page = StrToIntDef(frm->edtCPage->Text, s_wrk_ctx.page);
-
-    /* 根据原始的格式保存文件 */
+    /* 根据指定的格式保存文件 */
     fp = fopen(name, "wb");
     if (fp == NULL)
         goto _failure1;
@@ -730,7 +725,7 @@ qst_file_action (
     )
 {
     /* 先保存到临时文件再执行 */
-    if (!qst_save_file(QST_TMP_SCRIPT))
+    if (!qst_save_file(QST_TMP_SCRIPT, CR_UTF8))
         return;
     switch (item_idx)
     {

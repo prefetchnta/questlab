@@ -84,8 +84,9 @@ __published:    // IDE-managed Components
         TComboBox *lstType;
         TButton *btnRefresh;
         TButton *btnAction;
-        TButton *btnSave;
         TButton *btnLoad;
+        TEdit *edtSPage;
+        TButton *btnSave;
         TOpenDialog *dlgOpen;
         TSaveDialog *dlgSave;
         void __fastcall btnCPageClick(TObject *Sender);

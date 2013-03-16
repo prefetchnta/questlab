@@ -11,9 +11,9 @@
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
 CR_API bool_t   qst_change_cpage (uint_t cpage);
-CR_API bool_t   qst_save_file (const ansi_t *name);
-CR_API bool_t   qst_load_file (const ansi_t *name);
 CR_API void_t   qst_file_action (uint_t item_idx);
+CR_API bool_t   qst_load_file (const ansi_t *name);
+CR_API bool_t   qst_save_file (const ansi_t *name, uint_t page);
 //---------------------------------------------------------------------------
 __fastcall TfrmMain::TfrmMain(TComponent* Owner)
         : TForm(Owner)
@@ -44,6 +44,10 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
         GetWindowLong(edtCPage->Handle, GWL_STYLE) | ES_CENTER);
     edtCPage->Invalidate();
     edtCPage->Text = IntToStr(get_sys_codepage());
+    SetWindowLong(edtSPage->Handle, GWL_STYLE,
+        GetWindowLong(edtSPage->Handle, GWL_STYLE) | ES_CENTER);
+    edtSPage->Invalidate();
+    edtSPage->Text = IntToStr(CR_UTF8);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnCPageClick(TObject *Sender)
@@ -76,10 +80,15 @@ void __fastcall TfrmMain::btnActionClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnSaveClick(TObject *Sender)
 {
+    uint_t  cpage;
+
     /* 另存文本文件 */
     if (!dlgSave->Execute())
         return;
-    if (qst_save_file(dlgSave->FileName.c_str())) {
+    cpage = StrToIntDef(edtSPage->Text, CR_UTF8);
+    if ((sint_t)cpage <= 0) cpage = CR_UTF8;
+    edtSPage->Text = IntToStr(cpage);
+    if (qst_save_file(dlgSave->FileName.c_str(), cpage)) {
         MessageBox(this->Handle, "Save file okay!   ",
                 "SUCCESS", MB_OK | MB_ICONINFORMATION);
     } else {
@@ -116,6 +125,7 @@ void __fastcall TfrmMain::FormResize(TObject *Sender)
     btnRefresh->Top = sy;
     btnAction->Top  = sy;
     btnLoad->Top    = sy;
+    edtSPage->Top   = sy;
     btnSave->Top    = sy;
     edtCPage->Height   = hh;
     btnCPage->Height   = hh;
@@ -123,6 +133,7 @@ void __fastcall TfrmMain::FormResize(TObject *Sender)
     btnRefresh->Height = hh;
     btnAction->Height  = hh;
     btnLoad->Height    = hh;
+    edtSPage->Height   = hh;
     btnSave->Height    = hh;
 }
 //---------------------------------------------------------------------------
