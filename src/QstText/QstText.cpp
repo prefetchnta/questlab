@@ -567,7 +567,7 @@ _func_exit:
     切换文字编码
 =======================================
 */
-CR_API bool_t
+CR_API void_t
 qst_change_cpage (
   __CR_IN__ uint_t  cpage
     )
@@ -576,24 +576,23 @@ qst_change_cpage (
     TfrmMain*   frm;
 
     if (s_wrk_ctx.show == NULL)
-        return (TRUE);
+        return;
     if (s_wrk_ctx.page == CR_UTF8 ||
         s_wrk_ctx.page == CR_UTF16)
-        return (TRUE);
+        return;
     if (cpage == CR_UTF8 || cpage == CR_UTF16) {
         s_wrk_ctx.xbom = TRUE;
         s_wrk_ctx.isbe = FALSE;
-        return (TRUE);
+        return;
     }
     str = local_to_utf8(cpage, s_wrk_ctx.show);
     if (str == NULL)
-        return (FALSE);
+        return;
     frm = (TfrmMain*)(s_wrk_ctx.form);
     crisec_enter(s_wrk_ctx.lock);
     sci_call(SCI_SETTEXT, NULL, str);
     crisec_leave(s_wrk_ctx.lock);
     mem_free(str);
-    return (TRUE);
 }
 
 /*

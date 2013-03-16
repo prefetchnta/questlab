@@ -10,7 +10,7 @@
 #pragma resource "*.dfm"
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
-CR_API bool_t   qst_change_cpage (uint_t cpage);
+CR_API void_t   qst_change_cpage (uint_t cpage);
 CR_API void_t   qst_file_action (uint_t item_idx);
 CR_API bool_t   qst_load_file (const ansi_t *name);
 CR_API bool_t   qst_save_file (const ansi_t *name, uint_t page);
@@ -52,17 +52,15 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnCPageClick(TObject *Sender)
 {
-    uint_t      cpage, native;
-    AnsiString  xrsave = edtCPage->Text;
+    uint_t  cpage, native;
 
     /* 切换文字编码 */
     native = get_sys_codepage();
     cpage = StrToIntDef(edtCPage->Text, native);
-    if ((sint_t)cpage <= 0) cpage = native;
-    if (qst_change_cpage(cpage))
-        edtCPage->Text = IntToStr(cpage);
-    else
-        edtCPage->Text = xrsave;
+    if ((sint_t)cpage <= 0)
+        cpage = native;
+    edtCPage->Text = IntToStr(cpage);
+    qst_change_cpage(cpage);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnRefreshClick(TObject *Sender)
@@ -86,7 +84,11 @@ void __fastcall TfrmMain::btnSaveClick(TObject *Sender)
     if (!dlgSave->Execute())
         return;
     cpage = StrToIntDef(edtSPage->Text, CR_UTF8);
-    if ((sint_t)cpage <= 0) cpage = CR_UTF8;
+    if (cpage == CR_LOCAL)
+        cpage = get_sys_codepage();
+    else
+    if ((sint_t)cpage < 0)
+        cpage = CR_UTF8;
     edtSPage->Text = IntToStr(cpage);
     if (qst_save_file(dlgSave->FileName.c_str(), cpage)) {
         MessageBox(this->Handle, "Save file okay!   ",
