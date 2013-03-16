@@ -129,6 +129,35 @@ object frmMain: TfrmMain
           TabOrder = 1
         end
       end
+      object grpQstText: TGroupBox
+        Left = 176
+        Top = 8
+        Width = 417
+        Height = 81
+        Caption = 'QstText'
+        TabOrder = 2
+        object edtQEDT_max_size_kb: TLabeledEdit
+          Left = 304
+          Top = 40
+          Width = 97
+          Height = 21
+          EditLabel.Width = 68
+          EditLabel.Height = 13
+          EditLabel.Caption = #26368#22823#22823#23567'(KB)'
+          LabelPosition = lpAbove
+          LabelSpacing = 3
+          MaxLength = 5
+          TabOrder = 1
+        end
+        object btnQEDT_font: TButton
+          Left = 16
+          Top = 24
+          Width = 273
+          Height = 41
+          TabOrder = 0
+          OnClick = btnQEDT_fontClick
+        end
+      end
     end
   end
   object btnOK: TButton
@@ -163,6 +192,17 @@ object frmMain: TfrmMain
   object dlgColor: TColorDialog
     Ctl3D = True
     Left = 8
+    Top = 528
+  end
+  object dlgFont: TFontDialog
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    MinFontSize = 0
+    MaxFontSize = 0
+    Left = 40
     Top = 528
   end
 end

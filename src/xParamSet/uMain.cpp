@@ -26,7 +26,10 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 {
     sINIu*  ini;
     ansi_t* str;
+    ansi_t* name;
+    sint_t  size;
     int32u  color;
+    fsize_t fsize;
 
     /* 使用系统字体 */
     this->Font->Assign(Screen->MenuFont);
@@ -78,11 +81,11 @@ _qst_media:
     isQXMM_loop_play->Checked = false;
     str = file_load_as_strA(QST_PATH_CONFIG "QstMedia.ini");
     if (str == NULL)
-        goto _func_out;
+        goto _qst_text;
     ini = ini_parseU(str);
     mem_free(str);
     if (ini == NULL)
-        goto _func_out;
+        goto _qst_text;
     if (ini_key_intxU("qxmm::enabled", TRUE, ini))
         isQXMM_enabled->Checked = true;
     else
@@ -91,6 +94,44 @@ _qst_media:
         isQXMM_loop_play->Checked = true;
     else
         isQXMM_loop_play->Checked = false;
+    ini_closeU(ini);
+
+_qst_text:
+    /*******************/
+    /***** QstText *****/
+    /*******************/
+    btnQEDT_font->Caption = "Fixedsys, 12";
+    edtQEDT_max_size_kb->Text = "20480";
+    str = file_load_as_strA(QST_PATH_CONFIG "QstText.ini");
+    if (str == NULL)
+        goto _func_out;
+    ini = ini_parseU(str);
+    mem_free(str);
+    if (ini == NULL)
+        goto _func_out;
+    size = ini_key_intxU("qedt::font_size", 12, ini);
+    name = ini_key_stringU("qedt::font_face", ini);
+    if (name != NULL) {
+        str = name;
+        name = utf8_to_local(CR_LOCAL, str);
+        mem_free(str);
+    }
+    if (name == NULL) {
+        str = str_fmtA("Fixedsys, %d", size);
+    }
+    else {
+        str = str_fmtA("%s, %d", name, size);
+        mem_free(name);
+    }
+    if (str != NULL) {
+        btnQEDT_font->Caption = AnsiString(str);
+        mem_free(str);
+    }
+    SetWindowLong(edtQEDT_max_size_kb->Handle, GWL_STYLE,
+        GetWindowLong(edtQEDT_max_size_kb->Handle, GWL_STYLE) | ES_CENTER);
+    edtQEDT_max_size_kb->Invalidate();
+    fsize = ini_key_intxU("qedt::max_size_kb", 20480, ini);
+    edtQEDT_max_size_kb->Text = IntToStr((__int64)fsize);
     ini_closeU(ini);
 
 _func_out:
@@ -106,8 +147,12 @@ void __fastcall TfrmMain::btnOKClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnApplyClick(TObject *Sender)
 {
-    FILE*   fp;
-    int32u  color;
+    FILE*       fp;
+    ansi_t*     str;
+    ansi_t*     name;
+    sint_t      size;
+    int32u      color;
+    AnsiString  font;
 
     /* 应用按钮 */
 _qst_view2d:
@@ -145,7 +190,7 @@ _qst_media:
     /********************/
     fp = fopen(QST_PATH_CONFIG "QstMedia.ini", "w");
     if (fp == NULL)
-        goto _func_out;
+        goto _qst_text;
     if (isQXMM_enabled->Checked)
         fprintf(fp, "qxmm::enabled = 1\n");
     else
@@ -154,6 +199,36 @@ _qst_media:
         fprintf(fp, "qxmm::loop_play = 1\n");
     else
         fprintf(fp, "qxmm::loop_play = 0\n");
+    fclose(fp);
+
+_qst_text:
+    /*******************/
+    /***** QstText *****/
+    /*******************/
+    fp = fopen(QST_PATH_CONFIG "QstText.ini", "w");
+    if (fp == NULL)
+        goto _func_out;
+    font = btnQEDT_font->Caption;
+    name = font.c_str();
+    str = str_chrA(name, CR_AC(','));
+    if (str == NULL) {
+        fprintf(fp, "qedt::font_size = 12\n");
+    }
+    else {
+        *str = NIL;
+        fprintf(fp, "qedt::font_size = %s\n", str + 2);
+    }
+    str = local_to_utf8(CR_LOCAL, name);
+    if (str == NULL) {
+        fprintf(fp, "qedt::font_face = \"Fixedsys\"\n");
+    }
+    else {
+        fprintf(fp, "qedt::font_face = \"%s\"\n", str);
+        mem_free(str);
+    }
+    size = StrToIntDef(edtQEDT_max_size_kb->Text, 20480);
+    edtQEDT_max_size_kb->Text = IntToStr(size);
+    fprintf(fp, "qedt::max_size_kb = %u\n", size);
     fclose(fp);
 
 _func_out:
@@ -183,5 +258,33 @@ void __fastcall TfrmMain::txtQV2D_def_keycolorClick(TObject *Sender)
     if (!dlgColor->Execute())
         return;
     txtQV2D_def_keycolor->Color = dlgColor->Color;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::btnQEDT_fontClick(TObject *Sender)
+{
+    ansi_t*     str;
+    ansi_t*     name;
+    sint_t      size;
+    AnsiString  font;
+
+    /* 选择全局字体 */
+    font = btnQEDT_font->Caption;
+    name = font.c_str();
+    str = str_chrA(name, CR_AC(','));
+    if (str == NULL) {
+        size = 12;
+    }
+    else {
+        *str = NIL;
+        size = StrToIntDef(str + 2, 12);
+    }
+    dlgFont->Font->Name = AnsiString(name);
+    dlgFont->Font->Size = size;
+    if (!dlgFont->Execute())
+        return;
+    font = IntToStr(dlgFont->Font->Size);
+    btnQEDT_font->Caption = dlgFont->Font->Name;
+    btnQEDT_font->Caption = btnQEDT_font->Caption + ", ";
+    btnQEDT_font->Caption = btnQEDT_font->Caption + font;
 }
 //---------------------------------------------------------------------------

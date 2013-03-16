@@ -33,11 +33,16 @@ __published:    // IDE-managed Components
         TCheckBox *isQV2D_use_keycolor;
         TButton *btnApply;
         TCheckBox *isQV2D_use_keyalpha;
+        TGroupBox *grpQstText;
+        TLabeledEdit *edtQEDT_max_size_kb;
+        TButton *btnQEDT_font;
+        TFontDialog *dlgFont;
         void __fastcall btnOKClick(TObject *Sender);
         void __fastcall btnApplyClick(TObject *Sender);
         void __fastcall btnCancelClick(TObject *Sender);
         void __fastcall txtQV2D_bkcolorClick(TObject *Sender);
         void __fastcall txtQV2D_def_keycolorClick(TObject *Sender);
+        void __fastcall btnQEDT_fontClick(TObject *Sender);
 private:        // User declarations
 public:         // User declarations
         __fastcall TfrmMain(TComponent* Owner);
