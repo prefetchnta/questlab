@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-07  */
 /*     #######          ###    ###      [GFX2]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-02  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-18  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -1070,12 +1070,11 @@ iFONT_GDI_draw_tran (
     temp.bottom = rect->y2 + 2;
 
     /* 统一转换到 UTF-16 */
-    if (cpage == CR_UTF16) {
+    if (cpage == CR_UTF16X) {
         utf16 = (wide_t*)text;
         leng = str_lenW(utf16);
     }
     else {
-#ifndef _CR_API_ANSI_ONLY_
         utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
         if (utf16 == NULL) {
             err_set(__CR_GDIWIN_C__, CR_NULL,
@@ -1084,17 +1083,6 @@ iFONT_GDI_draw_tran (
             goto _func_out;
         }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
-#else
-        /* 没有 UNICODE 版本则直接绘制 */
-        leng = str_lenA((ansi_t*)text);
-        if (!ExtTextOutA(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                        &temp, (ansi_t*)text, (UINT)leng, NULL)) {
-            err_set(__CR_GDIWIN_C__, GetLastError(),
-                    "iFONT::draw_tran()", "ExtTextOutA() failure");
-            rett = FALSE;
-        }
-        goto _func_out;
-#endif
     }
 
     /* 据说用 ExtTextOut 绘制最快 */
@@ -1143,12 +1131,11 @@ iFONT_GDI_draw_text (
     temp.bottom = rect->y2 + 2;
 
     /* 统一转换到 UTF-16 */
-    if (cpage == CR_UTF16) {
+    if (cpage == CR_UTF16X) {
         utf16 = (wide_t*)text;
         leng = str_lenW(utf16);
     }
     else {
-#ifndef _CR_API_ANSI_ONLY_
         utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
         if (utf16 == NULL) {
             err_set(__CR_GDIWIN_C__, CR_NULL,
@@ -1156,17 +1143,6 @@ iFONT_GDI_draw_text (
             return (FALSE);
         }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
-#else
-        /* 没有 UNICODE 版本则直接绘制 */
-        leng = str_lenA((ansi_t*)text);
-        if (!ExtTextOutA(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                        &temp, (ansi_t*)text, (UINT)leng, NULL)) {
-            err_set(__CR_GDIWIN_C__, GetLastError(),
-                    "iFONT::draw_text()", "ExtTextOutA() failure");
-            return (FALSE);
-        }
-        return (TRUE);
-#endif
     }
     rett = TRUE;
 
@@ -1213,12 +1189,11 @@ iFONT_GDI_calc_rect (
     temp.bottom = rect->hh;
 
     /* 统一转换到 UTF-16 */
-    if (cpage == CR_UTF16) {
+    if (cpage == CR_UTF16X) {
         leng  = (leng_t)-1;
         utf16 = (wide_t*)text;
     }
     else {
-#ifndef _CR_API_ANSI_ONLY_
         utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
         if (utf16 == NULL) {
             err_set(__CR_GDIWIN_C__, CR_NULL,
@@ -1226,17 +1201,6 @@ iFONT_GDI_calc_rect (
             return (FALSE);
         }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
-#else
-        /* 没有 UNICODE 版本则直接测量 */
-        if (!DrawTextA(real->m_draw, (ansi_t*)text, -1, &temp,
-                       DT_LEFT | DT_CALCRECT)) {
-            err_set(__CR_GDIWIN_C__, GetLastError(),
-                    "iFONT::calc_rect()", "DrawTextA() failure");
-            return (FALSE);
-        }
-        rect_set_wh(rect, rect->x1, rect->y1, temp.right, temp.bottom);
-        return (TRUE);
-#endif
     }
 
     /* 测量文字输出范围 */

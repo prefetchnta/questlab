@@ -162,7 +162,6 @@ qst_clear (
 
     parm->show = NULL;
     parm->xbom = FALSE;
-    parm->isbe = FALSE;
     parm->page = get_sys_codepage();
     SAFE_FREE(parm->text)
     frm = (TfrmMain*)(parm->form);
@@ -252,7 +251,6 @@ qst_try_load (
     bool_t  rett;
     bool_t  used;
     bool_t  xbom;
-    bool_t  isbe;
     uint_t  page;
     ansi_t* show;
     ansi_t* info;
@@ -269,7 +267,7 @@ qst_try_load (
     page = ldrs->page;
     text = show = NULL;
     fmtz = tmpz = NULL;
-    rett = xbom = isbe = FALSE;
+    rett = xbom = FALSE;
     array_initT(&list, ansi_t*);
     list.free = finfo_free;
     struct_cpy(&copy, ldrs, sLOADER);
@@ -418,7 +416,7 @@ _func_out:
                 goto _func_exit;
             xbom = TRUE;
             text = show;
-            page = CR_UTF16;
+            page = CR_UTF16LE;
         }
         else
         if (mem_cmp(text, BOM_UTF16BE, 2) == 0) {
@@ -430,9 +428,8 @@ _func_out:
             if (show == NULL)
                 goto _func_exit;
             xbom = TRUE;
-            isbe = TRUE;
             text = show;
-            page = CR_UTF16;
+            page = CR_UTF16BE;
         }
     }
 
@@ -488,7 +485,7 @@ _func_out:
         }
     }
     else
-    if (page != CR_UTF16) {
+    if (!is_cr_utf16(page)) {
         if (is_utf8_file(show))
             page = CR_UTF8;
     }
@@ -496,7 +493,7 @@ _func_out:
     ansi_t* temp;
 
     /* 统一转换到 UTF-8 编码 */
-    if (page == CR_UTF8 || page == CR_UTF16) {
+    if (page == CR_UTF8 || is_cr_utf16(page)) {
         temp = show;
     }
     else {
@@ -519,7 +516,6 @@ _func_out:
 
     /* 保存加载结果 */
     parm->xbom = xbom;
-    parm->isbe = isbe;
     parm->page = page;
     parm->show = show;
     parm->text = text;
@@ -535,11 +531,12 @@ _func_out:
             info = str_dupA("+-CodePage: UTF-8 with BOM");
     }
     else
-    if (page == CR_UTF16) {
-        if (!isbe)
-            info = str_dupA("+-CodePage: UTF-16LE");
-        else
-            info = str_dupA("+-CodePage: UTF-16BE");
+    if (page == CR_UTF16LE) {
+        info = str_dupA("+-CodePage: UTF-16LE");
+    }
+    else
+    if (page == CR_UTF16BE) {
+        info = str_dupA("+-CodePage: UTF-16BE");
     }
     else {
         info = str_fmtA("+-CodePage: %u", page);
@@ -581,11 +578,10 @@ qst_change_cpage (
     if (s_wrk_ctx.show == NULL)
         return;
     if (s_wrk_ctx.page == CR_UTF8 ||
-        s_wrk_ctx.page == CR_UTF16)
+        is_cr_utf16(s_wrk_ctx.page))
         return;
-    if (cpage == CR_UTF8 || cpage == CR_UTF16) {
+    if (cpage == CR_UTF8 || is_cr_utf16(cpage)) {
         s_wrk_ctx.xbom = TRUE;
-        s_wrk_ctx.isbe = FALSE;
         return;
     }
     str = local_to_utf8(cpage, s_wrk_ctx.show);
@@ -643,11 +639,11 @@ qst_save_file (
             goto _failure2;
     }
     else
-    if (page == CR_UTF16)
+    if (is_cr_utf16(page))
     {
         wide_t* ucs2;
 
-        if (s_wrk_ctx.isbe) {
+        if (page == CR_UTF16BE) {
             wrt = fwrite(BOM_UTF16BE, 1, 2, fp);
             if (wrt != 2)
                 goto _failure2;
@@ -661,7 +657,7 @@ qst_save_file (
         if (ucs2 == NULL)
             goto _failure2;
         len = str_lenW(ucs2);
-        if (s_wrk_ctx.isbe) {
+        if (page == CR_UTF16BE) {
             for (wrt = 0; wrt < len; wrt++)
                 ucs2[wrt] = xchg_int16u(ucs2[wrt]);
         }

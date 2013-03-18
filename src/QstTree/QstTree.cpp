@@ -407,7 +407,7 @@ qst_load_xml (
 
     /* 指定了特定编码 */
     page = xml_attr_intxW(CR_WS("page"), page, &xml->nodes[idx]);
-    if (page == CR_UTF8 || page == CR_UTF16 || page == CR_UTF32) {
+    if (is_cr_unicode(page)) {
         xml_closeW(xml);
         parm->busy = FALSE;
         return (FALSE);

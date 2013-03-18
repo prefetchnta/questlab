@@ -56,7 +56,6 @@ typedef struct
 
         /* 保存的原始文本 */
         bool_t      xbom;   /* 是否带 BOM 头 */
-        bool_t      isbe;   /* 是否为大端格式 */
         uint_t      page;   /* 原始编码类型值 */
         ansi_t*     show;   /* 赋值给编辑器的指针 (不释放) */
         ansi_t*     text;   /* UNICODE 统一使用 UTF-8 保存 */

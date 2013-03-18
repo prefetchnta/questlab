@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-05  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-18  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -425,11 +425,9 @@ fmj_xzz2 (
 #ifndef _CR_ORDER_BE_
     #define oREG08  0
     #define oREG16  0
-    #define oREG32  0
 #else
     #define oREG08  3
     #define oREG16  2
-    #define oREG32  4
 #endif
 
 /* 常用编码值 CodePage */
@@ -437,11 +435,36 @@ fmj_xzz2 (
 #define CR_KOR      949
 #define CR_SJIS     932
 #define CR_BIG5     950
+#define CR_LOCAL    0x00
+#define CR_UTF16LE  1200
+#define CR_UTF16BE  1201
+#define CR_UTF32LE  12000
+#define CR_UTF32BE  12001
 #define CR_UTF7     65000
 #define CR_UTF8     65001
-#define CR_LOCAL    0x000
-#define CR_UTF16    0x002   /* 非标准 */
-#define CR_UTF32    0x004   /* 非标准 */
+#ifndef _CR_ORDER_BE_
+    #define CR_UTF16X   CR_UTF16LE
+    #define CR_UTF32X   CR_UTF32LE
+#else
+    #define CR_UTF16X   CR_UTF16BE
+    #define CR_UTF32X   CR_UTF32BE
+#endif
+
+/* CodePage 码值判定宏 */
+#define is_cr_utf16(cp) \
+    ((cp) == CR_UTF16LE || (cp) == CR_UTF16BE)
+#define is_cr_utf32(cp) \
+    ((cp) == CR_UTF32LE || (cp) == CR_UTF32BE)
+#define is_cr_unicode(cp) \
+    ((cp) == CR_UTF7 || (cp) == CR_UTF8 || \
+     (cp) == CR_UTF16LE || (cp) == CR_UTF16BE || \
+     (cp) == CR_UTF32LE || (cp) == CR_UTF32BE)
+#define is_cr_widechar(cp) \
+    ((cp) == CR_UTF16LE || (cp) == CR_UTF16BE || \
+     (cp) == CR_UTF32LE || (cp) == CR_UTF32BE)
+#define is_cr_multibyte(cp) \
+    ((cp) != CR_UTF16LE && (cp) != CR_UTF16BE && \
+     (cp) != CR_UTF32LE && (cp) != CR_UTF32BE)
 
 /* 内存分片常数 */
 #if     defined(_CR_SYS64_)
