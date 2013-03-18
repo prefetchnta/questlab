@@ -121,8 +121,8 @@ WinMain (
     g_root = NULL;
     if (argc > 0)
     {
-        HANDLE          find;
-        WIN32_FIND_DATA wfda;
+        HANDLE              find;
+        WIN32_FIND_DATAA    wfda;
 
         /* 验证目录是否存在 */
         find = FindFirstFileA(argv[0], &wfda);
