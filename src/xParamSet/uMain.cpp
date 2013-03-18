@@ -29,7 +29,6 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     ansi_t* name;
     sint_t  size;
     int32u  color;
-    fsize_t fsize;
 
     /* 使用系统字体 */
     this->Font->Assign(Screen->MenuFont);
@@ -130,8 +129,9 @@ _qst_text:
     SetWindowLong(edtQEDT_max_size_kb->Handle, GWL_STYLE,
         GetWindowLong(edtQEDT_max_size_kb->Handle, GWL_STYLE) | ES_CENTER);
     edtQEDT_max_size_kb->Invalidate();
-    fsize = ini_key_intxU("qedt::max_size_kb", 20480, ini);
-    edtQEDT_max_size_kb->Text = IntToStr((__int64)fsize);
+    size = ini_key_intxU("qedt::max_size_kb", 20480, ini);
+    if (size < 0) size = 0;
+    edtQEDT_max_size_kb->Text = IntToStr(size);
     ini_closeU(ini);
 
 _func_out:
@@ -152,7 +152,7 @@ void __fastcall TfrmMain::btnApplyClick(TObject *Sender)
     ansi_t*     name;
     sint_t      size;
     int32u      color;
-    AnsiString  font;
+    AnsiString  stemp;
 
     /* 应用按钮 */
 _qst_view2d:
@@ -208,8 +208,8 @@ _qst_text:
     fp = fopen(QST_PATH_CONFIG "QstText.ini", "w");
     if (fp == NULL)
         goto _func_out;
-    font = btnQEDT_font->Caption;
-    name = font.c_str();
+    stemp = btnQEDT_font->Caption;
+    name = stemp.c_str();
     str = str_chrA(name, CR_AC(','));
     if (str == NULL) {
         fprintf(fp, "qedt::font_size = 12\n");
@@ -227,6 +227,7 @@ _qst_text:
         mem_free(str);
     }
     size = StrToIntDef(edtQEDT_max_size_kb->Text, 20480);
+    if (size < 0) size = 0;
     edtQEDT_max_size_kb->Text = IntToStr(size);
     fprintf(fp, "qedt::max_size_kb = %u\n", size);
     fclose(fp);
@@ -265,11 +266,11 @@ void __fastcall TfrmMain::btnQEDT_fontClick(TObject *Sender)
     ansi_t*     str;
     ansi_t*     name;
     sint_t      size;
-    AnsiString  font;
+    AnsiString  stemp;
 
     /* 选择全局字体 */
-    font = btnQEDT_font->Caption;
-    name = font.c_str();
+    stemp = btnQEDT_font->Caption;
+    name = stemp.c_str();
     str = str_chrA(name, CR_AC(','));
     if (str == NULL) {
         size = 12;
@@ -282,9 +283,9 @@ void __fastcall TfrmMain::btnQEDT_fontClick(TObject *Sender)
     dlgFont->Font->Size = size;
     if (!dlgFont->Execute())
         return;
-    font = IntToStr(dlgFont->Font->Size);
+    stemp = IntToStr(dlgFont->Font->Size);
     btnQEDT_font->Caption = dlgFont->Font->Name;
     btnQEDT_font->Caption = btnQEDT_font->Caption + ", ";
-    btnQEDT_font->Caption = btnQEDT_font->Caption + font;
+    btnQEDT_font->Caption = btnQEDT_font->Caption + stemp;
 }
 //---------------------------------------------------------------------------

@@ -65,6 +65,7 @@ qst_load_cfg (
 {
     sINIu*  ini;
     ansi_t* str;
+    sint_t  size;
 
     /* 加载配置文件 */
     TRY_FREE(cfgs->font_face)
@@ -84,7 +85,9 @@ qst_load_cfg (
         cfgs->font_face = utf8_to_local(CR_LOCAL, str);
         mem_free(str);
     }
-    cfgs->max_fsize = ini_key_intxU("qedt::max_size_kb", 20480, ini);
+    size = ini_key_intxU("qedt::max_size_kb", 20480, ini);
+    if (size < 0) size = 0;
+    cfgs->max_fsize = size;
     cfgs->max_fsize *= 1024;
     ini_closeU(ini);
     return;
