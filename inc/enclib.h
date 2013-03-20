@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-13  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-19  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-20  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -190,6 +190,20 @@ CR_API leng_t   gen_code128b (void_t *dst, leng_t dstlen,
 /* Code128-C */
 CR_API leng_t   gen_code128c (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen);
+
+/*****************************************************************************/
+/*                               数据压缩助手                                */
+/*****************************************************************************/
+
+/* RLE 数据匹配 */
+CR_API leng_t   match_rle_1 (const void_t *data, leng_t size,
+                             leng_t max_count);
+CR_API leng_t   match_rle_2 (const void_t *data, leng_t size,
+                             leng_t max_count);
+CR_API leng_t   match_rle_4 (const void_t *data, leng_t size,
+                             leng_t max_count);
+CR_API leng_t   match_rle_x (const void_t *data, leng_t size,
+                             leng_t unit, leng_t max_count);
 
 #endif  /* !__CR_ENCLIB_H__ */
 

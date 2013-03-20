@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-23  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -496,6 +496,45 @@ dato_get_size (
     return (that->__size__);
 }
 #endif  /* _CR_NO_INLINE_ */
+
+/*****************************************************************************/
+/*                             文件存取接口助手                              */
+/*****************************************************************************/
+
+/* 位流输入包装结构 */
+typedef struct
+{
+        /* 输入接口 */
+        iDATIN* datin;
+
+        /* 读入数据的缓存
+           最大支持一次读入4字节 */
+        byte_t  buff[4];
+
+        /* 还剩下的位数 */
+        uint_t  rest_bits;
+
+        /* 一次读入的字节数 */
+        uint_t  cur_size, max_size;
+
+} sBITIN;
+
+/* 建立位流输入结构 */
+CR_API void_t   bitin_init (sBITIN *bitin, iDATIN *datin,
+                            leng_t max_size);
+CR_API void_t   bitin_reset (sBITIN *bitin, leng_t max_size);
+
+/* 高位先读调用 (推挤方式/层叠方式) */
+CR_API bool_t   bitin_hi_push (sBITIN *bitin, uint_t *value, ufast_t count);
+CR_API bool_t   bitin_hi_casc (sBITIN *bitin, uint_t *value, ufast_t count);
+
+/* 低位先读调用 (推挤方式/层叠方式) */
+CR_API bool_t   bitin_lo_push (sBITIN *bitin, uint_t *value, ufast_t count);
+CR_API bool_t   bitin_lo_casc (sBITIN *bitin, uint_t *value, ufast_t count);
+
+/*****************************************************************************/
+/*                             文件存取接口创建                              */
+/*****************************************************************************/
 
 /* 通用文件加载结构 */
 typedef struct

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-25  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -77,6 +77,23 @@ CR_API bool_t   str2datetimeW (sDATETIME *datetime, const wide_t *string,
 /*                               日期时间解析                                */
 /*****************************************************************************/
 
+/* DOS (FAT) */
+CR_API bool_t   date_to_dos (int16u *value, const sDATETIME *date);
+CR_API bool_t   time_to_dos (int16u *value, const sDATETIME *time);
+CR_API bool_t   date_from_dos (sDATETIME *date, int16u value);
+CR_API bool_t   time_from_dos (sDATETIME *time, int16u value);
+
+/* WIN32 (FILETIME) */
+CR_API bool_t   datetime_to_w32 (int64u *value, const sDATETIME *datetime);
+CR_API bool_t   datetime_from_w32 (sDATETIME *datetime, int64u value);
+
+/* UNIX (time64_t) */
+CR_API bool_t   datetime_to_unx (int64u *value, const sDATETIME *datetime);
+CR_API bool_t   datetime_from_unx (sDATETIME *datetime, int64u value);
+
+/* MACOS (longdt) */
+CR_API bool_t   datetime_to_mac (int64u *value, const sDATETIME *datetime);
+CR_API bool_t   datetime_from_mac (sDATETIME *datetime, int64u value);
 
 #endif  /* !__CR_RTCLIB_H__ */
 
