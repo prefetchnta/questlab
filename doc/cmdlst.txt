@@ -58,6 +58,9 @@
     qv2d:cmd:load <插件路径>
         加载一个 QstView2D 用的命令扩展插件
 
+    qv2d:flt:load [脚本路径]
+        加载一个 QstView2D 用的滤镜执行脚本，省略参数表示取消当前滤镜
+
 （4）文件加载命令
 
     ldr:free

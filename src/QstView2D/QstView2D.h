@@ -75,6 +75,10 @@ typedef struct
         HCURSOR     cur_free;   /* 正常光标 */
         HCURSOR     cur_busy;   /* 等待光标 */
 
+        /* 滤镜相关参数 */
+        sXMLu*      flt_scr;    /* 滤镜调用脚本 */
+        xmlcaller_t flt_lst;    /* 滤镜接口列表 */
+
 } sQstView2D;
 
 /* 多线程锁简化宏 */

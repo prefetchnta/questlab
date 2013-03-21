@@ -454,6 +454,10 @@ qst_make_image (
         image_alptran32(rgb);
     }
 
+    /* 调用滤镜脚本 (如果有的话) */
+    if (parm->flt_scr != NULL && parm->flt_lst != NULL)
+        xmlcall_exec(parm->flt_lst, rgb, "", parm->flt_scr);
+
     /* 抽出透明色通道 */
     img = image_get_alpha(rgb);
     if (img == NULL) {

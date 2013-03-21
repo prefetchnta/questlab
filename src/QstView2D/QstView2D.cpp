@@ -22,6 +22,7 @@ CR_API uint_t STDCALL qst_v2d_main (void_t *param);
 
 /* 内部函数的声明 */
 CR_API void_t   qst_load_cfg (sQV2D_conf *cfgs);
+CR_API void_t   qst_load_filter (sQstView2D *parm);
 CR_API void_t   qst_repaint_win (sQstView2D *parm);
 CR_API bool_t   qst_resize_win (sQstView2D *parm);
 CR_API void_t   qst_do_keyboard (sQstView2D *parm);
@@ -187,6 +188,7 @@ WinMain (
     s_wrk_ctx.quit = FALSE;
     s_wrk_ctx.cur_busy = LoadCursor(NULL, IDC_WAIT);
     s_wrk_ctx.cur_free = LoadCursor(NULL, IDC_ARROW);
+    qst_load_filter(&s_wrk_ctx);
     thrd = thread_new(0, qst_v2d_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL) {
         window_kill(s_wrk_ctx.hwnd, curt_app, WIN_CLASS);

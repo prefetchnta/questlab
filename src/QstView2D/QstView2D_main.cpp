@@ -261,6 +261,64 @@ qst_do_mouse (
     _LEAVE_V2D_SINGLE_
 }
 
+/*
+---------------------------------------
+    加载滤镜插件并注册接口
+---------------------------------------
+*/
+static bool_t
+filter_loader (
+  __CR_IN__ void_t*         param,
+  __CR_IN__ const sSEARCHa* finfo
+    )
+{
+    sbin_t      dll;
+    sXC_PORT*   port;
+    sQstView2D* parm;
+
+    /* 过滤文件名和大小 */
+    if (finfo->size <= CR_K2B(2))
+        return (TRUE);
+    if (finfo->name[0] != CR_AC('f') &&
+        finfo->name[0] != CR_AC('x'))
+        return (TRUE);
+
+    /* 加载并获取接口列表 */
+    dll = sbin_loadA(finfo->name);
+    if (dll == NULL)
+        return (TRUE);
+    port = sbin_exportT(dll, "qst_v2d_filter", sXC_PORT*);
+    if (port == NULL) {
+        sbin_unload(dll);
+        return (TRUE);
+    }
+    parm = (sQstView2D*)param;
+    xmlcall_setup(parm->flt_lst, port);
+    return (TRUE);
+}
+
+/*
+=======================================
+    搜索并加载所有滤镜插件
+=======================================
+*/
+CR_API void_t
+qst_load_filter (
+  __CR_IO__ sQstView2D* parm
+    )
+{
+    /* 创建 XMLCALL 对象 */
+    parm->flt_lst = xmlcall_load(NULL, NULL);
+    if (parm->flt_lst == NULL)
+        return;
+
+    const ansi_t*   ext = "*.dll";
+
+    /* 搜索所有滤镜插件并加载 */
+    file_searchA(QST_PATH_PLUGIN, FALSE, TRUE, FALSE,
+                &ext, 1, filter_loader, parm);
+}
+
 /*****************************************************************************/
 /*                               公用命令单元                                */
 /*****************************************************************************/
@@ -639,7 +697,7 @@ qst_v2d_cmd_load (
     sQST_CMD*   list;
 
     /* 获取命令表接口 */
-    list = sbin_exportT(dll, "qst_cmdz", sQST_CMD*);
+    list = sbin_exportT(dll, "qst_v2d_cmdz", sQST_CMD*);
     if (list == NULL) {
         if (!loaded)
             sbin_unload(dll);
@@ -649,6 +707,49 @@ qst_v2d_cmd_load (
     /* 命令加入列表 */
     ctx = (sQstView2D*)parm;
     cmd_exec_addn(ctx->objs, list);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    加载滤镜脚本
+---------------------------------------
+*/
+static bool_t
+qst_v2d_flt_load (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sXMLu*      xml;
+    ansi_t*     str;
+    sQstView2D* ctx;
+
+    /* 释放当前脚本 */
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    if (ctx->flt_scr != NULL) {
+        xml_closeU(ctx->flt_scr);
+        ctx->flt_scr = NULL;
+    }
+    _LEAVE_V2D_SINGLE_
+
+    /* 参数解析 [脚本路径] */
+    if (argc < 2)
+        return (TRUE);
+    str = file_load_as_strA(argv[1]);
+    if (str == NULL)
+        return (FALSE);
+    xml = xml_parseU(str);
+    mem_free(str);
+    if (xml == NULL)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx->flt_scr = xml;
+    qst_make_image(ctx);
+    qst_draw_image(ctx);
+    _LEAVE_V2D_SINGLE_
     return (TRUE);
 }
 
@@ -768,6 +869,7 @@ static const sQST_CMD   s_cmdz[] =
     { "qv2d:app:exit", qst_v2d_app_exit },
     { "qv2d:win:show", qst_v2d_win_show },
     { "qv2d:cmd:load", qst_v2d_cmd_load },
+    { "qv2d:flt:load", qst_v2d_flt_load },
 };
 
 /*
