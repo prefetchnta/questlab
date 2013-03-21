@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-14  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-11-23  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-21  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -189,16 +189,16 @@ typedef struct
         /* 最后一个接口项为 NULL */
         const ansi_t*   name;   /* 调用的名称 */
 
-        /* 指向接口函数的函数指针 (返回0成功) */
-        uint_t  (*func) (void_t*, void_t*, sXNODEu*);
+        /* 指向接口函数的函数指针 */
+        bool_t  (*func) (void_t*, void_t*, sXNODEu*);
 
 } sXC_PORT;
 
 CR_API xmlcaller_t  xmlcall_load (const ansi_t *name, void_t *aparam);
-CR_API xmlcaller_t  xmlcall_setup (const sXC_PORT *port, void_t *aparam);
+CR_API bool_t       xmlcall_setup (xmlcaller_t xmlcall, const sXC_PORT *port);
 CR_API void_t       xmlcall_unload (xmlcaller_t xmlcall);
 CR_API bool_t       xmlcall_exec (xmlcaller_t xmlcall, void_t *uparam,
-                                  const ansi_t *script);
+                                  const ansi_t *script, sXMLu *preload);
 
 /*****************************************************************************/
 /*                             序列化/反序列化                               */
