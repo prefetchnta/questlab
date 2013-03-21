@@ -12,8 +12,6 @@ void __fastcall subWinLoadClick(TObject *Sender);
 void __fastcall subWinSaveClick(TObject *Sender);
 void __fastcall subExitClick(TObject *Sender);
 //---------------------------------------------------------------------------
-void __fastcall subParamClick(TObject *Sender);
-//---------------------------------------------------------------------------
 void __fastcall subOpenQstCmdzClick(TObject *Sender);
 void __fastcall subOpenQstIndexClick(TObject *Sender);
 void __fastcall subOpenQstInfozClick(TObject *Sender);
@@ -32,6 +30,11 @@ void __fastcall subKillQstServClick(TObject *Sender);
 void __fastcall subKillQstTextClick(TObject *Sender);
 void __fastcall subKillQstTreeClick(TObject *Sender);
 void __fastcall subKillQstView2DClick(TObject *Sender);
+//---------------------------------------------------------------------------
+void __fastcall subFilterNoneClick(TObject *Sender);
+void __fastcall subFilterXXXXClick(TObject *Sender);
+//---------------------------------------------------------------------------
+void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subAboutClick(TObject *Sender);
 //---------------------------------------------------------------------------
@@ -67,12 +70,14 @@ void __fastcall TfrmMain::subG2dColorClick(TObject *Sender)
 {
     /* 显示图片色彩通道 */
     qst_send_cmdz("g2d:color");
+    ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subG2dAlphaClick(TObject *Sender)
 {
     /* 显示图片透明通道 */
     qst_send_cmdz("g2d:alpha");
+    ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subWinShowClick(TObject *Sender)
@@ -99,12 +104,6 @@ void __fastcall TfrmMain::subExitClick(TObject *Sender)
 {
     /* 退出整个系统 */
     this->Close();
-}
-//---------------------------------------------------------------------------
-void __fastcall TfrmMain::subParamClick(TObject *Sender)
-{
-    /* 参数菜单项 */
-    misc_call_exe("xParamSet.exe", FALSE, FALSE);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subOpenQstCmdzClick(TObject *Sender)
@@ -223,10 +222,76 @@ void __fastcall TfrmMain::subKillQstView2DClick(TObject *Sender)
     qst_send_cmdz("qv2d:app:exit");
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subFilterNoneClick(TObject *Sender)
+{
+    /* 取消图片滤镜功能 */
+    qst_send_cmdz("qv2d:flt:load");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subFilterXXXXClick(TObject *Sender)
+{
+    int         size;
+    AnsiString  line;
+
+    /* 选择图片滤镜功能 */
+    line = "qv2d:flt:load \"";
+    line += ((TMenuItem*)Sender)->Caption;
+    line += "\"";
+    size = line.Length();
+    for (int idx = 1; idx <= size; idx++) {
+        if (line[idx] == '&') {
+            line.Delete(idx, 1);
+            idx  -= 1;
+            size -= 1;
+        }
+    }
+    qst_send_cmdz(line.c_str());
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subParamClick(TObject *Sender)
+{
+    /* 参数菜单项 */
+    misc_call_exe("xParamSet.exe", FALSE, FALSE);
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subAboutClick(TObject *Sender)
 {
     /* 关于菜单项 */
     frmAbout->ShowModal();
+}
+//---------------------------------------------------------------------------
+/*
+---------------------------------------
+    添加图片滤镜菜单
+---------------------------------------
+*/
+static bool_t
+add_filter_menu (
+  __CR_IN__ void_t*         param,
+  __CR_IN__ const sSEARCHa* finfo
+    )
+{
+    TMenuItem*  item;
+    TMenuItem*  parent;
+
+    /* 过滤文件大小 */
+    if (finfo->size == 0)
+        return (TRUE);
+
+    ansi_t          name[128];
+    static uint_t   name_idx = 0;
+
+    /* 用文件路径做菜单文字 */
+    parent = (TMenuItem*)param;
+    sprintf(name, "subFilter%04u", name_idx++);
+    item = NewItem(finfo->name, 0, false, true,
+            frmMain->subFilterXXXXClick, 0, name);
+    item->RadioItem = true;
+    item->GroupIndex = 1;
+    parent->Add(item);
+    return (TRUE);
 }
 //---------------------------------------------------------------------------
 /*
@@ -263,7 +328,6 @@ unit_find (
     tmp.name = #_name_; \
     tmp.call = this->##_name_##Click; \
     curbead_insertT(&tbl, sMenuEvent, tmp.name, &tmp)
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::SetupMenu(void)
 {
@@ -286,7 +350,6 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subWinLoad);
     QST_MENU_EVENT(subWinSave);
     QST_MENU_EVENT(subExit);
-    QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subOpenQstCmdz);
     QST_MENU_EVENT(subOpenQstIndex);
     QST_MENU_EVENT(subOpenQstInfoz);
@@ -305,11 +368,32 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subKillQstText);
     QST_MENU_EVENT(subKillQstTree);
     QST_MENU_EVENT(subKillQstView2D);
+    QST_MENU_EVENT(subFilterNone);
+    QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subAbout);
 
+    TMenuItem*  temp_menu;
+    TMenuItem*  root_menu;
+
     /* 加载菜单配置文件 */
-    qst_load_menu(mnuMain->Items, &tbl);
+    root_menu = mnuMain->Items;
+    qst_load_menu(root_menu, &tbl);
     curbead_freeT(&tbl, sMenuEvent);
+
+    int             idx;
+    const ansi_t*   ext;
+
+    /* 根据滤镜脚本文件添加菜单 */
+    for (idx = 0; idx < root_menu->Count; idx++) {
+        temp_menu = root_menu->Items[idx];
+        if (temp_menu->Name == "subFilter2D")
+            break;
+    }
+    if (idx < root_menu->Count) {
+        ext = "filter\\*.xmlcall";
+        file_searchA(QST_PATH_SCRIPT, TRUE, TRUE, FALSE,
+                    &ext, 1, add_filter_menu, temp_menu);
+    }
 }
 //---------------------------------------------------------------------------
 #endif

@@ -126,8 +126,7 @@ qst_load_item (
         }
         mem_free(name_a);
         mem_free(text_a);
-        item->AutoCheck  = radio;
-        item->RadioItem  = radio;
+        item->RadioItem = radio;
         item->GroupIndex = (Byte)group;
         menu->Add(item);
 

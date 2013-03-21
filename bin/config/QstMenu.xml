@@ -14,28 +14,31 @@
         <MenuItem name="xxxSepOper3" text="-" />
         <MenuItem name="subExit" text="退出整个系统(&X)" />
     </MenuItem>
-    <MenuItem name="subParam" text="参数(&P)" />
     <MenuItem name="subPartShow" text="打开(&S)">
-        <MenuItem name="subOpenQstCmdz" text="打开 QstCmdz 窗口" />
-        <MenuItem name="subOpenQstIndex" text="打开 QstIndex 窗口" />
-        <MenuItem name="subOpenQstInfoz" text="打开 QstInfoz 窗口" />
-        <MenuItem name="subOpenQstMedia" text="打开 QstMedia 窗口" />
-        <MenuItem name="subOpenQstMount" text="打开 QstMount 窗口" />
-        <MenuItem name="subOpenQstServ" text="打开 QstServ 窗口" />
-        <MenuItem name="subOpenQstText" text="打开 QstText 窗口" />
-        <MenuItem name="subOpenQstTree" text="打开 QstTree 窗口" />
-        <MenuItem name="subOpenQstView2D" text="打开 QstView2D 窗口" />
+        <MenuItem name="subOpenQstCmdz" text="QstCmdz" />
+        <MenuItem name="subOpenQstIndex" text="QstIndex" />
+        <MenuItem name="subOpenQstInfoz" text="QstInfoz" />
+        <MenuItem name="subOpenQstMedia" text="QstMedia" />
+        <MenuItem name="subOpenQstMount" text="QstMount" />
+        <MenuItem name="subOpenQstServ" text="QstServ" />
+        <MenuItem name="subOpenQstText" text="QstText" />
+        <MenuItem name="subOpenQstTree" text="QstTree" />
+        <MenuItem name="subOpenQstView2D" text="QstView2D" />
     </MenuItem>
     <MenuItem name="subPartKill" text="关闭(&K)">
-        <MenuItem name="subKillQstCmdz" text="关闭 QstCmdz 窗口" />
-        <MenuItem name="subKillQstIndex" text="关闭 QstIndex 窗口" />
-        <MenuItem name="subKillQstInfoz" text="关闭 QstInfoz 窗口" />
-        <MenuItem name="subKillQstMedia" text="关闭 QstMedia 窗口" />
-        <MenuItem name="subKillQstMount" text="关闭 QstMount 窗口" />
-        <MenuItem name="subKillQstServ" text="关闭 QstServ 窗口" />
-        <MenuItem name="subKillQstText" text="关闭 QstText 窗口" />
-        <MenuItem name="subKillQstTree" text="关闭 QstTree 窗口" />
-        <MenuItem name="subKillQstView2D" text="关闭 QstView2D 窗口" />
+        <MenuItem name="subKillQstCmdz" text="QstCmdz" />
+        <MenuItem name="subKillQstIndex" text="QstIndex" />
+        <MenuItem name="subKillQstInfoz" text="QstInfoz" />
+        <MenuItem name="subKillQstMedia" text="QstMedia" />
+        <MenuItem name="subKillQstMount" text="QstMount" />
+        <MenuItem name="subKillQstServ" text="QstServ" />
+        <MenuItem name="subKillQstText" text="QstText" />
+        <MenuItem name="subKillQstTree" text="QstTree" />
+        <MenuItem name="subKillQstView2D" text="QstView2D" />
     </MenuItem>
+    <MenuItem name="subFilter2D" text="滤镜(&F)">
+        <MenuItem name="subFilterNone" text="none" radio="1" group="1" checked="1" />
+    </MenuItem>
+    <MenuItem name="subParam" text="参数(&P)" />
     <MenuItem name="subAbout" text="关于(&A)" />
 </QstMenu>
