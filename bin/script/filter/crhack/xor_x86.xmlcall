@@ -1,0 +1,4 @@
+<!-- 逻辑异或滤镜 -->
+<filters>
+    <crhack_xor_x86 mask="0x00FFFFFF" />
+</filters>

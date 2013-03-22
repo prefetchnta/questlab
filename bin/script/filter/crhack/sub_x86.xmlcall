@@ -1,0 +1,4 @@
+<!-- 饱和减法滤镜 -->
+<filters>
+    <crhack_sub_x86 color="0x007F7F7F" />
+</filters>

@@ -1,0 +1,4 @@
+<!-- 逻辑-与滤镜 -->
+<filters>
+    <crhack_and_x86 mask="0xFF0000FF" />
+</filters>
