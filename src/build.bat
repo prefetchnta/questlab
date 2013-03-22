@@ -84,3 +84,7 @@ cd xImpScript
 nmake -fxImpScript.mak
 cd..
 rem =====================
+cd CrHackSet
+nmake -fxCrHackSet.mak
+cd..
+rem =====================
