@@ -294,14 +294,15 @@ filter_loader (
     )
 {
     sbin_t      dll;
+    ansi_t*     name;
     sXC_PORT*   port;
     sQstView2D* parm;
 
     /* 过滤文件名和大小 */
     if (finfo->size <= CR_K2B(2))
         return (TRUE);
-    if (finfo->name[0] != CR_AC('f') &&
-        finfo->name[0] != CR_AC('x'))
+    name = (ansi_t*)finfo->name + str_lenA(QST_PATH_PLUGIN);
+    if (name[0] != CR_AC('f') && name[0] != CR_AC('x'))
         return (TRUE);
 
     /* 加载并获取接口列表 */
