@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-02-10  */
 /*     #######          ###    ###      [BLIT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-07-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-22  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -578,7 +578,7 @@ fill_lrp32_c (
                     oper.addr[2], oper.addr[3], color.c32.bbb,
                     color.c32.ggg, color.c32.rrr, color.c32.lrp)
 #elif   (CR_BLT_MODE == CR_BLT_SUB)
-            CR_BLEND_ADD_MAIN32(oper.addr[0], oper.addr[1],
+            CR_BLEND_SUB_MAIN32(oper.addr[0], oper.addr[1],
                     oper.addr[2], oper.addr[3], color.c32.bbb,
                     color.c32.ggg, color.c32.rrr, color.c32.lrp)
 #elif   (CR_BLT_MODE == CR_BLT_ALP)
