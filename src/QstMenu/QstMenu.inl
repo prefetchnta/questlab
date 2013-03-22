@@ -390,8 +390,8 @@ void __fastcall TfrmMain::SetupMenu(void)
             break;
     }
     if (idx < root_menu->Count) {
-        ext = "filter\\*.xmlcall";
-        file_searchA(QST_PATH_SCRIPT, TRUE, TRUE, FALSE,
+        ext = "*.xmlcall";
+        file_searchA(QST_PATH_SCRIPT "filter", TRUE, TRUE, FALSE,
                     &ext, 1, add_filter_menu, temp_menu);
     }
 }
