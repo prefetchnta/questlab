@@ -185,6 +185,54 @@ fill_lrp_x86 (
 }
 
 /*
+---------------------------------------
+    图片垂直翻转
+---------------------------------------
+*/
+static bool_t
+flip_vertical (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    CR_NOUSE(nouse);
+    CR_NOUSE(param);
+    image_flp((sIMAGE*)image, FALSE);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片 RB 互换
+---------------------------------------
+*/
+static bool_t
+swap_red_blue (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    leng_t  size;
+    byte_t* data;
+    sIMAGE* dest;
+
+    CR_NOUSE(nouse);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt == CR_ARGB8888) {
+        size = dest->size;
+        data = dest->data;
+        for (size /= 4; size != 0; size--) {
+            swap_rb32(data);
+            data += sizeof(int32u);
+        }
+    }
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -198,5 +246,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_add_x86", fill_add_x86 },
     { "crhack_sub_x86", fill_sub_x86 },
     { "crhack_lrp_x86", fill_lrp_x86 },
+    { "flip_vertical", flip_vertical },
+    { "swap_red_blue", swap_red_blue },
     { NULL, NULL },
 };

@@ -1,0 +1,4 @@
+<!-- RB 互换滤镜 -->
+<filters>
+    <swap_red_blue />
+</filters>

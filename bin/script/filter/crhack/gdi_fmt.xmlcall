@@ -1,0 +1,5 @@
+<!-- 转换到 GDI 滤镜 -->
+<filters>
+    <swap_red_blue />
+    <flip_vertical />
+</filters>
