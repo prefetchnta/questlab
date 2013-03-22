@@ -286,7 +286,7 @@ add_filter_menu (
     /* 用文件路径做菜单文字 */
     parent = (TMenuItem*)param;
     sprintf(name, "subFilter%04u", name_idx++);
-    item = NewItem(finfo->name, 0, false, true,
+    item = NewItem(&finfo->name[2], 0, false, true,
             frmMain->subFilterXXXXClick, 0, name);
     item->RadioItem = true;
     item->GroupIndex = 1;

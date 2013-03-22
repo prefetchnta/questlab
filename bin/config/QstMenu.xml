@@ -37,7 +37,8 @@
         <MenuItem name="subKillQstView2D" text="QstView2D" />
     </MenuItem>
     <MenuItem name="subFilter2D" text="滤镜(&F)">
-        <MenuItem name="subFilterNone" text="none" radio="1" group="1" checked="1" />
+        <MenuItem name="subFilterNone" text="disable image filters" radio="1" group="1" checked="1" />
+        <MenuItem name="xxxSepFilter" text="-" />
     </MenuItem>
     <MenuItem name="subParam" text="参数(&P)" />
     <MenuItem name="subAbout" text="关于(&A)" />
