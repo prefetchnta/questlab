@@ -70,6 +70,27 @@ _load_defs:
 
 /*
 =======================================
+    释放当前浏览图片
+=======================================
+*/
+CR_API void_t
+qst_clear (
+  __CR_IO__ sQstView2D* parm
+    )
+{
+    if (parm->fmtz != NULL) {
+        fmtz_free(parm->fmtz);
+        parm->fmtz = NULL;
+    }
+    if (parm->pictz != NULL) {
+        fmtz_free((sFMTZ*)parm->pictz);
+        parm->pictz = NULL;
+        parm->slide = NULL;
+    }
+}
+
+/*
+=======================================
     刷新前台窗口
 =======================================
 */
@@ -799,7 +820,7 @@ qst_v2d_g2d_color (
 
 /*
 ---------------------------------------
-    清除当前显示的图片
+    释放当前浏览图片
 ---------------------------------------
 */
 static bool_t
@@ -816,15 +837,7 @@ qst_v2d_g2d_clear (
 
     _ENTER_V2D_SINGLE_
     ctx = (sQstView2D*)parm;
-    if (ctx->fmtz != NULL) {
-        fmtz_free(ctx->fmtz);
-        ctx->fmtz = NULL;
-    }
-    if (ctx->pictz != NULL) {
-        fmtz_free((sFMTZ*)ctx->pictz);
-        ctx->pictz = NULL;
-        ctx->slide = NULL;
-    }
+    qst_clear(ctx);
     qst_make_image(ctx);
     qst_draw_image(ctx);
     _LEAVE_V2D_SINGLE_

@@ -1,6 +1,25 @@
 
 #include "QstView2D.h"
 
+/* 内部函数的声明 */
+CR_API void_t   qst_clear (sQstView2D *parm);
+
+/*
+---------------------------------------
+    释放信息列表
+---------------------------------------
+*/
+static void_t
+finfo_free (
+  __CR_IN__ void_t* obj
+    )
+{
+    ansi_t**    unit;
+
+    unit = (ansi_t**)obj;
+    mem_free(*unit);
+}
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
@@ -150,22 +169,6 @@ qst_send_image (
 
 /*
 ---------------------------------------
-    释放信息列表
----------------------------------------
-*/
-static void_t
-finfo_free (
-  __CR_IN__ void_t* obj
-    )
-{
-    ansi_t**    unit;
-
-    unit = (ansi_t**)obj;
-    mem_free(*unit);
-}
-
-/*
----------------------------------------
     尝试加载目标数据
 ---------------------------------------
 */
@@ -182,6 +185,9 @@ qst_try_load (
     sARRAY  list;
     ansi_t* info;
     sLOADER copy;
+
+    /* 释放上次加载 */
+    qst_clear(parm);
 
     /* 初始化加载尝试 */
     fmtz = tmpz = NULL;
@@ -496,17 +502,6 @@ qst_render_data (
 {
     /* 置鼠标忙碌状态 */
     QST_SET_CURSOR(parm->hwnd, parm->cur_busy);
-
-    /* 释放前次的生成 */
-    if (parm->fmtz != NULL) {
-        fmtz_free(parm->fmtz);
-        parm->fmtz = NULL;
-    }
-    if (parm->pictz != NULL) {
-        fmtz_free((sFMTZ*)parm->pictz);
-        parm->pictz = NULL;
-        parm->slide = NULL;
-    }
 
     /* 尝试加载文件 */
     qst_try_load(parm, ldrs);
