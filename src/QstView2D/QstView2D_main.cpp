@@ -748,26 +748,23 @@ qst_v2d_flt_load (
     ansi_t*     str;
     sQstView2D* ctx;
 
-    /* 释放当前脚本 */
-    _ENTER_V2D_SINGLE_
-    ctx = (sQstView2D*)parm;
-    if (ctx->flt_scr != NULL) {
-        xml_closeU(ctx->flt_scr);
-        ctx->flt_scr = NULL;
-    }
-    _LEAVE_V2D_SINGLE_
-
     /* 参数解析 [脚本路径] */
-    if (argc < 2)
-        return (TRUE);
-    str = file_load_as_strA(argv[1]);
-    if (str == NULL)
-        return (FALSE);
-    xml = xml_parseU(str);
-    mem_free(str);
-    if (xml == NULL)
-        return (FALSE);
+    ctx = (sQstView2D*)parm;
+    if (argc > 1) {
+        str = file_load_as_strA(argv[1]);
+        if (str == NULL)
+            return (FALSE);
+        xml = xml_parseU(str);
+        mem_free(str);
+        if (xml == NULL)
+            return (FALSE);
+    }
+    else {
+        xml = NULL;
+    }
     _ENTER_V2D_SINGLE_
+    if (ctx->flt_scr != NULL)
+        xml_closeU(ctx->flt_scr);
     ctx->flt_scr = xml;
     qst_make_image(ctx);
     qst_draw_image(ctx);
