@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-23  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-19  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-22  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -275,8 +275,8 @@ typedef struct
 } sSEARCHw;
 
 /* 文件处理回调类型 */
-typedef bool_t  (*search_filesA_t) (void_t*, const sSEARCHa*);
-typedef bool_t  (*search_filesW_t) (void_t*, const sSEARCHw*);
+typedef bool_t  (*search_filesA_t) (void_t*, sSEARCHa*);
+typedef bool_t  (*search_filesW_t) (void_t*, sSEARCHw*);
 
 /* [port] 通用文件属性映射 (需要包含相关 API 头文件)
    依次是: 普通, 系统, 隐藏, 存档, 只读, 加密, 临时, 压缩 */
@@ -292,12 +292,12 @@ typedef bool_t  (*search_filesW_t) (void_t*, const sSEARCHw*);
     #define CR_FILE_ATTR_CMP    FILE_ATTRIBUTE_COMPRESSED
 #endif
 
-CR_API bool_t   file_searchA (const ansi_t *root, bool_t sub, bool_t hide,
-                            bool_t fdir, const ansi_t *list[], uint_t list_num,
+CR_API bool_t   file_searchA (const ansi_t *root, bool_t sub,
+                            bool_t hide, bool_t fdir, const ansi_t *match,
                               search_filesA_t handler, void_t *param);
 
-CR_API bool_t   file_searchW (const wide_t *root, bool_t sub, bool_t hide,
-                            bool_t fdir, const wide_t *list[], uint_t list_num,
+CR_API bool_t   file_searchW (const wide_t *root, bool_t sub,
+                            bool_t hide, bool_t fdir, const wide_t *match,
                               search_filesW_t handler, void_t *param);
 
 /*****************************************************************************/

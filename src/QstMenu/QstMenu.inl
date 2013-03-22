@@ -269,8 +269,8 @@ void __fastcall TfrmMain::subAboutClick(TObject *Sender)
 */
 static bool_t
 add_filter_menu (
-  __CR_IN__ void_t*         param,
-  __CR_IN__ const sSEARCHa* finfo
+  __CR_IN__ void_t*     param,
+  __CR_IN__ sSEARCHa*   finfo
     )
 {
     TMenuItem*  item;
@@ -286,8 +286,8 @@ add_filter_menu (
     /* 用文件路径做菜单文字 */
     parent = (TMenuItem*)param;
     sprintf(name, "subFilter%04u", name_idx++);
-    item = NewItem(&finfo->name[2], 0, false, true,
-            frmMain->subFilterXXXXClick, 0, name);
+    item = NewItem(str_uprA(&finfo->name[2]), 0, false, true,
+                   frmMain->subFilterXXXXClick, 0, name);
     item->RadioItem = true;
     item->GroupIndex = 1;
     parent->Add(item);
@@ -331,6 +331,7 @@ unit_find (
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::SetupMenu(void)
 {
+    int         idx;
     sCURBEAD    tbl;
     sMenuEvent  tmp;
 
@@ -380,9 +381,6 @@ void __fastcall TfrmMain::SetupMenu(void)
     qst_load_menu(root_menu, &tbl);
     curbead_freeT(&tbl, sMenuEvent);
 
-    int             idx;
-    const ansi_t*   ext;
-
     /* 根据滤镜脚本文件添加菜单 */
     for (idx = 0; idx < root_menu->Count; idx++) {
         temp_menu = root_menu->Items[idx];
@@ -390,9 +388,8 @@ void __fastcall TfrmMain::SetupMenu(void)
             break;
     }
     if (idx < root_menu->Count) {
-        ext = "*.xmlcall";
-        file_searchA(QST_PATH_SCRIPT "filter", TRUE, TRUE, FALSE,
-                    &ext, 1, add_filter_menu, temp_menu);
+        file_searchA(QST_PATH_SCRIPT, TRUE, TRUE, FALSE,
+            "filter\\*.xmlcall", add_filter_menu, temp_menu);
     }
 }
 //---------------------------------------------------------------------------

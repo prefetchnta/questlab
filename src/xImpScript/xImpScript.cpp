@@ -48,8 +48,8 @@ struct  sTagOut
 */
 static bool_t
 file_tag_out (
-  __CR_IN__ void_t*         param,
-  __CR_IN__ const sSEARCHa* finfo
+  __CR_IN__ void_t*     param,
+  __CR_IN__ sSEARCHa*   finfo
     )
 {
     ansi_t*     esc;
@@ -144,34 +144,32 @@ do_import_scr (
             continue;
         }
 
-        ansi_t*         utf8;
-        const ansi_t*   filter;
+        ansi_t* utf8;
+        ansi_t* match;
 
         /* 执行一个节点 */
         utf8 = xml_attr_stringU(CR_AS("name"), node);
         if (utf8 != NULL) {
-            filter = utf8_to_local(parm->page, utf8);
+            match = utf8_to_local(parm->page, utf8);
             mem_free(utf8);
-            if (filter == NULL)
+            if (match == NULL)
                 goto _failure;
         }
         else {
-            filter = NULL;
+            match = NULL;
         }
         subx = xml_attr_intxU(CR_AS("sub"),  FALSE, node);
         hide = xml_attr_intxU(CR_AS("hide"), FALSE, node);
         parm->head = xml_attr_intx64U(CR_AS("head"), 0, node);
         parm->tail = xml_attr_intx64U(CR_AS("tail"), 0, node);
         parm->memo = xml_attr_stringU(CR_AS("memo"), node);
-        if (filter == NULL) {
-            filter = "*.*";
-            rett = file_searchA(root, subx, hide, FALSE,
-                        &filter, 1, file_tag_out, parm);
-        }
-        else {
-            rett = file_searchA(root, subx, hide, FALSE,
-                        &filter, 1, file_tag_out, parm);
-            mem_free(filter);
+        if (match == NULL) {
+            rett = file_searchA(root, subx, hide, FALSE, "*.*",
+                                file_tag_out, parm);
+        } else {
+            rett = file_searchA(root, subx, hide, FALSE, match,
+                                file_tag_out, parm);
+            mem_free(match);
         }
         TRY_FREE(parm->memo)
         if (!rett)
@@ -247,14 +245,12 @@ int main (int argc, char *argv[])
     param.page = page;
     if (file == NULL)
     {
-        const ansi_t*   filter = "*.*";
-
         /* 导入所有文件 */
         param.head = 0;
         param.tail = 0;
         param.memo = NULL;
         if (!file_searchA(root, FALSE, FALSE, FALSE,
-                &filter, 1, file_tag_out, &param)) {
+                "*.*", file_tag_out, &param)) {
             fclose(fp);
             file_deleteA(QST_IMPORT_LST);
             return (QST_ERROR);

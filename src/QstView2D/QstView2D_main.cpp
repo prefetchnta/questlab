@@ -289,8 +289,8 @@ qst_do_mouse (
 */
 static bool_t
 filter_loader (
-  __CR_IN__ void_t*         param,
-  __CR_IN__ const sSEARCHa* finfo
+  __CR_IN__ void_t*     param,
+  __CR_IN__ sSEARCHa*   finfo
     )
 {
     sbin_t      dll;
@@ -301,7 +301,7 @@ filter_loader (
     /* 过滤文件名和大小 */
     if (finfo->size <= CR_K2B(2))
         return (TRUE);
-    name = (ansi_t*)finfo->name + str_lenA(QST_PATH_PLUGIN);
+    name = finfo->name + str_lenA(QST_PATH_PLUGIN);
     if (name[0] != CR_AC('f') && name[0] != CR_AC('x'))
         return (TRUE);
 
@@ -334,11 +334,9 @@ qst_load_filter (
     if (parm->flt_lst == NULL)
         return;
 
-    const ansi_t*   ext = "*.dll";
-
     /* 搜索所有滤镜插件并加载 */
     file_searchA(QST_PATH_PLUGIN, FALSE, TRUE, FALSE,
-                &ext, 1, filter_loader, parm);
+                 "*.dll", filter_loader, parm);
 }
 
 /*****************************************************************************/
