@@ -710,7 +710,8 @@ qst_load_file (
 }
 
 /* 文本执行类型列表 */
-#define QST_ACT_QSTBAT      0x00    /* QstBat */
+#define QST_ACT_QSTBATCH    0x00    /* QstBatch */
+#define QST_ACT_FILTER2D    0x01    /* Filter2D */
 
 /*
 =======================================
@@ -728,8 +729,12 @@ qst_file_action (
     switch (item_idx)
     {
         default: return;
-        case QST_ACT_QSTBAT:    /* QstBat */
+        case QST_ACT_QSTBATCH:  /* QstBatch */
             misc_call_exe("QstCmdz.exe " QST_TMP_SCRIPT, FALSE, TRUE);
+            break;
+
+        case QST_ACT_FILTER2D:  /* Filter2D */
+            cmd_shl_send(s_wrk_ctx.netw, "qv2d:flt:load " QST_TMP_SCRIPT);
             break;
     }
 }

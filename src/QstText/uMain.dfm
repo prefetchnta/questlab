@@ -50,9 +50,10 @@ object frmMain: TfrmMain
       ItemHeight = 13
       ItemIndex = 0
       TabOrder = 2
-      Text = ' QstBat'
+      Text = ' QstBatch'
       Items.Strings = (
-        ' QstBat')
+        ' QstBatch'
+        ' Filter2D')
     end
     object btnRefresh: TButton
       Left = 288
