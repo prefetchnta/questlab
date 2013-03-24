@@ -4,6 +4,8 @@ questlab
 │  ├─output
 │  ├─plugin
 │  ├─script
+│  │  ├─filter
+│  │  │  └─crhack
 │  │  └─import
 │  │      └─jpn
 │  │          ├─gainax
@@ -34,6 +36,7 @@ questlab
 │  ├─unrar
 │  └─vtv
 ├─src
+│  ├─CrHackSet
 │  ├─CrH_BLIT
 │  ├─CrH_FMTZ
 │  │  ├─devil
