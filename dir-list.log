@@ -33,8 +33,34 @@ questlab
 │  ├─fi
 │  ├─fmod
 │  ├─gcasdk
+│  ├─opencv
 │  ├─unrar
 │  └─vtv
+├─ocv
+│  ├─opencv
+│  └─opencv2
+│      ├─calib3d
+│      ├─contrib
+│      ├─core
+│      ├─features2d
+│      ├─flann
+│      ├─gpu
+│      │  └─device
+│      │      └─detail
+│      ├─highgui
+│      ├─imgproc
+│      ├─legacy
+│      ├─ml
+│      ├─nonfree
+│      ├─objdetect
+│      ├─ocl
+│      ├─photo
+│      ├─stitching
+│      │  └─detail
+│      ├─ts
+│      ├─video
+│      ├─videostab
+│      └─world
 ├─src
 │  ├─CrHackSet
 │  ├─CrH_BLIT
