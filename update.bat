@@ -1,4 +1,5 @@
 @echo off
+cd bin
 copy C:\WINDOWS\system32\msvcp100.dll
 copy C:\WINDOWS\system32\msvcr100.dll
 copy C:\WINDOWS\system32\rtl60.bpl
