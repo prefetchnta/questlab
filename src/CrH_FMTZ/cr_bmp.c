@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-05-03  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-25  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -250,10 +250,11 @@ load_cr_bmp (
   __CR_IN__ const sLOADER*  param
     )
 {
+    uint_t  ww;
+    sint_t  hh;
     leng_t  read;
     bool_t  flip;
     uint_t  fcrh;
-    uint_t  ww, hh;
     byte_t  pal[1024];
     /* ----------- */
     sBMP_HDR    head;
@@ -313,15 +314,15 @@ load_cr_bmp (
                 "load_cr_bmp()", "image width truncated");
         return (NULL);
     }
-    if (cut_int32_u(&hh, DWORD_LE(head.biHeight))) {
+    if (cut_int32_s(&hh, DWORD_LE(head.biHeight))) {
         err_set(__CR_BMP_C__, head.biHeight,
                 "load_cr_bmp()", "image height truncated");
         return (NULL);
     }
 
     /* 图像是否颠倒 */
-    if ((sint_t)hh < 0) {
-        hh = 0 - hh;
+    if (hh < 0) {
+        hh = -hh;
         flip = FALSE;
     }
     else {

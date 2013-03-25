@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-16  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-01  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-03-25  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -170,6 +170,51 @@ cut_int32_u (
     if (dst != NULL)
        *dst  = tmp;
     return ((tmp == val) ? FALSE : TRUE);
+}
+
+/*
+=======================================
+    32-整数截断检查 (有符号)
+=======================================
+*/
+safe_inline bool_t
+cut_int32_s (
+  __CR_OT__ sint_t* dst,
+  __CR_IN__ int32s  val
+    )
+{
+    sint_t  tmp = (sint_t)val;
+
+    if (dst != NULL)
+       *dst  = tmp;
+    return ((tmp == val) ? FALSE : TRUE);
+}
+
+/*
+=======================================
+    64-32位整数截断检查 (无符号)
+=======================================
+*/
+safe_inline bool_t
+cut_int64_32u (
+  __CR_OT__ int32u* dst,
+  __CR_IN__ int64u  val
+    )
+{
+#ifndef _CR_NO_INT64_
+    int32u  tmp = (int32u)val;
+
+    if (dst != NULL)
+       *dst  = tmp;
+    return ((tmp == val) ? FALSE : TRUE);
+#else
+    int32u  tmp = (int32u)val.lo32;
+
+    if (dst != NULL)
+       *dst  = tmp;
+    return ((val.lo32 == tmp &&
+             val.hi32 == 0L) ? FALSE : TRUE);
+#endif
 }
 
 /*
