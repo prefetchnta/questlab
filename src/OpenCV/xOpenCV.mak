@@ -12,7 +12,7 @@ SRC_LIST=.$(L)xOpenCV.$(P) \
          .$(L)fOpenCV.$(P)
 
 build_all:
-    $(CC) $(CFLAGS) /I "..\..\ocv" /D "_CR_BUILD_DLL_" $(SRC_LIST)
+    $(CC) $(CFLAGS) /I "..\..\ocv" /EHsc /D "_CR_BUILD_DLL_" $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL /LIBPATH:..$(L)..$(L)lib$(L)opencv $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)plugin$(L)
