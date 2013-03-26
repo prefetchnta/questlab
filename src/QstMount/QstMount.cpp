@@ -690,17 +690,13 @@ qst_mnt_ext_load (
     if (argc < 2)
         return (FALSE);
 
-    /* 过滤已经加载的插件 */
-    if (sbin_testA(argv[1]) != NULL)
-        return (TRUE);
-    dll = sbin_loadA(argv[1]);
-    if (dll == NULL)
-        return (FALSE);
-
     sENGINE*        port;
     engine_init_t   func;
 
     /* 获取引擎接口 */
+    dll = sbin_loadA(argv[1]);
+    if (dll == NULL)
+        return (FALSE);
     func = sbin_exportT(dll, "engine_get", engine_init_t);
     if (func == NULL)
         goto _failure;

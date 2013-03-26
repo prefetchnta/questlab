@@ -514,17 +514,13 @@ qst_v2d_ext_load (
     if (argc < 2)
         return (FALSE);
 
-    /* 过滤已经加载的插件 */
-    if (sbin_testA(argv[1]) != NULL)
-        return (TRUE);
-    dll = sbin_loadA(argv[1]);
-    if (dll == NULL)
-        return (FALSE);
-
     sENGINE*        port;
     engine_init_t   func;
 
     /* 获取引擎接口 */
+    dll = sbin_loadA(argv[1]);
+    if (dll == NULL)
+        return (FALSE);
     func = sbin_exportT(dll, "engine_get", engine_init_t);
     if (func == NULL)
         goto _failure;
@@ -699,28 +695,15 @@ qst_v2d_cmd_load (
     if (argc < 2)
         return (FALSE);
 
-    bool_t  loaded;
-
-    /* 一个插件里可能会有多种类型的模块
-       并且这个插件可能已经加载过了 */
-    dll = sbin_testA(argv[1]);
-    if (dll == NULL) {
-        dll = sbin_loadA(argv[1]);
-        if (dll == NULL)
-            return (FALSE);
-        loaded = FALSE;
-    }
-    else {
-        loaded = TRUE;
-    }
-
     sQST_CMD*   list;
 
     /* 获取命令表接口 */
+    dll = sbin_loadA(argv[1]);
+    if (dll == NULL)
+        return (FALSE);
     list = sbin_exportT(dll, "qst_v2d_cmdz", sQST_CMD*);
     if (list == NULL) {
-        if (!loaded)
-            sbin_unload(dll);
+        sbin_unload(dll);
         return (FALSE);
     }
 
