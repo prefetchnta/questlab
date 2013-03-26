@@ -2,6 +2,7 @@
 #include "xOpenCV.h"
 #undef  getT    /* 有冲突 */
 #include "opencv2/opencv.hpp"
+using namespace cv;
 
 /* 外部库引用 */
 #ifndef _CR_NO_PRAGMA_LIB_
@@ -49,6 +50,10 @@ DllMain (
     CR_NOUSE(reserved);
     return (TRUE);
 }
+
+/*****************************************************************************/
+/*                                结构体互换                                 */
+/*****************************************************************************/
 
 /*
 =======================================
@@ -251,4 +256,123 @@ ilab_img2ipl_dup (
     if (!ilab_img2ipl_set(&temp, img))
         return (NULL);
     return (cvCloneImage(&temp));
+}
+
+/*****************************************************************************/
+/*                                摄像头操作                                 */
+/*****************************************************************************/
+
+/*
+=======================================
+    OpenCV 获取摄像头对象
+=======================================
+*/
+CR_API camera_t
+ilab_camera_new (
+  __CR_IN__ uint_t  id
+    )
+{
+    VideoCapture*   cap;
+
+    cap = new VideoCapture ((int)id);
+    if (!cap->isOpened()) {
+        delete cap;
+        return (NULL);
+    }
+    return ((camera_t)cap);
+}
+
+/*
+=======================================
+    OpenCV 释放摄像头对象
+=======================================
+*/
+CR_API void_t
+ilab_camera_del (
+  __CR_IN__ camera_t    cam
+    )
+{
+    VideoCapture*   cap;
+
+    cap = (VideoCapture*)cam;
+    delete cap;
+}
+
+/*
+=======================================
+    OpenCV 获取一帧图像
+=======================================
+*/
+CR_API ipls_t*
+ilab_camera_get (
+  __CR_IN__ camera_t    cam
+    )
+{
+    Mat             img;
+    IplImage        tmp;
+    VideoCapture*   cap;
+
+    cap = (VideoCapture*)cam;
+    *cap >> img;
+    tmp = (IplImage)img;
+    return (cvCloneImage(&tmp));
+}
+
+/*****************************************************************************/
+/*                               图片文件加载                                */
+/*****************************************************************************/
+
+/*
+=======================================
+    从文件加载图片A
+=======================================
+*/
+CR_API ipls_t*
+ilab_load_fileA (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    /* 加载到彩色图片 */
+    return (cvLoadImage(name, CV_LOAD_IMAGE_COLOR));
+}
+
+/*
+=======================================
+    从文件加载图片W
+=======================================
+*/
+CR_API ipls_t*
+ilab_load_fileW (
+  __CR_IN__ const wide_t*   name
+    )
+{
+    ipls_t* img;
+    ansi_t* tmp;
+
+    tmp = utf16_to_local(CR_LOCAL, name);
+    if (tmp == NULL)
+        return (NULL);
+    img = cvLoadImage(tmp, CV_LOAD_IMAGE_COLOR);
+    mem_free(tmp);
+    return (img);
+}
+
+/*
+=======================================
+    从内存加载图片
+=======================================
+*/
+CR_API ipls_t*
+ilab_load_mem (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    CvMat   mat;
+    uint_t  cvt;
+
+    if (cut_size(&cvt, size))
+        return (NULL);
+    mat = cvMat(1, (int)cvt, CV_8UC1, (void_t*)data);
+    return (cvDecodeImage(&mat, CV_LOAD_IMAGE_COLOR));
 }
