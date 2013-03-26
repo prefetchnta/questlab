@@ -42,8 +42,8 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 void __fastcall TfrmMain::FormResize(TObject *Sender)
 {
     /* 区分上下区域 */
-    lstTree->Height = (this->Height - sptTnB->Height) * 800 / 1000;
-    sptTnB->MinSize = lstTree->Height * 200 / 1000;
+    lstTree->Height = (this->Height - sptTnB->Height) * 720 / 1000;
+    sptTnB->MinSize = lstTree->Height * 280 / 1000;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::lstTreeFreeNode(TBaseVirtualTree *Sender,

@@ -6,7 +6,7 @@ object frmMain: TfrmMain
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'QstText'
   Color = clBtnFace
-  Constraints.MinHeight = 600
+  Constraints.MinHeight = 300
   Constraints.MinWidth = 800
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

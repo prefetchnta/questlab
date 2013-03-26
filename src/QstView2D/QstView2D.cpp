@@ -12,7 +12,7 @@
 
 /* 缺省的窗口大小 */
 #define QV2D_DEF_WIDTH  800
-#define QV2D_DEF_HEIGHT 600
+#define QV2D_DEF_HEIGHT 300
 
 /* 全局工作上下文 */
 static sQstView2D   s_wrk_ctx;

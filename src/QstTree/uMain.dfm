@@ -7,7 +7,7 @@ object frmMain: TfrmMain
   Caption = 'QstTree'
   Color = clBtnFace
   Constraints.MinHeight = 600
-  Constraints.MinWidth = 200
+  Constraints.MinWidth = 300
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
