@@ -88,3 +88,7 @@ cd CrHackSet
 nmake -fxCrHackSet.mak
 cd..
 rem =====================
+cd OpenCV
+nmake -fxOpenCV.mak
+cd..
+rem =====================
