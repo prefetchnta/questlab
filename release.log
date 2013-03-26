@@ -9,6 +9,8 @@
     [m] QstView2D.exe
     [+] plugin/xOpenCV.dll
     [m] QstTree.exe
+    [+] opencv_core244.dll
+    [+] opencv_highgui244.dll
 +
 +
 +

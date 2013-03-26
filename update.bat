@@ -21,3 +21,5 @@ copy D:\PRJ\FinalBIN\DevIL\lib\win32_vc08_x86\unicode\DevIL.dll
 copy D:\PRJ\FinalBIN\FMODEx\lib\mswin\fmodex.dll
 copy D:\PRJ\FinalBIN\UnRAR\lib\win32_vc09_x86\unrar.dll
 copy D:\PRJ\FinalBIN\Scintilla\lib\win32_vc10_x86\SciLexer.dll
+copy D:\LIB\opencv\build\x86\vc10\bin\opencv_core244.dll
+copy D:\LIB\opencv\build\x86\vc10\bin\opencv_highgui244.dll
