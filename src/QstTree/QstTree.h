@@ -39,7 +39,8 @@
 #define QST_ICON_DIR    1   /* 目录项目 */
 #define QST_ICON_PAK    2   /* 打包文件 */
 #define QST_ICON_MEM    3   /* 包内文件 */
-#define QST_ICON_MAX    3   /* 最大编号 */
+#define QST_ICON_CAM    4   /* 设备：摄像头 */
+#define QST_ICON_MAX    4   /* 最大编号 */
 
 /* 文件属性值 */
 #define QST_FILE_CMP    0x00000001UL    /* 压缩 */
