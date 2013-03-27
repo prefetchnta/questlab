@@ -150,6 +150,10 @@ static const iPICTURE_vtbl _rom_ s_pics_vtbl =
     iPIC_OCV_release, iPIC_OCV_getMore, iPIC_OCV_get,
 };
 
+/* 摄像头设备名 */
+#define OCV_DEV_CAMA    CR_AS(":opencv:camera")
+#define OCV_DEV_CAMW    CR_WS(":opencv:camera")
+
 /*
 =======================================
     OpenCV 摄像头读取
@@ -171,15 +175,15 @@ load_ocv_cam (
     switch (param->type)
     {
         case CR_LDR_ANSI:
-            len = str_lenA(CR_AS(":dev/ocv/camera"));
-            if (chr_cmpA(param->name.ansi, CR_AS(":dev/ocv/camera"), len) != 0)
+            len = str_lenA(OCV_DEV_CAMA);
+            if (chr_cmpA(param->name.ansi, OCV_DEV_CAMA, len) != 0)
                 return (NULL);
             cid = str2intxA(param->name.ansi + len);
             break;
 
         case CR_LDR_WIDE:
-            len = str_lenW(CR_WS(":dev/ocv/camera"));
-            if (chr_cmpW(param->name.wide, CR_WS(":dev/ocv/camera"), len) != 0)
+            len = str_lenW(OCV_DEV_CAMW);
+            if (chr_cmpW(param->name.wide, OCV_DEV_CAMW, len) != 0)
                 return (NULL);
             cid = str2intxW(param->name.wide + len);
             break;
@@ -198,7 +202,7 @@ load_ocv_cam (
         return (NULL);
     }
     port->m_cam = ocam;
-    port->pics.__count__ = (int32u)-1;
+    port->pics.__count__ = 256;
     port->pics.__vptr__ = &s_pics_vtbl;
 
     /* 返回读取的文件数据 */
