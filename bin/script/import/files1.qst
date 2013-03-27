@@ -4,6 +4,6 @@
 $call xSelectDir.exe
 $continue?
 $exec script/import/reset.qst
-$exec script/import/allview.ldr
+$exec script/import/files0.ldr
 $call xImpScript.exe
 dir:load

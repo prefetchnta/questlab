@@ -4,7 +4,7 @@
 $call xSelectDir.exe
 $continue?
 $exec script/import/reset.qst
-$exec script/import/allview.ldr
+$exec script/import/files0.ldr
 $fopen output/__imp__.xml
 <ImpScript>
     <Import name="*.*" sub="1" />
