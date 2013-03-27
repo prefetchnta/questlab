@@ -55,4 +55,12 @@ CR_API ipls_t*  ilab_load_fileA (const ansi_t *name);
 CR_API ipls_t*  ilab_load_fileW (const wide_t *name);
 CR_API ipls_t*  ilab_load_mem (const void_t *data, leng_t size);
 
+/*****************************************************************************/
+/*                                格式库部分                                 */
+/*****************************************************************************/
+
+CR_API sENGINE*     engine_opencv (void_t);
+CR_API sFMT_PRT*    load_ocv_cam (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PIC*    load_ocv_pic (iDATIN *datin, const sLOADER *param);
+
 #endif  /* !__QL_XOPENCV_H__ */
