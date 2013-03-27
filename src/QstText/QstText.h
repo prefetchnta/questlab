@@ -51,6 +51,7 @@ typedef struct
         void_t*     form;   /* 窗口对象 */
         crsc_t      lock;   /* 同步的锁 */
         sARRAY      extz;   /* 插件列表 */
+        uint_t      defs;   /* 默认编码 */
         socket_t    netw;   /* 网络连接 */
         sQEDT_conf  cfgs;   /* 配置参数 */
 

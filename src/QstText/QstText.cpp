@@ -908,6 +908,7 @@ qst_edt_ext_free (
     ctx->count = 0;
     SAFE_FREE(ctx->filter)
     SAFE_FREE(ctx->flists)
+    ctx->defs = CR_LOCAL;
     return (TRUE);
 }
 
@@ -997,7 +998,9 @@ qst_edt_ldr_file (
         set_ldrA(&ldr, argv[1], argv[6], head, tail);
     else
         set_ldrA(&ldr, argv[1], "", head, tail);
-    if (page == CR_LOCAL)
+    if (ctx->defs != CR_LOCAL)
+        page = ctx->defs;
+    else if (page == CR_LOCAL)
         page = get_sys_codepage();
     ldr.page = page;
 
@@ -1057,7 +1060,9 @@ qst_edt_ldr_smem (
         set_ldrM(&ldr, data, size, argv[7], head, tail);
     else
         set_ldrM(&ldr, data, size, "", head, tail);
-    if (page == CR_LOCAL)
+    if (ctx->defs != CR_LOCAL)
+        page = ctx->defs;
+    else if (page == CR_LOCAL)
         page = get_sys_codepage();
     ldr.page = page;
 
@@ -1086,6 +1091,25 @@ qst_edt_edt_clear (
     CR_NOUSE(argc);
     CR_NOUSE(argv);
     qst_clear((sQstText*)parm);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    设置默认文本编码
+---------------------------------------
+*/
+static bool_t
+qst_edt_edt_cpage (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <编码> */
+    if (argc < 2)
+        return (FALSE);
+    ((sQstText*)parm)->defs = str2intxA(argv[1]);
     return (TRUE);
 }
 
@@ -1158,6 +1182,7 @@ static const sQST_CMD   s_cmdz[] =
 
     /***** 编辑控制命令 *****/
     { "edt:clear",  qst_edt_edt_clear  },
+    { "edt:cpage",  qst_edt_edt_cpage  },
     { "edt:filter", qst_edt_edt_filter },
 
     /***** 文本插件命令 *****/
