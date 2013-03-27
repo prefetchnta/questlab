@@ -936,6 +936,7 @@ qst_v2d_main (
     }
     if (log != NULL)
         timer_del(log);
+    qst_clear(ctx);
     cmd_exec_free(obj);
     return (QST_OKAY);
 }
