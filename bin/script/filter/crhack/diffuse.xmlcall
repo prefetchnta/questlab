@@ -1,0 +1,4 @@
+<!-- 颜色扩散滤镜 -->
+<filters>
+    <crhack_diffuse min_x="-10" max_x="10" min_y="-10" max_y="10" />
+</filters>

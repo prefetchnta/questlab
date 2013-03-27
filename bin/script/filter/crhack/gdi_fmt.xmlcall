@@ -1,5 +1,5 @@
-<!-- 转换到 GDI 滤镜 -->
+<!-- GDI 转换滤镜 -->
 <filters>
-    <swap_red_blue />
-    <flip_vertical />
+    <crhack_swap_rb />
+    <crhack_flip_vv />
 </filters>

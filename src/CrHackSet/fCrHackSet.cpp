@@ -232,6 +232,139 @@ swap_red_blue (
     return (TRUE);
 }
 
+/* 颜色扩散细分 */
+#define DIFFUSE_MAX     256
+
+/*
+---------------------------------------
+    图片颜色扩散
+---------------------------------------
+*/
+static bool_t
+image_diffuse (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    int32u* pos1;
+    int32u* pos2;
+    sIMAGE* dest;
+    sint_t  minx, miny;
+    sint_t  maxx, maxy;
+    sint_t  dx, dy, ww, hh;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    minx = (sint_t)xml_attr_intxU("min_x", (uint_t)-5, param);
+    maxx = (sint_t)xml_attr_intxU("max_x", (uint_t)+5, param);
+    miny = (sint_t)xml_attr_intxU("min_y", (uint_t)-5, param);
+    maxy = (sint_t)xml_attr_intxU("max_y", (uint_t)+5, param);
+    maxx -= minx;
+    maxy -= miny;
+    rand_seed(timer_get32());
+    ww = (sint_t)dest->position.ww;
+    hh = (sint_t)dest->position.hh;
+    for (sint_t yy = 0; yy < hh; yy++)
+    for (sint_t xx = 0; xx < ww; xx++)
+    {
+        dx = rand_getx(DIFFUSE_MAX);
+        dy = rand_getx(DIFFUSE_MAX);
+        dx = (dx * maxx) / DIFFUSE_MAX + minx;
+        dy = (dy * maxy) / DIFFUSE_MAX + miny;
+        pos1 = pixel_addr4(dest, xx, yy);
+        if (xx + dx < 0 || xx + dx >= ww)
+            dx = 0;
+        if (yy + dy < 0 || yy + dy >= hh)
+            dy = 0;
+        pos2 = pixel_addr4(dest, xx + dx, yy + dy);
+        pos2[0] = pos1[0];
+    }
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片灰度转换
+---------------------------------------
+*/
+static bool_t
+image_graying (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  ww, hh, ii;
+
+    CR_NOUSE(nouse);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+            ptr[0] = (byte_t)ii;
+            ptr[1] = (byte_t)ii;
+            ptr[2] = (byte_t)ii;
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片二值转换
+---------------------------------------
+*/
+static bool_t
+image_binaryz (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  gate;
+    uint_t  ww, hh, ii;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    gate = xml_attr_intxU("gate", 127, param);
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+            ii = (ii > gate) ? 255 : 0;
+            ptr[0] = (byte_t)ii;
+            ptr[1] = (byte_t)ii;
+            ptr[2] = (byte_t)ii;
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    return (TRUE);
+}
+
 /*
 =======================================
     滤镜接口导出表
@@ -246,7 +379,10 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_add_x86", fill_add_x86 },
     { "crhack_sub_x86", fill_sub_x86 },
     { "crhack_lrp_x86", fill_lrp_x86 },
-    { "flip_vertical", flip_vertical },
-    { "swap_red_blue", swap_red_blue },
+    { "crhack_flip_vv", flip_vertical },
+    { "crhack_swap_rb", swap_red_blue },
+    { "crhack_diffuse", image_diffuse },
+    { "crhack_graying", image_graying },
+    { "crhack_binaryz", image_binaryz },
     { NULL, NULL },
 };

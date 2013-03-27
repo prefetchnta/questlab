@@ -1,4 +1,4 @@
 <!-- RB 互换滤镜 -->
 <filters>
-    <swap_red_blue />
+    <crhack_swap_rb />
 </filters>

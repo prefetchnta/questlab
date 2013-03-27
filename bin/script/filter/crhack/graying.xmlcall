@@ -1,0 +1,4 @@
+<!-- 灰度转换滤镜 -->
+<filters>
+    <crhack_graying />
+</filters>
