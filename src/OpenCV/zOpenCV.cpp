@@ -151,8 +151,8 @@ static const iPICTURE_vtbl _rom_ s_pics_vtbl =
 };
 
 /* 摄像头设备名 */
-#define OCV_DEV_CAMA    CR_AS(":opencv:camera")
-#define OCV_DEV_CAMW    CR_WS(":opencv:camera")
+#define OCV_DEV_CAMA    CR_AS(":computer/camera")
+#define OCV_DEV_CAMW    CR_WS(":computer/camera")
 
 /*
 =======================================
