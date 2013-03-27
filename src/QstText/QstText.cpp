@@ -903,12 +903,6 @@ qst_edt_ext_free (
     ctx = (sQstText*)parm;
     array_freeT(&ctx->extz, sENGINE*);
     ctx->extz.free = plugin_free;
-
-    /* 清匹配列表 */
-    ctx->count = 0;
-    SAFE_FREE(ctx->filter)
-    SAFE_FREE(ctx->flists)
-    ctx->defs = CR_LOCAL;
     return (TRUE);
 }
 

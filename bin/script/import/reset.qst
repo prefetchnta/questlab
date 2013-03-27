@@ -4,6 +4,8 @@
 ldr:free
 dir:clear
 app:reset
+edt:filter
+edt:cpage 0
 $del output/__dir__.xml
 $del output/__imp__.xml
 ext:free
