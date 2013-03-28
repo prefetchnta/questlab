@@ -6,7 +6,6 @@ using namespace cv;
 
 /* 外部库引用 */
 #ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "CrH_BLIT_msc.lib")
     #pragma comment (lib, "opencv_calib3d244.lib")
     #pragma comment (lib, "opencv_contrib244.lib")
     #pragma comment (lib, "opencv_core244.lib")

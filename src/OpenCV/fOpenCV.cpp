@@ -33,7 +33,7 @@ gaussian_blur (
     sigma_x = xml_attr_fp64U("sigma_x", 0, param);
     sigma_y = xml_attr_fp64U("sigma_y", 0, param);
 
-    Mat outp, inpt(&draw, false);
+    Mat inpt(&draw, false);
 
     /* 卷积核必须为奇数 */
     if (ksize_x < 3)
@@ -44,21 +44,7 @@ gaussian_blur (
         ksize_y = 3;
     else if (ksize_y % 2 == 0)
         ksize_y += 1;
-    GaussianBlur(inpt, outp, Size(ksize_x, ksize_y), sigma_x, sigma_y);
-
-    sBLIT       blt;
-    sIMAGE      srce;
-    IplImage    last;
-
-    /* 复制回原图片结构 */
-    last = (IplImage)outp;
-    if (!ilab_ipl2img_set(&srce, &last))
-        return (TRUE);
-    blt.dx = blt.dy = 0;
-    blt.sx = blt.sy = 0;
-    blt.sw = srce.position.ww;
-    blt.sh = srce.position.hh;
-    blit_set_c(dest, &srce, &blt, NULL);
+    GaussianBlur(inpt, inpt, Size(ksize_x, ksize_y), sigma_x, sigma_y);
     return (TRUE);
 }
 
@@ -100,7 +86,7 @@ hough_circles (
 
     size_t  idx, count;
     vector<Vec3f>   result;
-    Mat outp, inpt(&draw, true);
+    Mat outp, inpt(&draw, false);
 
     /* 变换需要8位单通道的图片 */
     cvtColor(inpt, outp, CV_BGR2GRAY);
@@ -116,20 +102,6 @@ hough_circles (
         circle(inpt, center,      3, Scalar(0, 255, 0, 255), -1, 8, 0);
         circle(inpt, center, radius, Scalar(0, 0, 255, 255),  3, 8, 0);
     }
-
-    sBLIT       blt;
-    sIMAGE      srce;
-    IplImage    last;
-
-    /* 复制回原图片结构 */
-    last = (IplImage)inpt;
-    if (!ilab_ipl2img_set(&srce, &last))
-        return (TRUE);
-    blt.dx = blt.dy = 0;
-    blt.sx = blt.sy = 0;
-    blt.sw = srce.position.ww;
-    blt.sh = srce.position.hh;
-    blit_set_c(dest, &srce, &blt, NULL);
     return (TRUE);
 }
 

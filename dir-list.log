@@ -5,7 +5,8 @@ questlab
 │  ├─plugin
 │  ├─script
 │  │  ├─filter
-│  │  │  └─crhack
+│  │  │  ├─crhack
+│  │  │  └─opencv
 │  │  └─import
 │  │      └─jpn
 │  │          ├─gainax
