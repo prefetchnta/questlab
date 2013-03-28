@@ -1,6 +1,8 @@
 
 #include "../QstLibs/QstLibs.h"
 
+#include <math.h>
+
 /*
 ---------------------------------------
     图片逻辑-与
@@ -367,62 +369,46 @@ image_binaryz (
 
 /*
 ---------------------------------------
-    图片卷积运算 (3 x 3)
+    卷积运算 (3 x 3)
 ---------------------------------------
 */
-static bool_t
-image_conv3x3 (
-  __CR_UU__ void_t*     nouse,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
+static byte_t*
+conv3x3_main (
+  __CR_IN__ const sIMAGE*   src,
+  __CR_IN__ const sint_t    mat[9]
     )
 {
-    ansi_t* str;
     byte_t* ptr;
-    byte_t* temp;
+    byte_t* dst;
     byte_t* prev;
     byte_t* curt;
     byte_t* next;
-    sIMAGE* dest;
     sint_t  csum;
-    sint_t  mat[9];
     uint_t  xx, yy;
     uint_t  ww, hh;
 
-    CR_NOUSE(nouse);
-    dest = (sIMAGE*)image;
-    if (dest->fmt != CR_ARGB8888)
-        return (TRUE);
-    ww = dest->position.ww;
-    hh = dest->position.hh;
+    /* 不处理边框 */
+    ww = src->position.ww;
+    hh = src->position.hh;
     if (ww < 3 || hh < 3)
-        return (TRUE);
+        return (NULL);
     ww -= 2;
     hh -= 2;
-    temp = (byte_t*)mem_malloc(ww * hh * 4);
-    if (temp == NULL)
-        return (TRUE);
-    ptr = temp;
+    dst = (byte_t*)mem_malloc(ww * hh * 4);
+    if (dst == NULL)
+        return (NULL);
+    ptr = dst;
 
-    /* 输入参数 */
-    str = xml_attr_bufferU("mat", param);
-    if (str == NULL ||
-        str2lstA((uint_t*)mat, 9, str, "[],") == NULL) {
-        for (xx = 0; xx < 9; xx++)
-            mat[xx] = 1;
-        csum = 9;
-    }
-    else {
-        for (csum = mat[0], xx = 1; xx < 9; xx++)
-            csum += mat[xx];
-        if (csum <= 0)
-            csum = 1;
-    }
+    /* 求矩阵的和 */
+    for (csum = mat[0], xx = 1; xx < 9; xx++)
+        csum += mat[xx];
+    if (csum <= 0)
+        csum = 1;
 
-    /* 计算卷积 */
-    prev = dest->data + 4;
-    curt = prev + dest->bpl;
-    next = curt + dest->bpl;
+    /* 开始计算卷积 */
+    prev = src->data + 4;
+    curt = prev + src->bpl;
+    next = curt + src->bpl;
     for (yy = 0; yy < hh; yy++)
     {
         for (xx = 0; xx < ww; xx++)
@@ -492,20 +478,173 @@ image_conv3x3 (
             /* 中心-A */
             *ptr++ = curt[xx * 4 + 3];
         }
-        prev += dest->bpl;
-        curt += dest->bpl;
-        next += dest->bpl;
+        prev += src->bpl;
+        curt += src->bpl;
+        next += src->bpl;
+    }
+    return (dst);
+}
+
+/*
+---------------------------------------
+    回拷图片
+---------------------------------------
+*/
+static void_t
+conv3x3_back (
+  __CR_IN__ const sIMAGE*   dst,
+  __CR_IN__ const byte_t*   src
+    )
+{
+    uint_t  hh;
+    leng_t  bpl;
+    byte_t* ptr;
+
+    hh = dst->position.hh - 2;
+    bpl = (dst->position.ww - 2) * 4;
+    ptr = dst->data + dst->bpl + 4;
+    for (; hh != 0; hh--) {
+        mem_cpy(ptr, src, bpl);
+        src += bpl;
+        ptr += dst->bpl;
+    }
+}
+
+/*
+---------------------------------------
+    图片卷积运算 (3 x 3)
+---------------------------------------
+*/
+static bool_t
+image_conv3x3 (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    uint_t  idx;
+    ansi_t* str;
+    byte_t* temp;
+    sIMAGE* dest;
+    sint_t  mat[9];
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    str = xml_attr_bufferU("mat", param);
+    if (str == NULL ||
+        str2lstA((uint_t*)mat, 9, str, "[],") == NULL) {
+        for (idx = 0; idx < 9; idx++)
+            mat[idx] = 1;
+    }
+    temp = conv3x3_main(dest, mat);
+    if (temp == NULL)
+        return (TRUE);
+    conv3x3_back(dest, temp);
+    mem_free(temp);
+    return (TRUE);
+}
+
+/* SOBEL 的两个卷积矩阵 */
+static const sint_t s_sobel_matx[9] =
+{
+    -1,  0,  1,
+    -2,  0,  2,
+    -1,  0,  1,
+};
+static const sint_t s_sobel_maty[9] =
+{
+     1,  2,  1,
+     0,  0,  0,
+    -1, -2, -1,
+};
+
+/*
+---------------------------------------
+    SOBEL 边缘检测
+---------------------------------------
+*/
+static bool_t
+img_edge_sobel (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* gx;
+    byte_t* gy;
+    leng_t  idx;
+    leng_t  size;
+    sIMAGE* dest;
+
+    CR_NOUSE(nouse);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    gx = conv3x3_main(dest, s_sobel_matx);
+    if (gx == NULL)
+        return (TRUE);
+    gy = conv3x3_main(dest, s_sobel_maty);
+    if (gy == NULL) {
+        mem_free(gx);
+        return (TRUE);
     }
 
-    /* 回拷图片 */
-    ww *= sizeof(int32u);
-    curt = dest->data + dest->bpl + 4;
-    for (ptr = temp, yy = 0; yy < hh; yy++) {
-        mem_cpy(curt, ptr, ww);
-        ptr  += ww;
-        curt += dest->bpl;
+    /* 计算梯度图 */
+    size  = dest->position.ww - 2;
+    size *= dest->position.hh - 2;
+    size *= sizeof(int32u);
+    for (idx = 0; idx < size; idx += 4)
+    {
+        sint_t  tx, ty;
+
+        /* 分量-B */
+        tx = (sint_t)gx[idx + 0];
+        ty = (sint_t)gy[idx + 0];
+        tx *= tx;
+        ty *= ty;
+        ty += tx;
+        tx = (sint_t)(sqrtf((float)ty) + 0.5f);
+        if (tx < 0)
+            tx = 0;
+        else
+        if (tx > 255)
+            tx = 255;
+        gx[idx + 0] = (byte_t)tx;
+
+        /* 分量-G */
+        tx = (sint_t)gx[idx + 1];
+        ty = (sint_t)gy[idx + 1];
+        tx *= tx;
+        ty *= ty;
+        ty += tx;
+        tx = (sint_t)(sqrtf((float)ty) + 0.5f);
+        if (tx < 0)
+            tx = 0;
+        else
+        if (tx > 255)
+            tx = 255;
+        gx[idx + 1] = (byte_t)tx;
+
+        /* 分量-R */
+        tx = (sint_t)gx[idx + 2];
+        ty = (sint_t)gy[idx + 2];
+        tx *= tx;
+        ty *= ty;
+        ty += tx;
+        tx = (sint_t)(sqrtf((float)ty) + 0.5f);
+        if (tx < 0)
+            tx = 0;
+        else
+        if (tx > 255)
+            tx = 255;
+        gx[idx + 2] = (byte_t)tx;
     }
-    mem_free(temp);
+    conv3x3_back(dest, gx);
+    mem_free(gy);
+    mem_free(gx);
     return (TRUE);
 }
 
@@ -529,5 +668,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_graying", image_graying },
     { "crhack_binaryz", image_binaryz },
     { "crhack_conv3x3", image_conv3x3 },
+    { "crhack_sobel", img_edge_sobel },
     { NULL, NULL },
 };

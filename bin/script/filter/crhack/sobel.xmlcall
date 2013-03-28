@@ -1,0 +1,4 @@
+<!-- SOBEL 边缘检测滤镜 -->
+<filters>
+    <crhack_sobel />
+</filters>
