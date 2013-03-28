@@ -366,6 +366,150 @@ image_binaryz (
 }
 
 /*
+---------------------------------------
+    图片卷积运算 (3 x 3)
+---------------------------------------
+*/
+static bool_t
+image_conv3x3 (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    ansi_t* str;
+    byte_t* ptr;
+    byte_t* temp;
+    byte_t* prev;
+    byte_t* curt;
+    byte_t* next;
+    sIMAGE* dest;
+    sint_t  csum;
+    sint_t  mat[9];
+    uint_t  xx, yy;
+    uint_t  ww, hh;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    if (ww < 3 || hh < 3)
+        return (TRUE);
+    ww -= 2;
+    hh -= 2;
+    temp = (byte_t*)mem_malloc(ww * hh * 4);
+    if (temp == NULL)
+        return (TRUE);
+    ptr = temp;
+
+    /* 输入参数 */
+    str = xml_attr_bufferU("mat", param);
+    if (str == NULL ||
+        str2lstA((uint_t*)mat, 9, str, "[],") == NULL) {
+        for (xx = 0; xx < 9; xx++)
+            mat[xx] = 1;
+        csum = 9;
+    }
+    else {
+        for (csum = mat[0], xx = 1; xx < 9; xx++)
+            csum += mat[xx];
+        if (csum <= 0)
+            csum = 1;
+    }
+
+    /* 计算卷积 */
+    prev = dest->data + 4;
+    curt = prev + dest->bpl;
+    next = curt + dest->bpl;
+    for (yy = 0; yy < hh; yy++)
+    {
+        for (xx = 0; xx < ww; xx++)
+        {
+            sint_t  bb, gg, rr;
+
+            /* 第一排 */
+            bb  = (sint_t)prev[(xx-1)*4+0] * mat[0];
+            gg  = (sint_t)prev[(xx-1)*4+1] * mat[0];
+            rr  = (sint_t)prev[(xx-1)*4+2] * mat[0];
+            bb += (sint_t)prev[(xx+0)*4+0] * mat[1];
+            gg += (sint_t)prev[(xx+0)*4+1] * mat[1];
+            rr += (sint_t)prev[(xx+0)*4+2] * mat[1];
+            bb += (sint_t)prev[(xx+1)*4+0] * mat[2];
+            gg += (sint_t)prev[(xx+1)*4+1] * mat[2];
+            rr += (sint_t)prev[(xx+1)*4+2] * mat[2];
+
+            /* 第二排 */
+            bb += (sint_t)curt[(xx-1)*4+0] * mat[3];
+            gg += (sint_t)curt[(xx-1)*4+1] * mat[3];
+            rr += (sint_t)curt[(xx-1)*4+2] * mat[3];
+            bb += (sint_t)curt[(xx+0)*4+0] * mat[4];
+            gg += (sint_t)curt[(xx+0)*4+1] * mat[4];
+            rr += (sint_t)curt[(xx+0)*4+2] * mat[4];
+            bb += (sint_t)curt[(xx+1)*4+0] * mat[5];
+            gg += (sint_t)curt[(xx+1)*4+1] * mat[5];
+            rr += (sint_t)curt[(xx+1)*4+2] * mat[5];
+
+            /* 第三排 */
+            bb += (sint_t)next[(xx-1)*4+0] * mat[6];
+            gg += (sint_t)next[(xx-1)*4+1] * mat[6];
+            rr += (sint_t)next[(xx-1)*4+2] * mat[6];
+            bb += (sint_t)next[(xx+0)*4+0] * mat[7];
+            gg += (sint_t)next[(xx+0)*4+1] * mat[7];
+            rr += (sint_t)next[(xx+0)*4+2] * mat[7];
+            bb += (sint_t)next[(xx+1)*4+0] * mat[8];
+            gg += (sint_t)next[(xx+1)*4+1] * mat[8];
+            rr += (sint_t)next[(xx+1)*4+2] * mat[8];
+
+            /* 中心-B */
+            bb /= csum;
+            if (bb < 0)
+                bb = 0;
+            else
+            if (bb > 255)
+                bb = 255;
+            *ptr++ = (byte_t)bb;
+
+            /* 中心-G */
+            gg /= csum;
+            if (gg < 0)
+                gg = 0;
+            else
+            if (gg > 255)
+                gg = 255;
+            *ptr++ = (byte_t)gg;
+
+            /* 中心-R */
+            rr /= csum;
+            if (rr < 0)
+                rr = 0;
+            else
+            if (rr > 255)
+                rr = 255;
+            *ptr++ = (byte_t)rr;
+
+            /* 中心-A */
+            *ptr++ = curt[xx * 4 + 3];
+        }
+        prev += dest->bpl;
+        curt += dest->bpl;
+        next += dest->bpl;
+    }
+
+    /* 回拷图片 */
+    ww *= sizeof(int32u);
+    curt = dest->data + dest->bpl + 4;
+    for (ptr = temp, yy = 0; yy < hh; yy++) {
+        mem_cpy(curt, ptr, ww);
+        ptr  += ww;
+        curt += dest->bpl;
+    }
+    mem_free(temp);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -384,5 +528,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_diffuse", image_diffuse },
     { "crhack_graying", image_graying },
     { "crhack_binaryz", image_binaryz },
+    { "crhack_conv3x3", image_conv3x3 },
     { NULL, NULL },
 };
