@@ -1,6 +1,13 @@
 +
 +
 +
+    SINCE 2013-03-28
+    ~~~~~~~~~~~~~~~~
+    [+] plugin/xOpenCV.dll
+    [m] plugin/xCrHackSet.dll
++
++
++
     SINCE 2013-03-24
     ~~~~~~~~~~~~~~~~
     [m] QstMedia.exe
@@ -11,6 +18,7 @@
     [m] QstTree.exe
     [+] opencv_core244.dll
     [+] opencv_highgui244.dll
+    [+] opencv_imgproc244.dll
     [m] plugin/xCrHackSet.dll
 +
 +
