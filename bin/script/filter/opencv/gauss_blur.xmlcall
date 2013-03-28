@@ -1,0 +1,4 @@
+<!-- 高斯模糊滤镜 -->
+<filters>
+    <opencv_gauss_blur ksize_x="9" ksize_y="9" sigma_x="0" sigma_y="0" />
+</filters>
