@@ -1,0 +1,7 @@
+<!-- 墨水效果滤镜 -->
+<filters>
+    <crhack_graying />
+    <opencv_gauss_blur />
+    <crhack_sobel />
+    <crhack_xor_x86 mask="0x00FFFFFF" />
+</filters>
