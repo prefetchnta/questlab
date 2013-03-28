@@ -1,5 +1,8 @@
 【更新日志】
-　2013-03-22　第一个图片滤镜模块插件 xCrHackSet.dll
+　2013-03-28　第一个支持命令扩展的模块 cCrHackSet 建立
+　2013-03-27　第一个支持多帧图片接口的引擎模块 zOpenCV（摄像头应用）
+　2013-03-26　复合插件 xOpenCV.dll 建立（引入 OpenCV SDK）
+　2013-03-22　第一个支持图片滤镜模块的插件 xCrHackSet.dll
 　2013-03-21　子项目 QstView2D 开始支持图片滤镜插件
 　2013-03-08　子项目 QstText 正式开始（引入 Scintilla 控件）
 　2013-03-04　第一个支持数据解码的引擎插件 zExpand.dll
