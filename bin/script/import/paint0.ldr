@@ -1,0 +1,5 @@
+//========================//
+//  加载绘图命令扩展插件  //
+//========================//
+qv2d:cmd:load plugin/xOpenCV.dll
+qv2d:cmd:load plugin/xCrHackSet.dll
