@@ -78,7 +78,10 @@ void __fastcall TfrmMain::lstTreeGetImageIndex(TBaseVirtualTree *Sender,
 
     /* 设置图标属性 */
     data = (sQTEE_file*)lstTree->GetNodeData(Node);
-    ImageIndex = (int)(data->icon);
+    if (Kind == ikNormal || Kind == ikSelected)
+        ImageIndex = (int)(data->icon);
+    else
+        ImageIndex = -1;
 
     /* 是否是隐藏文件 */
     if (data->attr & QST_FILE_HID)
