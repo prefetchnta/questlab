@@ -352,17 +352,52 @@ image_binaryz (
     ww = dest->position.ww;
     hh = dest->position.hh;
     gate = xml_attr_intxU("gate", 127, param);
-    for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
-        for (uint_t xx = 0; xx < ww; xx++) {
-            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-            ii = (ii > gate) ? 255 : 0;
-            ptr[0] = (byte_t)ii;
-            ptr[1] = (byte_t)ii;
-            ptr[2] = (byte_t)ii;
-            ptr += sizeof(int32u);
+    if (param->found)
+    {
+        /* 有参数使用指定参数 */
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                ii = (ii > gate) ? 255 : 0;
+                ptr[0] = (byte_t)ii;
+                ptr[1] = (byte_t)ii;
+                ptr[2] = (byte_t)ii;
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
         }
-        line += dest->bpl;
+    }
+    else
+    {
+        int64u  total = 0;
+
+        /* 没有参数使用平均值 */
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                total += ii;
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
+        }
+        total /= ww;
+        total /= hh;
+        gate = (uint_t)total;
+        line = dest->data;
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                ii = (ii > gate) ? 255 : 0;
+                ptr[0] = (byte_t)ii;
+                ptr[1] = (byte_t)ii;
+                ptr[2] = (byte_t)ii;
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
+        }
     }
     return (TRUE);
 }
@@ -566,7 +601,7 @@ static const sint_t s_sobel_maty[9] =
 ---------------------------------------
 */
 static bool_t
-img_edge_sobel (
+image_edge_sobel (
   __CR_UU__ void_t*     nouse,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
@@ -649,6 +684,84 @@ img_edge_sobel (
 }
 
 /*
+---------------------------------------
+    图片门限过滤
+---------------------------------------
+*/
+static bool_t
+image_cut_down (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  gate;
+    uint_t  ww, hh, ii;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    gate = xml_attr_intxU("gate", 97, param);
+    if (param->found)
+    {
+        /* 有参数使用指定参数 */
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                if (ii <= gate) {
+                    ptr[0] = 0;
+                    ptr[1] = 0;
+                    ptr[2] = 0;
+                }
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
+        }
+    }
+    else
+    {
+        int64u  total = 0;
+
+        /* 没有参数使用平均值 */
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                total += ii;
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
+        }
+        total /= ww;
+        total /= hh;
+        gate = (uint_t)total;
+        line = dest->data;
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                if (ii <= gate) {
+                    ptr[0] = 0;
+                    ptr[1] = 0;
+                    ptr[2] = 0;
+                }
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
+        }
+    }
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -668,6 +781,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_graying", image_graying },
     { "crhack_binaryz", image_binaryz },
     { "crhack_conv3x3", image_conv3x3 },
-    { "crhack_sobel", img_edge_sobel },
+    { "crhack_sobel", image_edge_sobel },
+    { "crhack_cutdown", image_cut_down },
     { NULL, NULL },
 };
