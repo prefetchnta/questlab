@@ -233,13 +233,13 @@ qst_clear (
         frm->timPlay->Enabled = false;
         frm->timPlayTimer(NULL);
     }
+    _ENTER_XMM_SINGLE_
     if (parm->fmtz != NULL) {
-        _ENTER_XMM_SINGLE_
         fmtz_free((sFMTZ*)parm->fmtz);
         parm->fmtz = NULL;
         parm->play = NULL;
-        _LEAVE_XMM_SINGLE_
     }
+    _LEAVE_XMM_SINGLE_
     frmPlay->Hide();
 }
 
@@ -393,8 +393,10 @@ _retry:
             misc_bring2top(frmMain->Handle, Application->Handle);
             frmPlay->Show();
         }
+        _ENTER_XMM_SINGLE_
         parm->fmtz = xmmz;
         parm->play = xmmplay;
+        _LEAVE_XMM_SINGLE_
 
         /* 压入插件信息 */
         info = str_fmtA("Plug-in: %s", (*unit)->info);
