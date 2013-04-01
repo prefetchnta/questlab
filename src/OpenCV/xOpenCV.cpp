@@ -26,9 +26,6 @@ using namespace cv;
     #pragma comment (lib, "opencv_videostab244.lib")
 #endif
 
-/* 绘制开关 */
-extern bool_t   s_okay;
-
 /*
 =======================================
     插件 DLL 入口点
@@ -44,7 +41,6 @@ DllMain (
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
-            s_okay = FALSE;
             break;
 
         case DLL_PROCESS_DETACH:
