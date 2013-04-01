@@ -3,3 +3,5 @@
 //========================//
 qv2d:cmd:load plugin/xOpenCV.dll
 qv2d:cmd:load plugin/xCrHackSet.dll
+crh:init
+ocv:init
