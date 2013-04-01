@@ -855,6 +855,7 @@ qst_v2d_g2d_canvas (
     qst_clear(ctx);
     ctx->paint = image_new(0, 0, ww, hh, CR_ARGB8888, FALSE, 4);
     if (ctx->paint != NULL) {
+        mem_set(ctx->paint->data, 0xFF, ctx->paint->size);
         qst_make_image(ctx);
         qst_draw_image(ctx);
     }
