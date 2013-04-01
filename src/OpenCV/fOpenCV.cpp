@@ -35,7 +35,7 @@ gaussian_blur (
 
     Mat inpt(&draw, false);
 
-    /* 卷积核必须为奇数 */
+    /* 卷积核大小必须为奇数 */
     if (ksize_x < 3)
         ksize_x = 3;
     else if (ksize_x % 2 == 0)
@@ -45,6 +45,41 @@ gaussian_blur (
     else if (ksize_y % 2 == 0)
         ksize_y += 1;
     GaussianBlur(inpt, inpt, Size(ksize_x, ksize_y), sigma_x, sigma_y);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    中值模糊处理
+---------------------------------------
+*/
+static bool_t
+median_blur (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    uint_t      size;
+    sIMAGE*     dest;
+    IplImage    draw;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    if (!ilab_img2ipl_set(&draw, dest))
+        return (TRUE);
+    size = xml_attr_intxU("ksize", 5, param);
+
+    Mat inpt(&draw, false);
+
+    /* 卷积核大小必须为奇数 */
+    if (size < 3)
+        size = 3;
+    else if (size % 2 == 0)
+        size += 1;
+    medianBlur(inpt, inpt, size);
     return (TRUE);
 }
 
@@ -113,6 +148,7 @@ hough_circles (
 CR_API const sXC_PORT   qst_v2d_filter[] =
 {
     { "opencv_gauss_blur", gaussian_blur },
+    { "opencv_median_blur", median_blur },
     { "opencv_hough_circles", hough_circles },
     { NULL, NULL },
 };
