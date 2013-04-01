@@ -87,6 +87,10 @@ qst_clear (
         parm->pictz = NULL;
         parm->slide = NULL;
     }
+    if (parm->paint != NULL) {
+        image_del(parm->paint);
+        parm->paint = NULL;
+    }
 }
 
 /*
@@ -823,6 +827,66 @@ qst_v2d_g2d_clear (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    创建绘图画布对象
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_canvas (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    uint_t      ww;
+    uint_t      hh;
+    sQstView2D* ctx;
+
+    /* 参数解析 <画布宽> <画布高> */
+    if (argc < 3)
+        return (FALSE);
+    ww = str2intxA(argv[1]);
+    hh = str2intxA(argv[2]);
+    if ((sint_t)ww <= 0 || (sint_t)hh <= 0)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    qst_clear(ctx);
+    ctx->paint = image_new(0, 0, ww, hh, CR_ARGB8888, FALSE, 4);
+    if (ctx->paint != NULL) {
+        qst_make_image(ctx);
+        qst_draw_image(ctx);
+    }
+    _LEAVE_V2D_SINGLE_
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    刷新当前浏览图片
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_refresh (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sQstView2D* ctx;
+
+    CR_NOUSE(argc);
+    CR_NOUSE(argv);
+
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    qst_make_image(ctx);
+    qst_draw_image(ctx);
+    _LEAVE_V2D_SINGLE_
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -849,9 +913,11 @@ static const sQST_CMD   s_cmdz[] =
     { "idx:set_now", qst_v2d_set_now },
 
     /***** 图片控制命令 *****/
-    { "g2d:alpha", qst_v2d_g2d_alpha },
-    { "g2d:color", qst_v2d_g2d_color },
-    { "g2d:clear", qst_v2d_g2d_clear },
+    { "g2d:alpha",   qst_v2d_g2d_alpha   },
+    { "g2d:color",   qst_v2d_g2d_color   },
+    { "g2d:clear",   qst_v2d_g2d_clear   },
+    { "g2d:canvas",  qst_v2d_g2d_canvas  },
+    { "g2d:refresh", qst_v2d_g2d_refresh },
 
     /***** 二维插件命令 *****/
     { "g2d:ext:free", qst_v2d_ext_free },

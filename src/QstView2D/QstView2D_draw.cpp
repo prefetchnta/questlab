@@ -418,35 +418,46 @@ qst_make_image (
 
     sFMT_FRAME* frame;
 
-    /* 数据源有效性检查 */
+    /* 图片数据源选择 */
     if (parm->fmtz == NULL)
-        return;
-    idx = parm->index;
-    if (parm->slide != NULL)
     {
-        /* 使用多帧图片接口 */
-        if (idx >= pict_get_count(parm->slide))
-            idx = pict_get_count(parm->slide) - 1;
-        pic = CR_VCALL(parm->slide)->get(parm->slide, idx);
-        if (pic != NULL) {
-            fmtz_free(parm->fmtz);
-            parm->fmtz = (sFMTZ*)pic;
-        }
-        else {
-            pic = (sFMT_PIC*)parm->fmtz;
-        }
-        frame = pic->frame;
+        /* 使用画布的图片数据 */
+        if (parm->paint == NULL)
+            return;
+        img = parm->paint;
+        parm->index = 0;
+        frame = NULL;
     }
     else
     {
-        /* 使用普通图片对象 */
-        pic = (sFMT_PIC*)parm->fmtz;
-        if (idx >= pic->count)
-            idx = pic->count - 1;
-        frame = &pic->frame[idx];
+        /* 使用加载的图片数据 */
+        idx = parm->index;
+        if (parm->slide != NULL)
+        {
+            /* 使用多帧图片接口 */
+            if (idx >= pict_get_count(parm->slide))
+                idx = pict_get_count(parm->slide) - 1;
+            pic = CR_VCALL(parm->slide)->get(parm->slide, idx);
+            if (pic != NULL) {
+                fmtz_free(parm->fmtz);
+                parm->fmtz = (sFMTZ*)pic;
+            }
+            else {
+                pic = (sFMT_PIC*)parm->fmtz;
+            }
+            frame = pic->frame;
+        }
+        else
+        {
+            /* 使用普通图片对象 */
+            pic = (sFMT_PIC*)parm->fmtz;
+            if (idx >= pic->count)
+                idx = pic->count - 1;
+            frame = &pic->frame[idx];
+        }
+        img = frame->pic;
+        parm->index = idx;
     }
-    img = frame->pic;
-    parm->index = idx;
 
     /* 转换到32位色 */
     rgb = img_auto_to_32(NULL, img);
@@ -481,12 +492,16 @@ qst_make_image (
     parm->image = rgb;
     parm->alpha = alp;
 
-    /* 发送当前帧号 */
-    if (parm->send)
-        qst_send_index("idx:get_now", parm->index, parm->netw);
+    /* 画布结果不发送信息 */
+    if (frame != NULL)
+    {
+        /* 发送当前帧号 */
+        if (parm->send)
+            qst_send_index("idx:get_now", parm->index, parm->netw);
 
-    /* 发送图片信息 */
-    qst_send_image(frame, parm->netw);
+        /* 发送图片信息 */
+        qst_send_image(frame, parm->netw);
+    }
 }
 
 /*
