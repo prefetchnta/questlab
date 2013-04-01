@@ -3,9 +3,10 @@
 +
     SINCE 2013-03-29
     ~~~~~~~~~~~~~~~~
-    QstTree.exe
-    QstMedia.exe
-    QstView2D.exe
+    [m] QstTree.exe
+    [m] QstMedia.exe
+    [m] QstView2D.exe
+    [m] plugin/xCrHackSet.dll
 +
 +
 +
