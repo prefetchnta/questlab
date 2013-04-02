@@ -342,7 +342,7 @@ image_binaryz (
     byte_t* line;
     sIMAGE* dest;
     uint_t  gate;
-    uint_t  ww, hh, ii;
+    uint_t  ww, hh;
 
     CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
@@ -358,11 +358,12 @@ image_binaryz (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                ii = (ii > gate) ? 255 : 0;
-                ptr[0] = (byte_t)ii;
-                ptr[1] = (byte_t)ii;
-                ptr[2] = (byte_t)ii;
+                if (ptr[0] > gate)
+                    ptr[0] = 0xFF;
+                else
+                    ptr[0] = 0x00;
+                ptr[1] = ptr[0];
+                ptr[2] = ptr[0];
                 ptr += sizeof(int32u);
             }
             line += dest->bpl;
@@ -376,8 +377,7 @@ image_binaryz (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                total += ii;
+                total += ptr[0];
                 ptr += sizeof(int32u);
             }
             line += dest->bpl;
@@ -389,11 +389,12 @@ image_binaryz (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                ii = (ii > gate) ? 255 : 0;
-                ptr[0] = (byte_t)ii;
-                ptr[1] = (byte_t)ii;
-                ptr[2] = (byte_t)ii;
+                if (ptr[0] > gate)
+                    ptr[0] = 0xFF;
+                else
+                    ptr[0] = 0x00;
+                ptr[1] = ptr[0];
+                ptr[2] = ptr[0];
                 ptr += sizeof(int32u);
             }
             line += dest->bpl;
@@ -699,7 +700,7 @@ image_cut_down (
     byte_t* line;
     sIMAGE* dest;
     uint_t  gate;
-    uint_t  ww, hh, ii;
+    uint_t  ww, hh;
 
     CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
@@ -715,8 +716,7 @@ image_cut_down (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                if (ii <= gate) {
+                if (ptr[0] <= gate) {
                     ptr[0] = 0;
                     ptr[1] = 0;
                     ptr[2] = 0;
@@ -734,8 +734,7 @@ image_cut_down (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                total += ii;
+                total += ptr[0];
                 ptr += sizeof(int32u);
             }
             line += dest->bpl;
@@ -747,8 +746,7 @@ image_cut_down (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                if (ii <= gate) {
+                if (ptr[0] <= gate) {
                     ptr[0] = 0;
                     ptr[1] = 0;
                     ptr[2] = 0;
