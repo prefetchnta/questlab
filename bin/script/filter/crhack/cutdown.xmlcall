@@ -1,4 +1,5 @@
 <!-- 门限过滤滤镜 -->
 <filters>
+    <crhack_graying />
     <crhack_cutdown gate="97" />
 </filters>
