@@ -13,6 +13,17 @@
 /* 显示画面索引 */
 static uint_t   s_img_idx;
 
+/* 执行源的几个接口类型 */
+typedef bool_t  (*ilab_init_t) (uint_t, ansi_t**);
+typedef bool_t  (*ilab_main_t) (sILAB_OUTPUT*, const sILAB_INPUT*);
+typedef void_t  (*ilab_kill_t) (void_t);
+
+/* OpenCV 转换工具函数类型 */
+typedef bool_t  (*ipl2img_set_t) (sIMAGE*, const ipls_t*);
+typedef bool_t  (*img2ipl_set_t) (ipls_t*, const sIMAGE*);
+typedef sIMAGE* (*ipl2img_dup_t) (const ipls_t*);
+typedef ipls_t* (*img2ipl_dup_t) (const sIMAGE*);
+
 /*
 =======================================
     Windows 窗口消息处理
@@ -182,6 +193,21 @@ WinMain (
     if ((port = fmtz_func()) == NULL)
         return (QST_ERROR);
     port->mask = CR_FMTZ_MASK_PIC;
+
+    /* 导入 OpenCV 转换工具函数 */
+    ilab_inpt.ilab_ipl2img_set = sbin_exportT(sbin,
+                                "ilab_ipl2img_set", ipl2img_set_t);
+    ilab_inpt.ilab_img2ipl_set = sbin_exportT(sbin,
+                                "ilab_img2ipl_set", img2ipl_set_t);
+    ilab_inpt.ilab_ipl2img_dup = sbin_exportT(sbin,
+                                "ilab_ipl2img_dup", ipl2img_dup_t);
+    ilab_inpt.ilab_img2ipl_dup = sbin_exportT(sbin,
+                                "ilab_img2ipl_dup", img2ipl_dup_t);
+    if (ilab_inpt.ilab_ipl2img_set == NULL ||
+        ilab_inpt.ilab_img2ipl_set == NULL ||
+        ilab_inpt.ilab_ipl2img_dup == NULL ||
+        ilab_inpt.ilab_img2ipl_dup == NULL)
+        return (QST_ERROR);
 
     create_gfx2_t   gfx2_func;
 

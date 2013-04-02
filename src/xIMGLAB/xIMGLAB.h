@@ -24,7 +24,7 @@
 #define __QL_XIMGLAB_H__
 
 #include "gfx2/gdiwin.h"
-#include "../QstLibs/QstLibs.h"
+#include "../OpenCV/xOpenCV.h"
 
 /* 公用定义宏 */
 #ifndef EXE_XNAME
@@ -49,11 +49,12 @@ typedef struct
         sIMAGE*     input;      /* 输入图片 */
         xmlcaller_t filter;     /* 滤镜接口 */
 
-} sILAB_INPUT;
+        /* OpenCV 转换工具函数 */
+        bool_t   (*ilab_ipl2img_set) (sIMAGE*, const ipls_t*);
+        bool_t   (*ilab_img2ipl_set) (ipls_t*, const sIMAGE*);
+        sIMAGE*  (*ilab_ipl2img_dup) (const ipls_t*);
+        ipls_t*  (*ilab_img2ipl_dup) (const sIMAGE*);
 
-/* 执行源的几个接口类型 */
-typedef bool_t  (*ilab_init_t) (uint_t, ansi_t**);
-typedef bool_t  (*ilab_main_t) (sILAB_OUTPUT*, const sILAB_INPUT*);
-typedef void_t  (*ilab_kill_t) (void_t);
+} sILAB_INPUT;
 
 #endif  /* !__QL_XIMGLAB_H__ */
