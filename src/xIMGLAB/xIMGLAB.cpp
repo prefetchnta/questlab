@@ -31,6 +31,19 @@ WindowProc (
         default:
             break;
 
+        /* 按键处理 */
+        case WM_KEYUP:
+            if (wparam == VK_LEFT) {
+                if (s_img_idx == 0)
+                    return (FALSE);
+                atom_dec((sint_t*)(&s_img_idx));
+            }
+            else
+            if (wparam == VK_RIGHT) {
+                atom_inc((sint_t*)(&s_img_idx));
+            }
+            return (FALSE);
+
         /* 使用自己的方法清屏 */
         case WM_ERASEBKGND:
             return (FALSE);
@@ -132,6 +145,7 @@ WinMain (
     /* 参数解析 <执行源> <输入源> */
     if (argc < 2)
         return (QST_ERROR);
+    s_img_idx = 0;
 
     sbin_t      sbin;
     ilab_init_t ilab_init;
@@ -286,7 +300,6 @@ WinMain (
         file_searchA(QST_PATH_PLUGIN, FALSE, TRUE, FALSE,
                      "*.dll", filter_loader, ilab_inpt.filter);
     }
-    s_img_idx = 0;
     fmtz_free((sFMTZ*)picz);
     struct_zero(&ilab_outp, sILAB_OUTPUT);
 
