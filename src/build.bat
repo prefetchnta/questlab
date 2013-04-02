@@ -80,6 +80,10 @@ cd QuestLAB
 nmake -fQuestLAB.mak
 cd..
 rem =====================
+cd xIMGLAB
+nmake -fxIMGLAB.mak
+cd..
+rem =====================
 cd xImpScript
 nmake -fxImpScript.mak
 cd..
