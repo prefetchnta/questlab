@@ -45,13 +45,25 @@ WindowProc (
         /* 按键处理 */
         case WM_KEYUP:
             if (wparam == VK_LEFT) {
-                if (s_img_idx == 0)
-                    return (FALSE);
-                atom_dec((sint_t*)(&s_img_idx));
+                if (s_img_idx != 0)
+                    s_img_idx -= 1;
             }
             else
             if (wparam == VK_RIGHT) {
-                atom_inc((sint_t*)(&s_img_idx));
+                if (s_img_idx != (uint_t)-1)
+                    s_img_idx += 1;
+            }
+            else
+            if (wparam == VK_HOME) {
+                s_img_idx = 0;
+            }
+            else
+            if (wparam == VK_END) {
+                s_img_idx = (uint_t)-1;
+            }
+            else
+            if (wparam == VK_ESCAPE) {
+                PostQuitMessage(0);
             }
             return (FALSE);
 
