@@ -10,7 +10,8 @@ questlab
 │  │  └─import
 │  │      └─jpn
 │  │          ├─gainax
-│  │          └─tgl
+│  │          ├─tgl
+│  │          └─typemoon
 │  ├─source
 │  │  └─import
 │  │      └─image

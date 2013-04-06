@@ -34,6 +34,8 @@ void __fastcall subKillQstView2DClick(TObject *Sender);
 void __fastcall subFilterNoneClick(TObject *Sender);
 void __fastcall subFilterXXXXClick(TObject *Sender);
 //---------------------------------------------------------------------------
+void __fastcall subImgLabXXXXClick(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subAboutClick(TObject *Sender);
@@ -250,6 +252,26 @@ void __fastcall TfrmMain::subFilterXXXXClick(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subImgLabXXXXClick(TObject *Sender)
+{
+    int         size;
+    AnsiString  line;
+
+    /* 选择图片滤镜功能 */
+    line = "xIMGLAB.exe ";
+    line += ((TMenuItem*)Sender)->Caption;
+    line += " :computer/camera0";
+    size = line.Length();
+    for (int idx = 1; idx <= size; idx++) {
+        if (line[idx] == '&') {
+            line.Delete(idx, 1);
+            idx  -= 1;
+            size -= 1;
+        }
+    }
+    misc_call_exe(line.c_str(), FALSE, FALSE);
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subParamClick(TObject *Sender)
 {
     /* 参数菜单项 */
@@ -290,6 +312,36 @@ add_filter_menu (
                    frmMain->subFilterXXXXClick, 0, name);
     item->RadioItem = true;
     item->GroupIndex = 1;
+    parent->Add(item);
+    return (TRUE);
+}
+//---------------------------------------------------------------------------
+/*
+---------------------------------------
+    添加图像实验菜单
+---------------------------------------
+*/
+static bool_t
+add_imglab_menu (
+  __CR_IN__ void_t*     param,
+  __CR_IN__ sSEARCHa*   finfo
+    )
+{
+    TMenuItem*  item;
+    TMenuItem*  parent;
+
+    /* 过滤文件大小 */
+    if (finfo->size == 0)
+        return (TRUE);
+
+    ansi_t          name[128];
+    static uint_t   name_idx = 0;
+
+    /* 用文件路径做菜单文字 */
+    parent = (TMenuItem*)param;
+    sprintf(name, "subImgLab%04u", name_idx++);
+    item = NewItem(&finfo->name[2], 0, false, true,
+                   frmMain->subImgLabXXXXClick, 0, name);
     parent->Add(item);
     return (TRUE);
 }
@@ -390,6 +442,17 @@ void __fastcall TfrmMain::SetupMenu(void)
     if (idx < root_menu->Count) {
         file_searchA(QST_PATH_SCRIPT, TRUE, TRUE, FALSE,
             "filter\\*.xmlcall", add_filter_menu, temp_menu);
+    }
+
+    /* 根据图像实验插件添加菜单 */
+    for (idx = 0; idx < root_menu->Count; idx++) {
+        temp_menu = root_menu->Items[idx];
+        if (temp_menu->Name == "subImgLab2D")
+            break;
+    }
+    if (idx < root_menu->Count) {
+        file_searchA(QST_PATH_PLUGIN, FALSE, TRUE, FALSE,
+                "*.ilab", add_imglab_menu, temp_menu);
     }
 }
 //---------------------------------------------------------------------------

@@ -36,6 +36,7 @@
         <MenuItem name="subKillQstTree" text="QstTree" />
         <MenuItem name="subKillQstView2D" text="QstView2D" />
     </MenuItem>
+    <MenuItem name="subImgLab2D" text="图像(&I)" />
     <MenuItem name="subFilter2D" text="滤镜(&F)">
         <MenuItem name="subFilterNone" text="DISABLE IMAGE FILTERS" radio="1" group="1" checked="1" />
         <MenuItem name="xxxSepFilter" text="-" />
