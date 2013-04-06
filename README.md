@@ -77,6 +77,13 @@
 
 　　所有插件位于目录 **bin/plugin** 下。字母 **c** 开头的插件为命令扩展插件，用于扩展一些应用程序的消息命令；字母 **f** 开头的插件为图片滤镜插件，用于实现二维图片的变换功能；字母 **z** 开头的插件为 **CrHack/FMTz** 引擎插件，专门负责加载各类输入的数据；字母 **x** 开头的插件则为复合插件，可以集中包括所有类型的插件功能模块。
 
+##zNScripter (VS2010 SP1)
+
+<p>支持加载 <b>NScripter</b> 游戏引擎里的几种文件格式：</p>
+ - Scripter3 ARchive (SAR)
+ - NScripter Archive (NSA)
+ - NScripter script file (nscript.dat)
+
 ##xOpenCV (VS2010 SP1)
 
 <p>基于 <b>OpenCV</b> 库的复合扩展插件，为 <b>QstView2D</b> 提供一些图像处理识别相关的图片滤镜和图形绘制命令扩展，并支持摄像头图片的输入以及支持加载以下几种图片格式：</p>
