@@ -155,7 +155,7 @@ decode_spb (
   __CR_IN__ leng_t          srclen
     )
 {
-    int32u  val;
+    int32u  vals;
     byte_t* copy;
     byte_t* line;
     byte_t* image;
@@ -167,6 +167,7 @@ decode_spb (
     uint_t  cc, kk;
     int16u  ww, hh;
     byte_t* channel;
+    leng_t  img_size;
     leng_t  bmp_size;
     leng_t  bpl, size;
 
@@ -201,12 +202,12 @@ decode_spb (
                 "decode_spb()", "invalid image width");
         goto _failure1;
     }
-    if (cut_mul(&bmp_size, bpl, hh)) {
+    if (cut_mul(&img_size, bpl, hh)) {
         err_set(__CR_NSCR_NSA_C__, hh,
                 "decode_spb()", "invalid image height");
         goto _failure1;
     }
-    if (cut_addu(&bmp_size, bmp_size, sizeof(s_bmp))) {
+    if (cut_addu(&bmp_size, img_size, sizeof(s_bmp))) {
         err_set(__CR_NSCR_NSA_C__, bmp_size,
                 "decode_spb()", "invalid image size");
         goto _failure1;
@@ -309,15 +310,14 @@ decode_spb (
     }
 
     /* 填写 BMP 图片信息 */
-    val = DWORD_LE((int32u)bmp_size);
-    mem_cpy((byte_t*)dst + 2, &val, 4);
+    vals = DWORD_LE((int32u)bmp_size);
+    mem_cpy((byte_t*)dst + 2, &vals, 4);
     ww = WORD_LE(ww);
     mem_cpy((byte_t*)dst + 18, &ww, 2);
     hh = WORD_LE(hh);
     mem_cpy((byte_t*)dst + 22, &hh, 2);
-    bmp_size -= sizeof(s_bmp);
-    val = DWORD_LE((int32u)bmp_size);
-    mem_cpy((byte_t*)dst + 34, &val, 4);
+    vals = DWORD_LE((int32u)img_size);
+    mem_cpy((byte_t*)dst + 34, &vals, 4);
     mem_free(channel);
     CR_VCALL(datin)->release(datin);
     return (bmp_size);

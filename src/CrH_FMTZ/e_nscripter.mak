@@ -16,7 +16,6 @@ SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)nscripter$(L)nscr_dat.$(C)
 
 build_all:
-    $(RC) $(RFLAGS)
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)
     $(MT) $(MFLAGS)
