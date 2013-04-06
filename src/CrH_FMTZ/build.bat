@@ -20,3 +20,5 @@ nmake -fe_rar.mak
 rem =====================
 nmake -fe_expand.mak
 rem =====================
+nmake -fe_nscripter.mak
+rem =====================

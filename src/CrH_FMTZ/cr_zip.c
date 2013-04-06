@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-02-28  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-06  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -114,7 +114,7 @@ iPAK_ZIP_getFileData (
     int64u          pack;
     int64u          size;
     int32u          cksm;
-    uint_t          type;
+    int16u          type;
     uint_t          unsz;
     uint_t          pksz;
     void_t*         temp;
@@ -460,14 +460,14 @@ load_cr_zip (
         temp.base.pack = DWORD_LE(unit.pksize);
         temp.base.size = DWORD_LE(unit.unsize);
         temp.base.name = utf8;
-        if (temp.base.pack != temp.base.size)
-            temp.base.attr |= PAK_FILE_CMP;
 
         /* 设置私有文件属性 */
         temp.crc32 = DWORD_LE(unit.crc32);
         temp.ftime =  WORD_LE(unit.ftime);
         temp.fdate =  WORD_LE(unit.fdate);
         temp.ftype =  WORD_LE(unit.compr);
+        if (temp.ftype != 0)
+            temp.base.attr |= PAK_FILE_CMP;
         switch (temp.ftype)
         {
             case 0:  temp.base.memo = "Store";            break;

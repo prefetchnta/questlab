@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -335,7 +335,8 @@ load_syn_gca (
                     "load_syn_gca()", "mem_talloc() failure");
             goto _failure3;
         }
-        mem_zero(list, cnt * sizeof(sPAK_GCA_FILE));
+        back = cnt;
+        mem_zero(list, back * sizeof(sPAK_GCA_FILE));
         memo = (gca->GetArcType() == CGca::GCA0) ? "GCA0" : "GCA1";
         for (idx = 0; idx < cnt; idx++)
         {

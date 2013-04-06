@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-03-04  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-07  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-06  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -436,7 +436,7 @@ load_rar (
         temp.base.offs = 0;
         temp.base.pack = mk_size(info.PackSizeHigh, info.PackSize);
         temp.base.size = mk_size(info.UnpSizeHigh, info.UnpSize);
-        if (temp.base.pack != temp.base.size)
+        if (info.Method != 0x30)
             temp.base.attr |= PAK_FILE_CMP;
         switch (info.Method)
         {

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-08-15  */
 /*     #######          ###    ###      [COMM]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-01-10  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-03  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -209,6 +209,34 @@ CR_TYPEDEF struct
 /*004*/
 } CR_PACKED sRFCMM_CSB_0C;
 
+/* 超声波查询探测距离结构 */
+CR_TYPEDEF struct
+{
+/*000*/ byte_t  devid;  /* 设备编号 */
+/*001*/ byte_t  cmdid;  /* 指令编号 =0x0D */
+/*002*/ byte_t  sum8b;  /* 8位累加和 */
+/*003*/
+} CR_PACKED sRFCMM_CSB_0D;
+
+/* 超声波查询固件版本结构 */
+CR_TYPEDEF struct
+{
+/*000*/ byte_t  devid;  /* 设备编号 */
+/*001*/ byte_t  cmdid;  /* 指令编号 =0x90 */
+/*002*/ byte_t  sum8b;  /* 8位累加和 */
+/*003*/
+} CR_PACKED sRFCMM_CSB_90;
+
+/* 区域屏干接点计数值 (BE) */
+CR_TYPEDEF struct
+{
+/*000*/ int32u  gan_cnt1;   /* 1号干接点计数值 */
+/*004*/ int32u  gan_cnt2;   /* 2号干接点计数值 */
+/*008*/ int32u  gan_cnt3;   /* 3号干接点计数值 */
+/*012*/ int32u  gan_cnt4;   /* 4号干接点计数值 */
+/*016*/
+} CR_PACKED sRFCMM_QYP_GAN;
+
 /* 引导屏管理信息结构 (BE) */
 CR_TYPEDEF struct
 {
@@ -337,6 +365,10 @@ CR_API bool_t   rfcmm_udp_all_get_arrow (socket_t netw, byte_t stype,
                                          uint_t *osize);
 CR_API bool_t   rfcmm_udp_qyp_free (socket_t netw, byte_t stype,
                                     uint_t *free);
+CR_API bool_t   rfcmm_udp_qyp_set_gan (socket_t netw, byte_t stype,
+                                       const sRFCMM_QYP_GAN *param);
+CR_API bool_t   rfcmm_udp_qyp_get_gan (socket_t netw, byte_t stype,
+                                       sRFCMM_QYP_GAN *param);
 CR_API bool_t   rfcmm_udp_qyp_set_ydp (socket_t netw, byte_t stype,
                                        const sRFCMM_QYP_MGR *param);
 CR_API bool_t   rfcmm_udp_qyp_get_ydp (socket_t netw, byte_t stype,
@@ -372,6 +404,10 @@ CR_API bool_t   rfcmm_udp_csb_getcp (socket_t netw, byte_t stype, byte_t line,
                                    byte_t val[2], const sRFCMM_CSB_0B *param);
 CR_API bool_t   rfcmm_udp_csb_setcp (socket_t netw, byte_t stype, byte_t line,
                                      const sRFCMM_CSB_0C *param);
+CR_API bool_t   rfcmm_udp_csb_lastd (socket_t netw, byte_t stype, byte_t line,
+                                   int32u *dists, const sRFCMM_CSB_0D *param);
+CR_API ansi_t*  rfcmm_udp_csb_fwver (socket_t netw, byte_t stype, byte_t line,
+                                     const sRFCMM_CSB_90 *param);
 
 #endif  /* !__CR_RFCMM_H__ */
 
