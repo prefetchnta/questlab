@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-06  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -485,9 +485,17 @@ load_cr_png (
                             "load_cr_png()", "iDATIN::read() failure");
                     goto _failure2;
                 }
-                /* 这个颜色为透明色 */
-                if (head.info.depth != 16)
-                    temp.pic->keycolor = CR_VRGBA24(pal[1], pal[3], pal[5]);
+                /* 这个颜色为透明色, 这里只能展开来写
+                   否则 C++Builder 2010 编译器编译时会崩溃 */
+                if (head.info.depth != 16) {
+                    temp.pic->keycolor  = pal[1];
+                    temp.pic->keycolor <<= 8;
+                    temp.pic->keycolor |= pal[3];
+                    temp.pic->keycolor <<= 8;
+                    temp.pic->keycolor |= pal[5];
+                    temp.pic->keycolor |= 0xFF000000UL;
+                    temp.pic->keycolor = DWORD_LE(temp.pic->keycolor);
+                }
             }
             else
             if (head.info.color == 3)

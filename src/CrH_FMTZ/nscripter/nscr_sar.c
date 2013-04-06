@@ -294,7 +294,7 @@ load_nscr_sar (
             goto _failure2;
         }
         if (offs > dati_get_size(datin) - beg) {
-            err_set(__CR_NSCR_SAR_C__, beg,
+            err_set(__CR_NSCR_SAR_C__, offs,
                     "load_nscr_sar()", "invalid SAR format");
             goto _failure2;
         }
@@ -304,7 +304,7 @@ load_nscr_sar (
             goto _failure2;
         }
         if (size > dati_get_size(datin) - beg - offs) {
-            err_set(__CR_NSCR_SAR_C__, beg,
+            err_set(__CR_NSCR_SAR_C__, size,
                     "load_nscr_sar()", "invalid SAR format");
             goto _failure2;
         }

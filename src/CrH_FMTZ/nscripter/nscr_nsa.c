@@ -251,6 +251,11 @@ decode_spb (
                 goto _failure2;
             }
             if (nn == 0) {
+                if (count + 4 > size) {
+                    err_set(__CR_NSCR_NSA_C__, count + 4,
+                            "decode_spb()", "dest buffer overflow");
+                    goto _failure2;
+                }
                 channel[count++] = (byte_t)cc;
                 channel[count++] = (byte_t)cc;
                 channel[count++] = (byte_t)cc;
@@ -269,6 +274,11 @@ decode_spb (
                 mm = nn + 2;
             }
 
+            if (count + 4 > size) {
+                err_set(__CR_NSCR_NSA_C__, count + 4,
+                        "decode_spb()", "dest buffer overflow");
+                goto _failure2;
+            }
             for (jj = 0; jj < 4; jj++) {
                 if (mm == 8) {
                     if (!bitin_hi_push(&bitin, &cc, 8)) {
@@ -680,7 +690,7 @@ load_nscr_nsa (
             goto _failure2;
         }
         if (offs > dati_get_size(datin) - beg) {
-            err_set(__CR_NSCR_NSA_C__, beg,
+            err_set(__CR_NSCR_NSA_C__, offs,
                     "load_nscr_nsa()", "invalid NSA format");
             goto _failure2;
         }
@@ -690,7 +700,7 @@ load_nscr_nsa (
             goto _failure2;
         }
         if (pack > dati_get_size(datin) - beg - offs) {
-            err_set(__CR_NSCR_NSA_C__, beg,
+            err_set(__CR_NSCR_NSA_C__, pack,
                     "load_nscr_nsa()", "invalid NSA format");
             goto _failure2;
         }
