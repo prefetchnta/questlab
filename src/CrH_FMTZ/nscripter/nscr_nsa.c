@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-04-05  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-06  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-07  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -640,13 +640,21 @@ load_nscr_nsa (
                 "load_nscr_nsa()", "iDATIN::getd_be() failure");
         goto _failure1;
     }
-    if (beg > dati_get_size(datin)) {
-        err_set(__CR_NSCR_NSA_C__, beg,
-                "load_nscr_nsa()", "invalid NSA format");
-        goto _failure1;
-    }
-    if (cha)
+    if (cha) {
+        if (beg > dati_get_size(datin) - sizeof(int16u)) {
+            err_set(__CR_NSCR_NSA_C__, beg,
+                    "load_nscr_nsa()", "invalid NSA format");
+            goto _failure1;
+        }
         beg += sizeof(int16u);
+    }
+    else {
+        if (beg > dati_get_size(datin)) {
+            err_set(__CR_NSCR_NSA_C__, beg,
+                    "load_nscr_nsa()", "invalid NSA format");
+            goto _failure1;
+        }
+    }
 
     /* 分配子文件属性表 */
     list = mem_talloc(cnt, sPAK_NSA_FILE);
