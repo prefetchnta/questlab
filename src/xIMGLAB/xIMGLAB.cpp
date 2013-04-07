@@ -341,6 +341,8 @@ WinMain (
     fmtz_free((sFMTZ*)picz);
     struct_zero(&ilab_outp, sILAB_OUTPUT);
 
+    timer_t log = timer_new();
+
     /* 消息循环 */
     for (;;)
     {
@@ -356,12 +358,20 @@ WinMain (
         {
             sBLIT   blit;
             sIMAGE* show;
+            ansi_t  buf[128];
 
             /* 执行图片数据处理 */
             if (ilab_main != NULL) {
                 free_img_list(&ilab_outp);
+                if (log != NULL)
+                    timer_set_base(log);
                 if (!ilab_main(&ilab_outp, &ilab_inpt))
                     break;
+                if (log != NULL) {
+                    sprintf(buf, WIN_TITLE " - cost: %.3f ms",
+                                timer_get_delta(log));
+                    SetWindowTextA(hwnd, buf);
+                }
                 if (s_img_idx >= ilab_outp.count)
                     s_img_idx = ilab_outp.count - 1;
                 show = img_auto_to_32(NULL, ilab_outp.frame[s_img_idx]);
