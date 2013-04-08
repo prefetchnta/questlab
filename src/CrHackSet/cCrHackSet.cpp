@@ -1,7 +1,7 @@
 
 #include "../QstView2D/QstView2D.h"
 
-/* 填充类型 */
+/* 填充函数类型 */
 typedef void_t  (*flldraw_t) (const sIMAGE*, const sFILL*,
                               cpix_t, const sRECT*);
 /* 全局绘制参数 */
@@ -357,7 +357,7 @@ qst_crh_circle (
 ---------------------------------------
 */
 static bool_t
-qst_crh_ellipse_xy (
+qst_crh_ellps_xy (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -389,7 +389,7 @@ qst_crh_ellipse_xy (
 ---------------------------------------
 */
 static bool_t
-qst_crh_ellipse_wh (
+qst_crh_ellps_wh (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -620,11 +620,11 @@ qst_crh_btfont (
 
     /* 加载点阵字库文件 */
     size = str2intxA(argv[1]);
-    sprintf(name, QST_PATH_SOURCE "btfont\\FULL%u", size);
+    sprintf(name, QST_PATH_SOURCE "btfont\\%s_%u.full", argv[4], size);
     hzk = create_disk_inA(name);
     if (hzk == NULL)
         return (FALSE);
-    sprintf(name, QST_PATH_SOURCE "btfont\\HALF%u", size);
+    sprintf(name, QST_PATH_SOURCE "btfont\\%s_%u.half", argv[4], size);
     asc = create_disk_inA(name);
     if (asc == NULL) {
         CR_VCALL(hzk)->release(hzk);
@@ -668,6 +668,25 @@ _failure:
     return (FALSE);
 }
 
+/* 文字对齐方式 */
+#if     (FALSE)
+    #define EGUI_ALN_L   1  /* 水平左对齐 */
+    #define EGUI_ALN_R   2  /* 水平右对齐 */
+    #define EGUI_ALN_C   3  /* 水平中对齐 */
+    #define EGUI_ALN_T   4  /* 垂直左对齐 */
+    #define EGUI_ALN_B   8  /* 垂直右对齐 */
+    #define EGUI_ALN_M  12  /* 垂直中对齐 */
+    #define EGUI_ALN_LT (EGUI_ALN_L | EGUI_ALN_T)
+    #define EGUI_ALN_LB (EGUI_ALN_L | EGUI_ALN_B)
+    #define EGUI_ALN_LM (EGUI_ALN_L | EGUI_ALN_M)
+    #define EGUI_ALN_RT (EGUI_ALN_R | EGUI_ALN_T)
+    #define EGUI_ALN_RB (EGUI_ALN_R | EGUI_ALN_B)
+    #define EGUI_ALN_RM (EGUI_ALN_R | EGUI_ALN_M)
+    #define EGUI_ALN_CT (EGUI_ALN_C | EGUI_ALN_T)
+    #define EGUI_ALN_CB (EGUI_ALN_C | EGUI_ALN_B)
+    #define EGUI_ALN_CM (EGUI_ALN_C | EGUI_ALN_M)
+#endif
+
 /*
 ---------------------------------------
     绘制文字 (实体)
@@ -683,10 +702,13 @@ qst_crh_texts (
     sRECT   pos;
     ansi_t* str;
     ansi_t* txt;
+    bool_t  rett;
+    sint_t  sx, sy;
+    uint_t  ww, hh, an;
 
     CR_NOUSE(parm);
 
-    /* 参数解析 <X> <Y> <EscText> */
+    /* 参数解析 <X> <Y> <EscText> [Width Height Align] */
     if (argc < 4)
         return (FALSE);
     if (s_font == NULL)
@@ -700,18 +722,20 @@ qst_crh_texts (
     mem_free(str);
     if (txt == NULL)
         return (FALSE);
-    pos.x1 = (sint_t)str2intxA(argv[1]);
-    pos.y1 = (sint_t)str2intxA(argv[2]);
-    if (!CR_VCALL(s_font)->calc_rect(s_font, txt, &pos, CR_LOCAL)) {
-        mem_free(txt);
-        return (FALSE);
+    sx = (sint_t)str2intxA(argv[1]);
+    sy = (sint_t)str2intxA(argv[2]);
+    if (argc < 7) {
+        rett = egui_draw_text2(s_font, txt, sx, sy);
     }
-    if (!CR_VCALL(s_font)->draw_text(s_font, txt, &pos, CR_LOCAL)) {
-        mem_free(txt);
-        return (FALSE);
+    else {
+        ww = str2intxA(argv[4]);
+        hh = str2intxA(argv[5]);
+        an = str2intxA(argv[6]);
+        rect_set_wh(&pos, sx, sy, ww, hh);
+        rett = egui_draw_text(s_font, txt, &pos, an);
     }
     mem_free(txt);
-    return (TRUE);
+    return (rett);
 }
 
 /*
@@ -729,10 +753,13 @@ qst_crh_textt (
     sRECT   pos;
     ansi_t* str;
     ansi_t* txt;
+    bool_t  rett;
+    sint_t  sx, sy;
+    uint_t  ww, hh, an;
 
     CR_NOUSE(parm);
 
-    /* 参数解析 <X> <Y> <EscText> */
+    /* 参数解析 <X> <Y> <EscText> [Width Height Align] */
     if (argc < 4)
         return (FALSE);
     if (s_font == NULL)
@@ -746,18 +773,20 @@ qst_crh_textt (
     mem_free(str);
     if (txt == NULL)
         return (FALSE);
-    pos.x1 = (sint_t)str2intxA(argv[1]);
-    pos.y1 = (sint_t)str2intxA(argv[2]);
-    if (!CR_VCALL(s_font)->calc_rect(s_font, txt, &pos, CR_LOCAL)) {
-        mem_free(txt);
-        return (FALSE);
+    sx = (sint_t)str2intxA(argv[1]);
+    sy = (sint_t)str2intxA(argv[2]);
+    if (argc < 7) {
+        rett = egui_draw_tran2(s_font, txt, sx, sy);
     }
-    if (!CR_VCALL(s_font)->draw_tran(s_font, txt, &pos, CR_LOCAL)) {
-        mem_free(txt);
-        return (FALSE);
+    else {
+        ww = str2intxA(argv[4]);
+        hh = str2intxA(argv[5]);
+        an = str2intxA(argv[6]);
+        rect_set_wh(&pos, sx, sy, ww, hh);
+        rett = egui_draw_tran(s_font, txt, &pos, an);
     }
     mem_free(txt);
-    return (TRUE);
+    return (rett);
 }
 
 /*
@@ -798,8 +827,8 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:rect_xy", qst_crh_rect_xy },
     { "crh:rect_wh", qst_crh_rect_wh },
     { "crh:circle", qst_crh_circle },
-    { "crh:ellipse_xy", qst_crh_ellipse_xy },
-    { "crh:ellipse_wh", qst_crh_ellipse_wh },
+    { "crh:ellps_xy", qst_crh_ellps_xy },
+    { "crh:ellps_wh", qst_crh_ellps_wh },
     { "crh:fill_xy", qst_crh_fill_xy },
     { "crh:fill_wh", qst_crh_fill_wh },
     { "crh:bkcolor", qst_crh_bkcolor },
