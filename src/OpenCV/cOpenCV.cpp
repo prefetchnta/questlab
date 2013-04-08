@@ -41,7 +41,7 @@ qst_ocv_init (
 ---------------------------------------
 */
 static bool_t
-qst_ocv_setcolor (
+qst_ocv_color (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -71,7 +71,7 @@ qst_ocv_setcolor (
 ---------------------------------------
 */
 static bool_t
-qst_ocv_setwidth (
+qst_ocv_width (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -92,7 +92,7 @@ qst_ocv_setwidth (
 ---------------------------------------
 */
 static bool_t
-qst_ocv_setline (
+qst_ocv_tline (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -105,7 +105,7 @@ qst_ocv_setline (
     /* 参数解析 <Type> */
     if (argc < 2)
         return (FALSE);
-    type = str2intxA(argv[1]);
+    type = str2intxA(argv[1]);  /* CV_AA = 16 */
     if (type != 8 && type != 4 && type != CV_AA)
         return (FALSE);
     s_tline = (sint_t)type;
@@ -405,6 +405,66 @@ qst_ocv_ellipse_agl (
 }
 
 /*
+---------------------------------------
+    绘制文字 (只支持字母)
+---------------------------------------
+*/
+static bool_t
+qst_ocv_text (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    ansi_t* str;
+    ansi_t* txt;
+    sint_t  fface;
+    fp64_t  scale;
+    sint_t  sx, sy;
+
+    /* 参数解析 <X> <Y> <FontFace> <FontScale> <EscText> */
+    if (argc < 6)
+        return (FALSE);
+
+    sIMAGE*     draw;
+    IplImage    image;
+
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+
+    /* 必须使用转义字符串 */
+    str = str_fmtA("\"%s\"", argv[5]);
+    if (str == NULL)
+        return (FALSE);
+    txt = str_esc_dupU(str);
+    mem_free(str);
+    if (txt == NULL)
+        return (FALSE);
+    ilab_img2ipl_set(&image, draw);
+
+    Mat img(&image, false);
+
+    /*  CV_FONT_HERSHEY_SIMPLEX         0
+        CV_FONT_HERSHEY_PLAIN           1
+        CV_FONT_HERSHEY_DUPLEX          2
+        CV_FONT_HERSHEY_COMPLEX         3
+        CV_FONT_HERSHEY_TRIPLEX         4
+        CV_FONT_HERSHEY_COMPLEX_SMALL   5
+        CV_FONT_HERSHEY_SCRIPT_SIMPLEX  6
+        CV_FONT_HERSHEY_SCRIPT_COMPLEX  7
+        CV_FONT_ITALIC                 +16 */
+    sx = (sint_t)str2intxA(argv[1]);
+    sy = (sint_t)str2intxA(argv[2]);
+    fface = (sint_t)str2intxA(argv[3]);
+    scale = str2fp64A(argv[4]);
+    putText(img, txt, Point(sx, sy), fface, scale,
+                s_color, s_thick, s_tline);
+    mem_free(txt);
+    return (TRUE);
+}
+
+/*
 =======================================
     命令单元导出表
 =======================================
@@ -412,9 +472,9 @@ qst_ocv_ellipse_agl (
 CR_API const sQST_CMD   qst_v2d_cmdz[] =
 {
     { "ocv:init", qst_ocv_init },
-    { "ocv:setcolor", qst_ocv_setcolor },
-    { "ocv:setwidth", qst_ocv_setwidth },
-    { "ocv:setline", qst_ocv_setline },
+    { "ocv:color", qst_ocv_color },
+    { "ocv:width", qst_ocv_width },
+    { "ocv:tline", qst_ocv_tline },
     { "ocv:moveto", qst_ocv_moveto },
     { "ocv:lineto", qst_ocv_lineto },
     { "ocv:line", qst_ocv_line },
@@ -423,5 +483,6 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "ocv:circle", qst_ocv_circle },
     { "ocv:ellipse_arc", qst_ocv_ellipse_arc },
     { "ocv:ellipse_agl", qst_ocv_ellipse_agl },
+    { "ocv:text", qst_ocv_text },
     { NULL, NULL },
 };
