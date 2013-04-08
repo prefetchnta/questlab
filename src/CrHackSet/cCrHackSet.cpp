@@ -1,7 +1,8 @@
 
 #include "../QstView2D/QstView2D.h"
 
-/* 填充函数类型 */
+/* 有用的函数类型 */
+typedef iFONT*  (*create_font_t) (const LOGFONTA*);
 typedef void_t  (*flldraw_t) (const sIMAGE*, const sFILL*,
                               cpix_t, const sRECT*);
 /* 全局绘制参数 */
@@ -15,6 +16,23 @@ static cpix_t       s_bkcolor;  /* 背景颜色 */
 static pixdraw_t    s_pixdraw;  /* 绘制模式 */
 static flldraw_t    s_flldraw;  /* 填充模式 */
 
+/* 用到的 GFX2_GDI.dll 里的函数 */
+static create_font_t    s_create_gdi_fontA;
+static create_gfx2_t    s_create_gdi_bitmap;
+
+/*
+---------------------------------------
+    是否为 GDI 文字输出对象
+---------------------------------------
+*/
+inline bool_t
+is_gdi_text_out (void_t)
+{
+    if (CR_VCALL(s_font)->getMore(s_font, "iFONT::GDI") != NULL)
+        return (TRUE);
+    return (FALSE);
+}
+
 /*
 ---------------------------------------
     初始化参数
@@ -27,10 +45,13 @@ qst_crh_init (
   __CR_IN__ ansi_t**    argv
     )
 {
+    sbin_t  sbin;
+
     CR_NOUSE(parm);
     CR_NOUSE(argc);
     CR_NOUSE(argv);
 
+    /* 设为默认值 */
     s_font = NULL;
     s_gfx2 = NULL;
     s_mode = CR_BLT_SET;
@@ -39,6 +60,21 @@ qst_crh_init (
     s_flldraw = fill_set32_c;
     s_color.val = 0xFF000000;
     s_bkcolor.val = 0xFFFFFFFF;
+
+    /* 两个用到的外部函数 */
+    sbin = sbin_testA("GFX2_GDI.dll");
+    if (sbin == NULL)
+        sbin = sbin_loadA("GFX2_GDI.dll");
+    if (sbin == NULL) {
+        s_create_gdi_fontA = NULL;
+        s_create_gdi_bitmap = NULL;
+    }
+    else {
+        s_create_gdi_fontA = sbin_exportT(sbin,
+                        "create_gdi_fontA", create_font_t);
+        s_create_gdi_bitmap = sbin_exportT(sbin,
+                        "create_gdi_bitmap", create_gfx2_t);
+    }
     return (TRUE);
 }
 
@@ -139,6 +175,8 @@ qst_crh_mode (
         return (FALSE);
     }
     if (s_font == NULL)
+        return (TRUE);
+    if (is_gdi_text_out())
         return (TRUE);
     return (CR_VCALL(s_font)->setMode(s_font, s_mode));
 }
@@ -811,6 +849,68 @@ qst_crh_sleep (
 }
 
 /*
+---------------------------------------
+    创建文字绘制对象 (GDI 字体)
+---------------------------------------
+*/
+static bool_t
+qst_crh_winfont (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    leng_t      len;
+    LOGFONTA    font;
+
+    CR_NOUSE(parm);
+
+    /* 参数解析 <Height> <FaceName> [Weight] [Width]
+                [CharSet] [Quality] [Italic] [Underline]
+                [StrikeOut] [Escapement] [Orientation] */
+    if (argc < 3)
+        return (FALSE);
+    if (s_create_gdi_fontA == NULL ||
+        s_create_gdi_bitmap == NULL)
+        return (FALSE);
+
+    /* 填充字体生成结构 */
+    struct_zero(&font, LOGFONTA);
+    font.lfCharSet = DEFAULT_CHARSET;
+    font.lfQuality = ANTIALIASED_QUALITY;
+    font.lfHeight = (LONG)str2intxA(argv[1]);
+    if ((len = str_lenA(argv[2])) >= LF_FACESIZE)
+        len = LF_FACESIZE - 1;
+    chr_cpyA(font.lfFaceName, argv[2], len);
+    if (argc > 3)
+        font.lfWeight = (LONG)str2intxA(argv[3]);
+    if (argc > 4)
+        font.lfWidth = (LONG)str2intxA(argv[4]);
+    if (argc > 5)
+        font.lfCharSet = (BYTE)str2intxA(argv[5]);
+    if (argc > 6)
+        font.lfQuality = (BYTE)str2intxA(argv[6]);
+    if (argc > 7)
+        font.lfItalic = (BYTE)str2intxA(argv[7]);
+    if (argc > 8)
+        font.lfUnderline = (BYTE)str2intxA(argv[8]);
+    if (argc > 9)
+        font.lfStrikeOut = (BYTE)str2intxA(argv[9]);
+    if (argc > 10)
+        font.lfEscapement = (LONG)str2intxA(argv[10]);
+    if (argc > 11)
+        font.lfOrientation = (LONG)str2intxA(argv[11]);
+
+    /* 生成文字输出对象 */
+    if (s_font != NULL)
+        CR_VCALL(s_font)->release(s_font);
+    s_font = s_create_gdi_fontA(&font);
+    if (s_font == NULL)
+        return (FALSE);
+    return (TRUE);
+}
+
+/*
 =======================================
     命令单元导出表
 =======================================
@@ -837,5 +937,6 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:texts", qst_crh_texts },
     { "crh:textt", qst_crh_textt },
     { "crh:sleep", qst_crh_sleep },
+    { "crh:winfont", qst_crh_winfont },
     { NULL, NULL },
 };
