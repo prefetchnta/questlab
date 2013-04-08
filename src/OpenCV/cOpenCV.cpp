@@ -326,7 +326,7 @@ qst_ocv_circle (
 ---------------------------------------
 */
 static bool_t
-qst_ocv_ellipse_arc (
+qst_ocv_ellps_arc (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -370,7 +370,7 @@ qst_ocv_ellipse_arc (
 ---------------------------------------
 */
 static bool_t
-qst_ocv_ellipse_agl (
+qst_ocv_ellps_agl (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -481,8 +481,8 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "ocv:rect_xy", qst_ocv_rect_xy },
     { "ocv:rect_wh", qst_ocv_rect_wh },
     { "ocv:circle", qst_ocv_circle },
-    { "ocv:ellipse_arc", qst_ocv_ellipse_arc },
-    { "ocv:ellipse_agl", qst_ocv_ellipse_agl },
+    { "ocv:ellps_arc", qst_ocv_ellps_arc },
+    { "ocv:ellps_agl", qst_ocv_ellps_agl },
     { "ocv:text", qst_ocv_text },
     { NULL, NULL },
 };
