@@ -765,9 +765,16 @@ qst_crh_text (
                 CR_VCALL(s_font)->leave(s_font);
 
                 /* 输出结果回拷到目标画布 */
-                if (rett) {
+                if (rett)
+                {
+                    /* 只复制颜色通道 (GDI 会清除 Alpha 通道) */
                     surf = CR_VCALL(gfx2)->lock(gfx2);
-                    blit_set32_c(draw, surf, &blit, NULL);
+                    image_flp(surf, FALSE);
+                    for (leng_t idx = 0; idx < draw->size; idx += 4) {
+                        draw->data[idx + 0] = surf->data[idx + 0];
+                        draw->data[idx + 1] = surf->data[idx + 1];
+                        draw->data[idx + 2] = surf->data[idx + 2];
+                    }
                     CR_VCALL(gfx2)->unlock(gfx2);
                 }
             }
