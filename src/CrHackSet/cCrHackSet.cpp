@@ -3,11 +3,12 @@
 
 /* 有用的函数类型 */
 typedef iFONT*  (*create_font_t) (const LOGFONTA*);
+typedef iGFX2*  (*create_surf_t) (uint_t, uint_t, uint_t,
+                                int32u, const int32u*, uint_t);
 typedef void_t  (*flldraw_t) (const sIMAGE*, const sFILL*,
                               cpix_t, const sRECT*);
 /* 全局绘制参数 */
 static iFONT*       s_font;     /* 文字绘制 */
-static iGFX2*       s_gfx2;     /* 绘制对象 */
 static int32u       s_mode;     /* 绘制模式 */
 static sint_t       s_posx;     /* 当前坐标 */
 static sint_t       s_posy;     /* 当前坐标 */
@@ -18,7 +19,7 @@ static flldraw_t    s_flldraw;  /* 填充模式 */
 
 /* 用到的 GFX2_GDI.dll 里的函数 */
 static create_font_t    s_create_gdi_fontA;
-static create_gfx2_t    s_create_gdi_bitmap;
+static create_surf_t    s_create_gdi_bitmap;
 
 /*
 ---------------------------------------
@@ -45,21 +46,20 @@ qst_crh_init (
   __CR_IN__ ansi_t**    argv
     )
 {
-    sbin_t  sbin;
-
     CR_NOUSE(parm);
     CR_NOUSE(argc);
     CR_NOUSE(argv);
 
     /* 设为默认值 */
     s_font = NULL;
-    s_gfx2 = NULL;
     s_mode = CR_BLT_SET;
     s_posx = s_posy = 0;
     s_pixdraw = pixel_set32z;
     s_flldraw = fill_set32_c;
     s_color.val = 0xFF000000;
     s_bkcolor.val = 0xFFFFFFFF;
+
+    sbin_t  sbin;
 
     /* 两个用到的外部函数 */
     sbin = sbin_testA("GFX2_GDI.dll");
@@ -73,7 +73,7 @@ qst_crh_init (
         s_create_gdi_fontA = sbin_exportT(sbin,
                         "create_gdi_fontA", create_font_t);
         s_create_gdi_bitmap = sbin_exportT(sbin,
-                        "create_gdi_bitmap", create_gfx2_t);
+                        "create_gdi_bitmap", create_surf_t);
     }
     return (TRUE);
 }
@@ -563,15 +563,13 @@ qst_crh_ucfont (
     iDATIN* asc;
     iDATIN* hzk;
     iDATIN* chr;
-    sIMAGE* draw;
     ansi_t  name[MAX_PATHA];
     uint_t  size, xspc, yspc;
 
+    CR_NOUSE(parm);
+
     /* 参数解析 <Size> <XSpace> <YSpace> [Suffix] */
     if (argc < 4)
-        return (FALSE);
-    draw = ((sQstView2D*)parm)->paint;
-    if (draw == NULL)
         return (FALSE);
 
     /* 加载点阵字库文件 */
@@ -605,30 +603,7 @@ qst_crh_ucfont (
             CR_VCALL(chr)->release(chr);
         return (FALSE);
     }
-
-    /* 这里只能直接在内部数据成员上做手脚了
-       随便生成一个屏幕绘制对象然后替换其后台缓冲结构 */
-    if (s_gfx2 == NULL) {
-        s_gfx2 = create_mem_bitmap(1, 1, CR_ARGB8888, 0, NULL, 0);
-        if (s_gfx2 == NULL)
-            goto _failure;
-        mem_free(s_gfx2->__back__.data);
-        struct_cpy(&s_gfx2->__back__, draw, sIMAGE);
-    }
-    if (!CR_VCALL(s_font)->bind(s_font, s_gfx2))
-        goto _failure;
-    if (!CR_VCALL(s_font)->setMode(s_font, s_mode))
-        goto _failure;
-    if (!CR_VCALL(s_font)->setColor(s_font, s_color.val))
-        goto _failure;
-    if (!CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val))
-        goto _failure;
     return (TRUE);
-
-_failure:
-    CR_VCALL(s_font)->release(s_font);
-    s_font = NULL;
-    return (FALSE);
 }
 
 /*
@@ -645,15 +620,13 @@ qst_crh_btfont (
 {
     iDATIN* asc;
     iDATIN* hzk;
-    sIMAGE* draw;
     ansi_t  name[MAX_PATHA];
     uint_t  size, xspc, yspc;
 
+    CR_NOUSE(parm);
+
     /* 参数解析 <Size> <XSpace> <YSpace> <Type> */
     if (argc < 5)
-        return (FALSE);
-    draw = ((sQstView2D*)parm)->paint;
-    if (draw == NULL)
         return (FALSE);
 
     /* 加载点阵字库文件 */
@@ -680,30 +653,7 @@ qst_crh_btfont (
         CR_VCALL(asc)->release(asc);
         return (FALSE);
     }
-
-    /* 这里只能直接在内部数据成员上做手脚了
-       随便生成一个屏幕绘制对象然后替换其后台缓冲结构 */
-    if (s_gfx2 == NULL) {
-        s_gfx2 = create_mem_bitmap(1, 1, CR_ARGB8888, 0, NULL, 0);
-        if (s_gfx2 == NULL)
-            goto _failure;
-        mem_free(s_gfx2->__back__.data);
-        struct_cpy(&s_gfx2->__back__, draw, sIMAGE);
-    }
-    if (!CR_VCALL(s_font)->bind(s_font, s_gfx2))
-        goto _failure;
-    if (!CR_VCALL(s_font)->setMode(s_font, s_mode))
-        goto _failure;
-    if (!CR_VCALL(s_font)->setColor(s_font, s_color.val))
-        goto _failure;
-    if (!CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val))
-        goto _failure;
     return (TRUE);
-
-_failure:
-    CR_VCALL(s_font)->release(s_font);
-    s_font = NULL;
-    return (FALSE);
 }
 
 /* 文字对齐方式 */
@@ -727,11 +677,11 @@ _failure:
 
 /*
 ---------------------------------------
-    绘制文字 (实体)
+    绘制文字 (实体/透明)
 ---------------------------------------
 */
 static bool_t
-qst_crh_texts (
+qst_crh_text (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -741,15 +691,19 @@ qst_crh_texts (
     ansi_t* str;
     ansi_t* txt;
     bool_t  rett;
+    bool_t  tran;
+    iGFX2*  gfx2;
+    sIMAGE* draw;
     sint_t  sx, sy;
     uint_t  ww, hh, an;
-
-    CR_NOUSE(parm);
 
     /* 参数解析 <X> <Y> <EscText> [Width Height Align] */
     if (argc < 4)
         return (FALSE);
     if (s_font == NULL)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
         return (FALSE);
 
     /* 必须使用转义字符串 */
@@ -760,69 +714,108 @@ qst_crh_texts (
     mem_free(str);
     if (txt == NULL)
         return (FALSE);
+
+    /* 区分实体和透明, 两个命令合并起来了 */
+    if (str_cmpA(argv[0], "crh:texts") == 0)
+        tran = FALSE;
+    else
+        tran = TRUE;
+    rett = FALSE;
     sx = (sint_t)str2intxA(argv[1]);
     sy = (sint_t)str2intxA(argv[2]);
-    if (argc < 7) {
-        rett = egui_draw_text2(s_font, txt, sx, sy);
-    }
-    else {
-        ww = str2intxA(argv[4]);
-        hh = str2intxA(argv[5]);
-        an = str2intxA(argv[6]);
-        rect_set_wh(&pos, sx, sy, ww, hh);
-        rett = egui_draw_text(s_font, txt, &pos, an);
-    }
-    mem_free(txt);
-    return (rett);
-}
 
-/*
----------------------------------------
-    绘制文字 (透明)
----------------------------------------
-*/
-static bool_t
-qst_crh_textt (
-  __CR_IN__ void_t*     parm,
-  __CR_IN__ uint_t      argc,
-  __CR_IN__ ansi_t**    argv
-    )
-{
-    sRECT   pos;
-    ansi_t* str;
-    ansi_t* txt;
-    bool_t  rett;
-    sint_t  sx, sy;
-    uint_t  ww, hh, an;
+    /* GDI 文字绘制对象要特殊处理 */
+    if (is_gdi_text_out())
+    {
+        sBLIT   blit;
+        int32u  mode;
+        sIMAGE* surf;
 
-    CR_NOUSE(parm);
+        /* 创建一个临时 GDI 表面然后复制输出的结果到目标画布 */
+        gfx2 = s_create_gdi_bitmap(draw->position.ww, draw->position.hh,
+                                   CR_ARGB8888, 0, NULL, 0);
+        if (gfx2 != NULL)
+        {
+            /* 画布复制到临时 GDI 表面 */
+            blit.dx = blit.dy = 0;
+            blit.sx = blit.sy = 0;
+            blit.sw = draw->position.ww;
+            blit.sh = draw->position.hh;
+            surf = CR_VCALL(gfx2)->lock(gfx2);
+            blit_set32_c(surf, draw, &blit, NULL);
+            CR_VCALL(gfx2)->unlock(gfx2);
+            mode = tran ? TRANSPARENT : OPAQUE;
 
-    /* 参数解析 <X> <Y> <EscText> [Width Height Align] */
-    if (argc < 4)
-        return (FALSE);
-    if (s_font == NULL)
-        return (FALSE);
+            /* 绑定目标表面并输出文字 */
+            if (CR_VCALL(s_font)->bind(s_font, gfx2) &&
+                CR_VCALL(s_font)->setMode(s_font, mode) &&
+                CR_VCALL(s_font)->setColor(s_font, s_color.val) &&
+                CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val)) {
+                CR_VCALL(s_font)->enter(s_font);
+                if (argc < 7) {
+                    rett = egui_draw_text2(s_font, txt, sx, sy);
+                }
+                else {
+                    ww = str2intxA(argv[4]);
+                    hh = str2intxA(argv[5]);
+                    an = str2intxA(argv[6]);
+                    rect_set_wh(&pos, sx, sy, ww, hh);
+                    rett = egui_draw_text(s_font, txt, &pos, an);
+                }
+                CR_VCALL(s_font)->leave(s_font);
 
-    /* 必须使用转义字符串 */
-    str = str_fmtA("\"%s\"", argv[3]);
-    if (str == NULL)
-        return (FALSE);
-    txt = str_esc_dupU(str);
-    mem_free(str);
-    if (txt == NULL)
-        return (FALSE);
-    sx = (sint_t)str2intxA(argv[1]);
-    sy = (sint_t)str2intxA(argv[2]);
-    if (argc < 7) {
-        rett = egui_draw_tran2(s_font, txt, sx, sy);
+                /* 输出结果回拷到目标画布 */
+                if (rett) {
+                    surf = CR_VCALL(gfx2)->lock(gfx2);
+                    blit_set32_c(draw, surf, &blit, NULL);
+                    CR_VCALL(gfx2)->unlock(gfx2);
+                }
+            }
+        }
     }
-    else {
-        ww = str2intxA(argv[4]);
-        hh = str2intxA(argv[5]);
-        an = str2intxA(argv[6]);
-        rect_set_wh(&pos, sx, sy, ww, hh);
-        rett = egui_draw_tran(s_font, txt, &pos, an);
+    else
+    {
+        sIMAGE  temp;
+
+        /* 随便生成一个内存绘制表面然后替换其后台缓冲结构为画布 */
+        gfx2 = create_mem_bitmap(1, 1, CR_ARGB8888, 0, NULL, 0);
+        if (gfx2 != NULL)
+        {
+            /* 替换表面参数结构 */
+            struct_cpy(&temp, &gfx2->__back__, sIMAGE);
+            struct_cpy(&gfx2->__back__, draw, sIMAGE);
+
+            /* 绑定目标表面并输出文字 */
+            if (CR_VCALL(s_font)->bind(s_font, gfx2) &&
+                CR_VCALL(s_font)->setMode(s_font, s_mode) &&
+                CR_VCALL(s_font)->setColor(s_font, s_color.val) &&
+                CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val)) {
+                if (argc < 7) {
+                    if (tran)
+                        rett = egui_draw_tran2(s_font, txt, sx, sy);
+                    else
+                        rett = egui_draw_text2(s_font, txt, sx, sy);
+                }
+                else {
+                    ww = str2intxA(argv[4]);
+                    hh = str2intxA(argv[5]);
+                    an = str2intxA(argv[6]);
+                    rect_set_wh(&pos, sx, sy, ww, hh);
+                    if (tran)
+                        rett = egui_draw_tran(s_font, txt, &pos, an);
+                    else
+                        rett = egui_draw_text(s_font, txt, &pos, an);
+                }
+            }
+
+            /* 换回原来的表面参数 */
+            struct_cpy(&gfx2->__back__, &temp, sIMAGE);
+        }
     }
+
+    /* 释放临时对象 */
+    if (gfx2 != NULL)
+        CR_VCALL(gfx2)->release(gfx2);
     mem_free(txt);
     return (rett);
 }
@@ -934,8 +927,8 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:bkcolor", qst_crh_bkcolor },
     { "crh:ucfont", qst_crh_ucfont },
     { "crh:btfont", qst_crh_btfont },
-    { "crh:texts", qst_crh_texts },
-    { "crh:textt", qst_crh_textt },
+    { "crh:texts", qst_crh_text },
+    { "crh:textt", qst_crh_text },
     { "crh:sleep", qst_crh_sleep },
     { "crh:winfont", qst_crh_winfont },
     { NULL, NULL },
