@@ -9,10 +9,12 @@ typedef void_t  (*flldraw_t) (const sIMAGE*, const sFILL*,
                               cpix_t, const sRECT*);
 /* 全局绘制参数 */
 static iFONT*       s_font;     /* 文字绘制 */
+static egui_t       s_resx;     /* 外部资源 */
 static int32u       s_mode;     /* 绘制模式 */
 static sint_t       s_posx;     /* 当前坐标 */
 static sint_t       s_posy;     /* 当前坐标 */
 static cpix_t       s_color;    /* 绘制颜色 */
+static cpix_t       s_trans;    /* 透明颜色 */
 static cpix_t       s_bkcolor;  /* 背景颜色 */
 static pixdraw_t    s_pixdraw;  /* 绘制模式 */
 static flldraw_t    s_flldraw;  /* 填充模式 */
@@ -52,11 +54,13 @@ qst_crh_init (
 
     /* 设为默认值 */
     s_font = NULL;
+    s_resx = NULL;
     s_mode = CR_BLT_SET;
     s_posx = s_posy = 0;
     s_pixdraw = pixel_set32z;
     s_flldraw = fill_set32_c;
     s_color.val = 0xFF000000;
+    s_trans.val = 0x00000000;
     s_bkcolor.val = 0xFFFFFFFF;
 
     sbin_t  sbin;
@@ -677,6 +681,102 @@ qst_crh_btfont (
 
 /*
 ---------------------------------------
+    绘制文字 (内部实现)
+---------------------------------------
+*/
+static bool_t
+qst_crh_text_int (
+  __CR_IN__ sIMAGE*         draw,
+  __CR_IN__ bool_t          tran,
+  __CR_IN__ const sRECT*    rect,
+  __CR_IN__ const ansi_t*   text,
+  __CR_IN__ uint_t          align
+    )
+{
+    sBLIT   blit;
+    iGFX2*  gfx2;
+    int32u  mode;
+    sIMAGE  temp, *surf;
+    bool_t  rett = FALSE;
+
+    /* GDI 文字绘制对象要特殊处理 */
+    if (is_gdi_text_out())
+    {
+        /* 创建一个临时 GDI 表面然后复制输出的结果到目标画布 */
+        gfx2 = s_create_gdi_bitmap(draw->position.ww, draw->position.hh,
+                                   CR_ARGB8888, 0, NULL, 0);
+        if (gfx2 == NULL)
+            return (FALSE);
+
+        /* 画布复制到临时 GDI 表面 */
+        blit.dx = blit.dy = 0;
+        blit.sx = blit.sy = 0;
+        blit.sw = draw->position.ww;
+        blit.sh = draw->position.hh;
+        surf = CR_VCALL(gfx2)->lock(gfx2);
+        blit_set32_c(surf, draw, &blit, NULL);
+        CR_VCALL(gfx2)->unlock(gfx2);
+        mode = tran ? TRANSPARENT : OPAQUE;
+
+        /* 绑定目标表面并输出文字 */
+        if (CR_VCALL(s_font)->bind(s_font, gfx2) &&
+            CR_VCALL(s_font)->setMode(s_font, mode) &&
+            CR_VCALL(s_font)->setColor(s_font, s_color.val) &&
+            CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val))
+        {
+            CR_VCALL(s_font)->enter(s_font);
+            rett = egui_draw_text(s_font, text, rect, align);
+            CR_VCALL(s_font)->leave(s_font);
+
+            /* 输出结果回拷到目标画布 */
+            if (rett)
+            {
+                /* 只复制颜色通道 (GDI 会清除 Alpha 通道) */
+                surf = CR_VCALL(gfx2)->lock(gfx2);
+                image_flp(surf, FALSE);
+                for (leng_t idx = 0; idx < draw->size; idx += 4) {
+                    draw->data[idx + 0] = surf->data[idx + 0];
+                    draw->data[idx + 1] = surf->data[idx + 1];
+                    draw->data[idx + 2] = surf->data[idx + 2];
+                }
+                CR_VCALL(gfx2)->unlock(gfx2);
+            }
+        }
+    }
+    else
+    {
+        /* 随便生成一个内存绘制表面然后替换其后台缓冲结构为画布 */
+        gfx2 = create_mem_bitmap(1, 1, CR_ARGB8888, 0, NULL, 0);
+        if (gfx2 == NULL)
+            return (FALSE);
+
+        /* 替换表面参数结构 */
+        struct_cpy(&temp, &gfx2->__back__, sIMAGE);
+        struct_cpy(&gfx2->__back__, draw, sIMAGE);
+
+        /* 绑定目标表面并输出文字 */
+        if (CR_VCALL(s_font)->bind(s_font, gfx2) &&
+            CR_VCALL(s_font)->setMode(s_font, s_mode) &&
+            CR_VCALL(s_font)->setColor(s_font, s_color.val) &&
+            CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val))
+        {
+            if (tran)
+                rett = egui_draw_tran(s_font, text, rect, align);
+            else
+                rett = egui_draw_text(s_font, text, rect, align);
+        }
+
+        /* 换回原来的表面参数 */
+        struct_cpy(&gfx2->__back__, &temp, sIMAGE);
+    }
+
+    /* 释放临时表面 */
+    CR_VCALL(gfx2)->release(gfx2);
+    return (rett);
+}
+
+/*
+---------------------------------------
     绘制文字 (实体/透明)
 ---------------------------------------
 */
@@ -687,15 +787,14 @@ qst_crh_text (
   __CR_IN__ ansi_t**    argv
     )
 {
-    sRECT   pos;
-    ansi_t* str;
-    ansi_t* txt;
+    sRECT   rect;
     bool_t  rett;
     bool_t  tran;
-    iGFX2*  gfx2;
+    ansi_t* temp;
+    ansi_t* text;
     sIMAGE* draw;
-    sint_t  sx, sy;
-    uint_t  ww, hh, an;
+    uint_t  ww,hh;
+    uint_t  align;
 
     /* 参数解析 <X> <Y> <EscText> [Width Height Align] */
     if (argc < 4)
@@ -707,12 +806,12 @@ qst_crh_text (
         return (FALSE);
 
     /* 必须使用转义字符串 */
-    str = str_fmtA("\"%s\"", argv[3]);
-    if (str == NULL)
+    temp = str_fmtA("\"%s\"", argv[3]);
+    if (temp == NULL)
         return (FALSE);
-    txt = str_esc_dupU(str);
-    mem_free(str);
-    if (txt == NULL)
+    text = str_esc_dupU(temp);
+    mem_free(temp);
+    if (text == NULL)
         return (FALSE);
 
     /* 区分实体和透明, 两个命令合并起来了 */
@@ -720,110 +819,19 @@ qst_crh_text (
         tran = FALSE;
     else
         tran = TRUE;
-    rett = FALSE;
-    sx = (sint_t)str2intxA(argv[1]);
-    sy = (sint_t)str2intxA(argv[2]);
-
-    /* GDI 文字绘制对象要特殊处理 */
-    if (is_gdi_text_out())
-    {
-        sBLIT   blit;
-        int32u  mode;
-        sIMAGE* surf;
-
-        /* 创建一个临时 GDI 表面然后复制输出的结果到目标画布 */
-        gfx2 = s_create_gdi_bitmap(draw->position.ww, draw->position.hh,
-                                   CR_ARGB8888, 0, NULL, 0);
-        if (gfx2 != NULL)
-        {
-            /* 画布复制到临时 GDI 表面 */
-            blit.dx = blit.dy = 0;
-            blit.sx = blit.sy = 0;
-            blit.sw = draw->position.ww;
-            blit.sh = draw->position.hh;
-            surf = CR_VCALL(gfx2)->lock(gfx2);
-            blit_set32_c(surf, draw, &blit, NULL);
-            CR_VCALL(gfx2)->unlock(gfx2);
-            mode = tran ? TRANSPARENT : OPAQUE;
-
-            /* 绑定目标表面并输出文字 */
-            if (CR_VCALL(s_font)->bind(s_font, gfx2) &&
-                CR_VCALL(s_font)->setMode(s_font, mode) &&
-                CR_VCALL(s_font)->setColor(s_font, s_color.val) &&
-                CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val)) {
-                CR_VCALL(s_font)->enter(s_font);
-                if (argc < 7) {
-                    rett = egui_draw_text2(s_font, txt, sx, sy);
-                }
-                else {
-                    ww = str2intxA(argv[4]);
-                    hh = str2intxA(argv[5]);
-                    an = str2intxA(argv[6]);
-                    rect_set_wh(&pos, sx, sy, ww, hh);
-                    rett = egui_draw_text(s_font, txt, &pos, an);
-                }
-                CR_VCALL(s_font)->leave(s_font);
-
-                /* 输出结果回拷到目标画布 */
-                if (rett)
-                {
-                    /* 只复制颜色通道 (GDI 会清除 Alpha 通道) */
-                    surf = CR_VCALL(gfx2)->lock(gfx2);
-                    image_flp(surf, FALSE);
-                    for (leng_t idx = 0; idx < draw->size; idx += 4) {
-                        draw->data[idx + 0] = surf->data[idx + 0];
-                        draw->data[idx + 1] = surf->data[idx + 1];
-                        draw->data[idx + 2] = surf->data[idx + 2];
-                    }
-                    CR_VCALL(gfx2)->unlock(gfx2);
-                }
-            }
-        }
+    rect.x1 = (sint_t)str2intxA(argv[1]);
+    rect.y1 = (sint_t)str2intxA(argv[2]);
+    if (argc > 6) {
+        ww = str2intxA(argv[4]);
+        hh = str2intxA(argv[5]);
+        align = str2intxA(argv[6]);
+        rect_set_wh(&rect, rect.x1, rect.y1, ww, hh);
     }
-    else
-    {
-        sIMAGE  temp;
-
-        /* 随便生成一个内存绘制表面然后替换其后台缓冲结构为画布 */
-        gfx2 = create_mem_bitmap(1, 1, CR_ARGB8888, 0, NULL, 0);
-        if (gfx2 != NULL)
-        {
-            /* 替换表面参数结构 */
-            struct_cpy(&temp, &gfx2->__back__, sIMAGE);
-            struct_cpy(&gfx2->__back__, draw, sIMAGE);
-
-            /* 绑定目标表面并输出文字 */
-            if (CR_VCALL(s_font)->bind(s_font, gfx2) &&
-                CR_VCALL(s_font)->setMode(s_font, s_mode) &&
-                CR_VCALL(s_font)->setColor(s_font, s_color.val) &&
-                CR_VCALL(s_font)->setBkColor(s_font, s_bkcolor.val)) {
-                if (argc < 7) {
-                    if (tran)
-                        rett = egui_draw_tran2(s_font, txt, sx, sy);
-                    else
-                        rett = egui_draw_text2(s_font, txt, sx, sy);
-                }
-                else {
-                    ww = str2intxA(argv[4]);
-                    hh = str2intxA(argv[5]);
-                    an = str2intxA(argv[6]);
-                    rect_set_wh(&pos, sx, sy, ww, hh);
-                    if (tran)
-                        rett = egui_draw_tran(s_font, txt, &pos, an);
-                    else
-                        rett = egui_draw_text(s_font, txt, &pos, an);
-                }
-            }
-
-            /* 换回原来的表面参数 */
-            struct_cpy(&gfx2->__back__, &temp, sIMAGE);
-        }
+    else {
+        align = 0;
     }
-
-    /* 释放临时对象 */
-    if (gfx2 != NULL)
-        CR_VCALL(gfx2)->release(gfx2);
-    mem_free(txt);
+    rett = qst_crh_text_int(draw, tran, &rect, text, align);
+    mem_free(text);
     return (rett);
 }
 
@@ -911,6 +919,235 @@ qst_crh_winfont (
 }
 
 /*
+---------------------------------------
+    设置透明颜色
+---------------------------------------
+*/
+static bool_t
+qst_crh_trans (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    CR_NOUSE(parm);
+
+    /* 参数解析 <Red> <Green> <Blue> [Alpha] */
+    if (argc < 4)
+        return (FALSE);
+    s_trans.c32.rrr = (byte_t)str2intxA(argv[1]);
+    s_trans.c32.ggg = (byte_t)str2intxA(argv[2]);
+    s_trans.c32.bbb = (byte_t)str2intxA(argv[3]);
+    if (argc > 4)
+        s_trans.c32.lrp = (byte_t)str2intxA(argv[4]);
+    else
+        s_trans.c32.lrp = 255;
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    加载外部资源
+---------------------------------------
+*/
+static bool_t
+qst_crh_loadres (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sIMAGE* draw;
+
+    /* 参数解析 <ResFile> [RootDir] */
+    if (argc < 2)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+
+    /* 加载外部资源描述文件 */
+    if (s_resx != NULL)
+        egui_free(s_resx);
+    s_resx = egui_init(1, 1, 0);
+    if (s_resx == NULL)
+        return (FALSE);
+    if (!egui_res_load_f(s_resx, argv[1], draw->fmt, NULL)) {
+        egui_free(s_resx);
+        s_resx = NULL;
+        return (FALSE);
+    }
+#if 0
+    /* 指定文件根目录 (功能暂时不开放) */
+    if (argc > 2) {
+        if (!egui_res_set_root(s_resx, argv[2])) {
+            egui_free(s_resx);
+            s_resx = NULL;
+            return (FALSE);
+        }
+    }
+#endif
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    绘制图块
+---------------------------------------
+*/
+static bool_t
+qst_crh_blit (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sBLIT   blit;
+    sRECT   rect;
+    int32u  idxs;
+    sIMAGE* draw;
+    sIMAGE* srce;
+
+    /* 参数解析 <X> <Y> <SpriteName> [Index] */
+    if (argc < 4)
+        return (FALSE);
+    if (s_resx == NULL)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+
+    /* 查找目标图片对象 */
+    if (argc > 4)
+        idxs = str2intxA(argv[4]);
+    else
+        idxs = 0;
+    srce = egui_res_get_img(s_resx, argv[3], idxs, &rect);
+    if (srce == NULL)
+        return (FALSE);
+    blit.sx = rect.x1;
+    blit.sy = rect.y1;
+    blit.sw = rect.ww;
+    blit.sh = rect.hh;
+    blit.dx = (sint_t)str2intxA(argv[1]);
+    blit.dy = (sint_t)str2intxA(argv[2]);
+    switch (s_mode)
+    {
+        default:
+        case CR_BLT_SET:
+            if (s_trans.val == 0)
+                blit_set32_c(draw, srce, &blit, NULL);
+            else
+                blit_str32_c(draw, srce, &blit, s_trans, NULL);
+            break;
+
+        case CR_BLT_AND:
+            blit_and32_c(draw, srce, &blit, NULL);
+            break;
+
+        case CR_BLT_ORR:
+            blit_orr32_c(draw, srce, &blit, NULL);
+            break;
+
+        case CR_BLT_NOT:
+            if (s_trans.val == 0)
+                blit_alp32_c(draw, srce, NULL, &blit, NULL);
+            else
+                blit_dtr32_c(draw, srce, &blit, s_trans, NULL);
+            break;
+
+        case CR_BLT_XOR:
+            blit_xor32_c(draw, srce, &blit, NULL);
+            break;
+
+        case CR_BLT_ADD:
+            blit_add32_c(draw, srce, &blit, NULL);
+            break;
+
+        case CR_BLT_SUB:
+            blit_sub32_c(draw, srce, &blit, NULL);
+            break;
+
+        case CR_BLT_ALP:
+            if (s_trans.val == 0)
+                blit_lrp32_c(draw, srce, &blit, s_trans, FALSE, NULL);
+            else
+                blit_lrp32_c(draw, srce, &blit, s_trans, TRUE, NULL);
+            break;
+    }
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    绘制方框 (使用外部定义)
+---------------------------------------
+*/
+static bool_t
+qst_crh_rect_ex (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sRECT*  rect;
+    sIMAGE* draw;
+
+    /* 参数解析 <RectName> */
+    if (argc < 2)
+        return (FALSE);
+    if (s_resx == NULL)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+
+    /* 查找目标矩形对象 */
+    rect = egui_res_get_rct(s_resx, argv[1]);
+    if (rect == NULL)
+        return (FALSE);
+    draw_rect(draw, rect, s_color, s_pixdraw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    绘制填充 (使用外部定义)
+---------------------------------------
+*/
+static bool_t
+qst_crh_fill_ex (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sFILL   fill;
+    sRECT*  rect;
+    sIMAGE* draw;
+
+    /* 参数解析 <RectName> */
+    if (argc < 2)
+        return (FALSE);
+    if (s_resx == NULL)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+
+    /* 查找目标矩形对象 */
+    rect = egui_res_get_rct(s_resx, argv[1]);
+    if (rect == NULL)
+        return (FALSE);
+    fill.dx = rect->x1;
+    fill.dy = rect->y1;
+    fill.dw = rect->ww;
+    fill.dh = rect->hh;
+    s_flldraw(draw, &fill, s_color, NULL);
+    return (TRUE);
+}
+
+/*
 =======================================
     命令单元导出表
 =======================================
@@ -938,5 +1175,10 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:textt", qst_crh_text },
     { "crh:sleep", qst_crh_sleep },
     { "crh:winfont", qst_crh_winfont },
+    { "crh:trans", qst_crh_trans },
+    { "crh:loadres", qst_crh_loadres },
+    { "crh:blit", qst_crh_blit },
+    { "crh:rect_ex", qst_crh_rect_ex },
+    { "crh:fill_ex", qst_crh_fill_ex },
     { NULL, NULL },
 };
