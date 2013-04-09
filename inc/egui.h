@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-03-21  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-02  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -48,6 +48,8 @@ CR_API bool_t   egui_res_load_s (egui_t egui, const ansi_t *text,
                                  uint_t type, engine_init_t port);
 CR_API bool_t   egui_res_load_f (egui_t egui, const ansi_t *name,
                                  uint_t type, engine_init_t port);
+CR_API bool_t   egui_res_set_root (egui_t egui, const ansi_t *root);
+
 /* 查找 eGUI 资源对象 */
 CR_API sFMTZ*       egui_res_get (egui_t egui, const ansi_t *name);
 CR_API bool_t       egui_res_set (egui_t egui, const ansi_t *name,
