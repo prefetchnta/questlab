@@ -1148,6 +1148,74 @@ qst_crh_fill_ex (
 }
 
 /*
+---------------------------------------
+    绘制文字 (使用外部定义)
+---------------------------------------
+*/
+static bool_t
+qst_crh_text_ex (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sRECT*  rect;
+    bool_t  free;
+    bool_t  rett;
+    bool_t  tran;
+    ansi_t* temp;
+    ansi_t* text;
+    sIMAGE* draw;
+    uint_t  align;
+
+    /* 参数解析 <EscText/TextName> <RectName> <Align> [IsTextName] */
+    if (argc < 4)
+        return (FALSE);
+    if (s_font == NULL)
+        return (FALSE);
+    if (s_resx == NULL)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+
+    /* 查找目标矩形对象 */
+    rect = egui_res_get_rct(s_resx, argv[2]);
+    if (rect == NULL)
+        return (FALSE);
+
+    /* 找不到或不使用文本名称的时候使用转义字符串 */
+    if (argc > 4)
+        text = egui_res_get_txt(s_resx, argv[1]);
+    else
+        text = NULL;
+    if (text == NULL) {
+        temp = str_fmtA("\"%s\"", argv[1]);
+        if (temp == NULL)
+            return (FALSE);
+        text = str_esc_dupU(temp);
+        mem_free(temp);
+        if (text == NULL)
+            return (FALSE);
+        free = TRUE;
+    }
+    else {
+        free = FALSE;
+    }
+
+    /* 区分实体和透明, 两个命令合并起来了 */
+    if (str_cmpA(argv[0], "crh:texts_ex") == 0)
+        tran = FALSE;
+    else
+        tran = TRUE;
+    align = str2intxA(argv[3]);
+    rett = qst_crh_text_int(draw, tran, rect, text, align);
+    if (free)
+        mem_free(text);
+    return (rett);
+}
+
+/*
 =======================================
     命令单元导出表
 =======================================
@@ -1180,5 +1248,7 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:blit", qst_crh_blit },
     { "crh:rect_ex", qst_crh_rect_ex },
     { "crh:fill_ex", qst_crh_fill_ex },
+    { "crh:texts_ex", qst_crh_text_ex },
+    { "crh:textt_ex", qst_crh_text_ex },
     { NULL, NULL },
 };
