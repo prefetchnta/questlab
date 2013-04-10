@@ -760,6 +760,138 @@ image_cut_down (
 }
 
 /*
+---------------------------------------
+    颜色距离的平方
+---------------------------------------
+*/
+static int32u
+distance_rgb (
+  __CR_IN__ sint_t          wr,
+  __CR_IN__ sint_t          wg,
+  __CR_IN__ sint_t          wb,
+  __CR_IN__ sint_t          wt,
+  __CR_IN__ const byte_t*   p1,
+  __CR_IN__ const byte_t*   p2
+    )
+{
+    int32s  sm;
+    int32s  bb = (int32s)p1[0];
+    int32s  gg = (int32s)p1[1];
+    int32s  rr = (int32s)p1[2];
+
+    /* 空间距离 */
+    bb -= (int32s)p2[0];
+    sm  = (int32s)(wb * bb * bb);
+    gg -= (int32s)p2[1];
+    sm += (int32s)(wg * gg * gg);
+    rr -= (int32s)p2[2];
+    sm += (int32s)(wr * rr * rr);
+    return ((int32u)(sm / wt));
+}
+
+/*
+---------------------------------------
+    生成色阶颜色表
+---------------------------------------
+*/
+static byte_t*
+create_step_rgb (
+  __CR_IN__ uint_t  step,
+  __CR_OT__ uint_t* size
+    )
+{
+    uchar*  ptr;
+    uchar*  table;
+    uint_t  count;
+    uint_t  delta;
+
+    if (step < 2)
+        step = 2;
+    else
+    if (step > 32)
+        step = 32;
+    count = step * step * step * 3;
+    table = (uchar*)mem_malloc(count);
+    if (table == NULL)
+        return (NULL);
+    ptr = table;
+    delta = 255 / (step - 1);
+    for (uint_t ir = 0; ir < step * delta; ir += delta) {
+        for (uint_t ig = 0; ig < step * delta; ig += delta) {
+            for (uint_t ib = 0; ib < step * delta; ib += delta) {
+                *ptr++ = (byte_t)ib;
+                *ptr++ = (byte_t)ig;
+                *ptr++ = (byte_t)ir;
+            }
+        }
+    }
+    *size = count;
+    return (table);
+}
+
+/*
+---------------------------------------
+    图片色阶过滤
+---------------------------------------
+*/
+static bool_t
+image_img_step (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* tbl;
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  step;
+    uint_t  ww, hh;
+    uint_t  idxs, size;
+    int32u  dist, mdst;
+    sint_t  wr, wg, wb, wt;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    step = xml_attr_intxU("step", 2, param);
+    tbl = create_step_rgb(step, &size);
+    if (tbl == NULL)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    wr = (sint_t)xml_attr_intxU("wr", 2, param);
+    wg = (sint_t)xml_attr_intxU("wg", 4, param);
+    wb = (sint_t)xml_attr_intxU("wb", 1, param);
+    wt = wr + wg + wb;
+
+    /* 颜色统一到距离最近的值 */
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            idxs = 0;
+            mdst = ((int32u)-1);
+            for (uint_t ii = 0; ii < size; ii += 3) {
+                dist = distance_rgb(wr, wg, wb, wt, ptr, &tbl[ii]);
+                if (dist < mdst) {
+                    idxs = ii;
+                    mdst = dist;
+                }
+            }
+            ptr[0] = tbl[idxs + 0];
+            ptr[1] = tbl[idxs + 1];
+            ptr[2] = tbl[idxs + 2];
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    mem_free(tbl);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -781,5 +913,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_conv3x3", image_conv3x3 },
     { "crhack_sobel", image_edge_sobel },
     { "crhack_cutdown", image_cut_down },
+    { "crhack_imgstep", image_img_step },
     { NULL, NULL },
 };
