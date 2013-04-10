@@ -831,63 +831,171 @@ create_step_rgb (
 
 /*
 ---------------------------------------
-    图片色阶过滤
+    图片色阶过滤 (内部实现)
 ---------------------------------------
 */
-static bool_t
-image_img_step (
-  __CR_UU__ void_t*     nouse,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
+static void_t
+image_clr_step_int (
+  __CR_IN__ sIMAGE*         dest,
+  __CR_IN__ uint_t          size,
+  __CR_IN__ const byte_t*   table,
+  __CR_IN__ const sint_t    wrgb[3]
     )
 {
-    byte_t* tbl;
     byte_t* ptr;
     byte_t* line;
-    sIMAGE* dest;
-    uint_t  step;
+    sint_t  wtot;
+    uint_t  idxs;
+    int32u  dist;
+    int32u  mdst;
     uint_t  ww, hh;
-    uint_t  idxs, size;
-    int32u  dist, mdst;
-    sint_t  wr, wg, wb, wt;
 
-    CR_NOUSE(nouse);
-    dest = (sIMAGE*)image;
-    if (dest->fmt != CR_ARGB8888)
-        return (TRUE);
-    step = xml_attr_intxU("step", 2, param);
-    tbl = create_step_rgb(step, &size);
-    if (tbl == NULL)
-        return (TRUE);
+    /* 统一到距离最近的颜色 */
+    if (size % 3 != 0)
+        return;
     line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
-    wr = (sint_t)xml_attr_intxU("wr", 2, param);
-    wg = (sint_t)xml_attr_intxU("wg", 4, param);
-    wb = (sint_t)xml_attr_intxU("wb", 1, param);
-    wt = wr + wg + wb;
-
-    /* 颜色统一到距离最近的值 */
+    wtot = wrgb[0] + wrgb[1] + wrgb[2];
+    if (wtot == 0) wtot = 1;
     for (uint_t yy = 0; yy < hh; yy++) {
         ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
             idxs = 0;
             mdst = ((int32u)-1);
             for (uint_t ii = 0; ii < size; ii += 3) {
-                dist = distance_rgb(wr, wg, wb, wt, ptr, &tbl[ii]);
+                dist = distance_rgb(wrgb[0], wrgb[1], wrgb[2],
+                                    wtot, ptr, &table[ii]);
                 if (dist < mdst) {
                     idxs = ii;
                     mdst = dist;
                 }
             }
-            ptr[0] = tbl[idxs + 0];
-            ptr[1] = tbl[idxs + 1];
-            ptr[2] = tbl[idxs + 2];
+            ptr[0] = table[idxs + 0];
+            ptr[1] = table[idxs + 1];
+            ptr[2] = table[idxs + 2];
             ptr += sizeof(int32u);
         }
         line += dest->bpl;
     }
-    mem_free(tbl);
+}
+
+/*
+---------------------------------------
+    图片色阶过滤
+---------------------------------------
+*/
+static bool_t
+image_clr_step (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+    byte_t* table;
+    sint_t  wrgb[3];
+    uint_t  size, step;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    step = xml_attr_intxU("step", 2, param);
+    table = create_step_rgb(step, &size);
+    if (table == NULL)
+        return (TRUE);
+    wrgb[0] = (sint_t)xml_attr_intxU("wr", 2, param);
+    wrgb[1] = (sint_t)xml_attr_intxU("wg", 4, param);
+    wrgb[2] = (sint_t)xml_attr_intxU("wb", 1, param);
+    image_clr_step_int(dest, size, table, wrgb);
+    mem_free(table);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片乘法运算
+---------------------------------------
+*/
+static bool_t
+image_multiply (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    fp32_t  mult;
+    fp32_t  fval;
+    uint_t  uval;
+    uint_t  ww, hh;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    mult = xml_attr_fp32U("factor", 2.0f, param);
+    if (param->found)
+    {
+        /* 有参数使用指定参数 */
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                fval = mult * ptr[0];
+                if (fval >= 255.0f)
+                    ptr[0] = 0xFF;
+                else
+                    ptr[0] = (byte_t)fval;
+                fval = mult * ptr[1];
+                if (fval >= 255.0f)
+                    ptr[1] = 0xFF;
+                else
+                    ptr[1] = (byte_t)fval;
+                fval = mult * ptr[2];
+                if (fval >= 255.0f)
+                    ptr[2] = 0xFF;
+                else
+                    ptr[2] = (byte_t)fval;
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
+        }
+    }
+    else
+    {
+        /* 没有参数使用乘方运算 */
+        for (uint_t yy = 0; yy < hh; yy++) {
+            ptr = line;
+            for (uint_t xx = 0; xx < ww; xx++) {
+                uval = ptr[0];
+                uval *= uval;
+                if (uval >= 0xFF)
+                    ptr[0] = 0xFF;
+                else
+                    ptr[0] = (byte_t)uval;
+                uval = ptr[1];
+                uval *= uval;
+                if (uval >= 0xFF)
+                    ptr[1] = 0xFF;
+                else
+                    ptr[1] = (byte_t)uval;
+                uval = ptr[2];
+                uval *= uval;
+                if (uval >= 0xFF)
+                    ptr[2] = 0xFF;
+                else
+                    ptr[2] = (byte_t)uval;
+                ptr += sizeof(int32u);
+            }
+            line += dest->bpl;
+        }
+    }
     return (TRUE);
 }
 
@@ -913,6 +1021,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_conv3x3", image_conv3x3 },
     { "crhack_sobel", image_edge_sobel },
     { "crhack_cutdown", image_cut_down },
-    { "crhack_imgstep", image_img_step },
+    { "crhack_imgstep", image_clr_step },
+    { "crhack_multiply", image_multiply },
     { NULL, NULL },
 };
