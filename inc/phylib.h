@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-01-15  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-10  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -87,7 +87,8 @@ CR_API double   iif97_4_t2mpa (double t);
 CR_API double   iif97_4_mpa2t (double mpa);
 CR_API double   iif97_5_ws_d (double t, double mpa);
 CR_API double   iif97_5_ws_e (double t, double mpa);
-CR_API double   iif97_ws_de (double *e, double t, double mpa, double wx);
+CR_API double   iif97_ws_de (double *e, double t, double mpa, double wx,
+                             ufast_t *sec CR_DEFAULT(NULL));
 
 #endif  /* !__CR_PHYLIB_H__ */
 
