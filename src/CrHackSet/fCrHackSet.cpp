@@ -1034,6 +1034,70 @@ image_lookup (
 }
 
 /*
+---------------------------------------
+    图片颜色替换
+---------------------------------------
+*/
+static bool_t
+image_replace (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* ptr;
+    byte_t* line;
+    ansi_t* data;
+    sIMAGE* dest;
+    leng_t  ssize;
+    leng_t  dsize;
+    uint_t  ww, hh;
+    byte_t  src[48];
+    byte_t  dst[48];
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    data = xml_attr_bufferU("src", param);
+    if (data == NULL)
+        return (TRUE);
+    ssize = sizeof(src);
+    str2datA(src, &ssize, data);
+    if (ssize % 3 != 0)
+        return (TRUE);
+    data = xml_attr_bufferU("dst", param);
+    if (data == NULL)
+        return (TRUE);
+    dsize = sizeof(dst);
+    str2datA(dst, &dsize, data);
+    if (dsize != ssize)
+        return (TRUE);
+
+    /* src 颜色替换成 dst 颜色 */
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            for (ssize = 0; ssize < dsize; ssize += 3) {
+                if (ptr[0] == src[ssize + 0] &&
+                    ptr[1] == src[ssize + 1] &&
+                    ptr[2] == src[ssize + 2]) {
+                    ptr[0]  = dst[ssize + 0];
+                    ptr[1]  = dst[ssize + 1];
+                    ptr[2]  = dst[ssize + 2];
+                }
+            }
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1058,5 +1122,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_imgstep", image_clr_step },
     { "crhack_multiply", image_multiply },
     { "crhack_lookup", image_lookup },
+    { "crhack_replace", image_replace },
     { NULL, NULL },
 };

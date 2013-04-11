@@ -1,0 +1,6 @@
+<!-- 颜色替换滤镜 -->
+<filters>
+    <crhack_replace
+        src="000000 7F0000 7F7F00 FFFF00 FF0000 3F3F3F C0C0C0 FFFFFF"
+        dst="FFFFFF FF0000 FF0000 FF0000 FF0000 FFFFFF FFFFFF FFFFFF" />
+</filters>
