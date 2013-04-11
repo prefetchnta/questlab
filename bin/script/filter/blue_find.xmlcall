@@ -1,0 +1,10 @@
+<!-- 蓝色搜索滤镜 -->
+<filters>
+    <crhack_and_x86 mask="0xFFFF00FF" />
+    <crhack_lookup wr="299" wg="587" wb="114"
+           table="000000 7F0000 FF0000 00007F 0000FF 7F7F7F FFFFFF" />
+    <crhack_replace src="7F0000 FF0000 00007F 0000FF 7F7F7F FFFFFF"
+                    dst="FF0000 FF0000 000000 000000 000000 000000" />
+    <crhack_form3x3 mat="[0, 1, 0, 1, 1, 1, 0, 1, 0]" exp="1" />
+    <crhack_form3x3 mat="[1, 1, 1, 1, 1, 1, 1, 1, 1]" exp="0" />
+</filters>
