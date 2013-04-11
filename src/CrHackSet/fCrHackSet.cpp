@@ -452,37 +452,37 @@ conv3x3_main (
             sint_t  bb, gg, rr;
 
             /* 第一排 */
-            bb  = (sint_t)prev[(xx-1)*4+0] * mat[0];
-            gg  = (sint_t)prev[(xx-1)*4+1] * mat[0];
-            rr  = (sint_t)prev[(xx-1)*4+2] * mat[0];
-            bb += (sint_t)prev[(xx+0)*4+0] * mat[1];
-            gg += (sint_t)prev[(xx+0)*4+1] * mat[1];
-            rr += (sint_t)prev[(xx+0)*4+2] * mat[1];
-            bb += (sint_t)prev[(xx+1)*4+0] * mat[2];
-            gg += (sint_t)prev[(xx+1)*4+1] * mat[2];
-            rr += (sint_t)prev[(xx+1)*4+2] * mat[2];
+            bb  = prev[(xx-1)*4+0] * mat[0];
+            gg  = prev[(xx-1)*4+1] * mat[0];
+            rr  = prev[(xx-1)*4+2] * mat[0];
+            bb += prev[(xx+0)*4+0] * mat[1];
+            gg += prev[(xx+0)*4+1] * mat[1];
+            rr += prev[(xx+0)*4+2] * mat[1];
+            bb += prev[(xx+1)*4+0] * mat[2];
+            gg += prev[(xx+1)*4+1] * mat[2];
+            rr += prev[(xx+1)*4+2] * mat[2];
 
             /* 第二排 */
-            bb += (sint_t)curt[(xx-1)*4+0] * mat[3];
-            gg += (sint_t)curt[(xx-1)*4+1] * mat[3];
-            rr += (sint_t)curt[(xx-1)*4+2] * mat[3];
-            bb += (sint_t)curt[(xx+0)*4+0] * mat[4];
-            gg += (sint_t)curt[(xx+0)*4+1] * mat[4];
-            rr += (sint_t)curt[(xx+0)*4+2] * mat[4];
-            bb += (sint_t)curt[(xx+1)*4+0] * mat[5];
-            gg += (sint_t)curt[(xx+1)*4+1] * mat[5];
-            rr += (sint_t)curt[(xx+1)*4+2] * mat[5];
+            bb += curt[(xx-1)*4+0] * mat[3];
+            gg += curt[(xx-1)*4+1] * mat[3];
+            rr += curt[(xx-1)*4+2] * mat[3];
+            bb += curt[(xx+0)*4+0] * mat[4];
+            gg += curt[(xx+0)*4+1] * mat[4];
+            rr += curt[(xx+0)*4+2] * mat[4];
+            bb += curt[(xx+1)*4+0] * mat[5];
+            gg += curt[(xx+1)*4+1] * mat[5];
+            rr += curt[(xx+1)*4+2] * mat[5];
 
             /* 第三排 */
-            bb += (sint_t)next[(xx-1)*4+0] * mat[6];
-            gg += (sint_t)next[(xx-1)*4+1] * mat[6];
-            rr += (sint_t)next[(xx-1)*4+2] * mat[6];
-            bb += (sint_t)next[(xx+0)*4+0] * mat[7];
-            gg += (sint_t)next[(xx+0)*4+1] * mat[7];
-            rr += (sint_t)next[(xx+0)*4+2] * mat[7];
-            bb += (sint_t)next[(xx+1)*4+0] * mat[8];
-            gg += (sint_t)next[(xx+1)*4+1] * mat[8];
-            rr += (sint_t)next[(xx+1)*4+2] * mat[8];
+            bb += next[(xx-1)*4+0] * mat[6];
+            gg += next[(xx-1)*4+1] * mat[6];
+            rr += next[(xx-1)*4+2] * mat[6];
+            bb += next[(xx+0)*4+0] * mat[7];
+            gg += next[(xx+0)*4+1] * mat[7];
+            rr += next[(xx+0)*4+2] * mat[7];
+            bb += next[(xx+1)*4+0] * mat[8];
+            gg += next[(xx+1)*4+1] * mat[8];
+            rr += next[(xx+1)*4+2] * mat[8];
 
             /* 中心-B */
             bb /= csum;
@@ -510,6 +510,133 @@ conv3x3_main (
             if (rr > 255)
                 rr = 255;
             *ptr++ = (byte_t)rr;
+
+            /* 中心-A */
+            *ptr++ = curt[xx * 4 + 3];
+        }
+        prev += src->bpl;
+        curt += src->bpl;
+        next += src->bpl;
+    }
+    return (dst);
+}
+
+/*
+---------------------------------------
+    形态运算 (3 x 3)
+---------------------------------------
+*/
+static byte_t*
+conv3x3_form (
+  __CR_IN__ const sIMAGE*   src,
+  __CR_IN__ const sint_t    mat[9],
+  __CR_IN__ bool_t          expand
+    )
+{
+    byte_t* ptr;
+    byte_t* dst;
+    byte_t* prev;
+    byte_t* curt;
+    byte_t* next;
+    uint_t  xx, yy;
+    uint_t  ww, hh;
+
+    /* 不处理边框 */
+    ww = src->position.ww;
+    hh = src->position.hh;
+    if (ww < 3 || hh < 3)
+        return (NULL);
+    ww -= 2;
+    hh -= 2;
+    dst = (byte_t*)mem_malloc(ww * hh * 4);
+    if (dst == NULL)
+        return (NULL);
+    ptr = dst;
+
+    /* 开始计算卷积 */
+    prev = src->data + 4;
+    curt = prev + src->bpl;
+    next = curt + src->bpl;
+    for (yy = 0; yy < hh; yy++)
+    {
+        for (xx = 0; xx < ww; xx++)
+        {
+            sint_t  bb, gg, rr;
+
+            /* 第一排 */
+            bb  = prev[(xx-1)*4+0] & mat[0];
+            gg  = prev[(xx-1)*4+1] & mat[0];
+            rr  = prev[(xx-1)*4+2] & mat[0];
+            bb += prev[(xx+0)*4+0] & mat[1];
+            gg += prev[(xx+0)*4+1] & mat[1];
+            rr += prev[(xx+0)*4+2] & mat[1];
+            bb += prev[(xx+1)*4+0] & mat[2];
+            gg += prev[(xx+1)*4+1] & mat[2];
+            rr += prev[(xx+1)*4+2] & mat[2];
+
+            /* 第二排 */
+            bb += curt[(xx-1)*4+0] & mat[3];
+            gg += curt[(xx-1)*4+1] & mat[3];
+            rr += curt[(xx-1)*4+2] & mat[3];
+            bb += curt[(xx+0)*4+0] & mat[4];
+            gg += curt[(xx+0)*4+1] & mat[4];
+            rr += curt[(xx+0)*4+2] & mat[4];
+            bb += curt[(xx+1)*4+0] & mat[5];
+            gg += curt[(xx+1)*4+1] & mat[5];
+            rr += curt[(xx+1)*4+2] & mat[5];
+
+            /* 第三排 */
+            bb += next[(xx-1)*4+0] & mat[6];
+            gg += next[(xx-1)*4+1] & mat[6];
+            rr += next[(xx-1)*4+2] & mat[6];
+            bb += next[(xx+0)*4+0] & mat[7];
+            gg += next[(xx+0)*4+1] & mat[7];
+            rr += next[(xx+0)*4+2] & mat[7];
+            bb += next[(xx+1)*4+0] & mat[8];
+            gg += next[(xx+1)*4+1] & mat[8];
+            rr += next[(xx+1)*4+2] & mat[8];
+
+            /* 中心-B */
+            if (expand) {
+                if (bb == 0)
+                    *ptr++ = 0x00;
+                else
+                    *ptr++ = 0xFF;
+            }
+            else {
+                if (bb == 9 * 255)
+                    *ptr++ = 0xFF;
+                else
+                    *ptr++ = 0x00;
+            }
+
+            /* 中心-G */
+            if (expand) {
+                if (gg == 0)
+                    *ptr++ = 0x00;
+                else
+                    *ptr++ = 0xFF;
+            }
+            else {
+                if (gg == 9 * 255)
+                    *ptr++ = 0xFF;
+                else
+                    *ptr++ = 0x00;
+            }
+
+            /* 中心-R */
+            if (expand) {
+                if (rr == 0)
+                    *ptr++ = 0x00;
+                else
+                    *ptr++ = 0xFF;
+            }
+            else {
+                if (rr == 9 * 255)
+                    *ptr++ = 0xFF;
+                else
+                    *ptr++ = 0x00;
+            }
 
             /* 中心-A */
             *ptr++ = curt[xx * 4 + 3];
@@ -637,8 +764,8 @@ image_edge_sobel (
         sint_t  tx, ty;
 
         /* 分量-B */
-        tx = (sint_t)gx[idx + 0];
-        ty = (sint_t)gy[idx + 0];
+        tx = gx[idx + 0];
+        ty = gy[idx + 0];
         tx *= tx;
         ty *= ty;
         ty += tx;
@@ -651,8 +778,8 @@ image_edge_sobel (
         gx[idx + 0] = (byte_t)tx;
 
         /* 分量-G */
-        tx = (sint_t)gx[idx + 1];
-        ty = (sint_t)gy[idx + 1];
+        tx = gx[idx + 1];
+        ty = gy[idx + 1];
         tx *= tx;
         ty *= ty;
         ty += tx;
@@ -665,8 +792,8 @@ image_edge_sobel (
         gx[idx + 1] = (byte_t)tx;
 
         /* 分量-R */
-        tx = (sint_t)gx[idx + 2];
-        ty = (sint_t)gy[idx + 2];
+        tx = gx[idx + 2];
+        ty = gy[idx + 2];
         tx *= tx;
         ty *= ty;
         ty += tx;
@@ -1098,6 +1225,50 @@ image_replace (
 }
 
 /*
+---------------------------------------
+    图片形态运算 (3 x 3)
+---------------------------------------
+*/
+static bool_t
+image_form3x3 (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    uint_t  idx;
+    ansi_t* str;
+    byte_t* temp;
+    sIMAGE* dest;
+    sint_t  mat[9];
+    uint_t  expand;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    str = xml_attr_bufferU("mat", param);
+    if (str == NULL ||
+        str2lstA((uint_t*)mat, 9, str, "[],") == NULL) {
+        for (idx = 0; idx < 9; idx++)
+            mat[idx] = 1;
+    }
+    for (idx = 0; idx < 9; idx++) {
+        if (mat[idx])
+            mat[idx] = 0xFF;
+        else
+            mat[idx] = 0x00;
+    }
+    expand = xml_attr_intxU("exp", TRUE, param);
+    temp = conv3x3_form(dest, mat, !!expand);
+    if (temp == NULL)
+        return (TRUE);
+    conv3x3_back(dest, temp);
+    mem_free(temp);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1123,5 +1294,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_multiply", image_multiply },
     { "crhack_lookup", image_lookup },
     { "crhack_replace", image_replace },
+    { "crhack_form3x3", image_form3x3 },
     { NULL, NULL },
 };

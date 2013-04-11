@@ -1,0 +1,4 @@
+<!-- 3x3形态滤镜 -->
+<filters>
+    <crhack_form3x3 mat="[1, 1, 1, 1, 1, 1, 1, 1, 1]" exp="1" />
+</filters>
