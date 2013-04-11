@@ -808,8 +808,8 @@ create_step_rgb (
     if (step < 2)
         step = 2;
     else
-    if (step > 32)
-        step = 32;
+    if (step > 16)
+        step = 16;
     count = step * step * step * 3;
     table = (uchar*)mem_malloc(count);
     if (table == NULL)
@@ -1000,6 +1000,40 @@ image_multiply (
 }
 
 /*
+---------------------------------------
+    图片查表过滤
+---------------------------------------
+*/
+static bool_t
+image_lookup (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    leng_t  size;
+    sIMAGE* dest;
+    ansi_t* data;
+    sint_t  wrgb[3];
+    byte_t  table[48];
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    data = xml_attr_bufferU("table", param);
+    if (data == NULL)
+        return (TRUE);
+    size = sizeof(table);
+    str2datA(table, &size, data);
+    wrgb[0] = (sint_t)xml_attr_intxU("wr", 2, param);
+    wrgb[1] = (sint_t)xml_attr_intxU("wg", 4, param);
+    wrgb[2] = (sint_t)xml_attr_intxU("wb", 1, param);
+    image_clr_step_int(dest, (uint_t)size, table, wrgb);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1023,5 +1057,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_cutdown", image_cut_down },
     { "crhack_imgstep", image_clr_step },
     { "crhack_multiply", image_multiply },
+    { "crhack_lookup", image_lookup },
     { NULL, NULL },
 };
