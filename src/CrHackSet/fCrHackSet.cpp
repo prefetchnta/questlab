@@ -538,6 +538,7 @@ conv3x3_form (
     byte_t* prev;
     byte_t* curt;
     byte_t* next;
+    sint_t  csum;
     uint_t  xx, yy;
     uint_t  ww, hh;
 
@@ -552,6 +553,10 @@ conv3x3_form (
     if (dst == NULL)
         return (NULL);
     ptr = dst;
+
+    /* 求矩阵的和 */
+    for (csum = mat[0], xx = 1; xx < 9; xx++)
+        csum += mat[xx];
 
     /* 开始计算卷积 */
     prev = src->data + 4;
@@ -604,7 +609,7 @@ conv3x3_form (
                     *ptr++ = 0xFF;
             }
             else {
-                if (bb == 9 * 255)
+                if (bb == csum)
                     *ptr++ = 0xFF;
                 else
                     *ptr++ = 0x00;
@@ -618,7 +623,7 @@ conv3x3_form (
                     *ptr++ = 0xFF;
             }
             else {
-                if (gg == 9 * 255)
+                if (gg == csum)
                     *ptr++ = 0xFF;
                 else
                     *ptr++ = 0x00;
@@ -632,7 +637,7 @@ conv3x3_form (
                     *ptr++ = 0xFF;
             }
             else {
-                if (rr == 9 * 255)
+                if (rr == csum)
                     *ptr++ = 0xFF;
                 else
                     *ptr++ = 0x00;
@@ -916,6 +921,9 @@ distance_rgb (
     return ((int32u)(sm / wt));
 }
 
+/* 最大查找颜色数 */
+#define LOOKUP_MAX  32
+
 /*
 ---------------------------------------
     生成色阶颜色表
@@ -935,8 +943,8 @@ create_step_rgb (
     if (step < 2)
         step = 2;
     else
-    if (step > 16)
-        step = 16;
+    if (step > LOOKUP_MAX)
+        step = LOOKUP_MAX;
     count = step * step * step * 3;
     table = (uchar*)mem_malloc(count);
     if (table == NULL)
@@ -1142,7 +1150,7 @@ image_lookup (
     sIMAGE* dest;
     ansi_t* data;
     sint_t  wrgb[3];
-    byte_t  table[48];
+    byte_t  table[LOOKUP_MAX * 3];
 
     CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
@@ -1176,11 +1184,10 @@ image_replace (
     byte_t* line;
     ansi_t* data;
     sIMAGE* dest;
-    leng_t  ssize;
-    leng_t  dsize;
     uint_t  ww, hh;
-    byte_t  src[48];
-    byte_t  dst[48];
+    leng_t  ssize, dsize;
+    byte_t  src[LOOKUP_MAX * 3];
+    byte_t  dst[LOOKUP_MAX * 3];
 
     CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
