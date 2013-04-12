@@ -977,8 +977,8 @@ qst_crh_loadres (
         s_resx = NULL;
         return (FALSE);
     }
-#if 0
-    /* 指定文件根目录 (功能暂时不开放) */
+
+    /* 指定文件根目录 */
     if (argc > 2) {
         if (!egui_res_set_root(s_resx, argv[2])) {
             egui_free(s_resx);
@@ -986,7 +986,6 @@ qst_crh_loadres (
             return (FALSE);
         }
     }
-#endif
     return (TRUE);
 }
 
