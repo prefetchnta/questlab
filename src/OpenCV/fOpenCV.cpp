@@ -141,6 +141,91 @@ hough_circles (
 }
 
 /*
+---------------------------------------
+    Hough 变换线搜索
+---------------------------------------
+*/
+static bool_t
+hough_lines (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE*     dest;
+    IplImage    draw;
+    /* ----------- */
+    fp64_t  rho, the;
+    uint_t  ksize, thres;
+    fp64_t  param1, param2;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    if (!ilab_img2ipl_set(&draw, dest))
+        return (TRUE);
+    ksize = xml_attr_intxU("ksize", 3, param);
+    param1 = xml_attr_fp64U("param1", 50, param);
+    param2 = xml_attr_fp64U("param2", 200, param);
+    rho = xml_attr_fp64U("rho", 1, param);
+    the = xml_attr_fp64U("theta", CV_PI / 180, param);
+
+    size_t  idx, count;
+    Mat outp, inpt(&draw, false);
+
+    /* 两种搜索直线的方法 */
+    Canny(inpt, outp, param1, param2, ksize);
+    if (str_cmpA(param->name, "opencv_hough_lines") == 0)
+    {
+        fp64_t  srn, stn;
+        vector<Vec2f>   lines;
+
+        srn = xml_attr_fp64U("srn", 0, param);
+        stn = xml_attr_fp64U("stn", 0, param);
+        thres = xml_attr_intxU("thres", 100, param);
+        HoughLines(outp, lines, rho, the, thres, srn, stn);
+        count = lines.size();
+        for (idx = 0; idx < count; idx++)
+        {
+            fp64_t  aa, bb;
+            fp64_t  x0, y0;
+
+            rho = lines[idx][0];
+            the = lines[idx][1];
+            aa = cos(the);
+            bb = sin(the);
+            x0 = aa * rho;
+            y0 = bb * rho;
+
+            Point   pt1(cvRound(x0 + 1000 * (-bb)),
+                        cvRound(y0 + 1000 * ( aa)));
+            Point   pt2(cvRound(x0 - 1000 * (-bb)),
+                        cvRound(y0 - 1000 * ( aa)));
+
+            line(inpt, pt1, pt2, Scalar(0, 0, 255, 255), 3, 8);
+        }
+    }
+    else
+    {
+        vector<Vec4i>   lines;
+        fp64_t  min_len, max_gap;
+
+        thres = xml_attr_intxU("thres", 80, param);
+        min_len = xml_attr_fp64U("min_len", 30, param);
+        max_gap = xml_attr_fp64U("max_gap", 10, param);
+        HoughLinesP(outp, lines, rho, the, thres, min_len, max_gap);
+        count = lines.size();
+        for (idx = 0; idx < count; idx++) {
+            line(inpt, Point(lines[idx][0], lines[idx][1]),
+                       Point(lines[idx][2], lines[idx][3]),
+                       Scalar(0, 0, 255, 255), 3, 8);
+        }
+    }
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -150,5 +235,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "opencv_gauss_blur", gaussian_blur },
     { "opencv_median_blur", median_blur },
     { "opencv_hough_circles", hough_circles },
+    { "opencv_hough_lines", hough_lines },
+    { "opencv_hough_linesp", hough_lines },
     { NULL, NULL },
 };

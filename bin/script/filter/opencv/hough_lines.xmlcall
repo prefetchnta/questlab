@@ -1,0 +1,5 @@
+<!-- Hough 线搜索滤镜 -->
+<filters>
+    <opencv_hough_lines ksize="3" param1="50" param2="200"
+            thres="100" rho="1" theta="0.01745" srn="0" stn="0" />
+</filters>
