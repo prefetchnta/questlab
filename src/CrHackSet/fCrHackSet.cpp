@@ -893,32 +893,84 @@ image_cut_down (
 
 /*
 ---------------------------------------
-    颜色距离的平方
+    RGB 转到 HSV
+---------------------------------------
+*/
+static void_t
+rgb2hsv (
+  __CR_OT__ int32s*         dst,
+  __CR_IN__ const byte_t*   src
+    )
+{
+    sint_t  dlt;
+    sint_t  bb = src[0];
+    sint_t  gg = src[1];
+    sint_t  rr = src[2];
+    sint_t  max = bb;
+    sint_t  min = bb;
+
+    if (max < gg) max = gg;
+    if (min > gg) min = gg;
+    if (max < rr) max = rr;
+    if (min > rr) min = rr;
+    dlt = max - min;
+
+    /* 分量-H */
+    if (max == min) {
+        dst[0] = 0;
+    }
+    else
+    if (max == rr) {
+        dst[0] = (60 * (gg - bb)) / dlt;
+        if (gg < bb)
+            dst[0] += 360;
+    }
+    else
+    if (max == gg) {
+        dst[0] = (60 * (bb - rr)) / dlt + 120;
+    }
+    else {
+        dst[0] = (60 * (rr - gg)) / dlt + 240;
+    }
+
+    /* 分量-S */
+    if (max == 0)
+        dst[1] = 0;
+    else
+        dst[1] = 360 - (360 * min) / max;
+
+    /* 分量-V */
+    dst[2] = (max * 360) / 255;
+}
+
+/*
+---------------------------------------
+    HSV 距离的平方
 ---------------------------------------
 */
 static int32u
-distance_rgb (
-  __CR_IN__ sint_t          wr,
-  __CR_IN__ sint_t          wg,
-  __CR_IN__ sint_t          wb,
+distance_hsv (
+  __CR_IN__ sint_t          wh,
+  __CR_IN__ sint_t          ws,
+  __CR_IN__ sint_t          wv,
   __CR_IN__ sint_t          wt,
   __CR_IN__ const byte_t*   p1,
   __CR_IN__ const byte_t*   p2
     )
 {
     int32s  sm;
-    int32s  bb = (int32s)p1[0];
-    int32s  gg = (int32s)p1[1];
-    int32s  rr = (int32s)p1[2];
+    int32s  h1[3];
+    int32s  h2[3];
 
-    /* 空间距离 */
-    bb -= (int32s)p2[0];
-    sm  = (int32s)(wb * bb * bb);
-    gg -= (int32s)p2[1];
-    sm += (int32s)(wg * gg * gg);
-    rr -= (int32s)p2[2];
-    sm += (int32s)(wr * rr * rr);
-    return ((int32u)(sm / wt));
+    rgb2hsv(h1, p1);
+    rgb2hsv(h2, p2);
+    h1[0] -= h2[0];
+    h1[1] -= h2[1];
+    h1[2] -= h2[2];
+    sm  = wh * h1[0] * h1[0];
+    sm += ws * h1[1] * h1[1];
+    sm += wv * h1[2] * h1[2];
+    return (sm / wt);
 }
 
 /* 最大查找颜色数 */
@@ -974,7 +1026,7 @@ image_clr_step_int (
   __CR_IN__ sIMAGE*         dest,
   __CR_IN__ uint_t          size,
   __CR_IN__ const byte_t*   table,
-  __CR_IN__ const sint_t    wrgb[3]
+  __CR_IN__ const sint_t    whsv[3]
     )
 {
     byte_t* ptr;
@@ -991,7 +1043,7 @@ image_clr_step_int (
     line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
-    wtot = wrgb[0] + wrgb[1] + wrgb[2];
+    wtot = whsv[0] + whsv[1] + whsv[2];
     if (wtot == 0) wtot = 1;
     for (uint_t yy = 0; yy < hh; yy++) {
         ptr = line;
@@ -999,7 +1051,7 @@ image_clr_step_int (
             idxs = 0;
             mdst = ((int32u)-1);
             for (uint_t ii = 0; ii < size; ii += 3) {
-                dist = distance_rgb(wrgb[0], wrgb[1], wrgb[2],
+                dist = distance_hsv(whsv[0], whsv[1], whsv[2],
                                     wtot, ptr, &table[ii]);
                 if (dist < mdst) {
                     idxs = ii;
@@ -1029,7 +1081,7 @@ image_clr_step (
 {
     sIMAGE* dest;
     byte_t* table;
-    sint_t  wrgb[3];
+    sint_t  whsv[3];
     uint_t  size, step;
 
     CR_NOUSE(nouse);
@@ -1040,10 +1092,10 @@ image_clr_step (
     table = create_step_rgb(step, &size);
     if (table == NULL)
         return (TRUE);
-    wrgb[0] = (sint_t)xml_attr_intxU("wr", 2, param);
-    wrgb[1] = (sint_t)xml_attr_intxU("wg", 4, param);
-    wrgb[2] = (sint_t)xml_attr_intxU("wb", 1, param);
-    image_clr_step_int(dest, size, table, wrgb);
+    whsv[0] = (sint_t)xml_attr_intxU("wh", 1, param);
+    whsv[1] = (sint_t)xml_attr_intxU("ws", 1, param);
+    whsv[2] = (sint_t)xml_attr_intxU("wv", 1, param);
+    image_clr_step_int(dest, size, table, whsv);
     mem_free(table);
     return (TRUE);
 }
@@ -1149,7 +1201,7 @@ image_lookup (
     leng_t  size;
     sIMAGE* dest;
     ansi_t* data;
-    sint_t  wrgb[3];
+    sint_t  whsv[3];
     byte_t  table[LOOKUP_MAX * 3];
 
     CR_NOUSE(nouse);
@@ -1161,10 +1213,10 @@ image_lookup (
         return (TRUE);
     size = sizeof(table);
     str2datA(table, &size, data);
-    wrgb[0] = (sint_t)xml_attr_intxU("wr", 2, param);
-    wrgb[1] = (sint_t)xml_attr_intxU("wg", 4, param);
-    wrgb[2] = (sint_t)xml_attr_intxU("wb", 1, param);
-    image_clr_step_int(dest, (uint_t)size, table, wrgb);
+    whsv[0] = (sint_t)xml_attr_intxU("wh", 1, param);
+    whsv[1] = (sint_t)xml_attr_intxU("ws", 1, param);
+    whsv[2] = (sint_t)xml_attr_intxU("wv", 1, param);
+    image_clr_step_int(dest, (uint_t)size, table, whsv);
     return (TRUE);
 }
 

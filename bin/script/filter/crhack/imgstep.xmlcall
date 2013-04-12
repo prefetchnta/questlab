@@ -1,4 +1,4 @@
 <!-- 色阶过滤滤镜 -->
 <filters>
-    <crhack_imgstep step="2" wr="2" wg="4" wb="1" />
+    <crhack_imgstep step="2" wh="1" ws="1" wv="1" />
 </filters>
