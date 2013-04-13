@@ -1034,7 +1034,7 @@ image_replace (
     byte_t* line;
     ansi_t* data;
     sIMAGE* dest;
-    uint_t  ww, hh;
+    uint_t  ww, hh, only;
     leng_t  ssize, dsize;
     byte_t  src[LOOKUP_MAX * 3];
     byte_t  dst[LOOKUP_MAX * 3];
@@ -1057,6 +1057,7 @@ image_replace (
     str2datA(dst, &dsize, data);
     if (dsize != ssize)
         return (TRUE);
+    only = xml_attr_intxU("only", FALSE, param);
 
     /* src 颜色替换成 dst 颜色 */
     line = dest->data;
@@ -1073,6 +1074,11 @@ image_replace (
                     ptr[1]  = dst[ssize + 1];
                     ptr[2]  = dst[ssize + 2];
                 }
+            }
+            if (only && ssize >= dsize) {
+                ptr[0] = 0x00;
+                ptr[1] = 0x00;
+                ptr[2] = 0x00;
             }
             ptr += sizeof(int32u);
         }
