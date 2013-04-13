@@ -1161,6 +1161,7 @@ image_replace (
                     ptr[0]  = dst[ssize + 0];
                     ptr[1]  = dst[ssize + 1];
                     ptr[2]  = dst[ssize + 2];
+                    break;
                 }
             }
             if (only && ssize >= dsize) {
