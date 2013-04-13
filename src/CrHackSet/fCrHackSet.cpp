@@ -893,12 +893,12 @@ image_cut_down (
 
 /*
 ---------------------------------------
-    RGB 转到 HSV
+    RGB 转到 HSL
 ---------------------------------------
 */
 static void_t
-rgb2hsv (
-  __CR_OT__ int32s*         dst,
+rgb2hsl (
+  __CR_OT__ sint_t*         dst,
   __CR_IN__ const byte_t*   src
     )
 {
@@ -916,7 +916,7 @@ rgb2hsv (
     dlt = max - min;
 
     /* 分量-H */
-    if (max == min) {
+    if (dlt == 0) {
         dst[0] = 0;
     }
     else
@@ -933,15 +933,55 @@ rgb2hsv (
         dst[0] = (60 * (rr - gg)) / dlt + 240;
     }
 
-    /* 分量-S */
-    if (max == 0)
-        dst[1] = 0;
-    else
-        dst[1] = 360 - (360 * min) / max;
+    /* 分量-L */
+    dst[2] = (min + max) / 2;
 
-    /* 分量-V */
-    dst[2] = (max * 360) / 255;
+    /* 分量-S */
+    if (dst[2] == 0 || dlt == 0) {
+        dst[1] = 0;
+    }
+    else
+    if (dst[2] <= 127) {
+        dst[1] = 255 * dlt / (2 * dst[2]);
+    }
+    else {
+        dst[1] = 255 * dlt / (2 * 255 - 2 * dst[2]);
+    }
 }
+
+/* 标准的色相表 */
+static const sint_t _rom_ s_hue[12] =
+{
+    15,     /* [  0 -  15] 红色区 0xFF0000 */
+    45,     /* [ 15 -  45] 橙色区 0xFF8000 */
+    75,     /* [ 45 -  75] 黄色区 0xFFFF00 */
+    105,    /* [ 75 - 105] 黄绿区 0x80FF00 */
+    135,    /* [105 - 135] 绿色区 0x00FF00 */
+    165,    /* [135 - 165] 青绿区 0x00FF80 */
+    195,    /* [165 - 195] 青色区 0x00FFFF */
+    225,    /* [195 - 225] 青蓝区 0x0080FF */
+    255,    /* [225 - 255] 蓝色区 0x0000FF */
+    285,    /* [255 - 285] 蓝紫区 0x8000FF */
+    315,    /* [285 - 315] 紫色区 0xFF00FF */
+    345,    /* [315 - 345] 紫红区 0xFF0080 */
+            /* [345 - 360] 红色区 0xFF0000 */
+};
+static const byte_t _rom_ s_color[13 * 3] =
+{
+    0xFF, 0x00, 0x00,
+    0xFF, 0x80, 0x00,
+    0xFF, 0xFF, 0x00,
+    0x80, 0xFF, 0x00,
+    0x00, 0xFF, 0x00,
+    0x00, 0xFF, 0x80,
+    0x00, 0xFF, 0xFF,
+    0x00, 0x80, 0xFF,
+    0x00, 0x00, 0xFF,
+    0x80, 0x00, 0xFF,
+    0xFF, 0x00, 0xFF,
+    0xFF, 0x00, 0x80,
+    0xFF, 0x00, 0x00,
+};
 
 /*
 ---------------------------------------
@@ -955,9 +995,57 @@ image_clr_step (
   __CR_IN__ sXNODEu*    param
     )
 {
+    ansi_t* str;
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  idx, ww, hh;
+    sint_t  gate_s, gate_l;
+    sint_t  hsl[3], hue[12];
+
     CR_NOUSE(nouse);
-    CR_NOUSE(image);
-    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    gate_s = (sint_t)xml_attr_intxU("gate_sat", 192, param);
+    gate_l = (sint_t)xml_attr_intxU("gate_lit", 128, param);
+    str = xml_attr_bufferU("table", param);
+    if (str == NULL ||
+        str2lstA((uint_t*)hue, 12, str, "[],") == NULL)
+        mem_cpy(hue, s_hue, sizeof(hue));
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            rgb2hsl(hsl, ptr);
+            if (hsl[0] == 0 || hsl[1] < gate_s) {
+                if (hsl[2] < gate_l) {
+                    ptr[0] = 0x00;
+                    ptr[1] = 0x00;
+                    ptr[2] = 0x00;
+                }
+                else {
+                    ptr[0] = 0xFF;
+                    ptr[1] = 0xFF;
+                    ptr[2] = 0xFF;
+                }
+            }
+            else {
+                for (idx = 0; idx < cntsof(hue); idx++) {
+                    if (hsl[0] < hue[idx])
+                        break;
+                }
+                idx *= 3;
+                ptr[0] = s_color[idx + 2];
+                ptr[1] = s_color[idx + 1];
+                ptr[2] = s_color[idx + 0];
+            }
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
     return (TRUE);
 }
 
