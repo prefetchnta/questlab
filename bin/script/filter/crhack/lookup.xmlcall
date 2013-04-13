@@ -1,5 +1,0 @@
-<!-- 图片查表滤镜 -->
-<filters>
-    <crhack_lookup wh="1" ws="1" wv="1"
-        table="000000 7F0000 7F7F00 FFFF00 FF0000 3F3F3F C0C0C0 FFFFFF" />
-</filters>

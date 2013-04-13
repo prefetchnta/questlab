@@ -945,130 +945,6 @@ rgb2hsv (
 
 /*
 ---------------------------------------
-    HSV 距离的平方
----------------------------------------
-*/
-static int32u
-distance_hsv (
-  __CR_IN__ sint_t          wh,
-  __CR_IN__ sint_t          ws,
-  __CR_IN__ sint_t          wv,
-  __CR_IN__ sint_t          wt,
-  __CR_IN__ const byte_t*   p1,
-  __CR_IN__ const byte_t*   p2
-    )
-{
-    int32s  sm;
-    int32s  h1[3];
-    int32s  h2[3];
-
-    rgb2hsv(h1, p1);
-    rgb2hsv(h2, p2);
-    h1[0] -= h2[0];
-    h1[1] -= h2[1];
-    h1[2] -= h2[2];
-    sm  = wh * h1[0] * h1[0];
-    sm += ws * h1[1] * h1[1];
-    sm += wv * h1[2] * h1[2];
-    return (sm / wt);
-}
-
-/* 最大查找颜色数 */
-#define LOOKUP_MAX  32
-
-/*
----------------------------------------
-    生成色阶颜色表
----------------------------------------
-*/
-static byte_t*
-create_step_rgb (
-  __CR_IN__ uint_t  step,
-  __CR_OT__ uint_t* size
-    )
-{
-    uchar*  ptr;
-    uchar*  table;
-    uint_t  count;
-    uint_t  delta;
-
-    if (step < 2)
-        step = 2;
-    else
-    if (step > LOOKUP_MAX)
-        step = LOOKUP_MAX;
-    count = step * step * step * 3;
-    table = (uchar*)mem_malloc(count);
-    if (table == NULL)
-        return (NULL);
-    ptr = table;
-    delta = 255 / (step - 1);
-    for (uint_t ir = 0; ir < step * delta; ir += delta) {
-        for (uint_t ig = 0; ig < step * delta; ig += delta) {
-            for (uint_t ib = 0; ib < step * delta; ib += delta) {
-                *ptr++ = (byte_t)ib;
-                *ptr++ = (byte_t)ig;
-                *ptr++ = (byte_t)ir;
-            }
-        }
-    }
-    *size = count;
-    return (table);
-}
-
-/*
----------------------------------------
-    图片色阶过滤 (内部实现)
----------------------------------------
-*/
-static void_t
-image_clr_step_int (
-  __CR_IN__ sIMAGE*         dest,
-  __CR_IN__ uint_t          size,
-  __CR_IN__ const byte_t*   table,
-  __CR_IN__ const sint_t    whsv[3]
-    )
-{
-    byte_t* ptr;
-    byte_t* line;
-    sint_t  wtot;
-    uint_t  idxs;
-    int32u  dist;
-    int32u  mdst;
-    uint_t  ww, hh;
-
-    /* 统一到距离最近的颜色 */
-    if (size % 3 != 0)
-        return;
-    line = dest->data;
-    ww = dest->position.ww;
-    hh = dest->position.hh;
-    wtot = whsv[0] + whsv[1] + whsv[2];
-    if (wtot == 0) wtot = 1;
-    for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
-        for (uint_t xx = 0; xx < ww; xx++) {
-            idxs = 0;
-            mdst = ((int32u)-1);
-            for (uint_t ii = 0; ii < size; ii += 3) {
-                dist = distance_hsv(whsv[0], whsv[1], whsv[2],
-                                    wtot, ptr, &table[ii]);
-                if (dist < mdst) {
-                    idxs = ii;
-                    mdst = dist;
-                }
-            }
-            ptr[0] = table[idxs + 0];
-            ptr[1] = table[idxs + 1];
-            ptr[2] = table[idxs + 2];
-            ptr += sizeof(int32u);
-        }
-        line += dest->bpl;
-    }
-}
-
-/*
----------------------------------------
     图片色阶过滤
 ---------------------------------------
 */
@@ -1079,24 +955,9 @@ image_clr_step (
   __CR_IN__ sXNODEu*    param
     )
 {
-    sIMAGE* dest;
-    byte_t* table;
-    sint_t  whsv[3];
-    uint_t  size, step;
-
     CR_NOUSE(nouse);
-    dest = (sIMAGE*)image;
-    if (dest->fmt != CR_ARGB8888)
-        return (TRUE);
-    step = xml_attr_intxU("step", 2, param);
-    table = create_step_rgb(step, &size);
-    if (table == NULL)
-        return (TRUE);
-    whsv[0] = (sint_t)xml_attr_intxU("wh", 1, param);
-    whsv[1] = (sint_t)xml_attr_intxU("ws", 1, param);
-    whsv[2] = (sint_t)xml_attr_intxU("wv", 1, param);
-    image_clr_step_int(dest, size, table, whsv);
-    mem_free(table);
+    CR_NOUSE(image);
+    CR_NOUSE(param);
     return (TRUE);
 }
 
@@ -1115,10 +976,9 @@ image_multiply (
     byte_t* ptr;
     byte_t* line;
     sIMAGE* dest;
-    fp32_t  mult;
     fp32_t  fval;
-    uint_t  uval;
     uint_t  ww, hh;
+    fp32_t  fr, fg, fb;
 
     CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
@@ -1127,98 +987,36 @@ image_multiply (
     line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
-    mult = xml_attr_fp32U("factor", 2.0f, param);
-    if (param->found)
-    {
-        /* 有参数使用指定参数 */
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                fval = mult * ptr[0];
-                if (fval >= 255.0f)
-                    ptr[0] = 0xFF;
-                else
-                    ptr[0] = (byte_t)fval;
-                fval = mult * ptr[1];
-                if (fval >= 255.0f)
-                    ptr[1] = 0xFF;
-                else
-                    ptr[1] = (byte_t)fval;
-                fval = mult * ptr[2];
-                if (fval >= 255.0f)
-                    ptr[2] = 0xFF;
-                else
-                    ptr[2] = (byte_t)fval;
-                ptr += sizeof(int32u);
-            }
-            line += dest->bpl;
+    fr = xml_attr_fp32U("red", 2.0f, param);
+    fg = xml_attr_fp32U("green", 2.0f, param);
+    fb = xml_attr_fp32U("blue", 2.0f, param);
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            fval = fb * ptr[0];
+            if (fval >= 255.0f)
+                ptr[0] = 0xFF;
+            else
+                ptr[0] = (byte_t)fval;
+            fval = fg * ptr[1];
+            if (fval >= 255.0f)
+                ptr[1] = 0xFF;
+            else
+                ptr[1] = (byte_t)fval;
+            fval = fr * ptr[2];
+            if (fval >= 255.0f)
+                ptr[2] = 0xFF;
+            else
+                ptr[2] = (byte_t)fval;
+            ptr += sizeof(int32u);
         }
-    }
-    else
-    {
-        /* 没有参数使用乘方运算 */
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                uval = ptr[0];
-                uval *= uval;
-                if (uval >= 0xFF)
-                    ptr[0] = 0xFF;
-                else
-                    ptr[0] = (byte_t)uval;
-                uval = ptr[1];
-                uval *= uval;
-                if (uval >= 0xFF)
-                    ptr[1] = 0xFF;
-                else
-                    ptr[1] = (byte_t)uval;
-                uval = ptr[2];
-                uval *= uval;
-                if (uval >= 0xFF)
-                    ptr[2] = 0xFF;
-                else
-                    ptr[2] = (byte_t)uval;
-                ptr += sizeof(int32u);
-            }
-            line += dest->bpl;
-        }
+        line += dest->bpl;
     }
     return (TRUE);
 }
 
-/*
----------------------------------------
-    图片查表过滤
----------------------------------------
-*/
-static bool_t
-image_lookup (
-  __CR_UU__ void_t*     nouse,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    leng_t  size;
-    sIMAGE* dest;
-    ansi_t* data;
-    sint_t  whsv[3];
-    byte_t  table[LOOKUP_MAX * 3];
-
-    CR_NOUSE(nouse);
-    dest = (sIMAGE*)image;
-    if (dest->fmt != CR_ARGB8888)
-        return (TRUE);
-    data = xml_attr_bufferU("table", param);
-    if (data == NULL)
-        return (TRUE);
-    size = sizeof(table);
-    str2datA(table, &size, data);
-    whsv[0] = (sint_t)xml_attr_intxU("wh", 1, param);
-    whsv[1] = (sint_t)xml_attr_intxU("ws", 1, param);
-    whsv[2] = (sint_t)xml_attr_intxU("wv", 1, param);
-    image_clr_step_int(dest, (uint_t)size, table, whsv);
-    return (TRUE);
-}
+/* 最大替换颜色数 */
+#define LOOKUP_MAX  32
 
 /*
 ---------------------------------------
@@ -1351,7 +1149,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_cutdown", image_cut_down },
     { "crhack_imgstep", image_clr_step },
     { "crhack_multiply", image_multiply },
-    { "crhack_lookup", image_lookup },
     { "crhack_replace", image_replace },
     { "crhack_form3x3", image_form3x3 },
     { NULL, NULL },

@@ -1,4 +1,4 @@
 <!-- 图片乘法滤镜 -->
 <filters>
-    <crhack_multiply factor="2.0" />
+    <crhack_multiply red="2.0" green="2.0" blue="2.0" />
 </filters>
