@@ -1020,7 +1020,7 @@ image_clr_step (
         ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
             rgb2hsl(hsl, ptr);
-            if (hsl[0] == 0 || hsl[1] < gate_s) {
+            if (hsl[1] < gate_s) {
                 if (hsl[2] < gate_l) {
                     ptr[0] = 0x00;
                     ptr[1] = 0x00;
