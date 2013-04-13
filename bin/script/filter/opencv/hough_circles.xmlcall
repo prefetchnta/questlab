@@ -1,4 +1,5 @@
 <!-- Hough 圆搜索滤镜 -->
 <filters>
-    <opencv_hough_circles dp="2" min_dist="120" param1="200" param2="100" min_radius="0" max_radius="240" />
+    <opencv_hough_circles dp="2.0" min_dist="120.0"
+        param1="200.0" param2="100.0" min_radius="0" max_radius="240" />
 </filters>
