@@ -1,5 +1,4 @@
 <!-- 二值转换滤镜 -->
 <filters>
-    <crhack_graying />
     <crhack_binaryz gate="127" />
 </filters>

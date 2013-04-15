@@ -341,8 +341,8 @@ image_binaryz (
     byte_t* ptr;
     byte_t* line;
     sIMAGE* dest;
-    uint_t  gate;
     uint_t  ww, hh;
+    uint_t  ii, gate;
 
     CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
@@ -358,7 +358,8 @@ image_binaryz (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                if (ptr[0] > gate)
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                if (ii > gate)
                     ptr[0] = 0xFF;
                 else
                     ptr[0] = 0x00;
@@ -389,7 +390,8 @@ image_binaryz (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                if (ptr[0] > gate)
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                if (ii > gate)
                     ptr[0] = 0xFF;
                 else
                     ptr[0] = 0x00;
@@ -831,8 +833,8 @@ image_cut_down (
     byte_t* ptr;
     byte_t* line;
     sIMAGE* dest;
-    uint_t  gate;
     uint_t  ww, hh;
+    uint_t  ii, gate;
 
     CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
@@ -848,10 +850,11 @@ image_cut_down (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                if (ptr[0] <= gate) {
-                    ptr[0] = 0;
-                    ptr[1] = 0;
-                    ptr[2] = 0;
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                if (ii <= gate) {
+                    ptr[0] = 0x00;
+                    ptr[1] = 0x00;
+                    ptr[2] = 0x00;
                 }
                 ptr += sizeof(int32u);
             }
@@ -878,10 +881,11 @@ image_cut_down (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                if (ptr[0] <= gate) {
-                    ptr[0] = 0;
-                    ptr[1] = 0;
-                    ptr[2] = 0;
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                if (ii <= gate) {
+                    ptr[0] = 0x00;
+                    ptr[1] = 0x00;
+                    ptr[2] = 0x00;
                 }
                 ptr += sizeof(int32u);
             }
