@@ -1,4 +1,4 @@
 <!-- 色阶过滤滤镜 -->
 <filters>
-    <crhack_imgstep gate_sat="192" gate_lit="128" />
+    <crhack_imgstep min_sat="63" min_lit="15" max_lit="199" />
 </filters>

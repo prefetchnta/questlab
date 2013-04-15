@@ -1,8 +1,6 @@
 <!-- 颜色区分滤镜 -->
 <filters>
-    <opencv_gauss_blur />
-    <crhack_imgstep step="2" />
-    <crhack_replace src="FF00FF FFFFFF" dst="0000FF 000000" />
-    <crhack_form3x3 mat="[1, 1, 1, 1, 1, 1, 1, 1, 1]" exp="0" />
-    <crhack_form3x3 mat="[0, 1, 0, 1, 1, 1, 0, 1, 0]" exp="0" />
+    <opencv_gauss_blur ksize_x="5" ksize_y="5" />
+    <crhack_imgstep min_sat="63" min_lit="15" max_lit="199"
+        table="[20, 40, 80, 100, 140, 160, 200, 220, 260, 280, 320, 340]" />
 </filters>

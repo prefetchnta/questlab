@@ -1004,8 +1004,9 @@ image_clr_step (
     byte_t* ptr;
     byte_t* line;
     sIMAGE* dest;
+    sint_t  min_st;
     uint_t  idx, ww, hh;
-    sint_t  gate_s, gate_l;
+    sint_t  min_lt, max_lt;
     sint_t  hsl[3], hue[12];
 
     CR_NOUSE(nouse);
@@ -1015,8 +1016,9 @@ image_clr_step (
     line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
-    gate_s = (sint_t)xml_attr_intxU("gate_sat", 192, param);
-    gate_l = (sint_t)xml_attr_intxU("gate_lit", 128, param);
+    min_st = (sint_t)xml_attr_intxU("min_sat", 63, param);
+    min_lt = (sint_t)xml_attr_intxU("min_lit", 15, param);
+    max_lt = (sint_t)xml_attr_intxU("max_lit", 199, param);
     str = xml_attr_bufferU("table", param);
     if (str == NULL ||
         str2lstA((uint_t*)hue, 12, str, "[],") == NULL)
@@ -1025,8 +1027,8 @@ image_clr_step (
         ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
             rgb2hsl(hsl, ptr);
-            if (hsl[1] <= gate_s) {
-                if (hsl[2] <= gate_l) {
+            if (hsl[1] <= min_st) {
+                if (hsl[2] <= 128) {
                     ptr[0] = 0x00;
                     ptr[1] = 0x00;
                     ptr[2] = 0x00;
@@ -1036,6 +1038,18 @@ image_clr_step (
                     ptr[1] = 0xFF;
                     ptr[2] = 0xFF;
                 }
+            }
+            else
+            if (hsl[2] <= min_lt) {
+                ptr[0] = 0x00;
+                ptr[1] = 0x00;
+                ptr[2] = 0x00;
+            }
+            else
+            if (hsl[2] > max_lt) {
+                ptr[0] = 0xFF;
+                ptr[1] = 0xFF;
+                ptr[2] = 0xFF;
             }
             else {
                 for (idx = 0; idx < cntsof(hue); idx++) {
