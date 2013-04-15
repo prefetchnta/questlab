@@ -1,6 +1,6 @@
 <!-- 颜色区分滤镜 -->
 <filters>
-    <opencv_gauss_blur ksize_x="5" ksize_y="5" />
     <crhack_imgstep min_sat="63" min_lit="15" max_lit="199"
         table="[20, 40, 80, 100, 140, 160, 200, 220, 260, 280, 320, 340]" />
+    <opencv_median_blur ksize="9" />
 </filters>
