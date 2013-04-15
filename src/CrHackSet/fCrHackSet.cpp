@@ -939,17 +939,18 @@ rgb2hsl (
 
     /* 分量-L */
     dst[2] = (min + max) / 2;
+    dst[2] += dst[2] / 128;
 
     /* 分量-S */
     if (dst[2] == 0 || dlt == 0) {
         dst[1] = 0;
     }
     else
-    if (dst[2] <= 127) {
-        dst[1] = 255 * dlt / (2 * dst[2]);
+    if (dst[2] <= 128) {
+        dst[1] = 256 * dlt / (2 * dst[2]);
     }
     else {
-        dst[1] = 255 * dlt / (2 * 255 - 2 * dst[2]);
+        dst[1] = 256 * dlt / (2 * 256 - 2 * dst[2]);
     }
 }
 
@@ -1024,8 +1025,8 @@ image_clr_step (
         ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
             rgb2hsl(hsl, ptr);
-            if (hsl[1] < gate_s) {
-                if (hsl[2] < gate_l) {
+            if (hsl[1] <= gate_s) {
+                if (hsl[2] <= gate_l) {
                     ptr[0] = 0x00;
                     ptr[1] = 0x00;
                     ptr[2] = 0x00;
@@ -1038,7 +1039,7 @@ image_clr_step (
             }
             else {
                 for (idx = 0; idx < cntsof(hue); idx++) {
-                    if (hsl[0] < hue[idx])
+                    if (hsl[0] <= hue[idx])
                         break;
                 }
                 idx *= 3;
