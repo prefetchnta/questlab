@@ -232,6 +232,47 @@ is_utf8_file (
     return (TRUE);
 }
 
+/* 扩展名匹配结构 */
+typedef struct
+{
+        sint_t          type;   /* 类型值 */
+        const ansi_t*   fext;   /* 扩展名 */
+
+} sQST_MATCH;
+
+/* 文本执行类型列表 */
+#define QST_ACT_QSTBATCH    0x00    /* QstBatch */
+#define QST_ACT_FILTER2D    0x01    /* Filter2D */
+
+/* 扩展名匹配类型列表 */
+static const sQST_MATCH s_fmatch[] =
+{
+    { QST_ACT_QSTBATCH, ".qst" },
+    { QST_ACT_QSTBATCH, ".ldr" },
+    /* ----------------------- */
+    { QST_ACT_FILTER2D, ".xmlcall" },
+};
+
+/*
+---------------------------------------
+    文件类型判断
+---------------------------------------
+*/
+static void_t
+qst_check_type (
+  __CR_IN__ TfrmMain*       form,
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    for (uint_t idx = 0; idx < cntsof(s_fmatch); idx++) {
+        if (filext_checkA(name, s_fmatch[idx].fext)) {
+            form->lstType->ItemIndex = s_fmatch[idx].type;
+            form->btnRefreshClick((TObject*)form->btnRefresh);
+            return;
+        }
+    }
+}
+
 /*
 ---------------------------------------
     尝试加载目标数据
@@ -544,6 +585,7 @@ _func_out:
     if (info != NULL)
         array_push_growT(&list, ansi_t*, &info);
     frm->edtCPage->Text = IntToStr(page);
+    qst_check_type(frm, ldrs->name.ansi);
 
     /* 发送整个信息列表 */
     qst_send_finfo(&list, parm->netw);
@@ -708,10 +750,6 @@ qst_load_file (
     ldr.page = get_sys_codepage();
     return (qst_try_load(&s_wrk_ctx, &ldr));
 }
-
-/* 文本执行类型列表 */
-#define QST_ACT_QSTBATCH    0x00    /* QstBatch */
-#define QST_ACT_FILTER2D    0x01    /* Filter2D */
 
 /*
 =======================================
