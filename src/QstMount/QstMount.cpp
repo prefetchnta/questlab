@@ -42,10 +42,10 @@ typedef struct
         sARRAY      extz;   /* 插件列表 */
         socket_t    netw;   /* 网络连接 */
         sCURBEAD    list;   /* 挂载列表 */
+        sCURBEAD    resx;   /* 资源列表 */
 
         /* 远程资源管理 */
         share_t     smem;   /* 当前内存共享文件 */
-        share_t     temp;   /* 临时内存共享文件 */
 
 } sQstMount;
 
@@ -55,6 +55,20 @@ typedef struct
 
 /* 全局工作上下文 */
 static sQstMount    s_wrk_ctx;
+
+/* 挂载文件的类型 */
+#define QST_MOUNT_DISK  0   /* 磁盘文件 */
+#define QST_MOUNT_TEMP  1   /* 临时文件 */
+
+/* 文件资源节点结构 */
+typedef struct
+{
+        leng_t  size;   /* 共享文件大小 */
+        ansi_t* name;   /* 文件标识名称 */
+        ansi_t* file;   /* 资源的文件名 */
+        share_t objs;   /* 内存共享文件 */
+
+} sQstResNode;
 
 /* 文件挂载节点结构 */
 typedef struct
@@ -69,10 +83,6 @@ typedef struct
         sFMT_PRT*   fmtz;   /* 封包 FMTZ 对象 (释放) */
 
 } sQstMntNode;
-
-/* 挂载文件的类型 */
-#define QST_MOUNT_DISK  0   /* 磁盘文件 */
-#define QST_MOUNT_TEMP  1   /* 临时文件 */
 
 /* 显示颜色配置 */
 static int16u   s_color_text;   /* 标题条的颜色 */
@@ -132,7 +142,7 @@ mount_free (
 ---------------------------------------
 */
 static bool_t
-unit_comp (
+mount_comp (
   __CR_IN__ const void_t*   key,
   __CR_IN__ const void_t*   obj
     )
@@ -148,7 +158,7 @@ unit_comp (
 ---------------------------------------
 */
 static uint_t
-unit_find (
+mount_find (
   __CR_IN__ const void_t*   key
     )
 {
@@ -164,6 +174,54 @@ unit_find (
         hash = cha + (hash << 5) + hash;
     }
     return (hash);
+}
+
+/*
+---------------------------------------
+    资源节点释放回调
+---------------------------------------
+*/
+static void_t
+resx_free (
+  __CR_IN__ void_t* obj
+    )
+{
+    sQstResNode*    unit;
+
+    unit = (sQstResNode*)obj;
+    if (unit->objs != NULL)
+        share_file_close(unit->objs);
+    TRY_FREE(unit->file)
+    mem_free(unit->name);
+}
+
+/*
+---------------------------------------
+    资源节点比较回调
+---------------------------------------
+*/
+static bool_t
+resx_comp (
+  __CR_IN__ const void_t*   key,
+  __CR_IN__ const void_t*   obj
+    )
+{
+    sQstResNode*    unit = (sQstResNode*)obj;
+
+    return (str_cmpA(unit->name, (ansi_t*)key) == 0);
+}
+
+/*
+---------------------------------------
+    资源节点索引回调
+---------------------------------------
+*/
+static uint_t
+resx_find (
+  __CR_IN__ const void_t*   key
+    )
+{
+    return (hash_str_djb2(key, str_lenA((ansi_t*)key)));
 }
 
 /*
@@ -188,29 +246,56 @@ plugin_free (
 
 /*
 ---------------------------------------
-    刷新列表显示
+    刷新资源显示
 ---------------------------------------
 */
 static void_t
-qst_refresh_list (
-  __CR_IO__ sQstMount*  parm
+qst_refresh_resx (
+  __CR_IN__ sCURBEAD*   tbl
     )
 {
-    uint_t      idx;
-    sCURBEAD*   tbl;
-
-    /* 清屏 */
-    system("cls");
-    cui_set_color(s_color_head);
-    printf("######################################\n");
-    printf("##     QUESTLAB RESOURCE SERVER     ##\n");
-    printf("######################################\n");
-
-    /* 遍历整个挂载列表 */
-    tbl = &parm->list;
     if (tbl->__list__ == NULL)
         return;
-    for (idx = 0; idx < tbl->__size__; idx++)
+    for (uint_t idx = 0; idx < tbl->__size__; idx++)
+    {
+        sLIST*      lst;
+        sLST_UNIT*  node;
+
+        lst = &tbl->__list__[idx];
+        if (lst->__size__ == 0)
+            continue;
+        node = lst->__head__;
+        do
+        {
+            sQstResNode*    info;
+
+            info = list_get_dataT(node, sQstResNode);
+            if (info->objs != NULL) {
+                cui_set_color(s_color_head);
+                printf("[%s] ", info->name);
+                cui_set_color(s_color_text);
+                printf("<%u Bytes> ", info->size);
+                cui_set_color(s_color_smem);
+                printf("%s\n", info->file);
+            }
+            node = node->next;
+        } while (node != NULL);
+    }
+}
+
+/*
+---------------------------------------
+    刷新挂载显示
+---------------------------------------
+*/
+static void_t
+qst_refresh_mount (
+  __CR_IN__ sCURBEAD*   tbl
+    )
+{
+    if (tbl->__list__ == NULL)
+        return;
+    for (uint_t idx = 0; idx < tbl->__size__; idx++)
     {
         sLIST*      lst;
         sLST_UNIT*  node;
@@ -247,6 +332,27 @@ qst_refresh_list (
             node = node->next;
         } while (node != NULL);
     }
+}
+
+/*
+---------------------------------------
+    刷新列表显示
+---------------------------------------
+*/
+static void_t
+qst_refresh_list (
+  __CR_IO__ sQstMount*  parm
+    )
+{
+    system("cls");
+    cui_set_color(s_color_head);
+    printf("######################################\n");
+    printf("##     QUESTLAB RESOURCE SERVER     ##\n");
+    printf("######################################\n");
+    qst_refresh_mount(&parm->list);
+    cui_set_color(s_color_head);
+    printf("--------------------------------------\n");
+    qst_refresh_resx(&parm->resx);
 }
 
 /*
@@ -963,8 +1069,8 @@ qst_mnt_ldr_free (
         ctx->quit = TRUE;
         return (FALSE);
     }
-    ctx->list.find = unit_find;
-    ctx->list.comp = unit_comp;
+    ctx->list.find = mount_find;
+    ctx->list.comp = mount_comp;
     ctx->list.free = mount_free;
     qst_refresh_list(ctx);
     return (TRUE);
@@ -1006,27 +1112,49 @@ qst_mnt_res_load (
 {
     int64u          idx;
     sQstMount*      ctx;
+    sQstResNode     tmp;
     sQstMntNode*    mnt;
+    sQstResNode*    res;
 
-    /* 释放上次的内存共享文件 */
-    ctx = (sQstMount*)parm;
-    if (ctx->temp != NULL) {
-        share_file_close(ctx->temp);
-        ctx->temp = NULL;
-    }
+    /* 参数解析 <标识名> <挂载名> <文件名> [编码] */
+    if (argc < 4)
+        return (FALSE);
 
     uint_t  page;
     ansi_t* send;
 
-    /* 参数解析 <挂载名> <文件名> [编码] */
-    if (argc < 3)
-        goto _failure1;
     page = CR_LOCAL;
-    if (argc > 3)
-        page = str2intxA(argv[3]);
+    if (argc > 4)
+        page = str2intxA(argv[4]);
+    ctx = (sQstMount*)parm;
+
+    /* 根据标识名查找建立资源槽位 */
+    res = curbead_findT(&ctx->resx, sQstResNode, argv[1]);
+    if (res != NULL)
+    {
+        /* 释放上次建立的内存共享文件 */
+        if (res->objs != NULL) {
+            share_file_close(res->objs);
+            res->objs = NULL;
+        }
+        SAFE_FREE(res->file)
+    }
+    else
+    {
+        /* 新建一个资源槽位 */
+        struct_zero(&tmp, sQstResNode);
+        tmp.name = str_dupA(argv[1]);
+        if (tmp.name == NULL)
+            goto _failure1;
+        res = curbead_insertT(&ctx->resx, sQstResNode, argv[1], &tmp);
+        if (res == NULL) {
+            mem_free(tmp.name);
+            goto _failure1;
+        }
+    }
 
     /* 请直接使用挂载名称 */
-    send = local_to_utf8(page, argv[1]);
+    send = local_to_utf8(page, argv[2]);
     if (send == NULL)
         goto _failure1;
     path_uniqueA(send);
@@ -1036,7 +1164,7 @@ qst_mnt_res_load (
         goto _failure1;
 
     /* 查找包内文件 */
-    if (!pack_find_fileA(mnt->pack, &idx, argv[2], page))
+    if (!pack_find_fileA(mnt->pack, &idx, argv[3], page))
         goto _failure1;
 
     leng_t      size;
@@ -1049,29 +1177,36 @@ qst_mnt_res_load (
         goto _failure1;
     size = buffer_size(&buff);
 
-    /* 直接用固定名称建立内存共享文件 */
-    ctx->temp = share_file_open("qlab_res", NULL, size);
-    if (ctx->temp == NULL)
+    /* 使用标识名称建立内存共享文件 */
+    res->objs = share_file_open(argv[1], NULL, size);
+    if (res->objs == NULL)
         goto _failure2;
-    if (!share_file_fill(ctx->temp, buff.data, size)) {
-        share_file_close(ctx->temp);
-        ctx->temp = NULL;
+    if (!share_file_fill(res->objs, buff.data, size)) {
+        share_file_close(res->objs);
+        res->objs = NULL;
         goto _failure2;
     }
+    res->size = size;
+    res->file = str_dupA(argv[3]);
     buffer_free(&buff);
 
     /* 发出已经建立成功的通知 */
-    send = str_fmtA("res:okay %u", size);
+    send = str_fmtA("res:okay %s %u", argv[1], size);
     if (send != NULL) {
         cmd_shl_send(ctx->netw, send);
         mem_free(send);
     }
+    qst_refresh_list(ctx);
     return (TRUE);
 
 _failure2:
     buffer_free(&buff);
 _failure1:
-    cmd_shl_send(ctx->netw, "res:fail");
+    send = str_fmtA("res:fail %s", argv[1]);
+    if (send != NULL) {
+        cmd_shl_send(ctx->netw, send);
+        mem_free(send);
+    }
     return (FALSE);
 }
 
@@ -1089,14 +1224,12 @@ qst_mnt_res_free (
 {
     sQstMount*  ctx;
 
-    CR_NOUSE(argc);
-    CR_NOUSE(argv);
-
+    /* 参数解析 <标识名> */
+    if (argc < 2)
+        return (FALSE);
     ctx = (sQstMount*)parm;
-    if (ctx->temp != NULL) {
-        share_file_close(ctx->temp);
-        ctx->temp = NULL;
-    }
+    curbead_deleteT(&ctx->resx, sQstResNode, argv[1]);
+    qst_refresh_list(ctx);
     return (TRUE);
 }
 
@@ -1179,9 +1312,16 @@ int main (int argc, char *argv[])
     /* 初始化挂载表 */
     if (!curbead_initT(&s_wrk_ctx.list, sQstMntNode, 0))
         return (QST_ERROR);
-    s_wrk_ctx.list.find = unit_find;
-    s_wrk_ctx.list.comp = unit_comp;
+    s_wrk_ctx.list.find = mount_find;
+    s_wrk_ctx.list.comp = mount_comp;
     s_wrk_ctx.list.free = mount_free;
+
+    /* 初始化资源表 */
+    if (!curbead_initT(&s_wrk_ctx.resx, sQstResNode, 0))
+        return (QST_ERROR);
+    s_wrk_ctx.resx.find = resx_find;
+    s_wrk_ctx.resx.comp = resx_comp;
+    s_wrk_ctx.resx.free = resx_free;
 
     /* 初始化网络 */
     if (!socket_init())
@@ -1221,10 +1361,9 @@ int main (int argc, char *argv[])
         mem_free(string);
     }
     /* 必须正常退出, 否则临时文件无法删除 */
-    if (s_wrk_ctx.temp != NULL)
-        share_file_close(s_wrk_ctx.temp);
     if (s_wrk_ctx.smem != NULL)
         share_file_close(s_wrk_ctx.smem);
+    curbead_freeT(&s_wrk_ctx.resx, sQstResNode);
     curbead_freeT(&s_wrk_ctx.list, sQstMntNode);
     cmd_exec_free(obj);
     netw_cli_close(s_wrk_ctx.netw);
