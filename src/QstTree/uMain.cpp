@@ -120,7 +120,7 @@ void __fastcall TfrmMain::FormKeyUp(TObject *Sender, WORD &Key,
 {
     /* 直接导入列表文件 */
     if (Shift.Contains(ssCtrl)) {
-        if (Key == 'C') {
+        if (Key == 'P') {
             qst_free_lst2();
         }
         else
