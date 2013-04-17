@@ -38,7 +38,7 @@ qst_make_path (
         mem_free(path);
         return (NULL);
     }
-    tots = str_fmtA("%s\\%s", temp, path);
+    tots = str_fmtA("%s|%s", temp, path);
     mem_free(temp);
     mem_free(path);
     if (tots == NULL)

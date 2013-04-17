@@ -843,7 +843,7 @@ qst_mnt_ldr_pack (
 
     /* 合成挂载节点名称 */
     pack_file_info(mnt->pack, &info, idx);
-    send = str_fmtA("%s\\%s", argv[1] + ctx->head, argv[2]);
+    send = str_fmtA("%s|%s", argv[1] + ctx->head, argv[2]);
     if (send == NULL)
         return (FALSE);
     name = local_to_utf8(page, send);
