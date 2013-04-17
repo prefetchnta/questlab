@@ -1240,6 +1240,48 @@ image_form3x3 (
 }
 
 /*
+---------------------------------------
+    图片曝光处理
+---------------------------------------
+*/
+static bool_t
+image_solarize (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  gate;
+    uint_t  ww, hh;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    gate = xml_attr_intxU("gate", 127, param);
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            if (ptr[0] <= gate)
+                ptr[0] = 255 - ptr[0];
+            if (ptr[1] <= gate)
+                ptr[1] = 255 - ptr[1];
+            if (ptr[2] <= gate)
+                ptr[2] = 255 - ptr[2];
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1265,5 +1307,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_multiply", image_multiply },
     { "crhack_replace", image_replace },
     { "crhack_form3x3", image_form3x3 },
+    { "crhack_solarize", image_solarize },
     { NULL, NULL },
 };
