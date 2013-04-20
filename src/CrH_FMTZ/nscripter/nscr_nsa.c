@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-04-05  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-07  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-20  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -214,7 +214,7 @@ decode_spb (
     }
 
     /* 安全检查 */
-    if (dstlen != bmp_size) {
+    if (dstlen < bmp_size) {
         err_set(__CR_NSCR_NSA_C__, dstlen,
                 "decode_spb()", "dest buffer overflow");
         goto _failure1;
@@ -225,7 +225,7 @@ decode_spb (
     /* 生成一个颜色通道的缓存 */
     size  = ww;
     size *= hh;
-    channel = (byte_t*)mem_malloc(size);
+    channel = (byte_t*)mem_malloc(size + 4);
     if (channel == NULL) {
         err_set(__CR_NSCR_NSA_C__, CR_NULL,
                 "decode_spb()", "mem_malloc() failure");
@@ -251,11 +251,6 @@ decode_spb (
                 goto _failure2;
             }
             if (nn == 0) {
-                if (count + 4 > size) {
-                    err_set(__CR_NSCR_NSA_C__, count + 4,
-                            "decode_spb()", "dest buffer overflow");
-                    goto _failure2;
-                }
                 channel[count++] = (byte_t)cc;
                 channel[count++] = (byte_t)cc;
                 channel[count++] = (byte_t)cc;
@@ -274,11 +269,6 @@ decode_spb (
                 mm = nn + 2;
             }
 
-            if (count + 4 > size) {
-                err_set(__CR_NSCR_NSA_C__, count + 4,
-                        "decode_spb()", "dest buffer overflow");
-                goto _failure2;
-            }
             for (jj = 0; jj < 4; jj++) {
                 if (mm == 8) {
                     if (!bitin_hi_push(&bitin, &cc, 8)) {
@@ -509,11 +499,12 @@ iPAK_NSA_getFileData (
             {
                 /* SPB (BMP) */
                 read = decode_spb(data, (leng_t)size, temp, (leng_t)pack);
-                if (read != (leng_t)size) {
+                if (read == 0) {
                     err_set(__CR_NSCR_NSA_C__, read,
                             "iPACKAGE::getFileData()", "decode_spb() failure");
                     goto _failure2;
                 }
+                size = read;
             }
             else
             if (type == 2)
