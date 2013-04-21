@@ -32,10 +32,10 @@ object frmMain: TfrmMain
     Top = 8
   end
   object dlgOpen: TOpenDialog
-    Filter = '*.qst|*.qst|*.ldr|*.ldr'
+    Filter = '*.qst|*.qst'
     InitialDir = '.\script'
     Options = [ofNoChangeDir, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Title = 'Open QST/LDR file'
+    Title = 'Open QST file'
     Left = 720
     Top = 8
   end

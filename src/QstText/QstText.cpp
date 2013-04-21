@@ -248,9 +248,8 @@ typedef struct
 static const sQST_MATCH s_fmatch[] =
 {
     { QST_ACT_QSTBATCH, ".qst" },
-    { QST_ACT_QSTBATCH, ".ldr" },
     /* ----------------------- */
-    { QST_ACT_FILTER2D, ".xmlcall" },
+    { QST_ACT_FILTER2D, ".f2d" },
 };
 
 /*

@@ -441,7 +441,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     }
     if (idx < root_menu->Count) {
         file_searchA(QST_PATH_SCRIPT, TRUE, TRUE, FALSE,
-            "filter\\*.xmlcall", add_filter_menu, temp_menu);
+            "filter\\*.f2d", add_filter_menu, temp_menu);
     }
 
     /* 根据图像实验插件添加菜单 */
