@@ -1,0 +1,19 @@
+//==================================//
+//  [WIN] 120日元之春夏秋冬-日文版  //
+//==================================//
+$call xSelectDir.exe
+$continue?
+$exec script/import/reset.qst
+g2d:ext:load CrH_FMTZ.dll
+g2d:ext:load plugin/zFreeImage.dll
+pak:ext:load plugin/zNScripter.dll
+edt:ext:load plugin/zNScripter.dll
+xmm:ext:load plugin/zFMOD.dll
+$fopen output/__imp__.xml
+<ImpScript>
+    <Import name="*.nsa" />
+    <Import name="nscript.dat" />
+</ImpScript>
+$fclose
+$call xImpScript.exe 932 output/__imp__.xml
+dir:load
