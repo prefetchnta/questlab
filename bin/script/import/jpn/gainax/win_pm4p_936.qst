@@ -1,0 +1,25 @@
+//==================================//
+//  [WIN] 美少女梦工厂4-中文完璧版  //
+//==================================//
+$call xSelectDir.exe
+$continue?
+$exec script/import/reset.qst
+g2d:ext:load CrH_FMTZ.dll
+g2d:ext:load plugin/zSYN.dll
+pak:ext:load plugin/zSYN.dll
+xmm:ext:load plugin/zFMOD.dll
+xmm:ext:load plugin/zDShow.dll
+$fopen output/__imp__.xml
+<ImpScript>
+    <Import name="movie\\*.mpg" />
+    <Import name="sound\\bgm\\*.ogg" />
+    <Import name="data" memo="kf" />
+    <Import name="gd" memo="kf" />
+    <Import name="script" memo="kf" />
+    <Import name="sound\\se" memo="kf" />
+    <Import name="sound\\sys_se" memo="kf" />
+    <Import name="sound\\voice" memo="kf" />
+</ImpScript>
+$fclose
+$call xImpScript.exe 936 output/__imp__.xml
+dir:load
