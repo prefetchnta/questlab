@@ -12,10 +12,12 @@ copy C:\PROGRAM\Borland\CBuilder6\Bin\borlndmm.dll
 copy C:\PROGRAM\Borland\CBuilder6\Bin\cc3260mt.dll
 copy C:\PROGRAM\Borland\CBuilder6\Bin\ThemeManagerC6.bpl
 copy C:\PROGRAM\Borland\CBuilder6\Bin\VirtualTreesC6.bpl
-copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_CORE.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_BLIT.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_COMM.dll
+copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_CORE.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_EXTZ.dll
+copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_MATH.dll
+copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_VSYS.dll
 copy D:\PRJ\FinalBIN\FreeImage\lib\win32_vc09_x86\FreeImage.dll
 copy D:\PRJ\FinalBIN\DevIL\lib\win32_vc08_x86\unicode\DevIL.dll
 copy D:\PRJ\FinalBIN\FMODEx\lib\mswin\fmodex.dll

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-10  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-18  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -20,7 +20,7 @@
 #ifndef __CR_PHYLIB_H__
 #define __CR_PHYLIB_H__ 0x73F4057FUL
 
-#include "defs.h"
+#include "gfx2.h"
 
 /*****************************************************************************/
 /*                                 重要常数                                  */
@@ -89,6 +89,56 @@ CR_API double   iif97_5_ws_d (double t, double mpa);
 CR_API double   iif97_5_ws_e (double t, double mpa);
 CR_API double   iif97_ws_de (double *e, double t, double mpa, double wx,
                              ufast_t *sec CR_DEFAULT(NULL));
+
+/*****************************************************************************/
+/*                                   颜色                                    */
+/*****************************************************************************/
+
+/* 用到的类型 */
+typedef void_t*     cstep_t;
+
+/* RGB 输入一律使用32色的小端模式 */
+CR_API void_t   bgr2hsl (sint_t hsl[3], const byte_t bgr[3]);
+CR_API void_t   bgr2hsv (sint_t hsv[3], const byte_t bgr[3]);
+
+/* 颜色分区判断 */
+CR_API cstep_t  color_step_init (void_t);
+CR_API void_t   color_step_kill (cstep_t cstep);
+CR_API void_t   color_step_set (cstep_t cstep, const sint_t steps[12],
+                                const byte_t color[39]);
+CR_API void_t   color_step_bias (cstep_t cstep, sint_t bias);
+CR_API byte_t   color_step_do (cstep_t cstep, byte_t dst[3], sint_t hue);
+
+/*****************************************************************************/
+/*                                   图像                                    */
+/*****************************************************************************/
+
+/* 卷积运算矩阵结构 */
+typedef struct
+{
+        sint_t          kk;     /* K 系数 */
+        uint_t          ww;     /* 矩阵宽 (奇数) */
+        uint_t          hh;     /* 矩阵高 (奇数) */
+        const sint_t*   dt;     /* 指向矩阵数据 */
+
+} sCONVO_MAT;
+
+/* 图像卷积运算 */
+CR_API void_t   image_convo (const sIMAGE *dst, const sIMAGE *src,
+                             const sCONVO_MAT *mat);
+/* 形态运算矩阵结构 */
+typedef struct
+{
+        uint_t          tt;     /* 矩阵类型 */
+        uint_t          ww;     /* 矩阵宽 (奇数) */
+        uint_t          hh;     /* 矩阵高 (奇数) */
+        const void_t*   dt;     /* 指向矩阵数据 */
+
+} sSHAPE_MAT;
+
+/* 图像形态运算 */
+CR_API void_t   image_shape (const sIMAGE *dst, const sIMAGE *src,
+                             const sSHAPE_MAT *mat, bool_t expand);
 
 #endif  /* !__CR_PHYLIB_H__ */
 
