@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-19  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-23  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -211,23 +211,8 @@ CR_API bool_t   blt_use_blit_clip (sBLTer *dst_blt, sBLTer *src_blt,
 #define pixel_addr4(img, x, y)  (int32u*)(((img)->data)+(y)*(img)->bpl+(x)*4)
 #define pixel_addrN(img, x, y)  (void_t*)(((img)->data)+(y)*(img)->bpl+(x)* \
                                                             (img)->bpc)
-/*
-=======================================
-    检查点是否在方框内
-=======================================
-*/
-inline bool_t
-clip_pixel (
-  __CR_IN__ sint_t          x,
-  __CR_IN__ sint_t          y,
-  __CR_IN__ const sRECT*    rect
-    )
-{
-    return ((x < rect->x1 || y < rect->y1 ||
-             x > rect->x2 || y > rect->y2) ? FALSE : TRUE);
-}
-
 /* 二维剪裁函数 */
+CR_API bool_t   clip_pixel (sint_t x, sint_t y, const sRECT *win);
 CR_API bool_t   clip_line (sLINE *dst, const sLINE *src, const sRECT *win);
 CR_API bool_t   clip_fill (sFILL *dst, const sFILL *src, const sRECT *win);
 CR_API bool_t   clip_blit (sBLIT *dst, const sBLIT *src, const sRECT *win);

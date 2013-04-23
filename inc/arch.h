@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-12-26  */
 /*     #######          ###    ###      [PORT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-04-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-23  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -43,6 +43,7 @@
     #define circle_ptr_s(ptr, incr, base, buflen) \
                 __builtin_circptr(ptr, incr, base, buflen)
 #else
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     循环处理封闭索引 (单向)
@@ -122,6 +123,8 @@ circle_ptr_s (
         ptr = (void_t*)((uchar*)ptr - buflen);
     return ((void_t*)ptr);
 }
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 #endif  /* CC TYPE predefines */
 

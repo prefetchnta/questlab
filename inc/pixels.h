@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-19  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-02  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-23  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -27,6 +27,7 @@
 /*                              单像素格式转换                               */
 /*****************************************************************************/
 
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     8888to332
@@ -123,8 +124,10 @@ pixel32to4444 (
     return (*dst);
 }
 
+#endif  /* !_CR_SICK_INLINE_ */
+
 /* 避免查表数据多次重复 */
-#ifdef  _CR_USE_PIXELCVT_
+#if defined(_CR_USE_PIXELCVT_)
 
 /* (0, 1) - (0, 255) */
 static const byte_t _rom_ g_by02to256[2] =
@@ -173,6 +176,7 @@ static const byte_t _rom_ g_by64to256[64] =
     0xE3, 0xE7, 0xEB, 0xEF, 0xF3, 0xF7, 0xFB, 0xFF,
 };
 
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     332to8888
@@ -267,6 +271,8 @@ pixel4444to32 (
     return (*dst);
 }
 
+#endif  /* !_CR_SICK_INLINE_ */
+
 #endif  /* _CR_USE_PIXELCVT_ */
 
 /*****************************************************************************/
@@ -294,6 +300,7 @@ CR_API void_t   pal_3b_to_vga (void_t *pal3, uint_t len CR_DEFAULT(256));
 /*                              单像素计算操作                               */
 /*****************************************************************************/
 
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     交换 RB 颜色通道
@@ -324,6 +331,8 @@ argb32_to_gdi (
     *(int32u*)color &= CDWORD_LE(0x00FFFFFFUL);
     return ((int32u)swap_rb32(color));
 }
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 /* 复杂的像素计算 */
 CR_API uint_t   rgb2light (uint_t r, uint_t g, uint_t b);
@@ -356,6 +365,7 @@ CR_API uint_t   rgb2light (uint_t r, uint_t g, uint_t b);
     #define CR_CBGRA(b, g, r, a)    CR_CRGBA32(r, g, b, a)
 #endif
 
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     12位色像素的合成
@@ -536,6 +546,8 @@ CR_CRGBA17 (
                               (((int16u)r << 7) & 0x7C00) |
                               (((int16u)g << 2) & 0x03E0) | (b >> 3))));
 }
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 /*****************************************************************************/
 /*                              像素块格式转换                               */

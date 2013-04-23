@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-23  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-22  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-23  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -566,6 +566,7 @@ typedef struct
 #define CR_LDR_WIDE     1   /* 使用 name.wide 加载 */
 #define CR_LDR_BUFF     2   /* 使用 buff 结构 加载 */
 
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     使用 ANSI 填充结构
@@ -641,6 +642,8 @@ set_ldrM (
     that->buff.data = data;
     that->type = CR_LDR_BUFF;
 }
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 /* 文件读取接口生成 */
 CR_API iDATIN*  create_disk_inA (const ansi_t *name);
