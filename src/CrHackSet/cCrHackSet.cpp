@@ -966,27 +966,28 @@ qst_crh_loadres (
     if (draw == NULL)
         return (FALSE);
 
-    /* 加载外部资源描述文件 */
+    /* 初始化资源描述对象 */
     if (s_resx != NULL)
         egui_free(s_resx);
     s_resx = egui_init(1, 1, 0);
     if (s_resx == NULL)
         return (FALSE);
-    if (!egui_res_load_f(s_resx, argv[1], draw->fmt, NULL)) {
-        egui_free(s_resx);
-        s_resx = NULL;
-        return (FALSE);
-    }
 
     /* 指定文件根目录 */
     if (argc > 2) {
-        if (!egui_res_set_root(s_resx, argv[2])) {
-            egui_free(s_resx);
-            s_resx = NULL;
-            return (FALSE);
-        }
+        if (!egui_res_set_root(s_resx, argv[2]))
+            goto _failure;
     }
+
+    /* 加载外部资源描述文件 */
+    if (!egui_res_load_f(s_resx, argv[1], draw->fmt, NULL))
+        goto _failure;
     return (TRUE);
+
+_failure:
+    egui_free(s_resx);
+    s_resx = NULL;
+    return (FALSE);
 }
 
 /*
