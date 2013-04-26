@@ -665,8 +665,8 @@ qst_crh_btfont (
     #define EGUI_ALN_L   1  /* 水平左对齐 */
     #define EGUI_ALN_R   2  /* 水平右对齐 */
     #define EGUI_ALN_C   3  /* 水平中对齐 */
-    #define EGUI_ALN_T   4  /* 垂直左对齐 */
-    #define EGUI_ALN_B   8  /* 垂直右对齐 */
+    #define EGUI_ALN_T   4  /* 垂直顶对齐 */
+    #define EGUI_ALN_B   8  /* 垂直底对齐 */
     #define EGUI_ALN_M  12  /* 垂直中对齐 */
     #define EGUI_ALN_LT (EGUI_ALN_L | EGUI_ALN_T)
     #define EGUI_ALN_LB (EGUI_ALN_L | EGUI_ALN_B)

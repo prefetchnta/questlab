@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-03-21  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-10  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-04-26  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -242,8 +242,8 @@ CR_API void_t   egui_wdg_event2 (egui_t egui, widge_t wdge, sEGUI_MSG *event);
 #define EGUI_ALN_L  (1 << 0)    /* 水平左对齐 */
 #define EGUI_ALN_R  (2 << 0)    /* 水平右对齐 */
 #define EGUI_ALN_C  (3 << 0)    /* 水平中对齐 */
-#define EGUI_ALN_T  (1 << 2)    /* 垂直左对齐 */
-#define EGUI_ALN_B  (2 << 2)    /* 垂直右对齐 */
+#define EGUI_ALN_T  (1 << 2)    /* 垂直顶对齐 */
+#define EGUI_ALN_B  (2 << 2)    /* 垂直底对齐 */
 #define EGUI_ALN_M  (3 << 2)    /* 垂直中对齐 */
 #define EGUI_ALN_LT (EGUI_ALN_L | EGUI_ALN_T)
 #define EGUI_ALN_LB (EGUI_ALN_L | EGUI_ALN_B)
