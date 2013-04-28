@@ -70,19 +70,19 @@ WinMain (
     uint_t  scn_w, scn_h;
     bool_t  user_cfg = FALSE;
 
-    /* 参数解析 [窗口位置配置名] */
-    if (argc > 0)
+    /* 参数解析 [执行列表] [窗口位置配置名] */
+    if (argc > 1)
     {
         HANDLE              find;
         WIN32_FIND_DATAA    wfda;
 
         /* 验证目录是否存在 */
-        sprintf(exec, QST_PATH_WINDOW "%s", argv[0]);
+        sprintf(exec, QST_PATH_WINDOW "%s", argv[1]);
         find = FindFirstFileA(exec, &wfda);
         if (find != INVALID_HANDLE_VALUE) {
             if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 sprintf(exec, "cmd.exe /c copy " QST_PATH_WINDOW
-                        "%s\\*.ini " QST_PATH_WINDOW, argv[0]);
+                        "%s\\*.ini " QST_PATH_WINDOW, argv[1]);
                 user_cfg = TRUE;
             }
             FindClose(find);
@@ -104,10 +104,15 @@ WinMain (
     thread_sleep(100);
 
     sINIu*  ini;
-    ansi_t* str;
+    ansi_t* str = NULL;
 
     /* 根据配置文件执行各部件 */
-    str = file_load_as_strA(QST_PATH_CONFIG WIN_ICONF);
+    if (argc > 0) {
+        sprintf(exec, QST_PATH_CONFIG "QuestLAB_%s.ini", argv[0]);
+        str = file_load_as_strA(exec);
+    }
+    if (str == NULL)
+        str = file_load_as_strA(QST_PATH_CONFIG WIN_ICONF);
     if (str == NULL)
         return (QST_ERROR);
     ini = ini_parseU(str);
