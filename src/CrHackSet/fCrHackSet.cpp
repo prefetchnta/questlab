@@ -378,7 +378,8 @@ image_binaryz (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                total += ptr[0];
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                total += ii;
                 ptr += sizeof(int32u);
             }
             line += dest->bpl;
@@ -869,7 +870,8 @@ image_cut_down (
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
-                total += ptr[0];
+                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+                total += ii;
                 ptr += sizeof(int32u);
             }
             line += dest->bpl;
