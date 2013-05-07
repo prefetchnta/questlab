@@ -348,33 +348,15 @@ image_binaryz (
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
-    line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
     gate = xml_attr_intxU("gate", 127, param);
-    if (param->found)
-    {
-        /* 有参数使用指定参数 */
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                if (ii > gate)
-                    ptr[0] = 0xFF;
-                else
-                    ptr[0] = 0x00;
-                ptr[1] = ptr[0];
-                ptr[2] = ptr[0];
-                ptr += sizeof(int32u);
-            }
-            line += dest->bpl;
-        }
-    }
-    else
+    if (!param->found)
     {
         int64u  total = 0;
 
         /* 没有参数使用平均值 */
+        line = dest->data;
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
@@ -387,21 +369,20 @@ image_binaryz (
         total /= ww;
         total /= hh;
         gate = (uint_t)total;
-        line = dest->data;
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                if (ii > gate)
-                    ptr[0] = 0xFF;
-                else
-                    ptr[0] = 0x00;
-                ptr[1] = ptr[0];
-                ptr[2] = ptr[0];
-                ptr += sizeof(int32u);
-            }
-            line += dest->bpl;
+    }
+
+    /* 二值化计算 */
+    line = dest->data;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+            ptr[0] = (ii > gate) ? 255 : 0;
+            ptr[1] = ptr[0];
+            ptr[2] = ptr[0];
+            ptr += sizeof(int32u);
         }
+        line += dest->bpl;
     }
     return (TRUE);
 }
@@ -841,32 +822,15 @@ image_cut_down (
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
-    line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
     gate = xml_attr_intxU("gate", 97, param);
-    if (param->found)
-    {
-        /* 有参数使用指定参数 */
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                if (ii <= gate) {
-                    ptr[0] = 0x00;
-                    ptr[1] = 0x00;
-                    ptr[2] = 0x00;
-                }
-                ptr += sizeof(int32u);
-            }
-            line += dest->bpl;
-        }
-    }
-    else
+    if (!param->found)
     {
         int64u  total = 0;
 
         /* 没有参数使用平均值 */
+        line = dest->data;
         for (uint_t yy = 0; yy < hh; yy++) {
             ptr = line;
             for (uint_t xx = 0; xx < ww; xx++) {
@@ -879,20 +843,22 @@ image_cut_down (
         total /= ww;
         total /= hh;
         gate = (uint_t)total;
-        line = dest->data;
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                if (ii <= gate) {
-                    ptr[0] = 0x00;
-                    ptr[1] = 0x00;
-                    ptr[2] = 0x00;
-                }
-                ptr += sizeof(int32u);
+    }
+
+    /* 掐掉暗的像素 */
+    line = dest->data;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+            if (ii <= gate) {
+                ptr[0] = 0x00;
+                ptr[1] = 0x00;
+                ptr[2] = 0x00;
             }
-            line += dest->bpl;
+            ptr += sizeof(int32u);
         }
+        line += dest->bpl;
     }
     return (TRUE);
 }
@@ -1284,6 +1250,85 @@ image_solarize (
 }
 
 /*
+---------------------------------------
+    图片白色平衡
+---------------------------------------
+*/
+static bool_t
+image_whitebl (
+  __CR_UU__ void_t*     nouse,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* ptr;
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  ww, hh, gate;
+    int64u  t_r, t_g, t_b;
+    fp32_t  tt, fr, fg, fb;
+
+    CR_NOUSE(nouse);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+
+    /* 计算颜色通道平均值 */
+    line = dest->data;
+    t_r = t_g = t_b = 0;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            t_b += ptr[0];
+            t_g += ptr[1];
+            t_r += ptr[2];
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    t_b /= ww;  t_b /= hh;
+    t_g /= ww;  t_g /= hh;
+    t_r /= ww;  t_r /= hh;
+    gate = xml_attr_intxU("gate", 127, param);
+    if (!param->found)
+    {
+        /* 没有参数使用平均值 */
+        gate = (uint_t)((t_r + t_g + t_b) / 3);
+    }
+
+    /* 用缩放因子调整图片颜色 */
+    line = dest->data;
+    fr = ((fp32_t)gate) / t_r;
+    fg = ((fp32_t)gate) / t_g;
+    fb = ((fp32_t)gate) / t_b;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            tt = fb * ptr[0];
+            if (tt >= 255.0f)
+                ptr[0] = 0xFF;
+            else
+                ptr[0] = (byte_t)tt;
+            tt = fg * ptr[1];
+            if (tt >= 255.0f)
+                ptr[1] = 0xFF;
+            else
+                ptr[1] = (byte_t)tt;
+            tt = fr * ptr[2];
+            if (tt >= 255.0f)
+                ptr[2] = 0xFF;
+            else
+                ptr[2] = (byte_t)tt;
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1310,5 +1355,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_replace", image_replace },
     { "crhack_form3x3", image_form3x3 },
     { "crhack_solarize", image_solarize },
+    { "crhack_whitebl", image_whitebl },
     { NULL, NULL },
 };
