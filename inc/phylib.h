@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-18  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-08  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -113,6 +113,20 @@ CR_API byte_t   color_step_do (cstep_t cstep, byte_t dst[3], sint_t hue);
 /*                                   图像                                    */
 /*****************************************************************************/
 
+/* 直方图阈值计算 */
+CR_API byte_t   histo_avge (const leng_t tab[256]);
+CR_API byte_t   histo_otsu (const leng_t tab[256]);
+
+/* 转换到灰度图 */
+CR_API sIMAGE*  image_graying (const sIMAGE *img);
+
+/* 灰度直方图计算 */
+CR_API bool_t   image_histo (leng_t tab[256], const sIMAGE *gray);
+
+/* 灰度图二值化 */
+CR_API bool_t   image_binary1 (const sIMAGE *gray, byte_t gate);
+CR_API bool_t   image_binary2 (const sIMAGE *gray, const sIMAGE *gate,
+                               sint_t offset);
 /* 卷积运算矩阵结构 */
 typedef struct
 {
