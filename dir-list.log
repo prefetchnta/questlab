@@ -9,6 +9,7 @@ questlab
 │  │  │  └─opencv
 │  │  └─import
 │  │      └─jpn
+│  │          ├─ego
 │  │          ├─gainax
 │  │          ├─nekoneko
 │  │          ├─tgl
@@ -70,6 +71,7 @@ questlab
 │  ├─CrH_BLIT
 │  ├─CrH_FMTZ
 │  │  ├─devil
+│  │  ├─ego
 │  │  ├─expand
 │  │  ├─fi
 │  │  ├─fmod
