@@ -1,4 +1,5 @@
 【更新日志】
+　2013-05-08　Studio e.go! 引擎插件 zEGO.dll 建立
 　2013-04-06　GameViewer 2D 渲染框架重建完成
 　2013-04-03　第一个支持文本解码的引擎插件 zNScripter.dll
 　2013-04-02　子项目 xIMGLAB 正式开始
