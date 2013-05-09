@@ -13,6 +13,7 @@ $fopen output/__imp__.xml
 <ImpScript>
     <Import name="bgm\\*.wav" />
     <Import name="*.nsa" />
+    <Import name="*.sar" />
     <Import name="nscript.dat" />
 </ImpScript>
 $fclose

@@ -12,6 +12,7 @@ xmm:ext:load plugin/zFMOD.dll
 $fopen output/__imp__.xml
 <ImpScript>
     <Import name="*.nsa" />
+    <Import name="*.sar" />
     <Import name="nscript.dat" />
 </ImpScript>
 $fclose
