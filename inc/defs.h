@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-18  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-16  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -216,9 +216,13 @@ typedef void_t*     hwnd_t;     /* GUI 相关的窗口句柄 */
     #define _CR_C_TAIL_
 #endif
 
-/* 建立成 DLL 所需的函数前缀 */
+/* 建立和使用 DLL 所需的函数前缀 */
 #ifndef _CR_BUILD_DLL_
-    #define CR_API  CR_C_FUNC
+    #ifndef _CR_USE_DLL_
+        #define CR_API  CR_C_FUNC
+    #else
+        #define CR_API  CR_C_FUNC CR_IMPORT
+    #endif
 #else
     #define CR_API  CR_C_FUNC CR_EXPORT
 #endif
