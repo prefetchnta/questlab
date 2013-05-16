@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-16  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -105,14 +105,28 @@ CR_API void_t   bgr2hsv (sint_t hsv[3], const byte_t bgr[3]);
 CR_API cstep_t  color_step_init (void_t);
 CR_API void_t   color_step_kill (cstep_t cstep);
 CR_API void_t   color_step_set (cstep_t cstep, const sint_t steps[12],
-                                const byte_t color[39]);
+                                const byte_t color[36]);
 CR_API void_t   color_step_bias (cstep_t cstep, sint_t bias);
 CR_API byte_t   color_step_do (cstep_t cstep, byte_t dst[3], sint_t hue);
+
+/*
+    颜色索引值说明 (颜色滤波器用)
+****************************************************************
+    0 - 无效    1 - 黑色    2 - 白色    3 - 红色    4 - 橙色
+    5 - 黄色    6 - 黄绿    7 - 绿色    8 - 青绿    9 - 青色
+    A - 青蓝    B - 蓝色    C - 蓝紫    D - 紫色    E - 紫红
+****************************************************************
+*/
+CR_API const byte_t _rom_ g_cstep_pal[64];
 
 /*****************************************************************************/
 /*                                   图像                                    */
 /*****************************************************************************/
 
+/* 抓图和回图 */
+CR_API sIMAGE*  image_grab (const sIMAGE *img, const sRECT *box);
+CR_API void_t   image_back (const sIMAGE *dst, const sIMAGE *src,
+                            sint_t left, sint_t top);
 /* 直方图阈值计算 */
 CR_API byte_t   histo_avge (const leng_t tab[256]);
 CR_API byte_t   histo_otsu (const leng_t tab[256]);
@@ -120,6 +134,11 @@ CR_API byte_t   histo_otsu (const leng_t tab[256]);
 /* 转换到灰度图 */
 CR_API sIMAGE*  image_graying (const sIMAGE *img);
 
+/* 转换到索引图 */
+typedef byte_t  (*idx_bgr_t) (void_t*, const byte_t*);
+
+CR_API sIMAGE*  image_indexed (const sIMAGE *img, idx_bgr_t dopix,
+                         const byte_t *pal, leng_t num, void_t *param);
 /* 灰度直方图计算 */
 CR_API bool_t   image_histo (leng_t tab[256], const sIMAGE *gray);
 
@@ -138,21 +157,59 @@ typedef struct
 } sCONVO_MAT;
 
 /* 图像卷积运算 */
-CR_API void_t   image_convo (const sIMAGE *dst, const sIMAGE *src,
-                             const sCONVO_MAT *mat);
+CR_API sIMAGE*  image_convo (const sIMAGE *img, const sCONVO_MAT *mat);
+
 /* 形态运算矩阵结构 */
 typedef struct
 {
-        uint_t          tt;     /* 矩阵类型 */
         uint_t          ww;     /* 矩阵宽 (奇数) */
         uint_t          hh;     /* 矩阵高 (奇数) */
-        const void_t*   dt;     /* 指向矩阵数据 */
+        const byte_t*   dt;     /* 指向矩阵数据 */
 
 } sSHAPE_MAT;
 
 /* 图像形态运算 */
-CR_API void_t   image_shape (const sIMAGE *dst, const sIMAGE *src,
-                             const sSHAPE_MAT *mat, bool_t expand);
+CR_API sIMAGE*  image_shape (const sIMAGE *img, const sSHAPE_MAT *mat,
+                             bool_t expand);
+/* 形态查找匹配 */
+CR_API bool_t   shape_match_and (const byte_t *left_top, leng_t img_bpl,
+                                 const sSHAPE_MAT *shape_mat);
+CR_API bool_t   shape_match_orr (const byte_t *left_top, leng_t img_bpl,
+                                 const sSHAPE_MAT *shape_mat);
+
+/*****************************************************************************/
+/*                                   几何                                    */
+/*****************************************************************************/
+
+/* 矩形过滤参数结构 */
+typedef struct
+{
+        fp32_t  merge;          /* 合并面积阈 */
+        fp32_t  min_s, max_s;   /* 极限宽高比 */
+        uint_t  min_w, min_h;   /* 最小的宽高 */
+        uint_t  max_w, max_h;   /* 最大的宽高 */
+
+} sRECT_FILTER;
+
+/* 过滤结果单元结构 */
+typedef struct
+{
+        sRECT   box;    /* 矩形坐标 */
+        fp32_t  w_h;    /* 矩形的宽高比 */
+        sint_t  type;   /* 类型 (小于0表示无效) */
+        leng_t  area;   /* 矩形的面积 */
+
+} sRECT_RESULT;
+
+/* 矩形过滤器 (坐标输入格式 [X, Y, TYPE]) */
+CR_API leng_t   rect_filter_lt_rb (sRECT_RESULT *result,
+                             const sint_t *pnt_lt, leng_t cnt_lt,
+                             const sint_t *pnt_rb, leng_t cnt_rb,
+                                const sRECT_FILTER *param);
+CR_API leng_t   rect_filter_lb_rt (sRECT_RESULT *result,
+                             const sint_t *pnt_lb, leng_t cnt_lb,
+                             const sint_t *pnt_rt, leng_t cnt_rt,
+                                const sRECT_FILTER *param);
 
 #endif  /* !__CR_PHYLIB_H__ */
 
