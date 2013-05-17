@@ -31,26 +31,18 @@
     #endif
 #endif
 
+#if defined(_CR_BUILD_DLL_)
 /*
 =======================================
     插件 DLL 入口点
 =======================================
 */
-#if defined(_CR_CC_BCC_)
-int  WINAPI
-DllEntryPoint (
-  __CR_IN__ HINSTANCE       hinst,
-  __CR_IN__ unsigned long   reason,
-  __CR_UU__ void*           reserved
-    )
-#else
 BOOL WINAPI
 DllMain (
   __CR_IN__ HANDLE  hinst,
   __CR_IN__ DWORD   reason,
   __CR_UU__ LPVOID  reserved
     )
-#endif
 {
     switch (reason)
     {
@@ -64,3 +56,5 @@ DllMain (
     CR_NOUSE(reserved);
     return (TRUE);
 }
+
+#endif  /* _CR_BUILD_DLL_ */

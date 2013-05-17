@@ -26,6 +26,7 @@ using namespace cv;
     #pragma comment (lib, "opencv_videostab244.lib")
 #endif
 
+#if defined(_CR_BUILD_DLL_)
 /*
 =======================================
     插件 DLL 入口点
@@ -50,6 +51,8 @@ DllMain (
     CR_NOUSE(reserved);
     return (TRUE);
 }
+
+#endif  /* _CR_BUILD_DLL_ */
 
 /*****************************************************************************/
 /*                                结构体互换                                 */

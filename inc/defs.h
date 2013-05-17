@@ -217,6 +217,7 @@ typedef void_t*     hwnd_t;     /* GUI 相关的窗口句柄 */
 #endif
 
 /* 建立和使用 DLL 所需的函数前缀 */
+#define CR_DLL  CR_C_FUNC CR_EXPORT
 #ifndef _CR_BUILD_DLL_
     #ifndef _CR_USE_DLL_
         #define CR_API  CR_C_FUNC
