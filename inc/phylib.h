@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-16  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-20  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -176,6 +176,8 @@ CR_API bool_t   shape_match_and (const byte_t *left_top, leng_t img_bpl,
                                  const sSHAPE_MAT *shape_mat);
 CR_API bool_t   shape_match_orr (const byte_t *left_top, leng_t img_bpl,
                                  const sSHAPE_MAT *shape_mat);
+CR_API bool_t   shape_match_cnt (const byte_t *left_top, leng_t img_bpl,
+                                 const sSHAPE_MAT *shape_mat, uint_t gate);
 
 /*****************************************************************************/
 /*                                   几何                                    */
@@ -191,25 +193,23 @@ typedef struct
 
 } sRECT_FILTER;
 
-/* 过滤结果单元结构 */
-typedef struct
-{
-        sRECT   box;    /* 矩形坐标 */
-        fp32_t  w_h;    /* 矩形的宽高比 */
-        sint_t  type;   /* 类型 (小于0表示无效) */
-        leng_t  area;   /* 矩形的面积 */
-
-} sRECT_RESULT;
-
-/* 矩形过滤器 (坐标输入格式 [X, Y, TYPE]) */
-CR_API leng_t   rect_filter_lt_rb (sRECT_RESULT *result,
-                             const sint_t *pnt_lt, leng_t cnt_lt,
-                             const sint_t *pnt_rb, leng_t cnt_rb,
+/* 矩形过滤器 (结果中宽为0的矩形表示此矩形已删除) */
+CR_API leng_t   rect_filter_lt_rb (sRECT *result,
+                             const sPNT2 *pnt_lt, leng_t cnt_lt,
+                             const sPNT2 *pnt_rb, leng_t cnt_rb,
                                 const sRECT_FILTER *param);
-CR_API leng_t   rect_filter_lb_rt (sRECT_RESULT *result,
-                             const sint_t *pnt_lb, leng_t cnt_lb,
-                             const sint_t *pnt_rt, leng_t cnt_rt,
+CR_API leng_t   rect_filter_lb_rt (sRECT *result,
+                             const sPNT2 *pnt_lb, leng_t cnt_lb,
+                             const sPNT2 *pnt_rt, leng_t cnt_rt,
                                 const sRECT_FILTER *param);
+/* 矩形合并 (已包含在过滤器里) */
+CR_API void_t   rect_merge (sRECT *result, leng_t count,
+                            const sRECT_FILTER* param);
+/* 取点密度最大的矩形 */
+CR_API bool_t   rect_max_density (sRECT *result,
+                            const sRECT *list, leng_t count,
+                            const sPNT2 *pnts1, leng_t cnts1,
+                            const sPNT2 *pnts2, leng_t cnts2);
 
 #endif  /* !__CR_PHYLIB_H__ */
 
