@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-20  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-21  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -168,10 +168,11 @@ typedef struct
 
 } sSHAPE_MAT;
 
-/* 图像形态运算 */
+/* 图像形态运算 (矩阵忽略点值为 0x80 只支持二值图像) */
 CR_API sIMAGE*  image_shape (const sIMAGE *img, const sSHAPE_MAT *mat,
                              bool_t expand);
-/* 形态查找匹配 */
+
+/* 形态查找匹配 (矩阵忽略点值为 0x80 可以支持索引图像) */
 CR_API bool_t   shape_match_and (const byte_t *left_top, leng_t img_bpl,
                                  const sSHAPE_MAT *shape_mat);
 CR_API bool_t   shape_match_orr (const byte_t *left_top, leng_t img_bpl,
