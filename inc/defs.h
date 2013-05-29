@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-16  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -77,19 +77,22 @@ typedef ubit_t  retc_t;
 typedef ufast_t bool_t;
 
 /* 浮点数的类型 */
-#ifndef _CR_NO_FLOAT_
-    #ifndef _CR_NO_FLT32_
-        typedef float   fp32_t;
-    #endif
-    #ifndef _CR_NO_FLT64_
-        #if !defined(_CR_CC_VDSP_)
-        typedef double      fp64_t;
-        #else
-        typedef long double fp64_t;
-        #endif
-    #endif
-    #include "port/float.h"
+typedef int16s  fp16_t;
+#ifndef _CR_NO_FLT32_
+    typedef float   fp32_t;
+#else
+    typedef int32s  fp32_t;
 #endif
+#ifndef _CR_NO_FLT64_
+    #if !defined(_CR_CC_VDSP_)
+    typedef double      fp64_t;
+    #else
+    typedef long double fp64_t;
+    #endif
+#else
+    typedef int64s  fp64_t;
+#endif
+#include "port/float.h"
 
 /* 很大的浮点数 */
 #define CR_LARG64   (1.0E30)
@@ -132,20 +135,16 @@ typedef ufast_t bool_t;
 
 /* 平台相关类型 */
 #if defined(_CR_SYS64_)
-    #ifndef _CR_NO_FLOAT_
     typedef fp64_t  real_t;
     #define CR_LARG CR_LARG64
     #define CR_ABIT CR_ABIT64
-    #endif
     typedef int64s  dist_t;
     typedef int64u  leng_t;
 #else   /* (_CR_SYS16_) */
         /* (_CR_SYS32_) */
-    #ifndef _CR_NO_FLOAT_
     typedef fp32_t  real_t;
     #define CR_LARG CR_LARG32
     #define CR_ABIT CR_ABIT32
-    #endif
     #if defined(_CR_SMALL_)
     typedef int16s  dist_t;
     typedef int16u  leng_t;
@@ -242,6 +241,7 @@ typedef void_t* (STDCALL *stdfunc_t) (void_t*, void_t*);
     #define FACOS(x)    ((fp32_t)acos(x))
     #define FATAN(x)    ((fp32_t)atan(x))
     #define FSQRT(x)    ((fp32_t)sqrt(x))
+    #define FPOW(x,y)   ((fp32_t)pow(x,y))
 #else
     #define  FSIN(x)    ((fp32_t) sinf(x))
     #define  FCOS(x)    ((fp32_t) cosf(x))
@@ -250,6 +250,7 @@ typedef void_t* (STDCALL *stdfunc_t) (void_t*, void_t*);
     #define FACOS(x)    ((fp32_t)acosf(x))
     #define FATAN(x)    ((fp32_t)atanf(x))
     #define FSQRT(x)    ((fp32_t)sqrtf(x))
+    #define FPOW(x,y)   ((fp32_t)powf(x,y))
 #endif
 
 /*****************************************************************************/

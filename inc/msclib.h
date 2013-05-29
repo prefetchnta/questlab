@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-12  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-11-23  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -36,13 +36,8 @@ CR_API int32u   timer_get32 (void_t);
 CR_API int64u   timer_get64 (void_t);
 
 /* 定时器获取时差 */
-#ifndef _CR_NO_FLOAT_
 CR_API void_t   timer_set_base  (timer_t timer);
 CR_API fp32_t   timer_get_delta (timer_t timer);
-#else
-CR_API void_t   timer_set_base  (timer_t timer);
-CR_API int32u   timer_get_delta (timer_t timer);
-#endif
 
 /*****************************************************************************/
 /*                                 杂项函数                                  */

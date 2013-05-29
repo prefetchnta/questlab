@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-27  */
 /*     #######          ###    ###      [BLIT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-23  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -229,6 +229,8 @@ CR_COLOR32 (
     #define pixel_subn      pixel_sub15n
     #define pixel_lrpz      pixel_lrp15z
     #define pixel_lrpn      pixel_lrp15n
+    #define dot_wu_get      dot_wu_get15
+    #define dot_wu_set      dot_wu_set15
     #define fill_and_c      fill_and16_c
     #define fill_orr_c      fill_orr16_c
     #define fill_not_c      fill_not16_c
@@ -265,6 +267,8 @@ CR_COLOR32 (
     #define pixel_subn      pixel_sub16n
     #define pixel_lrpz      pixel_lrp16z
     #define pixel_lrpn      pixel_lrp16n
+    #define dot_wu_get      dot_wu_get16
+    #define dot_wu_set      dot_wu_set16
     #define fill_and_c      fill_and16_c
     #define fill_orr_c      fill_orr16_c
     #define fill_not_c      fill_not16_c
@@ -301,6 +305,8 @@ CR_COLOR32 (
     #define pixel_subn      pixel_sub24n
     #define pixel_lrpz      pixel_lrp24z
     #define pixel_lrpn      pixel_lrp24n
+    #define dot_wu_get      dot_wu_get24
+    #define dot_wu_set      dot_wu_set24
     #define fill_and_c      fill_and24_c
     #define fill_orr_c      fill_orr24_c
     #define fill_not_c      fill_not24_c
@@ -337,6 +343,8 @@ CR_COLOR32 (
     #define pixel_subn      pixel_sub32n
     #define pixel_lrpz      pixel_lrp32z
     #define pixel_lrpn      pixel_lrp32n
+    #define dot_wu_get      dot_wu_get32
+    #define dot_wu_set      dot_wu_set32
     #define fill_and_c      fill_and32_c
     #define fill_orr_c      fill_orr32_c
     #define fill_not_c      fill_not32_c
@@ -474,6 +482,22 @@ CR_API void_t   pixel_lrp24z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 CR_API void_t   pixel_lrp24n (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 CR_API void_t   pixel_lrp32z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 CR_API void_t   pixel_lrp32n (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
+
+/* 抗锯齿读 */
+CR_API byte_t   dot_wu_get08 (const sIMAGE *dst, fp32_t x, fp32_t y);
+CR_API int16u   dot_wu_get12 (const sIMAGE *dst, fp32_t x, fp32_t y);
+CR_API int16u   dot_wu_get15 (const sIMAGE *dst, fp32_t x, fp32_t y);
+CR_API int16u   dot_wu_get16 (const sIMAGE *dst, fp32_t x, fp32_t y);
+CR_API int32u   dot_wu_get24 (const sIMAGE *dst, fp32_t x, fp32_t y);
+CR_API int32u   dot_wu_get32 (const sIMAGE *dst, fp32_t x, fp32_t y);
+
+/* 抗锯齿写 */
+CR_API void_t   dot_wu_set08 (const sIMAGE *dst, fp32_t x, fp32_t y, cpix_t);
+CR_API void_t   dot_wu_set12 (const sIMAGE *dst, fp32_t x, fp32_t y, cpix_t);
+CR_API void_t   dot_wu_set15 (const sIMAGE *dst, fp32_t x, fp32_t y, cpix_t);
+CR_API void_t   dot_wu_set16 (const sIMAGE *dst, fp32_t x, fp32_t y, cpix_t);
+CR_API void_t   dot_wu_set24 (const sIMAGE *dst, fp32_t x, fp32_t y, cpix_t);
+CR_API void_t   dot_wu_set32 (const sIMAGE *dst, fp32_t x, fp32_t y, cpix_t);
 
 /*****************************************************************************/
 /*                                 几何绘制                                  */

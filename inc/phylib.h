@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-21  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-29  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -125,6 +125,8 @@ CR_API const byte_t _rom_ g_cstep_pal[64];
 
 /* 抓图和回图 */
 CR_API sIMAGE*  image_grab (const sIMAGE *img, const sRECT *box);
+CR_API sIMAGE*  image_rotz (const sIMAGE *img, const sRECT *box,
+                            fp32_t ccw, bool_t fast);
 CR_API void_t   image_back (const sIMAGE *dst, const sIMAGE *src,
                             sint_t left, sint_t top);
 /* 直方图阈值计算 */
@@ -142,10 +144,23 @@ CR_API sIMAGE*  image_indexed (const sIMAGE *img, idx_bgr_t dopix,
 /* 灰度直方图计算 */
 CR_API bool_t   image_histo (leng_t tab[256], const sIMAGE *gray);
 
+/* 彩色直方图计算 */
+CR_API bool_t   image_histo3 (leng_t t_r[256], leng_t t_g[256],
+                              leng_t t_b[256], const sIMAGE *img);
 /* 灰度图二值化 */
 CR_API bool_t   image_binary1 (const sIMAGE *gray, byte_t gate);
 CR_API bool_t   image_binary2 (const sIMAGE *gray, const sIMAGE *gate,
                                sint_t offset);
+/* 灰度查表变换 */
+CR_API bool_t   image_lookup (const sIMAGE *gray, const byte_t tab[256]);
+
+/* 彩色查表变换 */
+CR_API bool_t   image_lookup3 (const sIMAGE *img, const byte_t t_r[256],
+                               const byte_t t_g[256], const byte_t t_b[256]);
+/* 伽玛与乘加变换 */
+CR_API void_t   dot_gamma (byte_t tab[256], fp32_t gamma, fp32_t comp);
+CR_API void_t   dot_muladd (byte_t tab[256], fp32_t fmul, fp32_t fadd);
+
 /* 卷积运算矩阵结构 */
 typedef struct
 {
@@ -184,6 +199,26 @@ CR_API bool_t   shape_match_cnt (const byte_t *left_top, leng_t img_bpl,
 /*                                   几何                                    */
 /*****************************************************************************/
 
+/* Hough 变换结果结构 */
+typedef struct
+{
+        uint_t  asize;  /* 变换图大小 */
+        uint_t  n_rho;  /* 变换图宽度 */
+        uint_t  n_ang;  /* 变换图高度 */
+        uint_t* accum;  /* 变换图 (需要释放) */
+
+} sLINE_HOUGH;
+
+/* 标准直线 Hough 变换 */
+CR_API bool_t   line_hough (sLINE_HOUGH *hough, const sIMAGE *img,
+                            fp32_t rho, fp32_t theta, uint_t gate,
+                            byte_t index);
+/* 获取直线极坐标参数 */
+CR_API bool_t   line_hough_get (uint_t idx, fp32_t *rho, fp32_t *theta,
+                                const sLINE_HOUGH *hough);
+/* 获取最长直线索引值 */
+CR_API uint_t   line_hough_max (const sLINE_HOUGH *hough);
+
 /* 矩形过滤参数结构 */
 typedef struct
 {
@@ -194,23 +229,54 @@ typedef struct
 
 } sRECT_FILTER;
 
-/* 矩形过滤器 (结果中宽为0的矩形表示此矩形已删除) */
-CR_API leng_t   rect_filter_lt_rb (sRECT *result,
+/* 矩形过滤 (结果中宽为0的矩形表示此矩形已删除) */
+CR_API leng_t   rect_filter_lt_rb (sRECT *result, leng_t limit,
                              const sPNT2 *pnt_lt, leng_t cnt_lt,
                              const sPNT2 *pnt_rb, leng_t cnt_rb,
                                 const sRECT_FILTER *param);
-CR_API leng_t   rect_filter_lb_rt (sRECT *result,
+CR_API leng_t   rect_filter_lb_rt (sRECT *result, leng_t limit,
                              const sPNT2 *pnt_lb, leng_t cnt_lb,
                              const sPNT2 *pnt_rt, leng_t cnt_rt,
                                 const sRECT_FILTER *param);
 /* 矩形合并 (已包含在过滤器里) */
 CR_API void_t   rect_merge (sRECT *result, leng_t count,
                             const sRECT_FILTER* param);
-/* 取点密度最大的矩形 */
+/* 取点密度最大矩形 */
 CR_API bool_t   rect_max_density (sRECT *result,
                             const sRECT *list, leng_t count,
                             const sPNT2 *pnts1, leng_t cnts1,
                             const sPNT2 *pnts2, leng_t cnts2);
+
+/*****************************************************************************/
+/*                                   纹理                                    */
+/*****************************************************************************/
+
+/* 像素投影直方图 */
+CR_API bool_t   tex_project_x (uint_t *prj, const sIMAGE *img, byte_t idx);
+CR_API bool_t   tex_project_y (uint_t *prj, const sIMAGE *img, byte_t idx);
+
+/* 交替统计参数结果结构 */
+typedef struct
+{
+        /* 输入参数 */
+        sint_t  step;           /* 像素的间隔 */
+        bool_t  altr;           /* 是否交替统计 */
+        uint_t  gmin, gmax;     /* 交替的阈值 */
+        byte_t  idx1, idx2;     /* 形态边界值组
+                                   进入形态 [idx1, idx2]
+                                   退出形态 [idx2, idx1] */
+        const sRECT*    win;    /* 局部位置 */
+        const sIMAGE*   img;    /* 输入图片 */
+
+        /* 返回结果 */
+        byte_t* result;     /* 结果状态列表 (需要释放) */
+        uint_t  nhit, ntot;     /* 符合数和总数 */
+
+} sTEX_PATTERN;
+
+/* 像素交替统计 */
+CR_API bool_t   tex_altern_x (sTEX_PATTERN *patt);
+CR_API bool_t   tex_altern_y (sTEX_PATTERN *patt);
 
 #endif  /* !__CR_PHYLIB_H__ */
 
