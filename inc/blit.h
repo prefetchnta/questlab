@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-27  */
 /*     #######          ###    ###      [BLIT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-29  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -80,6 +80,7 @@ typedef union
 /* 像素转换/绘制函数类型 */
 typedef cpix_t  (*pixcnvt_t) (const int32u*, cl32_t);
 typedef void_t  (*pixdraw_t) (const sIMAGE*, sint_t, sint_t, cpix_t);
+typedef void_t  (*dotdraw_t) (const sIMAGE*, fp32_t, fp32_t, cpix_t);
 
 #if !defined(_CR_SICK_INLINE_)
 /*
