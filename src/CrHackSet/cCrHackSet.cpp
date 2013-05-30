@@ -232,7 +232,7 @@ qst_crh_lineto (
         return (FALSE);
     newx = (sint_t)str2intxA(argv[1]);
     newy = (sint_t)str2intxA(argv[2]);
-    rect_set_xy(&line, s_posx, s_posy, newx, newy);
+    line_set_xy(&line, s_posx, s_posy, newx, newy);
     draw_line(draw, &line, s_color, s_pixdraw);
     s_posx = newx;
     s_posy = newy;
@@ -296,7 +296,7 @@ qst_crh_line (
     sy = (sint_t)str2intxA(argv[2]);
     dx = (sint_t)str2intxA(argv[3]);
     dy = (sint_t)str2intxA(argv[4]);
-    rect_set_xy(&line, sx, sy, dx, dy);
+    line_set_xy(&line, sx, sy, dx, dy);
     draw_line(draw, &line, s_color, s_pixdraw);
     return (TRUE);
 }
