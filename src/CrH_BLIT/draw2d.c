@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-02-22  */
 /*     #######          ###    ###      [BLIT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-07-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-30  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -254,7 +254,7 @@ draw_lines (
 
     for (index = 0; index < count; index++, pos = next) {
         next = (sPNT2*)((byte_t*)pos + skip);
-        rect_set_xy(&line, pos->x, pos->y, next->x, next->y);
+        line_set_xy(&line, pos->x, pos->y, next->x, next->y);
         draw_line(dst, &line, color, pixel_draw);
     }
 }
@@ -352,10 +352,10 @@ draw_polygon (
 
     for (index = 0; index < count; index++, pos = next) {
         next = (sPNT2*)((byte_t*)pos + skip);
-        rect_set_xy(&line, pos->x, pos->y, next->x, next->y);
+        line_set_xy(&line, pos->x, pos->y, next->x, next->y);
         draw_line(dst, &line, color, pixel_draw);
     }
-    rect_set_xy(&line, start->x, start->y, pos->x, pos->y);
+    line_set_xy(&line, start->x, start->y, pos->x, pos->y);
     draw_line(dst, &line, color, pixel_draw);
 }
 
