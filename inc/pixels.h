@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-19  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-23  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-31  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -580,22 +580,18 @@ CR_API sIMAGE*  img_1555_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
                                 const sIMAGE *src);
 CR_API sIMAGE*  img_4444_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
                                 const sIMAGE *src);
-
-CR_API sIMAGE*  img_dxtc_to_32 (sIMAGE *dst, const sIMAGE *src);
-CR_API sIMAGE*  img_auto_to_32 (sIMAGE *dst, const sIMAGE *src);
-CR_API sIMAGE*  img_auto_to_xx (sIMAGE *dst, const sIMAGE *src);
-
-/* 自定义图块转换 */
-typedef void_t  (*pixcnt_t) (void_t*, const void_t*);
-
-CR_API sIMAGE*  image_convert (sIMAGE *dst, uint_t dx, uint_t dy,
-                               const sIMAGE *src, pixcnt_t pixel_cnvrt,
-                               uint_t pixel_delta CR_DEFAULT(1));
+CR_API sIMAGE*  img_dxtc_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
+                                const sIMAGE *src);
+CR_API sIMAGE*  img_auto_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
+                                const sIMAGE *src);
 /* 从 D3DFMT 转出 */
-CR_API sIMAGE*  img_d3dx_to_32 (sIMAGE *dst, const void_t *pixel,
-                                leng_t size, uint_t width, uint_t height,
+CR_API sIMAGE*  img_d3dx_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
+                                const void_t *pixel, leng_t size,
+                                uint_t width, uint_t height,
                                 const void_t *palette, int32u d3dfmt,
                                 uint_t align CR_DEFAULT(4));
+/* 转换到任意格式 */
+CR_API sIMAGE*  img_auto_to_xx (sIMAGE *dst, const sIMAGE *src);
 
 /*****************************************************************************/
 /*                              常用的颜色常数                               */
