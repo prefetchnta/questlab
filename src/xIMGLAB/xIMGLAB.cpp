@@ -325,7 +325,7 @@ WinMain (
     sILAB_OUTPUT    ilab_outp;
 
     /* 初始化执行源 */
-    ilab_inpt.input = img_auto_to_32(NULL, picz->frame->pic);
+    ilab_inpt.input = img_auto_to_32(NULL, 0, 0, picz->frame->pic);
     if (ilab_inpt.input == NULL) {
         fmtz_free(fmtz);
         window_kill(hwnd, curt_app, WIN_CLASS);
@@ -374,7 +374,7 @@ WinMain (
                 }
                 if (s_img_idx >= ilab_outp.count)
                     s_img_idx = ilab_outp.count - 1;
-                show = img_auto_to_32(NULL, ilab_outp.frame[s_img_idx]);
+                show = img_auto_to_32(NULL, 0, 0, ilab_outp.frame[s_img_idx]);
                 if (show == NULL)
                     break;
             }
@@ -399,7 +399,7 @@ WinMain (
                 if (picz == NULL)
                     break;
                 image_del(ilab_inpt.input);
-                ilab_inpt.input = img_auto_to_32(NULL, picz->frame->pic);
+                ilab_inpt.input = img_auto_to_32(NULL, 0, 0, picz->frame->pic);
                 fmtz_free((sFMTZ*)picz);
                 if (ilab_inpt.input == NULL)
                     break;
