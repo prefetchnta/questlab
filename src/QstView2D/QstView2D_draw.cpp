@@ -460,7 +460,7 @@ qst_make_image (
     }
 
     /* 转换到32位色 */
-    rgb = img_auto_to_32(NULL, img);
+    rgb = img_auto_to_32(NULL, 0, 0, img);
     if (rgb == NULL)
         return;
 
@@ -481,7 +481,7 @@ qst_make_image (
         image_del(rgb);
         return;
     }
-    alp = img_auto_to_32(NULL, img);
+    alp = img_auto_to_32(NULL, 0, 0, img);
     image_del(img);
     if (alp == NULL) {
         image_del(rgb);
