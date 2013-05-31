@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-12  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-31  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -47,10 +47,6 @@ CR_API fp32_t   timer_get_delta (timer_t timer);
 CR_API void_t   delay08 (byte_t num);
 CR_API void_t   delay16 (int16u num);
 CR_API void_t   delay32 (int32u num);
-
-/* 16位浮点转换 */
-CR_API fp16_t   fp32_to_fp16 (fp32_t value);
-CR_API fp32_t   fp16_to_fp32 (fp16_t value);
 
 /* 伪随机数生成 */
 CR_API void_t   rand_seed (uint_t seed);

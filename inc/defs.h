@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-05-31  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -25,6 +25,40 @@
 /*****************************************************************************/
 /*                               编译环境定义                                */
 /*****************************************************************************/
+
+/* 函数调用规范 */
+#if defined(_CR_AR_X86_)
+    #define CCCCALL     __cdecl
+    #define STDCALL     __stdcall
+    #define REGCALL     __fastcall
+#else
+    #define CCCCALL
+    #define STDCALL
+    #define REGCALL
+#endif
+
+/* 纯 C 函数修饰 */
+#ifdef  __cplusplus
+    #define  CR_C_FUNC  extern "C"
+    #define _CR_C_HEAD_ extern "C" {
+    #define _CR_C_TAIL_ }
+#else
+    #define  CR_C_FUNC  extern
+    #define _CR_C_HEAD_
+    #define _CR_C_TAIL_
+#endif
+
+/* 建立和使用 DLL 所需的函数前缀 */
+#define CR_DLL  CR_C_FUNC CR_EXPORT
+#ifndef _CR_BUILD_DLL_
+    #ifndef _CR_USE_DLL_
+        #define CR_API  CR_C_FUNC
+    #else
+        #define CR_API  CR_C_FUNC CR_IMPORT
+    #endif
+#else
+    #define CR_API  CR_C_FUNC CR_EXPORT
+#endif
 
 /* 基本类型定义 */
 typedef   signed int    sint_t;
@@ -192,40 +226,6 @@ typedef int16s  fp16_t;
 /* 特殊应用类型 */
 typedef int32u      cl32_t;     /* 标准32位色 (蓝 先) */
 typedef void_t*     hwnd_t;     /* GUI 相关的窗口句柄 */
-
-/* 函数调用规范 */
-#if defined(_CR_AR_X86_)
-    #define CCCCALL     __cdecl
-    #define STDCALL     __stdcall
-    #define REGCALL     __fastcall
-#else
-    #define CCCCALL
-    #define STDCALL
-    #define REGCALL
-#endif
-
-/* 纯 C 函数修饰 */
-#ifdef  __cplusplus
-    #define  CR_C_FUNC  extern "C"
-    #define _CR_C_HEAD_ extern "C" {
-    #define _CR_C_TAIL_ }
-#else
-    #define  CR_C_FUNC  extern
-    #define _CR_C_HEAD_
-    #define _CR_C_TAIL_
-#endif
-
-/* 建立和使用 DLL 所需的函数前缀 */
-#define CR_DLL  CR_C_FUNC CR_EXPORT
-#ifndef _CR_BUILD_DLL_
-    #ifndef _CR_USE_DLL_
-        #define CR_API  CR_C_FUNC
-    #else
-        #define CR_API  CR_C_FUNC CR_IMPORT
-    #endif
-#else
-    #define CR_API  CR_C_FUNC CR_EXPORT
-#endif
 
 /* 三种函数类型 (返回指针防止可能的值截断) */
 typedef void_t* (CCCCALL *nopfunc_t) (void_t);
