@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-30  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-06-01  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -230,23 +230,26 @@ typedef struct
 
 } sRECT_FILTER;
 
-/* 矩形过滤 (结果中宽为0的矩形表示此矩形已删除) */
-CR_API leng_t   rect_filter_lt_rb (sRECT *result, leng_t limit,
-                             const sPNT2 *pnt_lt, leng_t cnt_lt,
-                             const sPNT2 *pnt_rb, leng_t cnt_rb,
+/* 矩形整理 */
+CR_API leng_t   rect_clean (sRECT *result, leng_t count);
+
+/* 矩形搜索 */
+CR_API leng_t   rect_get_lt_rb (sRECT *result, leng_t limit,
+                            const sPNT2 *pnt_lt, leng_t cnt_lt,
+                            const sPNT2 *pnt_rb, leng_t cnt_rb,
                                 const sRECT_FILTER *param);
-CR_API leng_t   rect_filter_lb_rt (sRECT *result, leng_t limit,
-                             const sPNT2 *pnt_lb, leng_t cnt_lb,
-                             const sPNT2 *pnt_rt, leng_t cnt_rt,
+CR_API leng_t   rect_get_lb_rt (sRECT *result, leng_t limit,
+                            const sPNT2 *pnt_lb, leng_t cnt_lb,
+                            const sPNT2 *pnt_rt, leng_t cnt_rt,
                                 const sRECT_FILTER *param);
-/* 矩形合并 (已包含在过滤器里) */
-CR_API void_t   rect_merge (sRECT *result, leng_t count,
+/* 矩形合并 */
+CR_API leng_t   rect_merge (sRECT *result, leng_t count,
                             const sRECT_FILTER* param);
 /* 取点密度最大矩形 */
-CR_API bool_t   rect_max_density (sRECT *result,
-                            const sRECT *list, leng_t count,
-                            const sPNT2 *pnts1, leng_t cnts1,
-                            const sPNT2 *pnts2, leng_t cnts2);
+CR_API bool_t   rect_max_density (sRECT *result, const sRECT *list,
+                                  leng_t count, const sPNT2 *pnts1,
+                                  leng_t cnts1, const sPNT2 *pnts2,
+                                  leng_t cnts2);
 
 /*****************************************************************************/
 /*                                   纹理                                    */
