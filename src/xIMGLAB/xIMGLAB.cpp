@@ -18,6 +18,9 @@ typedef bool_t  (*ilab_init_t) (uint_t, ansi_t**);
 typedef bool_t  (*ilab_main_t) (sILAB_OUTPUT*, const sILAB_INPUT*);
 typedef void_t  (*ilab_kill_t) (void_t);
 
+/* 生成字体用的接口类型 */
+typedef iFONT*  (*create_font_t) (const LOGFONTA*);
+
 /* OpenCV 转换工具函数类型 */
 typedef bool_t  (*ipl2img_set_t) (sIMAGE*, const ipls_t*);
 typedef bool_t  (*img2ipl_set_t) (ipls_t*, const sIMAGE*);
@@ -124,9 +127,17 @@ free_img_list (
   __CR_IO__ sILAB_OUTPUT*   output
     )
 {
+    uint_t  idx;
+
     if (output->frame != NULL) {
-        for (uint_t idx = 0; idx < output->count; idx++)
+        for (idx = 0; idx < output->n_img; idx++)
             image_del(output->frame[idx]);
+    }
+    if (output->texts != NULL) {
+        for (idx = 0; idx < output->n_txt; idx++) {
+            if (output->texts[idx].kll)
+                mem_free(output->texts[idx].txt);
+        }
     }
     struct_zero(output, sILAB_OUTPUT);
 }
@@ -222,6 +233,7 @@ WinMain (
         return (QST_ERROR);
 
     create_gfx2_t   gfx2_func;
+    create_font_t   gdi_fontA;
 
     /* 加载 GDI 绘制插件 (限制到 GDI) */
     sbin = sbin_loadA("GFX2_GDI.dll");
@@ -229,6 +241,9 @@ WinMain (
         return (QST_ERROR);
     gfx2_func = sbin_exportT(sbin, "create_gdi_canvas", create_gfx2_t);
     if (gfx2_func == NULL)
+        return (QST_ERROR);
+    gdi_fontA = sbin_exportT(sbin, "create_gdi_fontA", create_font_t);
+    if (gdi_fontA == NULL)
         return (QST_ERROR);
 
     HWND    hwnd;
@@ -322,6 +337,22 @@ WinMain (
     CR_VCALL(draw)->unlock(draw);
     CR_VCALL(draw)->clear(draw, 0, 0);
 
+    iFONT*      font;
+    LOGFONTA    fnta;
+
+    /* 创建输出文本用的文字绘制对象 */
+    struct_zero(&fnta, LOGFONTA);
+    fnta.lfCharSet = DEFAULT_CHARSET;
+    fnta.lfQuality = ANTIALIASED_QUALITY;
+    fnta.lfHeight = 12;
+    str_cpyA(fnta.lfFaceName, "Fixedsys");
+    font = gdi_fontA(&fnta);
+    if (font == NULL || !CR_VCALL(font)->bind(font, draw)) {
+        fmtz_free(fmtz);
+        window_kill(hwnd, curt_app, WIN_CLASS);
+        return (QST_ERROR);
+    }
+
     sILAB_OUTPUT    ilab_outp;
 
     /* 初始化执行源 */
@@ -372,8 +403,8 @@ WinMain (
                                 timer_get_delta(log));
                     SetWindowTextA(hwnd, buf);
                 }
-                if (s_img_idx >= ilab_outp.count)
-                    s_img_idx = ilab_outp.count - 1;
+                if (s_img_idx >= ilab_outp.n_img)
+                    s_img_idx = ilab_outp.n_img - 1;
                 show = img_auto_to_32(NULL, 0, 0, ilab_outp.frame[s_img_idx]);
                 if (show == NULL)
                     break;
@@ -382,6 +413,8 @@ WinMain (
                 s_img_idx = 0;
                 show = ilab_inpt.input;
             }
+
+            /* 输出调试图像 */
             blit.dx = blit.dy = 0;
             blit.sx = blit.sy = 0;
             blit.sw = show->position.ww;
@@ -389,9 +422,29 @@ WinMain (
             imgs = CR_VCALL(draw)->lock(draw);
             blit_set_c(imgs, show, &blit, NULL);
             CR_VCALL(draw)->unlock(draw);
-            CR_VCALL(draw)->flip(draw, FALSE);
             if (show != ilab_inpt.input)
                 image_del(show);
+
+            /* 输出文字信息 */
+            if (ilab_outp.texts != NULL) {
+                for (uint_t idx = 0; idx < ilab_outp.n_txt; idx++) {
+                    if (ilab_outp.texts[idx].idx != s_img_idx)
+                        continue;
+                    if (ilab_outp.texts[idx].trn)
+                        CR_VCALL(font)->setMode(font, TRANSPARENT);
+                    else
+                        CR_VCALL(font)->setMode(font, OPAQUE);
+                    CR_VCALL(font)->setColor(font, ilab_outp.texts[idx].fgc);
+                    CR_VCALL(font)->setBkColor(font, ilab_outp.texts[idx].bkc);
+                    CR_VCALL(font)->enter(font);
+                    egui_draw_text(font, ilab_outp.texts[idx].txt,
+                                        &ilab_outp.texts[idx].pos,
+                                         ilab_outp.texts[idx].aln,
+                                         ilab_outp.texts[idx].pge);
+                    CR_VCALL(font)->leave(font);
+                }
+            }
+            CR_VCALL(draw)->flip(draw, FALSE);
 
             /* 获取多帧图片的后续帧 */
             if (slide != NULL) {

@@ -35,11 +35,28 @@
     #define WIN_XCONF   "xIMGLAB.xml"
 #endif
 
+/* 文字输出结果 */
+typedef struct
+{
+        sRECT   pos;    /* 输出位置 */
+        uint_t  idx;    /* 画面索引 */
+        uint_t  aln;    /* 对齐参数 */
+        uint_t  pge;    /* 文本编码 */
+        cl32_t  fgc;    /* 前景颜色 */
+        cl32_t  bkc;    /* 背景颜色 */
+        bool_t  trn;    /* 透明输出 */
+        bool_t  kll;    /* 是否释放 */
+        void_t* txt;    /* 输出文本 */
+
+} sILAB_TXTOUT;
+
 /* 输出结果结构 */
 typedef struct
 {
-        uint_t      count;  /* 帧数量 */
-        sIMAGE**    frame;  /* 帧列表 */
+        uint_t          n_img;  /* 图片数量 */
+        sIMAGE**        frame;  /* 图片列表 */
+        uint_t          n_txt;  /* 文本数量 */
+        sILAB_TXTOUT*   texts;  /* 文本列表 */
 
 } sILAB_OUTPUT;
 
