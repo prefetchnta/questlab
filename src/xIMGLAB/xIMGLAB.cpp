@@ -132,12 +132,14 @@ free_img_list (
     if (output->frame != NULL) {
         for (idx = 0; idx < output->n_img; idx++)
             image_del(output->frame[idx]);
+        mem_free(output->frame);
     }
     if (output->texts != NULL) {
         for (idx = 0; idx < output->n_txt; idx++) {
             if (output->texts[idx].kll)
                 mem_free(output->texts[idx].txt);
         }
+        mem_free(output->texts);
     }
     struct_zero(output, sILAB_OUTPUT);
 }
