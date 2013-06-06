@@ -35,6 +35,7 @@ questlab
 ├─lib
 │  ├─crhack
 │  ├─devil
+│  ├─dxsdk
 │  ├─fi
 │  ├─fmod
 │  ├─gcasdk
