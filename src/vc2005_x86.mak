@@ -48,8 +48,8 @@ MFLAGS=/outputresource:$(BIN_NAME)^;^#2 /manifest ".\\2.manifest"
 ##
 CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /MD /W4 /Wp64 /wd4819 \
        /Zc:wchar_t- /arch:SSE /errorReport:prompt /I "..\..\inc" \
-       /I "..\..\inc\l3rd\dxsdk" /D "NDEBUG" /D "WIN32" /D "_WIN32" \
-       /D "UNICODE" /D "_UNICODE" /D "_CR_NO_ERROR_SET_"
+       /D "NDEBUG" /D "WIN32" /D "_WIN32" /D "UNICODE" /D "_UNICODE" \
+       /D "_CR_NO_ERROR_SET_"
 
 ##
 ##=====================================
@@ -59,6 +59,6 @@ CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /MD /W4 /Wp64 /wd4819 \
 LFLAGS=/OUT:$(BIN_NAME) /INCREMENTAL:NO /SUBSYSTEM:$(SUBSYSTEM) \
        /MANIFEST /MANIFESTFILE:".\\2.manifest" /OPT:REF /OPT:ICF \
        /LTCG /DYNAMICBASE /NXCOMPAT /ERRORREPORT:PROMPT /MACHINE:X86 \
-       /LIBPATH:..\..\lib\crhack /LIBPATH:..\..\lib\dxsdk \
-       kernel32.lib user32.lib gdi32.lib comdlg32.lib advapi32.lib \
-       shell32.lib ole32.lib oleaut32.lib CrH_CORE_msc.lib
+       /LIBPATH:..\..\lib\crhack kernel32.lib user32.lib gdi32.lib \
+       comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib \
+       CrH_CORE_msc.lib
