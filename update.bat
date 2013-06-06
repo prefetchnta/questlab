@@ -7,6 +7,8 @@ copy C:\WINDOWS\system32\vcl60.bpl
 copy C:\WINDOWS\system32\vclx60.bpl
 copy C:\WINDOWS\system32\dbrtl60.bpl
 copy C:\WINDOWS\system32\vcldb60.bpl
+copy C:\WINDOWS\system32\D3DX9_43.dll
+copy C:\WINDOWS\system32\D3DCompiler_43.dll
 copy C:\PROGRAM\Borland\CBuilder6\Bin\bcbie60.bpl
 copy C:\PROGRAM\Borland\CBuilder6\Bin\borlndmm.dll
 copy C:\PROGRAM\Borland\CBuilder6\Bin\cc3260mt.dll
@@ -16,13 +18,17 @@ copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_BLIT.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_COMM.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_CORE.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_EXTZ.dll
+copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_GFX3.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_MATH.dll
 copy D:\PRJ\CrHack\bin\vc2010_win32_x86\CrH_VSYS.dll
+copy D:\PRJ\CrHack\bin\vc2010_win32_x86\GFX3_D3D9.dll
 copy D:\PRJ\FinalBIN\FreeImage\lib\win32_vc09_x86\FreeImage.dll
 copy D:\PRJ\FinalBIN\DevIL\lib\win32_vc08_x86\unicode\DevIL.dll
 copy D:\PRJ\FinalBIN\FMODEx\lib\mswin\fmodex.dll
 copy D:\PRJ\FinalBIN\UnRAR\lib\win32_vc09_x86\unrar.dll
 copy D:\PRJ\FinalBIN\Scintilla\lib\win32_vc10_x86\SciLexer.dll
+copy D:\PRJ\FinalBIN\leptonica\lib\win32_vc09_x86\liblept168.dll
+copy D:\PRJ\FinalBIN\tesseract\lib\win32_vc09_x86\libtesseract302.dll
 copy D:\LIB\opencv\build\x86\vc10\bin\opencv_core244.dll
 copy D:\LIB\opencv\build\x86\vc10\bin\opencv_highgui244.dll
 copy D:\LIB\opencv\build\x86\vc10\bin\opencv_imgproc244.dll
