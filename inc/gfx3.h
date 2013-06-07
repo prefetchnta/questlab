@@ -54,10 +54,12 @@ typedef struct
 
 } mat4x4_t;
 
+/* 只使用微软自家的编译器 */
+#if     defined(_CR_CC_MSC_) && (_CR_CC_VER_ >= 1400)
 /*****************************************************************************/
 /*                              Direct3D8 API                                */
 /*****************************************************************************/
-#if     defined(_CR_USE_D3D8_)
+#if     defined(_CR_USE_D3D8_) && (_CR_CC_VER_ < 1700)
 
 #include <d3d8.h>
 #include <d3dx8.h>
@@ -66,11 +68,12 @@ typedef struct
     #pragma comment (lib, "d3dx8.lib")
     #pragma comment (lib, "dxguid8.lib")
 #endif
+#define _CR_HAVE_D3D8_
 
 /*****************************************************************************/
 /*                              Direct3D9 API                                */
 /*****************************************************************************/
-#elif   defined(_CR_USE_D3D9_)
+#elif   defined(_CR_USE_D3D9_) && (_CR_CC_VER_ < 1700)
 
 #include <d3d9.h>
 #include <d3dx9.h>
@@ -79,6 +82,7 @@ typedef struct
     #pragma comment (lib, "d3dx9.lib")
     #pragma comment (lib, "dxguid.lib")
 #endif
+#define _CR_HAVE_D3D9_
 
 /* D3D9 设备对象 */
 typedef struct
@@ -215,7 +219,7 @@ CR_API const sD3D9_CALL*    d3d9call_get (void_t);
 /*****************************************************************************/
 /*                              Direct3D11 API                               */
 /*****************************************************************************/
-#elif   defined(_CR_USE_D3D11_)
+#elif   defined(_CR_USE_D3D11_) && (_CR_CC_VER_ >= 1700)
 
 #include <dxgi.h>
 #include <d3dcommon.h>
@@ -227,8 +231,11 @@ CR_API const sD3D9_CALL*    d3d9call_get (void_t);
     #pragma comment (lib, "d3dx11.lib")
     #pragma comment (lib, "d3dx10.lib")
 #endif
+#define _CR_HAVE_D3D11_
 
 #endif  /* GFX3 API predefines */
+
+#endif  /* _CR_CC_MSC_ && _CR_CC_VER_ */
 
 #endif  /* !__CR_GFX3_H__ */
 
