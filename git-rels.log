@@ -8,6 +8,9 @@
     [+] GFX3_D3D9.dll
     [+] D3DX9_43.dll
     [+] D3DCompiler_43.dll
+    [m] CrH_CORE.dll
+    [m] fmodex.dll
+    [m] plugin/zFMOD.dll
 +
 +
 +
