@@ -278,6 +278,8 @@ ilab_camera_new (
     VideoCapture*   cap;
 
     cap = new VideoCapture ((int)id);
+    if (cap == NULL)
+        return (NULL);
     if (!cap->isOpened()) {
         delete cap;
         return (NULL);
