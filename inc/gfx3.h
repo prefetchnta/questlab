@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-06-05  */
 /*     #######          ###    ###      [GFX3]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-06  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-06-08  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -165,15 +165,23 @@ typedef struct
 
         sD3D9_TEXR* (*create_tex2_fileA) (sD3D9_MAIN *main,
                             const ansi_t *name, D3DPOOL pool, int32u usage,
-                                    uint_t level, cl32_t keycolor);
+                                    uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
 
         sD3D9_TEXR* (*create_tex2_fileW) (sD3D9_MAIN *main,
                             const wide_t *name, D3DPOOL pool, int32u usage,
-                                    uint_t level, cl32_t keycolor);
+                                    uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
 
         sD3D9_TEXR* (*create_tex2_mem) (sD3D9_MAIN *main,
                             const void_t *data, leng_t size, D3DPOOL pool,
-                                int32u usage, uint_t level, cl32_t keycolor);
+                                int32u usage, uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
+
+        sD3D9_TEXR* (*create_tex2_crh) (sD3D9_MAIN *main,
+                            const sIMAGE *image, D3DPOOL pool, int32u usage,
+                                    uint_t level, int32u mip_type);
+
         /* 生成 3D */
         sD3D9_TEXR* (*create_tex3) (sD3D9_MAIN *main, uint_t size,
                                     D3DFORMAT format, D3DPOOL pool,
@@ -181,15 +189,18 @@ typedef struct
 
         sD3D9_TEXR* (*create_tex3_fileA) (sD3D9_MAIN *main,
                             const ansi_t *name, D3DPOOL pool, int32u usage,
-                                    uint_t level, cl32_t keycolor);
+                                    uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
 
         sD3D9_TEXR* (*create_tex3_fileW) (sD3D9_MAIN *main,
                             const wide_t *name, D3DPOOL pool, int32u usage,
-                                    uint_t level, cl32_t keycolor);
+                                    uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
 
         sD3D9_TEXR* (*create_tex3_mem) (sD3D9_MAIN *main,
                             const void_t *data, leng_t size, D3DPOOL pool,
-                                int32u usage, uint_t level, cl32_t keycolor);
+                                int32u usage, uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
         /* 生成 VOLUME */
         sD3D9_TEXR* (*create_texv) (sD3D9_MAIN *main, uint_t width,
                             uint_t height, uint_t depth, D3DFORMAT format,
@@ -197,15 +208,18 @@ typedef struct
 
         sD3D9_TEXR* (*create_texv_fileA) (sD3D9_MAIN *main,
                             const ansi_t *name, D3DPOOL pool, int32u usage,
-                                    uint_t level, cl32_t keycolor);
+                                    uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
 
         sD3D9_TEXR* (*create_texv_fileW) (sD3D9_MAIN *main,
                             const wide_t *name, D3DPOOL pool, int32u usage,
-                                    uint_t level, cl32_t keycolor);
+                                    uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
 
         sD3D9_TEXR* (*create_texv_mem) (sD3D9_MAIN *main,
                             const void_t *data, leng_t size, D3DPOOL pool,
-                                int32u usage, uint_t level, cl32_t keycolor);
+                                int32u usage, uint_t level, int32u mip_type,
+                                            cl32_t keycolor);
         /* 释放 */
         void_t  (*release_texr) (sD3D9_TEXR *texr);
 
