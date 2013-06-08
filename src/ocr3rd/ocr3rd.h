@@ -32,6 +32,7 @@
 /* TESS-OCR 对象类型 */
 typedef void_t*     tess_ocr_t;
 
+/* TESS-OCR API 封装 */
 CR_API tess_ocr_t   tess_ocr_init (const ansi_t *path,
                                    const ansi_t *lang);
 CR_API void_t       tess_ocr_kill (tess_ocr_t tess_ocr);
