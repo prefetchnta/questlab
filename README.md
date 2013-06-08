@@ -13,6 +13,7 @@
 
 - **Borland C++Builder 6.0 Update4**
 - **Microsoft Visual Studio 2003 SP1**
+- **Microsoft Visual Studio 2008 SP1**
 - **Microsoft Visual Studio 2010 SP1**
 
 　　本系统内的项目全部使用 **Makefile** 作为工程的主要组织方式，没有必要不会使用 **IDE** 提供的工程文件。单个部件的编译可以执行项目目录下对应的批处理文件来实现。每个项目的具体编译环境要求详见下面的说明。
