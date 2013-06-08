@@ -54,6 +54,12 @@ make -fxSelectDir.mak
 del ..\..\bin\*.tds /Q
 cd..
 rem =====================
+call "%VS90COMNTOOLS%vsvars32.bat"
+rem =====================
+cd ocr3rd
+nmake -focr3rd.mak
+cd..
+rem =====================
 call "%VS100COMNTOOLS%vsvars32.bat"
 rem =====================
 cd QstCmdz
