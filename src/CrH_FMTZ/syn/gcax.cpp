@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-05  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-06-08  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -257,6 +257,11 @@ load_syn_gca (
     CGca*   gca = new CGca ();
 
     /* 初始化 GCA 对象 */
+    if (gca == NULL) {
+        err_set(__CR_GCAX_CPP__, CR_NULL,
+                "load_syn_gca()", "new() failure");
+        return (NULL);
+    }
     if (!gca->Init()) {
         err_set(__CR_GCAX_CPP__, FALSE,
                 "load_syn_gca()", "CGca::Init() failure");
