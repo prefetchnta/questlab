@@ -40,6 +40,7 @@ questlab
 │  ├─fmod
 │  ├─gcasdk
 │  ├─opencv
+│  ├─tess
 │  ├─unrar
 │  └─vtv
 ├─ocv
@@ -82,6 +83,8 @@ questlab
 │  │  └─unrar
 │  ├─CrH_GFX2
 │  │  └─gapi
+│  ├─ocr3rd
+│  │  └─tess
 │  ├─OpenCV
 │  ├─QstCmdz
 │  ├─QstIndex
