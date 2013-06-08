@@ -181,7 +181,6 @@ typedef struct
         sD3D9_TEXR* (*create_tex2_crh) (sD3D9_MAIN *main,
                             const sIMAGE *image, D3DPOOL pool, int32u usage,
                                     uint_t level, int32u mip_type);
-
         /* 生成 3D */
         sD3D9_TEXR* (*create_tex3) (sD3D9_MAIN *main, uint_t size,
                                     D3DFORMAT format, D3DPOOL pool,
@@ -233,7 +232,7 @@ CR_API const sD3D9_CALL*    d3d9call_get (void_t);
 /*****************************************************************************/
 /*                              Direct3D11 API                               */
 /*****************************************************************************/
-#elif   defined(_CR_USE_D3D11_) && (_CR_CC_VER_ >= 1700)
+#elif   defined(_CR_USE_D3D11_) && (_CR_CC_VER_ >= 1500)
 
 #include <dxgi.h>
 #include <d3dcommon.h>
