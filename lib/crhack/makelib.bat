@@ -1,10 +1,16 @@
 @echo
 :qstlibs
-if not exist QstLibs.lib goto crh_blit
+if not exist QstLibs.lib goto ocr3rd
 del QstLibs_bcc.lib
 del QstLibs_msc.lib
 coff2omf QstLibs.lib QstLibs_bcc.lib
 ren QstLibs.lib QstLibs_msc.lib
+:ocr3rd
+if not exist ocr3rd.lib goto crh_blit
+del ocr3rd_bcc.lib
+del ocr3rd_msc.lib
+coff2omf ocr3rd.lib ocr3rd_bcc.lib
+ren ocr3rd.lib ocr3rd_msc.lib
 :crh_blit
 if not exist CrH_BLIT.lib goto crh_comm
 del CrH_BLIT_bcc.lib
