@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-01  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-06-10  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -100,6 +100,7 @@ typedef void_t*     cstep_t;
 /* RGB 输入一律使用32色的小端模式 */
 CR_API void_t   bgr2hsl (sint_t hsl[3], const byte_t bgr[3]);
 CR_API void_t   bgr2hsv (sint_t hsv[3], const byte_t bgr[3]);
+CR_API void_t   bgr2yuv (byte_t yuv[3], const byte_t bgr[3]);
 
 /* 颜色分区判断 */
 CR_API cstep_t  color_step_init (void_t);
@@ -220,6 +221,9 @@ CR_API bool_t   line_hough_get (uint_t idx, fp32_t *rho, fp32_t *theta,
 /* 获取最长直线索引值 */
 CR_API uint_t   line_hough_max (const sLINE_HOUGH *hough);
 
+/* 释放 Hough 变换结果 */
+CR_API void_t   line_hough_free (sLINE_HOUGH *hough);
+
 /* 矩形过滤参数结构 */
 typedef struct
 {
@@ -279,8 +283,9 @@ typedef struct
 } sTEX_PATTERN;
 
 /* 像素交替统计 */
-CR_API bool_t   tex_altern_x (sTEX_PATTERN *patt);
-CR_API bool_t   tex_altern_y (sTEX_PATTERN *patt);
+CR_API bool_t   tex_altern_x  (sTEX_PATTERN *patt);
+CR_API bool_t   tex_altern_y  (sTEX_PATTERN *patt);
+CR_API void_t   tex_patt_free (sTEX_PATTERN *patt);
 
 #endif  /* !__CR_PHYLIB_H__ */
 
