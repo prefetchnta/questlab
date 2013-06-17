@@ -1,6 +1,7 @@
 【更新日志】
+　2013-06-17　Direct3D8 API 接口项目动工（引入 DirectX 8 SDK）
 　2013-06-08　开源 OCR 封装库项目建立（引入 VC9.0 & leptonica & tesseract-ocr SDK）
-　2013-06-05　Direct3D9 API 接口项目动工（引入 DirectX SDK）
+　2013-06-05　Direct3D9 API 接口项目动工（引入 DirectX 9 SDK）
 　2013-05-08　Studio e.go! 引擎插件 zEGO.dll 建立
 　2013-04-06　GameViewer 2D 渲染框架重建完成
 　2013-04-03　第一个支持文本解码的引擎插件 zNScripter.dll
