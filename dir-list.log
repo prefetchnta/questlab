@@ -17,6 +17,7 @@ questlab
 │  ├─source
 │  │  ├─import
 │  │  │  └─image
+│  │  ├─tessdata
 │  │  └─ucfont
 │  └─window
 │      └─1920x1080
