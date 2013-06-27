@@ -1,6 +1,6 @@
 1 VERSIONINFO
-    FILEVERSION 1,0,0,697
-    PRODUCTVERSION 1,0,0,697
+    FILEVERSION 1,0,0,700
+    PRODUCTVERSION 1,0,0,700
     FILEFLAGSMASK 0x17L
 #ifdef  _DEBUG
     FILEFLAGS 0x1L
@@ -16,11 +16,11 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "ProductName"     , "CrHack FMTZ Library\0"
-            VALUE "ProductVersion"  , "1.0.0.697\0"
-            VALUE "FileVersion"     , "1.0.0.697\0"
+            VALUE "ProductVersion"  , "1.0.0.700\0"
+            VALUE "FileVersion"     , "1.0.0.700\0"
             VALUE "FileDescription" , "CrHack FMTZ Library\0"
             VALUE "LegalCopyright"  , "Copyright 2009+ by CrHackOS\0"
-            VALUE "Comments"        , "Release Date: 2013-06-18\0"
+            VALUE "Comments"        , "Release Date: 2013-06-27\0"
         END
     END
     BLOCK "VarFileInfo"

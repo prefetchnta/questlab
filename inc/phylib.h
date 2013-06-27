@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-10  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-06-27  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -138,7 +138,7 @@ CR_API byte_t   histo_otsu (const leng_t tab[256]);
 CR_API sIMAGE*  image_graying (const sIMAGE *img);
 
 /* 转换到索引图 */
-typedef byte_t  (*idx_bgr_t) (void_t*, const byte_t*);
+typedef byte_t  (*idx_bgr_t) (void_t*, uint_t, uint_t, const byte_t*);
 
 CR_API sIMAGE*  image_indexed (const sIMAGE *img, idx_bgr_t dopix,
                          const byte_t *pal, leng_t num, void_t *param);
