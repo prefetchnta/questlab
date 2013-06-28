@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-27  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-06-28  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -158,10 +158,16 @@ CR_API bool_t   image_lookup (const sIMAGE *gray, const byte_t tab[256]);
 /* 彩色查表变换 */
 CR_API bool_t   image_lookup3 (const sIMAGE *img, const byte_t t_r[256],
                                const byte_t t_g[256], const byte_t t_b[256]);
-/* 伽玛与乘加变换 */
+/* 颜色分量变换 */
 CR_API void_t   dot_gamma (byte_t tab[256], fp32_t gamma, fp32_t comp);
 CR_API void_t   dot_muladd (byte_t tab[256], fp32_t fmul, fp32_t fadd);
+CR_API void_t   dot_contrast (byte_t tab[256], fp32_t contrast);
+CR_API void_t   dot_solarize (byte_t tab[256], sint_t light);
 
+/* 图片像素变换 */
+CR_API bool_t   pic_white_bl (const sIMAGE *img, sint_t light);
+CR_API bool_t   pic_saturation (const sIMAGE *img, const sIMAGE *gray,
+                                fp32_t fsat);
 /* 卷积运算矩阵结构 */
 typedef struct
 {
