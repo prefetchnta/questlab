@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-04-05  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-06  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-01  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -222,7 +222,6 @@ load_nscr_sar (
     uint_t      tmp;
     int32u      offs;
     int32u      size;
-    leng_t      cnts;
     iPAK_SAR*   port;
     sFMT_PRT*   rett;
     sPAK_FILE*  list;
@@ -266,8 +265,7 @@ load_nscr_sar (
                 "load_nscr_sar()", "mem_talloc() failure");
         goto _failure1;
     }
-    cnts = cnt;
-    mem_zero(list, cnts * sizeof(sPAK_FILE));
+    mem_tzero(list, cnt, sPAK_FILE);
     for (idx = 0; idx < cnt; idx++)
     {
         /* 读取文件名\0结尾 */

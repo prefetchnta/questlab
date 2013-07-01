@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-16  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-18  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-01  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -405,6 +405,10 @@ mem_sett (
 #define  chr_cpyW(d, s, n)          mem_cpy(d, s, (n) * sizeof(wide_t))
 #define _chr_cpyW(d, s, n)  (wchar*)mem_cpy(d, s, (n) * sizeof(wide_t))
 #define  chr_cmpW(d, s, n)  (sint_t)mem_cmp(d, s, (n) * sizeof(wide_t))
+
+/* 结构数组清除操作宏 */
+#define mem_tzero(d, n, t)  mem_czero(d, n, sizeof(t))
+#define mem_czero(d, n, s)  mem_zero(d, (leng_t)(n) * (leng_t)(s))
 
 /*****************************************************************************/
 /*                               内存扩展操作                                */

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-04-05  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-20  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-01  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -589,7 +589,6 @@ load_nscr_nsa (
     int32u          offs;
     int32u          pack;
     int32u          size;
-    leng_t          cnts;
     iPAK_NSA*       port;
     sFMT_PRT*       rett;
     sPAK_NSA_FILE*  list;
@@ -654,8 +653,7 @@ load_nscr_nsa (
                 "load_nscr_nsa()", "mem_talloc() failure");
         goto _failure1;
     }
-    cnts = cnt;
-    mem_zero(list, cnts * sizeof(sPAK_NSA_FILE));
+    mem_tzero(list, cnt, sPAK_NSA_FILE);
     for (idx = 0; idx < cnt; idx++)
     {
         /* 读取文件名\0结尾 */
