@@ -44,14 +44,14 @@ png_filter (
     uint_t  aa, bb, cc, pp, yy;
     byte_t  type, *dst = data;
 
+    if (size < (bpl + 1) * height) {
+        err_set(__CR_PNG_C__, size,
+                "png_filter()", "source buffer overflow");
+        return (FALSE);
+    }
+
     for (yy = 0, line = 0; yy < height; yy++, line += bpl)
     {
-        if (size < bpl + 1) {
-            err_set(__CR_PNG_C__, size,
-                    "png_filter()", "source buffer overflow");
-            return (FALSE);
-        }
-        size -= bpl + 1;
         type = *data++;
         for (xx = 0; xx < bpl; xx++)
             dst[line + xx] = *data++;
