@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -130,6 +130,9 @@ CR_API sIMAGE*  image_rotz (const sIMAGE *img, const sRECT *box,
                             fp32_t ccw, bool_t fast);
 CR_API void_t   image_back (const sIMAGE *dst, const sIMAGE *src,
                             sint_t left, sint_t top);
+/* 清除图片边框 */
+CR_API bool_t   image_bound (const sIMAGE *img, uint_t xsize, uint_t ysize);
+
 /* 直方图阈值计算 */
 CR_API byte_t   histo_avge (const leng_t tab[256]);
 CR_API byte_t   histo_otsu (const leng_t tab[256]);
@@ -193,6 +196,19 @@ typedef struct
 /* 图像形态运算 (矩阵忽略点值为 0x80 只支持二值图像) */
 CR_API sIMAGE*  image_shape (const sIMAGE *img, const sSHAPE_MAT *mat,
                              bool_t expand);
+/* 自定义形态运算 */
+#define SHAPE_OP_NOP    0   /* 忽略 */
+#define SHAPE_OP_DEL    1   /* 删除 */
+#define SHAPE_OP_SET    2   /* 设置 */
+typedef uint_t  (*shape_core_t) (void_t*, const byte_t*, leng_t);
+
+CR_API sIMAGE*  image_shape_ex (const sIMAGE *img, shape_core_t score,
+                                uint_t mat_w, uint_t mat_h, void_t *param);
+/* 开闭形态运算 */
+CR_API sIMAGE*  shape_open  (const sIMAGE *img, const sSHAPE_MAT *rotz,
+                             const sSHAPE_MAT *expn, uint_t times);
+CR_API sIMAGE*  shape_close (const sIMAGE *img, const sSHAPE_MAT *expn,
+                             const sSHAPE_MAT *rotz, uint_t times);
 
 /* 形态查找匹配 (矩阵忽略点值为 0x80 可以支持索引图像) */
 CR_API bool_t   shape_match_and (const byte_t *left_top, leng_t img_bpl,
@@ -201,6 +217,8 @@ CR_API bool_t   shape_match_orr (const byte_t *left_top, leng_t img_bpl,
                                  const sSHAPE_MAT *shape_mat);
 CR_API bool_t   shape_match_cnt (const byte_t *left_top, leng_t img_bpl,
                                  const sSHAPE_MAT *shape_mat, uint_t gate);
+CR_API bool_t   shape_match_wet (const byte_t *left_top, leng_t img_bpl,
+                    const sSHAPE_MAT *shape_mat, const sCONVO_MAT *weight);
 
 /*****************************************************************************/
 /*                                   几何                                    */

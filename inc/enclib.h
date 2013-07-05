@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-13  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-20  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -27,32 +27,32 @@
 /*****************************************************************************/
 
 /* aPLib */
-CR_API uint_t   compr_aplib (void_t *dst, uint_t dstlen,
-                             const void_t *src, uint_t srclen);
+CR_API leng_t   compr_aplib (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen);
 
-CR_API uint_t   uncompr_aplib (void_t *dst, uint_t dstlen,
-                               const void_t *src, uint_t srclen);
+CR_API leng_t   uncompr_aplib (void_t *dst, leng_t dstlen,
+                               const void_t *src, leng_t srclen);
 /* BZip2 */
-CR_API uint_t   compr_bzip2 (void_t *dst, uint_t dstlen,
-                             const void_t *src, uint_t srclen,
+CR_API leng_t   compr_bzip2 (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen,
                              uint_t level CR_DEFAULT(9));
 
-CR_API uint_t   uncompr_bzip2 (void_t *dst, uint_t dstlen,
-                               const void_t *src, uint_t srclen);
+CR_API leng_t   uncompr_bzip2 (void_t *dst, leng_t dstlen,
+                               const void_t *src, leng_t srclen);
 /* PKZip */
-CR_API uint_t   compr_pkzip (void_t *dst, uint_t dstlen,
-                             const void_t *src, uint_t srclen,
+CR_API leng_t   compr_pkzip (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen,
                              uint_t level CR_DEFAULT(9));
 
-CR_API uint_t   uncompr_pkzip (void_t *dst, uint_t dstlen,
-                               const void_t *src, uint_t srclen);
+CR_API leng_t   uncompr_pkzip (void_t *dst, leng_t dstlen,
+                               const void_t *src, leng_t srclen);
 /* JCALG1 */
-CR_API uint_t   compr_jcalg1 (void_t *dst, uint_t dstlen,
-                              const void_t *src, uint_t srclen,
+CR_API leng_t   compr_jcalg1 (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen,
                               uint_t winlen CR_DEFAULT(8192));
 
-CR_API uint_t   uncompr_jcalg1 (void_t *dst, uint_t dstlen,
-                                const void_t *src, uint_t srclen);
+CR_API leng_t   uncompr_jcalg1 (void_t *dst, leng_t dstlen,
+                                const void_t *src, leng_t srclen);
 /* Win32 LZ32 */
 CR_API leng_t   compr_lz32 (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen);
@@ -116,12 +116,12 @@ CR_API leng_t   compr_lzo (void_t *dst, leng_t dstlen,
 CR_API leng_t   uncompr_lzo (void_t *dst, leng_t dstlen,
                              const void_t *src, leng_t srclen);
 /* ZLib */
-CR_API uint_t   compr_zlib (void_t *dst, uint_t dstlen,
-                            const void_t *src, uint_t srclen,
+CR_API leng_t   compr_zlib (void_t *dst, leng_t dstlen,
+                            const void_t *src, leng_t srclen,
                             uint_t level CR_DEFAULT(9));
 
-CR_API uint_t   uncompr_zlib (void_t *dst, uint_t dstlen,
-                              const void_t *src, uint_t srclen);
+CR_API leng_t   uncompr_zlib (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen);
 
 /*****************************************************************************/
 /*                               数据加密解密                                */

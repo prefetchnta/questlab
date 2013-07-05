@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-02-28  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-06  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -21,7 +21,6 @@
 #define __CR_ZIP_C__ 0xCBF71DCCUL
 
 #include "hash.h"
-#include "safe.h"
 #include "enclib.h"
 #include "fmtint.h"
 #include "strlib.h"
@@ -115,8 +114,6 @@ iPAK_ZIP_getFileData (
     int64u          size;
     int32u          cksm;
     int16u          type;
-    uint_t          unsz;
-    uint_t          pksz;
     void_t*         temp;
     void_t*         data;
     iDATIN*         file;
@@ -195,19 +192,9 @@ iPAK_ZIP_getFileData (
             if (type == 8)
             {
                 /* Deflate (32K) */
-                if (cut_size(&pksz, (leng_t)pack)) {
-                    err_set(__CR_ZIP_C__, pack,
-                            "iPACKAGE::getFileData()", "<pack> truncated");
-                    goto _failure2;
-                }
-                if (cut_size(&unsz, (leng_t)size)) {
-                    err_set(__CR_ZIP_C__, size,
-                            "iPACKAGE::getFileData()", "<size> truncated");
-                    goto _failure2;
-                }
-                pksz = uncompr_pkzip(data, unsz, temp, pksz);
-                if (pksz != unsz) {
-                    err_set(__CR_ZIP_C__, pksz,
+                read = uncompr_pkzip(data, (leng_t)size, temp, (leng_t)pack);
+                if (read != (leng_t)size) {
+                    err_set(__CR_ZIP_C__, read,
                         "iPACKAGE::getFileData()", "uncompr_pkzip() failure");
                     goto _failure2;
                 }
@@ -216,19 +203,9 @@ iPAK_ZIP_getFileData (
             if (type == 12)
             {
                 /* BZip2 */
-                if (cut_size(&pksz, (leng_t)pack)) {
-                    err_set(__CR_ZIP_C__, pack,
-                            "iPACKAGE::getFileData()", "<pack> truncated");
-                    goto _failure2;
-                }
-                if (cut_size(&unsz, (leng_t)size)) {
-                    err_set(__CR_ZIP_C__, size,
-                            "iPACKAGE::getFileData()", "<size> truncated");
-                    goto _failure2;
-                }
-                pksz = uncompr_bzip2(data, unsz, temp, pksz);
-                if (pksz != unsz) {
-                    err_set(__CR_ZIP_C__, pksz,
+                read = uncompr_bzip2(data, (leng_t)size, temp, (leng_t)pack);
+                if (read != (leng_t)size) {
+                    err_set(__CR_ZIP_C__, read,
                         "iPACKAGE::getFileData()", "uncompr_bzip2() failure");
                     goto _failure2;
                 }

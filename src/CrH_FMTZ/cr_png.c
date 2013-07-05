@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-06  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -35,7 +35,8 @@ png_filter (
   __CR_IO__ byte_t* data,
   __CR_IN__ leng_t  bpl,
   __CR_IN__ leng_t  bpp,
-  __CR_IN__ uint_t  height
+  __CR_IN__ uint_t  height,
+  __CR_IN__ leng_t  size
     )
 {
     leng_t  xx, line;
@@ -45,6 +46,12 @@ png_filter (
 
     for (yy = 0, line = 0; yy < height; yy++, line += bpl)
     {
+        if (size < bpl + 1) {
+            err_set(__CR_PNG_C__, size,
+                    "png_filter()", "source buffer overflow");
+            return (FALSE);
+        }
+        size -= bpl + 1;
         type = *data++;
         for (xx = 0; xx < bpl; xx++)
             dst[line + xx] = *data++;
@@ -225,6 +232,7 @@ load_cr_png (
     uint_t  ww, hh;
     byte_t  pal[768];
     /* ----------- */
+    fsize_t     fsze;
     sPNG_HDR    head;
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;
@@ -370,10 +378,8 @@ load_cr_png (
     }
 
     /* 生成灰度调色板 */
-    if (temp.fmt == CR_PIC_GREY)
-    {
-        for (pal[0] = 0, index = 0; index < 1024; index += 4)
-        {
+    if (temp.fmt == CR_PIC_GREY) {
+        for (pal[0] = 0, index = 0; index < 1024; index += 4) {
             ((uchar*)temp.pic->pal)[index + 0] = (pal[0]);
             ((uchar*)temp.pic->pal)[index + 1] = (pal[0]);
             ((uchar*)temp.pic->pal)[index + 2] = (pal[0])++;
@@ -382,34 +388,33 @@ load_cr_png (
     }
 
     /* 分配 IDAT 的内存 */
-    dsize = temp.pic->size; /* 这里只能估算总大小了
-                               想要超出, 除非 ZLib 越压越大 */
-    if (dsize >= dati_get_size(datin))  /* 节约一点点内存 */
-        dsize = (leng_t)dati_get_size(datin) - sizeof(sPNG_HDR);
-    ddata = (byte_t*)mem_malloc(dsize);
-    if (ddata == NULL) {
-        err_set(__CR_PNG_C__, CR_NULL,
-                "load_cr_png()", "mem_malloc() failure");
+    fsze = dati_get_size(datin);
+    if (fsze <= sizeof(sPNG_HDR) + sizeof(sIEND) * 2) {
+        err_set(__CR_PNG_C__, fsze,
+                "load_cr_png()", "invalid PNG format");
         goto _failure1;
     }
+    fsze -= sizeof(sPNG_HDR) + sizeof(sIEND) * 2;
+    ddata = (byte_t*)mem_malloc64(fsze);
+    if (ddata == NULL) {
+        err_set(__CR_PNG_C__, CR_NULL,
+                "load_cr_png()", "mem_malloc64() failure");
+        goto _failure1;
+    }
+    dsize = (leng_t)fsze;
 
     /* 读取数据块 */
     dptr = 0;
     fcrh = 256;         /* 这个保存调色板颜色数 */
     do
     {
-        /* 数据块大小, 安全检查 */
+        /* 数据块大小 */
         if (!(CR_VCALL(datin)->getT(datin, &head.info, sCHUNK))) {
             err_set(__CR_PNG_C__, FALSE,
                     "load_cr_png()", "iDATIN::getT() failure");
             goto _failure2;
         }
         ssize = DWORD_BE(head.info.head.size);
-        if (ssize >= dati_get_size(datin)) {
-            err_set(__CR_PNG_C__, ssize,
-                    "load_cr_png()", "invalid PNG format");
-            goto _failure2;
-        }
 
         if (head.info.head.name == mk_tag4("PLTE"))
         {
@@ -427,7 +432,6 @@ load_cr_png (
             }
             /* 转换到 4B 格式 */
             fcrh = (uint_t)ssize / 3;
-            mem_zero(temp.pic->pal, 1024);
             pal_3b_to_4b(temp.pic->pal, pal, fcrh);
             for (index = 0; index < fcrh; index++)
                 swap_rb32(&temp.pic->pal[index]);
@@ -540,24 +544,17 @@ load_cr_png (
         }
     } while (head.info.head.name != mk_tag4("IEND"));
 
-    /* 截断检查 (64位时有效) */
-    if (cut_size(&index, dptr)) {
+    /* 无 IDAT 块 */
+    if (dptr == 0) {
         err_set(__CR_PNG_C__, dptr,
-                "load_cr_png()", "<dptr> truncated");
+                "load_cr_png()", "invalid PNG format");
         goto _failure2;
     }
 
     /* 分配带 filter 的图形内存 */
-    if (cut_mad(&dsize, ww * hh, sbpp, hh)) {
+    if (cut_mad(&dsize, ww, sbpp * hh, hh)) {
         err_set(__CR_PNG_C__, CR_ERROR,
                 "load_cr_png()", "arithmetic mad overflow");
-        goto _failure2;
-    }
-
-    /* 截断检查 (64位时有效) */
-    if (cut_size(&fcrh, dsize)) {
-        err_set(__CR_PNG_C__, dsize,
-                "load_cr_png()", "<dsize> truncated");
         goto _failure2;
     }
     sdata = (byte_t*)mem_malloc(dsize);
@@ -568,11 +565,11 @@ load_cr_png (
     }
 
     /* 解压图形数据 */
-    index = uncompr_zlib(sdata, fcrh, ddata, index);
+    dptr = uncompr_zlib(sdata, dsize, ddata, dptr);
     mem_free(ddata);
     ddata = sdata;
-    if (index == 0) {
-        err_set(__CR_PNG_C__, index,
+    if (dptr <= hh) {
+        err_set(__CR_PNG_C__, dptr,
                 "load_cr_png()", "uncompr_zlib() failure");
         goto _failure2;
     }
@@ -588,7 +585,7 @@ load_cr_png (
                     read = ww / 8;
                 else
                     read = ww / 8 + 1;
-                if (!png_filter(ddata, read, 1, hh)) {
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
                     err_set(__CR_PNG_C__, FALSE,
                             "load_cr_png()", "png_filter() failure");
                     goto _failure2;
@@ -605,7 +602,7 @@ load_cr_png (
                     read = ww / 4;
                 else
                     read = ww / 4 + 1;
-                if (!png_filter(ddata, read, 1, hh)) {
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
                     err_set(__CR_PNG_C__, FALSE,
                             "load_cr_png()", "png_filter() failure");
                     goto _failure2;
@@ -622,7 +619,7 @@ load_cr_png (
                     read = ww / 2;
                 else
                     read = ww / 2 + 1;
-                if (!png_filter(ddata, read, 1, hh)) {
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
                     err_set(__CR_PNG_C__, FALSE,
                             "load_cr_png()", "png_filter() failure");
                     goto _failure2;
@@ -636,7 +633,7 @@ load_cr_png (
 
             case 8:
                 read = ww;
-                if (!png_filter(ddata, read, 1, hh)) {
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
                     err_set(__CR_PNG_C__, FALSE,
                             "load_cr_png()", "png_filter() failure");
                     goto _failure2;
@@ -654,7 +651,7 @@ load_cr_png (
             default:
                 read = ww;
                 read *= 2;
-                if (!png_filter(ddata, read, 2, hh)) {
+                if (!png_filter(ddata, read, 2, hh, dptr)) {
                     err_set(__CR_PNG_C__, FALSE,
                             "load_cr_png()", "png_filter() failure");
                     goto _failure2;
@@ -671,7 +668,7 @@ load_cr_png (
     else
     {
         read = ww * sbpp;
-        if (!png_filter(ddata, read, sbpp, hh)) {
+        if (!png_filter(ddata, read, sbpp, hh, dptr)) {
             err_set(__CR_PNG_C__, FALSE,
                     "load_cr_png()", "png_filter() failure");
             goto _failure2;
