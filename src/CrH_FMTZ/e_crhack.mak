@@ -5,14 +5,18 @@ BIN_NAME=$(PROJECT).dll
 
 OBJ_LIST=.$(L)fmtz.$(O) \
          .$(L)cr_bmp.$(O) \
+         .$(L)cr_pcx.$(O) \
          .$(L)cr_png.$(O) \
+         .$(L)cr_tga.$(O) \
          .$(L)cr_zip.$(O) \
          .$(L)e_crhack.$(O) \
          .$(L)$(PROJECT).res
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)cr_bmp.$(C) \
+         .$(L)cr_pcx.$(C) \
          .$(L)cr_png.$(C) \
+         .$(L)cr_tga.$(C) \
          .$(L)cr_zip.$(C) \
          .$(L)e_crhack.$(C)
 

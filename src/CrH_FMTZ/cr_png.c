@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-05  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-08  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -415,6 +415,11 @@ load_cr_png (
             goto _failure2;
         }
         ssize = DWORD_BE(head.info.head.size);
+        if (ssize > fsze) {
+            err_set(__CR_PNG_C__, ssize,
+                    "load_cr_png()", "invalid PNG format");
+            goto _failure2;
+        }
 
         if (head.info.head.name == mk_tag4("PLTE"))
         {

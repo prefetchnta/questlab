@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-05  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-08  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -166,7 +166,8 @@ CR_API void_t   dot_gamma (byte_t tab[256], fp32_t gamma, fp32_t comp);
 CR_API void_t   dot_muladd (byte_t tab[256], fp32_t fmul, fp32_t fadd);
 CR_API void_t   dot_contrast (byte_t tab[256], fp32_t contrast);
 CR_API void_t   dot_solarize (byte_t tab[256], sint_t light);
-
+CR_API void_t   dot_histo_ave (byte_t tab[256], const leng_t hist[256],
+                               uint_t width, uint_t height);
 /* 图片像素变换 */
 CR_API bool_t   pic_white_bl (const sIMAGE *img, sint_t light);
 CR_API bool_t   pic_saturation (const sIMAGE *img, const sIMAGE *gray,
@@ -206,9 +207,11 @@ CR_API sIMAGE*  image_shape_ex (const sIMAGE *img, shape_core_t score,
                                 uint_t mat_w, uint_t mat_h, void_t *param);
 /* 开闭形态运算 */
 CR_API sIMAGE*  shape_open  (const sIMAGE *img, const sSHAPE_MAT *rotz,
-                             const sSHAPE_MAT *expn, uint_t times);
+                             uint_t rot_times, const sSHAPE_MAT *expn,
+                             uint_t exp_times);
 CR_API sIMAGE*  shape_close (const sIMAGE *img, const sSHAPE_MAT *expn,
-                             const sSHAPE_MAT *rotz, uint_t times);
+                             uint_t exp_times, const sSHAPE_MAT *rotz,
+                             uint_t rot_times);
 
 /* 形态查找匹配 (矩阵忽略点值为 0x80 可以支持索引图像) */
 CR_API bool_t   shape_match_and (const byte_t *left_top, leng_t img_bpl,
