@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-07-08  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -73,13 +73,15 @@ load_cr_tga (
     )
 {
     byte_t* ptr;
+    byte_t* line;
     bool_t  flip;
     uint_t  fcrh;
     uint_t  ii, jj;
     uint_t  ww, hh;
     byte_t  pixel[4];
     leng_t  bpl, read;
-    /* ------------ */
+    leng_t  by, repeat;
+    /* ------------- */
     sTGA_HDR    head;
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;
@@ -185,122 +187,64 @@ load_cr_tga (
     }
 
     /* 读取图片数据 */
-    ptr = temp.pic->data;
-    if (head.bpp == 24)
-    {
-        bpl = ww;
-        bpl *= 3;
-        if (head.img_type == 2) {
-            for (; hh != 0; hh--) {
-                read = CR_VCALL(datin)->read(datin, ptr, bpl);
-                if (read != bpl) {
-                    err_set(__CR_TGA_C__, read,
-                            "load_cr_tga()", "iDATIN::read() failure");
-                    goto _failure;
-                }
-                ptr += temp.pic->bpl;
+    by = head.bpp / 8;
+    bpl = ww;
+    bpl *= by;
+    line = temp.pic->data;
+    if (head.img_type == 2) {
+        for (; hh != 0; hh--) {
+            read = CR_VCALL(datin)->read(datin, line, bpl);
+            if (read != bpl) {
+                err_set(__CR_TGA_C__, read,
+                        "load_cr_tga()", "iDATIN::read() failure");
+                goto _failure;
             }
-        }
-        else {
-            for (; hh != 0; hh--) {
-                for (ii = 0; ii < ww; ii++) {
-                    if (!CR_VCALL(datin)->getb_no(datin, pixel)) {
-                        err_set(__CR_TGA_C__, FALSE,
-                                "load_cr_tga()", "iDATIN::getb_no() failure");
-                        goto _failure;
-                    }
-                    jj = (pixel[0] & 0x7F) + 1;
-                    if (ii + jj > ww) {
-                        err_set(__CR_TGA_C__, pixel[0],
-                                "load_cr_tga()", "invalid TGA format");
-                        goto _failure;
-                    }
-                    if (!(pixel[0] & 0x80)) {
-                        read = CR_VCALL(datin)->read(datin, ptr, jj * 3);
-                        if (read != jj * 3) {
-                            err_set(__CR_TGA_C__, read,
-                                    "load_cr_tga()", "iDATIN::read() failure");
-                            goto _failure;
-                        }
-                        ii += jj - 1;
-                        continue;
-                    }
-
-                    /* 读取需要重复的像素 */
-                    read = CR_VCALL(datin)->read(datin, pixel, 3);
-                    if (read != 3) {
-                        err_set(__CR_TGA_C__, read,
-                                "load_cr_tga()", "iDATIN::read() failure");
-                        goto _failure;
-                    }
-                    for (; jj != 0; jj--, ii++) {
-                        ptr[ii * 3 + 0] = pixel[0];
-                        ptr[ii * 3 + 1] = pixel[1];
-                        ptr[ii * 3 + 2] = pixel[2];
-                    }
-                    ii -= 1;
-                }
-                ptr += temp.pic->bpl;
-            }
+            line += temp.pic->bpl;
         }
     }
-    else
-    {
-        bpl = ww;
-        bpl *= 4;
-        if (head.img_type == 2) {
-            for (; hh != 0; hh--) {
-                read = CR_VCALL(datin)->read(datin, ptr, bpl);
-                if (read != bpl) {
-                    err_set(__CR_TGA_C__, read,
-                            "load_cr_tga()", "iDATIN::read() failure");
+    else {
+        for (; hh != 0; hh--) {
+            ptr = line;
+            for (ii = 0; ii < ww; ii++) {
+                if (!CR_VCALL(datin)->getb_no(datin, pixel)) {
+                    err_set(__CR_TGA_C__, FALSE,
+                            "load_cr_tga()", "iDATIN::getb_no() failure");
                     goto _failure;
                 }
-                ptr += temp.pic->bpl;
-            }
-        }
-        else {
-            for (; hh != 0; hh--) {
-                for (ii = 0; ii < ww; ii++) {
-                    if (!CR_VCALL(datin)->getb_no(datin, pixel)) {
-                        err_set(__CR_TGA_C__, FALSE,
-                                "load_cr_tga()", "iDATIN::getb_no() failure");
-                        goto _failure;
-                    }
-                    jj = (pixel[0] & 0x7F) + 1;
-                    if (ii + jj > ww) {
-                        err_set(__CR_TGA_C__, pixel[0],
-                                "load_cr_tga()", "invalid TGA format");
-                        goto _failure;
-                    }
-                    if (!(pixel[0] & 0x80)) {
-                        read = CR_VCALL(datin)->read(datin, ptr, jj * 4);
-                        if (read != jj * 4) {
-                            err_set(__CR_TGA_C__, read,
-                                    "load_cr_tga()", "iDATIN::read() failure");
-                            goto _failure;
-                        }
-                        ii += jj - 1;
-                        continue;
-                    }
-
-                    /* 读取需要重复的像素 */
-                    read = CR_VCALL(datin)->read(datin, pixel, 4);
-                    if (read != 4) {
+                jj = (pixel[0] & 0x7F) + 1;
+                if (ii + jj > ww) {
+                    err_set(__CR_TGA_C__, pixel[0],
+                            "load_cr_tga()", "invalid TGA format");
+                    goto _failure;
+                }
+                repeat = jj;
+                repeat *= by;
+                if (!(pixel[0] & 0x80)) {
+                    read = CR_VCALL(datin)->read(datin, ptr, repeat);
+                    if (read != repeat) {
                         err_set(__CR_TGA_C__, read,
                                 "load_cr_tga()", "iDATIN::read() failure");
                         goto _failure;
                     }
-                    for (; jj != 0; jj--, ii++) {
-                        ptr[ii * 3 + 0] = pixel[0];
-                        ptr[ii * 3 + 1] = pixel[1];
-                        ptr[ii * 3 + 2] = pixel[2];
-                        ptr[ii * 3 + 3] = pixel[3];
-                    }
-                    ii -= 1;
+                    ii  += jj - 1;
+                    ptr += repeat;
+                    continue;
                 }
-                ptr += temp.pic->bpl;
+
+                /* 读取需要重复的像素 */
+                read = CR_VCALL(datin)->read(datin, pixel, by);
+                if (read != by) {
+                    err_set(__CR_TGA_C__, read,
+                            "load_cr_tga()", "iDATIN::read() failure");
+                    goto _failure;
+                }
+                for (; jj != 0; jj--, ii++) {
+                    mem_cpy(ptr, pixel, by);
+                    ptr += by;
+                }
+                ii -= 1;
             }
+            line += temp.pic->bpl;
         }
     }
 

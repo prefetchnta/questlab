@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-07-08  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -65,6 +65,7 @@ load_cr_pcx (
 {
     byte_t* ptr;
     byte_t* line;
+    leng_t  ptsz;
     uint_t  fcrh;
     uint_t  x1, y1;
     uint_t  ww, hh;
@@ -250,9 +251,10 @@ load_cr_pcx (
                     goto _failure;
                 }
                 for (y1 = 0; y1 < ww; y1++) {
-                    ptr[y1 * 3 + 2] = line[y1];
-                    ptr[y1 * 3 + 1] = line[y1 + ww];
-                    ptr[y1 * 3 + 0] = line[y1 + ww + ww];
+                    ptsz = (leng_t)y1;
+                    ptr[ptsz * 3 + 2] = line[ptsz];
+                    ptr[ptsz * 3 + 1] = line[ptsz + ww];
+                    ptr[ptsz * 3 + 0] = line[ptsz + ww + ww];
                 }
                 ptr += temp.pic->bpl;
             }
@@ -288,9 +290,10 @@ load_cr_pcx (
                     read -= 1;
                 }
                 for (y1 = 0; y1 < ww; y1++) {
-                    ptr[y1 * 3 + 2] = line[y1];
-                    ptr[y1 * 3 + 1] = line[y1 + ww];
-                    ptr[y1 * 3 + 0] = line[y1 + ww + ww];
+                    ptsz = (leng_t)y1;
+                    ptr[ptsz * 3 + 2] = line[ptsz];
+                    ptr[ptsz * 3 + 1] = line[ptsz + ww];
+                    ptr[ptsz * 3 + 0] = line[ptsz + ww + ww];
                 }
                 ptr += temp.pic->bpl;
             }
