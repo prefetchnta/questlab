@@ -23,7 +23,6 @@ questlab
 │      └─1920x1080
 ├─doc
 ├─inc
-│  ├─arch
 │  ├─chip
 │  ├─comm
 │  ├─conf
