@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-06-14  */
 /*     #######          ###    ###      [GFX3]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-17  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-12  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -69,99 +69,58 @@ d3d9_texr_bind (
 
 /*
 =======================================
-    提交网格对象 (FF & DP)
+    提交网格对象 (DP)
 =======================================
 */
 inline void_t
-d3d9_mesh_dp_ff (
+d3d9_mesh_dp (
   __CR_IN__ sD3D9_MAIN*         main,
   __CR_IN__ sD3D9_MESH*         vmesh,
   __CR_IN__ D3DPRIMITIVETYPE    type,
   __CR_IN__ uint_t              start,
-  __CR_IN__ uint_t              count
+  __CR_IN__ uint_t              count,
+  __CR_IN__ sD3D9_VSH*          vsh CR_DEFAULT(NULL)
     )
 {
-    main->dev->SetFVF(vmesh->fvf);
+    if (vsh == NULL) {
+        main->dev->SetVertexShader(NULL);
+        main->dev->SetFVF(vmesh->fvf);
+    }
+    else {
+        main->dev->SetVertexDeclaration(vsh->decl);
+        main->dev->SetVertexShader(vsh->obj);
+    }
     main->dev->DrawPrimitive(type, start, count);
 }
 
 /*
 =======================================
-    提交网格对象 (PP & DP)
+    提交网格对象 (DIP)
 =======================================
 */
 inline void_t
-d3d9_mesh_dp_pp (
-  __CR_IN__ sD3D9_MAIN*         main,
-  __CR_IN__ sD3D9_MESH*         vmesh,
-  __CR_IN__ D3DPRIMITIVETYPE    type,
-  __CR_IN__ uint_t              start,
-  __CR_IN__ uint_t              count
-    )
-{
-    main->dev->SetVertexDeclaration(vmesh->decl);
-    main->dev->DrawPrimitive(type, start, count);
-}
-
-/*
-=======================================
-    提交网格对象 (FF & DIP)
-=======================================
-*/
-inline void_t
-d3d9_mesh_dip_ff (
+d3d9_mesh_dip (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sD3D9_MESH* vmesh,
-  __CR_IN__ sD3D9_MESH* imesh CR_DEFAULT(NULL)
-    )
-{
-    main->dev->SetFVF(vmesh->fvf);
-    if (imesh != NULL) {
-        main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
-                                        vmesh->vnum, 0, imesh->ntri);
-    } else {
-        main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
-                                        vmesh->vnum, 0, vmesh->ntri);
-    }
-}
-
-/*
-=======================================
-    提交网格对象 (PP & DIP)
-=======================================
-*/
-inline void_t
-d3d9_mesh_dip_pp (
-  __CR_IN__ sD3D9_MAIN* main,
-  __CR_IN__ sD3D9_MESH* vmesh,
-  __CR_IN__ sD3D9_MESH* imesh CR_DEFAULT(NULL)
-    )
-{
-    main->dev->SetVertexDeclaration(vmesh->decl);
-    if (imesh != NULL) {
-        main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
-                                        vmesh->vnum, 0, imesh->ntri);
-    } else {
-        main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
-                                        vmesh->vnum, 0, vmesh->ntri);
-    }
-}
-
-/*
-=======================================
-    应用 VS 对象
-=======================================
-*/
-inline void_t
-d3d9_vs_apply (
-  __CR_IN__ sD3D9_MAIN* main,
+  __CR_IN__ sD3D9_MESH* imesh CR_DEFAULT(NULL),
   __CR_IN__ sD3D9_VSH*  vsh CR_DEFAULT(NULL)
     )
 {
-    if (vsh != NULL)
-        main->dev->SetVertexShader(vsh->obj);
-    else
+    if (vsh == NULL) {
         main->dev->SetVertexShader(NULL);
+        main->dev->SetFVF(vmesh->fvf);
+    }
+    else {
+        main->dev->SetVertexDeclaration(vsh->decl);
+        main->dev->SetVertexShader(vsh->obj);
+    }
+    if (imesh != NULL) {
+        main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
+                                        vmesh->vnum, 0, imesh->ntri);
+    } else {
+        main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
+                                        vmesh->vnum, 0, vmesh->ntri);
+    }
 }
 
 /*

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-06-13  */
 /*     #######          ###    ###      [GFX3]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-17  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-12  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -182,17 +182,23 @@ typedef struct
 /* =============================== V.S.对象 ================================ */
 
         /* 生成 */
-        sD3D8_VSH*  (*create_vs_data) (sD3D8_MAIN *main, const void_t *decl,
-                                       const void_t *data);
+        sD3D8_VSH*  (*create_vs_data) (sD3D8_MAIN *main,
+                                const void_t *decl, const void_t *data);
 
-        sD3D8_VSH*  (*create_vs_fileA) (sD3D8_MAIN *main, const void_t *decl,
-                                        const ansi_t *name, int32u flags);
+        sD3D8_VSH*  (*create_vs_fileA) (sD3D8_MAIN *main,
+                                const void_t *decl, const ansi_t *name,
+                                    int32u flags, const ansi_t *entry,
+                                        const ansi_t *profile);
 
-        sD3D8_VSH*  (*create_vs_fileW) (sD3D8_MAIN *main, const void_t *decl,
-                                        const wide_t *name, int32u flags);
+        sD3D8_VSH*  (*create_vs_fileW) (sD3D8_MAIN *main,
+                                const void_t *decl, const wide_t *name,
+                                    int32u flags, const ansi_t *entry,
+                                        const ansi_t *profile);
 
-        sD3D8_VSH*  (*create_vs_text) (sD3D8_MAIN *main, const void_t *decl,
-                                       const ansi_t *text, int32u flags);
+        sD3D8_VSH*  (*create_vs_text) (sD3D8_MAIN *main,
+                                const void_t *decl, const ansi_t *text,
+                                    int32u flags, const ansi_t *entry,
+                                        const ansi_t *profile);
         /* 释放 */
         void_t  (*release_vs) (sD3D8_MAIN *main, const sD3D8_VSH *vsh);
 
@@ -202,13 +208,16 @@ typedef struct
         sD3D8_PSH*  (*create_ps_data) (sD3D8_MAIN *main, const void_t *data);
 
         sD3D8_PSH*  (*create_ps_fileA) (sD3D8_MAIN *main, const ansi_t *name,
-                                        int32u flags);
+                                        int32u flags, const ansi_t *entry,
+                                        const ansi_t *profile);
 
         sD3D8_PSH*  (*create_ps_fileW) (sD3D8_MAIN *main, const wide_t *name,
-                                        int32u flags);
+                                        int32u flags, const ansi_t *entry,
+                                        const ansi_t *profile);
 
         sD3D8_PSH*  (*create_ps_text) (sD3D8_MAIN *main, const ansi_t *text,
-                                       int32u flags);
+                                       int32u flags, const ansi_t *entry,
+                                       const ansi_t *profile);
         /* 释放 */
         void_t  (*release_ps) (sD3D8_MAIN *main, const sD3D8_PSH *psh);
 

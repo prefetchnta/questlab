@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-06-13  */
 /*     #######          ###    ###      [GFX3]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-06-17  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-07-12  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -45,9 +45,8 @@ typedef struct
 {
         uint_t      vnum, nbpv, vsize, fvf;
         uint_t      inum, nbpi, isize, ntri;
-        LPDIRECT3DVERTEXBUFFER9         vbuf;
-        LPDIRECT3DINDEXBUFFER9          ibuf;
-        LPDIRECT3DVERTEXDECLARATION9    decl;
+        LPDIRECT3DVERTEXBUFFER9     vbuf;
+        LPDIRECT3DINDEXBUFFER9      ibuf;
 
 } sD3D9_MESH;
 
@@ -69,7 +68,8 @@ typedef struct
 /* D3D9 VSH 对象 */
 typedef struct
 {
-        LPDIRECT3DVERTEXSHADER9 obj;
+        LPDIRECT3DVERTEXSHADER9         obj;
+        LPDIRECT3DVERTEXDECLARATION9    decl;
 
 } sD3D9_VSH;
 
@@ -116,7 +116,7 @@ typedef struct
         /* 生成 */
         sD3D9_MESH* (*create_mesh_vb) (sD3D9_MAIN *main, uint_t vnum,
                         uint_t bpv, D3DPOOL pool, int32u usage, uint_t fvf,
-                            LPD3DVERTEXELEMENT9 decl, const void_t *data);
+                                       const void_t *data);
 
         sD3D9_MESH* (*create_mesh_ib) (sD3D9_MAIN *main, uint_t inum,
                                     uint_t bpi, D3DPOOL pool, int32u usage,
@@ -125,8 +125,7 @@ typedef struct
         sD3D9_MESH* (*create_mesh_vib) (sD3D9_MAIN *main, uint_t vnum,
                         uint_t bpv, uint_t inum, D3DPOOL vpool, int32u vusage,
                             D3DPOOL ipool, int32u iusage, uint_t fvf,
-                            LPD3DVERTEXELEMENT9 decl, const void_t *vbuf,
-                                        const void_t *ibuf);
+                            const void_t *vbuf, const void_t *ibuf);
         /* 释放 */
         void_t  (*release_mesh) (const sD3D9_MESH *mesh);
 
@@ -208,21 +207,25 @@ typedef struct
 /* =============================== V.S.对象 ================================ */
 
         /* 生成 */
-        sD3D9_VSH*  (*create_vs_data) (sD3D9_MAIN *main, const void_t *data);
+        sD3D9_VSH*  (*create_vs_data) (sD3D9_MAIN *main,
+                            LPD3DVERTEXELEMENT9 decl, const void_t *data);
 
-        sD3D9_VSH*  (*create_vs_fileA) (sD3D9_MAIN *main, const ansi_t *name,
-                                        int32u flags, const ansi_t *entry,
+        sD3D9_VSH*  (*create_vs_fileA) (sD3D9_MAIN *main,
+                            LPD3DVERTEXELEMENT9 decl, const ansi_t *name,
+                                    int32u flags, const ansi_t *entry,
                                         const ansi_t *profile);
 
-        sD3D9_VSH*  (*create_vs_fileW) (sD3D9_MAIN *main, const wide_t *name,
-                                        int32u flags, const ansi_t *entry,
+        sD3D9_VSH*  (*create_vs_fileW) (sD3D9_MAIN *main,
+                            LPD3DVERTEXELEMENT9 decl, const wide_t *name,
+                                    int32u flags, const ansi_t *entry,
                                         const ansi_t *profile);
 
-        sD3D9_VSH*  (*create_vs_text) (sD3D9_MAIN *main, const ansi_t *text,
-                                       int32u flags, const ansi_t *entry,
-                                       const ansi_t *profile);
+        sD3D9_VSH*  (*create_vs_text) (sD3D9_MAIN *main,
+                            LPD3DVERTEXELEMENT9 decl, const ansi_t *text,
+                                    int32u flags, const ansi_t *entry,
+                                        const ansi_t *profile);
         /* 释放 */
-        void_t  (*release_vs) (const sD3D9_VSH *vsh);
+        void_t  (*release_vs) (sD3D9_MAIN *main, const sD3D9_VSH *vsh);
 
 /* =============================== P.S.对象 ================================ */
 
@@ -241,7 +244,7 @@ typedef struct
                                        int32u flags, const ansi_t *entry,
                                        const ansi_t *profile);
         /* 释放 */
-        void_t  (*release_ps) (const sD3D9_PSH *psh);
+        void_t  (*release_ps) (sD3D9_MAIN *main, const sD3D9_PSH *psh);
 
 /* =============================== 变换对象 ================================ */
 
