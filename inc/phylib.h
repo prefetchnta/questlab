@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-01  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -133,6 +133,9 @@ CR_API void_t   image_back (const sIMAGE *dst, const sIMAGE *src,
 /* 清除图片边框 */
 CR_API bool_t   image_bound (const sIMAGE *img, uint_t xsize, uint_t ysize);
 
+/* 垂直翻转图片 (若需要) */
+CR_API void_t   image_fuck_gdi (sIMAGE *img);
+
 /* 直方图阈值计算 */
 CR_API byte_t   histo_avge (const leng_t tab[256]);
 CR_API byte_t   histo_otsu (const leng_t tab[256]);
@@ -152,6 +155,7 @@ CR_API bool_t   image_histo (leng_t tab[256], const sIMAGE *gray);
 CR_API bool_t   image_histo3 (leng_t t_r[256], leng_t t_g[256],
                               leng_t t_b[256], const sIMAGE *img);
 /* 灰度图二值化 */
+CR_API bool_t   image_binary0 (const sIMAGE *gray, bool_t is_he);
 CR_API bool_t   image_binary1 (const sIMAGE *gray, byte_t gate);
 CR_API bool_t   image_binary2 (const sIMAGE *gray, const sIMAGE *gate,
                                sint_t offset);
@@ -212,6 +216,11 @@ CR_API sIMAGE*  shape_open  (const sIMAGE *img, const sSHAPE_MAT *rotz,
 CR_API sIMAGE*  shape_close (const sIMAGE *img, const sSHAPE_MAT *expn,
                              uint_t exp_times, const sSHAPE_MAT *rotz,
                              uint_t rot_times);
+/* 形态杂点清除 */
+#define SHAPE_CL_XX     0   /* X--轴 */
+#define SHAPE_CL_YY     1   /* Y--轴 */
+#define SHAPE_CL_XY     2   /* XY-轴 */
+CR_API sIMAGE*  shape_clean (const sIMAGE *img, uint_t type, uint_t times);
 
 /* 形态查找匹配 (矩阵忽略点值为 0x80 可以支持索引图像) */
 CR_API bool_t   shape_match_and (const byte_t *left_top, leng_t img_bpl,
@@ -281,6 +290,9 @@ CR_API bool_t   rect_max_density (sRECT *result, const sRECT *list,
                                   leng_t count, const sPNT2 *pnts1,
                                   leng_t cnts1, const sPNT2 *pnts2,
                                   leng_t cnts2);
+/* 计算点集的重心 */
+CR_API leng_t   rect_get_focus (sPNT2 *pnt, const sIMAGE *img,
+                                const sRECT *roi, bool_t gray);
 
 /*****************************************************************************/
 /*                                   纹理                                    */
@@ -313,6 +325,10 @@ typedef struct
 CR_API bool_t   tex_altern_x  (sTEX_PATTERN *patt);
 CR_API bool_t   tex_altern_y  (sTEX_PATTERN *patt);
 CR_API void_t   tex_patt_free (sTEX_PATTERN *patt);
+
+/* 纹理网格压缩 */
+CR_API sIMAGE*  tex_compress (const sIMAGE *img, uint_t tile_w,
+                              uint_t tile_h, byte_t gate);
 
 #endif  /* !__CR_PHYLIB_H__ */
 
