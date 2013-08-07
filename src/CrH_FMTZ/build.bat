@@ -24,3 +24,5 @@ nmake -fe_nscripter.mak
 rem =====================
 nmake -fe_ego.mak
 rem =====================
+nmake -fe_tgl.mak
+rem =====================

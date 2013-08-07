@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2011-11-21  */
 /*     #######          ###    ###      [MATH]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-01  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -293,6 +293,10 @@ CR_API bool_t   rect_max_density (sRECT *result, const sRECT *list,
 /* 计算点集的重心 */
 CR_API leng_t   rect_get_focus (sPNT2 *pnt, const sIMAGE *img,
                                 const sRECT *roi, bool_t gray);
+/* 连通区域标识与提取 */
+CR_API byte_t   rect_area_marks (const sIMAGE *img);
+CR_API bool_t   rect_area_bound (sRECT *bound, const sIMAGE *img,
+                                 byte_t type);
 
 /*****************************************************************************/
 /*                                   纹理                                    */
