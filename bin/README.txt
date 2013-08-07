@@ -1,4 +1,5 @@
 【更新日志】
+　2013-08-07　TGL 引擎插件 zTGL.dll 建立
 　2013-06-17　Direct3D8 API 接口项目动工（引入 DirectX 8 SDK）
 　2013-06-08　开源 OCR 封装库项目建立（引入 VC9.0 & leptonica & tesseract-ocr SDK）
 　2013-06-05　Direct3D9 API 接口项目动工（引入 DirectX 9 SDK）
