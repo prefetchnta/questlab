@@ -106,7 +106,7 @@ iPAK_PACF_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    uint_t          idx;
+    leng_t          idx;
     leng_t          read;
     int64u          pack;
     int64u          size;
