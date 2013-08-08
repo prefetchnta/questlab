@@ -1,0 +1,21 @@
+//=========================================//
+//  [WIN] 神奇传说-远征奥德赛1-繁体中文版  //
+//=========================================//
+$call xSelectDir.exe
+$continue?
+$exec script/import/reset.qst
+g2d:ext:load CrH_FMTZ.dll
+pak:ext:load plugin/zTGL.dll
+xmm:ext:load plugin/zFMOD.dll
+$fopen output/__imp__.xml
+<ImpScript>
+    <Import name="Bgm\\*.wav" />
+    <Import name="dat\\*.dat" />
+    <Import name="data_ud\\*.*" />
+    <Import name="scr\\*.scr" />
+    <Import name="wav\\*.wav" />
+    <Import name="*.pac" />
+</ImpScript>
+$fclose
+$call xImpScript.exe 950 output/__imp__.xml
+dir:load
