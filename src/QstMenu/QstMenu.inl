@@ -257,7 +257,7 @@ void __fastcall TfrmMain::subImgLabXXXXClick(TObject *Sender)
     int         size;
     AnsiString  line;
 
-    /* 选择图片滤镜功能 */
+    /* 选择图像实验功能 */
     line = "xIMGLAB.exe ";
     line += ((TMenuItem*)Sender)->Caption;
     line += " :computer/camera0";
