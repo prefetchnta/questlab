@@ -246,6 +246,28 @@ static const iPACKAGE_vtbl _rom_ s_pack_vtbl =
 };
 
 /*
+---------------------------------------
+    根据索引排序
+---------------------------------------
+*/
+static sint_t
+offset_comp (
+  __CR_IN__ const void_t*   elem1,
+  __CR_IN__ const void_t*   elem2
+    )
+{
+    int32u  off1, off2;
+
+    off1 = (int32u)(((sPAK_TGL_FILE*)elem1)->offs);
+    off2 = (int32u)(((sPAK_TGL_FILE*)elem2)->offs);
+    if (off1 < off2)
+        return (-1);
+    if (off1 > off2)
+        return (1);
+    return (0);
+}
+
+/*
 =======================================
     TGL PAC_FILE 文件读取
 =======================================
@@ -325,6 +347,11 @@ load_tgl_pac (
                     "load_tgl_pac()", "iDATIN::getd_le() failure");
             goto _failure2;
         }
+        if (offs > dati_get_size(datin)) {
+            err_set(__CR_TGL_PAC_C__, offs,
+                    "load_tgl_pac()", "invalid TGL PAC format");
+            goto _failure2;
+        }
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].base.name = local_to_utf8(param->page, str);
@@ -342,21 +369,21 @@ load_tgl_pac (
     }
 
     /* 计算文件的包内大小 */
-    if (cnt != 0) {
+    if (cnt != 0)
+    {
+        /* 先根据偏移值排序一下以免出意外状况 */
+        quick_sort(list, (leng_t)cnt, sizeof(sPAK_TGL_FILE), offset_comp);
         for (idx = 0; idx < cnt - 1; idx++) {
-            if (list[idx].base.offs > list[idx + 1].base.offs) {
-                list[idx].base.pack = CR_ULL(0);
-            }
-            else {
-                list[idx].base.pack = list[idx + 1].base.offs -
-                                      list[idx + 0].base.offs;
-            }
+            list[idx].base.pack = list[idx + 1].base.offs -
+                                  list[idx + 0].base.offs;
         }
         list[idx].base.pack = dati_get_size(datin) - list[idx].base.offs;
     }
 
     /* 获取文件的实际大小和类型 */
-    for (idx = 0; idx < cnt; idx++) {
+    for (idx = 0; idx < cnt; idx++)
+    {
+        /* 逐个文件定位过去判断 */
         if (!CR_VCALL(datin)->seek64(datin, list[idx].base.offs, SEEK_SET)) {
             err_set(__CR_TGL_PAC_C__, FALSE,
                     "load_tgl_pac()", "iDATIN::seek64() failure");
