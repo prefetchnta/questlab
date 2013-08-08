@@ -21,6 +21,7 @@
 #define __CR_TGL_PAC_C__ 0xB59EC6BBUL
 
 #include "enclib.h"
+#include "msclib.h"
 #include "strlib.h"
 #include "fmtz/tgl.h"
 #include "../fmtint.h"
@@ -258,8 +259,8 @@ offset_comp (
 {
     int32u  off1, off2;
 
-    off1 = (int32u)(((sPAK_TGL_FILE*)elem1)->offs);
-    off2 = (int32u)(((sPAK_TGL_FILE*)elem2)->offs);
+    off1 = (int32u)(((sPAK_TGL_FILE*)elem1)->base.offs);
+    off2 = (int32u)(((sPAK_TGL_FILE*)elem2)->base.offs);
     if (off1 < off2)
         return (-1);
     if (off1 > off2)
@@ -323,12 +324,12 @@ load_tgl_pac (
                     "load_tgl_pac()", "mem_talloc32() failure");
             goto _failure1;
         }
+        str[16] = NIL;
         mem_tzero(list, cnt, sPAK_TGL_FILE);
     }
     else {
         list = NULL;    /* 支持空的包文件 */
     }
-    str[16] = NIL;
 
     /* 加载文件信息表 */
     for (idx = 0; idx < cnt; idx++)
