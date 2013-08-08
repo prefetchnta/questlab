@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-07  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-07  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-08  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -54,11 +54,13 @@ iPAK_PACF_release (
     pack_free_list(that);
     real = (iPAK_PACF*)that;
     list = (sPAK_TGL_FILE*)real->pack.__filelst__;
-    for (idx = 0; idx < real->m_cnt; idx++) {
-        mem_free(list[idx].base.find);
-        mem_free(list[idx].base.name);
+    if (list != NULL) {
+        for (idx = 0; idx < real->m_cnt; idx++) {
+            mem_free(list[idx].base.find);
+            mem_free(list[idx].base.name);
+        }
+        mem_free(list);
     }
-    mem_free(list);
     CR_VCALL(real->m_file)->release(real->m_file);
     mem_free(that);
 }
@@ -290,21 +292,24 @@ load_tgl_pac (
                 "load_tgl_pac()", "iDATIN::getd_le() failure");
         goto _failure1;
     }
-    if (cnt == 0) {
-        err_set(__CR_TGL_PAC_C__, cnt,
-                "load_tgl_pac()", "invalid TGL PAC format");
-        goto _failure1;
-    }
 
     /* 分配子文件属性表 */
-    list = mem_talloc32(cnt, sPAK_TGL_FILE);
-    if (list == NULL) {
-        err_set(__CR_TGL_PAC_C__, CR_NULL,
-                "load_tgl_pac()", "mem_talloc32() failure");
-        goto _failure1;
+    if (cnt != 0) {
+        list = mem_talloc32(cnt, sPAK_TGL_FILE);
+        if (list == NULL) {
+            err_set(__CR_TGL_PAC_C__, CR_NULL,
+                    "load_tgl_pac()", "mem_talloc32() failure");
+            goto _failure1;
+        }
+        mem_tzero(list, cnt, sPAK_TGL_FILE);
     }
-    mem_tzero(list, cnt, sPAK_TGL_FILE);
-    for (str[16] = 0, idx = 0; idx < cnt; idx++)
+    else {
+        list = NULL;    /* 支持空的包文件 */
+    }
+    str[16] = NIL;
+
+    /* 加载文件信息表 */
+    for (idx = 0; idx < cnt; idx++)
     {
         /* 读取文件名不保证\0结尾 */
         read = CR_VCALL(datin)->read(datin, str, 16);
@@ -337,23 +342,25 @@ load_tgl_pac (
     }
 
     /* 计算文件的包内大小 */
-    for (idx = 0; idx < cnt - 1; idx++) {
-        if (list[idx].base.offs > list[idx + 1].base.offs) {
-            list[idx].base.pack = CR_ULL(0);
+    if (cnt != 0) {
+        for (idx = 0; idx < cnt - 1; idx++) {
+            if (list[idx].base.offs > list[idx + 1].base.offs) {
+                list[idx].base.pack = CR_ULL(0);
+            }
+            else {
+                list[idx].base.pack = list[idx + 1].base.offs -
+                                      list[idx + 0].base.offs;
+            }
         }
-        else {
-            list[idx].base.pack = list[idx + 1].base.offs -
-                                  list[idx + 0].base.offs;
-        }
+        list[idx].base.pack = dati_get_size(datin) - list[idx].base.offs;
     }
-    list[idx].base.pack = dati_get_size(datin) - list[idx].base.offs;
 
     /* 获取文件的实际大小和类型 */
     for (idx = 0; idx < cnt; idx++) {
         if (!CR_VCALL(datin)->seek64(datin, list[idx].base.offs, SEEK_SET)) {
             err_set(__CR_TGL_PAC_C__, FALSE,
                     "load_tgl_pac()", "iDATIN::seek64() failure");
-            goto _failure2;
+            goto _failure3;
         }
 
         /* 压缩文件的标志 */
@@ -361,7 +368,7 @@ load_tgl_pac (
         if (read != 4) {
             err_set(__CR_TGL_PAC_C__, read,
                     "load_tgl_pac()", "iDATIN::read() failure");
-            goto _failure2;
+            goto _failure3;
         }
         if (list[idx].ftype != mk_tag4("IEL1")) {
             list[idx].base.size = list[idx].base.pack;
@@ -371,7 +378,7 @@ load_tgl_pac (
             if (!CR_VCALL(datin)->getd_le(datin, &offs)) {
                 err_set(__CR_TGL_PAC_C__, FALSE,
                         "load_tgl_pac()", "iDATIN::getd_le() failure");
-                goto _failure2;
+                goto _failure3;
             }
             list[idx].base.size = offs;
             list[idx].base.attr |= PAK_FILE_CMP;
@@ -411,12 +418,16 @@ load_tgl_pac (
     rett->infor = "TGL PAC_FILE Archive (PACF)";
     return (rett);
 
+_failure3:
+    idx = cnt;
 _failure2:
-    for (cnt = 0; cnt < idx; cnt++) {
-        TRY_FREE(list[cnt].base.find)
-        mem_free(list[cnt].base.name);
+    if (list != NULL) {
+        for (cnt = 0; cnt < idx; cnt++) {
+            TRY_FREE(list[cnt].base.find)
+            mem_free(list[cnt].base.name);
+        }
+        mem_free(list);
     }
-    mem_free(list);
 _failure1:
     CR_VCALL(datin)->release(datin);
     return (NULL);
