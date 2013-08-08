@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-01  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-08  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -329,11 +329,9 @@ load_syn_gca (
     uint_t          cnt;
     sPAK_GCA_FILE*  list;
 
-    /* 加载文件信息表 */
+    /* 分配子文件属性表 */
     cnt = gca->GetNumFiles();
-    if (cnt != 0)
-    {
-        /* 分配子文件属性表 */
+    if (cnt != 0) {
         list = mem_talloc(cnt, sPAK_GCA_FILE);
         if (list == NULL) {
             err_set(__CR_GCAX_CPP__, CR_NULL,
@@ -341,41 +339,41 @@ load_syn_gca (
             goto _failure3;
         }
         mem_tzero(list, cnt, sPAK_GCA_FILE);
-        memo = (gca->GetArcType() == CGca::GCA0) ? "GCA0" : "GCA1";
-        for (idx = 0; idx < cnt; idx++)
-        {
-            string  name = gca->GetFileName((int)idx);
-
-            /* 文件名统一使用 UTF-8 编码 */
-            list[idx].base.name = local_to_utf8(param->page, name.c_str());
-            if (list[idx].base.name == NULL) {
-                err_set(__CR_GCAX_CPP__, CR_NULL,
-                        "load_syn_gca()", "local_to_utf8() failure");
-                goto _failure4;
-            }
-
-            /* 设置公用文件属性 (偏移没有实际用处) */
-            list[idx].base.skip = sizeof(sPAK_GCA_FILE);
-            list[idx].base.attr = attrib;
-            list[idx].base.offs = offset;
-            list[idx].base.pack = gca->GetDataSize((int)idx);
-            list[idx].base.size = gca->GetFileSize((int)idx);
-            if (list[idx].base.pack != list[idx].base.size)
-                list[idx].base.attr |= PAK_FILE_CMP;
-            list[idx].base.memo = memo;
-
-            FILETIME    ftime = gca->GetFileTime((int)idx);
-
-            /* 设置私有文件属性 */
-            list[idx].crc32 = gca->GetFileCRC((int)idx);
-            list[idx].fattr = gca->GetFileAttributesA((int)idx);
-            list[idx].ftime = mk_size(ftime.dwHighDateTime,
-                                      ftime.dwLowDateTime);
-        }
     }
     else {
-        idx = 0;
-        list = NULL;
+        list = NULL;    /* 支持空的包文件 */
+    }
+    memo = (gca->GetArcType() == CGca::GCA0) ? "GCA0" : "GCA1";
+
+    /* 加载文件信息表 */
+    for (idx = 0; idx < cnt; idx++)
+    {
+        string  name = gca->GetFileName((int)idx);
+
+        /* 文件名统一使用 UTF-8 编码 */
+        list[idx].base.name = local_to_utf8(param->page, name.c_str());
+        if (list[idx].base.name == NULL) {
+            err_set(__CR_GCAX_CPP__, CR_NULL,
+                    "load_syn_gca()", "local_to_utf8() failure");
+            goto _failure4;
+        }
+
+        /* 设置公用文件属性 (偏移没有实际用处) */
+        list[idx].base.skip = sizeof(sPAK_GCA_FILE);
+        list[idx].base.attr = attrib;
+        list[idx].base.offs = offset;
+        list[idx].base.pack = gca->GetDataSize((int)idx);
+        list[idx].base.size = gca->GetFileSize((int)idx);
+        if (list[idx].base.pack != list[idx].base.size)
+            list[idx].base.attr |= PAK_FILE_CMP;
+        list[idx].base.memo = memo;
+
+        FILETIME    ftime = gca->GetFileTime((int)idx);
+
+        /* 设置私有文件属性 */
+        list[idx].crc32 = gca->GetFileCRC((int)idx);
+        list[idx].fattr = gca->GetFileAttributesA((int)idx);
+        list[idx].ftime = mk_size(ftime.dwHighDateTime, ftime.dwLowDateTime);
     }
 
     iPAK_GCA*   port;
