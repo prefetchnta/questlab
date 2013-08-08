@@ -229,7 +229,7 @@ iPAK_PACF_getFileInfo (
                 "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (uint_t)index;
+    idx = (leng_t)index;
     list = (sPAK_TGL_FILE*)real->pack.__filelst__;
 
     /* 返回文件信息 */
