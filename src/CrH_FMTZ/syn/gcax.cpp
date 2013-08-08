@@ -339,11 +339,11 @@ load_syn_gca (
             goto _failure3;
         }
         mem_tzero(list, cnt, sPAK_GCA_FILE);
+        memo = (gca->GetArcType() == CGca::GCA0) ? "GCA0" : "GCA1";
     }
     else {
         list = NULL;    /* 支持空的包文件 */
     }
-    memo = (gca->GetArcType() == CGca::GCA0) ? "GCA0" : "GCA1";
 
     /* 加载文件信息表 */
     for (idx = 0; idx < cnt; idx++)
