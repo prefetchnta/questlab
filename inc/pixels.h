@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-19  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-31  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -284,6 +284,11 @@ CR_API void_t   pal_3b_to_4b (void_t *pal4, const void_t *pal3,
 CR_API void_t   pal_4b_to_3b (void_t *pal3, const void_t *pal4,
                               uint_t len CR_DEFAULT(256));
 
+CR_API void_t   pal_3b_to_4b_sw (void_t *pal4, const void_t *pal3,
+                                 uint_t len CR_DEFAULT(256));
+CR_API void_t   pal_4b_to_3b_sw (void_t *pal3, const void_t *pal4,
+                                 uint_t len CR_DEFAULT(256));
+
 CR_API void_t   pal_4b_to_2b_16 (void_t *pal2, const void_t *pal4,
                                  uint_t len CR_DEFAULT(256));
 CR_API void_t   pal_4b_to_2b_15 (void_t *pal2, const void_t *pal4,
@@ -295,6 +300,7 @@ CR_API void_t   pal_4b_to_2b_12 (void_t *pal2, const void_t *pal4,
 
 CR_API void_t   pal_vga_to_3b (void_t *vga3, uint_t len CR_DEFAULT(256));
 CR_API void_t   pal_3b_to_vga (void_t *pal3, uint_t len CR_DEFAULT(256));
+CR_API void_t   pal_set_gray8 (void_t *pal4, uint_t len CR_DEFAULT(256));
 
 /*****************************************************************************/
 /*                              单像素计算操作                               */

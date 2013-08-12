@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -378,14 +378,8 @@ load_cr_png (
     }
 
     /* 生成灰度调色板 */
-    if (temp.fmt == CR_PIC_GREY) {
-        for (pal[0] = 0, index = 0; index < 1024; index += 4) {
-            ((uchar*)temp.pic->pal)[index + 0] = (pal[0]);
-            ((uchar*)temp.pic->pal)[index + 1] = (pal[0]);
-            ((uchar*)temp.pic->pal)[index + 2] = (pal[0])++;
-            ((uchar*)temp.pic->pal)[index + 3] = (0xFF);
-        }
-    }
+    if (temp.fmt == CR_PIC_GREY)
+        pal_set_gray8(temp.pic->pal, 256);
 
     /* 分配 IDAT 的内存 */
     fsze = dati_get_size(datin);
@@ -437,9 +431,7 @@ load_cr_png (
             }
             /* 转换到 4B 格式 */
             fcrh = (uint_t)ssize / 3;
-            pal_3b_to_4b(temp.pic->pal, pal, fcrh);
-            for (index = 0; index < fcrh; index++)
-                swap_rb32(&temp.pic->pal[index]);
+            pal_3b_to_4b_sw(temp.pic->pal, pal, fcrh);
         }
         else
         if (head.info.head.name == mk_tag4("IDAT"))
