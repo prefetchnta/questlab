@@ -5,6 +5,7 @@ BIN_NAME=$(PROJECT).dll
 
 OBJ_LIST=.$(L)fmtz.$(O) \
          .$(L)cr_bmp.$(O) \
+         .$(L)cr_dds.$(O) \
          .$(L)cr_pcx.$(O) \
          .$(L)cr_png.$(O) \
          .$(L)cr_tga.$(O) \
@@ -14,6 +15,7 @@ OBJ_LIST=.$(L)fmtz.$(O) \
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)cr_bmp.$(C) \
+         .$(L)cr_dds.$(C) \
          .$(L)cr_pcx.$(C) \
          .$(L)cr_png.$(C) \
          .$(L)cr_tga.$(C) \

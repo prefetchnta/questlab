@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-12-11  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-12  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -44,6 +44,11 @@ static const sMATCHx _rom_ s_findx[] =
     },
     {
         CR_FMTZ_MASK_PIC,
+        CR_STR("*.dds"), CR_STR(".dds"),
+        CR_VFUNC(load_cr_dds)
+    },
+    {
+        CR_FMTZ_MASK_PIC,
         CR_STR("*.pcx"), CR_STR(".pcx"),
         CR_VFUNC(load_cr_pcx)
     },
@@ -72,6 +77,7 @@ static const sTRY_LDR _rom_ s_load[] =
     { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_bmp) },
     { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_png) },
     { CR_FMTZ_MASK_PAK, CR_VFUNC(load_cr_zip) },
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_dds) },
     { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_pcx) },
 };
 #endif  /* !_CR_FMTZ_WIDE_ */
