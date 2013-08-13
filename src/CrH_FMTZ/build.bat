@@ -26,3 +26,5 @@ nmake -fe_ego.mak
 rem =====================
 nmake -fe_tgl.mak
 rem =====================
+nmake -fe_falcom.mak
+rem =====================
