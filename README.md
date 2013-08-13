@@ -82,6 +82,7 @@
 
 <p>支持加载 <b>TGL</b> 公司开发的游戏里的几种专用的文件格式：</p>
  - TGL PAC_FILE Archive (PACF)
+ - TGL LZSS Compressed file (IEL1)
 
 ##zEGO (VS2010 SP1)
 
@@ -257,6 +258,7 @@
 
 <p>属于 <b>CrHack SDK</b> 本体的跨平台引擎插件，支持的文件格式如下（只支持文件的常见模式）：</p>
  - Windows Bitmap File (BMP)
+ - DirectDraw Surface (DDS)
  - Zsoft Publisher's Paintbrush (PCX)
  - Portable Network Graphics (PNG)
  - Truevision Targa (TGA)
