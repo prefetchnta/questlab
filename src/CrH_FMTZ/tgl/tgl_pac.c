@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-07  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-13  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -20,7 +20,6 @@
 #ifndef __CR_TGL_PAC_C__
 #define __CR_TGL_PAC_C__ 0xB59EC6BBUL
 
-#include "enclib.h"
 #include "msclib.h"
 #include "strlib.h"
 #include "fmtz/tgl.h"
@@ -48,17 +47,17 @@ iPAK_PACF_release (
   __CR_IN__ iPACKAGE*   that
     )
 {
-    leng_t          idx;
-    iPAK_PACF*      real;
-    sPAK_TGL_FILE*  list;
+    leng_t      idx;
+    iPAK_PACF*  real;
+    sPAK_FILE*  list;
 
     pack_free_list(that);
     real = (iPAK_PACF*)that;
-    list = (sPAK_TGL_FILE*)real->pack.__filelst__;
+    list = real->pack.__filelst__;
     if (list != NULL) {
         for (idx = 0; idx < real->m_cnt; idx++) {
-            mem_free(list[idx].base.find);
-            mem_free(list[idx].base.name);
+            mem_free(list[idx].find);
+            mem_free(list[idx].name);
         }
         mem_free(list);
     }
@@ -109,17 +108,13 @@ iPAK_PACF_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    leng_t          idx;
-    leng_t          read;
-    int64u          pack;
-    int64u          size;
-    int32u          type;
-    void_t*         temp;
-    void_t*         data;
-    byte_t*         pntr;
-    iDATIN*         file;
-    iPAK_PACF*      real;
-    sPAK_TGL_FILE*  list;
+    leng_t      idx;
+    leng_t      read;
+    int64u      size;
+    void_t*     data;
+    iDATIN*     file;
+    iPAK_PACF*  real;
+    sPAK_FILE*  list;
 
     /* 定位文件索引 */
     CR_NOUSE(hash);
@@ -130,10 +125,10 @@ iPAK_PACF_getFileData (
         return (FALSE);
     }
     idx = (leng_t)index;
-    list = (sPAK_TGL_FILE*)real->pack.__filelst__;
+    list = real->pack.__filelst__;
 
     /* 获取文件数据 (0大小文件分配1个字节) */
-    size = list[idx].base.size;
+    size = list[idx].size;
     if (size == 0) {
         data = mem_malloc(1);
         if (data == NULL) {
@@ -145,9 +140,8 @@ iPAK_PACF_getFileData (
         *(byte_t*)data = 0x00;
     }
     else {
-        pack = list[idx].base.pack;
-        temp = mem_malloc64(pack);
-        if (temp == NULL) {
+        data = mem_malloc64(size);
+        if (data == NULL) {
             err_set(__CR_TGL_PAC_C__, CR_NULL,
                     "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
@@ -155,55 +149,24 @@ iPAK_PACF_getFileData (
 
         /* 定位到文件并读起数据 */
         file = real->m_file;
-        if (!CR_VCALL(file)->seek64(file, list[idx].base.offs, SEEK_SET)) {
+        if (!CR_VCALL(file)->seek64(file, list[idx].offs, SEEK_SET)) {
             err_set(__CR_TGL_PAC_C__, FALSE,
                     "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
-            goto _failure1;
+            goto _failure;
         }
-        read = CR_VCALL(file)->read(file, temp, (leng_t)pack);
-        if (read != (leng_t)pack) {
+        read = CR_VCALL(file)->read(file, data, (leng_t)size);
+        if (read != (leng_t)size) {
             err_set(__CR_TGL_PAC_C__, read,
                     "iPACKAGE::getFileData()", "iDATIN::read() failure");
-            goto _failure1;
-        }
-
-        /* 根据压缩类型解码数据 */
-        type = list[idx].ftype;
-        if (type != mk_tag4("IEL1"))
-        {
-            /* Store */
-            size = pack;
-            data = temp;
-        }
-        else
-        {
-            data = mem_malloc64(size);
-            if (data == NULL) {
-                err_set(__CR_TGL_PAC_C__, CR_NULL,
-                        "iPACKAGE::getFileData()", "mem_malloc64() failure");
-                goto _failure1;
-            }
-
-            /* LZSS (IEL1) */
-            pack -= sizeof(int64u);
-            pntr = (byte_t*)temp + sizeof(int64u);
-            read = uncompr_lzss(data, (leng_t)size, pntr, (leng_t)pack, 0);
-            if (read != (leng_t)size) {
-                err_set(__CR_TGL_PAC_C__, read,
-                        "iPACKAGE::getFileData()", "uncompr_lzss8() failure");
-                goto _failure2;
-            }
-            mem_free(temp);
+            goto _failure;
         }
     }
 
     /* 返回文件数据 */
     return (buffer_init(buff, data, (leng_t)size, TRUE));
 
-_failure2:
+_failure:
     mem_free(data);
-_failure1:
-    mem_free(temp);
     return (FALSE);
 }
 
@@ -219,9 +182,8 @@ iPAK_PACF_getFileInfo (
   __CR_IN__ int64u      index
     )
 {
-    leng_t          idx;
-    iPAK_PACF*      real;
-    sPAK_TGL_FILE*  list;
+    leng_t      idx;
+    iPAK_PACF*  real;
 
     /* 定位文件索引 */
     real = (iPAK_PACF*)that;
@@ -230,11 +192,10 @@ iPAK_PACF_getFileInfo (
                 "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (leng_t)index;
-    list = (sPAK_TGL_FILE*)real->pack.__filelst__;
 
     /* 返回文件信息 */
-    *info = (sPAK_FILE*)(&list[idx]);
+    idx = (leng_t)index;
+    *info = &real->pack.__filelst__[idx];
     return (TRUE);
 }
 
@@ -259,8 +220,8 @@ offset_comp (
 {
     int32u  off1, off2;
 
-    off1 = (int32u)(((sPAK_TGL_FILE*)elem1)->base.offs);
-    off2 = (int32u)(((sPAK_TGL_FILE*)elem2)->base.offs);
+    off1 = (int32u)(((sPAK_FILE*)elem1)->offs);
+    off2 = (int32u)(((sPAK_FILE*)elem2)->offs);
     if (off1 < off2)
         return (-1);
     if (off1 > off2)
@@ -285,9 +246,8 @@ load_tgl_pac (
     leng_t      read;
     sFMT_PRT*   rett;
     iPAK_PACF*  port;
+    sPAK_FILE*  list;
     ansi_t      str[17];
-    /* -------------- */
-    sPAK_TGL_FILE*  list;
 
     /* 必须使用自己私有的读取接口 */
     datin = create_file_inX(param);
@@ -318,14 +278,14 @@ load_tgl_pac (
 
     /* 分配子文件属性表 */
     if (cnt != 0) {
-        list = mem_talloc32(cnt, sPAK_TGL_FILE);
+        list = mem_talloc32(cnt, sPAK_FILE);
         if (list == NULL) {
             err_set(__CR_TGL_PAC_C__, CR_NULL,
                     "load_tgl_pac()", "mem_talloc32() failure");
             goto _failure1;
         }
         str[16] = NIL;
-        mem_tzero(list, cnt, sPAK_TGL_FILE);
+        mem_tzero(list, cnt, sPAK_FILE);
     }
     else {
         list = NULL;    /* 支持空的包文件 */
@@ -355,63 +315,33 @@ load_tgl_pac (
         }
 
         /* 文件名统一使用 UTF-8 编码 */
-        list[idx].base.name = local_to_utf8(param->page, str);
-        if (list[idx].base.name == NULL) {
+        list[idx].name = local_to_utf8(param->page, str);
+        if (list[idx].name == NULL) {
             err_set(__CR_TGL_PAC_C__, CR_NULL,
                     "load_tgl_pac()", "local_to_utf8() failure");
             goto _failure2;
         }
 
         /* 设置公用文件属性 */
-        list[idx].base.skip = sizeof(sPAK_TGL_FILE);
-        list[idx].base.attr = 0;
-        list[idx].base.offs = offs;
-        list[idx].base.offs += 4;
+        list[idx].skip = sizeof(sPAK_FILE);
+        list[idx].attr = 0;
+        list[idx].offs = offs;
+        list[idx].offs += 4;
+        list[idx].memo = "Store";
     }
 
     /* 计算文件的包内大小 */
     if (cnt != 0)
     {
         /* 先根据偏移值排序一下以免出意外状况 */
-        quick_sort(list, (leng_t)cnt, sizeof(sPAK_TGL_FILE), offset_comp);
+        quick_sort(list, (leng_t)cnt, sizeof(sPAK_FILE), offset_comp);
         for (idx = 0; idx < cnt - 1; idx++) {
-            list[idx].base.pack = list[idx + 1].base.offs -
-                                  list[idx + 0].base.offs;
+            list[idx].pack = list[idx + 1].offs - list[idx].offs;
+            list[idx].size = list[idx].pack;
         }
-        list[idx].base.pack = dati_get_size(datin) - list[idx].base.offs;
-    }
-
-    /* 获取文件的实际大小和类型 */
-    for (idx = 0; idx < cnt; idx++)
-    {
-        /* 逐个文件定位过去判断 */
-        if (!CR_VCALL(datin)->seek64(datin, list[idx].base.offs, SEEK_SET)) {
-            err_set(__CR_TGL_PAC_C__, FALSE,
-                    "load_tgl_pac()", "iDATIN::seek64() failure");
-            goto _failure3;
-        }
-
-        /* 压缩文件的标志 */
-        read = CR_VCALL(datin)->read(datin, &list[idx].ftype, 4);
-        if (read != 4) {
-            err_set(__CR_TGL_PAC_C__, read,
-                    "load_tgl_pac()", "iDATIN::read() failure");
-            goto _failure3;
-        }
-        if (list[idx].ftype != mk_tag4("IEL1")) {
-            list[idx].base.size = list[idx].base.pack;
-            list[idx].base.memo = "Storing";
-        }
-        else {
-            if (!CR_VCALL(datin)->getd_le(datin, &offs)) {
-                err_set(__CR_TGL_PAC_C__, FALSE,
-                        "load_tgl_pac()", "iDATIN::getd_le() failure");
-                goto _failure3;
-            }
-            list[idx].base.size = offs;
-            list[idx].base.attr |= PAK_FILE_CMP;
-            list[idx].base.memo = "LZSS (IEL1)";
-        }
+        list[idx].pack = dati_get_size(datin) - list[idx].offs;
+        list[idx].size = list[idx].pack;
+        idx = cnt;
     }
 
     /* 生成读包接口对象 */
@@ -423,7 +353,7 @@ load_tgl_pac (
     }
     port->m_file = datin;
     port->m_cnt = (leng_t)cnt;
-    port->pack.__filelst__ = (sPAK_FILE*)list;
+    port->pack.__filelst__ = list;
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
         err_set(__CR_TGL_PAC_C__, FALSE,
@@ -446,13 +376,11 @@ load_tgl_pac (
     rett->infor = "TGL PAC_FILE Archive (PACF)";
     return (rett);
 
-_failure3:
-    idx = cnt;
 _failure2:
     if (list != NULL) {
         for (cnt = 0; cnt < idx; cnt++) {
-            TRY_FREE(list[cnt].base.find)
-            mem_free(list[cnt].base.name);
+            TRY_FREE(list[cnt].find)
+            mem_free(list[cnt].name);
         }
         mem_free(list);
     }

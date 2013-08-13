@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-07  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-07  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-13  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -50,6 +50,7 @@ static const sMATCHx _rom_ s_findx[] =
 static const sTRY_LDR _rom_ s_load[] =
 {
     { CR_FMTZ_MASK_PAK, CR_VFUNC(load_tgl_pac) },
+    { CR_FMTZ_MASK_DAT, CR_VFUNC(load_tgl_iel1) },
 };
 #endif  /* !_CR_FMTZ_WIDE_ */
 
