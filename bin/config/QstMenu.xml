@@ -41,6 +41,24 @@
         <MenuItem name="subFilterNone" text="DISABLE IMAGE FILTERS" radio="1" group="1" checked="1" />
         <MenuItem name="xxxSepFilter" text="-" />
     </MenuItem>
+    <MenuItem name="subCodePage" text="编码(&C)">
+        <MenuItem name="subCPgame" text="Game Code Page" radio="1" group="1" checked="1" />
+        <MenuItem name="xxxSepCodePage" text="-" />
+        <MenuItem name="subCP1256" text="Arabic [1256]" radio="1" group="1" />
+        <MenuItem name="subCP1257" text="Baltic [1257]" radio="1" group="1" />
+        <MenuItem name="subCP1250" text="Central European [1250]" radio="1" group="1" />
+        <MenuItem name="subCP936" text="Chinese (Simplified) [936]" radio="1" group="1" />
+        <MenuItem name="subCP950" text="Chinese (Traditional) [950]" radio="1" group="1" />
+        <MenuItem name="subCP1251" text="Cyrillic [1251]" radio="1" group="1" />
+        <MenuItem name="subCP1253" text="Greek [1253]" radio="1" group="1" />
+        <MenuItem name="subCP1255" text="Hebrew [1255]" radio="1" group="1" />
+        <MenuItem name="subCP932" text="Japanese [932]" radio="1" group="1" />
+        <MenuItem name="subCP949" text="Korean [949]" radio="1" group="1" />
+        <MenuItem name="subCP874" text="Thai [874]" radio="1" group="1" />
+        <MenuItem name="subCP1254" text="Turkish [1254]" radio="1" group="1" />
+        <MenuItem name="subCP1258" text="Vietnamese [1258]" radio="1" group="1" />
+        <MenuItem name="subCP1252" text="Western European [1252]" radio="1" group="1" />
+    </MenuItem>
     <MenuItem name="subParam" text="参数(&P)" />
     <MenuItem name="subAbout" text="关于(&A)" />
 </QstMenu>

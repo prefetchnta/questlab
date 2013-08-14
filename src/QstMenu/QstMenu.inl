@@ -36,6 +36,22 @@ void __fastcall subFilterXXXXClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subImgLabXXXXClick(TObject *Sender);
 //---------------------------------------------------------------------------
+void __fastcall subCPgameClick(TObject *Sender);
+void __fastcall subCP1256Click(TObject *Sender);
+void __fastcall subCP1257Click(TObject *Sender);
+void __fastcall subCP1250Click(TObject *Sender);
+void __fastcall subCP936Click(TObject *Sender);
+void __fastcall subCP950Click(TObject *Sender);
+void __fastcall subCP1251Click(TObject *Sender);
+void __fastcall subCP1253Click(TObject *Sender);
+void __fastcall subCP1255Click(TObject *Sender);
+void __fastcall subCP932Click(TObject *Sender);
+void __fastcall subCP949Click(TObject *Sender);
+void __fastcall subCP874Click(TObject *Sender);
+void __fastcall subCP1254Click(TObject *Sender);
+void __fastcall subCP1258Click(TObject *Sender);
+void __fastcall subCP1252Click(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subAboutClick(TObject *Sender);
@@ -272,6 +288,111 @@ void __fastcall TfrmMain::subImgLabXXXXClick(TObject *Sender)
     misc_call_exe(line.c_str(), FALSE, FALSE);
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCPgameClick(TObject *Sender)
+{
+    /* Game Code Page */
+    qst_send_cmdz("edt:cpage 0");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1256Click(TObject *Sender)
+{
+    /* Arabic [1256] */
+    qst_send_cmdz("edt:cpage 1256");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1257Click(TObject *Sender)
+{
+    /* Baltic [1257] */
+    qst_send_cmdz("edt:cpage 1257");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1250Click(TObject *Sender)
+{
+    /* Central European [1250] */
+    qst_send_cmdz("edt:cpage 1250");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP936Click(TObject *Sender)
+{
+    /* Chinese (Simplified) [936] */
+    qst_send_cmdz("edt:cpage 936");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP950Click(TObject *Sender)
+{
+    /* Chinese (Traditional) [950] */
+    qst_send_cmdz("edt:cpage 950");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1251Click(TObject *Sender)
+{
+    /* Cyrillic [1251] */
+    qst_send_cmdz("edt:cpage 1251");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1253Click(TObject *Sender)
+{
+    /* Greek [1253] */
+    qst_send_cmdz("edt:cpage 1253");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1255Click(TObject *Sender)
+{
+    /* Hebrew [1255] */
+    qst_send_cmdz("edt:cpage 1255");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP932Click(TObject *Sender)
+{
+    /* Japanese [932] */
+    qst_send_cmdz("edt:cpage 932");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP949Click(TObject *Sender)
+{
+    /* Korean [949] */
+    qst_send_cmdz("edt:cpage 949");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP874Click(TObject *Sender)
+{
+    /* Thai [874] */
+    qst_send_cmdz("edt:cpage 874");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1254Click(TObject *Sender)
+{
+    /* Turkish [1254] */
+    qst_send_cmdz("edt:cpage 1254");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1258Click(TObject *Sender)
+{
+    /* Vietnamese [1258] */
+    qst_send_cmdz("edt:cpage 1258");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCP1252Click(TObject *Sender)
+{
+    /* Western European [1252] */
+    qst_send_cmdz("edt:cpage 1252");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subParamClick(TObject *Sender)
 {
     /* 参数菜单项 */
@@ -422,6 +543,21 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subKillQstTree);
     QST_MENU_EVENT(subKillQstView2D);
     QST_MENU_EVENT(subFilterNone);
+    QST_MENU_EVENT(subCPgame);
+    QST_MENU_EVENT(subCP1256);
+    QST_MENU_EVENT(subCP1257);
+    QST_MENU_EVENT(subCP1250);
+    QST_MENU_EVENT(subCP936);
+    QST_MENU_EVENT(subCP950);
+    QST_MENU_EVENT(subCP1251);
+    QST_MENU_EVENT(subCP1253);
+    QST_MENU_EVENT(subCP1255);
+    QST_MENU_EVENT(subCP932);
+    QST_MENU_EVENT(subCP949);
+    QST_MENU_EVENT(subCP874);
+    QST_MENU_EVENT(subCP1254);
+    QST_MENU_EVENT(subCP1258);
+    QST_MENU_EVENT(subCP1252);
     QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subAbout);
 
