@@ -1,6 +1,6 @@
-//==================================//
-//  [WIN] 120日元之春夏秋冬-汉化版  //
-//==================================//
+//===========================//
+//  NScripter GAME IMPORTER  //
+//===========================//
 $call xSelectDir.exe
 $continue?
 $exec script/import/reset.qst
@@ -11,11 +11,8 @@ edt:ext:load plugin/zNScripter.dll
 xmm:ext:load plugin/zFMOD.dll
 $fopen output/__imp__.xml
 <ImpScript>
-    <Import name="*.nsa" />
-    <Import name="*.sar" />
-    <Import name="nscript.dat" />
+    <Import name="*.*" sub="1" />
 </ImpScript>
 $fclose
-edt:cpage 936
 $call xImpScript.exe 932 output/__imp__.xml
 dir:load

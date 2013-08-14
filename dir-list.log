@@ -9,11 +9,7 @@ questlab
 │  │  │  └─opencv
 │  │  └─import
 │  │      └─jpn
-│  │          ├─ego
-│  │          ├─gainax
-│  │          ├─nekoneko
-│  │          ├─tgl
-│  │          └─typemoon
+│  │          └─gainax
 │  ├─source
 │  │  ├─import
 │  │  │  └─image

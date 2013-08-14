@@ -11,14 +11,7 @@ xmm:ext:load plugin/zFMOD.dll
 xmm:ext:load plugin/zDShow.dll
 $fopen output/__imp__.xml
 <ImpScript>
-    <Import name="movie\\*.mpg" />
-    <Import name="sound\\bgm\\*.ogg" />
-    <Import name="data" memo="kingformation" />
-    <Import name="gd" memo="kingformation" />
-    <Import name="script" memo="kingformation" />
-    <Import name="sound\\se" memo="kingformation" />
-    <Import name="sound\\sys_se" memo="kingformation" />
-    <Import name="sound\\voice" memo="kingformation" />
+    <Import name="*.*" sub="1" memo="kingformation" />
 </ImpScript>
 $fclose
 $call xImpScript.exe 936 output/__imp__.xml

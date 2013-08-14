@@ -1,22 +1,18 @@
 //=====================//
-//  [WIN] 红泪-汉化版  //
+//  EGO GAME IMPORTER  //
 //=====================//
 $call xSelectDir.exe
 $continue?
 $exec script/import/reset.qst
 g2d:ext:load CrH_FMTZ.dll
+g2d:ext:load plugin/zFreeImage.dll
 pak:ext:load plugin/zEGO.dll
 xmm:ext:load plugin/zFMOD.dll
 xmm:ext:load plugin/zDShow.dll
 $fopen output/__imp__.xml
 <ImpScript>
-    <Import name="Data\\*.dat" />
-    <Import name="Movie\\*.avi" />
-    <Import name="Music\\*.wav" />
-    <Import name="Script\\*.scr" />
-    <Import name="game??.dat" />
+    <Import name="*.*" sub="1" />
 </ImpScript>
 $fclose
-edt:cpage 936
 $call xImpScript.exe 932 output/__imp__.xml
 dir:load
