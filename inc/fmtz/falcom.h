@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-13  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-13  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-14  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -43,13 +43,13 @@ CR_API sENGINE*     engine_falcom (void_t);
 /*                               封包文件格式                                */
 /*****************************************************************************/
 
-CR_API sFMT_PRT*    load_flcm_nnk (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PRT*    load_flc_nnk (iDATIN *datin, const sLOADER *param);
 
 /*****************************************************************************/
 /*                               数据文件格式                                */
 /*****************************************************************************/
 
-CR_API sFMT_DAT*    load_flcm_z (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_DAT*    load_flc_zed (iDATIN *datin, const sLOADER *param);
 
 #endif  /* !__CR_FALCOM_H__ */
 

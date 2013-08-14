@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-13  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-13  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-14  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -39,13 +39,13 @@ static const sMATCHx _rom_ s_findx[] =
 {
     {
         CR_FMTZ_MASK_PAK,
-        CR_STR("*.ni"), CR_STR(".ni"),
-        CR_VFUNC(load_flcm_nnk)
+        CR_STR("*.na"), CR_STR(".na"),
+        CR_VFUNC(load_flc_nnk)
     },
     {
         CR_FMTZ_MASK_DAT,
         CR_STR("*.z"), CR_STR(".z"),
-        CR_VFUNC(load_flcm_z)
+        CR_VFUNC(load_flc_zed)
     },
 };
 #endif  /* !s_findx */
@@ -54,7 +54,7 @@ static const sMATCHx _rom_ s_findx[] =
 #if !defined(_CR_FMTZ_WIDE_)
 static const sTRY_LDR _rom_ s_load[] =
 {
-    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_flcm_nnk) },
+    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_flc_nnk) },
 };
 #endif  /* !_CR_FMTZ_WIDE_ */
 
