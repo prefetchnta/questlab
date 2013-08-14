@@ -379,6 +379,7 @@ load_flc_nnk (
                 "load_flc_nnk()", "create_file_inX() failure");
         goto _failure3;
     }
+    CR_VCALL(datin)->release(datin);
     datin = flna;
 
     /* 分配子文件属性表 */
