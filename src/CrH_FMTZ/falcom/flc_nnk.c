@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-13  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-14  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-15  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -279,14 +279,6 @@ load_flc_nnk (
     sNNK_FILE*      info;
     sPAK_NNK_FILE*  list;
 
-    /* 只支持磁盘文件 */
-    if (param->type != CR_LDR_ANSI &&
-        param->type != CR_LDR_WIDE) {
-        err_set(__CR_FLC_NNK_C__, param->type,
-                "load_flc_nnk()", "invalid param: param->type");
-        return (NULL);
-    }
-
     /* 指定的文件只是数据文件
        索引位于另外一个文件, 需要替换扩展名 */
     struct_cpy(&ldrs, param, sLOADER);
@@ -301,7 +293,8 @@ load_flc_nnk (
         filext_changeA((ansi_t*)ldrs.name.ansi,
             param->name.ansi, CR_AS(".ni"));
     }
-    else {
+    else
+    if (param->type == CR_LDR_WIDE) {
         size = str_lenW(param->name.wide) + 4;
         ldrs.name.wide = str_allocW(size);
         if (ldrs.name.wide == NULL) {
@@ -311,6 +304,11 @@ load_flc_nnk (
         }
         filext_changeW((wide_t*)ldrs.name.wide,
             param->name.wide, CR_WS(".ni"));
+    }
+    else {
+        err_set(__CR_FLC_NNK_C__, param->type,
+                "load_flc_nnk()", "invalid param: param->type");
+        return (NULL);
     }
 
     /* 打开索引文件 */
