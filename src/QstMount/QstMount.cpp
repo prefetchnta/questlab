@@ -963,6 +963,10 @@ qst_mnt_ldr_pack (
         goto _failure1;
     size = buffer_size(&buff);
 
+    /* 调试用的文件导出功能 */
+    if (file_existA(QST_PATH_OUTPUT "hack.dat"))
+        file_saveA(QST_PATH_OUTPUT "hack.dat", buff.data, size);
+
     ansi_t  strn[50];
 
     /* 释放上次的内存共享文件 */
