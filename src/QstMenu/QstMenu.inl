@@ -37,6 +37,7 @@ void __fastcall subFilterXXXXClick(TObject *Sender);
 void __fastcall subImgLabXXXXClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subCPgameClick(TObject *Sender);
+void __fastcall subCPsystemClick(TObject *Sender);
 void __fastcall subCP1256Click(TObject *Sender);
 void __fastcall subCP1257Click(TObject *Sender);
 void __fastcall subCP1250Click(TObject *Sender);
@@ -295,6 +296,17 @@ void __fastcall TfrmMain::subCPgameClick(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCPsystemClick(TObject *Sender)
+{
+    AnsiString  line;
+
+    /* System Code Page */
+    line = "edt:cpage ";
+    line += IntToStr(get_sys_codepage());
+    qst_send_cmdz(line.c_str());
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1256Click(TObject *Sender)
 {
     /* Arabic [1256] */
@@ -544,6 +556,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subKillQstView2D);
     QST_MENU_EVENT(subFilterNone);
     QST_MENU_EVENT(subCPgame);
+    QST_MENU_EVENT(subCPsystem);
     QST_MENU_EVENT(subCP1256);
     QST_MENU_EVENT(subCP1257);
     QST_MENU_EVENT(subCP1250);

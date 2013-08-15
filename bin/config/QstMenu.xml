@@ -43,6 +43,7 @@
     </MenuItem>
     <MenuItem name="subCodePage" text="编码(&C)">
         <MenuItem name="subCPgame" text="Game Code Page" radio="1" group="1" checked="1" />
+        <MenuItem name="subCPsystem" text="System Code Page" radio="1" group="1" />
         <MenuItem name="xxxSepCodePage" text="-" />
         <MenuItem name="subCP1256" text="Arabic [1256]" radio="1" group="1" />
         <MenuItem name="subCP1257" text="Baltic [1257]" radio="1" group="1" />
