@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-25  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-12-11  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -26,25 +26,23 @@
 /*                                 插件部分                                  */
 /*****************************************************************************/
 
-/* 引擎插件内部结构 */
-typedef struct
-{
-        /* 通用部分 */
-        sENGINE     engine;
-
-        /* 个性部分 */
-        sCURTAIN    m_ansi; /* 单字节版文件查找表 */
-        sCURTAIN    m_wide; /* 双字节版文件查找表 */
-
-} sENGINE_INT;
-
-/* 自动匹配查找结构 */
+/* 自动匹配查找结构A */
 typedef struct
 {
         int32u          mask;   /* 结果类型掩码 */
         const void_t*   func;   /* 尝试加载接口 */
+        const ansi_t*   match;  /* 匹配的字符串 */
 
-} sTRY_LDR;
+} sTRY_LDRa;
+
+/* 自动匹配查找结构W */
+typedef struct
+{
+        int32u          mask;   /* 结果类型掩码 */
+        const void_t*   func;   /* 尝试加载接口 */
+        const wide_t*   match;  /* 匹配的字符串 */
+
+} sTRY_LDRw;
 
 /* 单字节版查找单元 */
 typedef struct
@@ -66,11 +64,24 @@ typedef struct
 
 } sMATCHw;
 
+/* 引擎插件内部结构 */
+typedef struct
+{
+        /* 通用部分 */
+        sENGINE     engine;
+
+        /* 个性部分 */
+        sCURTAIN    m_finda;    /* 单字节版文件查找表 */
+        sCURTAIN    m_findw;    /* 双字节版文件查找表 */
+
+        const sTRY_LDRa*    m_loada;    /* 自动匹配A */
+        const sTRY_LDRw*    m_loadw;    /* 自动匹配W */
+
+} sENGINE_INT;
+
 /***** 插件相关 API 组 (内部使用) *****/
-CR_API sENGINE* engine_init (const sMATCHa *ansi,
-                             const sMATCHw *wide, uint_t count);
-CR_API sFMTZ*   fmtz_load (iDATIN *datin, const sTRY_LDR *ldrs,
-                           uint_t count, sLOADER *param, int32u maskz);
+CR_API sENGINE* engine_init (const sMATCHa *finda, const sMATCHw *findw,
+                             const sTRY_LDRa *loada, const sTRY_LDRw *loadw);
 
 /*****************************************************************************/
 /*                                 读包部分                                  */

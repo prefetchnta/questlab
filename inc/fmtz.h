@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-19  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-04-23  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -47,7 +47,7 @@ typedef struct
 #endif
 } sFMTZ;
 
-/* 两个用得到的函数类型 */
+/* 用得到的函数类型 */
 typedef sFMTZ*  (*load_fmtz_t) (iDATIN*, const sLOADER*);
 
 /* 格式最终结果掩码 */
@@ -188,7 +188,7 @@ typedef sENGINE*    (*engine_init_t) (void_t);
 
 /***** 插件相关 API 组 *****/
 CR_API bool_t   fmtz_free (const sFMTZ *fmtz);
-CR_API bool_t   fmtz_find (sENGINE *engine, sLOADER *loader);
+CR_API sFMTZ*   fmtz_find (sENGINE *engine, sLOADER *loader);
 CR_API sIMAGE*  fmtz_get_pic (const sFMTZ *fmtz, int32u index);
 CR_API void_t   engine_free (sENGINE *engine);
 

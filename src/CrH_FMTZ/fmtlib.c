@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-29  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-03-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -76,38 +76,6 @@ match_findW (
 }
 
 /*
----------------------------------------
-    使用通配符匹配文件名A
----------------------------------------
-*/
-static bool_t
-match_compA (
-  __CR_IN__ const void_t*   key,
-  __CR_IN__ const void_t*   obj
-    )
-{
-    const sMATCHa*  unit = (sMATCHa*)obj;
-
-    return (wildcard_matchIA((ansi_t*)key, unit->match));
-}
-
-/*
----------------------------------------
-    使用通配符匹配文件名W
----------------------------------------
-*/
-static bool_t
-match_compW (
-  __CR_IN__ const void_t*   key,
-  __CR_IN__ const void_t*   obj
-    )
-{
-    const sMATCHw*  unit = (sMATCHw*)obj;
-
-    return (wildcard_matchIW((wide_t*)key, unit->match));
-}
-
-/*
 =======================================
     释放引擎插件
 =======================================
@@ -122,8 +90,8 @@ engine_free (
     real = (sENGINE_INT*)engine;
     if (engine->engine_free != NULL)
         engine->engine_free(engine);
-    curtain_freeT(&real->m_wide, sMATCHw);
-    curtain_freeT(&real->m_ansi, sMATCHa);
+    curtain_freeT(&real->m_findw, sMATCHw);
+    curtain_freeT(&real->m_finda, sMATCHa);
     if (engine->sbin != NULL)
         sbin_unload(engine->sbin);
     mem_free(engine);
@@ -136,12 +104,12 @@ engine_free (
 */
 CR_API sENGINE*
 engine_init (
-  __CR_IN__ const sMATCHa*  ansi,
-  __CR_IN__ const sMATCHw*  wide,
-  __CR_IN__ uint_t          count
+  __CR_IN__ const sMATCHa*      finda,
+  __CR_IN__ const sMATCHw*      findw,
+  __CR_IN__ const sTRY_LDRa*    loada,
+  __CR_IN__ const sTRY_LDRw*    loadw
     )
 {
-    uint_t          index;
     sENGINE_INT*    engine;
 
     engine = struct_new(sENGINE_INT);
@@ -152,53 +120,52 @@ engine_init (
     }
     struct_zero(engine, sENGINE_INT);
 
-    /* 生成两个哈希表 */
-    if (ansi != NULL) {
-        if (!curtain_initT(&engine->m_ansi, sMATCHa, count, 0)) {
-            err_set(__CR_FMTLIB_C__, FALSE,
-                    "engine_init()", "curtain_initT() failure");
-            goto _failure1;
-        }
-        engine->m_ansi.find = match_findA;
-        engine->m_ansi.comp = match_compA;
+    /* 生成两个哈希表并注册文件类型匹配 */
+    if (!curtain_initT(&engine->m_finda, sMATCHa, 0, 0)) {
+        err_set(__CR_FMTLIB_C__, FALSE,
+                "engine_init()", "curtain_initT() failure");
+        goto _failure1;
     }
-    if (wide != NULL) {
-        if (!curtain_initT(&engine->m_wide, sMATCHw, count, 0)) {
+    engine->m_finda.find = match_findA;
+
+    while (finda->loader != NULL) {
+        if (curtain_insertT(&engine->m_finda, sMATCHa,
+                            finda->filext, finda) == NULL) {
+            err_set(__CR_FMTLIB_C__, CR_NULL,
+                    "engine_init()", "curtain_insertT() failure");
+            goto _failure2;
+        }
+        finda++;
+    }
+
+    /* 宽字符版本可选 (有可能编译器不支持) */
+    if (findw != NULL) {
+        if (!curtain_initT(&engine->m_findw, sMATCHw, 0, 0)) {
             err_set(__CR_FMTLIB_C__, FALSE,
                     "engine_init()", "curtain_initT() failure");
             goto _failure2;
         }
-        engine->m_wide.find = match_findW;
-        engine->m_wide.comp = match_compW;
-    }
+        engine->m_findw.find = match_findW;
 
-    /* 注册文件类型匹配 */
-    for (index = 0; index < count; index++)
-    {
-        if (ansi != NULL) {
-            if (curtain_insertT(&engine->m_ansi, sMATCHa,
-                            ansi[index].filext, &ansi[index]) == NULL) {
+        while (findw->loader != NULL) {
+            if (curtain_insertT(&engine->m_findw, sMATCHw,
+                                findw->filext, findw) == NULL) {
                 err_set(__CR_FMTLIB_C__, CR_NULL,
                         "engine_init()", "curtain_insertT() failure");
                 goto _failure3;
             }
-        }
-        if (wide != NULL) {
-            if (curtain_insertT(&engine->m_wide, sMATCHw,
-                            wide[index].filext, &wide[index]) == NULL) {
-                err_set(__CR_FMTLIB_C__, CR_NULL,
-                        "engine_init()", "curtain_insertT() failure");
-                goto _failure3;
-            }
+            findw++;
         }
     }
+    engine->m_loada = loada;
+    engine->m_loadw = loadw;
     engine->engine.mask = CR_FMTZ_MASK_ALL;
     return ((sENGINE*)engine);
 
 _failure3:
-    curtain_freeT(&engine->m_wide, sMATCHw);
+    curtain_freeT(&engine->m_findw, sMATCHw);
 _failure2:
-    curtain_freeT(&engine->m_ansi, sMATCHa);
+    curtain_freeT(&engine->m_finda, sMATCHa);
 _failure1:
     mem_free(engine);
     return (NULL);
@@ -209,19 +176,34 @@ _failure1:
     文件格式模式匹配
 =======================================
 */
-CR_API bool_t
+CR_API sFMTZ*
 fmtz_find (
   __CR_IN__ sENGINE*    engine,
   __CR_IO__ sLOADER*    loader
     )
 {
+    leng_t          idx;
+    sFMTZ*          fmtz;
+    uint_t          hash;
+    sARRAY*         node;
+    iDATIN*         datin;
     ansi_t*         name_a;
     wide_t*         name_w;
-    void_t*         match = NULL;
+    sMATCHa*        match_a;
+    sMATCHw*        match_w;
+    sTRY_LDRa*      try_ldra;
+    sTRY_LDRw*      try_ldrw;
+    load_fmtz_t     fmtz_loader;
     sENGINE_INT*    real = (sENGINE_INT*)engine;
 
-    /* 清除上次结果 */
-    loader->nprm = NULL;
+    /* 尝试打开文件 */
+    datin = create_file_inX(loader);
+    if (datin == NULL) {
+        err_set(__CR_FMTLIB_C__, CR_NULL,
+                "fmtz_find()", "create_file_inX() failure");
+        return (NULL);
+    }
+    fmtz = NULL;
 
     /* 单字节匹配优先 */
     if (loader->name.ansi != NULL) {
@@ -229,82 +211,156 @@ fmtz_find (
         if (name_a == NULL) {
             err_set(__CR_FMTLIB_C__, CR_NULL,
                     "fmtz_find()", "str_dupA() failure");
-            return (FALSE);
+            goto _func_out;
         }
+
+        /* 文件名规则匹配 */
         flname_extractA(name_a, loader->name.ansi);
-        str_lwrA(name_a);
-        match = curtain_findT(&real->m_ansi, sMATCHa, name_a);
+        hash = match_findA(str_lwrA(name_a));
+        hash %= real->m_finda.__size__;
+        node = &real->m_finda.__list__[hash];
+        match_a = (sMATCHa*)node->__buff__;
+        for (idx = 0; idx < node->__cnts__; idx++, match_a++)
+        {
+            /* 必须是期望接口类型 */
+            if (!(match_a->maskz & engine->mask))
+                continue;
+
+            /* 扩展名与文件名必须符合规则 */
+            if (!filext_checkA(name_a, match_a->filext))
+                continue;
+            if (match_a->match != NULL) {
+                if (!wildcard_matchIA(name_a, match_a->match))
+                    continue;
+            }
+
+            /* 尝试加载目标文件 */
+            fmtz_loader = (load_fmtz_t)match_a->loader;
+            fmtz = fmtz_loader(datin, loader);
+            if (fmtz != NULL)
+                break;
+
+            /* 复位文件读取指针 */
+            if (!CR_VCALL(datin)->rewind(datin)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "fmtz_find()", "iDATIN::rewind() failure");
+                mem_free(name_a);
+                goto _func_out;
+            }
+        }
+
+        /* 逐个尝试加载匹配 */
+        if (fmtz == NULL) {
+            try_ldra = (sTRY_LDRa*)real->m_loada;
+            for (; try_ldra->func != NULL; try_ldra++)
+            {
+                /* 必须是期望接口类型 */
+                if (!(try_ldra->mask & engine->mask))
+                    continue;
+
+                /* 文件名必须符合规则 */
+                if (try_ldra->match != NULL) {
+                    if (!wildcard_matchIA(name_a, try_ldra->match))
+                        continue;
+                }
+
+                /* 尝试加载目标文件 */
+                fmtz_loader = (load_fmtz_t)try_ldra->func;
+                fmtz = fmtz_loader(datin, loader);
+                if (fmtz != NULL)
+                    break;
+
+                /* 复位文件读取指针 */
+                if (!CR_VCALL(datin)->rewind(datin)) {
+                    err_set(__CR_FMTLIB_C__, FALSE,
+                            "fmtz_find()", "iDATIN::rewind() failure");
+                    break;
+                }
+            }
+        }
         mem_free(name_a);
     }
     else
     if (loader->name.wide != NULL) {
+        if (real->m_findw.__list__ == NULL)
+            goto _func_out;
         name_w = str_dupW(loader->name.wide);
         if (name_w == NULL) {
             err_set(__CR_FMTLIB_C__, CR_NULL,
                     "fmtz_find()", "str_dupW() failure");
-            return (FALSE);
+            goto _func_out;
         }
+
+        /* 文件名规则匹配 */
         flname_extractW(name_w, loader->name.wide);
-        str_lwrW(name_w);
-        match = curtain_findT(&real->m_wide, sMATCHw, name_w);
+        hash = match_findW(str_lwrW(name_w));
+        hash %= real->m_findw.__size__;
+        node = &real->m_findw.__list__[hash];
+        match_w = (sMATCHw*)node->__buff__;
+        for (idx = 0; idx < node->__cnts__; idx++, match_w++)
+        {
+            /* 必须是期望接口类型 */
+            if (!(match_w->maskz & engine->mask))
+                continue;
+
+            /* 扩展名与文件名必须符合规则 */
+            if (!filext_checkW(name_w, match_w->filext))
+                continue;
+            if (match_w->match != NULL) {
+                if (!wildcard_matchIW(name_w, match_w->match))
+                    continue;
+            }
+
+            /* 尝试加载目标文件 */
+            fmtz_loader = (load_fmtz_t)match_w->loader;
+            fmtz = fmtz_loader(datin, loader);
+            if (fmtz != NULL)
+                break;
+
+            /* 复位文件读取指针 */
+            if (!CR_VCALL(datin)->rewind(datin)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "fmtz_find()", "iDATIN::rewind() failure");
+                mem_free(name_w);
+                goto _func_out;
+            }
+        }
+
+        /* 逐个尝试加载匹配 */
+        if (fmtz == NULL) {
+            try_ldrw = (sTRY_LDRw*)real->m_loadw;
+            for (; try_ldrw->func != NULL; try_ldrw++)
+            {
+                /* 必须是期望接口类型 */
+                if (!(try_ldrw->mask & engine->mask))
+                    continue;
+
+                /* 文件名必须符合规则 */
+                if (try_ldrw->match != NULL) {
+                    if (!wildcard_matchIW(name_w, try_ldrw->match))
+                        continue;
+                }
+
+                /* 尝试加载目标文件 */
+                fmtz_loader = (load_fmtz_t)try_ldrw->func;
+                fmtz = fmtz_loader(datin, loader);
+                if (fmtz != NULL)
+                    break;
+
+                /* 复位文件读取指针 */
+                if (!CR_VCALL(datin)->rewind(datin)) {
+                    err_set(__CR_FMTLIB_C__, FALSE,
+                            "fmtz_find()", "iDATIN::rewind() failure");
+                    break;
+                }
+            }
+        }
         mem_free(name_w);
     }
 
-    /* 需要判断一下掩码 */
-    if ((match != NULL) &&
-        (((sMATCHa*)match)->maskz & engine->mask)) {
-        loader->nprm = (void_t*)(((sMATCHa*)match)->loader);
-        return (TRUE);
-    }
-    return (FALSE);
-}
-
-/*
-=======================================
-    加载多类型文件 (返回匹配项)
-=======================================
-*/
-CR_API sFMTZ*
-fmtz_load (
-  __CR_IO__ iDATIN*         datin,
-  __CR_IN__ const sTRY_LDR* ldrs,
-  __CR_IN__ uint_t          count,
-  __CR_IO__ sLOADER*        param,
-  __CR_IN__ int32u          maskz
-    )
-{
-    sFMTZ*  fmtz;
-    uint_t  cnts;
-    fsize_t back;
-
-    /* 保存初始位置 */
-    back = CR_VCALL(datin)->tell(datin);
-    if (back == (fsize_t)-1) {
-        err_set(__CR_FMTLIB_C__, -1L,
-                "fmtz_load()", "iDATIN::tell() failure");
-        return (NULL);
-    }
-
-    for (cnts = 0; cnts < count; cnts++)
-    {
-        /* 跳过非期望类型 */
-        if (!(ldrs[cnts].mask & maskz))
-            continue;
-        fmtz = ((load_fmtz_t)(ldrs[cnts].func))(datin, param);
-        if (fmtz != NULL) {
-            param->nprm = (void_t*)(ldrs[cnts].func);   /* 设置匹配项 */
-            return (fmtz);
-        }
-
-        /* 定位到初始位置 */
-        if (!CR_VCALL(datin)->seek(datin, back, SEEK_SET)) {
-            err_set(__CR_FMTLIB_C__, FALSE,
-                    "fmtz_load()", "iDATIN::seek() failure");
-            return (NULL);
-        }
-    }
-    param->nprm = NULL;     /* 无匹配项, 设为 NULL */
-    return (NULL);
+_func_out:
+    CR_VCALL(datin)->release(datin);
+    return (fmtz);
 }
 
 /*
