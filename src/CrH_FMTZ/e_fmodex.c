@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-12-18  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-01-31  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -902,21 +902,9 @@ engine_fmodex_load (
   __CR_IO__ sLOADER*    loader
     )
 {
-    sFMTZ*  fmtz;
-
-    /* 过滤加载类型 */
     if (!(engine->mask & CR_FMTZ_MASK_XMM))
         return (NULL);
-
-    /* 让 FMODEx 自己去识别文件 */
-    fmtz = (sFMTZ*)load_fmodex(NULL, loader);
-    if (fmtz == NULL) {
-        err_set(__CR_E_FMODEX_C__, CR_NULL,
-                "engine_fmodex_load()", "load_fmodex() failure");
-        return (NULL);
-    }
-    loader->nprm = (void_t*)load_fmodex;
-    return (fmtz);
+    return ((sFMTZ*)load_fmodex(NULL, loader));
 }
 
 /*
@@ -943,7 +931,7 @@ engine_fmodex (void_t)
 {
     sENGINE*    engine;
 
-    engine = engine_init(NULL, NULL, 0);
+    engine = engine_init(NULL, NULL, NULL, NULL);
     if (engine == NULL) {
         err_set(__CR_E_FMODEX_C__, CR_NULL,
                 "engine_fmodex()", "engine_init() failure");

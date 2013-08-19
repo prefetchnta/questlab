@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-12-11  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-12-11  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -18,54 +18,62 @@
 /*****************************************************************************/
 
 #ifndef _CR_FMTZ_WIDE_
-    #define CR_STR  CR_AS
-    #define s_findx s_ansi
-    #define sMATCHx sMATCHa
+    #define CR_STR      CR_AS
+    #define s_findx     s_finda
+    #define s_loadx     s_loada
+    #define sMATCHx     sMATCHa
+    #define sTRY_LDRx   sTRY_LDRa
 #else
-    #define CR_STR  CR_WS
-    #ifndef _CR_NO_WIDE_
-        #define s_findx s_wide
-        #define sMATCHx sMATCHw
-    #else
-        #undef  s_findx
-    #endif
+#ifndef _CR_NO_WIDE_
+    #define CR_STR      CR_WS
+    #define s_findx     s_findw
+    #define s_loadx     s_loadw
+    #define sMATCHx     sMATCHw
+    #define sTRY_LDRx   sTRY_LDRw
+#endif
 #endif
 
-/* 引擎的匹配表 */
+/* 文件名匹配表 */
 #if !defined(s_findx)
-    #define s_wide  NULL
+    #define s_findw NULL
 #else
 static const sMATCHx _rom_ s_findx[] =
 {
     {
         CR_FMTZ_MASK_PIC,
-        CR_STR("*.argb"), CR_STR(".argb"),
+        NULL, CR_STR(".argb"),
         CR_VFUNC(load_syn_argb)
     },
 #if defined(_CR_HAVE_PAK_GCA_)
     {
         CR_FMTZ_MASK_PAK,
-        CR_STR("*.gca"), CR_STR(".gca"),
+        NULL, CR_STR(".gca"),
         CR_VFUNC(load_syn_gca)
     },
 #endif
+    { 0, NULL, NULL, NULL },
 };
 #endif  /* !s_findx */
 
-/* 引擎的接口表 */
-#if !defined(_CR_FMTZ_WIDE_)
-static const sTRY_LDR _rom_ s_load[] =
+/* 接口的尝试表 */
+#if !defined(s_loadx)
+    #define s_loadw NULL
+#else
+static const sTRY_LDRx _rom_ s_loadx[] =
 {
-    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_syn_argb) },
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_syn_argb), NULL },
 #if defined(_CR_HAVE_PAK_GCA_)
-    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_syn_gca) },
+    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_syn_gca), NULL },
 #endif
+    { 0, NULL, NULL },
 };
-#endif  /* !_CR_FMTZ_WIDE_ */
+#endif  /* !s_loadx */
 
 #undef  CR_STR
 #undef  s_findx
+#undef  s_loadx
 #undef  sMATCHx
+#undef  sTRY_LDRx
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

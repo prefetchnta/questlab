@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-25  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-02-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -40,49 +40,10 @@ engine_crhack_load (
   __CR_IO__ sLOADER*    loader
     )
 {
-    sFMTZ*  fmtz;
-    iDATIN* datin;
-
-    /* 过滤加载类型 */
     if (!(engine->mask & CR_FMTZ_MASK_PAK) &&
         !(engine->mask & CR_FMTZ_MASK_PIC))
         return (NULL);
-
-    /* 生成读取接口 */
-    datin = create_file_inX(loader);
-    if (datin == NULL) {
-        err_set(__CR_E_HACK_C__, CR_NULL,
-                "engine_crhack_load()", "create_file_inX() failure");
-        return (NULL);
-    }
-
-    /* 查找匹配 */
-    fmtz_find(engine, loader);
-
-    /* 已有匹配则直接使用 */
-    if (loader->nprm != NULL) {
-        fmtz = ((load_fmtz_t)(loader->nprm))(datin, loader);
-        if (fmtz != NULL)
-            goto _func_out;
-        loader->nprm = NULL;
-
-        /* 返回文件的头部 */
-        if (!CR_VCALL(datin)->seek(datin, 0, SEEK_SET)) {
-            err_set(__CR_E_HACK_C__, FALSE,
-                    "engine_crhack_load()", "iDATIN::seek() failure");
-            goto _func_out;
-        }
-    }
-
-    /* 否则逐个调用识别格式 */
-    fmtz = fmtz_load(datin, s_load, cntsof(s_load),
-                     loader, engine->mask);
-    if (fmtz == NULL)
-        err_set(__CR_E_HACK_C__, CR_NULL,
-                "engine_crhack_load()", "fmtz_load() failure");
-_func_out:
-    CR_VCALL(datin)->release(datin);
-    return (fmtz);
+    return (fmtz_find(engine, loader));
 }
 
 /*
@@ -95,7 +56,7 @@ engine_crhack (void_t)
 {
     sENGINE*    engine;
 
-    engine = engine_init(s_ansi, s_wide, cntsof(s_ansi));
+    engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
     if (engine == NULL) {
         err_set(__CR_E_HACK_C__, CR_NULL,
                 "engine_crhack()", "engine_init() failure");

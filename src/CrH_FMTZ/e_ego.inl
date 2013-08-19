@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-05-08  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -18,22 +18,24 @@
 /*****************************************************************************/
 
 #ifndef _CR_FMTZ_WIDE_
-    #define CR_STR  CR_AS
-    #define s_findx s_ansi
-    #define sMATCHx sMATCHa
+    #define CR_STR      CR_AS
+    #define s_findx     s_finda
+    #define s_loadx     s_loada
+    #define sMATCHx     sMATCHa
+    #define sTRY_LDRx   sTRY_LDRa
 #else
-    #define CR_STR  CR_WS
-    #ifndef _CR_NO_WIDE_
-        #define s_findx s_wide
-        #define sMATCHx sMATCHw
-    #else
-        #undef  s_findx
-    #endif
+#ifndef _CR_NO_WIDE_
+    #define CR_STR      CR_WS
+    #define s_findx     s_findw
+    #define s_loadx     s_loadw
+    #define sMATCHx     sMATCHw
+    #define sTRY_LDRx   sTRY_LDRw
+#endif
 #endif
 
-/* 引擎的匹配表 */
+/* 文件名匹配表 */
 #if !defined(s_findx)
-    #define s_wide  NULL
+    #define s_findw NULL
 #else
 static const sMATCHx _rom_ s_findx[] =
 {
@@ -42,12 +44,25 @@ static const sMATCHx _rom_ s_findx[] =
         CR_STR("game??.dat"), CR_STR(".dat"),
         CR_VFUNC(load_ego_gdat)
     },
+    { 0, NULL, NULL, NULL },
 };
 #endif  /* !s_findx */
 
+/* 接口的尝试表 */
+#if !defined(s_loadx)
+    #define s_loadw NULL
+#else
+static const sTRY_LDRx _rom_ s_loadx[] =
+{
+    { 0, NULL, NULL },
+};
+#endif  /* !s_loadx */
+
 #undef  CR_STR
 #undef  s_findx
+#undef  s_loadx
 #undef  sMATCHx
+#undef  sTRY_LDRx
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

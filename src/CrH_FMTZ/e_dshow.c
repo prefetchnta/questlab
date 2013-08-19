@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-12-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2012-12-23  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -453,21 +453,9 @@ engine_dshow_load (
   __CR_IO__ sLOADER*    loader
     )
 {
-    sFMTZ*  fmtz;
-
-    /* 过滤加载类型 */
     if (!(engine->mask & CR_FMTZ_MASK_XMM))
         return (NULL);
-
-    /* 让 DirectShow 自己去识别文件 */
-    fmtz = (sFMTZ*)load_dshow(NULL, loader);
-    if (fmtz == NULL) {
-        err_set(__CR_E_DSHOW_C__, CR_NULL,
-                "engine_dshow_load()", "load_dshow() failure");
-        return (NULL);
-    }
-    loader->nprm = (void_t*)load_dshow;
-    return (fmtz);
+    return ((sFMTZ*)load_dshow(NULL, loader));
 }
 
 /*
@@ -494,7 +482,7 @@ engine_dshow (void_t)
 {
     sENGINE*    engine;
 
-    engine = engine_init(NULL, NULL, 0);
+    engine = engine_init(NULL, NULL, NULL, NULL);
     if (engine == NULL) {
         err_set(__CR_E_DSHOW_C__, CR_NULL,
                 "engine_dshow()", "engine_init() failure");

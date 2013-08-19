@@ -172,7 +172,7 @@ typedef struct _sENGINE
         int32u          mask;   /* 期望结果的格式, 默认所有 */
         const ansi_t*   info;   /* 引擎模块的说明文字 */
 
-        /* 格式加载调用接口 (匹配项放在 loader->nprm 里) */
+        /* 格式加载调用接口 (外部文件加载接口放在 loader->nprm 里) */
         sFMTZ*  (*fmtz_load) (struct _sENGINE *engine, sLOADER *loader);
 
         /* 释放引擎插件内部数据的回调 */

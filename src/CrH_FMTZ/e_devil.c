@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-01-01  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -1381,32 +1381,9 @@ engine_devil_load (
   __CR_IO__ sLOADER*    loader
     )
 {
-    sFMTZ*  fmtz;
-
-    /* 过滤加载类型 */
     if (!(engine->mask & CR_FMTZ_MASK_PIC))
         return (NULL);
-
-    /* 查找匹配 */
-    fmtz_find(engine, loader);
-
-    /* 已有匹配则直接使用 */
-    if (loader->nprm != NULL) {
-        fmtz = ((load_fmtz_t)(loader->nprm))(NULL, loader);
-        if (fmtz != NULL)
-            return (fmtz);
-        loader->nprm = NULL;
-    }
-
-    /* 使用自动识别的接口 */
-    fmtz = (sFMTZ*)load_il_auto(NULL, loader);
-    if (fmtz == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "engine_devil_load()", "load_il_auto() failure");
-        return (NULL);
-    }
-    loader->nprm = (void_t*)load_il_auto;
-    return (fmtz);
+    return (fmtz_find(engine, loader));
 }
 
 /*
@@ -1433,7 +1410,7 @@ engine_devil (void_t)
 {
     sENGINE*    engine;
 
-    engine = engine_init(s_ansi, s_wide, cntsof(s_ansi));
+    engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
     if (engine == NULL) {
         err_set(__CR_E_DEVIL_C__, CR_NULL,
                 "engine_devil()", "engine_init() failure");

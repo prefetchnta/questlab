@@ -121,24 +121,24 @@ engine_init (
     struct_zero(engine, sENGINE_INT);
 
     /* 生成两个哈希表并注册文件类型匹配 */
-    if (!curtain_initT(&engine->m_finda, sMATCHa, 0, 0)) {
-        err_set(__CR_FMTLIB_C__, FALSE,
-                "engine_init()", "curtain_initT() failure");
-        goto _failure1;
-    }
-    engine->m_finda.find = match_findA;
-
-    while (finda->loader != NULL) {
-        if (curtain_insertT(&engine->m_finda, sMATCHa,
-                            finda->filext, finda) == NULL) {
-            err_set(__CR_FMTLIB_C__, CR_NULL,
-                    "engine_init()", "curtain_insertT() failure");
-            goto _failure2;
+    if (finda != NULL) {
+        if (!curtain_initT(&engine->m_finda, sMATCHa, 0, 0)) {
+            err_set(__CR_FMTLIB_C__, FALSE,
+                    "engine_init()", "curtain_initT() failure");
+            goto _failure1;
         }
-        finda++;
-    }
+        engine->m_finda.find = match_findA;
 
-    /* 宽字符版本可选 (有可能编译器不支持) */
+        while (finda->loader != NULL) {
+            if (curtain_insertT(&engine->m_finda, sMATCHa,
+                                finda->filext, finda) == NULL) {
+                err_set(__CR_FMTLIB_C__, CR_NULL,
+                        "engine_init()", "curtain_insertT() failure");
+                goto _failure2;
+            }
+            finda++;
+        }
+    }
     if (findw != NULL) {
         if (!curtain_initT(&engine->m_findw, sMATCHw, 0, 0)) {
             err_set(__CR_FMTLIB_C__, FALSE,
@@ -207,6 +207,8 @@ fmtz_find (
 
     /* 单字节匹配优先 */
     if (loader->name.ansi != NULL) {
+        if (real->m_finda.__list__ == NULL)
+            goto _func_out;
         name_a = str_dupA(loader->name.ansi);
         if (name_a == NULL) {
             err_set(__CR_FMTLIB_C__, CR_NULL,

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-12-11  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-12  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -18,73 +18,81 @@
 /*****************************************************************************/
 
 #ifndef _CR_FMTZ_WIDE_
-    #define CR_STR  CR_AS
-    #define s_findx s_ansi
-    #define sMATCHx sMATCHa
+    #define CR_STR      CR_AS
+    #define s_findx     s_finda
+    #define s_loadx     s_loada
+    #define sMATCHx     sMATCHa
+    #define sTRY_LDRx   sTRY_LDRa
 #else
-    #define CR_STR  CR_WS
-    #ifndef _CR_NO_WIDE_
-        #define s_findx s_wide
-        #define sMATCHx sMATCHw
-    #else
-        #undef  s_findx
-    #endif
+#ifndef _CR_NO_WIDE_
+    #define CR_STR      CR_WS
+    #define s_findx     s_findw
+    #define s_loadx     s_loadw
+    #define sMATCHx     sMATCHw
+    #define sTRY_LDRx   sTRY_LDRw
+#endif
 #endif
 
-/* 引擎的匹配表 */
+/* 文件名匹配表 */
 #if !defined(s_findx)
-    #define s_wide  NULL
+    #define s_findw NULL
 #else
 static const sMATCHx _rom_ s_findx[] =
 {
     {
         CR_FMTZ_MASK_PIC,
-        CR_STR("*.bmp"), CR_STR(".bmp"),
+        NULL, CR_STR(".bmp"),
         CR_VFUNC(load_cr_bmp)
     },
     {
         CR_FMTZ_MASK_PIC,
-        CR_STR("*.dds"), CR_STR(".dds"),
+        NULL, CR_STR(".dds"),
         CR_VFUNC(load_cr_dds)
     },
     {
         CR_FMTZ_MASK_PIC,
-        CR_STR("*.pcx"), CR_STR(".pcx"),
+        NULL, CR_STR(".pcx"),
         CR_VFUNC(load_cr_pcx)
     },
     {
         CR_FMTZ_MASK_PIC,
-        CR_STR("*.png"), CR_STR(".png"),
+        NULL, CR_STR(".png"),
         CR_VFUNC(load_cr_png)
     },
     {
         CR_FMTZ_MASK_PIC,
-        CR_STR("*.tga"), CR_STR(".tga"),
+        NULL, CR_STR(".tga"),
         CR_VFUNC(load_cr_tga)
     },
     {
         CR_FMTZ_MASK_PAK,
-        CR_STR("*.zip"), CR_STR(".zip"),
+        NULL, CR_STR(".zip"),
         CR_VFUNC(load_cr_zip)
     },
+    { 0, NULL, NULL, NULL },
 };
 #endif  /* !s_findx */
 
-/* 引擎的接口表 */
-#if !defined(_CR_FMTZ_WIDE_)
-static const sTRY_LDR _rom_ s_load[] =
+/* 接口的尝试表 */
+#if !defined(s_loadx)
+    #define s_loadw NULL
+#else
+static const sTRY_LDRx _rom_ s_loadx[] =
 {
-    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_bmp) },
-    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_png) },
-    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_cr_zip) },
-    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_dds) },
-    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_pcx) },
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_bmp), NULL },
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_png), NULL },
+    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_cr_zip), NULL },
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_dds), NULL },
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_cr_pcx), NULL },
+    { 0, NULL, NULL },
 };
-#endif  /* !_CR_FMTZ_WIDE_ */
+#endif  /* !s_loadx */
 
 #undef  CR_STR
 #undef  s_findx
+#undef  s_loadx
 #undef  sMATCHx
+#undef  sTRY_LDRx
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
