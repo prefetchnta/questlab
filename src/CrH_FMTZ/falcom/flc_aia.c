@@ -264,7 +264,6 @@ load_flc_aia (
                 "load_flc_aia()", "mem_talloc32() failure");
         return (NULL);
     }
-    cnt = head.img_num;
     size = (leng_t)head.img_num;
     size *= sizeof(sAIA_IDX);
     read = CR_VCALL(datin)->read(datin, attr, size);
@@ -272,6 +271,28 @@ load_flc_aia (
         err_set(__CR_FLC_AIA_C__, read,
                 "load_flc_aia()", "iDATIN::read() failure");
         goto _failure1;
+    }
+
+    /* 获取图片统一宽高 */
+    ww = WORD_LE(head.width);
+    hh = WORD_LE(head.height);
+
+    /* 统计真正有图像的帧数 */
+    for (cnt = idx = 0; idx < head.img_num; idx++) {
+        attr[idx].x1 = WORD_LE(attr[idx].x1);
+        attr[idx].y1 = WORD_LE(attr[idx].y1);
+        attr[idx].x2 = WORD_LE(attr[idx].x2);
+        attr[idx].y2 = WORD_LE(attr[idx].y2);
+        if ((uint_t)attr[idx].x2 > ww ||
+            (uint_t)attr[idx].y2 > hh ||
+            attr[idx].x1 >= attr[idx].x2 ||
+            attr[idx].y1 >= attr[idx].y2) {
+            attr[idx].x2 = attr[idx].y2 = 0;
+            continue;
+        }
+        attr[idx].x2 = attr[idx].x2 - attr[idx].x1;
+        attr[idx].y2 = attr[idx].y2 - attr[idx].y1;
+        cnt += 1;
     }
 
     /* 读取所有调色板数据 */
@@ -309,10 +330,6 @@ load_flc_aia (
         goto _failure3;
     }
 
-    /* 获取图片宽高 */
-    ww = WORD_LE(head.width);
-    hh = WORD_LE(head.height);
-
     /* 分配图片列表 */
     list = mem_talloc32(cnt, sFMT_FRAME);
     if (list == NULL) {
@@ -324,63 +341,55 @@ load_flc_aia (
     mem_tzero(list, cnt, sFMT_FRAME);
 
     /* 逐帧加载图片数据 */
-    for (idx = 0; idx < cnt; idx++)
+    for (cnt = idx = 0; idx < head.img_num; idx++)
     {
-        /* 生成图片对象 */
-        list[idx].fmt = CR_PIC_ARGB;
-        list[idx].bpp = 32;
-        list[idx].clr = "ARGB";
-        list[idx].wh[0] = 8;
-        list[idx].wh[1] = 8;
-        list[idx].wh[2] = 8;
-        list[idx].wh[3] = 8;
-        list[idx].pic = image_new(0, 0, ww, hh, CR_ARGB8888, FALSE, 4);
-        if (list[idx].pic == NULL) {
-            err_set(__CR_FLC_AIA_C__, CR_NULL,
-                    "load_flc_aia()", "image_new() failure");
-            goto _failure4;
-        }
-        mem_zero(list[idx].pic->data, list[idx].pic->size);
-
-        /* 非法的坐标表示空帧 */
-        attr[idx].x1 = WORD_LE(attr[idx].x1);
-        attr[idx].y1 = WORD_LE(attr[idx].y1);
-        attr[idx].x2 = WORD_LE(attr[idx].x2);
-        attr[idx].y2 = WORD_LE(attr[idx].y2);
-        if ((uint_t)attr[idx].x2 > ww ||
-            (uint_t)attr[idx].y2 > hh ||
-            attr[idx].x1 >= attr[idx].x2 ||
-            attr[idx].y1 >= attr[idx].y2)
+        /* 跳过废帧 (请自己定义帧序号) */
+        if (attr[idx].x2 == 0 || attr[idx].y2 == 0)
             continue;
-        attr[idx].x2 = attr[idx].x2 - attr[idx].x1;
-        attr[idx].y2 = attr[idx].y2 - attr[idx].y1;
 
-        /* 先安全检查再解码图形数据 */
+        /* 安全检查 */
         attr[idx].offset = DWORD_LE(attr[idx].offset);
         if (attr[idx].offset >= head.img_size) {
             err_set(__CR_FLC_AIA_C__, attr[idx].offset,
                     "load_flc_aia()", "invalid AIA format");
-            image_del(list[idx].pic);
             goto _failure4;
         }
         attr[idx].pal_idx = WORD_LE(attr[idx].pal_idx);
         if ((int32u)attr[idx].pal_idx >= head.pal_num) {
             err_set(__CR_FLC_AIA_C__, attr[idx].pal_idx,
                     "load_flc_aia()", "invalid AIA format");
-            image_del(list[idx].pic);
             goto _failure4;
         }
-        read = attr[idx].pal_idx;
-        dst_ptr = (int32u*)(list[idx].pic->data);
+
+        /* 生成图片对象 */
+        list[cnt].fmt = CR_PIC_ARGB;
+        list[cnt].bpp = 32;
+        list[cnt].clr = "ARGB";
+        list[cnt].wh[0] = 8;
+        list[cnt].wh[1] = 8;
+        list[cnt].wh[2] = 8;
+        list[cnt].wh[3] = 8;
+        list[cnt].pic = image_new(0, 0, ww, hh, CR_ARGB8888, FALSE, 4);
+        if (list[cnt].pic == NULL) {
+            err_set(__CR_FLC_AIA_C__, CR_NULL,
+                    "load_flc_aia()", "image_new() failure");
+            goto _failure4;
+        }
+        mem_zero(list[cnt].pic->data, list[cnt].pic->size);
+
+        /* 解码图形数据 */
+        read = (leng_t)attr[idx].pal_idx;
+        dst_ptr = (int32u*)(list[cnt].pic->data);
         if (!decode_aia(dst_ptr + attr[idx].y1 * size + attr[idx].x1,
                 &dats[attr[idx].offset], head.img_size - attr[idx].offset,
                 &(((int32u*)pals)[read * 256]), attr[idx].x2, attr[idx].y2,
                                 ww - attr[idx].x2)) {
             err_set(__CR_FLC_AIA_C__, FALSE,
                     "load_flc_aia()", "decode_aia() failure");
-            image_del(list[idx].pic);
+            image_del(list[cnt].pic);
             goto _failure4;
         }
+        cnt += 1;
     }
 
     /* 返回读取的文件数据 */
@@ -401,8 +410,8 @@ load_flc_aia (
     return (rett);
 
 _failure4:
-    for (cnt = 0; cnt < idx; cnt++)
-        image_del(list[cnt].pic);
+    for (idx = 0; idx < cnt; idx++)
+        image_del(list[idx].pic);
     mem_free(list);
 _failure3:
     mem_free(dats);
