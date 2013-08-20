@@ -81,6 +81,7 @@
 ##zFALCOM (VS2010 SP1)
 
 <p>支持加载 <b>FALCOM</b> 公司开发的游戏里的几种专用的文件格式：</p>
+ - FALCOM YS AIA Image File (\*.AIA)
  - FALCOM YS NNK Archive (\*.NI + \*.NA)
  - FALCOM ZLib Compressed file (\*.Z)
 
