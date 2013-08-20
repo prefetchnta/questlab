@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-13  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-20  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -36,12 +36,13 @@
 ---------------------------------------
 */
 static sFMTZ*
-engine_flcm_load (
+engine_flc_load (
   __CR_IN__ sENGINE*    engine,
   __CR_IO__ sLOADER*    loader
     )
 {
     if (!(engine->mask & CR_FMTZ_MASK_PAK) &&
+        !(engine->mask & CR_FMTZ_MASK_PIC) &&
         !(engine->mask & CR_FMTZ_MASK_DAT))
         return (NULL);
     return (fmtz_find(engine, loader));
@@ -63,7 +64,7 @@ engine_falcom (void_t)
                 "engine_falcom()", "engine_init() failure");
         return (NULL);
     }
-    engine->fmtz_load = engine_flcm_load;
+    engine->fmtz_load = engine_flc_load;
     engine->info = "FALCOM FMTz Engine (Done by CrHackOS)";
     return (engine);
 }

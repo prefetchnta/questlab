@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-13  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-20  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -40,6 +40,16 @@
 static const sMATCHx _rom_ s_findx[] =
 {
     {
+        CR_FMTZ_MASK_PIC,
+        NULL, CR_STR(".aia"),
+        CR_VFUNC(load_flc_aia)
+    },
+    {
+        CR_FMTZ_MASK_PIC,
+        CR_STR("*.aia.z"), CR_STR(".z"),
+        CR_VFUNC(load_flc_aia)
+    },
+    {
         CR_FMTZ_MASK_PAK,
         NULL, CR_STR(".na"),
         CR_VFUNC(load_flc_nnk)
@@ -59,6 +69,7 @@ static const sMATCHx _rom_ s_findx[] =
 #else
 static const sTRY_LDRx _rom_ s_loadx[] =
 {
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_flc_aia), NULL },
     { 0, NULL, NULL },
 };
 #endif  /* !s_loadx */

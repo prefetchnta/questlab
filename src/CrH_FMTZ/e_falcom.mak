@@ -4,12 +4,14 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)fmtz.$(O) \
+         .$(L)flc_aia.$(O) \
          .$(L)flc_nnk.$(O) \
          .$(L)flc_zed.$(O) \
          .$(L)e_falcom.$(O)
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)e_falcom.$(C) \
+         .$(L)falcom$(L)flc_aia.$(C) \
          .$(L)falcom$(L)flc_nnk.$(C) \
          .$(L)falcom$(L)flc_zed.$(C)
 
