@@ -20,6 +20,7 @@
 #ifndef __CR_FLC_AIA_C__
 #define __CR_FLC_AIA_C__ 0x3367C9E0UL
 
+#include "strlib.h"
 #include "fmtz/falcom.h"
 
 /*
@@ -197,12 +198,153 @@ CR_TYPEDEF struct
     #pragma pack (pop)
 #endif
 
+/* 接口内部数据结构 */
+typedef struct
+{
+        /* 通用部分 */
+        iPICTURE    pics;
+
+        /* 个性部分 */
+        uint_t      m_ww;
+        uint_t      m_hh;
+        int32u      m_size;
+        int32u*     m_pals;
+        byte_t*     m_dats;
+        sAIA_IDX*   m_attr;
+
+} iPIC_AIA;
+
+/*
+---------------------------------------
+    释放接口
+---------------------------------------
+*/
+static void_t
+iPIC_AIA_release (
+  __CR_IN__ iPICTURE*   that
+    )
+{
+    iPIC_AIA*   real;
+
+    real = (iPIC_AIA*)that;
+    mem_free(real->m_dats);
+    mem_free(real->m_pals);
+    mem_free(real->m_attr);
+    mem_free(that);
+}
+
+/*
+---------------------------------------
+    扩展接口
+---------------------------------------
+*/
+static void_t*
+iPIC_AIA_getMore (
+  __CR_IN__ iPICTURE*   that,
+  __CR_IN__ port_t      iid
+    )
+{
+    /* 判断一下名称 */
+    if (str_cmpA(iid, "iPICTURE::YS_AIA") != 0)
+        return (NULL);
+    return ((void_t*)that);
+}
+
+/*
+---------------------------------------
+    获取图片帧
+---------------------------------------
+*/
+static sFMT_PIC*
+iPIC_AIA_get (
+  __CR_IN__ iPICTURE*   that,
+  __CR_IN__ int32u      index
+    )
+{
+    leng_t      bpln;
+    leng_t      paln;
+    int32u*     dest;
+    iPIC_AIA*   real;
+    sFMT_PIC*   rett;
+    sAIA_IDX*   attr;
+    sFMT_FRAME  temp;
+
+    /* 帧号过滤 */
+    if (index >= that->__count__) {
+        err_set(__CR_FLC_AIA_C__, index,
+                "iPICTURE::get()", "index: out of bounds");
+        return (NULL);
+    }
+
+    /* 生成图片对象 */
+    real = (iPIC_AIA*)that;
+    mem_zero(temp.wh, sizeof(temp.wh));
+    temp.fmt = CR_PIC_ARGB;
+    temp.bpp = 32;
+    temp.clr = "ARGB";
+    temp.wh[0] = 8;
+    temp.wh[1] = 8;
+    temp.wh[2] = 8;
+    temp.wh[3] = 8;
+    temp.pic = image_new(0, 0, real->m_ww, real->m_hh,
+                         CR_ARGB8888, FALSE, 4);
+    if (temp.pic == NULL) {
+        err_set(__CR_FLC_AIA_C__, CR_NULL,
+                "iPICTURE::get()", "image_new() failure");
+        return (NULL);
+    }
+    mem_zero(temp.pic->data, temp.pic->size);
+
+    /* 解码图形数据 */
+    attr = &real->m_attr[index];
+    bpln = (leng_t)real->m_ww;
+    paln = (leng_t)attr->pal_idx;
+    dest = (int32u*)(temp.pic->data);
+    dest += attr->y1 * bpln + attr->x1;
+    if (!decode_aia(dest, &real->m_dats[attr->offset],
+            real->m_size - attr->offset, &real->m_pals[paln * 256],
+                attr->x2, attr->y2, real->m_ww - attr->x2)) {
+        err_set(__CR_FLC_AIA_C__, FALSE,
+                "iPICTURE::get()", "decode_aia() failure");
+        goto _failure;
+    }
+
+    /* 返回读取的文件数据 */
+    rett = struct_new(sFMT_PIC);
+    if (rett == NULL) {
+        err_set(__CR_FLC_AIA_C__, CR_NULL,
+                "iPICTURE::get()", "struct_new() failure");
+        goto _failure;
+    }
+    rett->frame = struct_dup(&temp, sFMT_FRAME);
+    if (rett->frame == NULL) {
+        err_set(__CR_FLC_AIA_C__, CR_NULL,
+                "iPICTURE::get()", "struct_dup() failure");
+        mem_free(rett);
+        goto _failure;
+    }
+    rett->type = CR_FMTZ_PIC;
+    rett->count = 1;
+    rett->infor = "FALCOM YS AIA Image File (*.AIA)";
+    return (rett);
+
+_failure:
+    image_del(temp.pic);
+    return (NULL);
+}
+
+/* 接口虚函数表 */
+static const iPICTURE_vtbl _rom_ s_pics_vtbl =
+{
+    iPIC_AIA_release, iPIC_AIA_getMore, iPIC_AIA_get,
+};
+
 /*
 =======================================
     FALCOM AIA 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMT_PRT*
 load_flc_aia (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -213,14 +355,13 @@ load_flc_aia (
     byte_t* pals;
     byte_t* dats;
     uint_t  ww, hh;
-    int32u* dst_ptr;
     int32u  idx, cnt;
     /* ----------- */
     fdist_t     offs;
     sAIA_HDR    head;
     sAIA_IDX*   attr;
-    sFMT_PIC*   rett;
-    sFMT_FRAME* list;
+    sFMT_PRT*   rett;
+    iPIC_AIA*   port;
 
     /* 这个参数可能为空 */
     if (datin == NULL) {
@@ -256,7 +397,7 @@ load_flc_aia (
         return (NULL);
     }
 
-    /* 跳过未知数据 */
+    /* 定位到已知数据区域 */
     if (!CR_VCALL(datin)->seek(datin, offs, SEEK_SET)) {
         err_set(__CR_FLC_AIA_C__, FALSE,
                 "load_flc_aia()", "iDATIN::seek() failure");
@@ -271,39 +412,59 @@ load_flc_aia (
                 "load_flc_aia()", "mem_talloc32() failure");
         return (NULL);
     }
-    size = (leng_t)head.img_num;
-    size *= sizeof(sAIA_IDX);
-    read = CR_VCALL(datin)->read(datin, attr, size);
-    if (read != size) {
-        err_set(__CR_FLC_AIA_C__, read,
-                "load_flc_aia()", "iDATIN::read() failure");
-        goto _failure1;
-    }
 
-    /* 获取图片统一宽高 */
+    /* 准备好一些属性值 */
     ww = WORD_LE(head.width);
     hh = WORD_LE(head.height);
+    head.pal_num  = DWORD_LE(head.pal_num);
+    head.img_size = DWORD_LE(head.img_size);
 
-    /* 统计真正有图像的帧数 */
+    /* 逐个读入有效的帧属性 */
     for (cnt = idx = 0; idx < head.img_num; idx++) {
-        attr[idx].x1 = WORD_LE(attr[idx].x1);
-        attr[idx].y1 = WORD_LE(attr[idx].y1);
-        attr[idx].x2 = WORD_LE(attr[idx].x2);
-        attr[idx].y2 = WORD_LE(attr[idx].y2);
-        if ((uint_t)attr[idx].x2 > ww ||
-            (uint_t)attr[idx].y2 > hh ||
-            attr[idx].x1 >= attr[idx].x2 ||
-            attr[idx].y1 >= attr[idx].y2) {
-            attr[idx].x2 = attr[idx].y2 = 0;
-            continue;
+        read = CR_VCALL(datin)->read(datin, &attr[cnt], sizeof(sAIA_IDX));
+        if (read != sizeof(sAIA_IDX)) {
+            err_set(__CR_FLC_AIA_C__, read,
+                    "load_flc_aia()", "iDATIN::read() failure");
+            goto _failure1;
         }
-        attr[idx].x2 = attr[idx].x2 - attr[idx].x1;
-        attr[idx].y2 = attr[idx].y2 - attr[idx].y1;
+
+        /* 提前安全检查 */
+        attr[cnt].offset = DWORD_LE(attr[cnt].offset);
+        if (attr[cnt].offset >= head.img_size) {
+            err_set(__CR_FLC_AIA_C__, attr[cnt].offset,
+                    "load_flc_aia()", "invalid AIA format");
+            goto _failure1;
+        }
+        attr[cnt].pal_idx = WORD_LE(attr[cnt].pal_idx);
+        if ((int32u)attr[cnt].pal_idx >= head.pal_num) {
+            err_set(__CR_FLC_AIA_C__, attr[cnt].pal_idx,
+                    "load_flc_aia()", "invalid AIA format");
+            goto _failure1;
+        }
+
+        /* 跳过废帧 (请自己定义帧序号) */
+        attr[cnt].x1 = WORD_LE(attr[cnt].x1);
+        attr[cnt].y1 = WORD_LE(attr[cnt].y1);
+        attr[cnt].x2 = WORD_LE(attr[cnt].x2);
+        attr[cnt].y2 = WORD_LE(attr[cnt].y2);
+        if ((uint_t)attr[cnt].x2 > ww ||
+            (uint_t)attr[cnt].y2 > hh ||
+            attr[cnt].x1 >= attr[cnt].x2 ||
+            attr[cnt].y1 >= attr[cnt].y2)
+            continue;
+        attr[cnt].x2 = attr[cnt].x2 - attr[cnt].x1;
+        attr[cnt].y2 = attr[cnt].y2 - attr[cnt].y1;
         cnt += 1;
     }
 
+    /* 空图片检查 */
+    if (cnt == 0) {
+        err_set(__CR_FLC_AIA_C__, cnt,
+                "load_flc_aia()", "invalid AIA format");
+        goto _failure1;
+    }
+
     /* 读取所有调色板数据 */
-    head.pal_num = DWORD_LE(head.pal_num);
     pals = (byte_t*)mem_calloc32(head.pal_num, 1024);
     if (pals == NULL) {
         err_set(__CR_FLC_AIA_C__, CR_NULL,
@@ -322,7 +483,6 @@ load_flc_aia (
         pals[read + 3] = 0xFF;
 
     /* 读取所有图形数据 */
-    head.img_size = DWORD_LE(head.img_size);
     dats = (byte_t*)mem_malloc32(head.img_size);
     if (dats == NULL) {
         err_set(__CR_FLC_AIA_C__, CR_NULL,
@@ -337,89 +497,37 @@ load_flc_aia (
         goto _failure3;
     }
 
-    /* 分配图片列表 */
-    list = mem_talloc32(cnt, sFMT_FRAME);
-    if (list == NULL) {
+    /* 生成多帧图片接口对象 */
+    port = struct_new(iPIC_AIA);
+    if (port == NULL) {
         err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "load_flc_aia()", "mem_talloc32() failure");
+                "load_flc_aia()", "struct_new() failure");
         goto _failure3;
     }
-    size = (leng_t)ww;
-    mem_tzero(list, cnt, sFMT_FRAME);
-
-    /* 逐帧加载图片数据 */
-    for (cnt = idx = 0; idx < head.img_num; idx++)
-    {
-        /* 跳过废帧 (请自己定义帧序号) */
-        if (attr[idx].x2 == 0 || attr[idx].y2 == 0)
-            continue;
-
-        /* 安全检查 */
-        attr[idx].offset = DWORD_LE(attr[idx].offset);
-        if (attr[idx].offset >= head.img_size) {
-            err_set(__CR_FLC_AIA_C__, attr[idx].offset,
-                    "load_flc_aia()", "invalid AIA format");
-            goto _failure4;
-        }
-        attr[idx].pal_idx = WORD_LE(attr[idx].pal_idx);
-        if ((int32u)attr[idx].pal_idx >= head.pal_num) {
-            err_set(__CR_FLC_AIA_C__, attr[idx].pal_idx,
-                    "load_flc_aia()", "invalid AIA format");
-            goto _failure4;
-        }
-
-        /* 生成图片对象 */
-        list[cnt].fmt = CR_PIC_ARGB;
-        list[cnt].bpp = 32;
-        list[cnt].clr = "ARGB";
-        list[cnt].wh[0] = 8;
-        list[cnt].wh[1] = 8;
-        list[cnt].wh[2] = 8;
-        list[cnt].wh[3] = 8;
-        list[cnt].pic = image_new(0, 0, ww, hh, CR_ARGB8888, FALSE, 4);
-        if (list[cnt].pic == NULL) {
-            err_set(__CR_FLC_AIA_C__, CR_NULL,
-                    "load_flc_aia()", "image_new() failure");
-            goto _failure4;
-        }
-        mem_zero(list[cnt].pic->data, list[cnt].pic->size);
-
-        /* 解码图形数据 */
-        read = (leng_t)attr[idx].pal_idx;
-        dst_ptr = (int32u*)(list[cnt].pic->data);
-        if (!decode_aia(dst_ptr + attr[idx].y1 * size + attr[idx].x1,
-                &dats[attr[idx].offset], head.img_size - attr[idx].offset,
-                &(((int32u*)pals)[read * 256]), attr[idx].x2, attr[idx].y2,
-                                ww - attr[idx].x2)) {
-            err_set(__CR_FLC_AIA_C__, FALSE,
-                    "load_flc_aia()", "decode_aia() failure");
-            image_del(list[cnt].pic);
-            goto _failure4;
-        }
-        cnt += 1;
-    }
+    port->m_ww = ww;
+    port->m_hh = hh;
+    port->m_attr = attr;
+    port->m_dats = dats;
+    port->m_pals = (int32u*)pals;
+    port->m_size = head.img_size;
+    port->pics.__count__ = cnt;
+    port->pics.__vptr__ = &s_pics_vtbl;
 
     /* 返回读取的文件数据 */
-    rett = struct_new(sFMT_PIC);
+    rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
         err_set(__CR_FLC_AIA_C__, CR_NULL,
                 "load_flc_aia()", "struct_new() failure");
-        goto _failure4;
+        iPIC_AIA_release((iPICTURE*)port);
+        return (NULL);
     }
-    mem_free(dats);
-    mem_free(pals);
-    mem_free(attr);
     CR_NOUSE(param);
-    rett->type = CR_FMTZ_PIC;
-    rett->count = cnt;
-    rett->frame = list;
+    rett->type = CR_FMTZ_PRT;
+    rett->port = (iPORT*)port;
+    rett->more = "iPICTURE";
     rett->infor = "FALCOM YS AIA Image File (*.AIA)";
     return (rett);
 
-_failure4:
-    for (idx = 0; idx < cnt; idx++)
-        image_del(list[idx].pic);
-    mem_free(list);
 _failure3:
     mem_free(dats);
 _failure2:
