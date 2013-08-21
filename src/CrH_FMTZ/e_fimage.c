@@ -429,6 +429,7 @@ typedef struct
         iPICTURE    pics;
 
         /* 个性部分 */
+        void_t*         m_fdata;
         FIMEMORY*       m_memio;
         const ansi_t*   m_infor;
         FIMULTIBITMAP*  m_multi;
@@ -451,6 +452,7 @@ iPIC_FI_release (
     FreeImage_CloseMultiBitmap(real->m_multi, 0);
     if (real->m_memio != NULL)
         FreeImage_CloseMemory(real->m_memio);
+    TRY_FREE(real->m_fdata)
     mem_free(that);
 }
 
@@ -554,6 +556,7 @@ fimage_load (
     uint_t      cnts;
     uint_t      size;
     bool_t      okay;
+    void_t*     data;
     ansi_t*     path;
     iPIC_FI*    port;
     sFMT_PIC*   rets;
@@ -731,11 +734,13 @@ fimage_load (
     switch (loader->type)
     {
         case CR_LDR_ANSI:
+            data = NULL;
             multi = FreeImage_OpenMultiBitmap(format,
                         loader->name.ansi, FALSE, TRUE, FALSE, flags);
             break;
 
         case CR_LDR_WIDE:
+            data = NULL;
             path = utf16_to_local(CR_LOCAL, loader->name.wide);
             if (path == NULL) {
                 err_set(__CR_E_FIMAGE_C__, CR_NULL,
@@ -753,11 +758,17 @@ fimage_load (
                         "fimage_load()", "<loader->buff.size> truncated");
                 return (NULL);
             }
-            memio = FreeImage_OpenMemory((BYTE*)loader->buff.data, size);
+            data = mem_dup(loader->buff.data, loader->buff.size);
+            if (data == NULL) {
+                err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                        "fimage_load()", "mem_dup() failure");
+                return (NULL);
+            }
+            memio = FreeImage_OpenMemory((BYTE*)data, size);
             if (memio == NULL) {
                 err_set(__CR_E_FIMAGE_C__, CR_NULL,
                         "fimage_load()", "FreeImage_OpenMemory() failure");
-                return (NULL);
+                goto _failure1;
             }
             multi = FreeImage_LoadMultiBitmapFromMemory(format, memio, flags);
             break;
@@ -772,9 +783,7 @@ fimage_load (
     if (multi == NULL) {
         err_set(__CR_E_FIMAGE_C__, CR_NULL,
                 "fimage_load()", "invalid FreeImage format");
-        if (memio != NULL)
-            FreeImage_CloseMemory(memio);
-        return (NULL);
+        goto _failure2;
     }
 
     /* 单帧图片不使用流接口 */
@@ -784,13 +793,14 @@ fimage_load (
         if (image == NULL) {
             err_set(__CR_E_FIMAGE_C__, CR_NULL,
                     "fimage_load()", "FreeImage_LockPage() failure");
-            goto _failure;
+            goto _failure3;
         }
         okay = fimage_info(&temp, image);
         FreeImage_UnlockPage(multi, image, FALSE);
         FreeImage_CloseMultiBitmap(multi, 0);
         if (memio != NULL)
             FreeImage_CloseMemory(memio);
+        TRY_FREE(data)
         if (!okay) {
             err_set(__CR_E_FIMAGE_C__, FALSE,
                     "fimage_load()", "fimage_info() failure");
@@ -824,8 +834,9 @@ fimage_load (
     if (port == NULL) {
         err_set(__CR_E_FIMAGE_C__, CR_NULL,
                 "fimage_load()", "struct_new() failure");
-        goto _failure;
+        goto _failure3;
     }
+    port->m_fdata = data;
     port->m_memio = memio;
     port->m_infor = infor;
     port->m_multi = multi;
@@ -846,10 +857,13 @@ fimage_load (
     retm->infor = infor;
     return ((sFMTZ*)retm);
 
-_failure:
+_failure3:
     FreeImage_CloseMultiBitmap(multi, 0);
+_failure2:
     if (memio != NULL)
         FreeImage_CloseMemory(memio);
+_failure1:
+    TRY_FREE(data)
     return (NULL);
 }
 
