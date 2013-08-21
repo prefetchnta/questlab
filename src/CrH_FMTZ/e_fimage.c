@@ -565,7 +565,6 @@ fimage_load (
     /* ----------- */
     FIBITMAP*       image;
     FIMEMORY*       memio;
-    const ansi_t*   infor;
     FIMULTIBITMAP*  multi;
 
     /* 未知格式自动识别 */
@@ -638,8 +637,6 @@ fimage_load (
         if (format == FIF_JPEG)
             flags = JPEG_ACCURATE;
     }
-    memio = NULL;
-    infor = fimage_type(format);
 
     /* 加载确定的文件格式 */
     if (format != FIF_GIF && format != FIF_ICO &&
@@ -649,10 +646,12 @@ fimage_load (
         switch (loader->type)
         {
             case CR_LDR_ANSI:
+                memio = NULL;
                 image = FreeImage_Load(format, loader->name.ansi, flags);
                 break;
 
             case CR_LDR_WIDE:
+                memio = NULL;
 #ifndef _CR_OS_MSWIN_
                 path = utf16_to_local(CR_LOCAL, loader->name.wide);
                 if (path == NULL) {
@@ -726,7 +725,7 @@ fimage_load (
         }
         rets->type = CR_FMTZ_PIC;
         rets->count = 1;
-        rets->infor = infor;
+        rets->infor = fimage_type(format);
         return ((sFMTZ*)rets);
     }
 
@@ -735,12 +734,14 @@ fimage_load (
     {
         case CR_LDR_ANSI:
             data = NULL;
+            memio = NULL;
             multi = FreeImage_OpenMultiBitmap(format,
                         loader->name.ansi, FALSE, TRUE, FALSE, flags);
             break;
 
         case CR_LDR_WIDE:
             data = NULL;
+            memio = NULL;
             path = utf16_to_local(CR_LOCAL, loader->name.wide);
             if (path == NULL) {
                 err_set(__CR_E_FIMAGE_C__, CR_NULL,
@@ -825,7 +826,7 @@ fimage_load (
         }
         rets->type = CR_FMTZ_PIC;
         rets->count = 1;
-        rets->infor = infor;
+        rets->infor = fimage_type(format);
         return ((sFMTZ*)rets);
     }
 
@@ -838,8 +839,8 @@ fimage_load (
     }
     port->m_fdata = data;
     port->m_memio = memio;
-    port->m_infor = infor;
     port->m_multi = multi;
+    port->m_infor = fimage_type(format);
     port->pics.__count__ = cnts;
     port->pics.__vptr__ = &s_pics_vtbl;
 
@@ -854,7 +855,7 @@ fimage_load (
     retm->type = CR_FMTZ_PRT;
     retm->port = (iPORT*)port;
     retm->more = "iPICTURE";
-    retm->infor = infor;
+    retm->infor = port->m_infor;
     return ((sFMTZ*)retm);
 
 _failure3:
