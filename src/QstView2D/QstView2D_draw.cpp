@@ -127,7 +127,8 @@ qst_send_image (
 
     /* 检查分量的有效性 */
     cnts = str_lenA(pict->clr);
-    if (cnts > 5) cnts = 5;
+    if (cnts > sizeof(pict->wh))
+        cnts = sizeof(pict->wh);
     for (idx = 0; idx < cnts; idx++) {
         if (pict->wh[idx] == 0)
             break;
