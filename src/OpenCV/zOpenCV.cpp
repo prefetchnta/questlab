@@ -27,6 +27,7 @@ opencv_info (
     frame->pic = ilab_ipl2img_dup(image);
     if (frame->pic == NULL)
         return (FALSE);
+    mem_zero(frame->wh, sizeof(frame->wh));
     switch (frame->pic->fmt)
     {
         default:

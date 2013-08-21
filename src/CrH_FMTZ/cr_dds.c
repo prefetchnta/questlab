@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-12  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-21  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -161,7 +161,7 @@ load_cr_dds (
     }
 
     /* 判断图片像素格式 */
-    mem_zero(&temp.wh, sizeof(temp.wh));
+    mem_zero(temp.wh, sizeof(temp.wh));
     head.ddpf.dwRBitMask = DWORD_LE(head.ddpf.dwRBitMask);
     head.ddpf.dwGBitMask = DWORD_LE(head.ddpf.dwGBitMask);
     head.ddpf.dwBBitMask = DWORD_LE(head.ddpf.dwBBitMask);
