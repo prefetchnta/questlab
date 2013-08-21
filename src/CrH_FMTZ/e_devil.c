@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-21  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -302,6 +302,7 @@ devil_info (
     uint_t  ww, hh;
 
     /* 填充图片格式信息 */
+    mem_zero(frame->wh, sizeof(frame->wh));
     frame->bpp = ilGetInteger(IL_IMAGE_BITS_PER_PIXEL);
     switch (ilGetInteger(IL_IMAGE_FORMAT))
     {
@@ -402,30 +403,143 @@ devil_info (
     return (TRUE);
 }
 
+/* 接口内部数据结构 */
+typedef struct
+{
+        /* 通用部分 */
+        iPICTURE    pics;
+
+        /* 个性部分 */
+        ILuint          m_image;
+        void_t*         m_fdata;
+        const ansi_t*   m_infor;
+
+} iPIC_IL;
+
+/*
+---------------------------------------
+    释放接口
+---------------------------------------
+*/
+static void_t
+iPIC_IL_release (
+  __CR_IN__ iPICTURE*   that
+    )
+{
+    iPIC_IL*    real;
+
+    real = (iPIC_IL*)that;
+    ilDeleteImages(1, &real->m_image);
+    TRY_FREE(real->m_fdata)
+    mem_free(that);
+}
+
+/*
+---------------------------------------
+    扩展接口
+---------------------------------------
+*/
+static void_t*
+iPIC_IL_getMore (
+  __CR_IN__ iPICTURE*   that,
+  __CR_IN__ port_t      iid
+    )
+{
+    /* 判断一下名称 */
+    if (str_cmpA(iid, "iPICTURE::DEVIL") != 0)
+        return (NULL);
+    return ((void_t*)that);
+}
+
+/*
+---------------------------------------
+    获取图片帧
+---------------------------------------
+*/
+static sFMT_PIC*
+iPIC_IL_get (
+  __CR_IN__ iPICTURE*   that,
+  __CR_IN__ int32u      index
+    )
+{
+    iPIC_IL*    real;
+    sFMT_PIC*   rett;
+    sFMT_FRAME  temp;
+
+    /* 帧号过滤 */
+    if (index >= that->__count__) {
+        err_set(__CR_E_DEVIL_C__, index,
+                "iPICTURE::get()", "index: out of bounds");
+        return (NULL);
+    }
+
+    /* 获取指定帧 */
+    real = (iPIC_IL*)that;
+    ilBindImage(real->m_image);
+    if (!ilActiveImage((ILuint)index)) {
+        err_set(__CR_E_DEVIL_C__, FALSE,
+                "iPICTURE::get()", "ilActiveImage() failure");
+        return (NULL);
+    }
+    if (!devil_info(&temp)) {
+        err_set(__CR_E_DEVIL_C__, FALSE,
+                "iPICTURE::get()", "devil_info() failure");
+        return (NULL);
+    }
+
+    /* 返回读取的文件数据 */
+    rett = struct_new(sFMT_PIC);
+    if (rett == NULL) {
+        err_set(__CR_E_DEVIL_C__, CR_NULL,
+                "iPICTURE::get()", "struct_new() failure");
+        image_del(temp.pic);
+        return (NULL);
+    }
+    rett->frame = struct_dup(&temp, sFMT_FRAME);
+    if (rett->frame == NULL) {
+        err_set(__CR_E_DEVIL_C__, CR_NULL,
+                "iPICTURE::get()", "struct_dup() failure");
+        image_del(temp.pic);
+        mem_free(rett);
+        return (NULL);
+    }
+    rett->type = CR_FMTZ_PIC;
+    rett->count = 1;
+    rett->infor = real->m_infor;
+    return (rett);
+}
+
+/* 接口虚函数表 */
+static const iPICTURE_vtbl _rom_ s_pics_vtbl =
+{
+    iPIC_IL_release, iPIC_IL_getMore, iPIC_IL_get,
+};
+
 /*
 ---------------------------------------
     DevIL 加载图片
 ---------------------------------------
 */
-static sFMT_PIC*
+static sFMTZ*
 devil_load (
   __CR_IN__ ILenum          format,
   __CR_IN__ const sLOADER*  loader
     )
 {
-    uint_t      idx;
     uint_t      cnts;
     ILuint      size;
-    sFMT_PIC*   rett;
-    ILboolean   okay;
+    void_t*     data;
 #if defined(UNICODE) || defined(_UNICODE)
     wide_t*     path;
 #else
     ansi_t*     path;
 #endif
-    ILuint      image;
-    sFMT_FRAME  frame;
-    sFMT_FRAME* lists;
+    ILuint      imgs;
+    iPIC_IL*    port;
+    sFMT_PIC*   rets;
+    sFMT_PRT*   retm;
+    ILboolean   okay;
+    sFMT_FRAME  temp;
 
     /* 必须先初始化 */
     if (!s_init) {
@@ -454,7 +568,7 @@ devil_load (
                 mem_free(path);
 #else
                 format = ilTypeFromExt(loader->name.ansi);
-                if (foramt == IL_TYPE_UNKNOWN)
+                if (format == IL_TYPE_UNKNOWN)
                     format = ilTypeFromExt(loader->name.ansi);
 #endif
                 break;
@@ -472,7 +586,7 @@ devil_load (
                     return (NULL);
                 }
                 format = ilDetermineType(path);
-                if (foramt == IL_TYPE_UNKNOWN)
+                if (format == IL_TYPE_UNKNOWN)
                     format = ilTypeFromExt(path);
                 mem_free(path);
 #endif
@@ -501,38 +615,44 @@ devil_load (
         }
     }
 
-    /* 生成一个图片对象 */
-    ilGenImages(1, &image);
-    ilBindImage(image);
-
     /* 加载确定的文件格式 */
     switch (loader->type)
     {
         case CR_LDR_ANSI:
+            data = NULL;
 #if defined(UNICODE) || defined(_UNICODE)
             path = local_to_utf16(CR_LOCAL, loader->name.ansi);
             if (path == NULL) {
                 err_set(__CR_E_DEVIL_C__, CR_NULL,
                         "devil_load()", "local_to_utf16() failure");
-                goto _failure1;
+                return (NULL);
             }
+            ilGenImages(1, &imgs);
+            ilBindImage(imgs);
             okay = ilLoad(format, path);
             mem_free(path);
 #else
+            ilGenImages(1, &imgs);
+            ilBindImage(imgs);
             okay = ilLoad(format, loader->name.ansi);
 #endif
             break;
 
         case CR_LDR_WIDE:
+            data = NULL;
 #if defined(UNICODE) || defined(_UNICODE)
+            ilGenImages(1, &imgs);
+            ilBindImage(imgs);
             okay = ilLoad(format, loader->name.wide);
 #else
             path = utf16_to_local(CR_LOCAL, loader->name.wide);
             if (path == NULL) {
                 err_set(__CR_E_DEVIL_C__, CR_NULL,
                         "devil_load()", "utf16_to_local() failure");
-                goto _failure1;
+                return (NULL);
             }
+            ilGenImages(1, &imgs);
+            ilBindImage(imgs);
             okay = ilLoad(format, path);
             mem_free(path);
 #endif
@@ -542,74 +662,95 @@ devil_load (
             if (cut_size(&size, loader->buff.size)) {
                 err_set(__CR_E_DEVIL_C__, loader->buff.size,
                         "devil_load()", "<loader->buff.size> truncated");
-                goto _failure1;
+                return (NULL);
             }
-            okay = ilLoadL(format, loader->buff.data, size);
+            data = mem_dup(loader->buff.data, loader->buff.size);
+            if (data == NULL) {
+                err_set(__CR_E_DEVIL_C__, CR_NULL,
+                        "devil_load()", "mem_dup() failure");
+                return (NULL);
+            }
+            ilGenImages(1, &imgs);
+            ilBindImage(imgs);
+            okay = ilLoadL(format, data, size);
             break;
 
         default:
             err_set(__CR_E_DEVIL_C__, loader->type,
                     "devil_load()", "invalid param: loader->type");
-            goto _failure1;
+            return (NULL);
     }
 
     /* 图片加载失败 */
     if (!okay) {
         err_set(__CR_E_DEVIL_C__, FALSE,
                 "devil_load()", "invalid DevIL format");
-        goto _failure1;
+        goto _failure;
     }
 
-    /* 加载图片数据 */
+    /* 单帧图片不使用流接口 */
     cnts = ilGetInteger(IL_NUM_IMAGES) + 1;
-    lists = mem_talloc(cnts, sFMT_FRAME);
-    if (lists == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "devil_load()", "mem_talloc() failure");
-        goto _failure1;
-    }
-
-    /* 逐帧加载图片数据 */
-    for (idx = 0; idx < cnts; idx++)
-    {
-        /* 切换帧必须先回到基础帧 */
-        ilBindImage(image);
-        if (!ilActiveImage(idx)) {
-            err_set(__CR_E_DEVIL_C__, FALSE,
-                    "devil_load()", "ilActiveImage() failure");
-            goto _failure2;
-        }
-        mem_zero(&frame, sizeof(frame));
-        if (!devil_info(&frame)) {
+    if (cnts == 1) {
+        if (!devil_info(&temp)) {
             err_set(__CR_E_DEVIL_C__, FALSE,
                     "devil_load()", "devil_info() failure");
-            goto _failure2;
+            goto _failure;
         }
+        ilDeleteImages(1, &imgs);
+        TRY_FREE(data)
 
-        /* 结构复制到图片列表 */
-        struct_cpy(&lists[idx], &frame, sFMT_FRAME);
+        /* 返回读取的文件数据 */
+        rets = struct_new(sFMT_PIC);
+        if (rets == NULL) {
+            err_set(__CR_E_DEVIL_C__, CR_NULL,
+                    "devil_load()", "struct_new() failure");
+            image_del(temp.pic);
+            return (NULL);
+        }
+        rets->frame = struct_dup(&temp, sFMT_FRAME);
+        if (rets->frame == NULL) {
+            err_set(__CR_E_DEVIL_C__, CR_NULL,
+                    "devil_load()", "struct_dup() failure");
+            image_del(temp.pic);
+            mem_free(rets);
+            return (NULL);
+        }
+        rets->type = CR_FMTZ_PIC;
+        rets->count = 1;
+        rets->infor = devil_type(format);
+        return ((sFMTZ*)rets);
     }
 
-    /* 返回读取的文件数据 */
-    rett = struct_new(sFMT_PIC);
-    if (rett == NULL) {
+    /* 生成多帧图片接口对象 */
+    port = struct_new(iPIC_IL);
+    if (port == NULL) {
         err_set(__CR_E_DEVIL_C__, CR_NULL,
                 "devil_load()", "struct_new() failure");
-        goto _failure2;
+        goto _failure;
     }
-    rett->type = CR_FMTZ_PIC;
-    rett->count = cnts;
-    rett->frame = lists;
-    rett->infor = devil_type(format);
-    ilDeleteImages(1, &image);
-    return ((sFMT_PIC*)rett);
+    port->m_fdata = data;
+    port->m_image = imgs;
+    port->m_infor = devil_type(format);
+    port->pics.__count__ = cnts;
+    port->pics.__vptr__ = &s_pics_vtbl;
 
-_failure2:
-    for (cnts = 0; cnts < idx; cnts++)
-        image_del(lists[cnts].pic);
-    mem_free(lists);
-_failure1:
-    ilDeleteImages(1, &image);
+    /* 返回读取的文件数据 */
+    retm = struct_new(sFMT_PRT);
+    if (retm == NULL) {
+        err_set(__CR_E_DEVIL_C__, CR_NULL,
+                "devil_load()", "struct_new() failure");
+        iPIC_IL_release((iPICTURE*)port);
+        return (NULL);
+    }
+    retm->type = CR_FMTZ_PRT;
+    retm->port = (iPORT*)port;
+    retm->more = "iPICTURE";
+    retm->infor = port->m_infor;
+    return ((sFMTZ*)retm);
+
+_failure:
+    ilDeleteImages(1, &imgs);
+    TRY_FREE(data)
     return (NULL);
 }
 
@@ -618,7 +759,7 @@ _failure1:
     BMP 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_bmp (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -633,7 +774,7 @@ load_il_bmp (
     CUT 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_cut (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -648,7 +789,7 @@ load_il_cut (
     DOOM WALLS 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_doomw (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -663,7 +804,7 @@ load_il_doomw (
     DOOM FLATS 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_doomf (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -678,7 +819,7 @@ load_il_doomf (
     ICO 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_ico (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -693,7 +834,7 @@ load_il_ico (
     JPG 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_jpg (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -708,7 +849,7 @@ load_il_jpg (
     ILBM 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_ilbm (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -723,7 +864,7 @@ load_il_ilbm (
     PCD 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_pcd (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -738,7 +879,7 @@ load_il_pcd (
     PCX 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_pcx (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -753,7 +894,7 @@ load_il_pcx (
     PIC 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_pic (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -768,7 +909,7 @@ load_il_pic (
     PNG 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_png (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -783,7 +924,7 @@ load_il_png (
     PNM 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_pnm (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -798,7 +939,7 @@ load_il_pnm (
     SGI 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_sgi (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -813,7 +954,7 @@ load_il_sgi (
     TGA 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_tga (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -828,7 +969,7 @@ load_il_tga (
     TIF 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_tif (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -843,7 +984,7 @@ load_il_tif (
     CHEAD 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_chead (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -858,7 +999,7 @@ load_il_chead (
     RAW 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_raw (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -873,7 +1014,7 @@ load_il_raw (
     MDL 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_mdl (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -888,7 +1029,7 @@ load_il_mdl (
     WAL 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_wal (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -903,7 +1044,7 @@ load_il_wal (
     LIF 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_lif (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -918,7 +1059,7 @@ load_il_lif (
     MNG 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_mng (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -933,7 +1074,7 @@ load_il_mng (
     GIF 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_gif (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -948,7 +1089,7 @@ load_il_gif (
     DDS 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_dds (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -963,7 +1104,7 @@ load_il_dds (
     DCX 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_dcx (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -978,7 +1119,7 @@ load_il_dcx (
     PSD 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_psd (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -993,7 +1134,7 @@ load_il_psd (
     PSP 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_psp (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1008,7 +1149,7 @@ load_il_psp (
     PIX 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_pix (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1023,7 +1164,7 @@ load_il_pix (
     PXR 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_pxr (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1038,7 +1179,7 @@ load_il_pxr (
     XPM 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_xpm (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1053,7 +1194,7 @@ load_il_xpm (
     HDR 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_hdr (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1068,7 +1209,7 @@ load_il_hdr (
     ICNS 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_icns (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1083,7 +1224,7 @@ load_il_icns (
     JP2 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_jp2 (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1098,7 +1239,7 @@ load_il_jp2 (
     EXR 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_exr (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1113,7 +1254,7 @@ load_il_exr (
     WDP 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_wdp (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1128,7 +1269,7 @@ load_il_wdp (
     VTF 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_vtf (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1143,7 +1284,7 @@ load_il_vtf (
     WBMP 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_wbmp (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1158,7 +1299,7 @@ load_il_wbmp (
     SUN 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_sun (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1173,7 +1314,7 @@ load_il_sun (
     IFF 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_iff (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1188,7 +1329,7 @@ load_il_iff (
     TPL 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_tpl (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1203,7 +1344,7 @@ load_il_tpl (
     FITS 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_fits (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1218,7 +1359,7 @@ load_il_fits (
     DICOM 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_dicom (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1233,7 +1374,7 @@ load_il_dicom (
     IWI 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_iwi (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1248,7 +1389,7 @@ load_il_iwi (
     BLP 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_blp (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1263,7 +1404,7 @@ load_il_blp (
     FTX 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_ftx (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1278,7 +1419,7 @@ load_il_ftx (
     ROT 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_rot (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1293,7 +1434,7 @@ load_il_rot (
     TEXTURE 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_tex (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1308,7 +1449,7 @@ load_il_tex (
     DPX 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_dpx (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1323,7 +1464,7 @@ load_il_dpx (
     UTX 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_utx (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1338,7 +1479,7 @@ load_il_utx (
     MP3 文件读取
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_mp3 (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
@@ -1353,7 +1494,7 @@ load_il_mp3 (
     图片文件读取 (自动识别)
 =======================================
 */
-CR_API sFMT_PIC*
+CR_API sFMTZ*
 load_il_auto (
   __CR_IO__ iDATIN*         datin,
   __CR_IN__ const sLOADER*  param
