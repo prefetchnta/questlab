@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-20  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-21  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -171,8 +171,7 @@ CR_TYPEDEF struct
 
 } CR_PACKED sAIA_IDX;
 
-/* AIA 文件头结构
-   (0x150 版本的头, 0x140 的要少8个字节, 等有样本了再说) */
+/* AIA 文件头结构 */
 CR_TYPEDEF struct
 {
         int32u  magic;      /* 文件标志 "AIA" */
@@ -183,8 +182,8 @@ CR_TYPEDEF struct
         int32u  img_num;    /* 图片项个数 */
         int16u  width;      /* 图片像素宽 */
         int16u  height;     /* 图片像素高 */
-        int16u  ww, hh;     /* 未知宽高值？ */
-        fp32_t  fw, fh;     /* 浮点宽高值？ */
+        int16u  ww, hh;     /* 未知宽高值？(140 版全部没有) */
+        fp32_t  fw, fh;     /* 浮点宽高值？(140 版没有 fh) */
         int32u  img_size;   /* 图像数据大小 */
 #if 0
         int32u      idx[idx_num * 4];       /* 未知数据, 索引？ */
@@ -241,16 +240,24 @@ load_flc_aia (
                 "load_flc_aia()", "invalid AIA format");
         return (NULL);
     }
-    if (head.version != CWORD_LE(0x150)) {
+    offs = DWORD_LE(head.idx_num);
+    offs *= sizeof(int32u) * 4;
+    if (head.version == CWORD_LE(0x140)) {
+        offs += 32;
+        mem_cpy(&head.img_size, &head.fw, 4);
+    }
+    else
+    if (head.version == CWORD_LE(0x150)) {
+        offs += 40;
+    }
+    else {
         err_set(__CR_FLC_AIA_C__, head.version,
                 "load_flc_aia()", "invalid AIA format");
         return (NULL);
     }
 
     /* 跳过未知数据 */
-    offs = DWORD_LE(head.idx_num);
-    offs *= sizeof(int32u) * 4;
-    if (!CR_VCALL(datin)->seek(datin, offs, SEEK_CUR)) {
+    if (!CR_VCALL(datin)->seek(datin, offs, SEEK_SET)) {
         err_set(__CR_FLC_AIA_C__, FALSE,
                 "load_flc_aia()", "iDATIN::seek() failure");
         return (NULL);
