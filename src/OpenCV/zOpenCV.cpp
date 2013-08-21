@@ -315,7 +315,7 @@ engine_opencv (void_t)
 {
     sENGINE*    engine;
 
-    engine = engine_init(NULL, NULL, 0);
+    engine = engine_init(NULL, NULL, NULL, NULL);
     if (engine == NULL)
         return (NULL);
     engine->fmtz_load = engine_ocv_load;

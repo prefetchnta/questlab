@@ -163,14 +163,8 @@ ilab_ipl2img_set (
         return (FALSE);
 
     /* 灰度图需要填充调色板 */
-    if (fmt != CR_INDEX8) {
-        for (fmt = 0; fmt < 256; fmt++) {
-            ((uchar*)img->pal)[fmt * 4 + 0] = (byte_t)fmt;
-            ((uchar*)img->pal)[fmt * 4 + 1] = (byte_t)fmt;
-            ((uchar*)img->pal)[fmt * 4 + 2] = (byte_t)fmt;
-            ((uchar*)img->pal)[fmt * 4 + 3] = 0xFF;
-        }
-    }
+    if (fmt == CR_INDEX8)
+        pal_set_gray8(img->pal, 256);
     return (TRUE);
 }
 
