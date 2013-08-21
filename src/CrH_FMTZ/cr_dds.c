@@ -438,7 +438,7 @@ load_cr_dds (
         }
     }
     else
- /* if (head.ddpf.dwFlags & DDPF_ALPHA) */
+    if (head.ddpf.dwFlags & DDPF_ALPHA)
     {
         /* 透明通道位图 */
         if (head.ddpf.dwRGBBitCount != 8) {
@@ -456,6 +456,13 @@ load_cr_dds (
         temp.clr = "A";
         temp.wh[0] = 8;
         d3dfmt = D3DFMT_A8;
+    }
+    else
+    {
+        /* 未知格式位图 */
+        err_set(__CR_DDS_C__, head.ddpf.dwFlags,
+                "load_cr_dds()", "invalid DDS format");
+        return (NULL);
     }
 
     /* 读取图片数据 */
