@@ -1,6 +1,6 @@
 1 VERSIONINFO
-    FILEVERSION 1,0,0,731
-    PRODUCTVERSION 1,0,0,731
+    FILEVERSION 1,0,0,734
+    PRODUCTVERSION 1,0,0,734
     FILEFLAGSMASK 0x17L
 #ifdef  _DEBUG
     FILEFLAGS 0x1L
@@ -16,11 +16,11 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "ProductName"     , "CrHack BLIT Library\0"
-            VALUE "ProductVersion"  , "1.0.0.731\0"
-            VALUE "FileVersion"     , "1.0.0.731\0"
+            VALUE "ProductVersion"  , "1.0.0.734\0"
+            VALUE "FileVersion"     , "1.0.0.734\0"
             VALUE "FileDescription" , "CrHack BLIT Library\0"
             VALUE "LegalCopyright"  , "Copyright 2009+ by CrHackOS\0"
-            VALUE "Comments"        , "Release Date: 2013-08-19\0"
+            VALUE "Comments"        , "Release Date: 2013-08-22\0"
         END
     END
     BLOCK "VarFileInfo"
