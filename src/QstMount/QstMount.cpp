@@ -1051,7 +1051,7 @@ _failure1:
 
 /*
 ---------------------------------------
-    卸除文件挂载节点
+    释放所有已加载内容
 ---------------------------------------
 */
 static bool_t
@@ -1076,6 +1076,14 @@ qst_mnt_ldr_free (
     ctx->list.find = mount_find;
     ctx->list.comp = mount_comp;
     ctx->list.free = mount_free;
+    curbead_freeT(&ctx->resx, sQstResNode);
+    if (!curbead_initT(&ctx->resx, sQstResNode, 0)) {
+        ctx->quit = TRUE;
+        return (FALSE);
+    }
+    ctx->resx.find = resx_find;
+    ctx->resx.comp = resx_comp;
+    ctx->resx.free = resx_free;
     qst_refresh_list(ctx);
     return (TRUE);
 }
