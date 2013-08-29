@@ -442,8 +442,7 @@ qst_load_xml (
     }
     else
     {
-        leng_t  head;
-        ansi_t* stra;
+        ansi_t* send;
         wide_t* root;
 
         /* 指定了磁盘根目录 */
@@ -457,18 +456,24 @@ qst_load_xml (
         if (!is_slashW(root[begin - 1]))
             begin += 1;
 
-        /* 计算需要发送的根目录长度 */
-        stra = utf16_to_local(page, root);
-        if (stra == NULL) {
+        /* 发送根目录路径 */
+        str = utf16_to_local(page, root);
+        if (str == NULL) {
             mem_free(root);
             xml_closeW(xml);
             parm->busy = FALSE;
             return (FALSE);
         }
-        head = str_lenA(stra);
-        if (!is_slashA(stra[head - 1]))
-            head += 1;
-        mem_free(stra);
+        send = str_fmtA("res:root \"%s\"", str);
+        mem_free(str);
+        if (send == NULL) {
+            mem_free(root);
+            xml_closeW(xml);
+            parm->busy = FALSE;
+            return (FALSE);
+        }
+        cmd_shl_send(parm->netw, send);
+        mem_free(send);
 
         sQTEE_file  temp;
 
@@ -491,12 +496,6 @@ qst_load_xml (
         }
         struct_cpy(tree->GetNodeData(node), &temp, sQTEE_file);
         disk = TRUE;
-
-        ansi_t  buf[64];
-
-        /* 发送根目录长度 */
-        sprintf(buf, "res:root %u", head);
-        cmd_shl_send(parm->netw, buf);
     }
 
     /* 逐个标签加载 */

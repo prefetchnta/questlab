@@ -1092,13 +1092,17 @@ qst_mnt_res_root (
   __CR_IN__ ansi_t**    argv
     )
 {
+    ansi_t*     str;
     sQstMount*  ctx;
 
-    /* 参数解析 <根目录长度> */
+    /* 参数解析 <根目录路径> */
     ctx = (sQstMount*)parm;
     if (argc < 2)
         return (FALSE);
-    ctx->head = str2intxA(argv[1]);
+    str = argv[1];
+    ctx->head = str_lenA(str);
+    if (!is_slashA(str[ctx->head - 1]))
+        ctx->head += 1;
     return (TRUE);
 }
 
