@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-08  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-29  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -227,7 +227,7 @@ load_syn_gca (
         return (NULL);
     }
 
-    leng_t  back;
+    leng_t  read;
     byte_t  tag[4];
     sLOADER loader;
 
@@ -240,10 +240,10 @@ load_syn_gca (
                 "load_syn_gca()", "create_file_inX() failure");
         return (NULL);
     }
-    back = CR_VCALL(datin)->read(datin, tag, sizeof(tag));
+    read = CR_VCALL(datin)->read(datin, tag, sizeof(tag));
     CR_VCALL(datin)->release(datin);
-    if (back != sizeof(tag)) {
-        err_set(__CR_GCAX_CPP__, back,
+    if (read != sizeof(tag)) {
+        err_set(__CR_GCAX_CPP__, read,
                 "load_syn_gca()", "iDATIN::read() failure");
         return (NULL);
     }

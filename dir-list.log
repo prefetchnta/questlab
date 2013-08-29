@@ -80,6 +80,7 @@ questlab
 │  │  ├─syn
 │  │  │  └─gcasdk
 │  │  ├─tgl
+│  │  ├─tjpgdec
 │  │  └─unrar
 │  ├─CrH_GFX2
 │  │  └─gapi

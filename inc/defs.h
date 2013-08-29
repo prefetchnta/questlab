@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-15  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-31  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-29  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -632,6 +632,10 @@ typedef struct  _iPORT
 #if defined(_CR_ALIGN_NEEDED_)
     #include "memlib.h"
 #endif
+
+/* 两种加密解密压缩解压接口类型 */
+typedef leng_t  (*enc_self_t) (void_t*, leng_t);
+typedef leng_t  (*enc_copy_t) (void_t*, leng_t, const void_t*, leng_t);
 
 #endif  /* !__CR_DEFS_H__ */
 
