@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-17  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-30  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -204,18 +204,6 @@ rotl_int32u (
 #if     !defined(_CR_NO_CROT32_)
     return (cr_rotl32(val, (unsigned char)shift));
 
-/* Intel style inline asm (ARM) */
-#elif   defined(_CR_ASM_INTL_) && defined(_CR_AR_ARM_)
-    int32u  r0, r1;
-
-    shift = 32 - shift;
-    __asm {
-        mov     r1, shift
-        mov     r0, val, ror r1
-        mov     val, r0
-    }
-    return (val);
-
 /* AT&T style inline asm (X86) */
 #elif   defined(_CR_ASM_ATnT_) && defined(_CR_AR_X86_)
     __asm__("roll %%cl, %0" : "=r"(val) : "0"(val), "c"(shift));
@@ -247,17 +235,6 @@ rotr_int32u (
 /* Compiler intrinsic support */
 #if     !defined(_CR_NO_CROT32_)
     return (cr_rotr32(val, (unsigned char)shift));
-
-/* Intel style inline asm (ARM) */
-#elif   defined(_CR_ASM_INTL_) && defined(_CR_AR_ARM_)
-    int32u  r0, r1;
-
-    __asm {
-        mov     r1, shift
-        mov     r0, val, ror r1
-        mov     val, r0
-    }
-    return (val);
 
 /* AT&T style inline asm (X86) */
 #elif   defined(_CR_ASM_ATnT_) && defined(_CR_AR_X86_)

@@ -4,8 +4,10 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)fmtz.$(O) \
+         .$(L)tjpgd.$(O) \
          .$(L)cr_bmp.$(O) \
          .$(L)cr_dds.$(O) \
+         .$(L)cr_jpg.$(O) \
          .$(L)cr_pcx.$(O) \
          .$(L)cr_png.$(O) \
          .$(L)cr_tga.$(O) \
@@ -16,11 +18,13 @@ OBJ_LIST=.$(L)fmtz.$(O) \
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)cr_bmp.$(C) \
          .$(L)cr_dds.$(C) \
+         .$(L)cr_jpg.$(C) \
          .$(L)cr_pcx.$(C) \
          .$(L)cr_png.$(C) \
          .$(L)cr_tga.$(C) \
          .$(L)cr_zip.$(C) \
-         .$(L)e_crhack.$(C)
+         .$(L)e_crhack.$(C) \
+         .$(L)tjpgdec$(L)tjpgd.$(C)
 
 build_all:
     $(RC) $(RFLAGS)

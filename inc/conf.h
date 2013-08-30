@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2009-12-15  */
 /*     #######          ###    ###      [PORT]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-05-28  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-30  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -378,6 +378,13 @@
         defined(_CR_OS_WINCE_)
     #define MAX_PATHA   260
     #define MAX_PATHW   260
+#else
+    #ifndef MAX_PATHA
+        #define MAX_PATHA   260
+    #endif
+    #ifndef MAX_PATHW
+        #define MAX_PATHW   MAX_PATHA
+    #endif
 #endif
 
 /* 文件路径分割符 */

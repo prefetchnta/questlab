@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-29  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-30  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -385,8 +385,11 @@ load_flc_aia (
     offs *= sizeof(int32u) * 4;
     if (head.version == CWORD_LE(0x140)) {
         offs += 32;
-        mem_cpy(&head.img_size, &head.scale1, 4);
-        mem_cpy(&head.scale1, &head.ww2, 4);
+        pals = (byte_t*)(&head.img_size);
+        dats = (byte_t*)(&head.scale1);
+        mem_cpy(pals, dats, 4);
+        pals = (byte_t*)(&head.ww2);
+        mem_cpy(dats, pals, 4);
         head.ww2 = head.hh2 = 0;
         head.scale2 = 0.0f;
     }

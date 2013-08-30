@@ -20,6 +20,21 @@
 
 #include "tjpgd.h"
 
+/* [port] 关闭警告 */
+#include "conf.h"
+#if     defined(_CR_CC_BCC_)
+    #pragma warn -8008
+    #pragma warn -8012
+    #pragma warn -8066
+
+#elif   defined(_CR_CC_MSC_)
+    #pragma warning (disable: 4127)
+    #pragma warning (disable: 4244)
+
+#elif   defined(_CR_CC_ARMCC_NEW_)
+    #pragma diag_suppress 188
+
+#endif  /* CC TYPE predefines */
 
 /*-----------------------------------------------*/
 /* Zigzag-order to raster-order conversion table */

@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-19  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-30  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -112,6 +112,7 @@ typedef struct
 /***** 文件加载 API 组 *****/
 CR_API sFMT_PIC*    load_cr_bmp (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_dds (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PIC*    load_cr_jpg (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_pcx (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_png (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_tga (iDATIN *datin, const sLOADER *param);
