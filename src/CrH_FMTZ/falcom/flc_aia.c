@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-20  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-30  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-08-31  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -434,19 +434,13 @@ load_flc_aia (
             goto _failure1;
         }
 
-        /* 提前安全检查 */
+        /* 跳过非法的废帧 */
         attr[cnt].offset = DWORD_LE(attr[cnt].offset);
-        if (attr[cnt].offset >= head.img_size) {
-            err_set(__CR_FLC_AIA_C__, attr[cnt].offset,
-                    "load_flc_aia()", "invalid AIA format");
-            goto _failure1;
-        }
+        if (attr[cnt].offset >= head.img_size)
+            continue;
         attr[cnt].pal_idx = WORD_LE(attr[cnt].pal_idx);
-        if ((int32u)attr[cnt].pal_idx >= head.pal_num) {
-            err_set(__CR_FLC_AIA_C__, attr[cnt].pal_idx,
-                    "load_flc_aia()", "invalid AIA format");
-            goto _failure1;
-        }
+        if ((int32u)attr[cnt].pal_idx >= head.pal_num)
+            continue;
 
         /* 跳过废帧 (请自己定义帧序号) */
         attr[cnt].x1 = WORD_LE(attr[cnt].x1);
