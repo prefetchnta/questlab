@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-19  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-30  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-04  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -22,6 +22,7 @@
 
 #include "gfx2.h"
 #include "datlib.h"
+#include "devlib.h"
 #include "fileio.h"
 #include "plugin.h"
 
@@ -516,6 +517,50 @@ pict_get_count (
     return (that->__count__);
 }
 #endif  /* _CR_NO_INLINE_ */
+
+/*****************************************************************************/
+/*                               外部文件加载                                */
+/*****************************************************************************/
+
+/* 外部文件返回结构 */
+typedef struct
+{
+        bool_t  is_free;    /* 是否释放内存 */
+        sLOADER ex_file;    /* 外部文件结果 */
+
+} sEX_FILE;
+
+/* 释放外部文件 */
+CR_API void_t   filex_free (const sEX_FILE *filex);
+
+/* 外部文件加载接口表 */
+typedef struct
+{
+        /* 启动加载器 (可选) */
+        void_t  (*init) (socket_t netw, const ansi_t *root);
+
+        /* 释放加载器 (可选) */
+        void_t  (*kill) (void_t);
+
+        /* 加载外部文件 (必须) */
+        bool_t  (*load) (sLOADER *filex, const ansi_t *type,
+                         const ansi_t *mount, const ansi_t *name);
+} sRES_LOADER;
+
+/* 资源路由加载接口表 */
+typedef struct
+{
+        /* 设置外部文件加载接口 */
+        void_t  (*setup) (const sRES_LOADER *loader);
+
+        /* 通过路由加载外部文件 */
+        bool_t  (*load) (sLOADER *filex, const ansi_t *type,
+                         const ansi_t *name);
+} sRES_ROUTER;
+
+/* 两个获取接口表的函数 */
+CR_API sRES_LOADER* res_loader_get (void_t);
+CR_API sRES_ROUTER* res_router_get (void_t);
 
 #endif  /* !__CR_FMTZ_H__ */
 
