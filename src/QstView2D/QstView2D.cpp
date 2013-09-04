@@ -3,11 +3,8 @@
 
 /* 外部库引用 */
 #ifndef _CR_NO_PRAGMA_LIB_
-    #if defined(_CR_CC_BCC_)
-        #pragma comment (lib, "CrH_BLIT_bcc.lib")
-    #else
-        #pragma comment (lib, "CrH_BLIT_msc.lib")
-    #endif
+    #pragma comment (lib, "CrH_BLIT_msc.lib")
+    #pragma comment (lib, "ResLoader_msc.lib")
 #endif
 
 /* 缺省的窗口大小 */

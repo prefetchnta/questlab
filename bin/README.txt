@@ -1,4 +1,5 @@
 【更新日志】
+　2013-09-04　开始外部资源文件加载框架的开发，网络加载接口 ResLoader.dll 建立
 　2013-08-13　FALCOM 引擎插件 zFALCOM.dll 建立
 　2013-08-07　TGL 引擎插件 zTGL.dll 建立
 　2013-06-17　Direct3D8 API 接口项目动工（引入 DirectX 8 SDK）
