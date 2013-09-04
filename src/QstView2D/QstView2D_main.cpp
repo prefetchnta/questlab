@@ -585,6 +585,8 @@ qst_v2d_ldr_file (
         set_ldrA(&ldr, argv[1], argv[6], head, tail);
     else
         set_ldrA(&ldr, argv[1], "", head, tail);
+    if (ctx->res_router != NULL)
+        ldr.nprm = (void_t*)(ctx->res_router->load);
     ldr.page = page;
 
     /* 渲染目标数据 */
@@ -643,6 +645,8 @@ qst_v2d_ldr_smem (
         set_ldrM(&ldr, data, size, argv[7], head, tail);
     else
         set_ldrM(&ldr, data, size, "", head, tail);
+    if (ctx->res_router != NULL)
+        ldr.nprm = (void_t*)(ctx->res_router->load);
     ldr.page = page;
 
     /* 渲染目标数据 */
@@ -888,6 +892,72 @@ qst_v2d_g2d_refresh (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    设置资源根目录路径
+---------------------------------------
+*/
+static bool_t
+qst_v2d_res_root (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sQstView2D* ctx;
+
+    /* 参数解析 <根目录路径> */
+    ctx = (sQstView2D*)parm;
+    if (argc < 2)
+        return (FALSE);
+    if (ctx->res_loader->init != NULL)
+        ctx->res_loader->init(ctx->netw, argv[1]);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    加载资源路由插件
+---------------------------------------
+*/
+static bool_t
+qst_v2d_res_router (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sQstView2D*     ctx;
+    router_get_t    func;
+
+    /* 参数解析 [插件路径] */
+    ctx = (sQstView2D*)parm;
+    if (ctx->dll_router != NULL) {
+        sbin_unload(ctx->dll_router);
+        ctx->dll_router = NULL;
+        ctx->res_router = NULL;
+    }
+
+    /* 不指定参数表示释放当前插件 */
+    if (argc < 2)
+        return (TRUE);
+
+    /* 加载路由插件获取接口表并设置加载接口 */
+    ctx->dll_router = sbin_loadA(argv[1]);
+    if (ctx->dll_router == NULL)
+        return (FALSE);
+    func = sbin_exportT(ctx->dll_router,
+                    "res_router_get", router_get_t);
+    if (func == NULL) {
+        sbin_unload(ctx->dll_router);
+        ctx->dll_router = NULL;
+        return (FALSE);
+    }
+    ctx->res_router = func();
+    ctx->res_router->setup(ctx->res_loader);
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -912,6 +982,10 @@ static const sQST_CMD   s_cmdz[] =
 
     /***** 索引控制命令 *****/
     { "idx:set_now", qst_v2d_set_now },
+
+    /***** 公用资源命令 *****/
+    { "res:root",   qst_v2d_res_root   },
+    { "res:router", qst_v2d_res_router },
 
     /***** 图片控制命令 *****/
     { "g2d:alpha",   qst_v2d_g2d_alpha   },

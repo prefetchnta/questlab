@@ -559,7 +559,8 @@ typedef struct
                          const ansi_t *name, uint_t cpage);
 } sRES_ROUTER;
 
-/* 资源路由加载接口类型 */
+/* 两个用得到的函数类型 */
+typedef const sRES_ROUTER*  (*router_get_t) (void_t);
 typedef bool_t  (*router_load_t) (sEX_FILE*, const ansi_t*,
                                   const ansi_t*, uint_t);
 /* 两个获取接口表的函数 */

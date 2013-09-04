@@ -81,8 +81,9 @@ typedef struct
         xmlcaller_t flt_lst;    /* 滤镜接口列表 */
 
         /* 外部资源加载相关 */
-        sbin_t              dll_router;     /* 资源路由插件 */
-        const sRES_ROUTER*  res_router;     /* 资源加载接口 */
+        sbin_t              dll_router;     /* 资源路由插件句柄 */
+        const sRES_LOADER*  res_loader;     /* 外部资源加载接口 */
+        const sRES_ROUTER*  res_router;     /* 路由资源加载接口 */
 
 } sQstView2D;
 

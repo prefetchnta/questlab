@@ -185,6 +185,9 @@ WinMain (
     s_wrk_ctx.quit = FALSE;
     s_wrk_ctx.cur_busy = LoadCursor(NULL, IDC_WAIT);
     s_wrk_ctx.cur_free = LoadCursor(NULL, IDC_ARROW);
+    s_wrk_ctx.res_loader = res_loader_get();
+    if (s_wrk_ctx.res_loader->init != NULL)
+        s_wrk_ctx.res_loader->init(s_wrk_ctx.netw, NULL);
     qst_load_filter(&s_wrk_ctx);
     thrd = thread_new(0, qst_v2d_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL) {
