@@ -226,8 +226,8 @@ res_load (
 
             void_t* data;
 
-            /* 从共享文件那里抓取文件数据 */
-            size = (leng_t)str2int64A(argv[2]);
+            /* 返回读取的内存数据 */
+            size = str2intA(argv[2]);
             mem_free(argv);
             mem_free(path);
             if (size == 0)
@@ -235,8 +235,6 @@ res_load (
             data = share_file_get(type, size);
             if (data == NULL)
                 break;
-
-            /* 返回读取的内存数据 */
             filex->is_free = TRUE;
             set_ldrM(&filex->ex_file, data, size, "", 0, 0);
             filex->ex_file.page = cpage;
@@ -257,10 +255,8 @@ res_load (
 /*****************************************************************************/
 
 /* 外部文件加载接口表 */
-const sRES_LOADER   s_res_loader =
-{
-    res_init, res_kill, res_load
-};
+static const sRES_LOADER
+s_res_loader = { res_init, res_kill, res_load };
 
 /*
 =======================================
