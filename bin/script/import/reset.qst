@@ -4,6 +4,7 @@
 ldr:free
 dir:clear
 app:reset
+res:router
 edt:filter
 edt:cpage 0
 $del output/__dir__.xml
