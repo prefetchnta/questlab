@@ -102,3 +102,7 @@ cd OpenCV
 nmake -fxOpenCV.mak
 cd..
 rem =====================
+cd ResLoader
+nmake -fResLoader.mak
+cd..
+rem =====================

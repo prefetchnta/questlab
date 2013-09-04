@@ -829,8 +829,23 @@ filex_free (
 {
     if (!filex->is_free)
         return;
-    if (filex->ex_file.type == CR_LDR_BUFF)
-        mem_free(filex->ex_file.buff.data);
+    switch (filex->ex_file.type)
+    {
+        default:
+            break;
+
+        case CR_LDR_ANSI:
+            TRY_FREE(filex->ex_file.name.ansi)
+            break;
+
+        case CR_LDR_WIDE:
+            TRY_FREE(filex->ex_file.name.wide)
+            break;
+
+        case CR_LDR_BUFF:
+            TRY_FREE(filex->ex_file.buff.data)
+            break;
+    }
 }
 
 #endif  /* !__CR_FMTLIB_C__ */

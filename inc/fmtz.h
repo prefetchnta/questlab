@@ -543,8 +543,9 @@ typedef struct
         void_t  (*kill) (void_t);
 
         /* 加载外部文件 (必须) */
-        bool_t  (*load) (sLOADER *filex, const ansi_t *type,
-                         const ansi_t *mount, const ansi_t *name);
+        bool_t  (*load) (sEX_FILE *filex, const ansi_t *type,
+                         const ansi_t *mount, const ansi_t *name,
+                         uint_t cpage);
 } sRES_LOADER;
 
 /* 资源路由加载接口表 */
@@ -554,13 +555,16 @@ typedef struct
         void_t  (*setup) (const sRES_LOADER *loader);
 
         /* 通过路由加载外部文件 */
-        bool_t  (*load) (sLOADER *filex, const ansi_t *type,
-                         const ansi_t *name);
+        bool_t  (*load) (sEX_FILE *filex, const ansi_t *type,
+                         const ansi_t *name, uint_t cpage);
 } sRES_ROUTER;
 
+/* 资源路由加载接口类型 */
+typedef bool_t  (*router_load_t) (sEX_FILE*, const ansi_t*,
+                                  const ansi_t*, uint_t);
 /* 两个获取接口表的函数 */
-CR_API sRES_LOADER* res_loader_get (void_t);
-CR_API sRES_ROUTER* res_router_get (void_t);
+CR_API const sRES_LOADER*   res_loader_get (void_t);
+CR_API const sRES_ROUTER*   res_router_get (void_t);
 
 #endif  /* !__CR_FMTZ_H__ */
 
