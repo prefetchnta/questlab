@@ -1153,7 +1153,7 @@ qst_mnt_res_load (
     ctx = (sQstMount*)parm;
 
     /* 可以使用全局挂载名 */
-    if (str_cmpA(argv[2], "|GLOBALS|") == 0)
+    if (str_cmpA(argv[2], QST_STR_GLOBALS) == 0)
     {
         leng_t  ii, nn;
 

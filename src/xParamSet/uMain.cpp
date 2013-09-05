@@ -234,7 +234,8 @@ _qst_text:
 
 _func_out:
     /* 发送参数加载命令 */
-    misc_call_exe("QstCmdz.exe script\\import\\param.qst", TRUE, TRUE);
+    misc_call_exe("QstCmdz.exe " QST_PATH_SCRIPT
+                  "import\\param.qst", TRUE, TRUE);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnCancelClick(TObject *Sender)

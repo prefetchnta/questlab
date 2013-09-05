@@ -62,7 +62,8 @@ void __fastcall subAboutClick(TObject *Sender);
 void __fastcall TfrmMain::subQstLibClick(TObject *Sender)
 {
     /* 导入脚本仓库 */
-    misc_call_exe("RunWebIE.exe source\\import\\index.html", FALSE, FALSE);
+    misc_call_exe("RunWebIE.exe " QST_PATH_SOURCE
+                  "import\\index.html", FALSE, FALSE);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subQstRunClick(TObject *Sender)
@@ -82,7 +83,8 @@ void __fastcall TfrmMain::subQstRunClick(TObject *Sender)
 void __fastcall TfrmMain::subTreeCloseClick(TObject *Sender)
 {
     /* 关闭导入文件 */
-    misc_call_exe("QstCmdz.exe script\\import\\reset.qst", TRUE, TRUE);
+    misc_call_exe("QstCmdz.exe " QST_PATH_SCRIPT
+                  "import\\reset.qst", TRUE, TRUE);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subG2dColorClick(TObject *Sender)
