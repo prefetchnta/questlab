@@ -40,6 +40,7 @@ typedef struct
         bool_t      quit;   /* 是否退出 */
         leng_t      head;   /* 路径开头 */
         sARRAY      extz;   /* 插件列表 */
+        sARRAY      paks;   /* 封包列表 */
         socket_t    netw;   /* 网络连接 */
         sCURBEAD    list;   /* 挂载列表 */
         sCURBEAD    resx;   /* 资源列表 */
@@ -640,6 +641,7 @@ qst_load_package (
         mount_free(&temp);
         return;
     }
+    array_push_growT(&parm->paks, iPACKAGE*, &temp.pack);
     qst_send_finfo(&temp.info, parm->netw);
     qst_refresh_list(parm);
 
@@ -1068,6 +1070,7 @@ qst_mnt_ldr_free (
 
     /* 重新生成出错直接退出 */
     ctx = (sQstMount*)parm;
+    array_freeT(&ctx->paks, iPACKAGE*);
     curbead_freeT(&ctx->list, sQstMntNode);
     if (!curbead_initT(&ctx->list, sQstMntNode, 0)) {
         ctx->quit = TRUE;
@@ -1085,6 +1088,7 @@ qst_mnt_ldr_free (
     ctx->resx.comp = resx_comp;
     ctx->resx.free = resx_free;
     qst_refresh_list(ctx);
+    ctx->head = 0;
     return (TRUE);
 }
 
@@ -1127,6 +1131,7 @@ qst_mnt_res_load (
     )
 {
     int64u          idx;
+    iPACKAGE*       prt;
     sQstMount*      ctx;
     sQstResNode     tmp;
     sQstMntNode*    mnt;
@@ -1136,13 +1141,61 @@ qst_mnt_res_load (
     if (argc < 4)
         return (FALSE);
 
-    uint_t  page;
-    ansi_t* send;
+    uint_t      page;
+    leng_t      size;
+    ansi_t*     send;
+    sBUFFER     buff;
+    sPAK_FILE*  info;
 
     page = CR_LOCAL;
     if (argc > 4)
         page = str2intxA(argv[4]);
     ctx = (sQstMount*)parm;
+
+    /* 可以使用全局挂载名 */
+    if (str_cmpA(argv[2], "|GLOBALS|") == 0)
+    {
+        leng_t  ii, nn;
+
+        /* 逐个封包查找文件 */
+        send = local_to_utf8(page, argv[3]);
+        if (send == NULL)
+            goto _failure1;
+        idx = 0;
+        prt = NULL;
+        nn = array_get_sizeT(&ctx->paks, iPACKAGE*);
+        for (ii = 0; ii < nn; ii++) {
+            prt = (array_get_unitT(&ctx->paks, iPACKAGE*, ii))[0];
+            if (pack_find_fileU(prt, &idx, send))
+                break;
+        }
+        mem_free(send);
+        if (ii >= nn)
+            goto _failure1;
+    }
+    else
+    {
+        /* 直接使用挂载名称 */
+        send = local_to_utf8(page, argv[2]);
+        if (send == NULL)
+            goto _failure1;
+        path_uniqueA(send);
+        mnt = curbead_findT(&ctx->list, sQstMntNode, send);
+        mem_free(send);
+        if (mnt == NULL)
+            goto _failure1;
+
+        /* 查找包内文件 */
+        if (!pack_find_fileA(mnt->pack, &idx, argv[3], page))
+            goto _failure1;
+        prt = mnt->pack;
+    }
+
+    /* 文件加载到内存 */
+    pack_file_info(prt, &info, idx);
+    if (!pack_file_data(prt, &buff, idx, TRUE))
+        goto _failure1;
+    size = buffer_size(&buff);
 
     /* 根据标识名查找建立资源槽位 */
     res = curbead_findT(&ctx->resx, sQstResNode, argv[1]);
@@ -1161,37 +1214,13 @@ qst_mnt_res_load (
         struct_zero(&tmp, sQstResNode);
         tmp.name = str_dupA(argv[1]);
         if (tmp.name == NULL)
-            goto _failure1;
+            goto _failure2;
         res = curbead_insertT(&ctx->resx, sQstResNode, argv[1], &tmp);
         if (res == NULL) {
             mem_free(tmp.name);
-            goto _failure1;
+            goto _failure2;
         }
     }
-
-    /* 请直接使用挂载名称 */
-    send = local_to_utf8(page, argv[2]);
-    if (send == NULL)
-        goto _failure1;
-    path_uniqueA(send);
-    mnt = curbead_findT(&ctx->list, sQstMntNode, send);
-    mem_free(send);
-    if (mnt == NULL)
-        goto _failure1;
-
-    /* 查找包内文件 */
-    if (!pack_find_fileA(mnt->pack, &idx, argv[3], page))
-        goto _failure1;
-
-    leng_t      size;
-    sBUFFER     buff;
-    sPAK_FILE*  info;
-
-    /* 文件加载到内存 */
-    pack_file_info(mnt->pack, &info, idx);
-    if (!pack_file_data(mnt->pack, &buff, idx, TRUE))
-        goto _failure1;
-    size = buffer_size(&buff);
 
     /* 使用标识名称建立内存共享文件 */
     res->objs = share_file_open(argv[1], NULL, size);
