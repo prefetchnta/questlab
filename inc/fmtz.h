@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-19  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-09-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-05  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -533,6 +533,11 @@ typedef struct
 /* 释放外部文件 */
 CR_API void_t   filex_free (const sEX_FILE *filex);
 
+/* 两个用得到的函数类型 */
+typedef bool_t  (*router_load_t) (sEX_FILE*, const ansi_t*,
+                                  const ansi_t*, uint_t);
+typedef bool_t  (*resource_load_t) (sEX_FILE*, const ansi_t*,
+                            const ansi_t*, const ansi_t*, uint_t);
 /* 外部文件加载接口表 */
 typedef struct
 {
@@ -552,17 +557,16 @@ typedef struct
 typedef struct
 {
         /* 设置外部文件加载接口 */
-        void_t  (*setup) (const sRES_LOADER *loader);
+        void_t  (*setup) (resource_load_t loader);
 
         /* 通过路由加载外部文件 */
         bool_t  (*load) (sEX_FILE *filex, const ansi_t *type,
                          const ansi_t *name, uint_t cpage);
 } sRES_ROUTER;
 
-/* 两个用得到的函数类型 */
+/* 获取外部文件路由接口表的函数类型 */
 typedef const sRES_ROUTER*  (*router_get_t) (void_t);
-typedef bool_t  (*router_load_t) (sEX_FILE*, const ansi_t*,
-                                  const ansi_t*, uint_t);
+
 /* 两个获取接口表的函数 */
 CR_API const sRES_LOADER*   res_loader_get (void_t);
 CR_API const sRES_ROUTER*   res_router_get (void_t);

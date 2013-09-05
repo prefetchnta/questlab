@@ -106,3 +106,7 @@ cd ResLoader
 nmake -fResLoader.mak
 cd..
 rem =====================
+cd ResRouter
+nmake -fResRouter.mak
+cd..
+rem =====================
