@@ -954,7 +954,7 @@ qst_v2d_res_router (
         return (FALSE);
     }
     ctx->res_router = func();
-    ctx->res_router->setup(ctx->res_loader);
+    ctx->res_router->setup(ctx->res_loader->load);
     return (TRUE);
 }
 
