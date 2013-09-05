@@ -232,7 +232,7 @@ res_load (
             size = str2intA(argv[2]);
             mem_free(argv);
             mem_free(path);
-            if (size == 0)
+            if ((dist_t)size <= 0)
                 break;
             data = share_file_get(type, size);
             if (data == NULL)
