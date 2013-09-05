@@ -142,31 +142,33 @@ res_load (
     leng_t  idx, size;
 
     /* 以挂载名为根目录预读 */
-    size = str_lenA(mount);
-    for (idx = 0; idx < size; idx++) {
-        if (mount[idx] == '|')
-            break;
-    }
-    /* 包中包不做预读, 只做一层的预读 */
-    if (idx >= size) {
-        if (s_root != NULL)
-            path = path_appendA(s_root, mount);
-        else
-            path = str_dupA(mount);
-        if (path == NULL)
-            return (FALSE);
-        filext_removeA(path);
-        full = path_appendA(path, name);
-        mem_free(path);
-        if (full == NULL)
-            return (FALSE);
-        if (file_existA(full)) {
-            filex->is_free = TRUE;
-            set_ldrA(&filex->ex_file, full, "", 0, 0);
-            filex->ex_file.page = cpage;
-            return (TRUE);
+    if (str_cmpA(mount, QST_STR_GLOBALS) != 0) {
+        size = str_lenA(mount);
+        for (idx = 0; idx < size; idx++) {
+            if (mount[idx] == '|')
+                break;
         }
-        mem_free(full);
+        /* 包中包不做预读, 只做一层的预读 */
+        if (idx >= size) {
+            if (s_root != NULL)
+                path = path_appendA(s_root, mount);
+            else
+                path = str_dupA(mount);
+            if (path == NULL)
+                return (FALSE);
+            filext_removeA(path);
+            full = path_appendA(path, name);
+            mem_free(path);
+            if (full == NULL)
+                return (FALSE);
+            if (file_existA(full)) {
+                filex->is_free = TRUE;
+                set_ldrA(&filex->ex_file, full, "", 0, 0);
+                filex->ex_file.page = cpage;
+                return (TRUE);
+            }
+            mem_free(full);
+        }
     }
 
     /* 使用网络接口加载 */
