@@ -16,4 +16,3 @@ build_all:
     del /Q *.obj
     del /Q 2.manifest
     del /Q $(PROJECT).exp
-    del /Q $(PROJECT).lib
