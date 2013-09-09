@@ -1,0 +1,19 @@
+//======================//
+//  KrKr GAME IMPORTER  //
+//======================//
+$call xSelectDir.exe
+$continue?
+$exec script/import/reset.qst
+g2d:ext:load CrH_FMTZ.dll
+g2d:ext:load plugin/zDevIL.dll
+g2d:ext:load plugin/zFreeImage.dll
+pak:ext:load plugin/zKiriKiri.dll
+xmm:ext:load plugin/zFMOD.dll
+xmm:ext:load plugin/zDShow.dll
+$fopen output/__imp__.xml
+<ImpScript>
+    <Import name="*.*" sub="1" />
+</ImpScript>
+$fclose
+$call xImpScript.exe 932 output/__imp__.xml
+dir:load
