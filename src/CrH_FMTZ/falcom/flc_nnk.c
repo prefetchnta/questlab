@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-13  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-15  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -107,13 +107,12 @@ iPAK_NNK_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    leng_t          idx;
     leng_t          read;
     int64u          size;
     void_t*         data;
     iDATIN*         file;
     iPAK_NNK*       real;
-    sPAK_NNK_FILE*  list;
+    sPAK_NNK_FILE*  item;
 
     /* 定位文件索引 */
     CR_NOUSE(hash);
@@ -123,11 +122,11 @@ iPAK_NNK_getFileData (
                 "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (leng_t)index;
-    list = (sPAK_NNK_FILE*)real->pack.__filelst__;
+    item = (sPAK_NNK_FILE*)real->pack.__filelst__;
+    item += (leng_t)index;
 
     /* 获取文件数据 (0大小文件分配1个字节) */
-    size = list[idx].base.size;
+    size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
         if (data == NULL) {
@@ -145,10 +144,10 @@ iPAK_NNK_getFileData (
                     "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
         }
+        file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        file = real->m_file;
-        if (!CR_VCALL(file)->seek64(file, list[idx].base.offs, SEEK_SET)) {
+        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET)) {
             err_set(__CR_FLC_NNK_C__, FALSE,
                     "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure;
@@ -401,6 +400,11 @@ load_flc_nnk (
         info[idx].name = DWORD_LE(info[idx].name);
         if (info[idx].name >= head.name_size) {
             err_set(__CR_FLC_NNK_C__, info[idx].name,
+                    "load_flc_nnk()", "invalid NNK format");
+            goto _failure4;
+        }
+        if (name[info[idx].name] == 0x00) {
+            err_set(__CR_FLC_NNK_C__, NIL,
                     "load_flc_nnk()", "invalid NNK format");
             goto _failure4;
         }
