@@ -462,7 +462,7 @@ load_krkr_xp3 (
         /* 读取文件名 UTF-16 无0结尾 */
         mem_cpy(&len, pntr + 20, sizeof(int16u));
         len = WORD_LE(len);
-        if (len == 0 || (int64u)len > tsz1 - 22) {
+        if ((int64u)len > tsz1 - 22) {
             err_set(__CR_KRKR_XP3_C__, len,
                     "load_krkr_xp3()", "invalid XP3 format");
             goto _failure2;
@@ -478,6 +478,12 @@ load_krkr_xp3 (
             name[idx] = WORD_LE(name[idx]);
         }
         name[idx] = 0x0000;
+        if (name[0] == 0x0000) {
+            err_set(__CR_KRKR_XP3_C__, NIL,
+                    "load_krkr_xp3()", "invalid XP3 format");
+            mem_free(name);
+            goto _failure2;
+        }
         temp.base.name = utf16_to_utf8(name);
         mem_free(name);
         if (temp.base.name == NULL) {
