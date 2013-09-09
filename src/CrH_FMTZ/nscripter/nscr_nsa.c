@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-04-05  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-01  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -414,16 +414,14 @@ iPAK_NSA_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    uint_t          idx;
     leng_t          read;
     int64u          pack;
     int64u          size;
-    byte_t          type;
     void_t*         temp;
     void_t*         data;
     iDATIN*         file;
     iPAK_NSA*       real;
-    sPAK_NSA_FILE*  list;
+    sPAK_NSA_FILE*  item;
 
     /* 定位文件索引 */
     CR_NOUSE(hash);
@@ -433,19 +431,18 @@ iPAK_NSA_getFileData (
                 "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (uint_t)index;
-    list = (sPAK_NSA_FILE*)real->pack.__filelst__;
+    item = (sPAK_NSA_FILE*)real->pack.__filelst__;
+    item += (uint_t)index;
 
     /* 提前过滤压缩类型 */
-    type = list[idx].ftype;
-    if (type != 0 && type != 1 && type != 2) {
-        err_set(__CR_NSCR_NSA_C__, type,
+    if (item->ftype != 0 && item->ftype != 1 && item->ftype != 2) {
+        err_set(__CR_NSCR_NSA_C__, item->ftype,
                 "iPACKAGE::getFileData()", "invalid compression type");
         return (FALSE);
     }
 
     /* 获取文件数据 (0大小文件分配1个字节) */
-    size = list[idx].base.size;
+    size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
         if (data == NULL) {
@@ -457,17 +454,17 @@ iPAK_NSA_getFileData (
         *(byte_t*)data = 0x00;
     }
     else {
-        pack = list[idx].base.pack;
+        pack = item->base.pack;
         temp = mem_malloc64(pack);
         if (temp == NULL) {
             err_set(__CR_NSCR_NSA_C__, CR_NULL,
                     "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
         }
+        file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        file = real->m_file;
-        if (!CR_VCALL(file)->seek64(file, list[idx].base.offs, SEEK_SET)) {
+        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET)) {
             err_set(__CR_NSCR_NSA_C__, FALSE,
                     "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure1;
@@ -480,7 +477,7 @@ iPAK_NSA_getFileData (
         }
 
         /* 根据压缩类型解码数据 */
-        if (type == 0)
+        if (item->ftype == 0)
         {
             /* Store */
             size = pack;
@@ -495,7 +492,7 @@ iPAK_NSA_getFileData (
                 goto _failure1;
             }
 
-            if (type == 1)
+            if (item->ftype == 1)
             {
                 /* SPB (BMP) */
                 read = decode_spb(data, (leng_t)size, temp, (leng_t)pack);
@@ -507,7 +504,7 @@ iPAK_NSA_getFileData (
                 size = read;
             }
             else
-            if (type == 2)
+            if (item->ftype == 2)
             {
                 /* LZSS-8 */
                 read = uncompr_lzss8(data, (leng_t)size, temp, (leng_t)pack);
