@@ -13,7 +13,7 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>>> CrHack KrKr XP3 封包读取函数库 <<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>>> CrHack kirikiri XP3 封包读取函数库 <<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
@@ -23,7 +23,7 @@
 #include "enclib.h"
 #include "strlib.h"
 #include "../fmtint.h"
-#include "fmtz/krkr.h"
+#include "fmtz/kirikiri.h"
 
 /* 接口内部数据结构 */
 typedef struct
@@ -40,7 +40,7 @@ typedef struct
                                 const sPAK_XP3_FILE *info);
         /* 数据块解密回调 */
         void_t  (*decode_block) (void_t *data, leng_t size,
-                            leng_t offset, const sPAK_XP3_FILE *info);
+                        leng_t offset, const sPAK_XP3_FILE *info);
 } iPAK_XP3;
 
 /*
@@ -280,6 +280,23 @@ decode_setup (
     that->decode_block = NULL;
 }
 
+/* XP3 内部结构 (LE) */
+#ifndef _CR_NO_PRAGMA_PACK_
+    #pragma pack (push, 1)
+#endif
+
+/* XP3 文件头结构 */
+CR_TYPEDEF struct
+{
+        byte_t  tag[11];    /* 文件头标志 */
+        int64u  idx_pos;    /* 索引表位置 */
+
+} CR_PACKED sXP3_HDR;
+
+#ifndef _CR_NO_PRAGMA_PACK_
+    #pragma pack (pop)
+#endif
+
 /*
 ---------------------------------------
     文件单元释放回调
@@ -323,6 +340,7 @@ load_krkr_xp3 (
     byte_t*         info;
     byte_t*         pntr;
     wide_t*         name;
+    sXP3_HDR        head;
     iPAK_XP3*       port;
     sFMT_PRT*       rett;
     sPAK_XP3_FILE   temp;
@@ -338,11 +356,24 @@ load_krkr_xp3 (
     list.free = xp3_free;
 
     /* 读取文件头信息 */
-    /******************/
-    /***** 未实现 *****/
-    /******************/
+    if (!(CR_VCALL(datin)->getT(datin, &head, sXP3_HDR))) {
+        err_set(__CR_BMP_C__, FALSE,
+                "load_krkr_xp3()", "iDATIN::getT() failure");
+        goto _failure1;
+    }
+    if (mem_cmp(head.tag, "XP3\r\n \n\x1A\x8B\x67\x01", 11) != 0) {
+        err_set(__CR_PNG_C__, CR_ERROR,
+                "load_krkr_xp3()", "invalid XP3 format");
+        goto _failure1;
+    }
+    head.idx_pos = QWORD_LE(head.idx_pos);
 
     /* 读取文件索引表 */
+    if (!CR_VCALL(datin)->seek64(datin, head.idx_pos, SEEK_SET)) {
+        err_set(__CR_KRKR_XP3_C__, FALSE,
+                "load_krkr_xp3()", "iDATIN::seek64() failure");
+        goto _failure1;
+    }
     if (!CR_VCALL(datin)->getb_no(datin, &type)) {
         err_set(__CR_KRKR_XP3_C__, FALSE,
                 "load_krkr_xp3()", "iDATIN::getb_no() failure");

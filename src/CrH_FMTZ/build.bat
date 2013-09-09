@@ -28,3 +28,5 @@ nmake -fe_tgl.mak
 rem =====================
 nmake -fe_falcom.mak
 rem =====================
+nmake -fe_kirikiri.mak
+rem =====================

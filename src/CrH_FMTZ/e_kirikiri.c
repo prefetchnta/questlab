@@ -13,52 +13,74 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>>>> CrHack KrKr FMTZ 插件头文件 <<<<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>>> CrHack kirikiri FMTZ 插件接口实现 <<<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_KRKR_H__
-#define __CR_KRKR_H__ 0xFC2048D4UL
+#ifndef __CR_E_KIRIKIRI_C__
+#define __CR_E_KIRIKIRI_C__ 0x60F80468UL
 
-#include "fmtz.h"
+#include "fmtint.h"
+#include "fmtz/kirikiri.h"
 
-/* XP3 文件分段结构 */
-CR_TYPEDEF struct
+/* 引擎常数表 */
+#undef  _CR_FMTZ_WIDE_
+#include "e_kirikiri.inl"
+#define _CR_FMTZ_WIDE_
+#include "e_kirikiri.inl"
+#undef  _CR_FMTZ_WIDE_
+
+/*
+---------------------------------------
+    文件格式加载接口
+---------------------------------------
+*/
+static sFMTZ*
+engine_flc_load (
+  __CR_IN__ sENGINE*    engine,
+  __CR_IO__ sLOADER*    loader
+    )
 {
-        int32u  zlib;       /* ZLib 压缩 */
-        int64u  offset;     /* 数据的偏移 */
-        int64u  unsize;     /* 解压缩大小 */
-        int64u  pksize;     /* 存放的大小 */
+    if (!(engine->mask & CR_FMTZ_MASK_PAK))
+        return (NULL);
+    return (fmtz_find(engine, loader));
+}
 
-} CR_PACKED sPAK_XP3_SEGM;
-
-/* XP3 文件信息结构 */
-typedef struct
+/*
+=======================================
+    获取引擎插件接口
+=======================================
+*/
+CR_API sENGINE*
+engine_krkr (void_t)
 {
-        /* 公用部分 */
-        sPAK_FILE   base;
+    sENGINE*    engine;
 
-        /* 个性部分 */
-        int32u          protect;    /* 保护字段？ */
-        int32u          adlr_key;   /* 附加的密钥 */
-        leng_t          segm_cnt;   /* 文件分段数量 */
-        sPAK_XP3_SEGM*  segm_lst;   /* 文件分段列表 */
+    engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
+    if (engine == NULL) {
+        err_set(__CR_E_KIRIKIRI_C__, CR_NULL,
+                "engine_krkr()", "engine_init() failure");
+        return (NULL);
+    }
+    engine->fmtz_load = engine_flc_load;
+    engine->info = "kirikiri FMTz Engine (Done by CrHackOS)";
+    return (engine);
+}
 
-} sPAK_XP3_FILE;
+#if defined(_CR_BUILD_DLL_)
+/*
+=======================================
+    获取引擎插件接口 (同名)
+=======================================
+*/
+CR_API sENGINE*
+engine_get (void_t)
+{
+    return (engine_krkr());
+}
+#endif  /* _CR_BUILD_DLL_ */
 
-/*****************************************************************************/
-/*                                 引擎接口                                  */
-/*****************************************************************************/
-
-CR_API sENGINE*     engine_krkr (void_t);
-
-/*****************************************************************************/
-/*                               封包文件格式                                */
-/*****************************************************************************/
-
-CR_API sFMT_PRT*    load_krkr_xp3 (iDATIN *datin, const sLOADER *param);
-
-#endif  /* !__CR_KRKR_H__ */
+#endif  /* !__CR_E_KIRIKIRI_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
