@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-08-07  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-13  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -108,13 +108,12 @@ iPAK_PACF_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    leng_t      idx;
     leng_t      read;
     int64u      size;
     void_t*     data;
     iDATIN*     file;
     iPAK_PACF*  real;
-    sPAK_FILE*  list;
+    sPAK_FILE*  item;
 
     /* 定位文件索引 */
     CR_NOUSE(hash);
@@ -124,11 +123,11 @@ iPAK_PACF_getFileData (
                 "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (leng_t)index;
-    list = real->pack.__filelst__;
+    item = real->pack.__filelst__;
+    item += (leng_t)index;
 
     /* 获取文件数据 (0大小文件分配1个字节) */
-    size = list[idx].size;
+    size = item->size;
     if (size == 0) {
         data = mem_malloc(1);
         if (data == NULL) {
@@ -146,10 +145,10 @@ iPAK_PACF_getFileData (
                     "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
         }
+        file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        file = real->m_file;
-        if (!CR_VCALL(file)->seek64(file, list[idx].offs, SEEK_SET)) {
+        if (!CR_VCALL(file)->seek64(file, item->offs, SEEK_SET)) {
             err_set(__CR_TGL_PAC_C__, FALSE,
                     "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure;
@@ -299,6 +298,11 @@ load_tgl_pac (
         if (read != 16) {
             err_set(__CR_TGL_PAC_C__, read,
                     "load_tgl_pac()", "iDATIN::read() failure");
+            goto _failure2;
+        }
+        if (str[0] == 0x00) {
+            err_set(__CR_TGL_PAC_C__, NIL,
+                    "load_tgl_pac()", "invalid TGL PAC format");
             goto _failure2;
         }
 
