@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-09-12  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-29  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -120,11 +120,10 @@ iPAK_GCA_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    uint_t          idx;
     int64u          size;
     void_t*         data;
     iPAK_GCA*       real;
-    sPAK_GCA_FILE*  list;
+    sPAK_GCA_FILE*  item;
 
     /* 定位文件索引 */
     CR_NOUSE(hash);
@@ -134,11 +133,11 @@ iPAK_GCA_getFileData (
                 "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (uint_t)index;
-    list = (sPAK_GCA_FILE*)real->pack.__filelst__;
+    item = (sPAK_GCA_FILE*)real->pack.__filelst__;
+    item += (uint_t)index;
 
     /* 获取文件数据 (0大小文件分配1个字节) */
-    size = list[idx].base.size;
+    size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
         if (data == NULL) {
@@ -156,7 +155,7 @@ iPAK_GCA_getFileData (
                     "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
         }
-        if (!real->m_gca->ExtractFileToMemory((int)idx, (BYTE*)data)) {
+        if (!real->m_gca->ExtractFileToMemory((int)index, (BYTE*)data)) {
             err_set(__CR_GCAX_CPP__, FALSE,
                     "iPACKAGE::getFileData()",
                     "CGca::ExtractFileToMemory() failure");
@@ -349,6 +348,13 @@ load_syn_gca (
     for (idx = 0; idx < cnt; idx++)
     {
         string  name = gca->GetFileName((int)idx);
+
+        /* 空文件名检查 */
+        if (name[0] == 0x00) {
+            err_set(__CR_GCAX_CPP__, NIL,
+                    "load_syn_gca()", "invalid GCA format");
+            goto _failure4;
+        }
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].base.name = local_to_utf8(param->page, name.c_str());
