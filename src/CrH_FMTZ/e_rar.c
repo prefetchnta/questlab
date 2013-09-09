@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-03-04  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-08-19  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -170,12 +170,11 @@ iPAK_RAR_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    leng_t                  idx;
     sint_t                  rett;
     int64u                  size;
     void_t*                 data;
     iPAK_RAR*               real;
-    sPAK_RAR_FILE*          list;
+    sPAK_RAR_FILE*          item;
     RARHeaderDataEx         info;
     RAROpenArchiveDataEx    open;
 
@@ -187,11 +186,11 @@ iPAK_RAR_getFileData (
                 "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (leng_t)index;
-    list = (sPAK_RAR_FILE*)real->pack.__filelst__;
+    item = (sPAK_RAR_FILE*)real->pack.__filelst__;
+    item += (leng_t)index;
 
     /* 获取文件数据 (0大小文件分配1个字节) */
-    size = list[idx].base.size;
+    size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
         if (data == NULL) {
@@ -212,7 +211,7 @@ iPAK_RAR_getFileData (
 
         /* RAR 只能顺序读取文件 */
         mtlock_acquire(&real->m_lock);
-        if (real->m_rar == NULL || list[idx].id < real->m_cur)
+        if (real->m_rar == NULL || item->id < real->m_cur)
         {
             /* 需要重新打开封包 */
             if (real->m_rar != NULL) {
@@ -240,7 +239,7 @@ iPAK_RAR_getFileData (
 
         /* 定位到指定文件 */
         struct_zero(&info, RARHeaderDataEx);
-        while (real->m_cur != list[idx].id) {
+        while (real->m_cur != item->id) {
             rett = RARReadHeaderEx(real->m_rar, &info);
             if (rett != 0) {
                 err_set(__CR_E_RAR_C__, rett,
@@ -419,6 +418,11 @@ load_rar (
                 goto _failure1;
             }
             continue;
+        }
+        if (info.FileName[0] == 0x00) {
+            err_set(__CR_E_RAR_C__, NIL,
+                    "load_rar()", "invalid RAR format");
+            goto _failure1;
         }
 
         /* 文件名统一使用 UTF-8 编码 */
