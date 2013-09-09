@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-02-28  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-07-05  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-09  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -108,17 +108,15 @@ iPAK_ZIP_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    leng_t          idx;
     leng_t          read;
     int64u          pack;
     int64u          size;
     int32u          cksm;
-    int16u          type;
     void_t*         temp;
     void_t*         data;
     iDATIN*         file;
     iPAK_ZIP*       real;
-    sPAK_ZIP_FILE*  list;
+    sPAK_ZIP_FILE*  item;
 
     /* 定位文件索引 */
     real = (iPAK_ZIP*)that;
@@ -127,19 +125,18 @@ iPAK_ZIP_getFileData (
                 "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
     }
-    idx = (leng_t)index;
-    list = (sPAK_ZIP_FILE*)real->pack.__filelst__;
+    item = (sPAK_ZIP_FILE*)real->pack.__filelst__;
+    item += (leng_t)index;
 
     /* 提前过滤压缩类型 */
-    type = list[idx].ftype;
-    if (type != 0 && type != 8 && type != 12) {
-        err_set(__CR_ZIP_C__, type,
+    if (item->ftype != 0 && item->ftype != 8 && item->ftype != 12) {
+        err_set(__CR_ZIP_C__, item->ftype,
                 "iPACKAGE::getFileData()", "invalid compression type");
         return (FALSE);
     }
 
     /* 获取文件数据 (0大小文件分配1个字节) */
-    size = list[idx].base.size;
+    size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
         if (data == NULL) {
@@ -151,17 +148,17 @@ iPAK_ZIP_getFileData (
         *(byte_t*)data = 0x00;
     }
     else {
-        pack = list[idx].base.pack;
+        pack = item->base.pack;
         temp = mem_malloc64(pack);
         if (temp == NULL) {
             err_set(__CR_ZIP_C__, CR_NULL,
                     "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
         }
+        file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        file = real->m_file;
-        if (!CR_VCALL(file)->seek64(file, list[idx].base.offs, SEEK_SET)) {
+        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET)) {
             err_set(__CR_ZIP_C__, FALSE,
                     "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure1;
@@ -174,7 +171,7 @@ iPAK_ZIP_getFileData (
         }
 
         /* 根据压缩类型解码数据 */
-        if (type == 0)
+        if (item->ftype == 0)
         {
             /* Store */
             size = pack;
@@ -189,7 +186,7 @@ iPAK_ZIP_getFileData (
                 goto _failure1;
             }
 
-            if (type == 8)
+            if (item->ftype == 8)
             {
                 /* Deflate (32K) */
                 read = uncompr_pkzip(data, (leng_t)size, temp, (leng_t)pack);
@@ -200,7 +197,7 @@ iPAK_ZIP_getFileData (
                 }
             }
             else
-            if (type == 12)
+            if (item->ftype == 12)
             {
                 /* BZip2 */
                 read = uncompr_bzip2(data, (leng_t)size, temp, (leng_t)pack);
@@ -216,8 +213,8 @@ iPAK_ZIP_getFileData (
 
     /* 校验文件数据 */
     if (hash) {
-        cksm = hash_crc32i_total(data, (leng_t)list[idx].base.size);
-        if (cksm != list[idx].crc32) {
+        cksm = hash_crc32i_total(data, (leng_t)item->base.size);
+        if (cksm != item->crc32) {
             err_set(__CR_ZIP_C__, cksm,
                     "iPACKAGE::getFileData()", "file checksum error");
             mem_free(data);
@@ -391,6 +388,12 @@ load_cr_zip (
             goto _failure;
         }
         name[len] = NIL;
+        if (name[0] == 0x00) {
+            err_set(__CR_ZIP_C__, NIL,
+                    "load_cr_zip()", "invalid ZIP format");
+            mem_free(name);
+            goto _failure;
+        }
 
         /* 跳过附加数据 */
         offs = WORD_LE(unit.ext_len);
