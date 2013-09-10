@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2013-09-09  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-09-09  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-10  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -329,7 +329,6 @@ load_krkr_xp3 (
     int16u          idx;
     int16u          len;
     int32u          attr;
-    byte_t          type;
     int64u          tots;
     int64u          tsz1;
     int64u          tsz2;
@@ -357,12 +356,12 @@ load_krkr_xp3 (
 
     /* 读取文件头信息 */
     if (!(CR_VCALL(datin)->getT(datin, &head, sXP3_HDR))) {
-        err_set(__CR_BMP_C__, FALSE,
+        err_set(__CR_KRKR_XP3_C__, FALSE,
                 "load_krkr_xp3()", "iDATIN::getT() failure");
         goto _failure1;
     }
     if (mem_cmp(head.tag, "XP3\r\n \n\x1A\x8B\x67\x01", 11) != 0) {
-        err_set(__CR_PNG_C__, CR_ERROR,
+        err_set(__CR_KRKR_XP3_C__, CR_ERROR,
                 "load_krkr_xp3()", "invalid XP3 format");
         goto _failure1;
     }
@@ -374,12 +373,12 @@ load_krkr_xp3 (
                 "load_krkr_xp3()", "iDATIN::seek64() failure");
         goto _failure1;
     }
-    if (!CR_VCALL(datin)->getb_no(datin, &type)) {
+    if (!CR_VCALL(datin)->getb_no(datin, head.tag)) {
         err_set(__CR_KRKR_XP3_C__, FALSE,
                 "load_krkr_xp3()", "iDATIN::getb_no() failure");
         goto _failure1;
     }
-    if (type)
+    if (head.tag[0])
     {
         /* ZLib 压缩的索引表 */
         if (!CR_VCALL(datin)->getq_le(datin, &pksz)) {
