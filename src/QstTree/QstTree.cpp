@@ -233,6 +233,8 @@ qst_do_node (
             break;
     }
     data->name = &data->path[len];
+    if (data->name[0] == 0x0000)
+        return (FALSE);
     return (TRUE);
 }
 
