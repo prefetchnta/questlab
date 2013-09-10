@@ -2,7 +2,7 @@
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-29  */
 /*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
-/*    ########          ###    ###                  ###  MODIFY: 2013-09-04  */
+/*    ########          ###    ###                  ###  MODIFY: 2013-09-10  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
 /*  ####       ######## ##########  #######  ###### ###  ###  |  A NEW C  |  */
@@ -522,27 +522,29 @@ pack_init_list (
         return (TRUE);
     ptr = pack->__filelst__;
     for (idx = 0; idx < num; idx++) {
-        tmp.index = idx;
-        tmp.finfo = ptr;
-        if (ptr->find == NULL) {
-            ptr->find = str_dupA(ptr->name);
+        if (ptr->name[0] != 0x00) {
+            tmp.index = idx;
+            tmp.finfo = ptr;
             if (ptr->find == NULL) {
+                ptr->find = str_dupA(ptr->name);
+                if (ptr->find == NULL) {
+                    err_set(__CR_FMTLIB_C__, CR_NULL,
+                            "pack_init_list()", "str_dupA() failure");
+                    curtain_freeT(&pack->__search__, sFINDER);
+                    return (FALSE);
+                }
+                if (caseless)
+                    flname_uniqueA((ansi_t*)ptr->find);
+                else
+                    path_uniqueA((ansi_t*)ptr->find);
+            }
+            if (curtain_insertT(&pack->__search__, sFINDER,
+                                ptr->find, &tmp) == NULL) {
                 err_set(__CR_FMTLIB_C__, CR_NULL,
-                        "pack_init_list()", "str_dupA() failure");
+                        "pack_init_list()", "curtain_insertT() failure");
                 curtain_freeT(&pack->__search__, sFINDER);
                 return (FALSE);
             }
-            if (caseless)
-                flname_uniqueA((ansi_t*)ptr->find);
-            else
-                path_uniqueA((ansi_t*)ptr->find);
-        }
-        if (curtain_insertT(&pack->__search__, sFINDER,
-                            ptr->find, &tmp) == NULL) {
-            err_set(__CR_FMTLIB_C__, CR_NULL,
-                    "pack_init_list()", "curtain_insertT() failure");
-            curtain_freeT(&pack->__search__, sFINDER);
-            return (FALSE);
         }
         ptr = (sPAK_FILE*)((byte_t*)ptr + ptr->skip);
     }
