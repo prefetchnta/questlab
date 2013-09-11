@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_BLENDS_H__
-#define __CR_BLENDS_H__ 0x50D69D07UL
+#define __CR_BLENDS_H__
 
 #include "endian.h"
 
