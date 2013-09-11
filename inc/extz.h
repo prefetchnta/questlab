@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_EXTZ_H__
-#define __CR_EXTZ_H__ 0x8F2AFE27UL
+#define __CR_EXTZ_H__
 
 #include "script.h"
 

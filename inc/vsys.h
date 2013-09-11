@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_VSYS_H__
-#define __CR_VSYS_H__ 0xCE97EDBAUL
+#define __CR_VSYS_H__
 
 #include "defs.h"
 

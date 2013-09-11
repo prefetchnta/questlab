@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_HLPLIB_H__
-#define __CR_HLPLIB_H__ 0x052E8E44UL
+#define __CR_HLPLIB_H__
 
 #include "datlib.h"
 

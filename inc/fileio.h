@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_FILEIO_H__
-#define __CR_FILEIO_H__ 0x176C5EBEUL
+#define __CR_FILEIO_H__
 
 #include "endian.h"
 

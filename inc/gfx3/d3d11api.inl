@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_D3D11API_INL__
-#define __CR_D3D11API_INL__ 0xA075FE73UL
+#define __CR_D3D11API_INL__
 
 
 #endif  /* !__CR_D3D11API_INL__ */

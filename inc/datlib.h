@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DATLIB_H__
-#define __CR_DATLIB_H__ 0x6A178767UL
+#define __CR_DATLIB_H__
 
 #include "memlib.h"
 
@@ -156,11 +156,8 @@ array_get_unit_safe (
   __CR_IN__ leng_t          index
     )
 {
-    if (index >= that->__cnts__) {
-        err_set(__CR_DATLIB_H__, index,
-                "array_get_unit_safe()", "index: out of bounds");
+    if (index >= that->__cnts__)
         return (NULL);
-    }
     return (that->__buff__ + index * unit);
 }
 
@@ -602,11 +599,8 @@ atree_go_next (
 {
     sATR_UNIT** next;
 
-    if (index >= node->next.__cnts__) {
-        err_set(__CR_DATLIB_H__, index,
-                "atree_go_next()", "index: out of bounds");
+    if (index >= node->next.__cnts__)
         return (NULL);
-    }
     next = array_get_unitT(&node->next, sATR_UNIT*, index);
     return ((sATR_UNIT*)(next[0]));
 }
@@ -668,11 +662,8 @@ bring_init (
 {
     struct_zero(that, sBRING);
     that->data = mem_talloc(size, BRING_TYPE);
-    if (that->data == NULL) {
-        err_set(__CR_DATLIB_H__, CR_NULL,
-                "bring_init()", "mem_talloc() failure");
+    if (that->data == NULL)
         return (FALSE);
-    }
     that->size = size;
     return (TRUE);
 }
@@ -945,11 +936,8 @@ pltable_get_unit_safe (
   __CR_IN__ leng_t          index
     )
 {
-    if (index >= that->__size__) {
-        err_set(__CR_DATLIB_H__, index,
-                "pltable_get_unit_safe()", "index: out of bounds");
+    if (index >= that->__size__)
         return (NULL);
-    }
     if (!that->__info__[index])
         return (NULL);
     return (that->__buff__ + index * unit);

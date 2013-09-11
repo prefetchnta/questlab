@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_RFLCK_H__
-#define __CR_RFLCK_H__ 0x1CEC5AB7UL
+#define __CR_RFLCK_H__
 
 #include "comm.h"
 

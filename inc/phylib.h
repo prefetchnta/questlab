@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_PHYLIB_H__
-#define __CR_PHYLIB_H__ 0x73F4057FUL
+#define __CR_PHYLIB_H__
 
 #include "gfx2.h"
 

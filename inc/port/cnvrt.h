@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_CNVRT_H__
-#define __CR_CNVRT_H__ 0x9D2605DDUL
+#define __CR_CNVRT_H__
 
 #if !defined(_CR_SICK_INLINE_)
 /*

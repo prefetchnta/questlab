@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_RFCON_H__
-#define __CR_RFCON_H__ 0x55866555UL
+#define __CR_RFCON_H__
 
 #include "comm.h"
 

@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_MTPLIB_H__
-#define __CR_MTPLIB_H__ 0xF41FA569UL
+#define __CR_MTPLIB_H__
 
 #include "defs.h"
 

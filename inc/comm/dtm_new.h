@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DTM_NEW_H__
-#define __CR_DTM_NEW_H__ 0xF5CF57FEUL
+#define __CR_DTM_NEW_H__
 
 #include "comm.h"
 

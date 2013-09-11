@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_HASH_H__
-#define __CR_HASH_H__ 0xE14CC6B1UL
+#define __CR_HASH_H__
 
 #include "defs.h"
 

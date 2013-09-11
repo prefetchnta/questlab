@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_RFCMM_H__
-#define __CR_RFCMM_H__ 0x5FEEBE8EUL
+#define __CR_RFCMM_H__
 
 #include "comm.h"
 

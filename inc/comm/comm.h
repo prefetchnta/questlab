@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_COMM_H__
-#define __CR_COMM_H__ 0x1D254D21UL
+#define __CR_COMM_H__
 
 #include "devlib.h"
 

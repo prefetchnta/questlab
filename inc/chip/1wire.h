@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_1WIRE_H__
-#define __CR_1WIRE_H__ 0xEC91969BUL
+#define __CR_1WIRE_H__
 
 #include "defs.h"
 

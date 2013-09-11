@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_D3D8API_H__
-#define __CR_D3D8API_H__ 0xCAFA9D2CUL
+#define __CR_D3D8API_H__
 
 #include <d3d8.h>
 #include <d3dx8.h>
