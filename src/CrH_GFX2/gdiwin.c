@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_GDIWIN_C__
-#define __CR_GDIWIN_C__ 0x80759705UL
-
 #include "memlib.h"
 #include "pixels.h"
 #include "strlib.h"
@@ -99,11 +96,8 @@ iGFX2_GDI_reset (
     iGFX2_GDI*  real = (iGFX2_GDI*)that;
 
     /* 重新获取窗口大小 */
-    if (!GetClientRect(real->m_hwnd, &rect)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iGFX2::reset()", "GetClientRect() failure");
+    if (!GetClientRect(real->m_hwnd, &rect))
         return (FALSE);
-    }
 
     /* 如果发生了改变则重新生成后台缓冲 */
     if ((uint_t)rect.right  != that->__back__.position.ww ||
@@ -111,11 +105,8 @@ iGFX2_GDI_reset (
     {
         next = create_gdi_bitmap(rect.right, rect.bottom,
                                  CR_UNKNOWN, 0, NULL, 0);
-        if (next == NULL) {
-            err_set(__CR_GDIWIN_C__, CR_NULL,
-                    "iGFX2::reset()", "create_gdi_bitmap() failure");
+        if (next == NULL)
             return (FALSE);
-        }
         DeleteObject(real->m_hbmp);
         DeleteDC(real->m_back);
 
@@ -170,14 +161,9 @@ iGFX2_GDI_flip (
 {
     iGFX2_GDI*  real = (iGFX2_GDI*)that;
 
-    if (!BitBlt(real->m_main, 0, 0, real->__back__.position.ww,
-                real->__back__.position.hh, real->m_back, 0, 1, SRCCOPY)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iGFX2::flip()", "BitBlt() failure");
-        return (FALSE);
-    }
     CR_NOUSE(sync);
-    return (TRUE);
+    return (BitBlt(real->m_main, 0, 0, real->__back__.position.ww,
+                   real->__back__.position.hh, real->m_back, 0, 1, SRCCOPY));
 }
 
 /*
@@ -194,29 +180,22 @@ iGFX2_GDI_clear (
 {
     RECT        pos;
     HBRUSH      hbr;
+    bool_t      rett;
     iGFX2_GDI*  real;
 
+    CR_NOUSE(param);
     hbr = CreateSolidBrush(argb32_to_gdi(&color));
-    if (hbr == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iGFX2::clear()", "CreateSolidBrush() failure");
+    if (hbr == NULL)
         return (FALSE);
-    }
-
     real = (iGFX2_GDI*)that;
+
     pos.left   = 0;
     pos.top    = 1;     /* 这里的加1很重要 */
     pos.right  = real->__back__.position.ww;
     pos.bottom = real->__back__.position.hh + 1;
-    if (!FillRect(real->m_back, &pos, hbr)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iGFX2::clear()", "FillRect() failure");
-        DeleteObject(hbr);
-        return (FALSE);
-    }
+    rett = FillRect(real->m_back, &pos, hbr);
     DeleteObject(hbr);
-    CR_NOUSE(param);
-    return (TRUE);
+    return (rett);
 }
 
 /*
@@ -242,8 +221,6 @@ iGFX2_GDI_setPal (
         case CR_INDEX8: type = 256; break;
 
         default:
-            err_set(__CR_GDIWIN_C__, type,
-                    "iGFX2::setPal()", "bitmap surface without palette");
             return (FALSE);
     }
 
@@ -255,11 +232,8 @@ iGFX2_GDI_setPal (
 
     real = (iGFX2_GDI*)that;
     if (SetDIBColorTable(real->m_back, start, count,
-                        (RGBQUAD*)(&real->__back__.pal)) != count) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iGFX2::setPal()", "SetDIBColorTable() failure");
+                        (RGBQUAD*)(&real->__back__.pal)) != count)
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -335,39 +309,28 @@ create_gdi_canvas (
     if (full) {
         scn_cw = GetSystemMetrics(SM_CXSCREEN);
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
-        if (!SetWindowPos(hwnd, HWND_TOP, 0, 0,
-                          scn_cw, scn_ch, SWP_SHOWWINDOW)) {
-            err_set(__CR_GDIWIN_C__, GetLastError(),
-                    "create_gdi_canvas()", "SetWindowPos() failure");
+        if (!SetWindowPos(hwnd, HWND_TOP, 0, 0, scn_cw,
+                          scn_ch, SWP_SHOWWINDOW))
             return (NULL);
-        }
     }
     else if (scn_cw == 0 || scn_ch == 0)
     {
         /* 非法宽高, 获取窗口大小 */
-        if (!GetClientRect(hwnd, &rect)) {
-            err_set(__CR_GDIWIN_C__, GetLastError(),
-                    "create_gdi_canvas()", "GetClientRect() failure");
+        if (!GetClientRect(hwnd, &rect))
             return (NULL);
-        }
         scn_cw = rect.right;
         scn_ch = rect.bottom;
     }
 
     /* 获取窗口 hDC */
     hdc = GetDC(hwnd);
-    if (hdc == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "create_gdi_canvas()", "GetDC() failure");
+    if (hdc == NULL)
         return (NULL);
-    }
 
     /* 生成后台缓冲表面 */
     canvas = create_gdi_bitmap(scn_cw, scn_ch, CR_UNKNOWN,
                                0, param, count);
     if (canvas == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "create_gdi_canvas()", "create_gdi_bitmap() failure");
         ReleaseDC(hwnd, hdc);
         return (NULL);
     }
@@ -405,25 +368,16 @@ create_gdi_bitmap (
     CR_NOUSE(ext_fmt);
 
     if ((crh_fmt == CR_ARGB4444) ||
-        (crh_fmt != CR_UNKNOWN && crh_fmt <= CR_DXT5)) {
-        err_set(__CR_GDIWIN_C__, crh_fmt,
-                "create_gdi_bitmap()", "invalid param: crh_fmt");
+        (crh_fmt != CR_UNKNOWN && crh_fmt <= CR_DXT5))
         return (NULL);
-    }
 
     surface = struct_new(iGFX2_GDI);
-    if (surface == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "create_gdi_bitmap()", "struct_new() failure");
+    if (surface == NULL)
         return (NULL);
-    }
 
     desktop = GetDC(GetDesktopWindow());
-    if (desktop == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "create_gdi_bitmap()", "GetDC() failure");
+    if (desktop == NULL)
         goto _failure1;
-    }
 
     if (crh_fmt == CR_INDEX1)
     {
@@ -445,11 +399,8 @@ create_gdi_bitmap (
     {
         /* 格式与系统一致 */
         bmp_bpp = GetDeviceCaps(desktop, PLANES);
-        if (bmp_bpp != 1) {
-            err_set(__CR_GDIWIN_C__, bmp_bpp,
-                    "create_gdi_bitmap()", "display mode not supported yet");
+        if (bmp_bpp != 1)
             goto _failure2;
-        }
 
         bmp_bpp = GetDeviceCaps(desktop, BITSPIXEL);
         crh_fmt = bmp_bpp;
@@ -472,13 +423,9 @@ create_gdi_bitmap (
     /* 填充位图头结构 */
     bmpinfo = (BITMAPINFO*)mem_malloc(sizeof(BITMAPINFO) +
                                       sizeof(RGBQUAD) * 255);
-    if (bmpinfo == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "create_gdi_bitmap()", "mem_malloc() failure");
+    if (bmpinfo == NULL)
         goto _failure2;
-    }
-    mem_zero(bmpinfo, sizeof(BITMAPINFO) +
-                      sizeof(RGBQUAD) * 255);
+    mem_zero(bmpinfo, sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 255);
     bmpinfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmpinfo->bmiHeader.biWidth  = width;
     bmpinfo->bmiHeader.biHeight = height + 1;   /* 多分配一行, 由于是
@@ -571,43 +518,28 @@ create_gdi_bitmap (
 
     /* 生成 DIB 位图 */
     surface->m_back = CreateCompatibleDC(desktop);
-    if (surface->m_back == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "create_gdi_bitmap()", "CreateCompatibleDC() failure");
+    if (surface->m_back == NULL)
         goto _failure3;
-    }
 
     surface->m_hbmp = CreateDIBSection(surface->m_back, bmpinfo,
                                        DIB_RGB_COLORS, &bmpdata, NULL, 0);
-    if (surface->m_hbmp == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "create_gdi_bitmap()", "CreateDIBSection() failure");
+    if (surface->m_hbmp == NULL)
         goto _failure4;
-    }
 
     /* hDC 选入位图 */
-    if (SelectObject(surface->m_back, surface->m_hbmp) == HGDI_ERROR) {
-        err_set(__CR_GDIWIN_C__, GDI_ERROR,
-                "create_gdi_bitmap()", "SelectObject() failure");
+    if (SelectObject(surface->m_back, surface->m_hbmp) == HGDI_ERROR)
         goto _failure5;
-    }
 
     /* 设置 sIMAGE 结构 */
     if (!image_set(&surface->__back__, bmpdata, (leng_t)(-1L),
-                   0, 0, width, height, crh_fmt, TRUE, 4)) {
-        err_set(__CR_GDIWIN_C__, FALSE,
-                "create_gdi_bitmap()", "image_set() failure");
+                   0, 0, width, height, crh_fmt, TRUE, 4))
         goto _failure5;
-    }
 
     /* 获取调色板数据 (如果需要的话) */
     if (crh_fmt <= CR_INDEX8) {
         if (GetDIBColorTable(surface->m_back, 0, pal_num, (RGBQUAD*)
-                                (&surface->__back__.pal)) != pal_num) {
-            err_set(__CR_GDIWIN_C__, GetLastError(),
-                    "create_gdi_bitmap()", "GetDIBColorTable() failure");
+                                (&surface->__back__.pal)) != pal_num)
             goto _failure5;
-        }
     }
     surface->m_main = NULL;
     surface->m_hwnd = NULL;
@@ -665,26 +597,19 @@ fill_gdi_draw (
 {
     RECT    pos;
     HBRUSH  hbr;
+    bool_t  rett;
 
     hbr = CreateSolidBrush(argb32_to_gdi(&color));
-    if (hbr == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "fill_gdi_draw()", "CreateSolidBrush() failure");
+    if (hbr == NULL)
         return (FALSE);
-    }
 
     pos.left = fill->dx;
     pos.top  = fill->dy + 1;        /* 这里的加1很重要 */
     pos.right  = pos.left + fill->dw;
     pos.bottom = pos.top  + fill->dh;
-    if (!FillRect(dst->m_back, &pos, hbr)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "fill_gdi_draw()", "FillRect() failure");
-        DeleteObject(hbr);
-        return (FALSE);
-    }
+    rett = FillRect(dst->m_back, &pos, hbr);
     DeleteObject(hbr);
-    return (TRUE);
+    return (rett);
 }
 
 /*
@@ -700,15 +625,8 @@ blit_gdi_copy (
     )
 {
                                     /* 这里的加1很重要 */
-    if (!BitBlt(dst->m_back, blit->dx, blit->dy + 1,
-                             blit->sw, blit->sh,
-                src->m_back, blit->sx, blit->sy + 1,
-                SRCCOPY)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "blit_gdi_copy()", "BitBlt() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (BitBlt(dst->m_back, blit->dx, blit->dy + 1, blit->sw, blit->sh,
+                   src->m_back, blit->sx, blit->sy + 1, SRCCOPY));
 }
 
 /*
@@ -724,16 +642,10 @@ blit_gdi_zoom (
     )
 {
                                     /* 这里的加1很重要 */
-    if (!StretchBlt(dst->m_back, zoom->dx, zoom->dy + 1,
-                                 zoom->dw, zoom->dh,
-                    src->m_back, zoom->sx, zoom->sy + 1,
-                                 zoom->sw, zoom->sh,
-                    SRCCOPY)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "blit_gdi_zoom()", "StretchBlt() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (StretchBlt(dst->m_back, zoom->dx, zoom->dy + 1,
+                                    zoom->dw, zoom->dh,
+                       src->m_back, zoom->sx, zoom->sy + 1,
+                                    zoom->sw, zoom->sh, SRCCOPY));
 }
 
 /* Windows CE 4.0+ 支持 */
@@ -756,16 +668,11 @@ blit_gdi_tran (
         return (blit_gdi_copy(dst, src, blit));
 
                                     /* 这里的加1很重要 */
-    if (!TransparentBlt(dst->m_back, blit->dx, blit->dy + 1,
-                                     blit->sw, blit->sh,
-                        src->m_back, blit->sx, blit->sy + 1,
-                                     blit->sw, blit->sh,
-                        argb32_to_gdi(&trans))) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "blit_gdi_tran()", "TransparentBlt() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (TransparentBlt(dst->m_back, blit->dx, blit->dy + 1,
+                                        blit->sw, blit->sh,
+                           src->m_back, blit->sx, blit->sy + 1,
+                                        blit->sw, blit->sh,
+                           argb32_to_gdi(&trans)));
 }
 
 #endif  /* OS TYPE predefines */
@@ -792,16 +699,10 @@ blit_gdi_blend (
     blend.SourceConstantAlpha = 0xFF;
     blend.AlphaFormat = AC_SRC_ALPHA;
                                     /* 这里的加1很重要 */
-    if (!AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
-                                 blit->sw, blit->sh,
-                    src->m_back, blit->sx, blit->sy + 1,
-                                 blit->sw, blit->sh,
-                    blend)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "blit_gdi_blend()", "AlphaBlend() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
+                                    blit->sw, blit->sh,
+                       src->m_back, blit->sx, blit->sy + 1,
+                                    blit->sw, blit->sh, blend));
 }
 
 /*
@@ -824,16 +725,10 @@ blit_gdi_alpha (
     blend.SourceConstantAlpha = (BYTE)alpha;
     blend.AlphaFormat = 0;
                                     /* 这里的加1很重要 */
-    if (!AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
-                                 blit->sw, blit->sh,
-                    src->m_back, blit->sx, blit->sy + 1,
-                                 blit->sw, blit->sh,
-                    blend)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "blit_gdi_alpha()", "AlphaBlend() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
+                                    blit->sw, blit->sh,
+                       src->m_back, blit->sx, blit->sy + 1,
+                                    blit->sw, blit->sh, blend));
 }
 
 #endif  /* OS TYPE predefines */
@@ -920,19 +815,13 @@ iFONT_GDI_bind (
     iGFX2_GDI*  gfx2_gdi;
 
     gfx2_gdi = (iGFX2_GDI*)(CR_VCALL(gfx2)->getMore(gfx2, "iGFX2::GDI"));
-    if (gfx2_gdi == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "iFONT::bind()", "iGFX2_GDI interface needed");
+    if (gfx2_gdi == NULL)
         return (FALSE);
-    }
     real = (iFONT_GDI*)that;
 
     /* 字体选入位图 */
-    if (SelectObject(gfx2_gdi->m_back, real->m_font) == HGDI_ERROR) {
-        err_set(__CR_GDIWIN_C__, GDI_ERROR,
-                "iFONT::bind()", "SelectObject() failure");
+    if (SelectObject(gfx2_gdi->m_back, real->m_font) == HGDI_ERROR)
         return (FALSE);
-    }
     real->m_draw = gfx2_gdi->m_back;
     return (TRUE);
 }
@@ -950,16 +839,10 @@ iFONT_GDI_setMode (
 {
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "iFONT::setMode()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
-    if (!SetBkMode(real->m_draw, (int)mode)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::setMode()", "SetBkMode() failure");
+    if (!SetBkMode(real->m_draw, (int)mode))
         return (FALSE);
-    }
     real->__draw_mode__ = mode;
     return (TRUE);
 }
@@ -981,17 +864,11 @@ iFONT_GDI_setColor (
     COLORREF    temp;
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "iFONT::setColor()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
     temp = SetTextColor(real->m_draw, argb32_to_gdi(&color));
-    if (temp == CLR_INVALID) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::setColor()", "SetTextColor() failure");
+    if (temp == CLR_INVALID)
         return (FALSE);
-    }
     real->__color__ = color;    /* 这里已经转换过了 */
     return (TRUE);
 #else
@@ -1017,17 +894,11 @@ iFONT_GDI_setBkColor (
     COLORREF    temp;
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "iFONT::setBkColor()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
     temp = SetBkColor(real->m_draw, argb32_to_gdi(&color));
-    if (temp == CLR_INVALID) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::setBkColor()", "SetBkColor() failure");
+    if (temp == CLR_INVALID)
         return (FALSE);
-    }
     real->__bkcolor__ = color;  /* 这里已经转换过了 */
     return (TRUE);
 }
@@ -1052,18 +923,12 @@ iFONT_GDI_draw_tran (
     wide_t*     utf16;
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "iFONT::draw_tran()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
     mode = SetBkMode(real->m_draw, TRANSPARENT);
-    if (mode == 0) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::draw_tran()", "SetBkMode() failure");
+    if (mode == 0)
         return (FALSE);
-    }
-    rett = TRUE;
+    rett = FALSE;
     temp.left   = rect->x1;
     temp.top    = rect->y1 + 1;     /* 这里的加1很重要 */
     temp.right  = rect->x2 + 1;
@@ -1076,23 +941,14 @@ iFONT_GDI_draw_tran (
     }
     else {
         utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
-        if (utf16 == NULL) {
-            err_set(__CR_GDIWIN_C__, CR_NULL,
-                    "iFONT::draw_tran()", "str_acp2uni() failure");
-            rett = FALSE;
+        if (utf16 == NULL)
             goto _func_out;
-        }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
     }
 
     /* 据说用 ExtTextOut 绘制最快 */
-    if (!ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                    &temp, utf16, (UINT)leng, NULL)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::draw_tran()", "ExtTextOutW() failure");
-        rett = FALSE;
-    }
-
+    rett = ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
+                                &temp, utf16, (UINT)leng, NULL);
     if (utf16 != (wide_t*)text)
         mem_free(utf16);
 _func_out:
@@ -1120,11 +976,8 @@ iFONT_GDI_draw_text (
     wide_t*     utf16;
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "iFONT::draw_text()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
     temp.left   = rect->x1;
     temp.top    = rect->y1 + 1;     /* 这里的加1很重要 */
     temp.right  = rect->x2 + 1;
@@ -1137,23 +990,14 @@ iFONT_GDI_draw_text (
     }
     else {
         utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
-        if (utf16 == NULL) {
-            err_set(__CR_GDIWIN_C__, CR_NULL,
-                    "iFONT::draw_text()", "str_acp2uni() failure");
+        if (utf16 == NULL)
             return (FALSE);
-        }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
     }
-    rett = TRUE;
 
     /* 据说用 ExtTextOut 绘制最快 */
-    if (!ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                    &temp, utf16, (UINT)leng, NULL)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::draw_text()", "ExtTextOutW() failure");
-        rett = FALSE;
-    }
-
+    rett = ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
+                                &temp, utf16, (UINT)leng, NULL);
     if (utf16 != (wide_t*)text)
         mem_free(utf16);
     return (rett);
@@ -1178,11 +1022,8 @@ iFONT_GDI_calc_rect (
     wide_t*     utf16;
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "iFONT::calc_rect()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
     temp.left   = 0;
     temp.top    = 0;
     temp.right  = rect->ww;
@@ -1195,25 +1036,16 @@ iFONT_GDI_calc_rect (
     }
     else {
         utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
-        if (utf16 == NULL) {
-            err_set(__CR_GDIWIN_C__, CR_NULL,
-                    "iFONT::calc_rect()", "str_acp2uni() failure");
+        if (utf16 == NULL)
             return (FALSE);
-        }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
     }
 
     /* 测量文字输出范围 */
-    if (!DrawTextW(real->m_draw, utf16, (UINT)leng, &temp,
-                   DT_LEFT | DT_CALCRECT)) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::calc_rect()", "DrawTextW() failure");
-        rett = FALSE;
-    }
-    else {
-        rett = TRUE;
+    rett = DrawTextW(real->m_draw, utf16, (UINT)leng, &temp,
+                            DT_LEFT | DT_CALCRECT);
+    if (rett)
         rect_set_wh(rect, rect->x1, rect->y1, temp.right, temp.bottom);
-    }
 
     if (utf16 != (wide_t*)text)
         mem_free(utf16);
@@ -1242,18 +1074,13 @@ create_gdi_fontA (
     iFONT_GDI*  font;
 
     font = struct_new(iFONT_GDI);
-    if (font == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "create_gdi_fontA()", "struct_new() failure");
+    if (font == NULL)
         return (NULL);
-    }
     struct_zero(font, iFONT_GDI);
 
     /* 生成字体对象 */
     font->m_font = CreateFontIndirectA(lplf);
     if (font->m_font == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "create_gdi_fontA()", "CreateFontIndirectA() failure");
         mem_free(font);
         return (NULL);
     }
@@ -1274,26 +1101,19 @@ create_gdi_fontW (
     iFONT_GDI*  font;
 
     font = struct_new(iFONT_GDI);
-    if (font == NULL) {
-        err_set(__CR_GDIWIN_C__, CR_NULL,
-                "create_gdi_fontW()", "struct_new() failure");
+    if (font == NULL)
         return (NULL);
-    }
     struct_zero(font, iFONT_GDI);
 
     /* 生成字体对象 */
     font->m_font = CreateFontIndirectW(lplf);
     if (font->m_font == NULL) {
-        err_set(__CR_GDIWIN_C__, GetLastError(),
-                "create_gdi_fontW()", "CreateFontIndirectW() failure");
         mem_free(font);
         return (NULL);
     }
     font->__vptr__ = &s_font_vtbl;
     return ((iFONT*)font);
 }
-
-#endif  /* !__CR_GDIWIN_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
