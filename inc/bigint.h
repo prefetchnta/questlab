@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_BIGINT_H__
-#define __CR_BIGINT_H__
+#define __CR_BIGINT_H__ 0x8E781ECDUL
 
 #include "defs.h"
 

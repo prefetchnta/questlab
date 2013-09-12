@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_GXAPI_CPP__
+#define __CR_GXAPI_CPP__ 0xF1D9FC66UL
+
 #include "memlib.h"
 #include "pixels.h"
 #include "strlib.h"
@@ -141,8 +144,11 @@ iGFX2_GX_lock_main (
     void_t* ptr;
 
     ptr = GXBeginDraw();
-    if (ptr == NULL)
+    if (ptr == NULL) {
+        err_set(__CR_GXAPI_CPP__, GetLastError(),
+                "iGFX2::lock()", "GXBeginDraw() failure");
         return (NULL);
+    }
     that->__back__.data = (byte_t*)ptr;
     return (&that->__back__);
 }
@@ -192,8 +198,11 @@ iGFX2_GX_clear_main (
 {
     iGFX2_GX*   real;
 
-    if (iGFX2_GX_lock_main(that) == NULL)
+    if (iGFX2_GX_lock_main(that) == NULL) {
+        err_set(__CR_GXAPI_CPP__, CR_NULL,
+                "iGFX2::clear()", "iGFX2::lock() failure");
         return (FALSE);
+    }
     real = (iGFX2_GX*)that;
     real->clear(that, color, param);
     iGFX2_GX_unlock_main(that);
@@ -241,8 +250,11 @@ iGFX2_GX_flip_back (
 
     CR_NOUSE(sync);
     ptr = GXBeginDraw();
-    if (ptr == NULL)
+    if (ptr == NULL) {
+        err_set(__CR_GXAPI_CPP__, GetLastError(),
+                "iGFX2::flip()", "GXBeginDraw() failure");
         return (FALSE);
+    }
     mem_cpy(ptr, that->__back__.data, that->__back__.size);
     GXEndDraw();
     return (TRUE);
@@ -313,41 +325,68 @@ create_gx_canvas (
   __CR_IN__ uint_t          count
     )
 {
+    HWND                hwnd;
+    uint_t              w, h;
     iGFX2_GX*           rett;
     GXDisplayProperties prop;
 
     /* 只支持全屏 */
+    CR_NOUSE(scn_cw);
+    CR_NOUSE(scn_ch);
     CR_NOUSE(scn_fmt);
-    if (!full)
+    if (!full) {
+        err_set(__CR_GXAPI_CPP__, full,
+                "create_gx_canvas()", "invalid param: full");
         return (NULL);
-    if (GXOpenDisplay((HWND)handle, GX_FULLSCREEN) == 0)
+    }
+    hwnd = (HWND)handle;
+    if (GXOpenDisplay(hwnd, GX_FULLSCREEN) == 0) {
+        err_set(__CR_GXAPI_CPP__, GetLastError(),
+                "create_gx_canvas()", "GXOpenDisplay() failure");
         return (NULL);
+    }
 
     /* 只支持高彩色, 不支持翻转 */
     prop = GXGetDisplayProperties();
-    if (prop.cBPP <= 8 || prop.cbxPitch < 0 || prop.cbyPitch < 0)
+    if (prop.cBPP <= 8) {
+        err_set(__CR_GXAPI_CPP__, prop.cBPP,
+                "create_gx_canvas()", "screen type not supported");
         goto _failure1;
+    }
+    if (prop.cbxPitch < 0) {
+        err_set(__CR_GXAPI_CPP__, prop.cbxPitch,
+                "create_gx_canvas()", "screen type not supported");
+        goto _failure1;
+    }
+    if (prop.cbyPitch < 0) {
+        err_set(__CR_GXAPI_CPP__, prop.cbyPitch,
+                "create_gx_canvas()", "screen type not supported");
+        goto _failure1;
+    }
 
     /* 生成接口对象 */
     rett = struct_new(iGFX2_GX);
-    if (rett == NULL)
+    if (rett == NULL) {
+        err_set(__CR_GXAPI_CPP__, CR_NULL,
+                "create_gx_canvas()", "struct_new() failure");
         goto _failure1;
+    }
     struct_zero(rett, iGFX2_GX);
     if (prop.cbxPitch > prop.cbyPitch) {
-        scn_cw = prop.cyHeight;
-        scn_ch = prop.cxWidth;
+        w = prop.cyHeight;
+        h = prop.cxWidth;
         rett->__back__.bpc = prop.cbyPitch;
         rett->__back__.bpl = prop.cbxPitch;
     }
     else {
-        scn_cw = prop.cxWidth;
-        scn_ch = prop.cyHeight;
+        w = prop.cxWidth;
+        h = prop.cyHeight;
         rett->__back__.bpc = prop.cbxPitch;
         rett->__back__.bpl = prop.cbyPitch;
     }
-    rect_set_wh(&rett->__back__.clip_win, 0, 0, scn_cw, scn_ch);
-    rect_set_wh(&rett->__back__.position, 0, 0, scn_cw, scn_ch);
-    rett->__back__.size  = scn_ch;
+    rect_set_wh(&rett->__back__.clip_win, 0, 0, w, h);
+    rect_set_wh(&rett->__back__.position, 0, 0, w, h);
+    rett->__back__.size  = h;
     rett->__back__.size *= rett->__back__.bpl;
     if (prop.ffFormat & kfDirect555) {
         rett->clear = iGFX2_GX_clear15;
@@ -369,6 +408,8 @@ create_gx_canvas (
         rett->__back__.fmt = CR_ARGB4444;
     }
     else {
+        err_set(__CR_GXAPI_CPP__, prop.ffFormat,
+                "create_gx_canvas()", "screen type not supported");
         goto _failure2;
     }
 
@@ -377,9 +418,12 @@ create_gx_canvas (
     {
         /* 默认开启后台缓冲 */
         rett->__vptr__ = &s_back_vtbl;
-        rett->__back__.data = (byte_t*)mem_malloc(rett->__back__.size + 16);
-        if (rett->__back__.data == NULL)
+        rett->__back__.data = (uchar*)mem_malloc(rett->__back__.size + 16);
+        if (rett->__back__.data == NULL) {
+            err_set(__CR_GXAPI_CPP__, CR_NULL,
+                    "create_gx_canvas()", "mem_malloc() failure");
             goto _failure2;
+        }
     }
     else
     {
@@ -415,6 +459,8 @@ create_canvas (
                              full, param, count));
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_GXAPI_CPP__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

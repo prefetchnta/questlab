@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_GXAPI_H__
-#define __CR_GXAPI_H__
+#define __CR_GXAPI_H__ 0x0DDF3C05UL
 
 #include "gfx2.h"
 

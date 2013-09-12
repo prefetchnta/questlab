@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_APPLIB_H__
-#define __CR_APPLIB_H__
+#define __CR_APPLIB_H__ 0xB3CF14EBUL
 
 #include "defs.h"
 

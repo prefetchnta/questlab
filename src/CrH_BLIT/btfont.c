@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_BTFONT_C__
+#define __CR_BTFONT_C__ 0x70D861AEUL
+
 #include "bltint.h"
 #include "memlib.h"
 #include "strlib.h"
@@ -87,8 +90,11 @@ iFONT_BIT_draw_tran (
     chr2off_t   char2offs;
     pixdraw_t   pixel_draw;
 
-    if (real->ucdos.m_draw == NULL)
+    if (real->ucdos.m_draw == NULL) {
+        err_set(__CR_BTFONT_C__, CR_NULL,
+                "iFONT::draw_tran()", "no binding interface");
         return (FALSE);
+    }
 
     /* 空字符串直接返回 */
     if (str_lenA((ansi_t*)text) == 0)
@@ -100,8 +106,11 @@ iFONT_BIT_draw_tran (
 
     /* 锁住位图表面 (只对硬件加速有效) */
     dest = CR_VCALL(real->ucdos.m_draw)->lock(real->ucdos.m_draw);
-    if (dest == NULL)
+    if (dest == NULL) {
+        err_set(__CR_BTFONT_C__, CR_NULL,
+                "iFONT::draw_tran()", "iGFX2::lock() failure");
         return (FALSE);
+    }
     dx = rect->x1;
     dy = rect->y1;
     CR_NOUSE(cpage);
@@ -224,9 +233,10 @@ iFONT_BIT_draw_text (
 {
     sRECT       clip;
     int32u      offs;
+    cpix_t      color;
+    cpix_t      bkcolor;
     sIMAGE      *dest;
     iDATIN      *asc, *hzk;
-    cpix_t      color, bkcolor;
     uint_t      xspace, yspace;
     uint_t      hzk_sw, asc_sw;
     uint_t      hzk_th, asc_start;
@@ -240,8 +250,11 @@ iFONT_BIT_draw_text (
     chr2off_t   char2offs;
     pixdraw_t   pixel_draw;
 
-    if (real->ucdos.m_draw == NULL)
+    if (real->ucdos.m_draw == NULL) {
+        err_set(__CR_BTFONT_C__, CR_NULL,
+                "iFONT::draw_text()", "no binding interface");
         return (FALSE);
+    }
 
     /* 空字符串直接返回 */
     if (str_lenA((ansi_t*)text) == 0)
@@ -253,8 +266,11 @@ iFONT_BIT_draw_text (
 
     /* 锁住位图表面 (只对硬件加速有效) */
     dest = CR_VCALL(real->ucdos.m_draw)->lock(real->ucdos.m_draw);
-    if (dest == NULL)
+    if (dest == NULL) {
+        err_set(__CR_BTFONT_C__, CR_NULL,
+                "iFONT::draw_text()", "iGFX2::lock() failure");
         return (FALSE);
+    }
     dx = rect->x1;
     dy = rect->y1;
     CR_NOUSE(cpage);
@@ -509,12 +525,18 @@ create_bit_font (
 {
     iFONT_BIT*  font;
 
-    if (size > 72 || size < 8)
+    if (size > 72 || size < 8) {
+        err_set(__CR_BTFONT_C__, size,
+                "create_bit_font()", "invalid param: size");
         return (NULL);
+    }
 
     font = struct_new(iFONT_BIT);
-    if (font == NULL)
+    if (font == NULL) {
+        err_set(__CR_BTFONT_C__, CR_NULL,
+                "create_bit_font()", "struct_new() failure");
         return (NULL);
+    }
     struct_zero(font, iFONT_BIT);
 
     /* 根据编码类型设置相应的回调 */
@@ -526,6 +548,8 @@ create_bit_font (
         font->char2offs = gb2312_char2offs;
     }
     else {
+        err_set(__CR_BTFONT_C__, CR_ERROR,
+                "create_bit_font()", "invalid param: type");
         mem_free(font);
         return (NULL);
     }
@@ -546,6 +570,8 @@ create_bit_font (
     font->ucdos.font.__vptr__ = &s_font_vtbl;
     return ((iFONT*)font);
 }
+
+#endif  /* !__CR_BTFONT_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

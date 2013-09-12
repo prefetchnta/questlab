@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_PIXELS_H__
-#define __CR_PIXELS_H__
+#define __CR_PIXELS_H__ 0x30F07BF0UL
 
 #include "gfx2.h"
 #include "endian.h"

@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DTM_OLD_H__
-#define __CR_DTM_OLD_H__
+#define __CR_DTM_OLD_H__ 0x53F7E0D0UL
 
 #include "comm.h"
 

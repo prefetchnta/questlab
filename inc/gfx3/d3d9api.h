@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_D3D9API_H__
-#define __CR_D3D9API_H__
+#define __CR_D3D9API_H__ 0x06509DB2UL
 
 #include <d3d9.h>
 #include <d3dx9.h>

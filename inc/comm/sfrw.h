@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_SFRW_H__
-#define __CR_SFRW_H__
+#define __CR_SFRW_H__ 0x2CD606B4UL
 
 #include "comm.h"
 

@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_ENDIAN_H__
-#define __CR_ENDIAN_H__
+#define __CR_ENDIAN_H__ 0x5D4C5268UL
 
 #include "defs.h"
 

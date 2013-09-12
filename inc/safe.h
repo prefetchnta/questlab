@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_SAFE_H__
-#define __CR_SAFE_H__
+#define __CR_SAFE_H__ 0x6B16BC55UL
 
 #include "defs.h"
 

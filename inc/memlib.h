@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_MEMLIB_H__
-#define __CR_MEMLIB_H__
+#define __CR_MEMLIB_H__ 0xA81AD7A1UL
 
 #include "defs.h"
 
@@ -601,8 +601,11 @@ buffer_init (
 {
     if (data == NULL) {
         data = mem_malloc(size);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_MEMLIB_H__, CR_NULL,
+                    "buffer_init()", "mem_malloc() failure");
             return (FALSE);
+        }
         is_free = TRUE;
     }
     if (!is_free)

@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_SCRIPT_H__
-#define __CR_SCRIPT_H__
+#define __CR_SCRIPT_H__ 0xDEBD2221UL
 
 #include "defs.h"
 

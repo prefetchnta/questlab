@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_CRYPTO_H__
-#define __CR_CRYPTO_H__
+#define __CR_CRYPTO_H__ 0x6125D435UL
 
 #include "defs.h"
 

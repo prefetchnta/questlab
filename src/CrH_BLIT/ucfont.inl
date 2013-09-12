@@ -63,8 +63,11 @@ FONT_UC_DRAW_TRAN (
     /* 以免每次读结构体 */
     pixdraw_t   pixel_draw;
 
-    if (real->m_draw == NULL)
+    if (real->m_draw == NULL) {
+        err_set(__CR_UCFONT_C__, CR_NULL,
+                "iFONT::draw_tran()", "no binding interface");
         return (FALSE);
+    }
 
     /* 空字符串直接返回 */
     if (str_lenA((ansi_t*)text) == 0)
@@ -76,8 +79,11 @@ FONT_UC_DRAW_TRAN (
 
     /* 锁住位图表面 (只对硬件加速有效) */
     dest = CR_VCALL(real->m_draw)->lock(real->m_draw);
-    if (dest == NULL)
+    if (dest == NULL) {
+        err_set(__CR_UCFONT_C__, CR_NULL,
+                "iFONT::draw_tran()", "iGFX2::lock() failure");
         return (FALSE);
+    }
     dx = rect->x1;
     dy = rect->y1;
     CR_NOUSE(cpage);
@@ -224,8 +230,9 @@ FONT_UC_DRAW_TEXT (
 {
     sRECT       clip;
     int32u      offs;
+    cpix_t      color;
+    cpix_t      bkcolor;
     sIMAGE      *dest;
-    cpix_t      color, bkcolor;
     uint_t      xspace, yspace;
     uint_t      t, x, y, z, dx, dy, sx;
     byte_t      *memo, *ptr, dat[CR_UC_HZK_SIZE];
@@ -239,8 +246,11 @@ FONT_UC_DRAW_TEXT (
     /* 以免每次读结构体 */
     pixdraw_t   pixel_draw;
 
-    if (real->m_draw == NULL)
+    if (real->m_draw == NULL) {
+        err_set(__CR_UCFONT_C__, CR_NULL,
+                "iFONT::draw_text()", "no binding interface");
         return (FALSE);
+    }
 
     /* 空字符串直接返回 */
     if (str_lenA((ansi_t*)text) == 0)
@@ -252,8 +262,11 @@ FONT_UC_DRAW_TEXT (
 
     /* 锁住位图表面 (只对硬件加速有效) */
     dest = CR_VCALL(real->m_draw)->lock(real->m_draw);
-    if (dest == NULL)
+    if (dest == NULL) {
+        err_set(__CR_UCFONT_C__, CR_NULL,
+                "iFONT::draw_text()", "iGFX2::lock() failure");
         return (FALSE);
+    }
     dx = rect->x1;
     dy = rect->y1;
     CR_NOUSE(cpage);

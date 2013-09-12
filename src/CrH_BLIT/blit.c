@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_BLIT_C__
+#define __CR_BLIT_C__ 0x1A530F26UL
+
 #include "blit.h"
 #include "memlib.h"
 #include "pixels.h"
@@ -276,8 +279,11 @@ create_mem_bitmap (
     CR_NOUSE(ext_fmt);
 
     gfx2 = struct_new(iGFX2);
-    if (gfx2 == NULL)
+    if (gfx2 == NULL) {
+        err_set(__CR_BLIT_C__, CR_NULL,
+                "create_mem_bitmap()", "struct_new() failure");
         return (NULL);
+    }
 
     /* 仅支持 CrHack 的部分类型 */
     switch (crh_fmt)
@@ -293,15 +299,17 @@ create_mem_bitmap (
         case CR_ARGB8888: gfx2->__vptr__ = &s_bmp32_vtbl; break;
 
         default:
-            mem_free(gfx2);
-            return (NULL);
+            err_set(__CR_BLIT_C__, crh_fmt,
+                    "create_mem_bitmap()", "invalid param: crh_fmt");
+            goto _failure;
     }
 
     /* 使用行8字节对齐 ----------- VV (多分配一行) */
     image = image_new(0, 0, width, height + 1, crh_fmt, FALSE, 8);
     if (image == NULL) {
-        mem_free(gfx2);
-        return (NULL);
+        err_set(__CR_BLIT_C__, CR_NULL,
+                "create_mem_bitmap()", "image_new() failure");
+        goto _failure;
     }
     /* 设置正确的参数 */
     image->clip_win.y2--;
@@ -314,7 +322,13 @@ create_mem_bitmap (
     struct_cpy(&gfx2->__back__, image, sIMAGE);
     mem_free(image);
     return ((iGFX2*)gfx2);
+
+_failure:
+    mem_free(gfx2);
+    return (NULL);
 }
+
+#endif  /* !__CR_BLIT_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

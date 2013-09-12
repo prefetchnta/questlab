@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DSHOW_H__
-#define __CR_DSHOW_H__
+#define __CR_DSHOW_H__ 0xD1F0C0E8UL
 
 #include "fmtz.h"
 

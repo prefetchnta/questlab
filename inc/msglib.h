@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_MSGLIB_H__
-#define __CR_MSGLIB_H__
+#define __CR_MSGLIB_H__ 0xE600F092UL
 
 #include "defs.h"
 

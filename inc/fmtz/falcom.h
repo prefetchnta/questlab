@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_FALCOM_H__
-#define __CR_FALCOM_H__
+#define __CR_FALCOM_H__ 0x63FD79E1UL
 
 #include "fmtz.h"
 

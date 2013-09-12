@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_PLUGIN_H__
-#define __CR_PLUGIN_H__
+#define __CR_PLUGIN_H__ 0xBE40F8C7UL
 
 #include "defs.h"
 

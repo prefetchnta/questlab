@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_FIMAGE_H__
-#define __CR_FIMAGE_H__
+#define __CR_FIMAGE_H__ 0x5F3303E2UL
 
 #include "fmtz.h"
 
