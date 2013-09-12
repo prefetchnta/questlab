@@ -224,10 +224,9 @@ iFONT_BIT_draw_text (
 {
     sRECT       clip;
     int32u      offs;
-    cpix_t      color;
-    cpix_t      bkcolor;
     sIMAGE      *dest;
     iDATIN      *asc, *hzk;
+    cpix_t      color, bkcolor;
     uint_t      xspace, yspace;
     uint_t      hzk_sw, asc_sw;
     uint_t      hzk_th, asc_start;

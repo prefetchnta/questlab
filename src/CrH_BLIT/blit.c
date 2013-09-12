@@ -293,14 +293,16 @@ create_mem_bitmap (
         case CR_ARGB8888: gfx2->__vptr__ = &s_bmp32_vtbl; break;
 
         default:
-            goto _failure;
+            mem_free(gfx2);
+            return (NULL);
     }
 
     /* 使用行8字节对齐 ----------- VV (多分配一行) */
     image = image_new(0, 0, width, height + 1, crh_fmt, FALSE, 8);
-    if (image == NULL)
-        goto _failure;
-
+    if (image == NULL) {
+        mem_free(gfx2);
+        return (NULL);
+    }
     /* 设置正确的参数 */
     image->clip_win.y2--;
     image->clip_win.hh--;
@@ -312,10 +314,6 @@ create_mem_bitmap (
     struct_cpy(&gfx2->__back__, image, sIMAGE);
     mem_free(image);
     return ((iGFX2*)gfx2);
-
-_failure:
-    mem_free(gfx2);
-    return (NULL);
 }
 
 /*****************************************************************************/

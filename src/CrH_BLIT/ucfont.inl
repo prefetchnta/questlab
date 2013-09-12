@@ -224,9 +224,8 @@ FONT_UC_DRAW_TEXT (
 {
     sRECT       clip;
     int32u      offs;
-    cpix_t      color;
-    cpix_t      bkcolor;
     sIMAGE      *dest;
+    cpix_t      color, bkcolor;
     uint_t      xspace, yspace;
     uint_t      t, x, y, z, dx, dy, sx;
     byte_t      *memo, *ptr, dat[CR_UC_HZK_SIZE];
