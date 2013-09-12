@@ -162,8 +162,10 @@ iGFX2_GDI_flip (
     iGFX2_GDI*  real = (iGFX2_GDI*)that;
 
     CR_NOUSE(sync);
-    return (BitBlt(real->m_main, 0, 0, real->__back__.position.ww,
-                   real->__back__.position.hh, real->m_back, 0, 1, SRCCOPY));
+    if (!BitBlt(real->m_main, 0, 0, real->__back__.position.ww,
+                real->__back__.position.hh, real->m_back, 0, 1, SRCCOPY))
+        return (FALSE);
+    return (TRUE);
 }
 
 /*
@@ -180,22 +182,24 @@ iGFX2_GDI_clear (
 {
     RECT        pos;
     HBRUSH      hbr;
-    bool_t      rett;
     iGFX2_GDI*  real;
 
-    CR_NOUSE(param);
     hbr = CreateSolidBrush(argb32_to_gdi(&color));
     if (hbr == NULL)
         return (FALSE);
-    real = (iGFX2_GDI*)that;
 
+    CR_NOUSE(param);
+    real = (iGFX2_GDI*)that;
     pos.left   = 0;
     pos.top    = 1;     /* 这里的加1很重要 */
     pos.right  = real->__back__.position.ww;
     pos.bottom = real->__back__.position.hh + 1;
-    rett = FillRect(real->m_back, &pos, hbr);
+    if (!FillRect(real->m_back, &pos, hbr)) {
+        DeleteObject(hbr);
+        return (FALSE);
+    }
     DeleteObject(hbr);
-    return (rett);
+    return (TRUE);
 }
 
 /*
@@ -597,7 +601,6 @@ fill_gdi_draw (
 {
     RECT    pos;
     HBRUSH  hbr;
-    bool_t  rett;
 
     hbr = CreateSolidBrush(argb32_to_gdi(&color));
     if (hbr == NULL)
@@ -607,9 +610,12 @@ fill_gdi_draw (
     pos.top  = fill->dy + 1;        /* 这里的加1很重要 */
     pos.right  = pos.left + fill->dw;
     pos.bottom = pos.top  + fill->dh;
-    rett = FillRect(dst->m_back, &pos, hbr);
+    if (!FillRect(dst->m_back, &pos, hbr)) {
+        DeleteObject(hbr);
+        return (FALSE);
+    }
     DeleteObject(hbr);
-    return (rett);
+    return (TRUE);
 }
 
 /*
@@ -625,8 +631,11 @@ blit_gdi_copy (
     )
 {
                                     /* 这里的加1很重要 */
-    return (BitBlt(dst->m_back, blit->dx, blit->dy + 1, blit->sw, blit->sh,
-                   src->m_back, blit->sx, blit->sy + 1, SRCCOPY));
+    if (!BitBlt(dst->m_back, blit->dx, blit->dy + 1,
+                             blit->sw, blit->sh,
+                src->m_back, blit->sx, blit->sy + 1, SRCCOPY))
+        return (FALSE);
+    return (TRUE);
 }
 
 /*
@@ -642,10 +651,12 @@ blit_gdi_zoom (
     )
 {
                                     /* 这里的加1很重要 */
-    return (StretchBlt(dst->m_back, zoom->dx, zoom->dy + 1,
-                                    zoom->dw, zoom->dh,
-                       src->m_back, zoom->sx, zoom->sy + 1,
-                                    zoom->sw, zoom->sh, SRCCOPY));
+    if (!StretchBlt(dst->m_back, zoom->dx, zoom->dy + 1,
+                                 zoom->dw, zoom->dh,
+                    src->m_back, zoom->sx, zoom->sy + 1,
+                                 zoom->sw, zoom->sh, SRCCOPY))
+        return (FALSE);
+    return (TRUE);
 }
 
 /* Windows CE 4.0+ 支持 */
@@ -668,11 +679,13 @@ blit_gdi_tran (
         return (blit_gdi_copy(dst, src, blit));
 
                                     /* 这里的加1很重要 */
-    return (TransparentBlt(dst->m_back, blit->dx, blit->dy + 1,
-                                        blit->sw, blit->sh,
-                           src->m_back, blit->sx, blit->sy + 1,
-                                        blit->sw, blit->sh,
-                           argb32_to_gdi(&trans)));
+    if (!TransparentBlt(dst->m_back, blit->dx, blit->dy + 1,
+                                     blit->sw, blit->sh,
+                        src->m_back, blit->sx, blit->sy + 1,
+                                     blit->sw, blit->sh,
+                        argb32_to_gdi(&trans)))
+        return (FALSE);
+    return (TRUE);
 }
 
 #endif  /* OS TYPE predefines */
@@ -699,10 +712,12 @@ blit_gdi_blend (
     blend.SourceConstantAlpha = 0xFF;
     blend.AlphaFormat = AC_SRC_ALPHA;
                                     /* 这里的加1很重要 */
-    return (AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
-                                    blit->sw, blit->sh,
-                       src->m_back, blit->sx, blit->sy + 1,
-                                    blit->sw, blit->sh, blend));
+    if (!AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
+                                 blit->sw, blit->sh,
+                    src->m_back, blit->sx, blit->sy + 1,
+                                 blit->sw, blit->sh, blend))
+        return (FALSE);
+    return (TRUE);
 }
 
 /*
@@ -725,10 +740,12 @@ blit_gdi_alpha (
     blend.SourceConstantAlpha = (BYTE)alpha;
     blend.AlphaFormat = 0;
                                     /* 这里的加1很重要 */
-    return (AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
-                                    blit->sw, blit->sh,
-                       src->m_back, blit->sx, blit->sy + 1,
-                                    blit->sw, blit->sh, blend));
+    if (!AlphaBlend(dst->m_back, blit->dx, blit->dy + 1,
+                                 blit->sw, blit->sh,
+                    src->m_back, blit->sx, blit->sy + 1,
+                                 blit->sw, blit->sh, blend))
+        return (FALSE);
+    return (TRUE);
 }
 
 #endif  /* OS TYPE predefines */
@@ -861,13 +878,11 @@ iFONT_GDI_setColor (
 /* Windows CE 4.0+ 支持 */
 #if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
 
-    COLORREF    temp;
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
     if (real->m_draw == NULL)
         return (FALSE);
-    temp = SetTextColor(real->m_draw, argb32_to_gdi(&color));
-    if (temp == CLR_INVALID)
+    if (SetTextColor(real->m_draw, argb32_to_gdi(&color)) == CLR_INVALID)
         return (FALSE);
     real->__color__ = color;    /* 这里已经转换过了 */
     return (TRUE);
@@ -891,13 +906,11 @@ iFONT_GDI_setBkColor (
   __CR_IN__ cl32_t  color
     )
 {
-    COLORREF    temp;
     iFONT_GDI*  real = (iFONT_GDI*)that;
 
     if (real->m_draw == NULL)
         return (FALSE);
-    temp = SetBkColor(real->m_draw, argb32_to_gdi(&color));
-    if (temp == CLR_INVALID)
+    if (SetBkColor(real->m_draw, argb32_to_gdi(&color)) == CLR_INVALID)
         return (FALSE);
     real->__bkcolor__ = color;  /* 这里已经转换过了 */
     return (TRUE);
@@ -947,8 +960,10 @@ iFONT_GDI_draw_tran (
     }
 
     /* 据说用 ExtTextOut 绘制最快 */
-    rett = ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                                &temp, utf16, (UINT)leng, NULL);
+    if (ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
+                    &temp, utf16, (UINT)leng, NULL))
+        rett = TRUE;
+
     if (utf16 != (wide_t*)text)
         mem_free(utf16);
 _func_out:
@@ -996,8 +1011,12 @@ iFONT_GDI_draw_text (
     }
 
     /* 据说用 ExtTextOut 绘制最快 */
-    rett = ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                                &temp, utf16, (UINT)leng, NULL);
+    if (ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
+                    &temp, utf16, (UINT)leng, NULL))
+        rett = TRUE;
+    else
+        rett = FALSE;
+
     if (utf16 != (wide_t*)text)
         mem_free(utf16);
     return (rett);
@@ -1042,10 +1061,14 @@ iFONT_GDI_calc_rect (
     }
 
     /* 测量文字输出范围 */
-    rett = DrawTextW(real->m_draw, utf16, (UINT)leng, &temp,
-                            DT_LEFT | DT_CALCRECT);
-    if (rett)
+    if (!DrawTextW(real->m_draw, utf16, (UINT)leng, &temp,
+                   DT_LEFT | DT_CALCRECT)) {
+        rett = FALSE;
+    }
+    else {
+        rett = TRUE;
         rect_set_wh(rect, rect->x1, rect->y1, temp.right, temp.bottom);
+    }
 
     if (utf16 != (wide_t*)text)
         mem_free(utf16);

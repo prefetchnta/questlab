@@ -313,19 +313,14 @@ create_gx_canvas (
   __CR_IN__ uint_t          count
     )
 {
-    HWND                hwnd;
-    uint_t              w, h;
     iGFX2_GX*           rett;
     GXDisplayProperties prop;
 
     /* 只支持全屏 */
-    CR_NOUSE(scn_cw);
-    CR_NOUSE(scn_ch);
     CR_NOUSE(scn_fmt);
     if (!full)
         return (NULL);
-    hwnd = (HWND)handle;
-    if (GXOpenDisplay(hwnd, GX_FULLSCREEN) == 0)
+    if (GXOpenDisplay((HWND)handle, GX_FULLSCREEN) == 0)
         return (NULL);
 
     /* 只支持高彩色, 不支持翻转 */
@@ -339,20 +334,20 @@ create_gx_canvas (
         goto _failure1;
     struct_zero(rett, iGFX2_GX);
     if (prop.cbxPitch > prop.cbyPitch) {
-        w = prop.cyHeight;
-        h = prop.cxWidth;
+        scn_cw = prop.cyHeight;
+        scn_ch = prop.cxWidth;
         rett->__back__.bpc = prop.cbyPitch;
         rett->__back__.bpl = prop.cbxPitch;
     }
     else {
-        w = prop.cxWidth;
-        h = prop.cyHeight;
+        scn_cw = prop.cxWidth;
+        scn_ch = prop.cyHeight;
         rett->__back__.bpc = prop.cbxPitch;
         rett->__back__.bpl = prop.cbyPitch;
     }
-    rect_set_wh(&rett->__back__.clip_win, 0, 0, w, h);
-    rect_set_wh(&rett->__back__.position, 0, 0, w, h);
-    rett->__back__.size  = h;
+    rect_set_wh(&rett->__back__.clip_win, 0, 0, scn_cw, scn_ch);
+    rect_set_wh(&rett->__back__.position, 0, 0, scn_cw, scn_ch);
+    rett->__back__.size  = scn_ch;
     rett->__back__.size *= rett->__back__.bpl;
     if (prop.ffFormat & kfDirect555) {
         rett->clear = iGFX2_GX_clear15;
@@ -382,7 +377,7 @@ create_gx_canvas (
     {
         /* 默认开启后台缓冲 */
         rett->__vptr__ = &s_back_vtbl;
-        rett->__back__.data = (uchar*)mem_malloc(rett->__back__.size + 16);
+        rett->__back__.data = (byte_t*)mem_malloc(rett->__back__.size + 16);
         if (rett->__back__.data == NULL)
             goto _failure2;
     }
