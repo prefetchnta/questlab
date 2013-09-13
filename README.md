@@ -81,7 +81,7 @@
 ##zKiriKiri (VS2010 SP1)
 
 <p>支持加载 <b>KrKr</b> (吉里吉里) 游戏引擎里的几种文件格式：</p>
- - KrKr XP3 Archive (XP3)
+ - KiriKiri2 XP3 Archive (XP3)
 
 ##zFALCOM (VS2010 SP1)
 

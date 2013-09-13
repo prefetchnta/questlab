@@ -13,7 +13,7 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>> CrHack kirikiri XP3 封包读取函数库 <<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>> CrHack KiriKiri2 XP3 封包读取函数库 <<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
@@ -522,8 +522,7 @@ load_krkr_xp3 (
         if (mem_cmp(pntr, "segm", 4) != 0) {
             err_set(__CR_KRKR_XP3_C__, CR_ERROR,
                     "load_krkr_xp3()", "invalid XP3 format");
-            mem_free(temp.base.name);
-            goto _failure2;
+            goto _failure3;
         }
         mem_cpy(&tsz2, pntr + 4, sizeof(int64u));
         tsz2 = QWORD_LE(tsz2);
@@ -532,8 +531,7 @@ load_krkr_xp3 (
             tsz2 > tots - 12 - tsz1 - 12) {
             err_set(__CR_KRKR_XP3_C__, tsz2,
                     "load_krkr_xp3()", "invalid XP3 format");
-            mem_free(temp.base.name);
-            goto _failure2;
+            goto _failure3;
         }
 
         /* 读取所有分段信息 */
@@ -541,8 +539,7 @@ load_krkr_xp3 (
         if (temp.segm_lst == NULL) {
             err_set(__CR_KRKR_XP3_C__, CR_NULL,
                     "load_krkr_xp3()", "mem_talloc64() failure");
-            mem_free(temp.base.name);
-            goto _failure2;
+            goto _failure3;
         }
         temp.segm_cnt = (leng_t)(tsz2 / 28);
         mem_cpy(temp.segm_lst, pntr, (leng_t)tsz2);
@@ -554,16 +551,12 @@ load_krkr_xp3 (
             if (temp.segm_lst[read].unsize > temp.base.size) {
                 err_set(__CR_KRKR_XP3_C__, temp.segm_lst[read].unsize,
                         "load_krkr_xp3()", "invalid XP3 format");
-                mem_free(temp.segm_lst);
-                mem_free(temp.base.name);
-                goto _failure2;
+                goto _failure4;
             }
             if (temp.segm_lst[read].pksize > temp.base.pack) {
                 err_set(__CR_KRKR_XP3_C__, temp.segm_lst[read].pksize,
                         "load_krkr_xp3()", "invalid XP3 format");
-                mem_free(temp.segm_lst);
-                mem_free(temp.base.name);
-                goto _failure2;
+                goto _failure4;
             }
         }
         pntr += (leng_t)tsz2;
@@ -579,9 +572,7 @@ load_krkr_xp3 (
                 if (tots < 16) {
                     err_set(__CR_KRKR_XP3_C__, tots,
                             "load_krkr_xp3()", "invalid XP3 format");
-                    mem_free(temp.segm_lst);
-                    mem_free(temp.base.name);
-                    goto _failure2;
+                    goto _failure4;
                 }
                 mem_cpy(&temp.adlr_key, pntr + 4, sizeof(int32u));
                 temp.adlr_key = DWORD_LE(temp.adlr_key);
@@ -604,9 +595,7 @@ load_krkr_xp3 (
         if (array_push_growT(&list, sPAK_XP3_FILE, &temp) == NULL) {
             err_set(__CR_KRKR_XP3_C__, CR_NULL,
                     "load_cr_zip()", "array_push_growT() failure");
-            mem_free(temp.segm_lst);
-            mem_free(temp.base.name);
-            goto _failure2;
+            goto _failure4;
         }
     }
     mem_free(info);
@@ -656,9 +645,13 @@ load_krkr_xp3 (
     rett->type = CR_FMTZ_PRT;
     rett->port = (iPORT*)port;
     rett->more = "iPACKAGE";
-    rett->infor = "KrKr XP3 Archive (XP3)";
+    rett->infor = "KiriKiri2 XP3 Archive (XP3)";
     return (rett);
 
+_failure4:
+    mem_free(temp.segm_lst);
+_failure3:
+    mem_free(temp.base.name);
 _failure2:
     mem_free(info);
 _failure1:
