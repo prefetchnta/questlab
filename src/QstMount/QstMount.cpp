@@ -425,8 +425,10 @@ qst_out_flist (
         ansi_t*     esc;
         sPAK_FILE*  info;
 
-        fprintf(fp, "<File ");
         pack_file_info(pack, &info, idx);
+        if (info->name[0] == NIL)
+            continue;
+        fprintf(fp, "<File ");
         fprintf(fp, "offs=\"%I64u\" ", info->offs);
         fprintf(fp, "pack=\"%I64u\" ", info->pack);
         fprintf(fp, "size=\"%I64u\" ", info->size);
