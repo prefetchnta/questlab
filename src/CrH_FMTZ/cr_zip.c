@@ -388,12 +388,6 @@ load_cr_zip (
             goto _failure;
         }
         name[len] = NIL;
-        if (name[0] == 0x00) {
-            err_set(__CR_ZIP_C__, NIL,
-                    "load_cr_zip()", "invalid ZIP format");
-            mem_free(name);
-            goto _failure;
-        }
 
         /* 跳过附加数据 */
         offs = WORD_LE(unit.ext_len);

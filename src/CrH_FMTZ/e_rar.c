@@ -419,11 +419,6 @@ load_rar (
             }
             continue;
         }
-        if (info.FileName[0] == 0x00) {
-            err_set(__CR_E_RAR_C__, NIL,
-                    "load_rar()", "invalid RAR format");
-            goto _failure1;
-        }
 
         /* 文件名统一使用 UTF-8 编码 */
         struct_zero(&temp, sPAK_RAR_FILE);

@@ -403,11 +403,6 @@ load_flc_nnk (
                     "load_flc_nnk()", "invalid NNK format");
             goto _failure4;
         }
-        if (name[info[idx].name] == 0x00) {
-            err_set(__CR_FLC_NNK_C__, NIL,
-                    "load_flc_nnk()", "invalid NNK format");
-            goto _failure4;
-        }
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].base.name = local_to_utf8(

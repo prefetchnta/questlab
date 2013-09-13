@@ -349,13 +349,6 @@ load_syn_gca (
     {
         string  name = gca->GetFileName((int)idx);
 
-        /* 空文件名检查 */
-        if (name[0] == 0x00) {
-            err_set(__CR_GCAX_CPP__, NIL,
-                    "load_syn_gca()", "invalid GCA format");
-            goto _failure4;
-        }
-
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].base.name = local_to_utf8(param->page, name.c_str());
         if (list[idx].base.name == NULL) {

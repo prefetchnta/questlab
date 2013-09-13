@@ -508,12 +508,6 @@ load_krkr_xp3 (
             name[idx] = WORD_LE(name[idx]);
         }
         name[idx] = 0x0000;
-        if (name[0] == 0x0000) {
-            err_set(__CR_KRKR_XP3_C__, NIL,
-                    "load_krkr_xp3()", "invalid XP3 format");
-            mem_free(name);
-            goto _failure2;
-        }
         temp.base.name = utf16_to_utf8(name);
         mem_free(name);
         if (temp.base.name == NULL) {

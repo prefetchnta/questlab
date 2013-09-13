@@ -300,11 +300,6 @@ load_tgl_pac (
                     "load_tgl_pac()", "iDATIN::read() failure");
             goto _failure2;
         }
-        if (str[0] == 0x00) {
-            err_set(__CR_TGL_PAC_C__, NIL,
-                    "load_tgl_pac()", "invalid TGL PAC format");
-            goto _failure2;
-        }
 
         /* 文件的包内偏移 */
         if (!CR_VCALL(datin)->getd_le(datin, &offs)) {
