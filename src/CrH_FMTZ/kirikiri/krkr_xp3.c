@@ -584,11 +584,17 @@ load_krkr_xp3 (
         /* 用第一段设置剩下的成员 */
         temp.base.offs = temp.segm_lst[0].offset;
         if (temp.segm_lst[0].zlib) {
-            temp.base.memo = "ZLib|Encrypt";
+            if (attr == 0)
+                temp.base.memo = "ZLib";
+            else
+                temp.base.memo = "ZLib + Encrypt";
             temp.base.attr |= PAK_FILE_CMP;
         }
         else {
-            temp.base.memo = "Store|Encrypt";
+            if (attr == 0)
+                temp.base.memo = "Store";
+            else
+                temp.base.memo = "Encrypt";
         }
 
         /* 文件信息压入列表 */
