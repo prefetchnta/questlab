@@ -205,7 +205,7 @@ qst_do_node (
     }
     else {
         data->offs = xml_attr_intx64W(CR_WS("offs"), 0, node);
-        data->pack = xml_attr_intx64W(CR_WS("pack"), data->size, node);
+        data->pack = xml_attr_intx64W(CR_WS("pack"), 0, node);
 
         /* 设置图标索引 */
         data->icon = xml_attr_intxW(CR_WS("icon"), QST_ICON_DSK, node);
@@ -214,7 +214,7 @@ qst_do_node (
     }
 
     /* 压缩属性可以计算得出 */
-    if (data->pack != data->size)
+    if (data->pack != 0 && data->pack != data->size)
         data->attr |= QST_FILE_CMP;
 
     /* 文件名称属性 (必有) */

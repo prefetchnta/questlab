@@ -157,7 +157,10 @@ void __fastcall TfrmMain::lstTreeChange(TBaseVirtualTree *Sender,
 
     /* 压入文件存放大小 */
     string  = "File size: ";
-    string += IntToStr((__int64)data->pack);
+    if (data->pack == 0)
+        string += IntToStr((__int64)data->size);
+    else
+        string += IntToStr((__int64)data->pack);
     string += " Bytes";
     txtInfo->Lines->Append(string);
 
