@@ -1,6 +1,69 @@
 questlab
 ├─bin
 │  ├─config
+│  ├─ext3rd
+│  │  └─npp
+│  │      ├─localization
+│  │      ├─plugins
+│  │      │  ├─APIs
+│  │      │  ├─Config
+│  │      │  │  └─Hunspell
+│  │      │  └─doc
+│  │      ├─themes
+│  │      ├─updater
+│  │      └─user.manual
+│  │          ├─documentation
+│  │          │  ├─document-properties
+│  │          │  └─notepad-user-manual
+│  │          │      ├─display
+│  │          │      ├─document-properties
+│  │          │      ├─editing
+│  │          │      ├─file-management
+│  │          │      ├─further-help
+│  │          │      ├─gui-elements
+│  │          │      ├─languages
+│  │          │      ├─searching
+│  │          │      ├─session-management
+│  │          │      ├─settings
+│  │          │      └─switching-between-documents
+│  │          ├─Images
+│  │          │  ├─Screenshots
+│  │          │  └─Toolbar
+│  │          ├─misc
+│  │          ├─modules
+│  │          │  ├─book
+│  │          │  ├─node
+│  │          │  ├─system
+│  │          │  └─user
+│  │          ├─sites
+│  │          │  ├─all
+│  │          │  │  ├─css
+│  │          │  │  ├─images
+│  │          │  │  ├─modules
+│  │          │  │  │  ├─captcha
+│  │          │  │  │  ├─cck
+│  │          │  │  │  │  ├─modules
+│  │          │  │  │  │  │  └─fieldgroup
+│  │          │  │  │  │  └─theme
+│  │          │  │  │  ├─ckeditor
+│  │          │  │  │  ├─dhtml_menu
+│  │          │  │  │  ├─fancy_login
+│  │          │  │  │  │  ├─css
+│  │          │  │  │  │  ├─images
+│  │          │  │  │  │  └─scripts
+│  │          │  │  │  ├─feedback
+│  │          │  │  │  │  └─images
+│  │          │  │  │  └─views
+│  │          │  │  │      ├─css
+│  │          │  │  │      └─images
+│  │          │  │  └─themes
+│  │          │  │      └─acquia_marina
+│  │          │  │          ├─icons
+│  │          │  │          ├─images
+│  │          │  │          └─theme_settings
+│  │          │  └─default
+│  │          │      └─files
+│  │          └─user
 │  ├─output
 │  ├─plugin
 │  ├─script
