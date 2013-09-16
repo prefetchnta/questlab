@@ -13,6 +13,9 @@ USEFORM("uAbout.cpp", frmAbout);
 /* 全局工作上下文 */
 static sQstMenu     s_wrk_ctx;
 
+/* 外部应用程序标志 */
+extern bool g_use_npp;  /* 使用 Notepad++ 的标志 */
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
@@ -325,6 +328,38 @@ qst_mnu_win_load2 (void_t)
     qst_mnu_win_load(&s_wrk_ctx, 0, NULL);
 }
 
+/*
+---------------------------------------
+    加载一个磁盘文件
+---------------------------------------
+*/
+static bool_t
+qst_mnu_ldr_file (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <文件路径> [头偏移] [尾偏移] [编码] [节点地址] [备注] */
+    if (argc < 2)
+        return (FALSE);
+
+    /* 根据设置调用外部程序 */
+    if (g_use_npp)
+    {
+        AnsiString  line;
+
+        line = QST_PATH_EXT3RD;
+        line += "npp\\notepad++.exe \"";
+        line += AnsiString(argv[1]);
+        line += "\"";
+        misc_call_exe(line.c_str(), FALSE, FALSE);
+    }
+
+    /* 无论成功失败都返回成功 */
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -336,6 +371,9 @@ static const sQST_CMD   s_cmdz[] =
     { "win:load", qst_mnu_win_load },
     { "win:save", qst_mnu_win_save },
     { "win:show", qst_mnu_win_show },
+
+    /***** 公用加载命令 *****/
+    { "ldr:file", qst_mnu_ldr_file },
 
     /***** 私有命令映射 *****/
     { "qmnu:app:exit", qst_mnu_app_exit },

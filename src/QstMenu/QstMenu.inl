@@ -31,6 +31,8 @@ void __fastcall subKillQstTextClick(TObject *Sender);
 void __fastcall subKillQstTreeClick(TObject *Sender);
 void __fastcall subKillQstView2DClick(TObject *Sender);
 //---------------------------------------------------------------------------
+void __fastcall subToolsNPPClick(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subFilterNoneClick(TObject *Sender);
 void __fastcall subFilterXXXXClick(TObject *Sender);
 //---------------------------------------------------------------------------
@@ -241,6 +243,16 @@ void __fastcall TfrmMain::subKillQstView2DClick(TObject *Sender)
 {
     /* 关闭 QstView2D 窗口 */
     qst_send_cmdz("qv2d:app:exit");
+}
+//---------------------------------------------------------------------------
+/* ================================================= */
+bool    g_use_npp = false;  /* 使用 Notepad++ 的标志 */
+/* ================================================= */
+void __fastcall TfrmMain::subToolsNPPClick(TObject *Sender)
+{
+    /* Notepad++ 开关 */
+    g_use_npp = !g_use_npp;
+    ((TMenuItem*)Sender)->Checked = g_use_npp;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subFilterNoneClick(TObject *Sender)
@@ -556,6 +568,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subKillQstText);
     QST_MENU_EVENT(subKillQstTree);
     QST_MENU_EVENT(subKillQstView2D);
+    QST_MENU_EVENT(subToolsNPP);
     QST_MENU_EVENT(subFilterNone);
     QST_MENU_EVENT(subCPgame);
     QST_MENU_EVENT(subCPsystem);
