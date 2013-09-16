@@ -59,6 +59,7 @@
 
 /* 缺省目录路径 */
 #define QST_PATH_CONFIG ".\\config\\"   /* 应用程序配置 */
+#define QST_PATH_EXT3RD ".\\ext3rd\\"   /* 外部应用程序 */
 #define QST_PATH_OUTPUT ".\\output\\"   /* 临时文件目录 */
 #define QST_PATH_PLUGIN ".\\plugin\\"   /* 应用程序插件 */
 #define QST_PATH_SCRIPT ".\\script\\"   /* 外部脚本汇总 */
