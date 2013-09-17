@@ -120,13 +120,14 @@ qst_in_package (
 CR_API void_t
 qst_try_load (
   __CR_IN__ PVirtualNode        node,
-  __CR_IN__ const sQTEE_file*   data,
+  __CR_IO__ sQTEE_file*         data,
   __CR_IN__ TVirtualStringTree* tree
     )
 {
     ansi_t* path;
     ansi_t* memo;
     ansi_t* send;
+    fsize_t size;
 
     /* 清除当前内容加载 */
     cmd_shl_send(s_wrk_ctx.netw, "app:reset");
@@ -136,6 +137,12 @@ qst_try_load (
         qst_in_package(node, data, tree);
         return;
     }
+
+    /* 重新获取文件大小 */
+    size = file_sizeW(data->path);
+    if (size == (fsize_t)-1)
+        return;
+    data->size = size;
 
     /* 发送磁盘文件请求 */
     path = utf16_to_local(data->page, data->path);
@@ -521,8 +528,19 @@ qst_load_xml (
         data.page = page;
         data.root = disk ? NULL : node;
 
+        /* 加入线性列表 */
+        if (disk) {
+            if (array_push_growT(&parm->list, sQTEE_file, &data) == NULL) {
+                TRY_FREE(data.path)
+                TRY_FREE(data.memo)
+                continue;
+            }
+        }
+
         /* 加入树形列表 */
         if (!qst_add_node(begin, &data, node, tree)) {
+            if (disk)
+                parm->list.__cnts__--;
             TRY_FREE(data.path)
             TRY_FREE(data.memo)
             continue;
@@ -562,6 +580,7 @@ qst_free_lst (
     if (parm->busy)
         return;
     parm->busy = TRUE;
+    array_freeT(&parm->list, sQTEE_file);
     ((TfrmMain*)(parm->form))->lstTree->BeginUpdate();
     ((TfrmMain*)(parm->form))->lstTree->Clear();
     ((TfrmMain*)(parm->form))->lstTree->EndUpdate();

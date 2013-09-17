@@ -73,6 +73,7 @@ typedef struct
         bool_t      quit;   /* 是否退出 */
         bool_t      busy;   /* 是否忙碌 */
         void_t*     form;   /* 窗口对象 */
+        sARRAY      list;   /* 文件列表 */
         socket_t    netw;   /* 网络连接 */
 
 } sQstTree;

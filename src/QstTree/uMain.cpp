@@ -152,6 +152,9 @@ void __fastcall TfrmMain::lstTreeChange(TBaseVirtualTree *Sender,
     if (data->attr & QST_FILE_DIR)
         return;
 
+    /* 发送文件加载请求 */
+    qst_try_load(Node, data, lstTree);
+
     ansi_t*     text;
     AnsiString  string;
 
@@ -199,8 +202,5 @@ void __fastcall TfrmMain::lstTreeChange(TBaseVirtualTree *Sender,
         txtInfo->Lines->Append(string);
         mem_free(text);
     }
-
-    /* 发送文件加载请求 */
-    qst_try_load(Node, data, lstTree);
 }
 //---------------------------------------------------------------------------
