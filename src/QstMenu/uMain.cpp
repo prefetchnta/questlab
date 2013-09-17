@@ -33,6 +33,9 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     this->Width  = ww;
     this->Height = hh;
 
+    /* 外部程序初始状态 */
+    m_use_npp = false;
+
     /* 加载主菜单 */
     this->SetupMenu();
 }

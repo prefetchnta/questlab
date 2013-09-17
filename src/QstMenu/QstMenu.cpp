@@ -13,9 +13,6 @@ USEFORM("uAbout.cpp", frmAbout);
 /* 全局工作上下文 */
 static sQstMenu     s_wrk_ctx;
 
-/* 外部应用程序标志 */
-extern bool g_use_npp;  /* 使用 Notepad++ 的标志 */
-
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
@@ -344,8 +341,14 @@ qst_mnu_ldr_file (
     if (argc < 2)
         return (FALSE);
 
+    TfrmMain*   frm;
+    sQstMenu*   ctx;
+
+    ctx = (sQstMenu*)parm;
+    frm = (TfrmMain*)(ctx->form);
+
     /* 根据设置调用外部程序 */
-    if (g_use_npp)
+    if (frm->is_use_npp())
     {
         AnsiString  line;
 

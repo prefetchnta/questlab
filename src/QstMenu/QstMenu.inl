@@ -245,14 +245,11 @@ void __fastcall TfrmMain::subKillQstView2DClick(TObject *Sender)
     qst_send_cmdz("qv2d:app:exit");
 }
 //---------------------------------------------------------------------------
-/* ================================================= */
-bool    g_use_npp = false;  /* 使用 Notepad++ 的标志 */
-/* ================================================= */
 void __fastcall TfrmMain::subToolsNPPClick(TObject *Sender)
 {
     /* Notepad++ 开关 */
-    g_use_npp = !g_use_npp;
-    ((TMenuItem*)Sender)->Checked = g_use_npp;
+    m_use_npp = !m_use_npp;
+    ((TMenuItem*)Sender)->Checked = m_use_npp;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subFilterNoneClick(TObject *Sender)
