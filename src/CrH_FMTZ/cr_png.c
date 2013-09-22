@@ -117,7 +117,7 @@ png_filter (
     return (TRUE);
 }
 
-/* PNG 内部结构 */
+/* PNG 内部结构 (BE) */
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (push, 1)
 #endif

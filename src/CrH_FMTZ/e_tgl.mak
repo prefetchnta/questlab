@@ -6,11 +6,13 @@ BIN_NAME=$(PROJECT).dll
 OBJ_LIST=.$(L)fmtz.$(O) \
          .$(L)e_tgl.$(O) \
          .$(L)tgl_pac.$(O) \
+         .$(L)tgl_sdc.$(O) \
          .$(L)tgl_iel1.$(O)
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)e_tgl.$(C) \
          .$(L)tgl$(L)tgl_pac.$(C) \
+         .$(L)tgl$(L)tgl_sdc.$(C) \
          .$(L)tgl$(L)tgl_iel1.$(C)
 
 build_all:
