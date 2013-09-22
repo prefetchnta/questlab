@@ -20,6 +20,7 @@
 #ifndef __CR_KRKR_XP3_C__
 #define __CR_KRKR_XP3_C__ 0x3A7B22FBUL
 
+#include "hash.h"
 #include "enclib.h"
 #include "strlib.h"
 #include "../fmtint.h"
@@ -264,6 +265,9 @@ static const iPACKAGE_vtbl _rom_ s_pack_vtbl =
     iPAK_XP3_getFileInfo,
 };
 
+/* 文件数据解密库 */
+#include "krkr_dec_cmm.inl"
+
 /*
 ---------------------------------------
     解密回调设置
@@ -275,9 +279,22 @@ decode_setup (
   __CR_IN__ const ansi_t*   type
     )
 {
-    CR_NOUSE(type);
-    that->decode_file = NULL;
-    that->decode_block = NULL;
+    int32u  crc32;
+    leng_t  len = str_lenA(type);
+
+    crc32 = hash_crc32i_total(type, len);
+    switch (crc32)
+    {
+        default:
+            that->decode_file = NULL;
+            that->decode_block = NULL;
+            break;
+
+        case KRKR_AUTO_XOR8:
+            that->decode_file = dec_auto_xor8;
+            that->decode_block = NULL;
+            break;
+    }
 }
 
 /* XP3 内部结构 (LE) */

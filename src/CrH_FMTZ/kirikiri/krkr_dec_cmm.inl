@@ -1,6 +1,6 @@
 /*****************************************************************************/
 /*                                                  ###                      */
-/*       #####          ###    ###                  ###  CREATE: 2013-09-09  */
+/*       #####          ###    ###                  ###  CREATE: 2013-09-22  */
 /*     #######          ###    ###      [FMTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
 /*    ########          ###    ###                  ###  MODIFY: XXXX-XX-XX  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
@@ -13,62 +13,84 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>> CrHack KiriKiri FMTZ 插件头文件 <<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>> CrHack KiriKiri2 文件数据解密库 (常用) <<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_KIRIKIRI_H__
-#define __CR_KIRIKIRI_H__ 0x892509D5UL
+#ifndef __CR_KRKR_DEC_CMM_INL__
+#define __CR_KRKR_DEC_CMM_INL__ 0x0628C907UL
 
-#include "fmtz.h"
-
-/* XP3 文件分段结构 (LE) */
-#ifndef _CR_NO_PRAGMA_PACK_
-    #pragma pack (push, 1)
-#endif
-CR_TYPEDEF struct
+/*
+---------------------------------------
+    "auto_xor8" 自识别8位异或
+---------------------------------------
+*/
+static void_t
+dec_auto_xor8 (
+  __CR_IO__ void_t*                 data,
+  __CR_IN__ leng_t                  size,
+  __CR_IN__ const sPAK_XP3_FILE*    info
+    )
 {
-        int32u  zlib;       /* ZLib 压缩 */
-        int64u  offset;     /* 数据的偏移 */
-        int64u  unsize;     /* 解压缩大小 */
-        int64u  pksize;     /* 存放的大小 */
+    byte_t          key, *ptr;
+    const ansi_t*   file = info->base.name;
+    const ansi_t*   fext = file + str_lenA(file);
 
-} CR_PACKED sPAK_XP3_SEGM;
+    /* 定位到扩展名 */
+    while (fext != file) {
+        if (*fext == CR_AC('.'))
+            break;
+        fext--;
+    }
+    ptr = (byte_t*)data;
 
-#ifndef _CR_NO_PRAGMA_PACK_
-    #pragma pack (pop)
-#endif
+    /* 根据文件类型反算出密钥 */
+    if (str_cmpIA(fext, ".png") == 0) {
+        key = ptr[0] ^ 0x89;
+    }
+    else
+    if (str_cmpIA(fext, ".jpg") == 0) {
+        key = ptr[0] ^ 0xFF;
+    }
+    else
+    if (str_cmpIA(fext, ".bmp") == 0) {
+        key = ptr[0] ^ 'B';
+    }
+    else
+    if (str_cmpIA(fext, ".wav") == 0) {
+        key = ptr[0] ^ 'R';
+    }
+    else
+    if (str_cmpIA(fext, ".mp3") == 0) {
+        key = ptr[0] ^ 'I';
+        if ((ptr[1] ^ key) != 'D')
+            key = ptr[0] ^ 0xFF;
+    }
+    else
+    if (str_cmpIA(fext, ".ogg") == 0) {
+        key = ptr[0] ^ 'O';
+    }
+    else
+    if (str_cmpIA(fext, ".mpg") == 0) {
+        key = ptr[0];
+    }
+    else
+    if (str_cmpIA(fext, ".ks") == 0 ||
+        str_cmpIA(fext, ".tjs") == 0) {
+        key = ptr[0] ^ 0xFF;
+        if ((ptr[1] ^ key) != 0xFE)
+            return;
+    }
+    else {
+        return;
+    }
 
-/* XP3 文件信息结构 */
-typedef struct
-{
-        /* 公用部分 */
-        sPAK_FILE   base;
+    /* 解密数据 */
+    for (; size != 0; size--)
+        *ptr++ ^= key;
+}
 
-        /* 个性部分 */
-        int32u          protect;    /* 保护字段？ */
-        int32u          adlr_key;   /* 附加的密钥 */
-        leng_t          segm_cnt;   /* 文件分段数量 */
-        sPAK_XP3_SEGM*  segm_lst;   /* 文件分段列表 */
-
-} sPAK_XP3_FILE;
-
-/* 文件加密标识 (用附加串的 CRC32 来确定) */
-#define KRKR_AUTO_XOR8  0xCA6CA894UL    /* "auto_xor8" 自识别8位异或 */
-
-/*****************************************************************************/
-/*                                 引擎接口                                  */
-/*****************************************************************************/
-
-CR_API sENGINE*     engine_krkr (void_t);
-
-/*****************************************************************************/
-/*                               封包文件格式                                */
-/*****************************************************************************/
-
-CR_API sFMT_PRT*    load_krkr_xp3 (iDATIN *datin, const sLOADER *param);
-
-#endif  /* !__CR_KIRIKIRI_H__ */
+#endif  /* !__CR_KRKR_DEC_CMM_INL__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
