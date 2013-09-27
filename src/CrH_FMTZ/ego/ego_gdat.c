@@ -333,7 +333,7 @@ load_ego_gdat (
             goto _failure;
         }
 
-        /* 剩下的全是文件名 (有0结尾) */
+        /* 剩下的全是文件名 (有\0结尾) */
         if (unit > sizeof(str)) {
             err_set(__CR_EGO_GDAT_C__, unit,
                     "load_ego_gdat()", "invalid EGO DAT format");

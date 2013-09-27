@@ -506,7 +506,7 @@ load_krkr_xp3 (
         temp.base.size = QWORD_LE(temp.base.size);
         temp.base.pack = QWORD_LE(temp.base.pack);
 
-        /* 读取文件名 UTF-16 无0结尾 */
+        /* 读取文件名 UTF-16 无\0结尾 */
         mem_cpy(&len, pntr + 20, sizeof(int16u));
         len = WORD_LE(len);
         if ((int64u)len > tsz1 - 22) {
