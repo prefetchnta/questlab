@@ -93,6 +93,7 @@
 ##zTGL (VS2010 SP1)
 
 <p>支持加载 <b>TGL</b> 公司开发的游戏里的几种专用的文件格式：</p>
+ - TGL IPAC Archive (IPAC)
  - TGL PAC_FILE Archive (PACF)
  - TGL LZSS Compressed file (IEL1)
  - TGL LZSS Compressed file (SDC)
