@@ -44,6 +44,11 @@ static const sMATCHx _rom_ s_findx[] =
         NULL, CR_STR(".pac"),
         CR_VFUNC(load_tgl_pac)
     },
+    {
+        CR_FMTZ_MASK_PAK,
+        NULL, CR_STR(".pak"),
+        CR_VFUNC(load_tgl_ipac)
+    },
     { 0, NULL, NULL, NULL },
 };
 #endif  /* !s_findx */
@@ -55,6 +60,7 @@ static const sMATCHx _rom_ s_findx[] =
 static const sTRY_LDRx _rom_ s_loadx[] =
 {
     { CR_FMTZ_MASK_PAK, CR_VFUNC(load_tgl_pac), NULL },
+    { CR_FMTZ_MASK_PAK, CR_VFUNC(load_tgl_ipac), NULL },
     { CR_FMTZ_MASK_DAT, CR_VFUNC(load_tgl_iel1), NULL },
     { CR_FMTZ_MASK_DAT, CR_VFUNC(load_tgl_sdc), NULL },
     { 0, NULL, NULL },

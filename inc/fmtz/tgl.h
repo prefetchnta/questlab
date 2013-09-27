@@ -43,7 +43,8 @@ CR_API sENGINE*     engine_tgl (void_t);
 /*                               封包文件格式                                */
 /*****************************************************************************/
 
-CR_API sFMT_PRT*    load_tgl_pac (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PRT*    load_tgl_pac  (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PRT*    load_tgl_ipac (iDATIN *datin, const sLOADER *param);
 
 /*****************************************************************************/
 /*                               数据文件格式                                */
