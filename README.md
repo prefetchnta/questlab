@@ -97,6 +97,7 @@
  - TGL PAC_FILE Archive (PACF)
  - TGL LZSS Compressed file (IEL1)
  - TGL LZSS Compressed file (SDC)
+ - TGL BMR Image File (BMR)
 
 ##zEGO (VS2010 SP1)
 

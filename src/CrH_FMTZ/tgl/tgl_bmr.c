@@ -83,6 +83,11 @@ load_tgl_bmr (
                 "load_tgl_bmr()", "invalid BMR format");
         return (NULL);
     }
+    if (head.pal_count == 0) {
+        err_set(__CR_TGL_BMR_C__, head.pal_count,
+                "load_tgl_bmr()", "invalid BMR format");
+        return (NULL);
+    }
     head.dat_size = DWORD_LE(head.dat_size);
     size = head.pal_count;
     size *= sizeof(int32u);
