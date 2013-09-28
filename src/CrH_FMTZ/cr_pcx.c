@@ -210,7 +210,7 @@ load_cr_pcx (
                         continue;
                     }
                     y1 = pal[0] & 0x3F;
-                    if (x1 + y1 > ww) {
+                    if (y1 > ww - x1) {
                         err_set(__CR_PCX_C__, pal[0],
                                 "load_cr_pcx()", "invalid PCX format");
                         goto _failure;
@@ -273,7 +273,7 @@ load_cr_pcx (
                         continue;
                     }
                     y1 = pal[0] & 0x3F;
-                    if (read + y1 > bpl) {
+                    if (y1 > bpl - read) {
                         err_set(__CR_PCX_C__, pal[0],
                                 "load_cr_pcx()", "invalid PCX format");
                         mem_free(line);

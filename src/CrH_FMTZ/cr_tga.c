@@ -212,7 +212,7 @@ load_cr_tga (
                     goto _failure;
                 }
                 jj = (pixel[0] & 0x7F) + 1;
-                if (ii + jj > ww) {
+                if (jj > ww - ii) {
                     err_set(__CR_TGA_C__, pixel[0],
                             "load_cr_tga()", "invalid TGA format");
                     goto _failure;
