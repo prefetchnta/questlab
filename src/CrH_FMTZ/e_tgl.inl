@@ -49,6 +49,11 @@ static const sMATCHx _rom_ s_findx[] =
         NULL, CR_STR(".pak"),
         CR_VFUNC(load_tgl_ipac)
     },
+    {
+        CR_FMTZ_MASK_PIC,
+        NULL, CR_STR(".bmr"),
+        CR_VFUNC(load_tgl_bmr)
+    },
     { 0, NULL, NULL, NULL },
 };
 #endif  /* !s_findx */

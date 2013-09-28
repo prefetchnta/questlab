@@ -53,6 +53,12 @@ CR_API sFMT_PRT*    load_tgl_ipac (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_DAT*    load_tgl_sdc  (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_DAT*    load_tgl_iel1 (iDATIN *datin, const sLOADER *param);
 
+/*****************************************************************************/
+/*                               图片文件格式                                */
+/*****************************************************************************/
+
+CR_API sFMT_PIC*    load_tgl_bmr (iDATIN *datin, const sLOADER *param);
+
 #endif  /* !__CR_TGL_H__ */
 
 /*****************************************************************************/

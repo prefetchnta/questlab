@@ -42,7 +42,8 @@ engine_tgl_load (
     )
 {
     if (!(engine->mask & CR_FMTZ_MASK_PAK) &&
-        !(engine->mask & CR_FMTZ_MASK_DAT))
+        !(engine->mask & CR_FMTZ_MASK_DAT) &&
+        !(engine->mask & CR_FMTZ_MASK_PIC))
         return (NULL);
     return (fmtz_find(engine, loader));
 }
