@@ -298,6 +298,10 @@ CR_API void_t   pal_4b_to_2b_17 (void_t *pal2, const void_t *pal4,
 CR_API void_t   pal_4b_to_2b_12 (void_t *pal2, const void_t *pal4,
                                  uint_t len CR_DEFAULT(256));
 
+CR_API void_t   pal_4b_alp_sw (void_t *pal4, bool_t swap,
+                               uint_t alp CR_DEFAULT(0xFF),
+                               uint_t len CR_DEFAULT(256));
+
 CR_API void_t   pal_vga_to_3b (void_t *vga3, uint_t len CR_DEFAULT(256));
 CR_API void_t   pal_3b_to_vga (void_t *pal3, uint_t len CR_DEFAULT(256));
 CR_API void_t   pal_set_gray8 (void_t *pal4, uint_t len CR_DEFAULT(256));
