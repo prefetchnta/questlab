@@ -32,12 +32,12 @@
 /* BMR 文件头结构 */
 CR_TYPEDEF struct
 {
-        int32u  zero;           /* 0x00000000？ */
+        int32u  unknown1;       /* 未知数据值 */
         int32u  width;          /* 图片的宽度 */
         int32u  height;         /* 图片的高度 */
         int32u  dat_size;       /* 压缩数据大小 */
         byte_t  pal_count;      /* 调色板颜色数 */
-        byte_t  unknown[3];     /* 未知数据值 */
+        byte_t  unknown2[3];    /* 未知数据值 */
 
 } CR_PACKED sBMR_HDR;
 
@@ -76,11 +76,6 @@ load_tgl_bmr (
     if (!(CR_VCALL(datin)->getT(datin, &head, sBMR_HDR))) {
         err_set(__CR_TGL_BMR_C__, FALSE,
                 "load_tgl_bmr()", "iDATIN::getT() failure");
-        return (NULL);
-    }
-    if (head.zero != 0x00000000UL) {
-        err_set(__CR_TGL_BMR_C__, head.zero,
-                "load_tgl_bmr()", "invalid BMR format");
         return (NULL);
     }
     if (head.pal_count == 0) {
