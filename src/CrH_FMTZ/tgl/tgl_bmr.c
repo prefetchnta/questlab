@@ -62,8 +62,8 @@ load_tgl_bmr (
     sFMT_FRAME  temp;
     /***************/
     leng_t  read, count;
+    byte_t  pair[2], *ptr;
     uint_t  rle, ww, hh, ii;
-    byte_t  pal[1020], *ptr;
 
     /* 这个参数可能为空 */
     if (datin == NULL) {
@@ -111,20 +111,6 @@ load_tgl_bmr (
         return (NULL);
     }
 
-    /* 读取调色板数据 */
-    count  = head.pal_count;
-    count *= sizeof(int32u);
-    read = CR_VCALL(datin)->read(datin, pal, count);
-    if (read != count) {
-        err_set(__CR_TGL_BMR_C__, read,
-                "load_tgl_bmr()", "iDATIN::read() failure");
-        return (NULL);
-    }
-    for (read = 0; read < count; read += 4) {
-        swap_rb32(&pal[read]);
-        pal[read + 3] = 0xFF;
-    }
-
     /* 生成图片对象 */
     mem_zero(temp.wh, sizeof(temp.wh));
     temp.fmt = CR_PIC_PALS;
@@ -137,38 +123,48 @@ load_tgl_bmr (
                 "load_tgl_bmr()", "image_new() failure");
         return (NULL);
     }
+
+    /* 读取调色板数据 */
+    count  = head.pal_count;
+    count *= sizeof(int32u);
+    read = CR_VCALL(datin)->read(datin, temp.pic->pal, count);
+    if (read != count) {
+        err_set(__CR_TGL_BMR_C__, read,
+                "load_tgl_bmr()", "iDATIN::read() failure");
+        goto _failure;
+    }
     ii = 0;
     ptr = temp.pic->data;
-    mem_cpy(temp.pic->pal, pal, count);
+    pal_4b_alp_sw(temp.pic->pal, TRUE, 0xFF, head.pal_count);
 
     /* 读取图片数据 */
     while (hh != 0) {
-        if (!CR_VCALL(datin)->getb_no(datin, pal)) {
+        if (!CR_VCALL(datin)->getb_no(datin, pair)) {
             err_set(__CR_TGL_BMR_C__, FALSE,
                     "load_tgl_bmr()", "iDATIN::getb_no() failure");
             goto _failure;
         }
 
         /* 注意：RLE 是跨行压缩的 */
-        if (pal[0] != 0xFF) {
+        if (pair[0] != 0xFF) {
             rle = 1;
         }
         else {
-            read = CR_VCALL(datin)->read(datin, pal, 2);
+            read = CR_VCALL(datin)->read(datin, pair, 2);
             if (read != 2) {
                 err_set(__CR_TGL_BMR_C__, read,
                         "load_tgl_bmr()", "iDATIN::read() failure");
                 goto _failure;
             }
-            if (pal[1] == 0)
+            if (pair[1] == 0)
                 rle = 256;
             else
-                rle = pal[1];
+                rle = pair[1];
         }
 
         /* 填充到目标图片 */
         for (; rle != 0; rle--) {
-            ptr[ii++] = pal[0];
+            ptr[ii++] = pair[0];
             if (ii == ww) {
                 if (hh == 0)
                     break;
