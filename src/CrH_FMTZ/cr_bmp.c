@@ -22,6 +22,7 @@
 
 #include "fmtz.h"
 #include "safe.h"
+#include "pixels.h"
 
 /* BMP 压缩格式 */
 #define CR_BI_RGB       0UL
@@ -255,7 +256,7 @@ load_cr_bmp (
     leng_t  read;
     bool_t  flip;
     uint_t  fcrh;
-    byte_t  pal[1024];
+    byte_t  mask[12];
     /* ----------- */
     sBMP_HDR    head;
     sFMT_PIC*   rett;
@@ -301,12 +302,6 @@ load_cr_bmp (
                 "load_cr_bmp()", "invalid BMP format");
         return (NULL);
     }
-    head.biClrUsed = DWORD_LE(head.biClrUsed);
-    if (head.biClrUsed > 256) {
-        err_set(__CR_BMP_C__, head.biClrUsed,
-                "load_cr_bmp()", "invalid BMP format");
-        return (NULL);
-    }
 
     /* 对宽高的截断检查 */
     if (cut_int32_u(&ww, DWORD_LE(head.biWidth))) {
@@ -330,20 +325,11 @@ load_cr_bmp (
     }
 
     /* 读取调色板区 */
-    mem_zero(pal, sizeof(pal));
     head.biBitCount = WORD_LE(head.biBitCount);
     head.biCompression = DWORD_LE(head.biCompression);
     if (head.biCompression == CR_BI_BITFIELDS) {
-        head.biClrUsed = 3 * sizeof(int32u);
-    }
-    else if (head.biBitCount <= 8) {
-        if (head.biClrUsed == 0)
-            head.biClrUsed = 1UL << head.biBitCount;
-        head.biClrUsed *= sizeof(int32u);
-    }
-    if (head.biClrUsed != 0) {
-        read = CR_VCALL(datin)->read(datin, pal, (leng_t)head.biClrUsed);
-        if (read != (leng_t)head.biClrUsed) {
+        read = CR_VCALL(datin)->read(datin, mask, 12);
+        if (read != 12) {
             err_set(__CR_BMP_C__, read,
                     "load_cr_bmp()", "iDATIN::read() failure");
             return (NULL);
@@ -408,7 +394,7 @@ load_cr_bmp (
             temp.fmt = CR_PIC_ARGB;
             temp.bpp = 16;
             if (head.biCompression == CR_BI_RGB ||
-                mem_cmp(pal, "\0\x7C\0\0\xE0\x03\0\0\x1F\0\0\0", 12) == 0)
+                mem_cmp(mask, "\0\x7C\0\0\xE0\x03\0\0\x1F\0\0\0", 12) == 0)
             {
                 /* 格式 X555 */
                 fcrh = CR_ARGBX555;
@@ -418,7 +404,7 @@ load_cr_bmp (
                 temp.wh[2] = 5;
             }
             else
-            if (mem_cmp(pal, "\0\xF8\0\0\xE0\x07\0\0\x1F\0\0\0", 12) == 0)
+            if (mem_cmp(mask, "\0\xF8\0\0\xE0\x07\0\0\x1F\0\0\0", 12) == 0)
             {
                 /* 格式 565 */
                 fcrh = CR_ARGB565;
@@ -482,6 +468,28 @@ load_cr_bmp (
         return (NULL);
     }
 
+    /* 读取调色板数据 */
+    if (temp.bpp <= 8) {
+        head.biClrUsed = DWORD_LE(head.biClrUsed);
+        if (head.biClrUsed > 256) {
+            err_set(__CR_BMP_C__, head.biClrUsed,
+                    "load_cr_bmp()", "invalid BMP format");
+            goto _failure;
+        }
+        fcrh = (uint_t)head.biClrUsed;
+        if (fcrh == 0)
+            fcrh = ((uint_t)1) << temp.bpp;
+        fcrh *= sizeof(int32u);
+        read = CR_VCALL(datin)->read(datin, temp.pic->pal, fcrh);
+        if (read != fcrh) {
+            err_set(__CR_BMP_C__, read,
+                    "load_cr_bmp()", "iDATIN::read() failure");
+            goto _failure;
+        }
+        fcrh /= sizeof(int32u);
+        pal_4b_alp_sw(temp.pic->pal, FALSE, 0xFF, fcrh);
+    }
+
     /* 读取图片数据 */
     if (!CR_VCALL(datin)->seek(datin, head.biOffset, SEEK_SET)) {
         err_set(__CR_BMP_C__, FALSE,
@@ -521,13 +529,6 @@ load_cr_bmp (
             err_set(__CR_BMP_C__, head.biCompression,
                     "load_cr_bmp()", "invalid BMP format");
             goto _failure;
-    }
-
-    /* 复制调色板数据 */
-    if (head.biBitCount <= 8) {
-        for (fcrh = 0; fcrh < 256; fcrh++)
-            pal[fcrh * 4 + 3] = 0xFF;
-        mem_cpy(temp.pic->pal, pal, 1024);
     }
 
     /* 返回读取的文件数据 */
