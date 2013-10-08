@@ -15,7 +15,7 @@
     0xaaaabbcc -> aaaa = major version number.  bb = minor version number.  cc = development version number.
 */
 
-#define FMOD_VERSION    0x00044414
+#define FMOD_VERSION    0x00044422
 
 /*
     Compiler specific settings.
@@ -371,6 +371,8 @@ typedef enum
     FMOD_OUTPUTTYPE_NACL,            /* Native Client   - Native Client output.                     (Default on Native Client) */
     FMOD_OUTPUTTYPE_WIIU,            /* Wii U           - Native Wii U output.                      (Default on Wii U) */
 	FMOD_OUTPUTTYPE_ASOUND,		 	 /* BlackBerry      - Native BlackBerry asound output.          (Default on BlackBerry) */
+    FMOD_OUTPUTTYPE_AUDIOOUT,        /* Orbis           - Audio Out output.                         (Default on Orbis) */
+    FMOD_OUTPUTTYPE_XAUDIO,          /* Durango         - XAudio2 output. */
 
     FMOD_OUTPUTTYPE_MAX,             /* Maximum number of output types supported. */
     FMOD_OUTPUTTYPE_FORCEINT = 65536 /* Makes sure this enum is signed 32bit. */
@@ -1475,7 +1477,7 @@ typedef struct FMOD_CREATESOUNDEXINFO
     int                            inclusionlistnum;   /* [w] Optional. Specify 0 to ignore. This is the number of integers contained within the inclusionlist array. */
     FMOD_SOUND_PCMREADCALLBACK     pcmreadcallback;    /* [w] Optional. Specify 0 to ignore. Callback to 'piggyback' on FMOD's read functions and accept or even write PCM data while FMOD is opening the sound.  Used for user sounds created with FMOD_OPENUSER or for capturing decoded data as FMOD reads it. */
     FMOD_SOUND_PCMSETPOSCALLBACK   pcmsetposcallback;  /* [w] Optional. Specify 0 to ignore. Callback for when the user calls a seeking function such as Channel::setTime or Channel::setPosition within a multi-sample sound, and for when it is opened.*/
-    FMOD_SOUND_NONBLOCKCALLBACK    nonblockcallback;   /* [w] Optional. Specify 0 to ignore. Callback for successful completion, or error while loading a sound that used the FMOD_NONBLOCKING flag.*/
+    FMOD_SOUND_NONBLOCKCALLBACK    nonblockcallback;   /* [w] Optional. Specify 0 to ignore. Callback for successful completion, or error while loading a sound that used the FMOD_NONBLOCKING flag.  Also called duing seeking, when setPosition is called or a stream is restarted. */
     const char                    *dlsname;            /* [w] Optional. Specify 0 to ignore. Filename for a DLS or SF2 sample set when loading a MIDI file. If not specified, on Windows it will attempt to open /windows/system32/drivers/gm.dls or /windows/system32/drivers/etc/gm.dls, on Mac it will attempt to load /System/Library/Components/CoreAudio.component/Contents/Resources/gs_instruments.dls, otherwise the MIDI will fail to open. Current DLS support is for level 1 of the specification. */
     const char                    *encryptionkey;      /* [w] Optional. Specify 0 to ignore. Key for encrypted FSB file.  Without this key an encrypted FSB file will not load. */
     int                            maxpolyphony;       /* [w] Optional. Specify 0 to ignore. For sequenced formats with dynamic channel allocation such as .MID and .IT, this specifies the maximum voice count allowed while playing.  .IT defaults to 64.  .MID defaults to 32. */
@@ -1770,6 +1772,7 @@ typedef struct FMOD_ADVANCEDSETTINGS
     int             maxXMAcodecs;               /* [r/w] Optional. Specify 0 to ignore. For use with FMOD_CREATECOMPRESSEDSAMPLE only.  XMA   codecs consume 14,836 bytes per instance and this number will determine how many XMA channels can be played simultaneously.    Default = 32. */
     int             maxCELTcodecs;              /* [r/w] Optional. Specify 0 to ignore. For use with FMOD_CREATECOMPRESSEDSAMPLE only.  CELT  codecs consume 11,500 bytes per instance and this number will determine how many CELT channels can be played simultaneously.   Default = 32. */    
     int             maxVORBIScodecs;            /* [r/w] Optional. Specify 0 to ignore. For use with FMOD_CREATECOMPRESSEDSAMPLE only.  Vorbis codecs consume 12,000 bytes per instance and this number will determine how many Vorbis channels can be played simultaneously. Default = 32. */    
+    int             maxAT9Codecs;               /* [r/w] Optional. Specify 0 to ignore. For use with FMOD_CREATECOMPRESSEDSAMPLE only.  AT9 codecs consume  8,720 bytes per instance and this number will determine how many AT9 channels can be played simultaneously. Default = 32. */    
     int             maxPCMcodecs;               /* [r/w] Optional. Specify 0 to ignore. For use with PS3 only.                          PCM   codecs consume 12,672 bytes per instance and this number will determine how many streams and PCM voices can be played simultaneously. Default = 16. */
     int             ASIONumChannels;            /* [r/w] Optional. Specify 0 to ignore. Number of channels available on the ASIO device. */
     char          **ASIOChannelList;            /* [r/w] Optional. Specify 0 to ignore. Pointer to an array of strings (number of entries defined by ASIONumChannels) with ASIO channel names. */
