@@ -51,6 +51,11 @@ static const sMATCHx _rom_ s_findx[] =
     },
     {
         CR_FMTZ_MASK_PIC,
+        NULL, CR_STR(".acf"),
+        CR_VFUNC(load_tgl_acf)
+    },
+    {
+        CR_FMTZ_MASK_PIC,
         NULL, CR_STR(".bmr"),
         CR_VFUNC(load_tgl_bmr)
     },
@@ -64,6 +69,7 @@ static const sMATCHx _rom_ s_findx[] =
 #else
 static const sTRY_LDRx _rom_ s_loadx[] =
 {
+    { CR_FMTZ_MASK_PIC, CR_VFUNC(load_tgl_acf), NULL },
     { CR_FMTZ_MASK_PAK, CR_VFUNC(load_tgl_pac), NULL },
     { CR_FMTZ_MASK_PAK, CR_VFUNC(load_tgl_ipac), NULL },
     { CR_FMTZ_MASK_DAT, CR_VFUNC(load_tgl_iel1), NULL },

@@ -5,6 +5,7 @@ BIN_NAME=$(PROJECT).dll
 
 OBJ_LIST=.$(L)fmtz.$(O) \
          .$(L)e_tgl.$(O) \
+         .$(L)tgl_acf.$(O) \
          .$(L)tgl_bmr.$(O) \
          .$(L)tgl_pac.$(O) \
          .$(L)tgl_ipac.$(O) \
@@ -13,6 +14,7 @@ OBJ_LIST=.$(L)fmtz.$(O) \
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)e_tgl.$(C) \
+         .$(L)tgl$(L)tgl_acf.$(C) \
          .$(L)tgl$(L)tgl_bmr.$(C) \
          .$(L)tgl$(L)tgl_pac.$(C) \
          .$(L)tgl$(L)tgl_ipac.$(C) \
