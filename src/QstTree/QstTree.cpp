@@ -526,6 +526,7 @@ qst_load_xml (
         if (!qst_do_node(&data, disk, &xml->nodes[idx]))
             continue;
         data.page = page;
+        data.head = begin;
         data.root = disk ? NULL : node;
 
         /* 加入线性列表 */

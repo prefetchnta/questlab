@@ -56,6 +56,7 @@ typedef struct
         int64s          offs;   /* 文件的偏移 */
         int64u          pack;   /* 压缩的大小 */
         int64u          size;   /* 文件的大小 */
+        leng_t          head;   /* 路径的开始 */
         uint_t          page;   /* 文件名编码 */
         uint_t          icon;   /* 图标的编号 */
         int32u          attr;   /* 文件的属性 */
