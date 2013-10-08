@@ -190,7 +190,6 @@ load_tgl_acf (
     int32u      pals;
     int32u      vals;
     leng_t      read;
-    leng_t      size;
     byte_t*     file;
     byte_t*     dats;
     fsize_t     flsz;
@@ -376,14 +375,14 @@ load_tgl_acf (
     }
 
     /* 读取所有图片帧数据 */
-    dats = CR_VCALL(datin)->get(datin, &size, FALSE);
+    dats = CR_VCALL(datin)->get(datin, &read, FALSE);
     if (dats == NULL) {
         err_set(__CR_TGL_ACF_C__, CR_NULL,
                 "load_tgl_acf()", "iDATIN::get() failure");
         goto _failure2;
     }
-    if (size < flsz) {
-        err_set(__CR_TGL_ACF_C__, size,
+    if (read < flsz) {
+        err_set(__CR_TGL_ACF_C__, read,
                 "load_tgl_acf()", "invalid ACF format");
         goto _failure3;
     }
