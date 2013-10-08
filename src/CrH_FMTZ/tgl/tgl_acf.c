@@ -49,11 +49,11 @@ typedef struct
         iPICTURE    pics;
 
         /* 个性部分 */
-        uint_t      m_type;
         bool_t      m_flip;
         byte_t*     m_dats;
         sACF_IDX*   m_attr;
         byte_t      m_pal[1024];
+        const ansi_t*   m_infor;
 
 } iPIC_ACF;
 
@@ -160,13 +160,7 @@ iPIC_ACF_get (
     }
     rett->type = CR_FMTZ_PIC;
     rett->count = 1;
-    if (real->m_type == 0)
-        rett->infor = "TGL ACF Image File (0FCA)";
-    else
-    if (real->m_type == 1)
-        rett->infor = "TGL ACF Image File (1FCA)";
-    else
-        rett->infor = "TGL ACF Image File (2FCA)";
+    rett->infor = real->m_infor;
     return (rett);
 
 _failure:
@@ -409,7 +403,6 @@ load_tgl_acf (
         goto _failure3;
     }
     struct_zero(port, iPIC_ACF);
-    port->m_type = type;
     port->m_dats = dats;
     port->m_attr = attr;
     port->pics.__count__ = cnts;
@@ -428,6 +421,21 @@ load_tgl_acf (
     pals /= sizeof(int32u);
     pal_4b_alp_sw(port->m_pal, FALSE, 0xFF, (uint_t)pals);
 
+    /* 设置图片属性和文件信息 */
+    if (type == 0) {
+        port->m_flip = TRUE;
+        port->m_infor = "TGL ACF Image File (0FCA)";
+    }
+    else
+    if (type == 1) {
+        port->m_flip = TRUE;
+        port->m_infor = "TGL ACF Image File (1FCA)";
+    }
+    else {
+        port->m_flip = FALSE;
+        port->m_infor = "TGL ACF Image File (2FCA)";
+    }
+
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
@@ -440,19 +448,7 @@ load_tgl_acf (
     rett->type = CR_FMTZ_PRT;
     rett->port = (iPORT*)port;
     rett->more = "iPICTURE";
-    if (port->m_type == 0) {
-        port->m_flip = TRUE;
-        rett->infor = "TGL ACF Image File (0FCA)";
-    }
-    else
-    if (port->m_type == 1) {
-        port->m_flip = TRUE;
-        rett->infor = "TGL ACF Image File (1FCA)";
-    }
-    else {
-        port->m_flip = FALSE;
-        rett->infor = "TGL ACF Image File (2FCA)";
-    }
+    rett->infor = port->m_infor;
     return (rett);
 
 _failure3:
