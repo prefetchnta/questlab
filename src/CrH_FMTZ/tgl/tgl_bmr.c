@@ -161,9 +161,9 @@ load_tgl_bmr (
         for (; rle != 0; rle--) {
             ptr[ii++] = pair[0];
             if (ii == ww) {
+                hh -= 1;
                 if (hh == 0)
                     break;
-                hh -= 1;
                 ptr += temp.pic->bpl;
                 ii = 0;
             }
