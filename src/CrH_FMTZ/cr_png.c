@@ -50,7 +50,17 @@ png_filter (
         return (FALSE);
     }
 
-    for (yy = 0, line = 0; yy < height; yy++, line += bpl)
+    /* 第一行特殊处理 */
+    type = *data++;
+    for (xx = 0; xx < bpl; xx++)
+        dst[xx] = *data++;
+    if (type == 1) {
+        for (xx = bpp; xx < bpl; xx++)
+            dst[xx] = dst[xx] + dst[xx - bpp];
+    }
+
+    /* 后续行支持全部过滤器 */
+    for (yy = 1, line = bpl; yy < height; yy++, line += bpl)
     {
         type = *data++;
         for (xx = 0; xx < bpl; xx++)
