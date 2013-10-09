@@ -59,6 +59,7 @@ CR_API sFMT_DAT*    load_tgl_iel1 (iDATIN *datin, const sLOADER *param);
 
 CR_API sFMT_PRT*    load_tgl_acf (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_tgl_bmr (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PIC*    load_tgl_cgr (iDATIN *datin, const sLOADER *param);
 
 #endif  /* !__CR_TGL_H__ */
 
