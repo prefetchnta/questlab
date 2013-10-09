@@ -97,10 +97,10 @@
  - TGL PAC_FILE Archive (PACF)
  - TGL LZSS Compressed file (IEL1)
  - TGL LZSS Compressed file (SDC)
+ - TGL ACF0 Image File (0FCA)
+ - TGL ACF1 Image File (1FCA)
+ - TGL ACF2 Image File (2FCA)
  - TGL BMR Image File (BMR)
- - TGL ACF Image File (0FCA)
- - TGL ACF Image File (1FCA)
- - TGL ACF Image File (2FCA)
 
 ##zEGO (VS2010 SP1)
 

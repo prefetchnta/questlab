@@ -423,16 +423,16 @@ load_tgl_acf (
     /* 设置图片属性和文件信息 */
     if (type == 0) {
         port->m_flip = TRUE;
-        port->m_infor = "TGL ACF Image File (0FCA)";
+        port->m_infor = "TGL ACF0 Image File (0FCA)";
     }
     else
     if (type == 1) {
         port->m_flip = TRUE;
-        port->m_infor = "TGL ACF Image File (1FCA)";
+        port->m_infor = "TGL ACF1 Image File (1FCA)";
     }
     else {
         port->m_flip = FALSE;
-        port->m_infor = "TGL ACF Image File (2FCA)";
+        port->m_infor = "TGL ACF2 Image File (2FCA)";
     }
 
     /* 返回读取的文件数据 */
