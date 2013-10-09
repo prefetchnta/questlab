@@ -44,7 +44,7 @@ CR_TYPEDEF struct
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (pop)
 #endif
-#include <windows.h>
+
 /*
 =======================================
     TGL BMR 文件读取
