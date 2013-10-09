@@ -101,6 +101,7 @@
  - TGL ACF1 Image File (1FCA)
  - TGL ACF2 Image File (2FCA)
  - TGL BMR Image File (BMR)
+ - TGL CGR Image File (CGR)
 
 ##zEGO (VS2010 SP1)
 
