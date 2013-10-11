@@ -32,8 +32,8 @@ build_all:
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)
+    move $(PROJECT).lib ..$(L)..$(L)tmp$(L)
     del /Q *.obj
     del /Q *.res
     del /Q 2.manifest
     del /Q $(PROJECT).exp
-    del /Q $(PROJECT).lib
