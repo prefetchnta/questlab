@@ -1,4 +1,0 @@
-<!-- 曝光处理滤镜 -->
-<filters>
-    <crhack_solarize gate="127" />
-</filters>

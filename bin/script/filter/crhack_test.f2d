@@ -1,0 +1,69 @@
+<!-- CrHackSet 滤镜测试列表 -->
+<filters>
+
+    <!-- 饱和加法滤镜 -->
+    <?crhack_add_x86 color="0x007F7F7F" />
+
+    <!-- 逻辑-与滤镜 -->
+    <?crhack_and_x86 mask="0xFF0000FF" />
+
+    <!-- 二值转换滤镜 -->
+    <?crhack_binaryz gate="127" />
+
+    <!-- 3x3卷积滤镜 -->
+    <?crhack_conv3x3 mat="[-1, -1, -1, -1, 8, -1, -1, -1, -1]" />
+
+    <!-- 门限过滤滤镜 -->
+    <?crhack_cutdown gate="97" />
+
+    <!-- 颜色扩散滤镜 -->
+    <?crhack_diffuse min_x="-10" max_x="10" min_y="-10" max_y="10" />
+
+    <!-- 垂直翻转滤镜 -->
+    <?crhack_flip_vv />
+
+    <!-- 3x3形态滤镜 -->
+    <?crhack_form3x3 mat="[1, 1, 1, 1, 1, 1, 1, 1, 1]" exp="1" />
+
+    <!-- 灰度转换滤镜 -->
+    <?crhack_graying />
+
+    <!-- 色阶过滤滤镜 -->
+    <?crhack_imgstep min_sat="63" min_lit="15" max_lit="199" />
+
+    <!-- 插值填充滤镜 -->
+    <?crhack_lrp_x86 color="0x7FFF00FF" />
+
+    <!-- 图片乘法滤镜 -->
+    <?crhack_multiply red="2.0" green="2.0" blue="2.0" />
+
+    <!-- 逻辑-非滤镜 -->
+    <?crhack_not_x86 />
+
+    <!-- 逻辑-或滤镜 -->
+    <?crhack_orr_x86 mask="0x0000FF00" />
+
+    <!-- 颜色替换滤镜 -->
+    <?crhack_replace only="0"
+        src="000000 7F0000 7F7F00 FFFF00 FF0000 3F3F3F C0C0C0 FFFFFF"
+        dst="FFFFFF FF0000 FF0000 FF0000 FF0000 FFFFFF FFFFFF FFFFFF" />
+
+    <!-- SOBEL 边缘检测滤镜 -->
+    <?crhack_sobel />
+
+    <!-- 曝光处理滤镜 -->
+    <?crhack_solarize gate="127" />
+
+    <!-- 饱和减法滤镜 -->
+    <?crhack_sub_x86 color="0x007F7F7F" />
+
+    <!-- RB 互换滤镜 -->
+    <?crhack_swap_rb />
+
+    <!-- 白色平衡滤镜 -->
+    <?crhack_whitebl gate="127" />
+
+    <!-- 逻辑异或滤镜 -->
+    <?crhack_xor_x86 mask="0x00FFFFFF" />
+
+</filters>

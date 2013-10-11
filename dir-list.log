@@ -68,7 +68,6 @@ questlab
 │  ├─plugin
 │  ├─script
 │  │  ├─filter
-│  │  │  ├─crhack
 │  │  │  └─opencv
 │  │  └─import
 │  │      └─jpn
