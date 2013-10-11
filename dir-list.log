@@ -68,7 +68,6 @@ questlab
 │  ├─plugin
 │  ├─script
 │  │  ├─filter
-│  │  │  └─opencv
 │  │  └─import
 │  │      └─jpn
 │  │          ├─falcom

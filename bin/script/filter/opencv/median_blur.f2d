@@ -1,4 +1,0 @@
-<!-- 中值模糊滤镜 -->
-<filters>
-    <opencv_median_blur ksize="5" />
-</filters>
