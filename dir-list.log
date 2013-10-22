@@ -6,9 +6,12 @@ questlab
 │  │      ├─localization
 │  │      ├─plugins
 │  │      │  ├─APIs
+│  │      │  ├─ComparePlugin
 │  │      │  ├─Config
 │  │      │  │  └─Hunspell
-│  │      │  └─doc
+│  │      │  ├─doc
+│  │      │  └─SourceCookifier
+│  │      │      └─icons
 │  │      ├─themes
 │  │      ├─updater
 │  │      └─user.manual

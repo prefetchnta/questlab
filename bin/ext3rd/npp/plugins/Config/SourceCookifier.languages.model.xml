@@ -1,0 +1,5684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SerializableDictionaryOfStringLanguage>
+  <item>
+    <key>
+      <string>Ant</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.build.xml</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>projects</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>targets</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Asm</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.asm</string>
+          <string>.ASM</string>
+          <string>.inc</string>
+          <string>.s</string>
+          <string>.S</string>
+          <string>.A51</string>
+          <string>.29[kK]</string>
+          <string>.[68][68][kKsSxX]</string>
+          <string>.[xX][68][68]</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>S</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Section]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*(\.const|\.code)\b/\1/S/ei</string>
+                  <string>/^[[:blank:]]*(\.data[\?[:space:]]?[[:space:]])/\1/S/ei</string>
+                  <string>/^[[:blank:]]*section[[:blank:]'\"]+([^'\"]+)[[:blank:]'\"]+([^;]*)/\1&#x2;signature:\2/S/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>asm_section.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>P</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Proc]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bproc\b[[:blank:]]*([[:alnum:]_:,[:space:]]*)/\1&#x2;signature:\2/P/ei</string>
+                  <string>/^[[:blank:]]*proc[[:blank:]]+([[:alnum:]_]+)[[:blank:]]*([[:alnum:]_:,[:space:]]*)/\1&#x2;signature:\2/P/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>asm_proc.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>defines</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>labels</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Struct]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*struct[[:blank:]]+([[:alnum:]_]+)/\1/t/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>asm_struct.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Macro]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*macro[[:blank:]]+([[:alnum:]_]+)/\1/m/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>asm_macro.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Asp</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.asp</string>
+          <string>.asa</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>constants</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subroutines</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>variables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Awk</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.awk</string>
+          <string>.gawk</string>
+          <string>.mawk</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Basic</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.bas</string>
+          <string>.bi</string>
+          <string>.bb</string>
+          <string>.pb</string>
+          <string>.frm</string>
+          <string>.vbs</string>
+          <string>.cls</string>
+          <string>.vb</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>false</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Method]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Label]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>g</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_enum.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Type]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_typedef.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Const]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_macro.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Field]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>BETA</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.bet</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>fragment definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>all patterns [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>slots (fragment uses)</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>patterns (virtual or rebound)</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>C</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.c</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>::</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>n</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Namespace]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_namespace.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_class.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>u</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Union]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_union.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class|Struct|Union member]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>g</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_enum.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum item]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_enumitem.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function prototype]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>x</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Extern variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Local variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Macro|Constant]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_macro.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Typedef]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_typedef.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>C++</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.c++</string>
+          <string>.cc</string>
+          <string>.cp</string>
+          <string>.cpp</string>
+          <string>.cxx</string>
+          <string>.h</string>
+          <string>.h++</string>
+          <string>.hh</string>
+          <string>.hp</string>
+          <string>.hpp</string>
+          <string>.hxx</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>::</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>n</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Namespace]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_namespace.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_class.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Struct]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_struct.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>u</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Union]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_union.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class|Struct|Union member]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>g</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_enum.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum item]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_enumitem.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function prototype]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>x</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Extern variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Local variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Macro|Constant]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_macro.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Typedef]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_typedef.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>C#</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.cs</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>n</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Namespace]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_namespace.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Interface]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_interface.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_class.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Struct]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_struct.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>g</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_enum.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum item]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_enumitem.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>E</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Event]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_event.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Method]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Property]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_property.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Field]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>local variables [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>macro definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>typedefs</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Cobol</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.cbl</string>
+          <string>.cob</string>
+          <string>.CBL</string>
+          <string>.COB</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>data items</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>file descriptions (FD, SD, RD)</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>g</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>group items</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>paragraphs</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>P</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>program ids</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>sections</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>CSS</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.css</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_class.png</IconFilename>
+                <ForeColor>-10485760</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Selectors</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_typedef.png</IconFilename>
+                <ForeColor>-16777088</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Identifiers</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_property.png</IconFilename>
+                <ForeColor>-16752512</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>DosBatch</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.bat</string>
+          <string>.cmd</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>labels</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>variables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Eiffel</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.e</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>features</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>local entities [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Erlang</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.erl</string>
+          <string>.ERL</string>
+          <string>.hrl</string>
+          <string>.HRL</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>:</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>macro definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>modules</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>record definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Fgl</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.4gl</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>false</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Statements</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_typedef.png</IconFilename>
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Cursors</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_enum.png</IconFilename>
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Variables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Flex</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.as</string>
+          <string>.mxml</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>methods</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>properties</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>global variables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>x</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>mxtags</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Fortran</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.f</string>
+          <string>.for</string>
+          <string>.ftn</string>
+          <string>.f77</string>
+          <string>.f90</string>
+          <string>.f95</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>b</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>block data</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>common blocks</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>entry points</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>interface contents, generic names, and operators [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>k</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>type and structure components</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>labels</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>L</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>local, common block, and namelist variables [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>modules</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>n</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>namelists</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>programs</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subroutines</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>derived types and structures</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>program (global) and module variables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>HTML</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.htm</string>
+          <string>.html</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>a</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>named anchors</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>JavaScript functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Java</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.java</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Package]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_namespace.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Interface]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_interface.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_class.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>g</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_enum.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enum constant]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_enumitem.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Method]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Field]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>local variables [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>JavaScript</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.js</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_class.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Method]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Property]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_property.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Global variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Lisp</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.cl</string>
+          <string>.clisp</string>
+          <string>.el</string>
+          <string>.l</string>
+          <string>.lisp</string>
+          <string>.lsp</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Lua</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.lua</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Make</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.mak</string>
+          <string>.mk</string>
+          <string>[Mm]akefile</string>
+          <string>GNUmakefile</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>macros</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>MatLab</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.m</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>function</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>ObjectiveC</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.m</string>
+          <string>.h</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class interfaces]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_interface.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>I</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class implementations]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_class.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Properties]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_property.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Object's methods]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class' methods]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Global variables]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>F</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Object fields]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_field.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Functions]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_method.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Type aliases]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_typedef.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Type structures]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_struct.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Enumerations]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_enumitem.png</IconFilename>
+                <ForeColor>4866304</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>M</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Preprocessor macros]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>c_macro.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>OCaml</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.ml</string>
+          <string>.mli</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Object's method</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>M</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Module or functor</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Global variable</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Type name</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>A function</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>C</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>A constructor</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>A 'structure' field</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>An exception</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Pascal</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.p</string>
+          <string>.pas</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>pascal_function.png</IconFilename>
+                <ForeColor>-11327964</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Procedure]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>pascal_procedure.png</IconFilename>
+                <ForeColor>-11468735</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Perl</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.pl</string>
+          <string>.pm</string>
+          <string>.plx</string>
+          <string>.perl</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>constants</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>formats</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>labels</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>packages</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subroutines</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subroutine declarations [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>PHP</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.php</string>
+          <string>.php3</string>
+          <string>.phtml</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>php_classes.png</IconFilename>
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>interfaces</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>constant definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>variables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>j</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>javascript functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>M</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Class Methods</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/(public\s|private\s|protected\s|)\s*(static\s)?\s*function\s+([A-Z_][A-Z_0-9]*)\s*(\(.*\))/\3&#x2;access:\1\2&#x2;signature:\4/M/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>php_class_methods.png</IconFilename>
+                <ForeColor>-8388608</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>P</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Class Properties</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/(public|private|protected|var)(\s)\s*(static\s)?\s*(\$[A-Z_][A-Z_0-9]*)/\3\1\2\4/P/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>php_class_properties.png</IconFilename>
+                <ForeColor>-16760704</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>C</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Class Constants</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/const\s\s*([A-Z_][A-Z_0-9]*)/\1/C/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_class_constants.png</IconFilename>
+                <ForeColor>-16760832</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>N</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Named HTML Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/\sname=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1\3/N/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_named_html_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>T</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Text Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/&lt;input\s.*type=[\\\"\']{2}text[\\\"\']{2}\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1/T/ei</string>
+                  <string>/&lt;input\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?.*type=[\\\"\']{2}text[\\\"\']{2}/\1/T/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_text_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>H</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Hidden Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/&lt;input\s.*type=[\\\"\']{2}hidden[\\\"\']{2}\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1/H/ei</string>
+                  <string>/&lt;input\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?.*type=[\\\"\']{2}hidden[\\\"\']{2}/\1/H/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_hidden_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>R</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Radio Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/&lt;input\s.*type=[\\\"\']{2}radio[\\\"\']{2}\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1/R/ei</string>
+                  <string>/&lt;input\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?.*type=[\\\"\']{2}radio[\\\"\']{2}/\1/R/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_radio_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>X</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Checkbox Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/&lt;input\s.*type=[\\\"\']{2}checkbox[\\\"\']{2}\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1/X/ei</string>
+                  <string>/&lt;input\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?.*type=[\\\"\']{2}checkbox[\\\"\']{2}/\1/X/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_checkbox_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>B</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Button Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/&lt;input\s.*type=[\\\"\']{2}(image|button|submit|reset)[\\\"\']{2}\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\2/S/ei</string>
+                  <string>/&lt;input\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?.*type=[\\\"\']{2}(image|button|submit|reset)[\\\"\']{2}/\1/S/ei</string>
+                  <string>/&lt;button\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1/S/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_button_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>S</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Select Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/&lt;select\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1/B/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_select_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>A</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>Textarea Elements</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/&lt;textarea\s.*name=\\[\"\']([^\\\|]+)(\|)?([^\\]+)?/\1/A/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_textarea_elements.png</IconFilename>
+                <ForeColor>-14013910</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Python</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.py</string>
+          <string>.pyx</string>
+          <string>.pxd</string>
+          <string>.pxi</string>
+          <string>.scons</string>
+          <string>Sconscript.</string>
+          <string>Sconstruct.</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Import]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>false</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>python_import.png</IconFilename>
+                <ForeColor>4210752</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>python_class.png</IconFilename>
+                <ForeColor>1621</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Method]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>python_method.png</IconFilename>
+                <ForeColor>-9699290</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>python_function.png</IconFilename>
+                <ForeColor>5832775</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Variable]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>python_variable.png</IconFilename>
+                <ForeColor>19015</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>REXX</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.rexx</string>
+          <string>.rx</string>
+          <string>.rex</string>
+          <string>.rxj</string>
+          <string>.nrx</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Class]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^::class[[:space:]+]([A-Za-z0-9@#$\\.!?_]+)*/\1/c/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>php_classes.png</IconFilename>
+                <ForeColor>-16775595</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Method]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^::method[[:space:]+]([A-Za-z0-9@#$\\.!?_]+)*/\1/m/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>php_class_methods.png</IconFilename>
+                <ForeColor>-8388608</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Routine]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^::routine[[:space:]+]([A-Za-z0-9@#$\\.!?_]+)*/\1/r/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>php_class_constants.png</IconFilename>
+                <ForeColor>-16760832</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Subroutine]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>ini_section.png</IconFilename>
+                <ForeColor>-11910912</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Ruby</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.rb</string>
+          <string>.ruby</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>methods</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>modules</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>F</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>singleton methods</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Scheme</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.SCM</string>
+          <string>.SM</string>
+          <string>.sch</string>
+          <string>.scheme</string>
+          <string>.scm</string>
+          <string>.sm</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>sets</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Sh</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.sh</string>
+          <string>.SH</string>
+          <string>.bsh</string>
+          <string>.bash</string>
+          <string>.ksh</string>
+          <string>.zsh</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>SLang</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.sl</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>n</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>namespaces</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>SML</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.sml</string>
+          <string>.sig</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>exception declarations</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>function definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functor definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>signature declarations</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>structure declarations</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>type definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>value bindings</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>SQL</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.sql</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>false</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>cursors</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>prototypes [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>F</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>record fields</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>local variables [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>L</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>block label</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>P</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>packages</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>procedures</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>records [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subtypes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>tables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>T</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>triggers</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>variables</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>indexes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>events</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>U</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>publications</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>R</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>services</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>D</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>domains</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>V</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>views</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>n</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>synonyms</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>x</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>MobiLink Table Scripts</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>y</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>MobiLink Conn Scripts</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Tcl</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.tcl</string>
+          <string>.tk</string>
+          <string>.wish</string>
+          <string>.itcl</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>methods</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>procedures</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Tex</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.tex</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>chapters</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>sections</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>u</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subsections</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>b</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subsubsections</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>parts</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>P</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>paragraphs</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>G</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subparagraphs</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Vera</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.vr</string>
+          <string>.vri</string>
+          <string>.vrh</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>classes</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>macro definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>enumerators (values inside an enumeration)</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>function definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>g</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>enumeration names</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>local variables [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>class, struct, and union members</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>programs</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>P</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>function prototypes [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>tasks</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>T</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>typedefs</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>variable definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>x</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>external variable declarations [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Verilog</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.v</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>constants (define, parameter, specparam)</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>events</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>functions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>modules</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>n</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>net data types</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>ports</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>register data types</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>tasks</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>VHDL</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.vhdl</string>
+          <string>.vhd</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>constant declarations</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>t</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>type definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>T</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>subtype definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>record names</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>e</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>entity declarations</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>C</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>component declarations [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>prototypes [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>function prototypes and declarations</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>p</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>procedure prototypes and declarations</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>P</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>package definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>local definitions [off]</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Vim</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.vim</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>a</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>autocommand groups</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>user-defined commands</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>function definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>maps</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>variable definitions</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>YACC</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>true</BuildIn>
+        <Extensions>
+          <string>.y</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>labels</Description>
+                <BuildIn>true</BuildIn>
+                <RegexPatterns />
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename />
+                <ForeColor>0</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>RC</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>false</BuildIn>
+        <Extensions>
+          <string>.rc</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>v</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Version]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bVERSIONINFO\b/\1/v/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_version.png</IconFilename>
+                <ForeColor>-6980096</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>d</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Dialog]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bDIALOG(EX)?\b/\1/d/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_dialog.png</IconFilename>
+                <ForeColor>-16774262</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>m</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Menu]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bMENU(EX)?\b/\1/m/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_menu.png</IconFilename>
+                <ForeColor>-16774262</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>a</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Accelerator]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bACCELERATOR\b/\1/a/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_accelerator.png</IconFilename>
+                <ForeColor>-16774262</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>r</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Registry]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bREGISTRY\b/\1/r/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_registry.png</IconFilename>
+                <ForeColor>-13602560</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[String table]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bSTRINGTABLE\b/\1/s/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_stringtable.png</IconFilename>
+                <ForeColor>-4259840</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>M</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Message table]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bMESSAGETABLE\b/\1/M/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_messagetable.png</IconFilename>
+                <ForeColor>-4259840</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Font]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bFONT\b/\1/f/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_font.png</IconFilename>
+                <ForeColor>-8388480</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>b</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Bitmap]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\b(BITMAP|IMAGE)\b/\1/b/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_bitmap.png</IconFilename>
+                <ForeColor>-4784032</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>i</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Icon]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bICON\b/\1/i/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_icon.png</IconFilename>
+                <ForeColor>-4784032</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>c</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Cursor]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bCURSOR\b/\1/c/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_cursor.png</IconFilename>
+                <ForeColor>-4784032</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>R</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Resource data]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*([[:alnum:]_]+)[[:blank:]]*\bRCDATA\b/\1/R/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>rc_rcdata.png</IconFilename>
+                <ForeColor>-12688792</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>INI</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>false</BuildIn>
+        <Extensions>
+          <string>.ini</string>
+          <string>.reg</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>true</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Section]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^[[:blank:]]*\[(.+)\][[:blank:]]*$/\1/s/e</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>true</TrackCaret>
+                <IconFilename>ini_section.png</IconFilename>
+                <ForeColor>-16777216</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+  <item>
+    <key>
+      <string>Autohotkey</string>
+    </key>
+    <value>
+      <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <BuildIn>false</BuildIn>
+        <Extensions>
+          <string>.ahk</string>
+        </Extensions>
+        <DisplayAccess>false</DisplayAccess>
+        <DisplayReturnType>false</DisplayReturnType>
+        <DisplayScope>false</DisplayScope>
+        <DisplaySignature>false</DisplaySignature>
+        <CaseSensitive>false</CaseSensitive>
+        <ScopeOperator>.</ScopeOperator>
+        <TagTypes>
+          <item>
+            <key>
+              <string>f</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Function]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^(\w{3,})[[:space:]]*(\(.*\))[[:space:]]*/\1&#x2;signature:\2/f/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>python_function.png</IconFilename>
+                <ForeColor>-16772364</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>s</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Hotstring]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^:[^[:space:]]*:([^[:space:]]+)::(.{1,5})/\1__(\2...)/s/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_text_elements.png</IconFilename>
+                <ForeColor>-16777216</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>k</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Hotkey]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^([^,;:]+)\:\:/\1/k/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>rc_accelerator.png</IconFilename>
+                <ForeColor>-16777216</ForeColor>
+              </TagType>
+            </value>
+          </item>
+          <item>
+            <key>
+              <string>l</string>
+            </key>
+            <value>
+              <TagType>
+                <Description>[Label]</Description>
+                <BuildIn>false</BuildIn>
+                <RegexPatterns>
+                  <string>/^([^[:space:]]]*)([^,:;[:space:]\(\"]+?):[[:space:]]*$/\1\2/l/ei</string>
+                </RegexPatterns>
+                <Show>true</Show>
+                <TrackCaret>false</TrackCaret>
+                <IconFilename>php_named_html_elements.png</IconFilename>
+                <ForeColor>-16777216</ForeColor>
+              </TagType>
+            </value>
+          </item>
+        </TagTypes>
+      </Language>
+    </value>
+  </item>
+</SerializableDictionaryOfStringLanguage>

@@ -1,0 +1,212 @@
+INSTALLATION:
+-------------
+    -place these files and folders into Notepad++'s "plugins" folder
+    -BUT (!!!) if you installed N++ with "Don't use %APPDATA%" UNCHECKED,
+     then place the "Config" folder into "%APPDATA%\Notepad++\plugins" instead!
+    -check out the help text ("Help & About")
+    -enjoy
+
+CHANGES:
+-------------
+    0.7.3
+       -fix: unicode functionality broken in N++
+    0.7.2
+       -fix: CTags: regex handling is broken for some languages (PHP,..)
+    0.7.1
+       -new: option "Go to definition by pressing ctrl + left mousebutton"
+       -new: option "Max. number of symbols to show" (It's recommended to limit the count of
+              symbols which are shown as nodes in the treeview, in order to prevent a hanging N++
+              when for instance source files with several thousand symbols are analyzed.
+              When in cookie session mode, then such files are automatically loaded into the
+              INCLUDES folder. In the other modes the symbols of such files aren't loaded at all.)
+       -new: option "Show plus minus controls (for source nodes)"
+       -fix: CTags: lots of fixes in the CParser (C, C++, C#, Java,..)
+       -fix: allow loading of session files created by older versions
+       -fix: in N++ session mode: file nodes vanishing when moving a file from one N++ view to another
+    0.7
+       -IMPORTANT: the plugin will be C#-only from now on, thus no more use of C++ loader/wrapper DLLs.
+                   advantage: much faster startup time. disadvantage: no more warning message about
+                   missing .NET runtime (unknown plugin loading error instead).
+       -IMPORTANT: sorry, but again .c00k!e session files of previous versions are invalid for this new version!
+       -new: CTags: update sources (fixes for C and OCaml + support for Objective-C)
+       -new: CTags: add support for CSS (ctags patch by Iago Rubio)
+       -new: CTags: add support for INFORMIX 4GL (ctags extension by Tim Kim)
+       -new: add regex rules for Autohotkey (AHK) (thanks to vixay)
+       -new: "Import" and "Export" settings of one or more languages (in language settings dialog)
+       -new: treenode contextmenu items: "Collapse all", "Expand all"
+       -new: new option "Size limit of analyzed INCLUDES"
+       -new: new option "Session file extension" (default = "c00k!e")
+       -new: new option "Use relative paths in session file"
+       -new: new option "Handle CTags warnings as errors" (helpful when trying out new regex entries)
+       -new: new option "Show plus minus controls (for tag nodes)"
+       -new: show tooltips in options dialog
+       -new: buttons "Select All" and "Select None" in import dialog (after drag&drop of multiple extension types)
+       -new: provide auto restore of corrupted language settings file
+       -new: support message+filepath from other plugins in order to add files to a session
+       -fix: CTags: PythonParser: wrong parent nesting in PythonParser
+       -fix: CTags: PythonParser: enable function arguments
+       -fix: CTags: C#Parser: fully disable local variables tag to avoid false tags
+       -fix: context menu not shown when tag type node is selected (in grouped view)
+       -fix: in Cookie session mode: unexpected N++ behavior when SourceCookifier panel titel is longer than 32 chars
+       -fix: in N++ session mode: sourcelist doesn't get updated when treeview is invisible
+       -fix: when plugin's startup mode is 'hide', then the plugin might show up only after 2nd try
+       -fix: exceptions/deadlocks when switching view mode, sorting, etc. with multiple source nodes in treeview
+       -fix: wrong node nesting in class view mode
+       -fix: when searching (search textbox) in class view mode, then not all nodes are expanded
+       -fix: characters ' ' (space) and '!' are not allowed in regex expressions
+       -fix: exception on "Go To Definition" when using "Includes" files
+       -fix: exception when opening contextmenu on 'unsupported source type' nodes
+    0.6.1
+       -new: CTRL+C copies currently selected treeview item (tag name) to clipboard
+       -fix: parsing of source files with UTF-16 format and windows-like EOL (CR + LF)
+       -fix: prevent CTags from unintentionally finding config files in the PATH and using them
+             (may lead to unexpected behavior)
+       -fix: exceptions when adding/changing source node files when both the treeview contains
+             'invalid' source nodes and the search filter is in use
+       -fix: editor didn't get focused when mouse middle button clicking on treeview items
+       -changed: removed option "Use 'tags' file instead of StandardOut" - now always reading from tags file.
+             Using StandardOut was even slower anyway due to CTags always writing into a temp tags file.
+             Also the location of the tags file changed to the plugins config folder.
+    0.6
+       -IMPORTANT: sorry, but .c00k!e session files of previous versions might be invalid for this new version !
+       -new: CLASS VIEW (single file scope) for object oriented languages.
+             (Multiple file scoped view is still in progress, but it might never get finished, since it seems
+             undoable at the moment)
+       -new: [display] return type of functions
+             (as new extended field type. merged from ctags mods of Anjuta DevStudio sources.
+             at the moment only works for C-like languages (C/C++/C#/Java) out of the box)
+       -new: [settings] "Semantics: Case sensitive" -> now you can define a language as case insensitive
+             to make the "Go To Definition" work correctly for languages like BASIC
+       -new: [settings/display] "Semantics: Scope operator" -> now you can define the separating char(s)
+             in scope names for each language ('::' for C++, '.' for C#, ...)
+       -new: [settings/contextmenu] "Display (extended)" -> define for each language if to directly
+             show also extended fields (Access/Returntype/Scope/Signature) in node text
+       -new: [button] "Clear search filter"
+       -new: [options] filesize limit (e.g. 200kb or 5mb)
+       -new: [options] show toolbar menu at bottom
+       -new: [options] flowing menu buttons (no hidden overflow)
+       -new: [options] Startup show mode (force show/hide of sourcecookifier at startup of notepad++)
+       -new: [options] Startup session mode
+       -new: don't search at once when typing search word in uppercase (start search with 'enter')
+       -new: highlight 'Accept changes' buttons in settings dialog (how many times did I forget myself to hit 'em!)
+       -new: additionally show session mode via background color of toolbar
+       -new: remember selections in language settings dialog on close
+       -new: customization of REXX rules (as noticed on deltaos.de)
+       -new: asm rules extended for FASM syntax
+       -new: open source nodes with middle mouse button click
+       -new: toolstripseparator for contextmenu (current file|others)
+       -fix: also save changed options when sourcecookifier window wasn't visible (initialized)
+       -fix: don't move treeview selection (twice) after doubleclick/return on any node
+       -fix: merged recent updates from original ctags sources
+       -fix: continue following cursor by treeview selection also when using search filter
+       -fix: don't restore+hide hidden sourcecookfier window when using 'Go To Definition' shortcut
+       -fix: watch N++'s 'Save as' actions in 'single file' and 'N++ session' mode (change/add filenames in treeview)
+       -fix: don't re-add currently search filtered (hidden) source nodes when saved in n++ editor
+       -changed: don't clear search filter when tags get updated
+       -changed: improved PHP class method rules (access + signature)
+       -changed: rule for .INI (added .REG)
+       -changed: resorted toolbar layout
+    0.5.4
+       -new: 2 batch files for adding/removing a .NET policy for the plugin on the current machine -
+             this policy is required when starting N++ on a network location and using sourcecookifier!
+       -new: enable (in CTAGS) 'Mac OS 9' form for source code parser (EOL = CR)
+       -fix: bring import dialog to top
+       -fix: crash when tab window is initialized in 'N++ session mode'
+       -fix: sources in treeview don't get added/removed when tab window is in 'N++ session mode' but hidden
+       -changed: disable treeview ui while importing sources (speedup)
+       -changed: scope-name-delimiter now '.' instead of '::'
+       -changed: show invalid sources by default
+    0.5.3
+       -new: show session mode/name in toolbar caption 
+       -fix: 1252 as default encoding for streams and stdout (since v0.5 SourceCookifier didn't work
+             at all for people using non-western-european region/language on their machine!) 
+       -fix: show error in node tooltip when ctags.exe returns error (while not using tags file) 
+       -fix: remove/move in context menu for invalid source nodes 
+       -fix: save error/path info of invalid source nodes (in .c00k!e files)
+    0.5.2
+       -new: PHP appearance customization (thanks to Thériault)
+       -new: session button icon overlays
+       -new: always turn to cookie session mode on drag&drop file(s)
+       -fix: supress error message box on invalid source
+       -fix: show invalid sources in red letters
+       -fix: include invalid sources on multi file import
+       -fix: show invalid sources in INCLUDE files too
+       -fix: char '|' in input regex expressions or results caused exceptions
+       -fix: 'unquiet' exceptions in tag parsing
+       -fix: correct source tag color and tooltip, when source turns from valid to invalid and vice versa
+       -fix: "Show invalid sources": show them in import dialog, else not
+       -fix: extensions with dots in between not recognized (like ANT's ".build.xml")
+       -fix: hide invalid source nodes when searching
+       -fix: space char in front of tag signature instead of after signature
+       -import dialog: auto enlarge window when importing many different file types
+       -import dialog: better sorting of file types (all valid ones at top)
+    0.5.1
+       -fix: N++ deadlocks while using sourcecookifier window in floating state (not docked)
+       -fix: when switching between file buffers with windowmanager plugin, tags weren't
+        refreshed in Single-File-Mode, when the treeview was hidden (by windowmanager plugin again)
+       -fix: write error log files into plugins config folder instead of sourcecookifier folder;
+        might have failed due to missing admin rights in previous versions; also into one and
+        the same file (appending) now instead of 1 file per error
+    0.5
+       -native loader for plugin wrapper: .NET runtime doesn't get loaded until you start
+        using the plug-in, so that N++ usually starts like a rocket again
+       -messagebox to notify about missing .NET runtime, when you try to use the plug-in
+        without installed .NET 2.0
+       -progress bar inside of treeview (when adding/refreshing multiple sources/includefiles)
+       -new treeview context menu items in cookie session mode:
+        "Remove", "Move to INCLUDES", "Move to SOURCES"
+       -history of used cookie session files (in 'Session' contextmenu)
+       -Java & Javascript appearance customization
+       -tagtype icons not loaded redundant anymore
+       -gotodefinition contextmenu: fullpath in menu or tooltip (options)
+       -gotodefinition contextmenu: fix order of activated doc items (at top)
+       -track include file in treeview when activating different buffer
+       -fix: treeview not filled after npp startup in n++ session mode
+       -fix: remove INCLUDES folder if 0 items left after removing
+       -fix: add/remove in sources<>includes after drag&drop
+       -fix: TAB char issues (ctags.exe patch)
+       -fix: N++'s shortcuts not working (dropdownmenu issue)
+       -fix: quicktags encoding
+    0.4
+       -"Go To Definition" functionality:
+        contextmenu popup if more than one match (tooltip shows full path)
+       -"Navigate Backward" and "Navigate Forward" functionality
+       -"Track caret" properties for each language in treeview context menu:
+        customizable caret tracking behavior (current caret position gets highlighted in treeview)
+       -3 session modes: "Single file mode", "N++ session mode", "Cookie session mode"
+       -always open cookie session if .c00k!e-file opened in notepad++
+       -special "INCLUDES" folder (node) in treeview (in cookie session mode):
+        drop files with modifier key (ctrl, alt or shift)
+       -refresh source node on file_save now for all session modes
+       -Regular expressions (settings dialog): "Input", "Output", "Case sensitive",
+        special fields in regex output ("access:", "signature:"), dynamic delimiter
+       -exception log files written into 'SourceCookifier' folder
+    0.3
+       -new custom languages: RC and INI
+       -support for custom languages
+       -'Try' button in settings dialog
+    0.2
+       -context menu for flatview button: Keep types grouped
+       -unfocus tab control if ESC key 2 times pressed
+       -'Bascal' icons
+       -new config setting: Show ToolTips
+       -changed toggling behavior: focus treeview if visible and not focused - hide if visible and focused
+       -'Basic' icons and settings
+
+KNOWN ISSUES:
+-------------
+    -GDI glitches:    sometimes the treeview doesn't get correctly redrawn (refreshed)
+    -N++ shortcuts:   when the sourcecookifier toolbar does NOT use flowing buttons,
+                      then all of N++'s shortcuts suddenly don't work anymore as soon
+                      as you move the mouse pointer from its overflow menu (>>) directly
+                      back into the sourcecookifier toolbar. you can restore the
+                      functionality of all shortcuts simply by opening the overflow menu
+                      again and this time pressing a button or leaving the menu somewhere
+                      else (not directly into the toolbar)... weird bug and out of my
+                      grasp!!!
+    -Floating window: When the windows is not docked to a border but in floating state, then
+                      do NOT change the focus from the SourceCookifier search textbox
+                      directly back to the N++ editor window. N++ will deadlock at once!
+                      Better don't use SourceCookifier in floating state at the moment.
+                      For some reason sub windows don't receive WM_KILLFOCUS messages and
+                      alike when loosing focus to a 'native' window above.
