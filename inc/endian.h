@@ -66,7 +66,7 @@
     #define rotl_byte_t(val, shift) \
             cr_rotl08(val, (unsigned char)(shift))
 #else
-inline byte_t
+cr_inline byte_t
 rotl_byte_t (
   __CR_IN__ byte_t  val,
   __CR_IN__ uint_t  shift
@@ -98,7 +98,7 @@ rotl_byte_t (
     #define rotr_byte_t(val, shift) \
             cr_rotr08(val, (unsigned char)(shift))
 #else
-inline byte_t
+cr_inline byte_t
 rotr_byte_t (
   __CR_IN__ byte_t  val,
   __CR_IN__ uint_t  shift
@@ -130,7 +130,7 @@ rotr_byte_t (
     #define rotl_int16u(val, shift) \
             cr_rotl16(val, (unsigned char)(shift))
 #else
-inline int16u
+cr_inline int16u
 rotl_int16u (
   __CR_IN__ int16u  val,
   __CR_IN__ uint_t  shift
@@ -162,7 +162,7 @@ rotl_int16u (
     #define rotr_int16u(val, shift) \
             cr_rotr16(val, (unsigned char)(shift))
 #else
-inline int16u
+cr_inline int16u
 rotr_int16u (
   __CR_IN__ int16u  val,
   __CR_IN__ uint_t  shift
@@ -194,7 +194,7 @@ rotr_int16u (
     #define rotl_int32u(val, shift) \
             cr_rotl32(val, (unsigned char)(shift))
 #else
-inline int32u
+cr_inline int32u
 rotl_int32u (
   __CR_IN__ int32u  val,
   __CR_IN__ uint_t  shift
@@ -226,7 +226,7 @@ rotl_int32u (
     #define rotr_int32u(val, shift) \
             cr_rotr32(val, (unsigned char)(shift))
 #else
-inline int32u
+cr_inline int32u
 rotr_int32u (
   __CR_IN__ int32u  val,
   __CR_IN__ uint_t  shift
@@ -258,7 +258,7 @@ rotr_int32u (
     #define rotl_int64u(val, shift) \
             cr_rotl64(val, (unsigned char)(shift))
 #else
-inline int64u
+cr_inline int64u
 rotl_int64u (
   __CR_IN__ int64u  val,
   __CR_IN__ uint_t  shift
@@ -285,7 +285,7 @@ rotl_int64u (
     #define rotr_int64u(val, shift) \
             cr_rotr64(val, (unsigned char)(shift))
 #else
-inline int64u
+cr_inline int64u
 rotr_int64u (
   __CR_IN__ int64u  val,
   __CR_IN__ uint_t  shift
@@ -344,7 +344,7 @@ rotr_int64u (
     单字交换顺序 (常数用)
 =======================================
 */
-inline int16u
+cr_inline int16u
 xchg_cint16u (
   __CR_IN__ int16u  val
     )
@@ -358,7 +358,7 @@ xchg_cint16u (
     双字交换顺序 (常数用)
 =======================================
 */
-inline int32u
+cr_inline int32u
 xchg_cint32u (
   __CR_IN__ int32u  val
     )
@@ -374,7 +374,7 @@ xchg_cint32u (
     四字交换顺序 (常数用)
 =======================================
 */
-inline int64u
+cr_inline int64u
 xchg_cint64u (
   __CR_IN__ int64u  val
     )
@@ -399,7 +399,7 @@ xchg_cint64u (
     单字交换顺序 [port]
 =======================================
 */
-inline int16u
+cr_inline int16u
 xchg_int16u (
   __CR_IN__ int16u  val
     )
@@ -455,7 +455,7 @@ xchg_int16u (
     双字交换顺序 [port]
 =======================================
 */
-inline int32u
+cr_inline int32u
 xchg_int32u (
   __CR_IN__ int32u  val
     )
@@ -520,7 +520,7 @@ xchg_int32u (
     四字交换顺序 [port]
 =======================================
 */
-inline int64u
+cr_inline int64u
 xchg_int64u (
   __CR_IN__ int64u  val
     )

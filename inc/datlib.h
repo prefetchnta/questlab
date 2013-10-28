@@ -108,7 +108,7 @@ CR_API void_t*  array_insert_grow (sARRAY *that, leng_t unit, leng_t index,
     获取成员总指针
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 array_get_data (
   __CR_IN__ const sARRAY*   that
     )
@@ -121,7 +121,7 @@ array_get_data (
     获取成员总个数
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 array_get_size (
   __CR_IN__ const sARRAY*   that
     )
@@ -134,7 +134,7 @@ array_get_size (
     获取指定成员指针
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 array_get_unit (
   __CR_IN__ const sARRAY*   that,
   __CR_IN__ leng_t          unit,
@@ -149,7 +149,7 @@ array_get_unit (
     获取指定成员指针 (带安全检查)
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 array_get_unit_safe (
   __CR_IN__ const sARRAY*   that,
   __CR_IN__ leng_t          unit,
@@ -303,7 +303,7 @@ CR_API void_t*  list_insert (sLIST *that, leng_t unit, const void_t *data,
     获取节点数据
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 list_get_data (
   __CR_IN__ sLST_UNIT*  node
     )
@@ -316,7 +316,7 @@ list_get_data (
     获取节点总个数
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 list_get_size (
   __CR_IN__ const sLIST*    that
     )
@@ -329,7 +329,7 @@ list_get_size (
     获取当前节点数据
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 list_get_node (
   __CR_IN__ const sLIST*    that
     )
@@ -344,7 +344,7 @@ list_get_node (
     获取当前节点
 =======================================
 */
-inline sLST_UNIT*
+cr_inline sLST_UNIT*
 list_get_pos (
   __CR_IN__ const sLIST*    that
     )
@@ -357,7 +357,7 @@ list_get_pos (
     设置当前节点
 =======================================
 */
-inline void_t
+cr_inline void_t
 list_set_pos (
   __CR_IN__ sLIST*      that,
   __CR_IN__ sLST_UNIT*  node
@@ -371,7 +371,7 @@ list_set_pos (
     定位到链表头
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 list_go_head (
   __CR_IO__ sLIST*  that
     )
@@ -387,7 +387,7 @@ list_go_head (
     定位到链表尾
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 list_go_tail (
   __CR_IO__ sLIST*  that
     )
@@ -403,7 +403,7 @@ list_go_tail (
     定位到下一个节点
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 list_go_next (
   __CR_IO__ sLIST*  that
     )
@@ -422,7 +422,7 @@ list_go_next (
     定位到上一个节点
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 list_go_prev (
   __CR_IO__ sLIST*  that
     )
@@ -555,7 +555,7 @@ CR_API sATR_UNIT*   atree_insert (const sATREE *that, leng_t unit,
     获取节点数据
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 atree_get_data (
   __CR_IN__ sATR_UNIT*  node
     )
@@ -568,7 +568,7 @@ atree_get_data (
     获取根节点指针
 =======================================
 */
-inline sATR_UNIT*
+cr_inline sATR_UNIT*
 atree_get_root (
   __CR_IN__ const sATREE*   that
     )
@@ -581,7 +581,7 @@ atree_get_root (
     获取子节点数量
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 atree_get_subn (
   __CR_IN__ const sATR_UNIT*    node
     )
@@ -594,7 +594,7 @@ atree_get_subn (
     返回下一级节点
 =======================================
 */
-inline sATR_UNIT*
+cr_inline sATR_UNIT*
 atree_go_next (
   __CR_IN__ const sATR_UNIT*    node,
   __CR_IN__ leng_t              index
@@ -616,7 +616,7 @@ atree_go_next (
     返回上一级节点
 =======================================
 */
-inline sATR_UNIT*
+cr_inline sATR_UNIT*
 atree_go_prev (
   __CR_IN__ const sATR_UNIT*    node
     )
@@ -660,7 +660,7 @@ typedef struct
     构造函数
 =======================================
 */
-inline bool_t
+cr_inline bool_t
 bring_init (
   __CR_OT__ sBRING* that,
   __CR_IN__ leng_t  size
@@ -693,7 +693,7 @@ typedef struct
     构造函数
 =======================================
 */
-inline void_t
+cr_inline void_t
 bring_init (
   __CR_OT__ sBRING* that
     )
@@ -708,7 +708,7 @@ bring_init (
     析构函数
 =======================================
 */
-inline void_t
+cr_inline void_t
 bring_free (
   __CR_IO__ sBRING* that
     )
@@ -724,7 +724,7 @@ bring_free (
     返回环形队列大小
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 bring_get_size (
   __CR_IN__ const sBRING*   that
     )
@@ -741,7 +741,7 @@ bring_get_size (
     环形队列读取数据
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 bring_read (
   __CR_IO__ sBRING* that,
   __CR_OT__ void_t* data,
@@ -776,7 +776,7 @@ bring_read (
     环形队列写入数据
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 bring_write (
   __CR_IO__ sBRING*         that,
   __CR_IN__ const void_t*   data,
@@ -882,7 +882,7 @@ CR_API void_t*  pltable_insert (const sPLTABLE *that, leng_t unit,
     获取成员总指针
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 pltable_get_data (
   __CR_IN__ const sPLTABLE* that
     )
@@ -895,7 +895,7 @@ pltable_get_data (
     获取节点有效指针
 =======================================
 */
-inline byte_t*
+cr_inline byte_t*
 pltable_get_info (
   __CR_IN__ const sPLTABLE* that
     )
@@ -908,7 +908,7 @@ pltable_get_info (
     获取成员总个数
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 pltable_get_size (
   __CR_IN__ const sPLTABLE* that
     )
@@ -921,7 +921,7 @@ pltable_get_size (
     获取指定成员指针
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 pltable_get_unit (
   __CR_IN__ const sPLTABLE* that,
   __CR_IN__ leng_t          unit,
@@ -938,7 +938,7 @@ pltable_get_unit (
     获取指定成员指针 (带安全检查)
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 pltable_get_unit_safe (
   __CR_IN__ const sPLTABLE* that,
   __CR_IN__ leng_t          unit,

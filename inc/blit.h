@@ -88,7 +88,7 @@ typedef void_t  (*dotdraw_t) (const sIMAGE*, fp32_t, fp32_t, cpix_t);
     08位色插值参数设置
 =======================================
 */
-inline cpix_t
+cr_inline cpix_t
 CR_COLOR08 (
   __CR_IN__ byte_t  c08,
   __CR_IN__ byte_t  lerp CR_DEFAULT(255)
@@ -108,7 +108,7 @@ CR_COLOR08 (
     12位色插值参数设置
 =======================================
 */
-inline cpix_t
+cr_inline cpix_t
 CR_COLOR12 (
   __CR_IN__ int16u  c12,
   __CR_IN__ byte_t  lerp CR_DEFAULT(255)
@@ -127,7 +127,7 @@ CR_COLOR12 (
     15位色插值参数设置
 =======================================
 */
-inline cpix_t
+cr_inline cpix_t
 CR_COLOR15 (
   __CR_IN__ int16u  c15,
   __CR_IN__ byte_t  lerp CR_DEFAULT(255)
@@ -146,7 +146,7 @@ CR_COLOR15 (
     16位色插值参数设置
 =======================================
 */
-inline cpix_t
+cr_inline cpix_t
 CR_COLOR16 (
   __CR_IN__ int16u  c16,
   __CR_IN__ byte_t  lerp CR_DEFAULT(255)
@@ -165,7 +165,7 @@ CR_COLOR16 (
     24位色插值参数设置
 =======================================
 */
-inline cpix_t
+cr_inline cpix_t
 CR_COLOR24 (
   __CR_IN__ int32u  c24,
   __CR_IN__ byte_t  lerp CR_DEFAULT(255)
@@ -183,7 +183,7 @@ CR_COLOR24 (
     32位色插值参数设置
 =======================================
 */
-inline cpix_t
+cr_inline cpix_t
 CR_COLOR32 (
   __CR_IN__ int32u  c32
     )

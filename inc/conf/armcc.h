@@ -50,10 +50,11 @@
     /*------------------------------------------------*/
 
     /* 编译器平台架构 */
+    #if     1
+        #define _CR_AR_ARM_     /* ARM */
+    #endif
     #if defined(__thumb) || defined(__thumb__)
         #define _CR_AR_THUMB_   /* THUMB */
-    #else
-        #define _CR_AR_ARM_     /* ARM */
     #endif
     #if defined(_CR_CC_ARMCC_OLD_)
         #if     defined(__TARGET_ARCH_3) || \
@@ -156,25 +157,15 @@
 
     /* 编译器内联函数修饰 */
     #undef  _CR_NO_INLINE_
-    #ifndef __cplusplus
-        #define inline  __inline
-    #endif
+    #define cr_inline       __inline
     /*------------------------------------------------*/
 
     /* 编译器汇编内联函数 */
-    #define fasm_inline   inline
+    #define fasm_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器安全内联函数 */
-    #define safe_inline   inline
-    /*------------------------------------------------*/
-
-    /* 编译器强迫内联修饰 */
-    #if defined(_CR_CC_ARMCC_OLD_)
-        #define CR_INLINE   __inline
-    #else
-        #define CR_INLINE   __forceinline
-    #endif
+    #define safe_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器函数导出修饰 */
@@ -192,16 +183,6 @@
         #define _CR_ASM_INTL_
     #elif   0
         #define _CR_ASM_ATnT_
-    #else
-        #define _CR_ASM_SPEC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器noreturn修饰 */
-    #if defined(_CR_CC_ARMCC_OLD_)
-        #define CR_NORETURN
-    #else
-        #define CR_NORETURN __declspec(noreturn)
     #endif
     /*------------------------------------------------*/
 
@@ -229,15 +210,11 @@
     #ifndef _CR_CC_ARMCC_OLD_
         #define CR_PACKED
         #define CR_TYPEDEF  typedef
-        #if     0
-            #define _CR_NO_PRAGMA_PACK_
-        #endif
+        #undef  _CR_NO_PRAGMA_PACK_
     #else
         #define CR_PACKED
         #define CR_TYPEDEF  typedef __packed
-        #if     1
-            #define _CR_NO_PRAGMA_PACK_
-        #endif
+        #define _CR_NO_PRAGMA_PACK_
     #endif
     /*------------------------------------------------*/
 
@@ -265,18 +242,6 @@
     #define _CR_NO_CROT64_
     #define _CR_NO_IROTSM_
     #define _CR_NO_INTRIN_
-    /*------------------------------------------------*/
-
-    /* LIBC 剔除所有 C 函数的选项 */
-    #if     0
-        #define _CR_NO_STDC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* LIBC 是否支持 GLIBC 函数库 */
-    #if     0
-        #define _CR_USE_GLIBC_
-    #endif
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */
@@ -335,14 +300,8 @@
     /*------------------------------------------------*/
 
     /* 处理器架构的对齐访问设置 */
-    #if     defined(_CR_AR_ARM_)
-        #if (_CR_ARM_V32_ < 7)
-            #define _CR_ALIGN_NEEDED_
-        #endif
-    #elif   defined(_CR_AR_THUMB_)
-        #if (_CR_ARM_V16_ < 4)
-            #define _CR_ALIGN_NEEDED_
-        #endif
+    #if (_CR_ARM_V32_ < 7) && (_CR_ARM_V16_ < 4)
+        #define _CR_ALIGN_NEEDED_
     #endif
     /*------------------------------------------------*/
 

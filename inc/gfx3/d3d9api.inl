@@ -25,7 +25,7 @@
     绑定网格 (VB)
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_mesh_vb_bind (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ uint_t      stream,
@@ -40,7 +40,7 @@ d3d9_mesh_vb_bind (
     绑定网格 (IB)
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_mesh_ib_bind (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sD3D9_MESH* imesh
@@ -54,7 +54,7 @@ d3d9_mesh_ib_bind (
     绑定纹理
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_texr_bind (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ int32u      sampler,
@@ -72,7 +72,7 @@ d3d9_texr_bind (
     提交网格对象 (DP)
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_mesh_dp (
   __CR_IN__ sD3D9_MAIN*         main,
   __CR_IN__ sD3D9_MESH*         vmesh,
@@ -98,7 +98,7 @@ d3d9_mesh_dp (
     提交网格对象 (DIP)
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_mesh_dip (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sD3D9_MESH* vmesh,
@@ -128,7 +128,7 @@ d3d9_mesh_dip (
     应用 PS 对象
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_ps_apply (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sD3D9_PSH*  psh CR_DEFAULT(NULL)
@@ -145,7 +145,7 @@ d3d9_ps_apply (
     设置 VS 浮点常数缓冲
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_vs_set_vec4f (
   __CR_IN__ sD3D9_MAIN*     main,
   __CR_IN__ uint_t          start,
@@ -161,7 +161,7 @@ d3d9_vs_set_vec4f (
     设置 VS 整数常数缓冲
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_vs_set_vec4i (
   __CR_IN__ sD3D9_MAIN*     main,
   __CR_IN__ uint_t          start,
@@ -177,7 +177,7 @@ d3d9_vs_set_vec4i (
     设置 VS 布尔常数缓冲
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_vs_set_vec4b (
   __CR_IN__ sD3D9_MAIN*     main,
   __CR_IN__ uint_t          start,
@@ -193,7 +193,7 @@ d3d9_vs_set_vec4b (
     设置 PS 浮点常数缓冲
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_ps_set_vec4f (
   __CR_IN__ sD3D9_MAIN*     main,
   __CR_IN__ uint_t          start,
@@ -209,7 +209,7 @@ d3d9_ps_set_vec4f (
     设置 PS 整数常数缓冲
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_ps_set_vec4i (
   __CR_IN__ sD3D9_MAIN*     main,
   __CR_IN__ uint_t          start,
@@ -225,7 +225,7 @@ d3d9_ps_set_vec4i (
     设置 PS 布尔常数缓冲
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_ps_set_vec4b (
   __CR_IN__ sD3D9_MAIN*     main,
   __CR_IN__ uint_t          start,
@@ -246,7 +246,7 @@ d3d9_ps_set_vec4b (
     设置世界变换
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_tran_set_world (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sint_t      regn,
@@ -264,7 +264,7 @@ d3d9_tran_set_world (
     设置观察变换
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_tran_set_view (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sint_t      regn,
@@ -282,7 +282,7 @@ d3d9_tran_set_view (
     设置投影变换
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_tran_set_proj (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sint_t      regn,
@@ -300,7 +300,7 @@ d3d9_tran_set_proj (
     设置视口变换
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_tran_set_port (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sD3D9_TRAN* tran
@@ -314,7 +314,7 @@ d3d9_tran_set_port (
     设置 WVP 变换 (PP Only)
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_tran_set_mwvp (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ uint_t      regn,
@@ -329,7 +329,7 @@ d3d9_tran_set_mwvp (
     开始渲染
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_do_enter (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ int32u      flags,
@@ -348,7 +348,7 @@ d3d9_do_enter (
     结束渲染
 =======================================
 */
-inline void_t
+cr_inline void_t
 d3d9_do_leave (
   __CR_IN__ sD3D9_MAIN* main
     )
@@ -361,7 +361,7 @@ d3d9_do_leave (
     显示结果
 =======================================
 */
-inline HRESULT
+cr_inline HRESULT
 d3d9_do_flip (
   __CR_IN__ sD3D9_MAIN* main
     )

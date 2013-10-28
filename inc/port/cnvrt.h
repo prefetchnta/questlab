@@ -26,7 +26,7 @@
     获取内存大小高半位
 =======================================
 */
-inline uint_t
+cr_inline uint_t
 size_hi (
   __CR_IN__ leng_t  size
     )
@@ -46,7 +46,7 @@ size_hi (
     获取文件大小高32位
 =======================================
 */
-inline int32u
+cr_inline int32u
 fsize_hi (
   __CR_IN__ fsize_t size
     )
@@ -64,7 +64,7 @@ fsize_hi (
     32位数合成64位数
 =======================================
 */
-inline int64u
+cr_inline int64u
 mk_size (
   __CR_IN__ int32u  hi,
   __CR_IN__ int32u  lo
@@ -86,7 +86,7 @@ mk_size (
     短整数合成大整数
 =======================================
 */
-inline maxu_t
+cr_inline maxu_t
 mk_maxu (
   __CR_IN__ uint_t  hi,
   __CR_IN__ uint_t  lo
@@ -100,7 +100,7 @@ mk_maxu (
     32整数转单精度浮点数
 =======================================
 */
-inline fp32_t
+cr_inline fp32_t
 cvt_i2f (
   __CR_IN__ int32s  i
     )
@@ -119,7 +119,7 @@ cvt_i2f (
     单精度浮点数转32整数
 =======================================
 */
-inline int32s
+cr_inline int32s
 cvt_f2i (
   __CR_IN__ fp32_t  f
     )
@@ -138,7 +138,7 @@ cvt_f2i (
     64整数转双精度浮点数
 =======================================
 */
-inline fp64_t
+cr_inline fp64_t
 cvt_i2d (
   __CR_IN__ int64s  i
     )
@@ -157,7 +157,7 @@ cvt_i2d (
     双精度浮点数转64整数
 =======================================
 */
-inline int64s
+cr_inline int64s
 cvt_d2i (
   __CR_IN__ fp64_t  d
     )
@@ -176,7 +176,7 @@ cvt_d2i (
     字符串转标志 (2B)
 =======================================
 */
-inline int16u
+cr_inline int16u
 mk_tag2 (
   __CR_IN__ const ansi_t*   str
     )
@@ -189,7 +189,7 @@ mk_tag2 (
     字符串转标志 (4B)
 =======================================
 */
-inline int32u
+cr_inline int32u
 mk_tag4 (
   __CR_IN__ const ansi_t*   str
     )
@@ -202,7 +202,7 @@ mk_tag4 (
     字符串转标志 (8B)
 =======================================
 */
-inline int64u
+cr_inline int64u
 mk_tag8 (
   __CR_IN__ const ansi_t*   str
     )

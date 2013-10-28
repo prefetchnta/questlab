@@ -118,7 +118,7 @@ typedef int16s  fp16_t;
     typedef int32s  fp32_t;
 #endif
 #ifndef _CR_NO_FLT64_
-    #if !defined(_CR_CC_VDSP_)
+    #if !defined(_CR_DOUBLE32_)
     typedef double      fp64_t;
     #else
     typedef long double fp64_t;
@@ -282,7 +282,7 @@ typedef void_t* (STDCALL *stdfunc_t) (void_t*, void_t*);
     取消无效代码的警告
 =======================================
 */
-inline int32u
+cr_inline int32u
 fmj_xzz1 (
   __CR_UU__ int32u  nouse
     )
@@ -295,7 +295,7 @@ fmj_xzz1 (
     取消无用参数的警告
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 fmj_xzz2 (
   __CR_UU__ void_t* nouse
     )

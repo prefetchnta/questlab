@@ -71,7 +71,7 @@ typedef struct
     设置空型变量
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_void (
   __CR_OT__ sUVAR*  that
     )
@@ -86,7 +86,7 @@ set_uv_void (
     设置有符号数
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_ints (
   __CR_OT__ sUVAR*  that,
   __CR_IN__ dist_t  value
@@ -102,7 +102,7 @@ set_uv_ints (
     设置无符号数
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_intu (
   __CR_OT__ sUVAR*  that,
   __CR_IN__ leng_t  value
@@ -118,7 +118,7 @@ set_uv_intu (
     设置浮点实数
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_real (
   __CR_OT__ sUVAR*  that,
   __CR_IN__ real_t  value
@@ -134,7 +134,7 @@ set_uv_real (
     设置字符串-A
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_ansi (
   __CR_OT__ sUVAR*          that,
   __CR_IN__ const ansi_t*   astr,
@@ -151,7 +151,7 @@ set_uv_ansi (
     设置字符串-W
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_wide (
   __CR_OT__ sUVAR*          that,
   __CR_IN__ const wide_t*   wstr,
@@ -168,7 +168,7 @@ set_uv_wide (
     设置内存地址
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_addr (
   __CR_OT__ sUVAR*          that,
   __CR_IN__ const void_t*   addr,
@@ -185,7 +185,7 @@ set_uv_addr (
     设置 C 风格调用
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_ccall (
   __CR_OT__ sUVAR*  that,
   __CR_IN__ void_t* func,
@@ -210,7 +210,7 @@ set_uv_ccall (
     设置 STD 风格调用
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_uv_scall (
   __CR_OT__ sUVAR*  that,
   __CR_IN__ void_t* func,

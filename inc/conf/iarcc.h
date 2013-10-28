@@ -57,10 +57,11 @@
 
     /* 编译器平台架构 */
     #if     defined(__ICCARM__)
+        #if     1
+            #define _CR_AR_ARM_     /* ARM */
+        #endif
         #if (__CPU_MODE__ == 1)
             #define _CR_AR_THUMB_   /* THUMB */
-        #else
-            #define _CR_AR_ARM_     /* ARM */
         #endif
     #elif   defined(__ICC8051__)
         #define _CR_AR_MCS51_   /* Intel MCS-51 */
@@ -190,18 +191,15 @@
 
     /* 编译器内联函数修饰 */
     #undef  _CR_NO_INLINE_
+    #define cr_inline   static inline
     /*------------------------------------------------*/
 
     /* 编译器汇编内联函数 */
-    #define fasm_inline inline
+    #define fasm_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器安全内联函数 */
-    #define safe_inline inline
-    /*------------------------------------------------*/
-
-    /* 编译器强迫内联修饰 */
-    #define CR_INLINE   inline
+    #define safe_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器函数导出修饰 */
@@ -216,16 +214,6 @@
         #define _CR_ASM_INTL_
     #elif   0
         #define _CR_ASM_ATnT_
-    #else
-        #define _CR_ASM_SPEC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器noreturn修饰 */
-    #if     defined(_CR_CC_ICC8051_)
-        #define CR_NORETURN
-    #elif   defined(_CR_CC_ICCARM_)
-        #define CR_NORETURN     __noreturn
     #endif
     /*------------------------------------------------*/
 
@@ -286,23 +274,16 @@
     #define _CR_NO_INTRIN_
     /*------------------------------------------------*/
 
-    /* LIBC 剔除所有 C 函数的选项 */
-    #if     0
-        #define _CR_NO_STDC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* LIBC 是否支持 GLIBC 函数库 */
-    #if     0
-        #define _CR_USE_GLIBC_
-    #endif
-    /*------------------------------------------------*/
-
     /* LIBC printf() 整数宽度前缀 */
-    #define CR_I08  "hh"
+    #define CR_I08
     #define CR_I16
-    #define CR_I32  "L"
-    #define CR_I64  "ll"
+    #if     defined(_CR_CC_ICC8051_)
+        #define CR_I32  "L"
+        #define CR_I64
+    #elif   defined(_CR_CC_ICCARM_)
+        #define CR_I32
+        #define CR_I64  "ll"
+    #endif
     /*------------------------------------------------*/
 
     /* LIBC 是否有 errno.h 头文件 */
@@ -350,14 +331,8 @@
     /*------------------------------------------------*/
 
     /* 处理器架构的对齐访问设置 */
-    #if     defined(_CR_AR_ARM_)
-        #if (_CR_ARM_V32_ < 7)
-            #define _CR_ALIGN_NEEDED_
-        #endif
-    #elif   defined(_CR_AR_THUMB_)
-        #if (_CR_ARM_V16_ < 4)
-            #define _CR_ALIGN_NEEDED_
-        #endif
+    #if (_CR_ARM_V32_ < 7) && (_CR_ARM_V16_ < 4)
+        #define _CR_ALIGN_NEEDED_
     #endif
     /*------------------------------------------------*/
 

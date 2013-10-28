@@ -203,7 +203,7 @@ CR_API void_t   engine_free (sENGINE *engine);
     #define engine_do(engine, loader) \
         ((sFMTZ*)((engine)->fmtz_load(engine, loader)))
 #else
-inline sFMTZ*
+cr_inline sFMTZ*
 engine_do (
   __CR_IN__ sENGINE*    engine,
   __CR_IO__ sLOADER*    loader
@@ -377,7 +377,7 @@ typedef struct  _iXMMEDIA
     #define xmms_get_hwnd(that) \
         ((hwnd_t)((that)->__hwnd__))
 #else
-inline hwnd_t
+cr_inline hwnd_t
 xmms_get_hwnd (
   __CR_IN__ const iXMMEDIA* that
     )
@@ -395,7 +395,7 @@ xmms_get_hwnd (
     #define xmms_get_full(that) \
         ((bool_t)((that)->__full__))
 #else
-inline bool_t
+cr_inline bool_t
 xmms_get_full (
   __CR_IN__ const iXMMEDIA* that
     )
@@ -413,7 +413,7 @@ xmms_get_full (
     #define xmms_get_volume(that) \
         ((sint_t)((that)->__volume__))
 #else
-inline sint_t
+cr_inline sint_t
 xmms_get_volume (
   __CR_IN__ const iXMMEDIA* that
     )
@@ -428,7 +428,7 @@ xmms_get_volume (
     重新播放媒体
 =======================================
 */
-inline bool_t
+cr_inline bool_t
 xmms_replay (
   __CR_IN__ iXMMEDIA*   that
     )
@@ -451,7 +451,7 @@ xmms_replay (
     修改播放音量
 =======================================
 */
-inline bool_t
+cr_inline bool_t
 xmms_adj_volume (
   __CR_IO__ iXMMEDIA*   that,
   __CR_IN__ sint_t      value
@@ -509,7 +509,7 @@ typedef struct  _iPICTURE
     #define pict_get_count(that) \
         ((int32u)((that)->__count__))
 #else
-inline int32u
+cr_inline int32u
 pict_get_count (
   __CR_IN__ const iPICTURE* that
     )

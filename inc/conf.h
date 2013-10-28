@@ -41,6 +41,9 @@
     #include "conf/iarcc.h"
 #endif
 #ifndef _CR_CC_VER_
+    #include "conf/mcxc.h"
+#endif
+#ifndef _CR_CC_VER_
     #include "conf/vdsp.h"
 #endif
 #ifndef _CR_CC_VER_
@@ -71,25 +74,29 @@
     #define _CR_AR_STR_ "[X64]"
 
 /* ARM
-  (32bit Bi-Endian) */
+  (32bit/64bit Bi-Endian) */
 #elif   defined(_CR_AR_ARM_)
     #define _CR_SYS32_
-    #define _CR_AR_STR_ "[ARM]"
-
-/* THUMB
-  (32bit Bi-Endian) */
-#elif   defined(_CR_AR_THUMB_)
-    #define _CR_SYS32_
-    #define _CR_AR_STR_ "[THUMB]"
+    #if defined(_CR_AR_THUMB_)
+        #define _CR_AR_STR_ "[THUMB]"
+    #else
+        #define _CR_AR_STR_ "[ARM]"
+    #endif
 
 /* MIPS
   (32bit/64bit Bi-Endian) */
 #elif   defined(_CR_AR_MIPS_)
-    #define _CR_AR_STR_ "[MIPS]"
 
     /* 系统位数 */
-    #ifdef  __mips64
+    #if defined(__mips64)
         #define _CR_SYS64_
+    #else
+        #define _CR_SYS32_
+    #endif
+    #if defined(_CR_AR_MIPS16_)
+        #define _CR_AR_STR_ "[MIPS16]"
+    #else
+        #define _CR_AR_STR_ "[MIPS]"
     #endif
 
     /* 字节顺序 */
@@ -190,6 +197,20 @@
     #define _CR_SYS16_
     #define _CR_ARCH8_
     #define _CR_AR_STR_ "[MCS51]"
+
+/* MicroChip PIC-8bit
+  (8bit Compiler-Endian) */
+#elif   defined(_CR_AR_PIC8_)
+    #define _CR_SYS16_
+    #define _CR_ARCH8_
+    #define _CR_AR_STR_ "[PIC8]"
+
+/* MicroChip PIC-16bit
+  (16bit Little-Endian) */
+#elif   defined(_CR_AR_PIC16_)
+    #define _CR_SYS16_
+    #define _CR_ORDER_LE_
+    #define _CR_AR_STR_ "[PIC16]"
 
 /* ADSP Blackfin
   (32bit Little-Endian) */
@@ -330,6 +351,11 @@
 #if defined(_CR_OS_MSWIN_)
     #undef  WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN
+#endif
+
+/* 是否支持 GLIBC 函数库 */
+#if defined(_CR_OS_UNIX_)
+    #define _CR_USE_GLIBC_
 #endif
 
 /* 文件系统的位数 */
@@ -490,6 +516,17 @@
     /*
 #undef  _CR_BUILD_DLL_
     */
+
+/* 剔除所有 C 相关的选项
+   默认: 不剔除 */
+    /*
+#undef  _CR_NO_STDC_
+    */
+#if defined(_CR_NO_STDC_)
+    #undef  CR_BTEX_FAIL
+    #undef  _CR_HAVE_WCS_
+    #define _CR_NO_ERRNO_
+#endif
 
 /* 文件操作映射到直接系统调用
    默认: 不映射 (可选自己的实现) */

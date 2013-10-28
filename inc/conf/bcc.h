@@ -150,21 +150,15 @@
 
     /* 编译器内联函数修饰 */
     #undef  _CR_NO_INLINE_
-    #ifndef __cplusplus
-        #define inline  __inline
-    #endif
+    #define cr_inline       __inline
     /*------------------------------------------------*/
 
     /* 编译器汇编内联函数 */
-    #define fasm_inline   static
+    #define fasm_inline     static
     /*------------------------------------------------*/
 
     /* 编译器安全内联函数 */
-    #define safe_inline   static
-    /*------------------------------------------------*/
-
-    /* 编译器强迫内联修饰 */
-    #define CR_INLINE   __inline
+    #define safe_inline     static
     /*------------------------------------------------*/
 
     /* 编译器函数导出修饰 */
@@ -182,16 +176,6 @@
         #define _CR_ASM_INTL_
     #elif   0
         #define _CR_ASM_ATnT_
-    #else
-        #define _CR_ASM_SPEC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器noreturn修饰 */
-    #if     0
-        #define CR_NORETURN
-    #else
-        #define CR_NORETURN __declspec(noreturn)
     #endif
     /*------------------------------------------------*/
 
@@ -220,9 +204,7 @@
     /* 编译器紧凑结构修饰 */
     #define CR_PACKED
     #define CR_TYPEDEF  typedef
-    #if     0
-        #define _CR_NO_PRAGMA_PACK_
-    #endif
+    #undef  _CR_NO_PRAGMA_PACK_
     /*------------------------------------------------*/
 
     /* 编译器分支优化指示 */
@@ -249,18 +231,6 @@
     #define _CR_NO_CROT64_
     #define _CR_NO_IROTSM_
     #define _CR_NO_INTRIN_
-    /*------------------------------------------------*/
-
-    /* LIBC 剔除所有 C 函数的选项 */
-    #if     0
-        #define _CR_NO_STDC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* LIBC 是否支持 GLIBC 函数库 */
-    #if     0
-        #define _CR_USE_GLIBC_
-    #endif
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */
@@ -299,17 +269,15 @@
     /*------------------------------------------------*/
 
     /* LIBC beginthreadex() 返回值 */
-    #ifndef _CR_NO_STDC_
-        #if (_CR_CC_VER_ < 0x0570)
-            #define CR_BTEX_FAIL   -1
-        #else
-            #define CR_BTEX_FAIL    0
-        #endif
+    #if (_CR_CC_VER_ < 0x0570)
+        #define CR_BTEX_FAIL   -1
+    #else
+        #define CR_BTEX_FAIL    0
     #endif
     /*------------------------------------------------*/
 
     /* LIBC 支持宽字符串函数的设置 */
-    #ifndef _CR_NO_STDC_
+    #if     1
         #define _CR_HAVE_WCS_
     #endif
     /*------------------------------------------------*/

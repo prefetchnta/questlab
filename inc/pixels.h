@@ -33,7 +33,7 @@
     8888to332
 =======================================
 */
-inline byte_t
+cr_inline byte_t
 pixel32to332 (
   __CR_OT__ byte_t* dst,
   __CR_IN__ int32u  src
@@ -51,7 +51,7 @@ pixel32to332 (
     8888to565
 =======================================
 */
-inline int16u
+cr_inline int16u
 pixel32to565 (
   __CR_OT__ int16u* dst,
   __CR_IN__ int32u  src
@@ -70,7 +70,7 @@ pixel32to565 (
     8888toX555
 =======================================
 */
-inline int16u
+cr_inline int16u
 pixel32toX555 (
   __CR_OT__ int16u* dst,
   __CR_IN__ int32u  src
@@ -89,7 +89,7 @@ pixel32toX555 (
     8888to1555
 =======================================
 */
-inline int16u
+cr_inline int16u
 pixel32to1555 (
   __CR_OT__ int16u* dst,
   __CR_IN__ int32u  src
@@ -109,7 +109,7 @@ pixel32to1555 (
     8888to4444
 =======================================
 */
-inline int16u
+cr_inline int16u
 pixel32to4444 (
   __CR_OT__ int16u* dst,
   __CR_IN__ int32u  src
@@ -182,7 +182,7 @@ static const byte_t _rom_ g_by64to256[64] =
     332to8888
 =======================================
 */
-inline int32u
+cr_inline int32u
 pixel332to32 (
   __CR_OT__ int32u* dst,
   __CR_IN__ byte_t  src
@@ -200,7 +200,7 @@ pixel332to32 (
     565to8888
 =======================================
 */
-inline int32u
+cr_inline int32u
 pixel565to32 (
   __CR_OT__ int32u* dst,
   __CR_IN__ int16u  src
@@ -219,7 +219,7 @@ pixel565to32 (
     X555to8888
 =======================================
 */
-inline int32u
+cr_inline int32u
 pixelX555to32 (
   __CR_OT__ int32u* dst,
   __CR_IN__ int16u  src
@@ -238,7 +238,7 @@ pixelX555to32 (
     1555to8888
 =======================================
 */
-inline int32u
+cr_inline int32u
 pixel1555to32 (
   __CR_OT__ int32u* dst,
   __CR_IN__ int16u  src
@@ -257,7 +257,7 @@ pixel1555to32 (
     4444to8888
 =======================================
 */
-inline int32u
+cr_inline int32u
 pixel4444to32 (
   __CR_OT__ int32u* dst,
   __CR_IN__ int16u  src
@@ -316,7 +316,7 @@ CR_API void_t   pal_set_gray8 (void_t *pal4, uint_t len CR_DEFAULT(256));
     交换 RB 颜色通道
 =======================================
 */
-inline int32u
+cr_inline int32u
 swap_rb32 (
   __CR_IO__ void_t* color
     )
@@ -333,7 +333,7 @@ swap_rb32 (
     32位色转 COLORREF 格式
 =======================================
 */
-inline int32u
+cr_inline int32u
 argb32_to_gdi (
   __CR_IO__ void_t* color
     )
@@ -381,7 +381,7 @@ CR_API uint_t   rgb2light (uint_t r, uint_t g, uint_t b);
     12位色像素的合成
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_VRGBA12 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -399,7 +399,7 @@ CR_VRGBA12 (
     15位色像素的合成
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_VRGBA15 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -415,7 +415,7 @@ CR_VRGBA15 (
     16位色像素的合成
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_VRGBA16 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -431,7 +431,7 @@ CR_VRGBA16 (
     15位色像素的合成
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_VRGBA17 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -449,7 +449,7 @@ CR_VRGBA17 (
     24位色像素的合成
 =======================================
 */
-inline int32u
+cr_inline int32u
 CR_VRGBA24 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -471,7 +471,7 @@ CR_VRGBA24 (
     32位色像素的合成
 =======================================
 */
-inline int32u
+cr_inline int32u
 CR_VRGBA32 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -494,7 +494,7 @@ CR_VRGBA32 (
     12位色像素的合成 (常数用)
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_CRGBA12 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -512,7 +512,7 @@ CR_CRGBA12 (
     15位色像素的合成 (常数用)
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_CRGBA15 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -528,7 +528,7 @@ CR_CRGBA15 (
     16位色像素的合成 (常数用)
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_CRGBA16 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,
@@ -544,7 +544,7 @@ CR_CRGBA16 (
     15位色像素的合成 (常数用)
 =======================================
 */
-inline int16u
+cr_inline int16u
 CR_CRGBA17 (
   __CR_IN__ byte_t  r,
   __CR_IN__ byte_t  g,

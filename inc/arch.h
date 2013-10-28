@@ -49,7 +49,7 @@
     循环处理封闭索引 (单向)
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 circle_idx_u (
   __CR_IN__ leng_t  index,
   __CR_IN__ leng_t  incr,
@@ -67,7 +67,7 @@ circle_idx_u (
     循环处理封闭索引 (双向)
 =======================================
 */
-inline dist_t
+cr_inline dist_t
 circle_idx_s (
   __CR_IN__ dist_t  index,
   __CR_IN__ dist_t  incr,
@@ -88,7 +88,7 @@ circle_idx_s (
     循环处理封闭指针 (单向)
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 circle_ptr_u (
   __CR_IN__ const void_t*   ptr,
   __CR_IN__ leng_t          incr,
@@ -107,7 +107,7 @@ circle_ptr_u (
     循环处理封闭指针 (双向)
 =======================================
 */
-inline void_t*
+cr_inline void_t*
 circle_ptr_s (
   __CR_IN__ const void_t*   ptr,
   __CR_IN__ dist_t          incr,

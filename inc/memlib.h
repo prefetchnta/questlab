@@ -99,7 +99,7 @@ CR_API void_t*  mem_far_sett (void_t *dst, const byte_t val[3], leng_t len);
 #if defined(_CR_NO_INLINE_)
     #define mem_set_stdc    memset
 #else
-inline void_t*
+cr_inline void_t*
 mem_set_stdc (
   __CR_OT__ void_t* dst,
   __CR_IN__ byte_t  val,
@@ -118,7 +118,7 @@ mem_set_stdc (
 #if defined(_CR_NO_INLINE_)
     #define mem_cpy_stdc    memcpy
 #else
-inline void_t*
+cr_inline void_t*
 mem_cpy_stdc (
   __CR_OT__ void_t*         dst,
   __CR_IN__ const void_t*   src,
@@ -137,7 +137,7 @@ mem_cpy_stdc (
 #if defined(_CR_NO_INLINE_)
     #define mem_cmp_stdc    memcmp
 #else
-inline sint_t
+cr_inline sint_t
 mem_cmp_stdc (
   __CR_IN__ const void_t*   dst,
   __CR_IN__ const void_t*   src,
@@ -156,7 +156,7 @@ mem_cmp_stdc (
 #if defined(_CR_NO_INLINE_)
     #define mem_mov_stdc    memmove
 #else
-inline void_t*
+cr_inline void_t*
 mem_mov_stdc (
   __CR_OT__ void_t*         dst,
   __CR_IN__ const void_t*   src,
@@ -175,7 +175,7 @@ mem_mov_stdc (
 =======================================
 */
 #ifndef mem_set
-inline void_t*
+cr_inline void_t*
 mem_set (
   __CR_OT__ void_t* dst,
   __CR_IN__ byte_t  val,
@@ -196,7 +196,7 @@ mem_set (
 =======================================
 */
 #ifndef mem_cpy
-inline void_t*
+cr_inline void_t*
 mem_cpy (
   __CR_OT__ void_t*         dst,
   __CR_IN__ const void_t*   src,
@@ -218,7 +218,7 @@ mem_cpy (
 =======================================
 */
 #ifndef mem_cmp
-inline sint_t
+cr_inline sint_t
 mem_cmp (
   __CR_IN__ const void_t*   dst,
   __CR_IN__ const void_t*   src,
@@ -247,7 +247,7 @@ mem_cmp (
 =======================================
 */
 #ifndef mem_mov
-inline void_t*
+cr_inline void_t*
 mem_mov (
   __CR_OT__ void_t*         dst,
   __CR_IN__ const void_t*   src,
@@ -282,7 +282,7 @@ mem_mov (
 #if defined(_CR_NO_INLINE_)
     #define mem_zero(d, n)  mem_set(d, 0, n)
 #else
-inline void_t*
+cr_inline void_t*
 mem_zero (
   __CR_OT__ void_t* dst,
   __CR_IN__ leng_t  len
@@ -300,7 +300,7 @@ mem_zero (
 =======================================
 */
 #ifndef mem_setw
-inline void_t*
+cr_inline void_t*
 mem_setw (
   __CR_OT__ void_t* dst,
   __CR_IN__ int16u  val,
@@ -321,7 +321,7 @@ mem_setw (
 =======================================
 */
 #ifndef mem_setd
-inline void_t*
+cr_inline void_t*
 mem_setd (
   __CR_OT__ void_t* dst,
   __CR_IN__ int32u  val,
@@ -342,7 +342,7 @@ mem_setd (
 =======================================
 */
 #ifndef mem_setq
-inline void_t*
+cr_inline void_t*
 mem_setq (
   __CR_OT__ void_t* dst,
   __CR_IN__ int64u  val,
@@ -371,7 +371,7 @@ mem_setq (
 =======================================
 */
 #ifndef mem_sett
-inline void_t*
+cr_inline void_t*
 mem_sett (
   __CR_OT__ void_t*         dst,
   __CR_IN__ const byte_t    val[3],
@@ -435,7 +435,7 @@ CR_API void_t*  mem_replace (const void_t *data, leng_t srclen, leng_t *dstlen,
     读取非对齐单字
 =======================================
 */
-inline int16u
+cr_inline int16u
 load_misali16 (
   __CR_IN__ const void_t*   ptr
     )
@@ -460,7 +460,7 @@ load_misali16 (
     读取非对齐双字
 =======================================
 */
-inline int32u
+cr_inline int32u
 load_misali32 (
   __CR_IN__ const void_t*   ptr
     )
@@ -485,7 +485,7 @@ load_misali32 (
     读取非对齐四字
 =======================================
 */
-inline int64u
+cr_inline int64u
 load_misali64 (
   __CR_IN__ const void_t*   ptr
     )
@@ -510,7 +510,7 @@ load_misali64 (
     写入非对齐单字
 =======================================
 */
-inline void_t
+cr_inline void_t
 save_misali16 (
   __CR_OT__ void_t* ptr,
   __CR_IN__ int16u  val
@@ -533,7 +533,7 @@ save_misali16 (
     写入非对齐双字
 =======================================
 */
-inline void_t
+cr_inline void_t
 save_misali32 (
   __CR_OT__ void_t* ptr,
   __CR_IN__ int32u  val
@@ -556,7 +556,7 @@ save_misali32 (
     写入非对齐四字
 =======================================
 */
-inline void_t
+cr_inline void_t
 save_misali64 (
   __CR_OT__ void_t* ptr,
   __CR_IN__ int64u  val
@@ -591,7 +591,7 @@ typedef struct
     设置数据缓冲
 =======================================
 */
-inline bool_t
+cr_inline bool_t
 buffer_init (
   __CR_OT__ sBUFFER*        buff,
   __CR_IN__ const void_t*   data,
@@ -621,7 +621,7 @@ buffer_init (
     释放数据缓冲
 =======================================
 */
-inline void_t
+cr_inline void_t
 buffer_free (
   __CR_IN__ const sBUFFER*  buff
     )
@@ -635,7 +635,7 @@ buffer_free (
     获取数据大小
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 buffer_size (
   __CR_IN__ const sBUFFER*  buff
     )
@@ -657,7 +657,7 @@ buffer_size (
     返回字符串长度A
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 str_lenA (
   __CR_IN__ const ansi_t*   str
     )
@@ -679,7 +679,7 @@ str_lenA (
     返回字符串长度W
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 str_lenW (
   __CR_IN__ const wide_t*   str
     )
@@ -701,7 +701,7 @@ str_lenW (
     返回字符串大小A
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 str_sizeA (
   __CR_IN__ const ansi_t*   str
     )
@@ -714,7 +714,7 @@ str_sizeA (
     返回字符串大小W
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 str_sizeW (
   __CR_IN__ const wide_t*   str
     )
@@ -727,7 +727,7 @@ str_sizeW (
     返回字符串限长长度A
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 str_lenNA (
   __CR_IN__ const ansi_t*   str,
   __CR_IN__ leng_t          len
@@ -746,7 +746,7 @@ str_lenNA (
     返回字符串限长长度W
 =======================================
 */
-inline leng_t
+cr_inline leng_t
 str_lenNW (
   __CR_IN__ const wide_t*   str,
   __CR_IN__ leng_t          len

@@ -423,7 +423,7 @@ typedef struct  _iDATIN
     #define dati_get_head(that) \
         ((fsize_t)((that)->__head__))
 #else
-inline fsize_t
+cr_inline fsize_t
 dati_get_head (
   __CR_IN__ const iDATIN*   that
     )
@@ -441,7 +441,7 @@ dati_get_head (
     #define dati_get_tail(that) \
         ((fsize_t)((that)->__tail__))
 #else
-inline fsize_t
+cr_inline fsize_t
 dati_get_tail (
   __CR_IN__ const iDATIN*   that
     )
@@ -459,7 +459,7 @@ dati_get_tail (
     #define dati_get_size(that) \
         ((fsize_t)((that)->__size__))
 #else
-inline fsize_t
+cr_inline fsize_t
 dati_get_size (
   __CR_IN__ const iDATIN*   that
     )
@@ -488,7 +488,7 @@ typedef struct  _iDATOT
     #define dato_get_size(that) \
         ((fsize_t)((that)->__size__))
 #else
-inline fsize_t
+cr_inline fsize_t
 dato_get_size (
   __CR_IN__ const iDATOT*   that
     )
@@ -572,7 +572,7 @@ typedef struct
     使用 ANSI 填充结构
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_ldrA (
   __CR_OT__ sLOADER*        that,
   __CR_IN__ const ansi_t*   name,
@@ -597,7 +597,7 @@ set_ldrA (
     使用 WIDE 填充结构
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_ldrW (
   __CR_OT__ sLOADER*        that,
   __CR_IN__ const wide_t*   name,
@@ -622,7 +622,7 @@ set_ldrW (
     使用 BUFF 填充结构
 =======================================
 */
-inline void_t
+cr_inline void_t
 set_ldrM (
   __CR_OT__ sLOADER*        that,
   __CR_IN__ const void_t*   data,

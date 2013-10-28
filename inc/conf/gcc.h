@@ -81,15 +81,20 @@
             defined(__i386__) || defined(_X86_)
         #define _CR_AR_X86_     /* Intel X86 */
 
-    #elif   defined(__thumb) || defined(__thumb__)
-        #define _CR_AR_THUMB_   /* THUMB */
-
     #elif   defined(__arm) || defined(__arm__)
-        #define _CR_AR_ARM_     /* ARM */
-
+        #if     1
+            #define _CR_AR_ARM_     /* ARM */
+        #endif
+        #if defined(__thumb) || defined(__thumb__)
+            #define _CR_AR_THUMB_   /* THUMB */
+        #endif
     #elif   defined(mips) || defined(__mips__)
-        #define _CR_AR_MIPS_    /* MIPS */
-
+        #if     1
+            #define _CR_AR_MIPS_    /* MIPS */
+        #endif
+        #if defined(__mips16)
+            #define _CR_AR_MIPS16_  /* MIPS16e */
+        #endif
     #elif   defined(__ppc__) || defined(__powerpc) || \
             defined(__powerpc__) || defined(__POWERPC__)
         #define _CR_AR_PPC_     /* PowerPC */
@@ -233,21 +238,15 @@
 
     /* 编译器内联函数修饰 */
     #undef  _CR_NO_INLINE_
-    #ifndef __cplusplus
-        #define inline  static __inline
-    #endif
+    #define cr_inline   static __inline
     /*------------------------------------------------*/
 
     /* 编译器汇编内联函数 */
-    #define fasm_inline     inline
+    #define fasm_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器安全内联函数 */
-    #define safe_inline     inline
-    /*------------------------------------------------*/
-
-    /* 编译器强迫内联修饰 */
-    #define CR_INLINE   __attribute__((always_inline))
+    #define safe_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器函数导出修饰 */
@@ -265,16 +264,6 @@
         #define _CR_ASM_INTL_
     #elif   1
         #define _CR_ASM_ATnT_
-    #else
-        #define _CR_ASM_SPEC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器noreturn修饰 */
-    #if     0
-        #define CR_NORETURN
-    #else
-        #define CR_NORETURN __attribute__((noreturn))
     #endif
     /*------------------------------------------------*/
 
@@ -303,9 +292,7 @@
     /* 编译器紧凑结构修饰 */
     #define CR_TYPEDEF  typedef
     #define CR_PACKED   __attribute__((packed))
-    #if     1
-        #define _CR_NO_PRAGMA_PACK_
-    #endif
+    #define _CR_NO_PRAGMA_PACK_
     /*------------------------------------------------*/
 
     /* 编译器分支优化指示 */
@@ -339,18 +326,6 @@
     #define _CR_NO_CROT64_
     #define _CR_NO_IROTSM_
     #define _CR_NO_INTRIN_
-    /*------------------------------------------------*/
-
-    /* LIBC 剔除所有 C 函数的选项 */
-    #if     0
-        #define _CR_NO_STDC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* LIBC 是否支持 GLIBC 函数库 */
-    #if defined(_CR_OS_UNIX_)
-        #define _CR_USE_GLIBC_
-    #endif
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */
@@ -395,15 +370,13 @@
     /*------------------------------------------------*/
 
     /* LIBC beginthreadex() 返回值 */
-    #if !defined(_CR_NO_STDC_) && \
-         defined(_CR_OS_MSWIN_)
+    #if defined(_CR_OS_MSWIN_)
         #define CR_BTEX_FAIL    0
     #endif
     /*------------------------------------------------*/
 
     /* LIBC 支持宽字符串函数的设置 */
-    #if !defined(_CR_NO_STDC_) && \
-         defined(_CR_OS_MSWIN_)
+    #if defined(_CR_OS_MSWIN_)
         #define _CR_HAVE_WCS_
     #endif
     /*------------------------------------------------*/

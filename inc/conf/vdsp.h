@@ -117,6 +117,8 @@
     /* 编译器64位浮点 */
     #if     0
         #define _CR_NO_FLT64_
+    #else
+        #define _CR_DOUBLE32_
     #endif
     /*------------------------------------------------*/
 
@@ -137,21 +139,15 @@
 
     /* 编译器内联函数修饰 */
     #undef  _CR_NO_INLINE_
-    #ifndef __cplusplus
-        #define inline  __inline
-    #endif
+    #define cr_inline       __inline
     /*------------------------------------------------*/
 
     /* 编译器汇编内联函数 */
-    #define fasm_inline   inline
+    #define fasm_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器安全内联函数 */
-    #define safe_inline   inline
-    /*------------------------------------------------*/
-
-    /* 编译器强迫内联修饰 */
-    #define CR_INLINE   _Pragma("always_inline")
+    #define safe_inline     cr_inline
     /*------------------------------------------------*/
 
     /* 编译器函数导出修饰 */
@@ -166,14 +162,6 @@
         #define _CR_ASM_INTL_
     #elif   0
         #define _CR_ASM_ATnT_
-    #else
-        #define _CR_ASM_SPEC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器noreturn修饰 */
-    #if     1
-        #define CR_NORETURN
     #endif
     /*------------------------------------------------*/
 
@@ -205,9 +193,7 @@
     /* 编译器紧凑结构修饰 */
     #define CR_PACKED
     #define CR_TYPEDEF  typedef
-    #if     0
-        #define _CR_NO_PRAGMA_PACK_
-    #endif
+    #undef  _CR_NO_PRAGMA_PACK_
     /*------------------------------------------------*/
 
     /* 编译器分支优化指示 */
@@ -241,18 +227,6 @@
     #endif
     #define cr_byteswap16   byteswap2
     #define cr_byteswap32   byteswap4
-    /*------------------------------------------------*/
-
-    /* LIBC 剔除所有 C 函数的选项 */
-    #if     0
-        #define _CR_NO_STDC_
-    #endif
-    /*------------------------------------------------*/
-
-    /* LIBC 是否支持 GLIBC 函数库 */
-    #if     0
-        #define _CR_USE_GLIBC_
-    #endif
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */

@@ -108,7 +108,7 @@ CR_API void_t   splock_release (lock_t volatile *lock);
     普通加一
 =======================================
 */
-inline void_t
+cr_inline void_t
 atom_inc (
   __CR_IO__ sint_t* dst
     )
@@ -121,7 +121,7 @@ atom_inc (
     普通减一
 =======================================
 */
-inline void_t
+cr_inline void_t
 atom_dec (
   __CR_IO__ sint_t* dst
     )
@@ -134,7 +134,7 @@ atom_dec (
     普通加法
 =======================================
 */
-inline void_t
+cr_inline void_t
 atom_add (
   __CR_IO__ dist_t* dst,
   __CR_IN__ dist_t  src
@@ -148,7 +148,7 @@ atom_add (
     普通减法
 =======================================
 */
-inline void_t
+cr_inline void_t
 atom_sub (
   __CR_IO__ dist_t* dst,
   __CR_IN__ dist_t  src
@@ -162,7 +162,7 @@ atom_sub (
     普通设值
 =======================================
 */
-inline void_t
+cr_inline void_t
 atom_set (
   __CR_IO__ sint_t* dst,
   __CR_IN__ sint_t  val
