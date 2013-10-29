@@ -82,16 +82,12 @@
         #define _CR_AR_X86_     /* Intel X86 */
 
     #elif   defined(__arm) || defined(__arm__)
-        #if     1
-            #define _CR_AR_ARM_     /* ARM */
-        #endif
+        #define _CR_AR_ARM_     /* ARM */
         #if defined(__thumb) || defined(__thumb__)
             #define _CR_AR_THUMB_   /* THUMB */
         #endif
     #elif   defined(mips) || defined(__mips__)
-        #if     1
-            #define _CR_AR_MIPS_    /* MIPS */
-        #endif
+        #define _CR_AR_MIPS_    /* MIPS */
         #if defined(__mips16)
             #define _CR_AR_MIPS16_  /* MIPS16e */
         #endif
@@ -180,19 +176,8 @@
     /*------------------------------------------------*/
 
     /* 编译器内存模型 */
-    #if     0
-        #define _CR_SMALL_  /* 16bit 小模式 */
-    #elif   0
-        #define _CR_LARGE_  /* 16bit 巨模式 */
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器过期风格 */
-    #if     0
-        #define const
-        #define signed
-        #define volatile
-    #endif
+    #undef  _CR_SMALL_  /* 16bit 小模式 */
+    #undef  _CR_LARGE_  /* 16bit 巨模式 */
     /*------------------------------------------------*/
 
     /* 编译器特有类型 */
@@ -200,35 +185,23 @@
     /*------------------------------------------------*/
 
     /* 编译器指针修饰 */
-    #if     1
-        #define _slw_
-        #define _pge_
-        #define _ram_
-        #define _rom_
-        #define _far_
-    #endif
+    #define _far_
+    #define _rom_
+    #define _slw_
+    #define _pge_
+    #define _ram_
     /*------------------------------------------------*/
 
-    /* 编译器32位浮点 */
-    #if     0
-        #define _CR_NO_FLT32_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器64位浮点 */
-    #if     0
-        #define _CR_NO_FLT64_
-    #endif
+    /* 编译器浮点配置 */
+    #undef  _CR_NO_FLT32_
+    #undef  _CR_NO_FLT64_
+    #undef  _CR_DOUBLE32_
     /*------------------------------------------------*/
 
     /* 编译器64位整数 */
-    #if     0
-        #define _CR_NO_INT64_
-    #elif   1
-        #define _CR_USE_LLONG_
-    #else
-        #define _CR_USE_INT64_
-    #endif
+    #undef  _CR_NO_INT64_
+    #define _CR_USE_LLONG_
+    #undef  _CR_USE_INT64_
     /*------------------------------------------------*/
 
     /* 编译器64位常数后缀 */
@@ -260,33 +233,20 @@
     /*------------------------------------------------*/
 
     /* 编译器内联汇编风格 */
-    #if     0
-        #define _CR_ASM_INTL_
-    #elif   1
-        #define _CR_ASM_ATnT_
-    #endif
+    #undef  _CR_ASM_INTL_
+    #define _CR_ASM_ATnT_
     /*------------------------------------------------*/
 
     /* 编译器noinline修饰 */
-    #if     0
-        #define CR_NOINLINE
-    #else
-        #define CR_NOINLINE __attribute__((noinline))
-    #endif
+    #define CR_NOINLINE __attribute__((noinline))
     /*------------------------------------------------*/
 
     /* 编译器成员对齐修饰 */
-    #if     0
-        #define CR_ALIGN(x)
-    #else
-        #define CR_ALIGN(x) __attribute__((aligned(x)))
-    #endif
+    #define CR_ALIGN(x) __attribute__((aligned(x)))
     /*------------------------------------------------*/
 
     /* 编译器导入库的选项 */
-    #if     1
-        #define _CR_NO_PRAGMA_LIB_
-    #endif
+    #define _CR_NO_PRAGMA_LIB_
     /*------------------------------------------------*/
 
     /* 编译器紧凑结构修饰 */
@@ -315,9 +275,7 @@
     /*------------------------------------------------*/
 
     /* 编译器不支持宽字符 */
-    #if     0
-        #define _CR_NO_WIDE_
-    #endif
+    #undef  _CR_NO_WIDE_
     /*------------------------------------------------*/
 
     /* 编译器指令函数优化 */
@@ -349,24 +307,20 @@
     #if defined(_CR_OS_DOS32_) || \
         defined(_CR_OS_MSWIN_)
         #define _CR_NO_STDIO64_
-    #elif   0
-        #define _CR_MS_STDIO64_
     #endif
+    #undef  _CR_MS_STDIO64_
     /*------------------------------------------------*/
 
     /* LIBC 支持64位POSIX文件偏移 */
     #if defined(_CR_OS_DOS32_) || \
         defined(_CR_OS_MSWIN_)
         #define _CR_NO_POSIX64_
-    #elif   0
-        #define _CR_MS_POSIX64_
     #endif
+    #undef  _CR_MS_POSIX64_
     /*------------------------------------------------*/
 
     /* LIBC 支持 C99 数学函数设置 */
-    #if     0
-        #define _CR_NO_MATHC99_
-    #endif
+    #undef  _CR_NO_MATHC99_
     /*------------------------------------------------*/
 
     /* LIBC beginthreadex() 返回值 */
@@ -383,19 +337,6 @@
 
     /* 处理器架构的空指令宏设置 */
     #define CR_NOP  __asm__("nop")
-    /*------------------------------------------------*/
-
-    /* 处理器架构的对齐访问设置 */
-    #if !defined(_CR_AR_X86_) && \
-        !defined(_CR_AR_X64_)   /* maybe more */
-        #define _CR_ALIGN_NEEDED_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 处理器架构支持原子级操作 */
-    #if     0
-        #define _CR_FAST_ATOM_
-    #endif
     /*------------------------------------------------*/
 
 #endif  /* __GNUC__ */

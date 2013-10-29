@@ -23,7 +23,7 @@
 /******************************/
 /* 版本值 1030 表示版本 V1.03 */
 /******************************/
-#if defined(__XC) || defined(__XC16)
+#if defined(__XC8) || defined(__XC16) || defined(__XC32)
 
     /* 编译器类型定义 */
     #define _CR_CC_MCXC_
@@ -31,24 +31,24 @@
 
     /* 编译器版本定义 */
     #if     defined(__XC8)
+        #define _CR_CC_XC8_
         #define _CR_CC_VER_     __XC8_VERSION
 
     #elif   defined(__XC16)
+        #define _CR_CC_XC16_
         #define _CR_CC_VER_     __XC16_VERSION
 
-    #elif   defined(__XC32)
-        #define _CR_CC_VER_     __XC32_VERSION
-
     #else
-        #error "mcxc.h: CC TYPE not supported!"
+        #define _CR_CC_XC32_
+        #define _CR_CC_VER_     __XC32_VERSION
     #endif
     /*------------------------------------------------*/
 
     /* 编译器名称定义 */
-    #if     defined(__XC8)
+    #if     defined(_CR_CC_XC8_)
         #define _CR_CC_STR_     "MicroChip XC8"
 
-    #elif   defined(__XC16)
+    #elif   defined(_CR_CC_XC16_)
         #define _CR_CC_STR_     "MicoChip XC16"
 
     #else
@@ -63,15 +63,14 @@
     /*------------------------------------------------*/
 
     /* 编译器平台架构 */
-    #if     defined(__XC8)
+    #if     defined(_CR_CC_XC8_)
         #define _CR_AR_PIC8_    /* MicroChip PIC-8bit */
 
-    #elif   defined(__XC16)
+    #elif   defined(_CR_CC_XC16_)
         #define _CR_AR_PIC16_   /* MicroChip PIC-16bit */
+
     #else
-        #if     1
-            #define _CR_AR_MIPS_    /* MIPS R3000 */
-        #endif
+        #define _CR_AR_MIPS_    /* MIPS R3000 */
         #if defined(__mips16)
             #define _CR_AR_MIPS16_  /* MIPS16e */
         #endif
@@ -79,14 +78,13 @@
     /*------------------------------------------------*/
 
     /* 编译器操作系统 */
-    #if     1
-        #define _CR_OS_NAKED_
-    #endif
+    #define _CR_OS_NAKED_
     /*------------------------------------------------*/
 
     /* 编译器全局定义 */
-    #if     1
-        #define _CR_ORDER_LE_   /* 全部小端模式 */
+    #define _CR_ORDER_LE_   /* 全部小端模式 */
+    #if defined(_CR_CC_XC8_)
+        #define _CR_SICK_INLINE_    /* 剔除内联 */
     #endif
     /*------------------------------------------------*/
 
@@ -95,23 +93,14 @@
     /*------------------------------------------------*/
 
     /* 编译器内存模型 */
-    #if !defined(__XC32)
+    #if !defined(_CR_CC_XC32_)
         #define _CR_SMALL_  /* 16bit 小模式 */
-    #elif   0
-        #define _CR_LARGE_  /* 16bit 巨模式 */
     #endif
-    /*------------------------------------------------*/
-
-    /* 编译器过期风格 */
-    #if     0
-        #define const
-        #define signed
-        #define volatile
-    #endif
+    #undef  _CR_LARGE_  /* 16bit 巨模式 */
     /*------------------------------------------------*/
 
     /* 编译器特有类型 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         typedef bit     ubit_t;
     #else
         typedef unsigned int    ubit_t;
@@ -119,23 +108,16 @@
     /*------------------------------------------------*/
 
     /* 编译器指针修饰 */
-    #if     1
-        #define _far_
-        #define _rom_
-        #define _slw_
-        #define _pge_
-        #define _ram_
-    #endif
+    #define _far_
+    #define _rom_
+    #define _slw_
+    #define _pge_
+    #define _ram_
     /*------------------------------------------------*/
 
-    /* 编译器32位浮点 */
-    #if     0
-        #define _CR_NO_FLT32_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 编译器64位浮点 */
-    #if defined(__XC8)
+    /* 编译器浮点配置 */
+    #undef  _CR_NO_FLT32_
+    #if defined(_CR_CC_XC8_)
         #define _CR_NO_FLT64_
     #else
         #define _CR_DOUBLE32_
@@ -143,17 +125,16 @@
     /*------------------------------------------------*/
 
     /* 编译器64位整数 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define _CR_NO_INT64_
-    #elif   1
-        #define _CR_USE_LLONG_
     #else
-        #define _CR_USE_INT64_
+        #define _CR_USE_LLONG_
     #endif
+    #undef  _CR_USE_INT64_
     /*------------------------------------------------*/
 
     /* 编译器64位常数后缀 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define CR_SLL(x)   x
         #define CR_ULL(x)   x
     #else
@@ -176,22 +157,19 @@
     /*------------------------------------------------*/
 
     /* 编译器函数导出修饰 */
-    #if     1
-        #define CR_EXPORT
-        #define CR_IMPORT
-    #endif
+    #define CR_EXPORT
+    #define CR_IMPORT
     /*------------------------------------------------*/
 
     /* 编译器内联汇编风格 */
-    #if     0
-        #define _CR_ASM_INTL_
-    #elif   !defined(__XC8)
+    #undef  _CR_ASM_INTL_
+    #if !defined(_CR_CC_XC8_)
         #define _CR_ASM_ATnT_
     #endif
     /*------------------------------------------------*/
 
     /* 编译器noinline修饰 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define CR_NOINLINE
     #else
         #define CR_NOINLINE __attribute__((noinline))
@@ -199,7 +177,7 @@
     /*------------------------------------------------*/
 
     /* 编译器成员对齐修饰 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define CR_ALIGN(x)
     #else
         #define CR_ALIGN(x) __attribute__((aligned(x)))
@@ -207,13 +185,11 @@
     /*------------------------------------------------*/
 
     /* 编译器导入库的选项 */
-    #if     1
-        #define _CR_NO_PRAGMA_LIB_
-    #endif
+    #define _CR_NO_PRAGMA_LIB_
     /*------------------------------------------------*/
 
     /* 编译器紧凑结构修饰 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define CR_PACKED
         #define CR_TYPEDEF  typedef
         #define _CR_NO_PRAGMA_PACK_
@@ -225,7 +201,7 @@
     /*------------------------------------------------*/
 
     /* 编译器分支优化指示 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define surely(x)   (x)
         #define mostly(x)   (x)
         #define rarely(x)   (x)
@@ -237,13 +213,11 @@
     /*------------------------------------------------*/
 
     /* 编译器不支持多线程 */
-    #if     1
-        #define _CR_NO_MT_
-    #endif
+    #define _CR_NO_MT_
     /*------------------------------------------------*/
 
     /* 编译器不支持宽字符 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define _CR_NO_WIDE_
     #endif
     /*------------------------------------------------*/
@@ -259,7 +233,7 @@
     /* LIBC printf() 整数宽度前缀 */
     #define CR_I08
     #define CR_I16
-    #if defined(__XC8) || defined(__XC16)
+    #if !defined(_CR_CC_XC32_)
         #define CR_I32  "l"
         #define CR_I64
     #else
@@ -269,47 +243,35 @@
     /*------------------------------------------------*/
 
     /* LIBC 是否有 errno.h 头文件 */
-    #if     0
-        #define _CR_NO_ERRNO_
-    #endif
+    #undef  _CR_NO_ERRNO_
     /*------------------------------------------------*/
 
     /* LIBC 支持64位STDIO文件偏移 */
-    #if     1
-        #define _CR_NO_STDIO64_
-    #else
-        #define _CR_MS_STDIO64_
-    #endif
+    #define _CR_NO_STDIO64_
+    #undef  _CR_MS_STDIO64_
     /*------------------------------------------------*/
 
     /* LIBC 支持64位POSIX文件偏移 */
-    #if     1
-        #define _CR_NO_POSIX64_
-    #else
-        #define _CR_MS_POSIX64_
-    #endif
+    #define _CR_NO_POSIX64_
+    #undef  _CR_MS_POSIX64_
     /*------------------------------------------------*/
 
     /* LIBC 支持 C99 数学函数设置 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define _CR_NO_MATHC99_
     #endif
     /*------------------------------------------------*/
 
     /* LIBC beginthreadex() 返回值 */
-    #if     1
-        #undef  CR_BTEX_FAIL
-    #endif
+    #undef  CR_BTEX_FAIL
     /*------------------------------------------------*/
 
     /* LIBC 支持宽字符串函数的设置 */
-    #if     0
-        #define _CR_HAVE_WCS_
-    #endif
+    #undef  _CR_HAVE_WCS_
     /*------------------------------------------------*/
 
     /* 处理器架构的空指令宏设置 */
-    #if defined(__XC8)
+    #if defined(_CR_CC_XC8_)
         #define CR_NOP  _nop()
         #pragma intrinsic(_nop)
         extern void _nop (void);
@@ -318,19 +280,7 @@
     #endif
     /*------------------------------------------------*/
 
-    /* 处理器架构的对齐访问设置 */
-    #if !defined(_CR_AR_PIC8_)
-        #define _CR_ALIGN_NEEDED_
-    #endif
-    /*------------------------------------------------*/
-
-    /* 处理器架构支持原子级操作 */
-    #if     0
-        #define _CR_FAST_ATOM_
-    #endif
-    /*------------------------------------------------*/
-
-#endif  /* __XC || __XC16 */
+#endif  /* __XC8 || __XC16 || __XC32 */
 
 #endif  /* !__CR_MCXC_H__ */
 

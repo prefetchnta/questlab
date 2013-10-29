@@ -233,7 +233,7 @@ typedef void_t* (CCCCALL *cccfunc_t) (void_t*, ...);
 typedef void_t* (STDCALL *stdfunc_t) (void_t*, void_t*);
 
 /* 编译器库函数差异映射 */
-#if defined(_CR_NO_MATHC99_)
+#if defined(_CR_DOUBLE32_) || defined(_CR_NO_MATHC99_)
     #define  FSIN(x)    ((fp32_t) sin(x))
     #define  FCOS(x)    ((fp32_t) cos(x))
     #define  FTAN(x)    ((fp32_t) tan(x))

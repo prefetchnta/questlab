@@ -76,7 +76,6 @@
 /* ARM
   (32bit/64bit Bi-Endian) */
 #elif   defined(_CR_AR_ARM_)
-    #define _CR_SYS32_
     #if defined(_CR_AR_THUMB_)
         #define _CR_AR_STR_ "[THUMB]"
     #else
@@ -86,24 +85,20 @@
 /* MIPS
   (32bit/64bit Bi-Endian) */
 #elif   defined(_CR_AR_MIPS_)
-
-    /* 系统位数 */
     #if defined(__mips64)
         #define _CR_SYS64_
     #else
         #define _CR_SYS32_
     #endif
-    #if defined(_CR_AR_MIPS16_)
-        #define _CR_AR_STR_ "[MIPS16]"
-    #else
-        #define _CR_AR_STR_ "[MIPS]"
-    #endif
-
-    /* 字节顺序 */
     #if     defined(__MIPSEL__)
         #define _CR_ORDER_LE_
     #elif   defined(__MIPSEB__)
         #define _CR_ORDER_BE_
+    #endif
+    #if defined(_CR_AR_MIPS16_)
+        #define _CR_AR_STR_ "[MIPS16]"
+    #else
+        #define _CR_AR_STR_ "[MIPS]"
     #endif
 
 /* PowerPC
@@ -127,17 +122,13 @@
 /* SPARC
   (32bit/64bit Big-Endian) */
 #elif   defined(_CR_AR_SPARC_)
-    #define _CR_AR_STR_ "[SPARC]"
-
-    /* 字节顺序 */
-    #define _CR_ORDER_BE_
-
-    /* 系统位数 */
     #if     defined(__sparcv8)
         #define _CR_SYS32_
     #elif   defined(__sparcv9)
         #define _CR_SYS64_
     #endif
+    #define _CR_ORDER_BE_
+    #define _CR_AR_STR_ "[SPARC]"
 
 /* IA64
   (64bit Bi-Endian) */
@@ -172,17 +163,13 @@
 /* System/390
   (32bit/64bit Big-Endian) */
 #elif   defined(_CR_AR_S390_)
-    #define _CR_AR_STR_ "[S390]"
-
-    /* 字节顺序 */
-    #define _CR_ORDER_BE_
-
-    /* 系统位数 */
     #if     defined(__s390__)
         #define _CR_SYS32_
     #elif   defined(__s390x__)
         #define _CR_SYS64_
     #endif
+    #define _CR_ORDER_BE_
+    #define _CR_AR_STR_ "[S390]"
 
 /* z/Architecture
   (64bit Big-Endian) */
@@ -304,6 +291,25 @@
     #define _CR_ORDER_STR_  "<LE>"
 #elif   defined(_CR_ORDER_BE_)
     #define _CR_ORDER_STR_  "<BE>"
+#endif
+
+/* CPU 架构对齐访问设置 */
+#if !defined(_CR_ARCH8_)
+    #if     defined(_CR_AR_ARM_)
+        /* ARMv7 以下必须要对齐访问 */
+        #if defined(_CR_ARM_V32_) && \
+            defined(_CR_ARM_V16_)
+            #if (_CR_ARM_V32_ < 7) && (_CR_ARM_V16_ < 4)
+                #define _CR_ALIGN_NEEDED_
+            #endif
+        #else
+            #define _CR_ALIGN_NEEDED_
+        #endif
+    /* 除此以外默认需要对齐访问 */
+    #elif   !defined(_CR_AR_X86_) && \
+            !defined(_CR_AR_X64_)
+        #define _CR_ALIGN_NEEDED_
+    #endif
 #endif
 
 /*****************************************************************************/
