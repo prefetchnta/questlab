@@ -113,9 +113,6 @@
             #define _CRT_NONSTDC_NO_DEPRECATE
         #endif
     #endif
-    /*------------------------------------------------*/
-
-    /* 编译器多余警告 */
     #pragma warning (disable: 4054) /* 函数指针2数据指针 */
     #pragma warning (disable: 4055) /* 数据指针2函数指针 */
     #pragma warning (disable: 4201) /*  匿名结构体的警告 */
@@ -319,7 +316,7 @@
     /*------------------------------------------------*/
 
     /* 处理器架构的空指令宏设置 */
-    #if defined(_CR_AR_X86_)
+    #if defined(_CR_ASM_INTL_)
         #define CR_NOP  __asm nop
     #endif
     /*------------------------------------------------*/
