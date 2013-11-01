@@ -49,18 +49,7 @@ typedef struct
 /* 工作上下文结构 */
 typedef struct
 {
-        /* 非实时参数 */
-        HWND        hwnd;   /* 窗口句柄 */
-        iGFX2*      draw;   /* 绘制对象 */
-        lock_t      lock;   /* 同步的锁 */
-        exec_t      objs;   /* 命令对象 */
-        bool_t      quit;   /* 是否退出 */
-        bool_t      send;   /* 是否发送 */
-        sARRAY      extz;   /* 插件列表 */
-        socket_t    netw;   /* 网络连接 */
-        sQV2D_conf  cfgs;   /* 配置参数 */
-
-        /* 实时渲染参数 */
+        /* 图片渲染参数 */
         sFMTZ*      fmtz;   /* 渲染内容的对象 */
         int32u      index;  /* 当前图片的帧号 */
         uint_t      win_x;  /* 图片漫游 X 坐标 */
@@ -71,6 +60,17 @@ typedef struct
         sIMAGE*     paint;  /* 32位色的绘图画布 */
         iPICTURE*   slide;  /* 多帧图片接口对象 */
         sFMT_PRT*   pictz;  /* 多帧图片 FMTZ 对象 */
+
+        /* 应用程序参数 */
+        HWND        hwnd;   /* 窗口句柄 */
+        iGFX2*      draw;   /* 绘制对象 */
+        lock_t      lock;   /* 同步的锁 */
+        exec_t      objs;   /* 命令对象 */
+        bool_t      quit;   /* 是否退出 */
+        bool_t      send;   /* 是否发送 */
+        sARRAY      extz;   /* 插件列表 */
+        socket_t    netw;   /* 网络连接 */
+        sQV2D_conf  cfgs;   /* 配置参数 */
 
         /* 两个鼠标光标 */
         HCURSOR     cur_free;   /* 正常光标 */
