@@ -37,7 +37,7 @@
 /* 工作上下文结构 */
 typedef struct
 {
-        /* 非实时参数 */
+        /* 应用程序参数 */
         bool_t      quit;   /* 是否退出 */
         bool_t      send;   /* 是否发送 */
         void_t*     form;   /* 窗口对象 */

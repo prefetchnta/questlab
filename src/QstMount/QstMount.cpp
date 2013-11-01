@@ -34,7 +34,7 @@
 /* 工作上下文结构 */
 typedef struct
 {
-        /* 非实时参数 */
+        /* 应用程序参数 */
         HWND        hwnd;   /* 窗口句柄 */
         HANDLE      hcui;   /* 输出句柄 */
         bool_t      quit;   /* 是否退出 */
