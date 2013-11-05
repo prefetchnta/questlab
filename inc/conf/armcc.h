@@ -152,14 +152,6 @@
     #undef  _CR_ASM_ATnT_
     /*------------------------------------------------*/
 
-    /* 编译器noinline修饰 */
-    #if defined(_CR_CC_ARMCC_OLD_)
-        #define CR_NOINLINE
-    #else
-        #define CR_NOINLINE __declspec(noinline)
-    #endif
-    /*------------------------------------------------*/
-
     /* 编译器成员对齐修饰 */
     #define CR_ALIGN(x) __align(x)
     /*------------------------------------------------*/

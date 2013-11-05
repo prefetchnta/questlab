@@ -164,14 +164,6 @@
     #endif
     /*------------------------------------------------*/
 
-    /* 编译器noinline修饰 */
-    #if defined(_CR_CC_XC8_)
-        #define CR_NOINLINE
-    #else
-        #define CR_NOINLINE __attribute__((noinline))
-    #endif
-    /*------------------------------------------------*/
-
     /* 编译器成员对齐修饰 */
     #if defined(_CR_CC_XC8_)
         #define CR_ALIGN(x)
