@@ -23,6 +23,7 @@
 #include "defs.h"
 /*-------------*/
 #include "blit.h"
+#include "comm.h"
 #include "egui.h"
 #include "extz.h"
 #include "fmtz.h"
@@ -32,7 +33,6 @@
 #include "safe.h"
 #include "vsys.h"
 #include "applib.h"
-#include "bigint.h"
 #include "crypto.h"
 #include "datlib.h"
 #include "devlib.h"

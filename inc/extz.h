@@ -20,7 +20,7 @@
 #ifndef __CR_EXTZ_H__
 #define __CR_EXTZ_H__ 0x8F2AFE27UL
 
-#include "script.h"
+#include "defs.h"
 
 /*****************************************************************************/
 /*                                多媒体接口                                 */
@@ -83,42 +83,6 @@ CR_API bool_t   dshow_get_balance (dshow_t dshow, sint_t *balance);
 CR_API bool_t   dshow_set_position (dshow_t dshow, int64u curt);
 CR_API bool_t   dshow_get_position (dshow_t dshow, int64u *curt,
                                     int64u *total);
-
-/*****************************************************************************/
-/*                               外部脚本接口                                */
-/*****************************************************************************/
-
-/* 脚本对象类型 */
-typedef void_t*     slua_t;
-typedef void_t*     pndr_t;
-
-/***** Lua51 脚本接口 *****/
-CR_API void_t   scr_lua51_init (void_t);
-CR_API slua_t   scr_lua51_open (const ansi_t *name);
-CR_API void_t   scr_lua51_close (slua_t slua);
-CR_API bool_t   scr_lua51_do_file (slua_t slua, const ansi_t *name);
-CR_API bool_t   scr_lua51_do_text (slua_t slua, const ansi_t *text);
-CR_API bool_t   scr_lua51_get_var (slua_t slua, const ansi_t *name,
-                                   sUVAR *uvar);
-CR_API bool_t   scr_lua51_set_var (slua_t slua, const ansi_t *name,
-                                   const sUVAR *uvar);
-CR_API void_t   scr_lua51_set_func (slua_t slua, const ansi_t *name,
-                                    uv_func_t func);
-CR_API uint_t   scr_lua51_param (void_t *state, sUVAR *param, uint_t count);
-CR_API uint_t   scr_lua51_return (void_t *state, const sUVAR *result,
-                                  uint_t count);
-CR_API void_t   scr_lua51_error (void_t *state, const ansi_t *message);
-
-/***** Pandora 脚本接口 *****/
-CR_API void_t   scr_pndr_init (void_t);
-CR_API pndr_t   scr_pndr_open (const ansi_t *name);
-CR_API void_t   scr_pndr_close (pndr_t pndr);
-CR_API bool_t   scr_pndr_do_file (pndr_t pndr, const ansi_t *name);
-CR_API bool_t   scr_pndr_do_text (pndr_t pndr, const ansi_t *text);
-CR_API bool_t   scr_pndr_get_var (pndr_t pndr, const ansi_t *name,
-                                  sUVAR *uvar);
-CR_API bool_t   scr_pndr_set_var (pndr_t pndr, const ansi_t *name,
-                                  const sUVAR *uvar);
 
 /*****************************************************************************/
 /*                               网络扩展接口                                */

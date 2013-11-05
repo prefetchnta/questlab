@@ -85,7 +85,6 @@ questlab
 ├─doc
 ├─inc
 │  ├─chip
-│  ├─comm
 │  ├─conf
 │  ├─fmtz
 │  ├─gfx2
