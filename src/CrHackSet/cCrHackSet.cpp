@@ -968,8 +968,8 @@ qst_crh_loadres (
 
     /* 初始化资源描述对象 */
     if (s_resx != NULL)
-        egui_free(s_resx);
-    s_resx = egui_init(1, 1, 0);
+        egui_res_free(s_resx);
+    s_resx = egui_res_init(0);
     if (s_resx == NULL)
         return (FALSE);
 
@@ -985,7 +985,7 @@ qst_crh_loadres (
     return (TRUE);
 
 _failure:
-    egui_free(s_resx);
+    egui_res_free(s_resx);
     s_resx = NULL;
     return (FALSE);
 }
