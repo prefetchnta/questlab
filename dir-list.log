@@ -132,6 +132,9 @@ questlab
 ├─src
 │  ├─CrHackSet
 │  ├─CrH_BLIT
+│  ├─CrH_EXTZ
+│  │  └─dshow
+│  │      └─DShowIDL
 │  ├─CrH_FMTZ
 │  │  ├─devil
 │  │  ├─ego
