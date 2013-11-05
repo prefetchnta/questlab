@@ -128,12 +128,12 @@ load_cr_jpg (
         return (NULL);
     }
     if (mem_cmp2(head, "\xFF\xD8\xFF\xE0**JFIF", 11) != 0) {
-        err_set(__CR_JPG_C__, head.map_type,
+        err_set(__CR_JPG_C__, CR_ERROR,
                 "load_cr_jpg()", "invalid JPG format");
         return (NULL);
     }
     if (!CR_VCALL(datin)->rewind(datin)) {
-        err_set(__CR_JPG_C__, read,
+        err_set(__CR_JPG_C__, FALSE,
                 "load_cr_jpg()", "iDATIN::rewind() failure");
         return (NULL);
     }
