@@ -9,7 +9,6 @@ OBJ_LIST=.$(L)extz.$(O) \
          .$(L)xmm_win32.$(O) \
          .$(L)$(PROJECT).res
 
-
 SRC_LIST=.$(L)extz.$(C) \
          .$(L)net_win32.$(C) \
          .$(L)xmm_dshow.$(P) \
