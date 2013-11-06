@@ -50,16 +50,35 @@ png_filter (
         return (FALSE);
     }
 
-    /* 第一行特殊处理 */
+    /* 第一行超出边界的点都按0来算 */
     type = *data++;
     for (xx = 0; xx < bpl; xx++)
         dst[xx] = *data++;
-    if (type == 1) {
-        for (xx = bpp; xx < bpl; xx++)
-            dst[xx] = dst[xx] + dst[xx - bpp];
+
+    switch (type)
+    {
+        case 0:     /* none */
+        case 2:     /* up */
+            break;
+
+        case 1:     /* sub */
+        case 4:     /* peath */
+            for (xx = bpp; xx < bpl; xx++)
+                dst[xx] = dst[xx] + dst[xx - bpp];
+            break;
+
+        case 3:     /* average */
+            for (xx = bpp; xx < bpl; xx++)
+                dst[xx] = dst[xx] + dst[xx - bpp] / 2;
+            break;
+
+        default:
+            err_set(__CR_PNG_C__, type,
+                    "png_filter()", "invalid PNG filter type");
+            return (FALSE);
     }
 
-    /* 后续行支持全部过滤器 */
+    /* 后续行按正常的方式计算 */
     for (yy = 1, line = bpl; yy < height; yy++, line += bpl)
     {
         type = *data++;
