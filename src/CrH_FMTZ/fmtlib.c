@@ -432,7 +432,7 @@ fmtz_free (
 =======================================
 */
 CR_API sIMAGE*
-fmtz_get_pic (
+fmtz_get_imgo (
   __CR_IN__ const sFMTZ*    fmtz,
   __CR_IN__ int32u          index
     )
@@ -441,16 +441,94 @@ fmtz_get_pic (
 
     if (fmtz->type != CR_FMTZ_PIC) {
         err_set(__CR_FMTLIB_C__, fmtz->type,
-                "fmtz_get_pic()", "invalid param: fmtz->type");
+                "fmtz_get_imgo()", "invalid param: fmtz");
         return (NULL);
     }
     fmt_pic = (const sFMT_PIC*)fmtz;
     if (index >= fmt_pic->count) {
         err_set(__CR_FMTLIB_C__, index,
-                "fmtz_get_pic()", "index: out of bounds");
+                "fmtz_get_imgo()", "index: out of bounds");
         return (NULL);
     }
     return (fmt_pic->frame[index].pic);
+}
+
+/*
+=======================================
+    获取读包系统接口
+=======================================
+*/
+CR_API iPACKAGE*
+fmtz_get_pack (
+  __CR_IN__ const sFMTZ*    fmtz
+    )
+{
+    const sFMT_PRT* fmt_prt;
+
+    if (fmtz->type != CR_FMTZ_PRT) {
+        err_set(__CR_FMTLIB_C__, fmtz->type,
+                "fmtz_get_pack()", "invalid param: fmtz");
+        return (NULL);
+    }
+    fmt_prt = (const sFMT_PRT*)fmtz;
+    if (str_cmpA(fmt_prt->more, "iPACKAGE") != 0) {
+        err_set(__CR_FMTLIB_C__, CR_ERROR,
+                "fmtz_get_pack()", "invalid param: fmtz");
+        return (NULL);
+    }
+    return ((iPACKAGE*)fmt_prt->port);
+}
+
+/*
+=======================================
+    获取媒体播放接口
+=======================================
+*/
+CR_API iXMMEDIA*
+fmtz_get_xmms (
+  __CR_IN__ const sFMTZ*    fmtz
+    )
+{
+    const sFMT_PRT* fmt_prt;
+
+    if (fmtz->type != CR_FMTZ_PRT) {
+        err_set(__CR_FMTLIB_C__, fmtz->type,
+                "fmtz_get_xmms()", "invalid param: fmtz");
+        return (NULL);
+    }
+    fmt_prt = (const sFMT_PRT*)fmtz;
+    if (str_cmpA(fmt_prt->more, "iXMMEDIA") != 0) {
+        err_set(__CR_FMTLIB_C__, CR_ERROR,
+                "fmtz_get_xmms()", "invalid param: fmtz");
+        return (NULL);
+    }
+    return ((iXMMEDIA*)fmt_prt->port);
+}
+
+/*
+=======================================
+    获取多帧图片接口
+=======================================
+*/
+CR_API iPICTURE*
+fmtz_get_pict (
+  __CR_IN__ const sFMTZ*    fmtz
+    )
+{
+    const sFMT_PRT* fmt_prt;
+
+    if (fmtz->type != CR_FMTZ_PRT) {
+        err_set(__CR_FMTLIB_C__, fmtz->type,
+                "fmtz_get_pict()", "invalid param: fmtz");
+        return (NULL);
+    }
+    fmt_prt = (const sFMT_PRT*)fmtz;
+    if (str_cmpA(fmt_prt->more, "iPICTURE") != 0) {
+        err_set(__CR_FMTLIB_C__, CR_ERROR,
+                "fmtz_get_pict()", "invalid param: fmtz");
+        return (NULL);
+    }
+    return ((iPICTURE*)fmt_prt->port);
 }
 
 /*****************************************************************************/

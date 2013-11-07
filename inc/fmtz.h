@@ -191,7 +191,7 @@ typedef sENGINE*    (*engine_init_t) (void_t);
 /***** 插件相关 API 组 *****/
 CR_API bool_t   fmtz_free (const sFMTZ *fmtz);
 CR_API sFMTZ*   fmtz_find (sENGINE *engine, sLOADER *loader);
-CR_API sIMAGE*  fmtz_get_pic (const sFMTZ *fmtz, int32u index);
+CR_API sIMAGE*  fmtz_get_imgo (const sFMTZ *fmtz, int32u index);
 CR_API void_t   engine_free (sENGINE *engine);
 
 /*
@@ -517,6 +517,11 @@ pict_get_count (
     return (that->__count__);
 }
 #endif  /* _CR_NO_INLINE_ */
+
+/* 接口对象获取函数组 */
+CR_API iPACKAGE*    fmtz_get_pack (const sFMTZ *fmtz);
+CR_API iXMMEDIA*    fmtz_get_xmms (const sFMTZ *fmtz);
+CR_API iPICTURE*    fmtz_get_pict (const sFMTZ *fmtz);
 
 /*****************************************************************************/
 /*                               外部文件加载                                */
