@@ -1,6 +1,7 @@
 questlab
 ├─bin
 │  ├─config
+│  │  └─base
 │  ├─ext3rd
 │  │  └─npp
 │  │      ├─localization
@@ -81,7 +82,8 @@ questlab
 │  │  ├─tessdata
 │  │  └─ucfont
 │  └─window
-│      └─1920x1080
+│      └─base
+│          └─1920x1080
 ├─doc
 ├─inc
 │  ├─chip

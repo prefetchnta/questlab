@@ -31,6 +31,9 @@
     #define WIN_XCONF   "QuestLAB.xml"
 #endif
 
+/* 默认配置名称 */
+#define DEF_CONF_NAME   "base"
+
 /*
 =======================================
     WinMain 程序入口
@@ -67,35 +70,41 @@ WinMain (
     argv = misc_get_param(cmd_line, &argc);
 
     ansi_t  exec[256];
-    uint_t  scn_w, scn_h;
-    bool_t  user_cfg = FALSE;
+    ansi_t* conf_name;
 
-    /* 参数解析 [执行列表] [窗口位置配置名] */
-    if (argc > 1)
-    {
-        HANDLE              find;
-        WIN32_FIND_DATAA    wfda;
+    /* 参数解析 [配置名称] */
+    if (argc == 0 || str_lenA(argv[0]) > 64)
+        conf_name = DEF_CONF_NAME;
+    else
+        conf_name = argv[0];
 
-        /* 验证目录是否存在 */
-        sprintf(exec, QST_PATH_WINDOW "%s", argv[1]);
-        find = FindFirstFileA(exec, &wfda);
-        if (find != INVALID_HANDLE_VALUE) {
-            if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                sprintf(exec, "cmd.exe /c copy " QST_PATH_WINDOW
-                        "%s\\*.ini " QST_PATH_WINDOW, argv[1]);
-                user_cfg = TRUE;
-            }
-            FindClose(find);
-        }
-    }
+    HANDLE              find;
+    WIN32_FIND_DATAA    wfda;
 
-    /* 根据分辨率设置窗口布局 */
-    if (!user_cfg) {
-        scn_w = GetSystemMetrics(SM_CXSCREEN);
-        scn_h = GetSystemMetrics(SM_CYSCREEN);
-        sprintf(exec, "cmd.exe /c copy " QST_PATH_WINDOW
-            "%ux%u\\*.ini " QST_PATH_WINDOW, scn_w, scn_h);
-    }
+    /* 复制指定的配置文件 */
+    sprintf(exec, QST_PATH_CONFIG "%s", conf_name);
+    find = FindFirstFileA(exec, &wfda);
+    if ((find == INVALID_HANDLE_VALUE) ||
+       !(wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        conf_name = DEF_CONF_NAME;
+    sprintf(exec, "cmd.exe /c copy " QST_PATH_CONFIG
+            "%s\\*.* " QST_PATH_CONFIG, conf_name);
+    if (find != INVALID_HANDLE_VALUE)
+        FindClose(find);
+    misc_call_exe(exec, TRUE, TRUE);
+
+    /* 复制指定的窗口布局 */
+    sprintf(exec, QST_PATH_WINDOW "%s", conf_name);
+    find = FindFirstFileA(exec, &wfda);
+    if ((find == INVALID_HANDLE_VALUE) ||
+       !(wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        conf_name = DEF_CONF_NAME;
+    sprintf(exec, "cmd.exe /c copy " QST_PATH_WINDOW
+            "%s\\%ux%u\\*.* " QST_PATH_WINDOW, conf_name,
+                    GetSystemMetrics(SM_CXSCREEN),
+                    GetSystemMetrics(SM_CYSCREEN));
+    if (find != INVALID_HANDLE_VALUE)
+        FindClose(find);
     misc_call_exe(exec, TRUE, TRUE);
 
     /* 启动广播服务器程序 */
@@ -104,15 +113,10 @@ WinMain (
     thread_sleep(100);
 
     sINIu*  ini;
-    ansi_t* str = NULL;
+    ansi_t* str;
 
     /* 根据配置文件执行各部件 */
-    if (argc > 0) {
-        sprintf(exec, QST_PATH_CONFIG "QuestLAB_%s.ini", argv[0]);
-        str = file_load_as_strA(exec);
-    }
-    if (str == NULL)
-        str = file_load_as_strA(QST_PATH_CONFIG WIN_ICONF);
+    str = file_load_as_strA(QST_PATH_CONFIG WIN_ICONF);
     if (str == NULL)
         return (QST_ERROR);
     ini = ini_parseU(str);
