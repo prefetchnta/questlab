@@ -197,7 +197,6 @@ CR_API uint_t   hash_count (leng_t count);
 
 /* 通讯中常用的字符串哈希 */
 CR_API int16u   hash_modbus (const void_t *data, leng_t size);
-CR_API int16u   hash_fack16 (const void_t *data, leng_t size);
 CR_API int16u   hash_half16 (const void_t *data, leng_t size);
 
 /* 一组常用字符串哈希函数 (注意: 16bit 下结果是不同的) */
@@ -210,8 +209,6 @@ CR_API uint_t   hash_str_jsx (const void_t *data, leng_t size);
 CR_API uint_t   hash_str_rs  (const void_t *data, leng_t size);
 CR_API uint_t   hash_str_rsx (const void_t *data, leng_t size);
 
-CR_API uint_t   hash_str_pjw  (const void_t *data, leng_t size);
-CR_API uint_t   hash_str_pjwx (const void_t *data, leng_t size);
 CR_API uint_t   hash_str_elf  (const void_t *data, leng_t size);
 CR_API uint_t   hash_str_elfx (const void_t *data, leng_t size);
 CR_API uint_t   hash_str_dek  (const void_t *data, leng_t size);
