@@ -31,7 +31,6 @@
 #include "gfx3.h"
 #include "hash.h"
 #include "safe.h"
-#include "vsys.h"
 #include "applib.h"
 #include "crypto.h"
 #include "datlib.h"

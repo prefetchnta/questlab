@@ -64,17 +64,10 @@ coff2omf CrH_GFX3.lib CrH_GFX3_bcc.lib
 ren CrH_GFX3.lib CrH_GFX3_msc.lib
 rem ========================================
 :crh_math
-if not exist CrH_MATH.lib goto crh_vsys
+if not exist CrH_MATH.lib goto bat_exit
 del CrH_MATH_bcc.lib
 del CrH_MATH_msc.lib
 coff2omf CrH_MATH.lib CrH_MATH_bcc.lib
 ren CrH_MATH.lib CrH_MATH_msc.lib
-rem ========================================
-:crh_vsys
-if not exist CrH_VSYS.lib goto bat_exit
-del CrH_VSYS_bcc.lib
-del CrH_VSYS_msc.lib
-coff2omf CrH_VSYS.lib CrH_VSYS_bcc.lib
-ren CrH_VSYS.lib CrH_VSYS_msc.lib
 rem ========================================
 :bat_exit
