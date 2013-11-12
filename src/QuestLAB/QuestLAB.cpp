@@ -110,7 +110,18 @@ WinMain (
     /* 启动广播服务器程序 */
     if (!misc_call_exe("QstServ.exe", FALSE, FALSE))
         return (QST_ERROR);
-    thread_sleep(100);
+
+    /* 复制指定的 SciTE 配置文件 */
+    sprintf(exec, QST_PATH_EXT3RD "wscite\\%s", conf_name);
+    find = FindFirstFileA(exec, &wfda);
+    if ((find == INVALID_HANDLE_VALUE) ||
+       !(wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        conf_name = DEF_CONF_NAME;
+    sprintf(exec, "cmd.exe /c copy " QST_PATH_EXT3RD "wscite\\"
+            "%s\\*.* " QST_PATH_EXT3RD "wscite\\", conf_name);
+    if (find != INVALID_HANDLE_VALUE)
+        FindClose(find);
+    misc_call_exe(exec, FALSE, TRUE);
 
     sINIu*  ini;
     ansi_t* str;
@@ -129,7 +140,6 @@ WinMain (
             str_strIA(str, ".exe") == NULL)
             continue;
         misc_call_exe(str, FALSE, FALSE);
-        thread_sleep(100);
     }
     ini_closeU(ini);
     return (QST_OKAY);
