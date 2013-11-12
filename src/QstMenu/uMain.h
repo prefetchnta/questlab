@@ -28,10 +28,10 @@ __published:    // IDE-managed Components
         #include "QstMenu.inl"
         void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 private:        // User declarations
-        bool    m_use_npp;  /* 使用 Notepad++ 的标志 */
+        bool    m_use_scite;    /* 使用 SciTE 的标志 */
 public:         // User declarations
         __fastcall TfrmMain(TComponent* Owner);
-        inline bool is_use_npp () const { return (m_use_npp); }
+        inline bool is_use_scite () const { return (m_use_scite); }
 };
 #undef  QST_MENU_HEADER
 //---------------------------------------------------------------------------

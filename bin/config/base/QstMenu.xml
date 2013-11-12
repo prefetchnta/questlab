@@ -37,7 +37,7 @@
         <MenuItem name="subKillQstView2D" text="QstView2D" />
     </MenuItem>
     <MenuItem name="subTools" text="工具(&T)">
-        <MenuItem name="subToolsNPP" text="Notepad++ (&1)" />
+        <MenuItem name="subToolsSciTE" text="SciTE (&1)" />
     </MenuItem>
     <MenuItem name="subImgLab2D" text="图像(&I)" />
     <MenuItem name="subFilter2D" text="滤镜(&F)">

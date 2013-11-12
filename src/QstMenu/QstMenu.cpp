@@ -348,12 +348,12 @@ qst_mnu_ldr_file (
     frm = (TfrmMain*)(ctx->form);
 
     /* 根据设置调用外部程序 */
-    if (frm->is_use_npp())
+    if (frm->is_use_scite())
     {
         AnsiString  line;
 
         line = QST_PATH_EXT3RD;
-        line += "npp\\notepad++.exe \"";
+        line += "wscite\\SciTE.exe \"";
         line += AnsiString(argv[1]);
         line += "\"";
         misc_call_exe(line.c_str(), FALSE, FALSE);
