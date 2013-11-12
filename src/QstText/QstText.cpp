@@ -1305,7 +1305,7 @@ WinMain (
     socket_set_timeout(s_wrk_ctx.netw, -1, QST_TCP_TOUT);
 
     /* 加载 SCI 控件 (无需释放) */
-    if (sbin_loadA("SciLexer.dll") == NULL)
+    if (sbin_loadA(QST_PATH_EXT3RD "wscite\\SciLexer.dll") == NULL)
         return (QST_ERROR);
 
     thrd_t  thrd;
