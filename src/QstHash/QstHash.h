@@ -34,16 +34,6 @@
     #define WIN_XCONF   "QstHash.xml"
 #endif
 
-/* 工作上下文结构 */
-typedef struct
-{
-        /* 应用程序参数 */
-        bool_t      quit;   /* 是否退出 */
-        void_t*     form;   /* 窗口对象 */
-        socket_t    netw;   /* 网络连接 */
-
-} sQstHash;
-
 /* 哈希校验执行单元 */
 typedef struct
 {
@@ -51,7 +41,7 @@ typedef struct
         const ansi_t*   name;
 
         /* 是否支持分段计算 */
-        bool_t  is_support_section;
+        bool_t  support_section;
 
         /* 获取哈希对象 */
         void_t* (*hash_init) (void_t);
@@ -63,5 +53,19 @@ typedef struct
         ansi_t* (*hash_finish) (void_t *ctx);
 
 } sQHSH_UNIT;
+
+/* 工作上下文结构 */
+typedef struct
+{
+        /* 应用程序参数 */
+        bool_t      quit;   /* 是否退出 */
+        void_t*     form;   /* 窗口对象 */
+        socket_t    netw;   /* 网络连接 */
+
+        /* 支持的哈希类型列表 */
+        sARRAY              doit;
+        const sQHSH_UNIT*   hasher;
+
+} sQstHash;
 
 #endif  /* !__QL_QSTHASH_H__ */

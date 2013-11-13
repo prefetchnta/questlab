@@ -11,6 +11,54 @@ USEFORM("uMain.cpp", frmMain);
 /* 全局工作上下文 */
 static sQstHash     s_wrk_ctx;
 
+/* 当前工作状态设置宏 */
+#define QST_SET_STATE_FREE \
+    ((TfrmMain*)(ctx->form))->Caption = WIN_TITLE;
+#define QST_SET_STATE_BUSY \
+    ((TfrmMain*)(ctx->form))->Caption = WIN_TITLE " - Hashing...";
+
+/*****************************************************************************/
+/*                                 内部函数                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取指定的哈希执行列表
+---------------------------------------
+*/
+static uint_t
+qst_get_list (
+  __CR_IO__ sQstHash*   parm,
+  __CR_IN__ TfrmMain*   form,
+  __CR_IN__ bool_t      disk
+    )
+{
+    uint_t              cnts;
+    AnsiString          name;
+    const sQHSH_UNIT*   list;
+
+    cnts = 0;
+    array_freeT(&parm->doit, sQHSH_UNIT*);
+    for (int idx = 0; idx < form->lstHash->Count; idx++) {
+        if (!form->lstHash->Checked[idx])
+            continue;
+        name = form->lstHash->Items->Strings[idx];
+        for (list = parm->hasher; list->name != NULL; list++) {
+            if (str_cmpA(list->name, name.c_str()) != 0)
+                continue;
+            if (disk && !list->support_section)
+                form->lstHash->Checked[idx] = false;
+            else
+            if (array_push_growT(&parm->doit, sQHSH_UNIT*, &list) == NULL)
+                form->lstHash->Checked[idx] = false;
+            else
+                cnts++;
+            break;
+        }
+    }
+    return (cnts);
+}
+
 /*****************************************************************************/
 /*                               公用命令单元                                */
 /*****************************************************************************/
@@ -297,6 +345,16 @@ WinMain (
 
     /* 读取需要超时, 不然线程无法退出 */
     socket_set_timeout(s_wrk_ctx.netw, -1, QST_TCP_TOUT);
+
+    sbin_t  sbin;
+
+    /* 加载哈希实现插件 (无需释放) */
+    sbin = sbin_loadA("QstHashImp.dll");
+    if (sbin == NULL)
+        return (QST_ERROR);
+    s_wrk_ctx.hasher = sbin_exportT(sbin, "hasher", sQHSH_UNIT*);
+    if (s_wrk_ctx.hasher == NULL)
+        return (QST_ERROR);
 
     thrd_t  thrd;
 
