@@ -7,6 +7,7 @@
         程序退出命令
             qcmd:app:exit   只针对 QstCmdz 部件
             qedt:app:exit   只针对 QstText 部件
+            qhsh:app:exit   只针对 QstHash 部件
             qidx:app:exit   只针对 QstIndex 部件
             qinf:app:exit   只针对 QstInfoz 部件
             qxmm:app:exit   只针对 QstMedia 部件
@@ -30,6 +31,7 @@
         显示当前窗口，窗口拉到最前面
             qcmd:win:show   只针对 QstCmdz 部件
             qedt:win:show   只针对 QstText 部件
+            qhsh:win:show   只针对 QstHash 部件
             qidx:win:show   只针对 QstIndex 部件
             qinf:win:show   只针对 QstInfoz 部件
             qxmm:win:show   只针对 QstMedia 部件
