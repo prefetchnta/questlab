@@ -94,6 +94,7 @@ questlab
 │  │  └─tess
 │  ├─OpenCV
 │  ├─QstCmdz
+│  ├─QstHash
 │  ├─QstIndex
 │  ├─QstInfoz
 │  ├─QstLibs
