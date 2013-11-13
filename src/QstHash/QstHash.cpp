@@ -173,19 +173,11 @@ qst_hsh_ldr_smem (
 {
     leng_t  size;
     void_t* data;
-    fdist_t head;
-    fdist_t tail;
 
     /* 参数解析 <共享名> <文件大小> <文件名> [头偏移] [尾偏移] [编码] [备注] */
     if (argc < 4)
         return (FALSE);
-    head = tail = 0;
     size = str2intx32A(argv[2]);
-    if (argc > 4) {
-        head = str2intx64A(argv[4]);
-        if (argc > 5)
-            tail = str2intx64A(argv[5]);
-    }
 
     TfrmMain*   frm;
     sQstHash*   ctx;

@@ -30,6 +30,9 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     SetWindowLong(edtInput->Handle, GWL_STYLE,
         GetWindowLong(edtInput->Handle, GWL_STYLE) | ES_CENTER);
     edtInput->Invalidate();
+
+    /* 加载哈希类型列表 */
+    lstHash->Items->LoadFromFile(QST_PATH_CONFIG WIN_ICONF);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnHEXClick(TObject *Sender)

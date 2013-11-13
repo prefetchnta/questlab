@@ -49,15 +49,15 @@ object frmMain: TfrmMain
   object lstHash: TCheckListBox
     Left = 8
     Top = 40
-    Width = 137
+    Width = 217
     Height = 521
     ItemHeight = 13
     TabOrder = 3
   end
   object txtResult: TMemo
-    Left = 152
+    Left = 232
     Top = 40
-    Width = 433
+    Width = 353
     Height = 521
     ReadOnly = True
     ScrollBars = ssBoth
