@@ -195,10 +195,6 @@ CR_API void_t   hash_ed2k_total2 (byte_t hash[16], const void_t *data,
 /* 获取哈希表大小 */
 CR_API uint_t   hash_count (leng_t count);
 
-/* 通讯中常用的字符串哈希 */
-CR_API int16u   hash_modbus (const void_t *data, leng_t size);
-CR_API int16u   hash_half16 (const void_t *data, leng_t size);
-
 /* 一组常用字符串哈希函数 (注意: 16bit 下结果是不同的) */
 CR_API uint_t   hash_str_ap  (const void_t *data, leng_t size);
 CR_API uint_t   hash_str_apx (const void_t *data, leng_t size);
