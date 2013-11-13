@@ -21,4 +21,47 @@ object frmMain: TfrmMain
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
+  object btnHEX: TButton
+    Left = 8
+    Top = 8
+    Width = 49
+    Height = 25
+    Caption = 'HEX'
+    TabOrder = 0
+    OnClick = btnHEXClick
+  end
+  object edtInput: TEdit
+    Left = 64
+    Top = 8
+    Width = 465
+    Height = 21
+    TabOrder = 1
+  end
+  object btnSTR: TButton
+    Left = 536
+    Top = 8
+    Width = 49
+    Height = 25
+    Caption = 'STR'
+    TabOrder = 2
+    OnClick = btnSTRClick
+  end
+  object lstHash: TCheckListBox
+    Left = 8
+    Top = 40
+    Width = 137
+    Height = 521
+    ItemHeight = 13
+    TabOrder = 3
+  end
+  object txtResult: TMemo
+    Left = 152
+    Top = 40
+    Width = 433
+    Height = 521
+    ReadOnly = True
+    ScrollBars = ssBoth
+    TabOrder = 4
+    OnDblClick = txtResultDblClick
+  end
 end
