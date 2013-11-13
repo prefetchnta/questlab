@@ -1,5 +1,11 @@
 @echo off
 rem =====================
+cd QstHash
+del ..\..\tmp\*.obj /Q
+make -fQstHash.mak
+del ..\..\bin\*.tds /Q
+cd..
+rem =====================
 cd QstIndex
 del ..\..\tmp\*.obj /Q
 make -fQstIndex.mak
