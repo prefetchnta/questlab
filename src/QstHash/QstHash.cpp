@@ -251,8 +251,6 @@ qst_hsh_main (
     /* 工作循环 */
     while (!ctx->quit)
     {
-        sINIu*  iniu;
-        ansi_t* text;
         ansi_t* string;
 
         /* 接收一条命令 */
