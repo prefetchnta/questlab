@@ -13,6 +13,7 @@ void __fastcall subWinSaveClick(TObject *Sender);
 void __fastcall subExitClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subOpenQstCmdzClick(TObject *Sender);
+void __fastcall subOpenQstHashClick(TObject *Sender);
 void __fastcall subOpenQstIndexClick(TObject *Sender);
 void __fastcall subOpenQstInfozClick(TObject *Sender);
 void __fastcall subOpenQstMediaClick(TObject *Sender);
@@ -21,7 +22,9 @@ void __fastcall subOpenQstServClick(TObject *Sender);
 void __fastcall subOpenQstTextClick(TObject *Sender);
 void __fastcall subOpenQstTreeClick(TObject *Sender);
 void __fastcall subOpenQstView2DClick(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subKillQstCmdzClick(TObject *Sender);
+void __fastcall subKillQstHashClick(TObject *Sender);
 void __fastcall subKillQstIndexClick(TObject *Sender);
 void __fastcall subKillQstInfozClick(TObject *Sender);
 void __fastcall subKillQstMediaClick(TObject *Sender);
@@ -136,6 +139,13 @@ void __fastcall TfrmMain::subOpenQstCmdzClick(TObject *Sender)
     misc_call_exe("QstCmdz.exe", FALSE, FALSE);
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subOpenQstHashClick(TObject *Sender)
+{
+    /* 打开 QstHash 窗口 */
+    qst_send_cmdz("qhsh:win:show");
+    misc_call_exe("QstHash.exe", FALSE, FALSE);
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subOpenQstIndexClick(TObject *Sender)
 {
     /* 打开 QstIndex 窗口 */
@@ -195,6 +205,12 @@ void __fastcall TfrmMain::subKillQstCmdzClick(TObject *Sender)
 {
     /* 关闭 QstCmdz 窗口 */
     qst_send_cmdz("qcmd:app:exit");
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subKillQstHashClick(TObject *Sender)
+{
+    /* 关闭 QstHash 窗口 */
+    qst_send_cmdz("qhsh:app:exit");
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subKillQstIndexClick(TObject *Sender)
@@ -548,6 +564,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subWinSave);
     QST_MENU_EVENT(subExit);
     QST_MENU_EVENT(subOpenQstCmdz);
+    QST_MENU_EVENT(subOpenQstHash);
     QST_MENU_EVENT(subOpenQstIndex);
     QST_MENU_EVENT(subOpenQstInfoz);
     QST_MENU_EVENT(subOpenQstMedia);
@@ -557,6 +574,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subOpenQstTree);
     QST_MENU_EVENT(subOpenQstView2D);
     QST_MENU_EVENT(subKillQstCmdz);
+    QST_MENU_EVENT(subKillQstHash);
     QST_MENU_EVENT(subKillQstIndex);
     QST_MENU_EVENT(subKillQstInfoz);
     QST_MENU_EVENT(subKillQstMedia);
