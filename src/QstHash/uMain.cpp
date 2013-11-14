@@ -35,6 +35,8 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 
     /* 加载哈希类型列表 */
     lstHash->Items->LoadFromFile(QST_PATH_CONFIG WIN_ICONF);
+    for (int idx = 0; idx < lstHash->Count; idx++)
+        lstHash->Checked[idx] = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnHEXClick(TObject *Sender)
@@ -44,6 +46,7 @@ void __fastcall TfrmMain::btnHEXClick(TObject *Sender)
     AnsiString  str = edtInput->Text;
 
     /* 计算16进制哈希 */
+    txtResult->Clear();
     len = str.Length();
     if (len == 0)
         return;
@@ -63,6 +66,7 @@ void __fastcall TfrmMain::btnSTRClick(TObject *Sender)
     AnsiString  str = edtInput->Text;
 
     /* 计算字符串哈希 */
+    txtResult->Clear();
     len = str.Length();
     if (len == 0)
         return;

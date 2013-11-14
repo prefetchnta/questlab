@@ -73,7 +73,8 @@ qst_hash_init (
   __CR_IO__ sQHSH_CTX*  ctx
     )
 {
-    leng_t      idx, cnts;
+    leng_t          idx;
+    leng_t          cnts;
     sQHSH_UNIT**    list;
 
     /* 初始化每个哈希单元的上下文 */
@@ -107,7 +108,8 @@ qst_hash_update (
   __CR_IN__ leng_t          size
     )
 {
-    leng_t      idx, cnts;
+    leng_t          idx;
+    leng_t          cnts;
     sQHSH_UNIT**    list;
 
     /* 只有磁盘文件才需要支持分块计算 */
@@ -129,8 +131,10 @@ qst_hash_finish (
   __CR_IO__ sQHSH_CTX*  ctx
     )
 {
-    ansi_t*     result;
-    leng_t      idx, cnts;
+    leng_t          idx;
+    leng_t          cnts;
+    ansi_t*         rett;
+    AnsiString      text;
     sQHSH_UNIT**    list;
 
     /* 结果加入文本框列表 */
@@ -139,10 +143,12 @@ qst_hash_finish (
     list = array_get_dataT(&ctx->doit, sQHSH_UNIT*);
     for (idx = 0; idx < cnts; idx++) {
         if (ctx->ctxs[idx] != NULL) {
-            result = list[idx]->hash_finish(ctx->ctxs[idx]);
-            if (result != NULL) {
-                ctx->form->txtResult->Lines->Append(result);
-                mem_free(result);
+            rett = list[idx]->hash_finish(ctx->ctxs[idx]);
+            if (rett != NULL) {
+                text = AnsiString(list[idx]->name);
+                text += AnsiString(rett);
+                ctx->form->txtResult->Lines->Append(text);
+                mem_free(rett);
             }
         }
     }
@@ -165,8 +171,10 @@ qst_hash_memory (
 {
     _ENTER_HSH_SINGLE_
     if (qst_hash_init(ctx)) {
-        qst_hash_update(ctx, data, size);
-        qst_hash_finish(ctx);
+        if (size != 0) {
+            qst_hash_update(ctx, data, size);
+            qst_hash_finish(ctx);
+        }
     }
     _LEAVE_HSH_SINGLE_
 }
