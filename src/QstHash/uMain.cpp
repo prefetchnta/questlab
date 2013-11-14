@@ -10,6 +10,8 @@
 #pragma resource "*.dfm"
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
+CR_API void_t   qst_hash_total (const void_t *data, leng_t size);
+//---------------------------------------------------------------------------
 __fastcall TfrmMain::TfrmMain(TComponent* Owner)
         : TForm(Owner)
 {
@@ -37,12 +39,34 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnHEXClick(TObject *Sender)
 {
+    leng_t      len;
+    void_t*     dat;
+    AnsiString  str = edtInput->Text;
+
     /* 计算16进制哈希 */
+    len = str.Length();
+    if (len == 0)
+        return;
+    len += 1;
+    if (len > 1) len /= 2;
+    dat = mem_malloc(len + 1);
+    if (dat == NULL)
+        return;
+    str2datA(dat, &len, str.c_str());
+    qst_hash_total(dat, len);
+    mem_free(dat);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnSTRClick(TObject *Sender)
 {
+    leng_t      len;
+    AnsiString  str = edtInput->Text;
+
     /* 计算字符串哈希 */
+    len = str.Length();
+    if (len == 0)
+        return;
+    qst_hash_total(str.c_str(), len);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::txtResultDblClick(TObject *Sender)

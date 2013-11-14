@@ -13,50 +13,243 @@ static sQstHash     s_wrk_ctx;
 
 /* 当前工作状态设置宏 */
 #define QST_SET_STATE_FREE \
-    ((TfrmMain*)(ctx->form))->Caption = WIN_TITLE;
+    ((TfrmMain*)(ctx.form))->Caption = WIN_TITLE; \
+    ((TfrmMain*)(ctx.form))->Enabled = true;
 #define QST_SET_STATE_BUSY \
-    ((TfrmMain*)(ctx->form))->Caption = WIN_TITLE " - Hashing...";
+    ((TfrmMain*)(ctx.form))->Caption = WIN_TITLE " - Hashing..."; \
+    ((TfrmMain*)(ctx.form))->Enabled = false;
 
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
+
+/* 哈希上下文结构 */
+typedef struct
+{
+        sARRAY      doit;   /* 哈希列表 */
+        void_t**    ctxs;   /* 上下文列表 */
+        sQstHash*   parm;   /* 应用上下文 */
+        TfrmMain*   form;   /* 应用窗体 */
+        bool_t      disk;   /* 是否磁盘文件 */
+
+} sQHSH_CTX;
 
 /*
 ---------------------------------------
     获取指定的哈希执行列表
 ---------------------------------------
 */
-static uint_t
+static void_t
 qst_get_list (
-  __CR_IO__ sQstHash*   parm,
-  __CR_IN__ TfrmMain*   form,
-  __CR_IN__ bool_t      disk
+  __CR_IO__ sQHSH_CTX*  ctx
     )
 {
-    uint_t              cnts;
     AnsiString          name;
     const sQHSH_UNIT*   list;
 
-    cnts = 0;
-    array_freeT(&parm->doit, sQHSH_UNIT*);
-    for (int idx = 0; idx < form->lstHash->Count; idx++) {
-        if (!form->lstHash->Checked[idx])
+    array_initT(&ctx->doit, sQHSH_UNIT*);
+    for (int idx = 0; idx < ctx->form->lstHash->Count; idx++) {
+        if (!ctx->form->lstHash->Checked[idx])
             continue;
-        name = form->lstHash->Items->Strings[idx];
-        for (list = parm->hasher; list->name != NULL; list++) {
+        name = ctx->form->lstHash->Items->Strings[idx];
+        for (list = ctx->parm->hasher; list->name != NULL; list++) {
             if (str_cmpA(list->name, name.c_str()) != 0)
                 continue;
-            if (disk && !list->support_section)
-                form->lstHash->Checked[idx] = false;
-            else
-            if (array_push_growT(&parm->doit, sQHSH_UNIT*, &list) == NULL)
-                form->lstHash->Checked[idx] = false;
-            else
-                cnts++;
+            if ((ctx->disk && !list->support_section) ||
+                (array_push_growT(&ctx->doit, sQHSH_UNIT*, &list) == NULL))
+                ctx->form->lstHash->Checked[idx] = false;
             break;
         }
     }
-    return (cnts);
+}
+
+/*
+---------------------------------------
+    开始哈希计算
+---------------------------------------
+*/
+static bool_t
+qst_hash_init (
+  __CR_IO__ sQHSH_CTX*  ctx
+    )
+{
+    leng_t      idx, cnts;
+    sQHSH_UNIT**    list;
+
+    /* 初始化每个哈希单元的上下文 */
+    qst_get_list(ctx);
+    ctx->form->txtResult->Clear();
+    cnts = array_get_sizeT(&ctx->doit, sQHSH_UNIT*);
+    if (cnts == 0)
+        goto _failure;
+    ctx->ctxs = mem_talloc(cnts, void_t*);
+    if (ctx->ctxs == NULL)
+        goto _failure;
+    list = array_get_dataT(&ctx->doit, sQHSH_UNIT*);
+    for (idx = 0; idx < cnts; idx++)
+        ctx->ctxs[idx] = list[idx]->hash_init();
+    return (TRUE);
+
+_failure:
+    array_freeT(&ctx->doit, sQHSH_UNIT*);
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+qst_hash_update (
+  __CR_IN__ sQHSH_CTX*      ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    leng_t      idx, cnts;
+    sQHSH_UNIT**    list;
+
+    /* 只有磁盘文件才需要支持分块计算 */
+    cnts = array_get_sizeT(&ctx->doit, sQHSH_UNIT*);
+    list = array_get_dataT(&ctx->doit, sQHSH_UNIT*);
+    for (idx = 0; idx < cnts; idx++) {
+        if (ctx->ctxs[idx] != NULL)
+            list[idx]->hash_update(ctx->ctxs[idx], data, size);
+    }
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static void_t
+qst_hash_finish (
+  __CR_IO__ sQHSH_CTX*  ctx
+    )
+{
+    ansi_t*     result;
+    leng_t      idx, cnts;
+    sQHSH_UNIT**    list;
+
+    /* 结果加入文本框列表 */
+    ctx->form->txtResult->Lines->BeginUpdate();
+    cnts = array_get_sizeT(&ctx->doit, sQHSH_UNIT*);
+    list = array_get_dataT(&ctx->doit, sQHSH_UNIT*);
+    for (idx = 0; idx < cnts; idx++) {
+        if (ctx->ctxs[idx] != NULL) {
+            result = list[idx]->hash_finish(ctx->ctxs[idx]);
+            if (result != NULL) {
+                ctx->form->txtResult->Lines->Append(result);
+                mem_free(result);
+            }
+        }
+    }
+    ctx->form->txtResult->Lines->EndUpdate();
+    array_freeT(&ctx->doit, sQHSH_UNIT*);
+    mem_free(ctx->ctxs);
+}
+
+/*
+---------------------------------------
+    内存文件哈希计算
+---------------------------------------
+*/
+static void_t
+qst_hash_memory (
+  __CR_IO__ sQHSH_CTX*      ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    _ENTER_HSH_SINGLE_
+    if (qst_hash_init(ctx)) {
+        qst_hash_update(ctx, data, size);
+        qst_hash_finish(ctx);
+    }
+    _LEAVE_HSH_SINGLE_
+}
+
+/* 分块计算大小 */
+#define HSH_BLOCK   CR_M2B(4)
+
+/*
+---------------------------------------
+    磁盘文件哈希计算
+---------------------------------------
+*/
+static void_t
+qst_hash_disk (
+  __CR_IO__ sQHSH_CTX*      ctx,
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    fraw_t  file;
+    void_t* data;
+    leng_t  blks;
+    leng_t  rsts;
+    fsize_t size;
+
+    _ENTER_HSH_SINGLE_
+    if (!qst_hash_init(ctx))
+        goto _func_out;
+
+    /* 打开目标文件 */
+    size = file_sizeA(name);
+    if ((fdist_t)size <= 0)
+        goto _func_out;
+    data = mem_malloc(HSH_BLOCK);
+    if (data == NULL)
+        goto _func_out;
+    file = file_raw_openA(name, CR_FO_RO | CR_FO_SEQ);
+    if (file == NULL)
+        goto _failure1;
+
+    /* 分块读取计算 */
+    blks = (leng_t)(size / HSH_BLOCK);
+    rsts = (leng_t)(size % HSH_BLOCK);
+    for (; blks != 0; blks--) {
+        if (file_raw_read(data, HSH_BLOCK, file) != HSH_BLOCK)
+            goto _failure2;
+        qst_hash_update(ctx, data, HSH_BLOCK);
+    }
+    if (rsts != 0) {
+        if (file_raw_read(data, rsts, file) != rsts)
+            goto _failure2;
+        qst_hash_update(ctx, data, rsts);
+    }
+
+    /* 结束释放资源 */
+    qst_hash_finish(ctx);
+_failure2:
+    file_raw_close(file);
+_failure1:
+    mem_free(data);
+_func_out:
+    _LEAVE_HSH_SINGLE_
+}
+
+/*
+=======================================
+    一次性完成哈希计算
+=======================================
+*/
+CR_API void_t
+qst_hash_total (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    sQHSH_CTX   ctx;
+
+    ctx.parm = &s_wrk_ctx;
+    ctx.form = (TfrmMain*)(ctx.parm->form);
+    ctx.disk = FALSE;
+
+    QST_SET_STATE_BUSY
+    qst_hash_memory(&ctx, data, size);
+    QST_SET_STATE_FREE
 }
 
 /*****************************************************************************/
@@ -194,14 +387,16 @@ qst_hsh_ldr_file (
     if (argc < 2)
         return (FALSE);
 
-    TfrmMain*   frm;
-    sQstHash*   ctx;
+    sQHSH_CTX   ctx;
 
-    ctx = (sQstHash*)parm;
-    frm = (TfrmMain*)(ctx->form);
+    ctx.parm = (sQstHash*)parm;
+    ctx.form = (TfrmMain*)(ctx.parm->form);
+    ctx.disk = TRUE;
 
     /* 执行哈希计算 */
-
+    QST_SET_STATE_BUSY
+    qst_hash_disk(&ctx, argv[1]);
+    QST_SET_STATE_FREE
 
     /* 无论成功失败都返回成功 */
     return (TRUE);
@@ -227,11 +422,11 @@ qst_hsh_ldr_smem (
         return (FALSE);
     size = str2intx32A(argv[2]);
 
-    TfrmMain*   frm;
-    sQstHash*   ctx;
+    sQHSH_CTX   ctx;
 
-    ctx = (sQstHash*)parm;
-    frm = (TfrmMain*)(ctx->form);
+    ctx.parm = (sQstHash*)parm;
+    ctx.form = (TfrmMain*)(ctx.parm->form);
+    ctx.disk = FALSE;
 
     /* 获取整个共享文件 */
     data = share_file_get(argv[1], size);
@@ -239,7 +434,9 @@ qst_hsh_ldr_smem (
         return (FALSE);
 
     /* 执行哈希计算 */
-
+    QST_SET_STATE_BUSY
+    qst_hash_memory(&ctx, data, size);
+    QST_SET_STATE_FREE
 
     /* 用完后需要释放掉 */
     mem_free(data);
@@ -360,6 +557,7 @@ WinMain (
 
     /* 生成工作线程 */
     s_wrk_ctx.quit = FALSE;
+    mtlock_init(&s_wrk_ctx.lock);
     thrd = thread_new(0, qst_hsh_main, &s_wrk_ctx, TRUE);
     if (thrd == NULL)
         return (QST_ERROR);

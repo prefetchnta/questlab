@@ -48,7 +48,7 @@ typedef struct
 
         /* 更新哈希计算 */
         void_t  (*hash_update) (void_t *ctx,
-                            const void_t *data, uint_t size);
+                            const void_t *data, leng_t size);
         /* 结束哈希计算 */
         ansi_t* (*hash_finish) (void_t *ctx);
 
@@ -60,12 +60,18 @@ typedef struct
         /* 应用程序参数 */
         bool_t      quit;   /* 是否退出 */
         void_t*     form;   /* 窗口对象 */
+        lock_t      lock;   /* 同步的锁 */
         socket_t    netw;   /* 网络连接 */
 
         /* 支持的哈希类型列表 */
-        sARRAY              doit;
         const sQHSH_UNIT*   hasher;
 
 } sQstHash;
+
+/* 多线程锁简化宏 */
+#define _ENTER_HSH_SINGLE_  \
+    mtlock_acquire(&s_wrk_ctx.lock);
+#define _LEAVE_HSH_SINGLE_  \
+    mtlock_release(&s_wrk_ctx.lock);
 
 #endif  /* !__QL_QSTHASH_H__ */
