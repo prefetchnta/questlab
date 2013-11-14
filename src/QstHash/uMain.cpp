@@ -73,10 +73,11 @@ void __fastcall TfrmMain::btnSTRClick(TObject *Sender)
     qst_hash_total(str.c_str(), len);
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMain::txtResultDblClick(TObject *Sender)
+void __fastcall TfrmMain::lstHashDblClick(TObject *Sender)
 {
-    /* 清除结果文本框 */
-    txtResult->Clear();
+    /* 复选框反选 */
+    for (int idx = 0; idx < lstHash->Count; idx++)
+        lstHash->Checked[idx] = !lstHash->Checked[idx];
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormResize(TObject *Sender)

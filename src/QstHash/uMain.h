@@ -19,7 +19,7 @@ __published:    // IDE-managed Components
         TMemo *txtResult;
         void __fastcall btnHEXClick(TObject *Sender);
         void __fastcall btnSTRClick(TObject *Sender);
-        void __fastcall txtResultDblClick(TObject *Sender);
+        void __fastcall lstHashDblClick(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
 private:        // User declarations
 public:         // User declarations

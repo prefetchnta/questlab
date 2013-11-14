@@ -53,6 +53,7 @@ object frmMain: TfrmMain
     Height = 521
     ItemHeight = 13
     TabOrder = 3
+    OnDblClick = lstHashDblClick
   end
   object txtResult: TMemo
     Left = 232
@@ -62,6 +63,5 @@ object frmMain: TfrmMain
     ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 4
-    OnDblClick = txtResultDblClick
   end
 end
