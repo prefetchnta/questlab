@@ -70,16 +70,22 @@ qst_get_list (
 */
 static bool_t
 qst_hash_init (
-  __CR_IO__ sQHSH_CTX*  ctx
+  __CR_IO__ sQHSH_CTX*      ctx,
+  __CR_IN__ const ansi_t*   title
     )
 {
     leng_t          idx;
     leng_t          cnts;
+    AnsiString      text;
     sQHSH_UNIT**    list;
 
     /* 初始化每个哈希单元的上下文 */
     qst_get_list(ctx);
     ctx->form->txtResult->Clear();
+    text  = "<< ";
+    text += AnsiString(title);
+    text += " >>";
+    ctx->form->txtResult->Lines->Append(text);
     cnts = array_get_sizeT(&ctx->doit, sQHSH_UNIT*);
     if (cnts == 0)
         goto _failure;
@@ -166,11 +172,12 @@ static void_t
 qst_hash_memory (
   __CR_IO__ sQHSH_CTX*      ctx,
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ const ansi_t*   title
     )
 {
     _ENTER_HSH_SINGLE_
-    if (qst_hash_init(ctx)) {
+    if (qst_hash_init(ctx, title)) {
         if (size != 0) {
             qst_hash_update(ctx, data, size);
             qst_hash_finish(ctx);
@@ -190,7 +197,8 @@ qst_hash_memory (
 static void_t
 qst_hash_disk (
   __CR_IO__ sQHSH_CTX*      ctx,
-  __CR_IN__ const ansi_t*   name
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ const ansi_t*   title
     )
 {
     fraw_t  file;
@@ -200,7 +208,7 @@ qst_hash_disk (
     fsize_t size;
 
     _ENTER_HSH_SINGLE_
-    if (!qst_hash_init(ctx))
+    if (!qst_hash_init(ctx, title))
         goto _func_out;
 
     /* 打开目标文件 */
@@ -246,7 +254,8 @@ _func_out:
 CR_API void_t
 qst_hash_total (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ const ansi_t*   title
     )
 {
     sQHSH_CTX   ctx;
@@ -256,7 +265,7 @@ qst_hash_total (
     ctx.disk = FALSE;
 
     QST_SET_STATE_BUSY
-    qst_hash_memory(&ctx, data, size);
+    qst_hash_memory(&ctx, data, size, title);
     QST_SET_STATE_FREE
 }
 
@@ -403,7 +412,7 @@ qst_hsh_ldr_file (
 
     /* 执行哈希计算 */
     QST_SET_STATE_BUSY
-    qst_hash_disk(&ctx, argv[1]);
+    qst_hash_disk(&ctx, argv[1], argv[1]);
     QST_SET_STATE_FREE
 
     /* 无论成功失败都返回成功 */
@@ -443,7 +452,7 @@ qst_hsh_ldr_smem (
 
     /* 执行哈希计算 */
     QST_SET_STATE_BUSY
-    qst_hash_memory(&ctx, data, size);
+    qst_hash_memory(&ctx, data, size, argv[3]);
     QST_SET_STATE_FREE
 
     /* 用完后需要释放掉 */
