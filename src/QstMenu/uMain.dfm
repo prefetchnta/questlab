@@ -14,6 +14,7 @@ object frmMain: TfrmMain
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsStayOnTop
   Menu = mnuMain
   OldCreateOrder = False
   OnClose = FormClose
