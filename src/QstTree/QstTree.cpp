@@ -550,6 +550,7 @@ qst_load_xml (
     tree->EndUpdate();
     xml_closeW(xml);
     parm->busy = FALSE;
+    misc_bring2top(frmMain->Handle, Application->Handle);
     return (TRUE);
 }
 
