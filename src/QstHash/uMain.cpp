@@ -57,7 +57,7 @@ void __fastcall TfrmMain::btnHEXClick(TObject *Sender)
     if (dat == NULL)
         return;
     str2datA(dat, &len, str.c_str());
-    qst_hash_total(dat, len, "Current HEX");
+    qst_hash_total(dat, len, NULL);
     mem_free(dat);
 }
 //---------------------------------------------------------------------------
@@ -71,7 +71,7 @@ void __fastcall TfrmMain::btnSTRClick(TObject *Sender)
     len = str.Length();
     if (len == 0)
         return;
-    qst_hash_total(str.c_str(), len, "Current STR");
+    qst_hash_total(str.c_str(), len, NULL);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::lstHashDblClick(TObject *Sender)

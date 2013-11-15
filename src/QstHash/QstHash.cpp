@@ -76,16 +76,13 @@ qst_hash_init (
 {
     leng_t          idx;
     leng_t          cnts;
-    AnsiString      text;
     sQHSH_UNIT**    list;
 
     /* 初始化每个哈希单元的上下文 */
     qst_get_list(ctx);
     ctx->form->txtResult->Clear();
-    text  = "<< ";
-    text += AnsiString(title);
-    text += " >>";
-    ctx->form->txtResult->Lines->Append(text);
+    if (title != NULL)
+        ctx->form->edtInput->Text = title;
     cnts = array_get_sizeT(&ctx->doit, sQHSH_UNIT*);
     if (cnts == 0)
         goto _failure;
