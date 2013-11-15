@@ -63,5 +63,6 @@ object frmMain: TfrmMain
     ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 4
+    OnDblClick = txtResultDblClick
   end
 end

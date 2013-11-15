@@ -81,6 +81,13 @@ void __fastcall TfrmMain::lstHashDblClick(TObject *Sender)
         lstHash->Checked[idx] = !lstHash->Checked[idx];
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::txtResultDblClick(TObject *Sender)
+{
+    /* 复选框全选 */
+    for (int idx = 0; idx < lstHash->Count; idx++)
+        lstHash->Checked[idx] = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormResize(TObject *Sender)
 {
     sint_t  sx, sy, hh;
