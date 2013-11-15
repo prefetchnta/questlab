@@ -13,11 +13,12 @@ static sQstHash     s_wrk_ctx;
 
 /* 当前工作状态设置宏 */
 #define QST_SET_STATE_FREE \
-    ((TfrmMain*)(ctx.form))->Caption = WIN_TITLE; \
-    ((TfrmMain*)(ctx.form))->Enabled = true;
+    hsh_ctx.form->Caption = WIN_TITLE; \
+    hsh_ctx.form->Enabled = true; \
+    misc_bring2top(hsh_ctx.form->Handle, Application->Handle);
 #define QST_SET_STATE_BUSY \
-    ((TfrmMain*)(ctx.form))->Caption = WIN_TITLE " - Hashing..."; \
-    ((TfrmMain*)(ctx.form))->Enabled = false;
+    hsh_ctx.form->Caption = WIN_TITLE " - Hashing..."; \
+    hsh_ctx.form->Enabled = false;
 
 /*****************************************************************************/
 /*                                 内部函数                                  */
@@ -255,14 +256,14 @@ qst_hash_total (
   __CR_IN__ const ansi_t*   title
     )
 {
-    sQHSH_CTX   ctx;
+    sQHSH_CTX   hsh_ctx;
 
-    ctx.parm = &s_wrk_ctx;
-    ctx.form = (TfrmMain*)(ctx.parm->form);
-    ctx.disk = FALSE;
+    hsh_ctx.parm = &s_wrk_ctx;
+    hsh_ctx.form = (TfrmMain*)(hsh_ctx.parm->form);
+    hsh_ctx.disk = FALSE;
 
     QST_SET_STATE_BUSY
-    qst_hash_memory(&ctx, data, size, title);
+    qst_hash_memory(&hsh_ctx, data, size, title);
     QST_SET_STATE_FREE
 }
 
@@ -401,15 +402,15 @@ qst_hsh_ldr_file (
     if (argc < 2)
         return (FALSE);
 
-    sQHSH_CTX   ctx;
+    sQHSH_CTX   hsh_ctx;
 
-    ctx.parm = (sQstHash*)parm;
-    ctx.form = (TfrmMain*)(ctx.parm->form);
-    ctx.disk = TRUE;
+    hsh_ctx.parm = (sQstHash*)parm;
+    hsh_ctx.form = (TfrmMain*)(hsh_ctx.parm->form);
+    hsh_ctx.disk = TRUE;
 
     /* 执行哈希计算 */
     QST_SET_STATE_BUSY
-    qst_hash_disk(&ctx, argv[1], argv[1]);
+    qst_hash_disk(&hsh_ctx, argv[1], argv[1]);
     QST_SET_STATE_FREE
 
     /* 无论成功失败都返回成功 */
@@ -436,11 +437,11 @@ qst_hsh_ldr_smem (
         return (FALSE);
     size = str2intx32A(argv[2]);
 
-    sQHSH_CTX   ctx;
+    sQHSH_CTX   hsh_ctx;
 
-    ctx.parm = (sQstHash*)parm;
-    ctx.form = (TfrmMain*)(ctx.parm->form);
-    ctx.disk = FALSE;
+    hsh_ctx.parm = (sQstHash*)parm;
+    hsh_ctx.form = (TfrmMain*)(hsh_ctx.parm->form);
+    hsh_ctx.disk = FALSE;
 
     /* 获取整个共享文件 */
     data = share_file_get(argv[1], size);
@@ -449,7 +450,7 @@ qst_hsh_ldr_smem (
 
     /* 执行哈希计算 */
     QST_SET_STATE_BUSY
-    qst_hash_memory(&ctx, data, size, argv[3]);
+    qst_hash_memory(&hsh_ctx, data, size, argv[3]);
     QST_SET_STATE_FREE
 
     /* 用完后需要释放掉 */
