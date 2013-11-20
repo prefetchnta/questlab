@@ -386,13 +386,6 @@ fmj_xzz2 (
 #define FALSE       0
 #define CR_FALSE    0
 
-/* printf() 平台最快类型 */
-#ifndef _CR_ARCH8_
-    #define CR_CNT
-#else
-    #define CR_CNT  CR_I08
-#endif
-
 /* printf() 文件大小修饰符 */
 #if defined(_CR_FILE32_)
     #define CR_FSZ  CR_I32

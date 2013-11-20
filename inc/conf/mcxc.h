@@ -219,8 +219,6 @@
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */
-    #define CR_I08
-    #define CR_I16
     #if !defined(_CR_CC_XC32_)
         #define CR_I32  "l"
         #define CR_I64
