@@ -1,5 +1,11 @@
 @echo off
 rem =====================
+cd QstData
+del ..\..\tmp\*.obj /Q
+make -fQstData.mak
+del ..\..\bin\*.tds /Q
+cd..
+rem =====================
 cd QstHash
 del ..\..\tmp\*.obj /Q
 make -fQstHash.mak
@@ -106,6 +112,10 @@ cd..
 rem =====================
 cd OpenCV
 nmake -fxOpenCV.mak
+cd..
+rem =====================
+cd QstData
+nmake -fQstDataImp.mak
 cd..
 rem =====================
 cd QstHash
