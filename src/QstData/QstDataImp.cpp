@@ -56,7 +56,7 @@ DllMain (
 
 /*
 ---------------------------------------
-    INT08S
+    INT8S
 ---------------------------------------
 */
 static ansi_t*
@@ -75,7 +75,7 @@ int08s_show (
 
 /*
 ---------------------------------------
-    INT08U
+    INT8U
 ---------------------------------------
 */
 static ansi_t*
@@ -206,6 +206,201 @@ int64u_show (
     return (str_fmtA(": %I64u", val));
 }
 
+/*
+---------------------------------------
+    HALF
+---------------------------------------
+*/
+static ansi_t*
+fp16_t_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    fp16_t  val;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(fp16_t*)data;
+    return (str_fmtA(": %G", fp16_to_fp32(val)));
+}
+
+/*
+---------------------------------------
+    FLOAT
+---------------------------------------
+*/
+static ansi_t*
+fp32_t_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    fp32_t  val;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(fp32_t*)data;
+    return (str_fmtA(": %G", val));
+}
+
+/*
+---------------------------------------
+    DOUBLE
+---------------------------------------
+*/
+static ansi_t*
+fp64_t_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    fp64_t  val;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(fp64_t*)data;
+    return (str_fmtA(": %G", val));
+}
+
+/*
+---------------------------------------
+    DOSDATE
+---------------------------------------
+*/
+static ansi_t*
+dosdate_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int16u      val;
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(int16u*)data;
+    if (!date_from_dos(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %04u-%02u-%02u",
+        dtm.year, dtm.month, dtm.day));
+}
+
+/*
+---------------------------------------
+    DOSTIME
+---------------------------------------
+*/
+static ansi_t*
+dostime_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int16u      val;
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(int16u*)data;
+    if (!time_from_dos(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %02u:%02u:%02u",
+        dtm.hour, dtm.minute, dtm.second));
+}
+
+/*
+---------------------------------------
+    FILETIME
+---------------------------------------
+*/
+static ansi_t*
+filetime_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int64u      val;
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(int64u*)data;
+    if (!datetime_from_w32(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+}
+
+/*
+---------------------------------------
+    time32_t
+---------------------------------------
+*/
+static ansi_t*
+time32_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int32u      val;
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(int32u*)data;
+    if (!datetime_from_unx(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+}
+
+/*
+---------------------------------------
+    time64_t
+---------------------------------------
+*/
+static ansi_t*
+time64_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int64u      val;
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(int64u*)data;
+    if (!datetime_from_unx(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+}
+
+/*
+---------------------------------------
+    longdt
+---------------------------------------
+*/
+static ansi_t*
+longdt_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int64u      val;
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(int64u*)data;
+    if (!datetime_from_mac(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+}
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -213,13 +408,22 @@ int64u_show (
 /* 导出所有数值观察单元 */
 CR_API const sQDAT_UNIT viewer[] =
 {
-    { "INT08S", int08s_show },
-    { "INT08U", int08u_show },
+    { "INT8S", int08s_show },
+    { "INT8U", int08u_show },
     { "INT16S", int16s_show },
     { "INT16U", int16u_show },
     { "INT32S", int32s_show },
     { "INT32U", int32u_show },
     { "INT64S", int64s_show },
     { "INT64U", int64u_show },
+    { "HALF", fp16_t_show },
+    { "FLOAT", fp32_t_show },
+    { "DOUBLE", fp64_t_show },
+    { "DOSDATE", dosdate_show },
+    { "DOSTIME", dostime_show },
+    { "FILETIME", filetime_show },
+    { "time32_t", time32_show },
+    { "time64_t", time64_show },
+    { "longdt", longdt_show },
     { NULL, NULL }
 };
