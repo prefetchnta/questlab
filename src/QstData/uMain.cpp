@@ -11,7 +11,7 @@
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
 CR_API void_t   qst_data_view (const void_t *data, leng_t size,
-                               const ansi_t *title);
+                               const ansi_t *title, bool_t is_be);
 //---------------------------------------------------------------------------
 __fastcall TfrmMain::TfrmMain(TComponent* Owner)
         : TForm(Owner)
@@ -35,13 +35,13 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     edtInput->Invalidate();
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMain::btnHEXClick(TObject *Sender)
+void __fastcall TfrmMain::btnLEClick(TObject *Sender)
 {
     leng_t      len;
     void_t*     dat;
     AnsiString  str = edtInput->Text;
 
-    /* 显示16进制数值 */
+    /* 显示16进制数值 (LE) */
     txtValue->Clear();
     len = str.Length();
     if (len == 0)
@@ -52,21 +52,29 @@ void __fastcall TfrmMain::btnHEXClick(TObject *Sender)
     if (dat == NULL)
         return;
     str2datA(dat, &len, str.c_str());
-    qst_data_view(dat, len, NULL);
+    qst_data_view(dat, len, NULL, FALSE);
     mem_free(dat);
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMain::btnSTRClick(TObject *Sender)
+void __fastcall TfrmMain::btnBEClick(TObject *Sender)
 {
     leng_t      len;
+    void_t*     dat;
     AnsiString  str = edtInput->Text;
 
-    /* 显示字符串数值 */
+    /* 显示16进制数值 (BE) */
     txtValue->Clear();
     len = str.Length();
     if (len == 0)
         return;
-    qst_data_view(str.c_str(), len, NULL);
+    len += 1;
+    if (len > 1) len /= 2;
+    dat = mem_malloc(len + 1);
+    if (dat == NULL)
+        return;
+    str2datA(dat, &len, str.c_str());
+    qst_data_view(dat, len, NULL, TRUE);
+    mem_free(dat);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormResize(TObject *Sender)
@@ -79,16 +87,16 @@ void __fastcall TfrmMain::FormResize(TObject *Sender)
     if (sx < hh + 4)
         hh = sx - 4;
     sy = (sx - hh) / 2;
-    btnHEX->Top   = sy;
-    btnSTR->Top   = sy;
+    btnLE->Top    = sy;
+    btnBE->Top    = sy;
     edtInput->Top = sy;
-    btnHEX->Height   = hh;
-    btnSTR->Height   = hh;
+    btnLE->Height    = hh;
+    btnBE->Height    = hh;
     edtInput->Height = hh;
     sx = this->ClientWidth - pgeMain->Width;
     sx = sx / 2 - pgeMain->Left;
-    btnHEX->Left   = btnHEX->Left   + sx;
-    btnSTR->Left   = btnSTR->Left   + sx;
+    btnLE->Left    = btnLE->Left    + sx;
+    btnBE->Left    = btnBE->Left    + sx;
     edtInput->Left = edtInput->Left + sx;
     pgeMain->Left  = pgeMain->Left  + sx;
 }

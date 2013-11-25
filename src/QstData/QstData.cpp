@@ -25,7 +25,8 @@ qst_data_view_int (
   __CR_IN__ sQstData*       ctx,
   __CR_IN__ const void_t*   data,
   __CR_IN__ leng_t          size,
-  __CR_IN__ const ansi_t*   title
+  __CR_IN__ const ansi_t*   title,
+  __CR_IN__ bool_t          is_be
     )
 {
     ansi_t*             rett;
@@ -41,7 +42,7 @@ qst_data_view_int (
         form->edtInput->Text = title;
     form->txtValue->Lines->BeginUpdate();
     for (list = ctx->viewer; list->name != NULL; list++) {
-        rett = list->data_view(data, size);
+        rett = list->data_view(data, size, is_be);
         if (rett != NULL) {
             text = AnsiString(list->name);
             text += AnsiString(rett);
@@ -62,11 +63,12 @@ CR_API void_t
 qst_data_view (
   __CR_IN__ const void_t*   data,
   __CR_IN__ leng_t          size,
-  __CR_IN__ const ansi_t*   title
+  __CR_IN__ const ansi_t*   title,
+  __CR_IN__ bool_t          is_be
     )
 {
     /* GUI 使用的包装 */
-    qst_data_view_int(&s_wrk_ctx, data, size, title);
+    qst_data_view_int(&s_wrk_ctx, data, size, title, is_be);
 }
 
 /*****************************************************************************/

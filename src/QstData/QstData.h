@@ -41,8 +41,8 @@ typedef struct
         const ansi_t*   name;
 
         /* 数值观察器函数 */
-        ansi_t* (*data_view) (const void_t *data, leng_t size);
-
+        ansi_t* (*data_view) (const void_t *data, leng_t size,
+                              bool_t is_be);
 } sQDAT_UNIT;
 
 /* 工作上下文结构 */

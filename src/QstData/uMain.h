@@ -13,17 +13,17 @@
 class TfrmMain : public TForm
 {
 __published:    // IDE-managed Components
-        TButton *btnHEX;
+        TButton *btnLE;
         TEdit *edtInput;
-        TButton *btnSTR;
+        TButton *btnBE;
         TPageControl *pgeMain;
         TTabSheet *tabValue;
         TTabSheet *tabImage;
         TTabSheet *tabAudio;
         TTabSheet *tabData;
         TMemo *txtValue;
-        void __fastcall btnHEXClick(TObject *Sender);
-        void __fastcall btnSTRClick(TObject *Sender);
+        void __fastcall btnLEClick(TObject *Sender);
+        void __fastcall btnBEClick(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
 private:        // User declarations
 public:         // User declarations

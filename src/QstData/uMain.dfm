@@ -21,14 +21,14 @@ object frmMain: TfrmMain
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object btnHEX: TButton
+  object btnLE: TButton
     Left = 8
     Top = 8
     Width = 49
     Height = 25
-    Caption = 'HEX'
+    Caption = 'LE'
     TabOrder = 0
-    OnClick = btnHEXClick
+    OnClick = btnLEClick
   end
   object edtInput: TEdit
     Left = 64
@@ -37,14 +37,14 @@ object frmMain: TfrmMain
     Height = 21
     TabOrder = 1
   end
-  object btnSTR: TButton
+  object btnBE: TButton
     Left = 536
     Top = 8
     Width = 49
     Height = 25
-    Caption = 'STR'
+    Caption = 'BE'
     TabOrder = 2
-    OnClick = btnSTRClick
+    OnClick = btnBEClick
   end
   object pgeMain: TPageControl
     Left = 8

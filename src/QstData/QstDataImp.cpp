@@ -62,11 +62,13 @@ DllMain (
 static ansi_t*
 int08s_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     ansi_t  val;
 
+    CR_NOUSE(is_be);
     if (size < sizeof(val))
         return (NULL);
     val = *(ansi_t*)data;
@@ -81,11 +83,13 @@ int08s_show (
 static ansi_t*
 int08u_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     byte_t  val;
 
+    CR_NOUSE(is_be);
     if (size < sizeof(val))
         return (NULL);
     val = *(byte_t*)data;
@@ -100,7 +104,8 @@ int08u_show (
 static ansi_t*
 int16s_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int16s  val;
@@ -108,6 +113,7 @@ int16s_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int16s*)data;
+    if (is_be) val = xchg_int16u(val);
     return (str_fmtA(": %d", val));
 }
 
@@ -119,7 +125,8 @@ int16s_show (
 static ansi_t*
 int16u_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int16u  val;
@@ -127,6 +134,7 @@ int16u_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int16u*)data;
+    if (is_be) val = xchg_int16u(val);
     return (str_fmtA(": %u", val));
 }
 
@@ -138,7 +146,8 @@ int16u_show (
 static ansi_t*
 int32s_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int32s  val;
@@ -146,6 +155,7 @@ int32s_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int32s*)data;
+    if (is_be) val = xchg_int32u(val);
     return (str_fmtA(": %d", val));
 }
 
@@ -157,7 +167,8 @@ int32s_show (
 static ansi_t*
 int32u_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int32u  val;
@@ -165,6 +176,7 @@ int32u_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int32u*)data;
+    if (is_be) val = xchg_int32u(val);
     return (str_fmtA(": %u", val));
 }
 
@@ -176,7 +188,8 @@ int32u_show (
 static ansi_t*
 int64s_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int64s  val;
@@ -184,6 +197,7 @@ int64s_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int64s*)data;
+    if (is_be) val = xchg_int64u(val);
     return (str_fmtA(": %I64d", val));
 }
 
@@ -195,7 +209,8 @@ int64s_show (
 static ansi_t*
 int64u_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int64u  val;
@@ -203,6 +218,7 @@ int64u_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int64u*)data;
+    if (is_be) val = xchg_int64u(val);
     return (str_fmtA(": %I64u", val));
 }
 
@@ -214,7 +230,8 @@ int64u_show (
 static ansi_t*
 fp16_t_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     fp16_t  val;
@@ -222,6 +239,7 @@ fp16_t_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(fp16_t*)data;
+    if (is_be) val = xchg_int16u(val);
     return (str_fmtA(": %G", fp16_to_fp32(val)));
 }
 
@@ -233,7 +251,8 @@ fp16_t_show (
 static ansi_t*
 fp32_t_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     fp32_t  val;
@@ -241,6 +260,7 @@ fp32_t_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(fp32_t*)data;
+    if (is_be) val = cvt_i2f(xchg_int32u(cvt_f2i(val)));
     return (str_fmtA(": %G", val));
 }
 
@@ -252,7 +272,8 @@ fp32_t_show (
 static ansi_t*
 fp64_t_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     fp64_t  val;
@@ -260,6 +281,7 @@ fp64_t_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(fp64_t*)data;
+    if (is_be) val = cvt_i2d(xchg_int64u(cvt_d2i(val)));
     return (str_fmtA(": %G", val));
 }
 
@@ -271,7 +293,8 @@ fp64_t_show (
 static ansi_t*
 dosdate_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int16u      val;
@@ -280,6 +303,7 @@ dosdate_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int16u*)data;
+    if (is_be) val = xchg_int16u(val);
     if (!date_from_dos(&dtm, val))
         return (NULL);
     return (str_fmtA(": %04u-%02u-%02u",
@@ -294,7 +318,8 @@ dosdate_show (
 static ansi_t*
 dostime_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int16u      val;
@@ -303,6 +328,7 @@ dostime_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int16u*)data;
+    if (is_be) val = xchg_int16u(val);
     if (!time_from_dos(&dtm, val))
         return (NULL);
     return (str_fmtA(": %02u:%02u:%02u",
@@ -317,7 +343,8 @@ dostime_show (
 static ansi_t*
 filetime_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int64u      val;
@@ -326,6 +353,7 @@ filetime_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int64u*)data;
+    if (is_be) val = xchg_int64u(val);
     if (!datetime_from_w32(&dtm, val))
         return (NULL);
     return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
@@ -340,7 +368,8 @@ filetime_show (
 static ansi_t*
 time32_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int32u      val;
@@ -349,6 +378,7 @@ time32_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int32u*)data;
+    if (is_be) val = xchg_int32u(val);
     if (!datetime_from_unx(&dtm, val))
         return (NULL);
     return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
@@ -363,7 +393,8 @@ time32_show (
 static ansi_t*
 time64_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int64u      val;
@@ -372,6 +403,7 @@ time64_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int64u*)data;
+    if (is_be) val = xchg_int64u(val);
     if (!datetime_from_unx(&dtm, val))
         return (NULL);
     return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
@@ -386,7 +418,8 @@ time64_show (
 static ansi_t*
 longdt_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int64u      val;
@@ -395,6 +428,7 @@ longdt_show (
     if (size < sizeof(val))
         return (NULL);
     val = *(int64u*)data;
+    if (is_be) val = xchg_int64u(val);
     if (!datetime_from_mac(&dtm, val))
         return (NULL);
     return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
