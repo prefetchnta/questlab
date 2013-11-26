@@ -198,6 +198,50 @@ qst_dat_win_load (
 
 /*
 ---------------------------------------
+    输入16进制串数据
+---------------------------------------
+*/
+static bool_t
+qst_dat_hex_inp (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <16进制串> */
+    if (argc < 2)
+        return (FALSE);
+
+    leng_t      len;
+    void_t*     dat;
+    TfrmMain*   frm;
+    sQstData*   ctx;
+
+    ctx = (sQstData*)parm;
+    frm = (TfrmMain*)(ctx->form);
+
+    /* 解析输入的16进制串 */
+    frm->txtValue->Clear();
+    len = str_lenA(argv[1]);
+    if (len == 0)
+        return (TRUE);
+    len += 1;
+    if (len > 1) len /= 2;
+    dat = mem_malloc(len + 1);
+    if (dat == NULL)
+        return (FALSE);
+    str2datA(dat, &len, argv[1]);
+    if (str_cmpA(argv[0], "hex:in_le") == 0)
+        qst_data_view(dat, len, argv[1], FALSE);
+    else
+        qst_data_view(dat, len, argv[1], TRUE);
+    mem_free(dat);
+    misc_bring2top(frm->Handle, Application->Handle);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     加载一个磁盘文件
 ---------------------------------------
 */
@@ -292,6 +336,10 @@ static const sQST_CMD   s_cmdz[] =
     /***** 公用加载命令 *****/
     { "ldr:file", qst_dat_ldr_file },
     { "ldr:smem", qst_dat_ldr_smem },
+
+    /***** 公用数据命令 *****/
+    { "hex:in_le", qst_dat_hex_inp },
+    { "hex:in_be", qst_dat_hex_inp },
 
     /***** 私有命令映射 *****/
     { "qdat:app:exit", qst_dat_app_exit },
