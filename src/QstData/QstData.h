@@ -62,10 +62,4 @@ typedef struct
 
 } sQstData;
 
-/* 多线程锁简化宏 */
-#define _ENTER_DAT_SINGLE_  \
-    mtlock_acquire(&s_wrk_ctx.lock);
-#define _LEAVE_DAT_SINGLE_  \
-    mtlock_release(&s_wrk_ctx.lock);
-
 #endif  /* !__QL_QSTDATA_H__ */

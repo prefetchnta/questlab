@@ -1,6 +1,10 @@
 
 #include "QstView2D.h"
 
+/* 鼠标状态设置宏 */
+#define QST_SET_CURSOR(hwnd, cursor) \
+    SetClassLongPtr(hwnd, GCLP_HCURSOR, (LONG_PTR)(cursor))
+
 /* 内部函数的声明 */
 CR_API void_t   qst_clear (sQstView2D *parm);
 

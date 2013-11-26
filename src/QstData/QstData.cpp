@@ -11,6 +11,12 @@ USEFORM("uMain.cpp", frmMain);
 /* 全局工作上下文 */
 static sQstData     s_wrk_ctx;
 
+/* 多线程锁简化宏 */
+#define _ENTER_DAT_SINGLE_  \
+    mtlock_acquire(&s_wrk_ctx.lock);
+#define _LEAVE_DAT_SINGLE_  \
+    mtlock_release(&s_wrk_ctx.lock);
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/

@@ -1,6 +1,12 @@
 
 #include "QstView2D.h"
 
+/* 多线程锁简化宏 */
+#define _ENTER_V2D_SINGLE_  \
+    mtlock_acquire(&(((sQstView2D*)parm)->lock));
+#define _LEAVE_V2D_SINGLE_  \
+    mtlock_release(&(((sQstView2D*)parm)->lock));
+
 /* 内部函数的声明 */
 CR_API void_t   qst_draw_image (sQstView2D *parm);
 CR_API void_t   qst_make_image (sQstView2D *parm);

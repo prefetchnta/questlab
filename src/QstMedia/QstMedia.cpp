@@ -13,6 +13,12 @@ USEFORM("uPlay.cpp", frmPlay);
 /* 全局工作上下文 */
 static sQstMedia    s_wrk_ctx;
 
+/* 多线程锁简化宏 */
+#define _ENTER_XMM_SINGLE_  \
+    mtlock_acquire(&s_wrk_ctx.lock);
+#define _LEAVE_XMM_SINGLE_  \
+    mtlock_release(&s_wrk_ctx.lock);
+
 /* 当前工作状态设置宏 */
 #define QST_SET_STATE_FREE \
     ((TfrmMain*)(ctx->form))->Caption = WIN_TITLE;

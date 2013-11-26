@@ -60,10 +60,4 @@ typedef struct
 /* 进度条位置刻度 */
 #define QST_XMM_MAX     65535
 
-/* 多线程锁简化宏 */
-#define _ENTER_XMM_SINGLE_  \
-    mtlock_acquire(&s_wrk_ctx.lock);
-#define _LEAVE_XMM_SINGLE_  \
-    mtlock_release(&s_wrk_ctx.lock);
-
 #endif  /* !__QL_QSTMEDIA_H__ */

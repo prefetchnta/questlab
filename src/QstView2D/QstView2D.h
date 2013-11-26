@@ -87,14 +87,4 @@ typedef struct
 
 } sQstView2D;
 
-/* 多线程锁简化宏 */
-#define _ENTER_V2D_SINGLE_  \
-    mtlock_acquire(&(((sQstView2D*)parm)->lock));
-#define _LEAVE_V2D_SINGLE_  \
-    mtlock_release(&(((sQstView2D*)parm)->lock));
-
-/* 鼠标状态设置宏 */
-#define QST_SET_CURSOR(hwnd, cursor) \
-    SetClassLongPtr(hwnd, GCLP_HCURSOR, (LONG_PTR)(cursor))
-
 #endif  /* !__QL_QSTVIEW2D_H__ */
