@@ -435,6 +435,43 @@ longdt_show (
         dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
 }
 
+/*
+---------------------------------------
+    STRING
+---------------------------------------
+*/
+static ansi_t*
+string_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    leng_t  idx;
+    ansi_t* ptr;
+    ansi_t* ret;
+
+    CR_NOUSE(is_be);
+    if (size == 0)
+        return (NULL);
+    ptr = (ansi_t*)data;
+    for (idx = 0; idx < size; idx++) {
+        if (!is_graphA(*ptr) && *ptr != ' ')
+            break;
+        ptr++;
+    }
+    if (idx == 0)
+        return (NULL);
+    ptr = str_allocA(idx + 1);
+    if (ptr == NULL)
+        return (NULL);
+    mem_cpy(ptr, data, idx);
+    ptr[idx] = 0x00;
+    ret = str_fmtA(": \"%s\"", ptr);
+    mem_free(ptr);
+    return (ret);
+}
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -459,5 +496,6 @@ CR_API const sQDAT_UNIT viewer[] =
     { "time32_t", time32_show },
     { "time64_t", time64_show },
     { "longdt", longdt_show },
+    { "STRING", string_show },
     { NULL, NULL }
 };
