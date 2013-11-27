@@ -232,9 +232,9 @@ qst_dat_hex_inp (
         return (FALSE);
     str2datA(dat, &len, argv[1]);
     if (str_cmpA(argv[0], "hex:in_le") == 0)
-        qst_data_view(dat, len, argv[1], FALSE);
+        qst_data_view_int(ctx, dat, len, argv[1], FALSE);
     else
-        qst_data_view(dat, len, argv[1], TRUE);
+        qst_data_view_int(ctx, dat, len, argv[1], TRUE);
     mem_free(dat);
     misc_bring2top(frm->Handle, Application->Handle);
     return (TRUE);
@@ -263,15 +263,16 @@ qst_dat_ldr_file (
     frm = (TfrmMain*)(ctx->form);
 
     /* 打开目标文件 */
+    /* WinXP 下，在非主线程里连续设置两次
+       TEdit::Text 属性程序会崩溃，Win7 下不会 */
     frm->txtValue->Clear();
-    frm->edtInput->Text = "";
     if (ctx->datin != NULL)
         CR_VCALL(ctx->datin)->release(ctx->datin);
     ctx->datin = create_disk_inA(argv[1]);
     if (ctx->datin != NULL)
         frm->edtInput->Text = AnsiString(argv[1]);
-
-    /* 无论成功失败都返回成功 */
+    else
+        frm->edtInput->Text = "";
     return (TRUE);
 }
 
@@ -308,16 +309,16 @@ qst_dat_ldr_smem (
 
     /* 打开目标文件 */
     frm->txtValue->Clear();
-    frm->edtInput->Text = "";
     if (ctx->datin != NULL)
         CR_VCALL(ctx->datin)->release(ctx->datin);
     ctx->datin = create_buff_in(data, size, TRUE);
-    if (ctx->datin != NULL)
+    if (ctx->datin != NULL) {
         frm->edtInput->Text = AnsiString(argv[3]);
-    else
+    }
+    else {
+        frm->edtInput->Text = "";
         mem_free(data);
-
-    /* 无论成功失败都返回成功 */
+    }
     return (TRUE);
 }
 
