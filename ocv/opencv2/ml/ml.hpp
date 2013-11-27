@@ -534,6 +534,8 @@ protected:
     virtual void write_params( CvFileStorage* fs ) const;
     virtual void read_params( CvFileStorage* fs, CvFileNode* node );
 
+    void optimize_linear_svm();
+
     CvSVMParams params;
     CvMat* class_labels;
     int var_all;
@@ -1250,6 +1252,8 @@ public:
     const CvDTreeTrainData* get_data() const;
 
 protected:
+
+    void update_weights_impl( CvBoostTree* tree, double initial_weights[2] );
 
     virtual bool set_params( const CvBoostParams& params );
     virtual void update_weights( CvBoostTree* tree );

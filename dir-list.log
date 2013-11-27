@@ -64,10 +64,10 @@ questlab
 │      ├─photo
 │      ├─stitching
 │      │  └─detail
+│      ├─superres
 │      ├─ts
 │      ├─video
-│      ├─videostab
-│      └─world
+│      └─videostab
 ├─src
 │  ├─CrHackSet
 │  ├─CrH_BLIT

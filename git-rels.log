@@ -6,6 +6,13 @@
     [m] QstData.exe
     [m] fmodex.dll
     [m] plugin/zFMOD.dll
+    [m] plugin/xOpenCV.dll
+    [-] opencv_core244.dll
+    [-] opencv_highgui244.dll
+    [-] opencv_imgproc244.dll
+    [+] opencv_core247.dll
+    [+] opencv_highgui247.dll
+    [+] opencv_imgproc247.dll
 +
 +
 +
