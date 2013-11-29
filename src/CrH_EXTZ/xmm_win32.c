@@ -157,9 +157,9 @@ win_wav_playA (
   __CR_IN__ int32u          flags
     )
 {
-#ifndef _CR_OS_WINCE_
     DWORD   used;
 
+#ifndef _CR_API_WIDE_ONLY_
     used = win_wav_flags(flags);
     used |= SND_FILENAME;
     if (!PlaySoundA(name, NULL, used)) {
@@ -169,7 +169,6 @@ win_wav_playA (
     }
     return (TRUE);
 #else
-    DWORD   used;
     wide_t* wname;
 
     wname = local_to_utf16(CR_LOCAL, name);

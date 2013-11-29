@@ -86,7 +86,7 @@ win_ftp_openA (
 {
     sWFTP*  rett;
 
-#ifndef _CR_OS_WINCE_
+#ifndef _CR_API_WIDE_ONLY_
 
     /* 创建结构 */
     rett = struct_new(sWFTP);
@@ -259,7 +259,7 @@ win_ftp_getfileA (
 {
     sWFTP*  real = (sWFTP*)ftps;
 
-#ifndef _CR_OS_WINCE_
+#ifndef _CR_API_WIDE_ONLY_
     if (root == NULL)
         root = CR_AS("/");
     if (!FtpSetCurrentDirectoryA(real->conn, root)) {
@@ -384,7 +384,7 @@ win_ftp_putfileA (
 {
     sWFTP*  real = (sWFTP*)ftps;
 
-#ifndef _CR_OS_WINCE_
+#ifndef _CR_API_WIDE_ONLY_
     if (root == NULL)
         root = CR_AS("/");
     if (!FtpSetCurrentDirectoryA(real->conn, root)) {
@@ -509,7 +509,7 @@ win_http_getfileA (
 {
     HRESULT rett;
 
-#ifndef _CR_OS_WINCE_
+#ifndef _CR_API_WIDE_ONLY_
     DeleteUrlCacheEntryA(url);
     rett = URLDownloadToFileA(NULL, url, name, 0, NULL);
     if (rett != S_OK) {
