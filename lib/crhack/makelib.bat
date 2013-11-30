@@ -22,18 +22,11 @@ coff2omf ResLoader.lib ResLoader_bcc.lib
 ren ResLoader.lib ResLoader_msc.lib
 rem ========================================
 :crh_blit
-if not exist CrH_BLIT.lib goto crh_comm
+if not exist CrH_BLIT.lib goto crh_core
 del CrH_BLIT_bcc.lib
 del CrH_BLIT_msc.lib
 coff2omf CrH_BLIT.lib CrH_BLIT_bcc.lib
 ren CrH_BLIT.lib CrH_BLIT_msc.lib
-rem ========================================
-:crh_comm
-if not exist CrH_COMM.lib goto crh_core
-del CrH_COMM_bcc.lib
-del CrH_COMM_msc.lib
-coff2omf CrH_COMM.lib CrH_COMM_bcc.lib
-ren CrH_COMM.lib CrH_COMM_msc.lib
 rem ========================================
 :crh_core
 if not exist CrH_CORE.lib goto crh_extz

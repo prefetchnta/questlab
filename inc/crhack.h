@@ -23,7 +23,6 @@
 #include "defs.h"
 /*-------------*/
 #include "blit.h"
-#include "comm.h"
 #include "egui.h"
 #include "extz.h"
 #include "fmtz.h"
@@ -48,7 +47,6 @@
 #include "pixels.h"
 #include "plugin.h"
 #include "rtclib.h"
-#include "script.h"
 #include "strlib.h"
 /*---------------*/
 
