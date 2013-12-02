@@ -1091,16 +1091,21 @@ misc_bring2top (
   __CR_IN__ hwnd_t  parent
     )
 {
+    LONG    style;
+
     /* 恢复窗口 */
     if (parent == NULL)
         parent = hwnd;
     if (IsIconic(parent))
         ShowWindow(parent, SW_RESTORE);
+    style = GetWindowLong(hwnd, GWL_EXSTYLE);
 
     /* 强拉到最前面 */
     while (!SetWindowPos(hwnd, HWND_TOPMOST,
         0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
             thread_sleep(1);
+    if (style & WS_EX_TOPMOST)
+        return;
     thread_sleep(1);
     while (!SetWindowPos(hwnd, HWND_NOTOPMOST,
         0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
