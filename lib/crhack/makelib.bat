@@ -43,18 +43,11 @@ coff2omf CrH_EXTZ.lib CrH_EXTZ_bcc.lib
 ren CrH_EXTZ.lib CrH_EXTZ_msc.lib
 rem ========================================
 :crh_fmtz
-if not exist CrH_FMTZ.lib goto crh_gfx3
+if not exist CrH_FMTZ.lib goto crh_math
 del CrH_FMTZ_bcc.lib
 del CrH_FMTZ_msc.lib
 coff2omf CrH_FMTZ.lib CrH_FMTZ_bcc.lib
 ren CrH_FMTZ.lib CrH_FMTZ_msc.lib
-rem ========================================
-:crh_gfx3
-if not exist CrH_GFX3.lib goto crh_math
-del CrH_GFX3_bcc.lib
-del CrH_GFX3_msc.lib
-coff2omf CrH_GFX3.lib CrH_GFX3_bcc.lib
-ren CrH_GFX3.lib CrH_GFX3_msc.lib
 rem ========================================
 :crh_math
 if not exist CrH_MATH.lib goto bat_exit
