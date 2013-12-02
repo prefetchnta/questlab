@@ -90,6 +90,7 @@ questlab
 │  │  └─unrar
 │  ├─CrH_GFX2
 │  │  └─gapi
+│  ├─CrH_GFX3
 │  ├─ocr3rd
 │  │  └─tess
 │  ├─OpenCV
