@@ -230,9 +230,6 @@ qst_mnu_win_show (
     ctx = (sQstMenu*)parm;
     frm = (TfrmMain*)(ctx->form);
     misc_bring2top(frm->Handle, Application->Handle);
-    while (!SetWindowPos(frm->Handle, HWND_TOPMOST,
-        0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
-            thread_sleep(1);
     return (TRUE);
 }
 
@@ -307,9 +304,6 @@ qst_mnu_win_load (
     ctx = (sQstMenu*)parm;
     frm = (TfrmMain*)(ctx->form);
     misc_bring2top(frm->Handle, Application->Handle);
-    while (!SetWindowPos(frm->Handle, HWND_TOPMOST,
-        0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
-            thread_sleep(1);
 
     /* 设置窗口位置 */
     frm->Left   = x1;
