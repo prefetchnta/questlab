@@ -448,18 +448,6 @@
     #endif
 #endif
 
-/* 异步串口接口开关 */
-#if defined(_CR_OS_UNIX_) || \
-    defined(_CR_OS_MSWIN_)
-    #define _CR_COMMLIB_UART_
-#endif
-
-/* 网络 SOCKET 接口开关 */
-#if defined(_CR_OS_UNIX_) || \
-    defined(_CR_OS_MSWIN_)
-    #define _CR_COMMLIB_SOCK_
-#endif
-
 /*  网络 SOCKET 不支持 PEEK 操作 */
 #if defined(_CR_OS_WINCE_)
     #define _CR_NET_NO_PEEK_
