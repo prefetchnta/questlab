@@ -31,7 +31,7 @@
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="xSelectDir.cpp"/>
     <INCLUDEPATH value=".;..\..\inc;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value=".;..\..\lib\crhack;$(BCB)\lib\obj;$(BCB)\lib\psdk;$(BCB)\lib"/>
+    <LIBPATH value=".;..\..\lib\crhack\omf;$(BCB)\lib\obj;$(BCB)\lib\psdk;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -95,7 +95,7 @@ Item0=.;..\..\inc;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
 Count=1
-Item0=.;..\..\lib\crhack;$(BCB)\lib\obj;$(BCB)\lib\psdk;$(BCB)\lib
+Item0=.;..\..\lib\crhack\omf;$(BCB)\lib\obj;$(BCB)\lib\psdk;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
 Count=1

@@ -59,6 +59,6 @@ CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /MD /W4 /wd4819 \
 LFLAGS=/OUT:$(BIN_NAME) /INCREMENTAL:NO /SUBSYSTEM:$(SUBSYSTEM) \
        /MANIFEST /MANIFESTFILE:".\\2.manifest" /OPT:REF /OPT:ICF \
        /LTCG /DYNAMICBASE /NXCOMPAT /ERRORREPORT:PROMPT /MACHINE:X86 \
-       /LIBPATH:..\..\lib\crhack kernel32.lib user32.lib gdi32.lib \
+       /LIBPATH:..\..\lib\crhack\coff kernel32.lib user32.lib gdi32.lib \
        comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib \
-       CrH_CORE_msc.lib
+       CrH_CORE.lib

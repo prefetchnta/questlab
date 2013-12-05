@@ -5,7 +5,7 @@ BIN_NAME=$(PROJECT).dll
 
 OBJ_LIST=.$(L)fmtz.$(O) \
          .$(L)e_dshow.$(O) \
-         ..$(L)..$(L)lib$(L)crhack$(L)CrH_EXTZ_msc.lib
+         ..$(L)..$(L)lib$(L)crhack$(L)coff$(L)CrH_EXTZ.lib
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)e_dshow.$(C)

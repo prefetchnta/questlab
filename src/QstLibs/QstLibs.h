@@ -31,16 +31,9 @@
 
 /* 外部库引用 */
 #ifndef _CR_NO_PRAGMA_LIB_
-    #if defined(_CR_CC_BCC_)
-        #pragma comment (lib, "CrH_CORE_bcc.lib")
-        #ifndef _CR_BUILD_DLL_
-            #pragma comment (lib, "QstLibs_bcc.lib")
-        #endif
-    #else
-        #pragma comment (lib, "CrH_CORE_msc.lib")
-        #ifndef _CR_BUILD_DLL_
-            #pragma comment (lib, "QstLibs_msc.lib")
-        #endif
+    #pragma comment (lib, "CrH_CORE.lib")
+    #ifndef _CR_BUILD_DLL_
+        #pragma comment (lib, "QstLibs.lib")
     #endif
 #endif
 

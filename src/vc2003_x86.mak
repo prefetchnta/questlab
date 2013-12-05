@@ -48,6 +48,6 @@ CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /MT /W4 /Wp64 /arch:SSE \
 ##=====================================
 ##
 LFLAGS=/OUT:$(BIN_NAME) /INCREMENTAL:NO /SUBSYSTEM:$(SUBSYSTEM) \
-       /OPT:REF /OPT:ICF /LTCG /MACHINE:X86 /LIBPATH:..\..\lib\crhack \
+       /OPT:REF /OPT:ICF /LTCG /MACHINE:X86 /LIBPATH:..\..\lib\crhack\coff \
        kernel32.lib user32.lib gdi32.lib comdlg32.lib advapi32.lib \
-       shell32.lib ole32.lib oleaut32.lib CrH_CORE_msc.lib
+       shell32.lib ole32.lib oleaut32.lib CrH_CORE.lib

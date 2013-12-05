@@ -3,7 +3,7 @@
 
 /* 外部库引用 */
 #ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "CrH_BLIT_msc.lib")
+    #pragma comment (lib, "CrH_BLIT.lib")
 #endif
 
 /* 显示画面索引 */

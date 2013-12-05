@@ -24,7 +24,7 @@
 
 /* 外部库引用 */
 #ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "QstLibs_msc.lib")
+    #pragma comment (lib, "QstLibs.lib")
 #endif
 
 /* 从宿主传过来的参数 */
