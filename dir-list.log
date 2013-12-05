@@ -34,6 +34,8 @@ questlab
 │  └─port
 ├─lib
 │  ├─crhack
+│  │  ├─coff
+│  │  └─omf
 │  ├─devil
 │  ├─dxsdk
 │  ├─fi
