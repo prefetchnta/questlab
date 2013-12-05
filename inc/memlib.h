@@ -30,6 +30,10 @@
 /*                               内存分配释放                                */
 /*****************************************************************************/
 
+/* 分配释放函数类型 */
+typedef void_t* (*cr_alloc_t) (leng_t);
+typedef void_t  (*cr_mfree_t) (void_t*);
+
 CR_API void_t   mem_reset (void_t);
 CR_API void_t   mem_count (dist_t *size, leng_t *maxs,
                            leng_t *tots, sint_t *count);
@@ -41,7 +45,7 @@ CR_API void_t*  mem_malloc64 (int64u size);
 CR_API void_t*  mem_calloc32 (int32u num, leng_t size);
 CR_API void_t*  mem_calloc64 (int64u num, leng_t size);
 CR_API void_t*  mem_realloc (void_t *ptr, leng_t new_size);
-CR_API void_t   mem_info (msize_t *total, msize_t *avail);
+CR_API void_t   mem_init (cr_alloc_t alloc, cr_mfree_t mfree);
 
 /* 字符串的分配宏 */
 #define str_allocA(len) (ansi_t*)mem_malloc(len)

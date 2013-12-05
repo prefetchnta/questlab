@@ -403,7 +403,7 @@
     #define MAX_PATHA   260
     #define MAX_PATHW   32768
 #elif   defined(_CR_OS_UNIX_)
-    #define MAX_PATHA   4096
+    #define MAX_PATHA   512
     #define MAX_PATHW   4096
 #elif   defined(_CR_OS_DOS16_) || \
         defined(_CR_OS_DOS32_) || \
@@ -568,20 +568,6 @@
    默认: 不开启 */
     /*
 #undef  _CR_USE_BRING_INL_
-    */
-
-/* 是否关闭内存释放时的函数指针检查
-   默认: 不关闭 (实现跨编译器内存释放)
-   关闭后在使用插件的时候会有一些问题
-   插件卸掉后释放内存的代码可能也一起卸掉了 */
-    /*
-#undef  _CR_NO_SAFE_FREE_
-    */
-
-/* 是否使用 HeapAlloc 代替 dlmm
-   默认: 不代替 (仅限 Windows) */
-    /*
-#undef  _CR_USE_HEAPALLOC_
     */
 
 /* 是否使用单像素转换函数
