@@ -46,6 +46,7 @@ CR_API void_t*  mem_calloc32 (int32u num, leng_t size);
 CR_API void_t*  mem_calloc64 (int64u num, leng_t size);
 CR_API void_t*  mem_realloc (void_t *ptr, leng_t new_size);
 CR_API void_t   mem_init (cr_alloc_t alloc, cr_mfree_t mfree);
+CR_API void_t*  mem_size (const void_t *ptr, leng_t *size);
 
 /* 字符串的分配宏 */
 #define str_allocA(len) (ansi_t*)mem_malloc(len)
