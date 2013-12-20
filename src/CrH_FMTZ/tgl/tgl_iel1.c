@@ -66,9 +66,9 @@ load_tgl_iel1 (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sIEL1_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sIEL1_HDR))) {
         err_set(__CR_TGL_IEL1_C__, FALSE,
-                "load_tgl_iel1()", "iDATIN::getT() failure");
+                "load_tgl_iel1()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (head.magic != mk_tag4("IEL1")) {

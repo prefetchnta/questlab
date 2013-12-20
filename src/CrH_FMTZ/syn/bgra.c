@@ -71,9 +71,9 @@ load_syn_argb (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sARGB_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sARGB_HDR))) {
         err_set(__CR_BGRA_C__, FALSE,
-                "load_syn_argb()", "iDATIN::getT() failure");
+                "load_syn_argb()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (head.dwIdentifier != mk_tag4("BGRA")) {

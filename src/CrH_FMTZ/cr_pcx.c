@@ -84,9 +84,9 @@ load_cr_pcx (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sPCX_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sPCX_HDR))) {
         err_set(__CR_PCX_C__, FALSE,
-                "load_cr_pcx()", "iDATIN::getT() failure");
+                "load_cr_pcx()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (head.man != 0x0A) {

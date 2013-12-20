@@ -371,9 +371,9 @@ load_flc_aia (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sAIA_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sAIA_HDR))) {
         err_set(__CR_FLC_AIA_C__, FALSE,
-                "load_flc_aia()", "iDATIN::getT() failure");
+                "load_flc_aia()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (head.magic != mk_tag4("AIA")) {

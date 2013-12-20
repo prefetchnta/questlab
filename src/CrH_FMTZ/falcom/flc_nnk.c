@@ -323,9 +323,9 @@ load_flc_nnk (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sNNK_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sNNK_HDR))) {
         err_set(__CR_FLC_NNK_C__, FALSE,
-                "load_flc_nnk()", "iDATIN::getT() failure");
+                "load_flc_nnk()", "iDATIN::geType() failure");
         goto _failure1;
     }
     if (head.magic != mk_tag4("NNI")) {

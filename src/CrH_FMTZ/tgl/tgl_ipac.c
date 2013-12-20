@@ -254,9 +254,9 @@ load_tgl_ipac (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sIPAC_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sIPAC_HDR))) {
         err_set(__CR_TGL_IPAC_C__, FALSE,
-                "load_tgl_ipac()", "iDATIN::getT() failure");
+                "load_tgl_ipac()", "iDATIN::geType() failure");
         goto _failure1;
     }
     if (head.magic != mk_tag4("IPAC")) {

@@ -66,9 +66,9 @@ load_ms_sz20 (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sSZ20_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sSZ20_HDR))) {
         err_set(__CR_SZ20_C__, FALSE,
-                "load_ms_sz20()", "iDATIN::getT() failure");
+                "load_ms_sz20()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (mem_cmp(head.tag, "SZ\x20\x88\xF0\x27\x33\xD1", 8) != 0) {

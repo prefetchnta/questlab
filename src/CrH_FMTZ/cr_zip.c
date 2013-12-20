@@ -354,9 +354,9 @@ load_cr_zip (
     for (;;)
     {
         /* 读取一个文件记录头 */
-        if (!(CR_VCALL(datin)->getT(datin, &unit, sZIP_FILE))) {
+        if (!(CR_VCALL(datin)->geType(datin, &unit, sZIP_FILE))) {
             err_set(__CR_ZIP_C__, FALSE,
-                    "load_cr_zip()", "iDATIN::getT() failure");
+                    "load_cr_zip()", "iDATIN::geType() failure");
             goto _failure;
         }
 

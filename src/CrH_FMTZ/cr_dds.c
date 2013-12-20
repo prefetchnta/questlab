@@ -115,9 +115,9 @@ load_cr_dds (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sDDS_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sDDS_HDR))) {
         err_set(__CR_DDS_C__, FALSE,
-                "load_cr_dds()", "iDATIN::getT() failure");
+                "load_cr_dds()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (head.dwMagic != mk_tag4("DDS ")) {

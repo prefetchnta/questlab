@@ -270,9 +270,9 @@ load_cr_bmp (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sBMP_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sBMP_HDR))) {
         err_set(__CR_BMP_C__, FALSE,
-                "load_cr_bmp()", "iDATIN::getT() failure");
+                "load_cr_bmp()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (head.biMagic != mk_tag2("BM")) {

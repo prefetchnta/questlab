@@ -274,9 +274,9 @@ load_cr_png (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sPNG_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sPNG_HDR))) {
         err_set(__CR_PNG_C__, FALSE,
-                "load_cr_png()", "iDATIN::getT() failure");
+                "load_cr_png()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (mem_cmp(&head, "\x89PNG\r\n\x1A\n\0\0\0\x0DIHDR", 16) != 0) {
@@ -432,9 +432,9 @@ load_cr_png (
     do
     {
         /* 数据块大小 */
-        if (!(CR_VCALL(datin)->getT(datin, &head.info, sCHUNK))) {
+        if (!(CR_VCALL(datin)->geType(datin, &head.info, sCHUNK))) {
             err_set(__CR_PNG_C__, FALSE,
-                    "load_cr_png()", "iDATIN::getT() failure");
+                    "load_cr_png()", "iDATIN::geType() failure");
             goto _failure2;
         }
         ssize = DWORD_BE(head.info.head.size);

@@ -372,9 +372,9 @@ load_krkr_xp3 (
     list.free = xp3_free;
 
     /* 读取文件头信息 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sXP3_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sXP3_HDR))) {
         err_set(__CR_KRKR_XP3_C__, FALSE,
-                "load_krkr_xp3()", "iDATIN::getT() failure");
+                "load_krkr_xp3()", "iDATIN::geType() failure");
         goto _failure1;
     }
     if (mem_cmp(head.tag, "XP3\r\n \n\x1A\x8B\x67\x01", 11) != 0) {

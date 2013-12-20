@@ -68,9 +68,9 @@ load_ms_szdd (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sSZDD_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sSZDD_HDR))) {
         err_set(__CR_SZDD_C__, FALSE,
-                "load_ms_szdd()", "iDATIN::getT() failure");
+                "load_ms_szdd()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (mem_cmp(head.tag, "SZDD\x88\xF0\x27\x33", 8) != 0) {

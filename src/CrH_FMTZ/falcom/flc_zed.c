@@ -67,9 +67,9 @@ load_flc_zed (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sZED_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sZED_HDR))) {
         err_set(__CR_FLC_ZED_C__, FALSE,
-                "load_flc_zed()", "iDATIN::getT() failure");
+                "load_flc_zed()", "iDATIN::geType() failure");
         return (NULL);
     }
 

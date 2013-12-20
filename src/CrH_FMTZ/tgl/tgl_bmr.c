@@ -73,9 +73,9 @@ load_tgl_bmr (
     }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->getT(datin, &head, sBMR_HDR))) {
+    if (!(CR_VCALL(datin)->geType(datin, &head, sBMR_HDR))) {
         err_set(__CR_TGL_BMR_C__, FALSE,
-                "load_tgl_bmr()", "iDATIN::getT() failure");
+                "load_tgl_bmr()", "iDATIN::geType() failure");
         return (NULL);
     }
     if (head.pal_count == 0) {

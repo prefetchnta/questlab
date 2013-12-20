@@ -353,7 +353,7 @@ typedef struct
 
 /* 读取结构体的宏
    判断返回值时必须在整个语句上加括号 */
-#define getT(that, data, type) \
+#define geType(that, data, type) \
         read(that, data, sizeof(type)) == sizeof(type)
 
 /* 文件写入接口表 */
@@ -395,7 +395,7 @@ typedef struct
 
 /* 写入结构体的宏
    判断返回值时必须在整个语句上加括号 */
-#define putT(that, data, type) \
+#define puType(that, data, type) \
        write(that, data, sizeof(type)) == sizeof(type)
 
 #undef  iDATIN
