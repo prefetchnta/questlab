@@ -64,32 +64,6 @@ CR_API bool_t   is_slashW (wide_t ch);  /* 路径分割 */
 /*                              字符串工具函数                               */
 /*****************************************************************************/
 
-/* 字符串包装结构 */
-typedef struct  _sSTRING
-{
-        uint_t          type;   /* 字符的字节大小 */
-        const void_t*   data;   /* 字符串数据指针 */
-
-#ifdef  __cplusplus
-    public:
-        _sSTRING ()
-        {
-            data = "\0\0\0";
-            type = sizeof(ansi_t);
-        }
-        _sSTRING (const ansi_t *str)
-        {
-            data = (void_t*)str;
-            type = sizeof(ansi_t);
-        }
-        _sSTRING (const wide_t *wcs)
-        {
-            data = (void_t*)wcs;
-            type = sizeof(wide_t);
-        }
-#endif
-} sSTRING;
-
 /***** 基本组 *****/
 CR_API ansi_t*  str_uprA (ansi_t *str);
 CR_API wide_t*  str_uprW (wide_t *str);
