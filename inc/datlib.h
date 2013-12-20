@@ -76,7 +76,7 @@ typedef struct
  ((type*)array_top(that, sizeof(type), data))
 
 #define array_popT(that, type, data) \
- ((type*)array_pop(that, sizeof(type), data))
+         array_pop(that, sizeof(type), data))
 
 #define array_deleteT(that, type, index) \
          array_delete(that, sizeof(type), index)
@@ -96,7 +96,7 @@ CR_API bool_t   array_reserve (sARRAY *that, leng_t unit, leng_t size);
 CR_API void_t*  array_push (sARRAY *that, leng_t unit, const void_t *data);
 CR_API void_t*  array_push_grow (sARRAY *that, leng_t unit,const void_t *data);
 CR_API void_t*  array_top (const sARRAY *that, leng_t unit, void_t *data);
-CR_API void_t*  array_pop (sARRAY *that, leng_t unit, void_t *data);
+CR_API bool_t   array_pop (sARRAY *that, leng_t unit, void_t *data);
 CR_API bool_t   array_delete (sARRAY *that, leng_t unit, leng_t index);
 CR_API void_t*  array_insert (sARRAY *that, leng_t unit, leng_t index,
                               const void_t *data);
