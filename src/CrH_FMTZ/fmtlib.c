@@ -536,35 +536,6 @@ fmtz_get_pict (
 /*****************************************************************************/
 
 /*
----------------------------------------
-    查找成员索引回调
----------------------------------------
-*/
-static uint_t
-finder_find (
-  __CR_IN__ const void_t*   key
-    )
-{
-    return (hash_str_djb2(key, str_lenA((ansi_t*)key)));
-}
-
-/*
----------------------------------------
-    查找成员比较回调
----------------------------------------
-*/
-static bool_t
-finder_comp (
-  __CR_IN__ const void_t*   key,
-  __CR_IN__ const void_t*   obj
-    )
-{
-    sFINDER*    unit = (sFINDER*)obj;
-
-    return (str_cmpA(unit->finfo->find, (ansi_t*)key) == 0);
-}
-
-/*
 =======================================
     初始化文件查找表
 =======================================
@@ -575,10 +546,13 @@ pack_init_list (
   __CR_IN__ bool_t      caseless
     )
 {
+    leng_t      ii;
     int64u      idx;
     int64u      num;
     leng_t      cnt;
+    sARRAY*     nod;
     sFINDER     tmp;
+    sFINDER*    fnd;
     sPAK_FILE*  ptr;
 
     num = pack_file_num(pack);
@@ -593,38 +567,53 @@ pack_init_list (
         return (FALSE);
     }
     pack->__caseless__ = caseless;
-    pack->__search__.find = finder_find;
-    pack->__search__.comp = finder_comp;
 
     if (pack->__filelst__ == NULL)
         return (TRUE);
     ptr = pack->__filelst__;
-    for (idx = 0; idx < num; idx++) {
-        if (ptr->name[0] != 0x00) {
-            tmp.index = idx;
-            tmp.finfo = ptr;
+    for (idx = 0; idx < num; idx++,
+         ptr = (sPAK_FILE*)((byte_t*)ptr + ptr->skip))
+    {
+        if (ptr->name[0] == 0x00)
+            continue;
+        if (ptr->find == NULL) {
+            ii = str_lenA(ptr->name);
+            ptr->find = (ansi_t*)mem_dup(ptr->name, ii + 1);
             if (ptr->find == NULL) {
-                ptr->find = str_dupA(ptr->name);
-                if (ptr->find == NULL) {
-                    err_set(__CR_FMTLIB_C__, CR_NULL,
-                            "pack_init_list()", "str_dupA() failure");
-                    curtain_freeT(&pack->__search__, sFINDER);
-                    return (FALSE);
-                }
-                if (caseless)
-                    flname_uniqueA((ansi_t*)ptr->find);
-                else
-                    path_uniqueA((ansi_t*)ptr->find);
-            }
-            if (curtain_insertT(&pack->__search__, sFINDER,
-                                ptr->find, &tmp) == NULL) {
                 err_set(__CR_FMTLIB_C__, CR_NULL,
-                        "pack_init_list()", "curtain_insertT() failure");
+                        "pack_init_list()", "mem_dup() failure");
+                curtain_freeT(&pack->__search__, sFINDER);
+                return (FALSE);
+            }
+            if (caseless)
+                flname_uniqueA((ansi_t*)ptr->find);
+            else
+                path_uniqueA((ansi_t*)ptr->find);
+        }
+        else {
+            ii = str_lenA(ptr->find);
+        }
+        tmp.index = idx;
+        tmp.finfo = ptr;
+        tmp.crc32 = hash_crc32i_total(ptr->find, ii);
+        ii = (leng_t)(tmp.crc32 % pack->__search__.__size__);
+        nod = &pack->__search__.__list__[ii];
+        fnd = array_get_dataT(nod, sFINDER);
+        for (ii = 0; ii < nod->__cnts__; ii++, fnd++) {
+            if (tmp.crc32 == fnd->crc32 &&
+                str_cmpA(ptr->find, fnd->finfo->find) == 0) {
+                struct_cpy(fnd, &tmp, sFINDER);
+                break;
+            }
+        }
+        if (ii >= nod->__cnts__) {
+            if (array_push_growT(nod, sFINDER, &tmp) == NULL) {
+                err_set(__CR_FMTLIB_C__, CR_NULL,
+                        "pack_init_list()", "array_push_growT() failure");
                 curtain_freeT(&pack->__search__, sFINDER);
                 return (FALSE);
             }
         }
-        ptr = (sPAK_FILE*)((byte_t*)ptr + ptr->skip);
     }
     return (TRUE);
 }
@@ -654,23 +643,36 @@ pack_find_fileU (
   __CR_IN__ const ansi_t*   name
     )
 {
+    leng_t      idx;
+    int32u      hash;
     ansi_t*     find;
+    sARRAY*     node;
     sFINDER*    unit;
 
     /* 统一文件目录风格 */
-    find = str_dupA(name);
+    idx = str_lenA(name);
+    find = (ansi_t*)mem_dup(name, idx + 1);
     if (find == NULL) {
         err_set(__CR_FMTLIB_C__, CR_NULL,
-                "pack_find_fileU()", "str_dupA() failure");
+                "pack_find_fileU()", "mem_dup() failure");
         return (FALSE);
     }
     if (pack->__caseless__)
         flname_uniqueA(find);
     else
         path_uniqueA(find);
-    unit = curtain_findT(&pack->__search__, sFINDER, find);
+
+    hash = hash_crc32i_total(find, idx);
+    idx = (leng_t)(hash % pack->__search__.__size__);
+    node = &pack->__search__.__list__[idx];
+    unit = array_get_dataT(node, sFINDER);
+    for (idx = 0; idx < node->__cnts__; idx++, unit++) {
+        if (hash == unit->crc32 &&
+            str_cmpA(find, unit->finfo->find) == 0)
+            break;
+    }
     mem_free(find);
-    if (unit == NULL)
+    if (idx >= node->__cnts__)
         return (FALSE);
     if (index != NULL)
        *index  = unit->index;

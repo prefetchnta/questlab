@@ -92,6 +92,7 @@ typedef struct
 {
         int64u              index;  /* 文件索引 */
         const sPAK_FILE*    finfo;  /* 文件信息 */
+        int32u              crc32;  /* 名称校验 */
 
 } sFINDER;
 
