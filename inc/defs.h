@@ -589,19 +589,6 @@ CR_API void_t   error_set (int32u file, uint_t line, maxu_t l3rd,
     #include "arch.h"
 #endif
 
-/* 进度回调结构 */
-typedef struct
-{
-        /* 附加参数 */
-        void_t* object_param;
-
-        /* 回调函数 */
-        void_t  (* init ) (void_t *obj, leng_t max);
-        void_t  (*update) (void_t *obj, leng_t step);
-        void_t  (*finish) (void_t *obj, leng_t max);
-
-} sPROBAR;
-
 /* 对象标识类型 */
 typedef const ansi_t*   port_t;
 
@@ -626,9 +613,11 @@ typedef struct  _iPORT
     #include "memlib.h"
 #endif
 
-/* 两种加密解密压缩解压接口类型 */
+/* 三种数据变换接口类型 */
 typedef leng_t  (*enc_self_t) (void_t*, leng_t);
 typedef leng_t  (*enc_copy_t) (void_t*, leng_t, const void_t*, leng_t);
+typedef leng_t  (*enc_parm_t) (void_t*, leng_t, const void_t*, leng_t,
+                               void_t*);
 
 #endif  /* !__CR_DEFS_H__ */
 

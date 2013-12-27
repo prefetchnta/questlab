@@ -26,7 +26,7 @@
 /*                                 绘制接口                                  */
 /*****************************************************************************/
 
-/* 生成 GameAPI 图形绘制接口 */
+/* 生成 GameAPI 图形绘制接口 (附加参数: 是否使用双缓冲, 默认使用) */
 CR_API iGFX2*   create_gx_canvas (void_t *handle, uint_t scn_cw,
                             uint_t scn_ch, uint_t scn_fmt, bool_t full,
                                   const int32u *param, uint_t count);
