@@ -110,6 +110,7 @@ engine_init (
   __CR_IN__ const sTRY_LDRw*    loadw
     )
 {
+    leng_t          count;
     sENGINE_INT*    engine;
 
     engine = struct_new(sENGINE_INT);
@@ -122,39 +123,51 @@ engine_init (
 
     /* 生成两个哈希表并注册文件类型匹配 */
     if (finda != NULL) {
-        if (!curtain_initT(&engine->m_finda, sMATCHa, 0, 0)) {
-            err_set(__CR_FMTLIB_C__, FALSE,
-                    "engine_init()", "curtain_initT() failure");
-            goto _failure1;
+        for (count = 0; ; count++) {
+            if (finda[count].loader == NULL)
+                break;
         }
-        engine->m_finda.find = match_findA;
-
-        while (finda->loader != NULL) {
-            if (curtain_insertT(&engine->m_finda, sMATCHa,
-                                finda->filext, finda) == NULL) {
-                err_set(__CR_FMTLIB_C__, CR_NULL,
-                        "engine_init()", "curtain_insertT() failure");
-                goto _failure2;
+        if (count != 0) {
+            if (!curtain_initT(&engine->m_finda, sMATCHa, count, 0)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "engine_init()", "curtain_initT() failure");
+                goto _failure1;
             }
-            finda++;
+            engine->m_finda.find = match_findA;
+
+            while (finda->loader != NULL) {
+                if (curtain_insertT(&engine->m_finda, sMATCHa,
+                                    finda->filext, finda) == NULL) {
+                    err_set(__CR_FMTLIB_C__, CR_NULL,
+                            "engine_init()", "curtain_insertT() failure");
+                    goto _failure2;
+                }
+                finda++;
+            }
         }
     }
     if (findw != NULL) {
-        if (!curtain_initT(&engine->m_findw, sMATCHw, 0, 0)) {
-            err_set(__CR_FMTLIB_C__, FALSE,
-                    "engine_init()", "curtain_initT() failure");
-            goto _failure2;
+        for (count = 0; ; count++) {
+            if (findw[count].loader == NULL)
+                break;
         }
-        engine->m_findw.find = match_findW;
-
-        while (findw->loader != NULL) {
-            if (curtain_insertT(&engine->m_findw, sMATCHw,
-                                findw->filext, findw) == NULL) {
-                err_set(__CR_FMTLIB_C__, CR_NULL,
-                        "engine_init()", "curtain_insertT() failure");
-                goto _failure3;
+        if (count != 0) {
+            if (!curtain_initT(&engine->m_findw, sMATCHw, count, 0)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "engine_init()", "curtain_initT() failure");
+                goto _failure2;
             }
-            findw++;
+            engine->m_findw.find = match_findW;
+
+            while (findw->loader != NULL) {
+                if (curtain_insertT(&engine->m_findw, sMATCHw,
+                                    findw->filext, findw) == NULL) {
+                    err_set(__CR_FMTLIB_C__, CR_NULL,
+                            "engine_init()", "curtain_insertT() failure");
+                    goto _failure3;
+                }
+                findw++;
+            }
         }
     }
     engine->m_loada = loada;
