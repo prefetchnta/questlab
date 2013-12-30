@@ -360,7 +360,7 @@ WinMain (
         window_kill(hwnd, curt_app, WIN_CLASS);
         return (QST_ERROR);
     }
-    ilab_inpt.filter = xmlcall_load(NULL, NULL);
+    ilab_inpt.filter = xmlcall_load(NULL, 0, NULL);
     if (ilab_inpt.filter != NULL)
     {
         /* 加载滤镜接口列表 (可选功能, 使用之可少写一些代码) */

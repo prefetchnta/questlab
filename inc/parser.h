@@ -194,7 +194,8 @@ typedef struct
 
 } sXC_PORT;
 
-CR_API xmlcaller_t  xmlcall_load (const ansi_t *name, void_t *aparam);
+CR_API xmlcaller_t  xmlcall_load (const ansi_t *name, leng_t count,
+                                  void_t *aparam);
 CR_API bool_t       xmlcall_setup (xmlcaller_t xmlcall, const sXC_PORT *port);
 CR_API void_t       xmlcall_unload (xmlcaller_t xmlcall);
 CR_API bool_t       xmlcall_exec (xmlcaller_t xmlcall, void_t *uparam,
