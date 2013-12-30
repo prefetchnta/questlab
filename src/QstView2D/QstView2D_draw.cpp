@@ -232,6 +232,7 @@ _retry:
         fmtz = tmpz;
         datz = (sFMT_DAT*)tmpz;
         set_ldrM(&copy, datz->data, datz->unsz, ldrs->aprm, 0, 0);
+        copy.nprm = ldrs->nprm;
         copy.page = ldrs->page;
 
         /* 压入插件信息 */
