@@ -233,7 +233,6 @@ typedef struct
         leng_t      __size__;   /* 节点的个数 */
         sLST_UNIT*  __head__;   /* 首节点指针 */
         sLST_UNIT*  __tail__;   /* 尾节点指针 */
-        sLST_UNIT*  __node__;   /* 当前的节点 */
 
         /* 成员释放回调 */
         void_t  (*free) (void_t *obj);
@@ -246,20 +245,8 @@ typedef struct
 #define list_freeT(that, type) \
          list_free(that)
 
-#define list_swapT(that, type) \
- ((type*)list_swap(that))
-
-#define list_go_headT(that, type) \
- ((type*)list_go_head(that))
-
-#define list_go_tailT(that, type) \
- ((type*)list_go_tail(that))
-
-#define list_go_nextT(that, type) \
- ((type*)list_go_next(that))
-
-#define list_go_prevT(that, type) \
- ((type*)list_go_prev(that))
+#define list_swapT(that, type, node) \
+ ((type*)list_swap(that, node))
 
 #define list_get_dataT(node, type) \
  ((type*)list_get_data(node))
@@ -267,17 +254,14 @@ typedef struct
 #define list_get_sizeT(that, type) \
          list_get_size(that)
 
-#define list_get_nodeT(that, type) \
- ((type*)list_get_node(that))
+#define list_get_headT(that, type) \
+         list_get_head(that)
 
-#define list_get_posT(that, type) \
-         list_get_pos(that)
+#define list_get_tailT(that, type) \
+         list_get_tail(that)
 
-#define list_set_posT(that, type, node) \
-         list_set_pos(that, node)
-
-#define list_deleteT(that, type) \
-         list_delete(that)
+#define list_deleteT(that, type, node) \
+         list_delete(that, node)
 
 #define list_appendT(that, type, data) \
  ((type*)list_append(that, sizeof(type), data))
@@ -285,18 +269,18 @@ typedef struct
 #define list_stheadT(that, type, data) \
  ((type*)list_sthead(that, sizeof(type), data))
 
-#define list_insertT(that, type, data, front) \
- ((type*)list_insert(that, sizeof(type), data, front))
+#define list_insertT(that, type, node, data, front) \
+ ((type*)list_insert(that, sizeof(type), node, data, front))
 
 /***** 原生函数 *****/
 CR_API void_t   list_init (sLIST *that);
 CR_API void_t   list_free (sLIST *that);
-CR_API void_t*  list_swap (sLIST *that);
-CR_API void_t   list_delete (sLIST *that);
+CR_API void_t*  list_swap (sLIST *that, sLST_UNIT *node);
+CR_API void_t   list_delete (sLIST *that, sLST_UNIT *node);
 CR_API void_t*  list_append (sLIST *that, leng_t unit, const void_t *data);
 CR_API void_t*  list_sthead (sLIST *that, leng_t unit, const void_t *data);
-CR_API void_t*  list_insert (sLIST *that, leng_t unit, const void_t *data,
-                             bool_t front CR_DEFAULT(FALSE));
+CR_API void_t*  list_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
+                                const void_t *data, bool_t front);
 #if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
@@ -326,114 +310,28 @@ list_get_size (
 
 /*
 =======================================
-    获取当前节点数据
-=======================================
-*/
-cr_inline void_t*
-list_get_node (
-  __CR_IN__ const sLIST*    that
-    )
-{
-    if (that->__node__ == NULL)
-        return (NULL);
-    return (&that->__node__[1]);
-}
-
-/*
-=======================================
-    获取当前节点
+    获取头节点
 =======================================
 */
 cr_inline sLST_UNIT*
-list_get_pos (
+list_get_head (
   __CR_IN__ const sLIST*    that
     )
 {
-    return (that->__node__);
+    return (that->__head__);
 }
 
 /*
 =======================================
-    设置当前节点
+    获取尾节点
 =======================================
 */
-cr_inline void_t
-list_set_pos (
-  __CR_IN__ sLIST*      that,
-  __CR_IN__ sLST_UNIT*  node
+cr_inline sLST_UNIT*
+list_get_tail (
+  __CR_IN__ const sLIST*    that
     )
 {
-    that->__node__ = node;
-}
-
-/*
-=======================================
-    定位到链表头
-=======================================
-*/
-cr_inline void_t*
-list_go_head (
-  __CR_IO__ sLIST*  that
-    )
-{
-    that->__node__ = that->__head__;
-    if (that->__node__ == NULL)
-        return (NULL);
-    return (&that->__node__[1]);
-}
-
-/*
-=======================================
-    定位到链表尾
-=======================================
-*/
-cr_inline void_t*
-list_go_tail (
-  __CR_IO__ sLIST*  that
-    )
-{
-    that->__node__ = that->__tail__;
-    if (that->__node__ == NULL)
-        return (NULL);
-    return (&that->__node__[1]);
-}
-
-/*
-=======================================
-    定位到下一个节点
-=======================================
-*/
-cr_inline void_t*
-list_go_next (
-  __CR_IO__ sLIST*  that
-    )
-{
-    sLST_UNIT*  next;
-
-    next = that->__node__->next;
-    if (next == NULL)
-        return (NULL);
-    that->__node__ = next;
-    return ((void_t*)(&next[1]));
-}
-
-/*
-=======================================
-    定位到上一个节点
-=======================================
-*/
-cr_inline void_t*
-list_go_prev (
-  __CR_IO__ sLIST*  that
-    )
-{
-    sLST_UNIT*  prev;
-
-    prev = that->__node__->prev;
-    if (prev == NULL)
-        return (NULL);
-    that->__node__ = prev;
-    return ((void_t*)(&prev[1]));
+    return (that->__tail__);
 }
 
 #endif  /* !_CR_SICK_INLINE_ */
