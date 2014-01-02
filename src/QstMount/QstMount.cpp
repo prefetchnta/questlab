@@ -80,6 +80,9 @@ typedef struct
         ansi_t*     file;   /* 磁盘文件名 (释放) */
         void_t*     data;   /* 内存数据 (可能释放) */
         sARRAY      info;   /* 文件信息列表 (释放) */
+        leng_t      cmax;   /* 最大文件名哈希冲突数 */
+        leng_t      ctot;   /* 文件名哈希冲突的总数 */
+        uint_t      room;   /* 哈希表的真实空间 */
         iPACKAGE*   pack;   /* 封包读取接口 (不释放) */
         sFMT_PRT*   fmtz;   /* 封包 FMTZ 对象 (释放) */
 
@@ -329,7 +332,8 @@ qst_refresh_mount (
                 printf("[Temp File] ");
                 cui_set_color(s_color_temp);
             }
-            printf("%s\n", info->show);
+            printf("%s (%u, %u, %u)\n", info->show,
+                    info->cmax, info->ctot, info->room);
             node = node->next;
         } while (node != NULL);
     }
@@ -572,6 +576,23 @@ _retry:
             datz = (sFMT_DAT*)fmtz;
             node->data = datz->data;
             mem_free(fmtz);
+        }
+
+        uint_t  cf_idx;
+        leng_t* cf_num;
+
+        /* 统计文件名哈希冲突数据 */
+        node->cmax = node->ctot = 0;
+        node->room = node->pack->__search__.__size__;
+        cf_num = curtain_check(&node->pack->__search__, &cf_idx);
+        if (cf_num != NULL) {
+            while (cf_idx-- != 0) {
+                if (node->cmax < cf_num[cf_idx])
+                    node->cmax = cf_num[cf_idx];
+                if (cf_num[cf_idx] > 1)
+                    node->ctot += cf_num[cf_idx];
+            }
+            mem_free(cf_num);
         }
 
         /* 压入插件信息 */
