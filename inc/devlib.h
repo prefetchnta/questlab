@@ -126,11 +126,14 @@ typedef void_t*     devb_mgr_t;
 #define CR_DEVB_ERR_NO_READ         CR_ERRS(0x0002UL)   /* 无效接口 */
 #define CR_DEVB_ERR_NO_WRITE        CR_ERRS(0x0003UL)   /* 无效接口 */
 #define CR_DEVB_ERR_NO_IOCTL        CR_ERRS(0x0004UL)   /* 无效接口 */
-#define CR_DEVB_ERR_ADDR_OVERFLOW   CR_ERRS(0x0005UL)   /* 地址溢出 */
-#define CR_DEVB_ERR_CONTROL_CODE    CR_ERRS(0x0006UL)   /* 无效控制码 */
-#define CR_DEVB_ERR_CONTROL_ISIZE   CR_ERRS(0x0007UL)   /* 无效的输入大小 */
-#define CR_DEVB_ERR_CONTROL_OSIZE   CR_ERRS(0x0008UL)   /* 无效的输出大小 */
-#define CR_DEVB_ERR_CONTROL_RETTS   CR_ERRS(0x0009UL)   /* 无效的返回大小 */
+#define CR_DEVB_ERR_CONTROL_CODE    CR_ERRS(0x0005UL)   /* 无效控制码 */
+#define CR_DEVB_ERR_CONTROL_ISIZE   CR_ERRS(0x0006UL)   /* 无效的输入大小 */
+#define CR_DEVB_ERR_CONTROL_OSIZE   CR_ERRS(0x0007UL)   /* 无效的输出大小 */
+#define CR_DEVB_ERR_CONTROL_RETTS   CR_ERRS(0x0008UL)   /* 无效的返回大小 */
+#define CR_DEVB_ERR_ADDR_OVERFLOW   CR_ERRS(0x0009UL)   /* 指定的地址溢出 */
+#define CR_DEVB_ERR_DATA_CLOSED     CR_ERRS(0x000AUL)   /* 数据链路已断开 */
+#define CR_DEVB_ERR_READ_TIMEOUT    CR_ERRS(0x000BUL)   /* 数据读取超时 */
+#define CR_DEVB_ERR_WRITE_TIMEOUT   CR_ERRS(0x000CUL)   /* 数据写入超时 */
 
 /* 块设备管理结构 */
 typedef struct

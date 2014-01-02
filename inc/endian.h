@@ -428,18 +428,6 @@ xchg_int16u (
     __asm__("xchgb %b0, %h0" : "=Q"(val) : "0"(val));
     return (val);
 
-/* AT&T style inline asm (68K) */
-#elif   defined(_CR_ASM_ATnT_) && defined(_CR_AR_68K_)
-    __asm__("rorw #8, %0" : "=d"(val) : "0"(val) : "cc");
-    return (val);
-
-/* AT&T style inline asm (PPC) */
-#elif   defined(_CR_ASM_ATnT_) && defined(_CR_AR_PPC_)
-    int16u  tmp;
-
-    __asm__("rlwimi %0, %2, 8, 16, 23" : "=&r"(tmp) : "0"(val>>8), "r"(val));
-    return (tmp);
-
 #else
     #if !defined(_CR_NO_IROTSM_) && !defined(_CR_CC_CX51_)
         return (rotr_int16u(val, 8));
@@ -485,22 +473,6 @@ xchg_int32u (
 #elif   defined(_CR_ASM_ATnT_) && defined(_CR_AR_X64_)
     __asm__("bswapl %0" : "=r"(val) : "0"(val));
     return (val);
-
-/* AT&T style inline asm (68K) */
-#elif   defined(_CR_ASM_ATnT_) && defined(_CR_AR_68K_)
-    __asm__("rorw #8, %0\n\t"
-            "swap %0\n\t"
-            "rorw #8, %0" : "=d"(val) : "0"(val) : "cc");
-    return (val);
-
-/* AT&T style inline asm (PPC) */
-#elif   defined(_CR_ASM_ATnT_) && defined(_CR_AR_PPC_)
-    int32u  tmp;
-
-    __asm__("rlwimi %0, %2, 24, 16, 23" : "=&r"(tmp) : "0"(val>>24), "r"(val));
-    __asm__("rlwimi %0, %2,  8,  8, 15" : "=&r"(tmp) : "0"(tmp),     "r"(val));
-    __asm__("rlwimi %0, %2, 24,  0,  7" : "=&r"(tmp) : "0"(tmp),     "r"(val));
-    return (tmp);
 
 #else
     int16u  hi, lo, *pt;

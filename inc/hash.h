@@ -96,6 +96,13 @@ CR_API int32u   hash_crc32a_update (int32u hash, const void_t *data,
 CR_API int32u   hash_crc32a_finish (int32u hash);
 CR_API int32u   hash_crc32a_total (const void_t *data, leng_t size);
 
+/* CRC-32/CASTAGNOLI */
+CR_API int32u   hash_crc32c_init (void_t);
+CR_API int32u   hash_crc32c_update (int32u hash, const void_t *data,
+                                    leng_t size);
+CR_API int32u   hash_crc32c_finish (int32u hash);
+CR_API int32u   hash_crc32c_total (const void_t *data, leng_t size);
+
 /* CRC-32/HONEYMAN */
 CR_API int32u   hash_crc32h_init (void_t);
 CR_API int32u   hash_crc32h_update (int32u hash, const void_t *data,

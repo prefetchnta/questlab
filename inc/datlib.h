@@ -97,7 +97,7 @@ CR_API void_t*  array_push (sARRAY *that, leng_t unit, const void_t *data);
 CR_API void_t*  array_push_grow (sARRAY *that, leng_t unit,const void_t *data);
 CR_API void_t*  array_top (const sARRAY *that, leng_t unit, void_t *data);
 CR_API bool_t   array_pop (sARRAY *that, leng_t unit, void_t *data);
-CR_API bool_t   array_delete (sARRAY *that, leng_t unit, leng_t index);
+CR_API void_t   array_delete (sARRAY *that, leng_t unit, leng_t index);
 CR_API void_t*  array_insert (sARRAY *that, leng_t unit, leng_t index,
                               const void_t *data);
 CR_API void_t*  array_insert_grow (sARRAY *that, leng_t unit, leng_t index,
@@ -203,6 +203,9 @@ typedef struct
 #define curtain_insertT(that, type, key, data) \
  ((type*)curtain_insert(that, sizeof(type), key, data))
 
+#define curtain_checkT(that, type, size) \
+         curtain_check(that, size)
+
 /***** 原生函数 *****/
 CR_API bool_t   curtain_init (sCURTAIN *that, leng_t unit,
                               leng_t count, leng_t leng CR_DEFAULT(4));
@@ -213,6 +216,7 @@ CR_API bool_t   curtain_delete (const sCURTAIN *that, leng_t unit,
                                 const void_t *key);
 CR_API void_t*  curtain_insert (const sCURTAIN *that, leng_t unit,
                                 const void_t *key, const void_t *data);
+CR_API leng_t*  curtain_check (const sCURTAIN *that, uint_t *size);
 
 /*****************************************************************************/
 /*                                 双向链表                                  */
@@ -259,6 +263,18 @@ typedef struct
 
 #define list_get_tailT(that, type) \
          list_get_tail(that)
+
+#define list_go_nextT(node, type) \
+         list_go_next(node)
+
+#define list_go_prevT(node, type) \
+         list_go_prev(node)
+
+#define list_get_unitT(that, type, index) \
+         list_get_unit(that, index)
+
+#define list_get_unit_safeT(that, type, index) \
+         list_get_unit_safe(that, index)
 
 #define list_deleteT(that, type, node) \
          list_delete(that, node)
@@ -334,6 +350,75 @@ list_get_tail (
     return (that->__tail__);
 }
 
+/*
+=======================================
+    返回下一个节点
+=======================================
+*/
+cr_inline sLST_UNIT*
+list_go_next (
+  __CR_IN__ const sLST_UNIT*    node
+    )
+{
+    return ((sLST_UNIT*)node->next);
+}
+
+/*
+=======================================
+    返回上一个节点
+=======================================
+*/
+cr_inline sLST_UNIT*
+list_go_prev (
+  __CR_IN__ const sLST_UNIT*    node
+    )
+{
+    return ((sLST_UNIT*)node->prev);
+}
+
+/*
+=======================================
+    获取指定的节点
+=======================================
+*/
+cr_inline sLST_UNIT*
+list_get_unit (
+  __CR_IN__ const sLIST*    that,
+  __CR_IN__ leng_t          index
+    )
+{
+    sLST_UNIT*  node;
+
+    node = that->__head__;
+    for (; index != 0; index--)
+        node = node->next;
+    return (node);
+}
+
+/*
+=======================================
+    获取指定的节点 (带安全检查)
+=======================================
+*/
+cr_inline sLST_UNIT*
+list_get_unit_safe (
+  __CR_IN__ const sLIST*    that,
+  __CR_IN__ leng_t          index
+    )
+{
+    sLST_UNIT*  node;
+
+    if (index >= that->__size__) {
+        err_set(__CR_DATLIB_H__, index,
+                "list_get_unit_safe()", "index: out of bounds");
+        return (NULL);
+    }
+    node = that->__head__;
+    for (; index != 0; index--)
+        node = node->next;
+    return (node);
+}
+
 #endif  /* !_CR_SICK_INLINE_ */
 
 /*****************************************************************************/
@@ -373,6 +458,9 @@ typedef struct
 #define curbead_insertT(that, type, key, data) \
  ((type*)curbead_insert(that, sizeof(type), key, data))
 
+#define curbead_checkT(that, type, size) \
+         curbead_check(that, size)
+
 /***** 原生函数 *****/
 CR_API bool_t   curbead_init (sCURBEAD *that, leng_t count);
 CR_API void_t   curbead_free (sCURBEAD *that);
@@ -380,6 +468,7 @@ CR_API void_t*  curbead_find (const sCURBEAD *that, const void_t *key);
 CR_API bool_t   curbead_delete (const sCURBEAD *that, const void_t *key);
 CR_API void_t*  curbead_insert (const sCURBEAD *that, leng_t unit,
                                 const void_t *key, const void_t *data);
+CR_API leng_t*  curbead_check (const sCURBEAD *that, uint_t *size);
 
 /*****************************************************************************/
 /*                                树形数据表                                 */
@@ -409,8 +498,8 @@ typedef struct
 #define atree_get_rootT(that, type) \
          atree_get_root(that)
 
-#define atree_get_subnT(that, type) \
-         atree_get_subn(that)
+#define atree_get_subnT(node, type) \
+         atree_get_subn(node)
 
 #define atree_go_nextT(node, type, index) \
          atree_go_next(node, index)
