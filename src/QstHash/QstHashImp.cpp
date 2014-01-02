@@ -693,6 +693,60 @@ crc32a_finish (
 }
 
 /*****************************************************************************/
+/*                            CRC-32/CASTAGNOLI                              */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+crc32c_init (void_t)
+{
+    int32u* ctx;
+
+    ctx = struct_new(int32u);
+    if (ctx != NULL)
+        *ctx = hash_crc32c_init();
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+crc32c_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int32u* cvt = (int32u*)ctx;
+
+    *cvt = hash_crc32c_update(*cvt, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+crc32c_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    int32u* cvt = (int32u*)ctx;
+    int32u  result = hash_crc32c_finish(*cvt);
+
+    mem_free(ctx);
+    return (str_fmtA(": %08X", result));
+}
+
+/*****************************************************************************/
 /*                             CRC-32/HONEYMAN                               */
 /*****************************************************************************/
 
@@ -1374,6 +1428,7 @@ CR_API const sQHSH_UNIT hasher[] = {
 { "CRC-16/IBM (0000)", TRUE, crc16i_init, crc16i_update, crc16i_finish },
 { "CRC-16/IBM (FFFF)", TRUE, crc16i_init_not, crc16i_update, crc16i_finish },
 { "CRC-32/AAL5", TRUE, crc32a_init, crc32a_update, crc32a_finish },
+{ "CRC-32/CASTAGNOLI", TRUE, crc32c_init, crc32c_update, crc32c_finish },
 { "CRC-32/HONEYMAN", TRUE, crc32h_init, crc32h_update, crc32h_finish },
 { "CRC-32/IEEE", TRUE, crc32i_init, crc32i_update, crc32i_finish },
 { "CRC-64/ECMA-182", TRUE, crc64e_init, crc64e_update, crc64e_finish },
