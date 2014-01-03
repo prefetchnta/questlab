@@ -45,18 +45,6 @@ typedef struct
 #define array_freeT(that, type) \
          array_free(that, sizeof(type))
 
-#define array_get_dataT(that, type) \
- ((type*)array_get_data(that))
-
-#define array_get_sizeT(that, type) \
-         array_get_size(that)
-
-#define array_get_unitT(that, type, index) \
- ((type*)array_get_unit(that, sizeof(type), index))
-
-#define array_get_unit_safeT(that, type, index) \
- ((type*)array_get_unit_safe(that, sizeof(type), index))
-
 #define array_clearT(that, type) \
          array_clear(that, sizeof(type))
 
@@ -76,7 +64,7 @@ typedef struct
  ((type*)array_top(that, sizeof(type), data))
 
 #define array_popT(that, type, data) \
-         array_pop(that, sizeof(type), data))
+         array_pop(that, sizeof(type), data)
 
 #define array_deleteT(that, type, index) \
          array_delete(that, sizeof(type), index)
@@ -86,6 +74,18 @@ typedef struct
 
 #define array_insert_growT(that, type, index, data) \
  ((type*)array_insert_grow(that, sizeof(type), index, data))
+
+#define array_get_dataT(that, type) \
+ ((type*)array_get_data(that))
+
+#define array_get_sizeT(that, type) \
+         array_get_size(that)
+
+#define array_get_unitT(that, type, index) \
+ ((type*)array_get_unit(that, sizeof(type), index))
+
+#define array_get_unit_safeT(that, type, index) \
+ ((type*)array_get_unit_safe(that, sizeof(type), index))
 
 /***** 原生函数 *****/
 CR_API void_t   array_init (sARRAY *that);
@@ -250,7 +250,19 @@ typedef struct
          list_free(that)
 
 #define list_swapT(that, type, node) \
- ((type*)list_swap(that, node))
+         list_swap(that, node)
+
+#define list_deleteT(that, type, node) \
+         list_delete(that, node)
+
+#define list_appendT(that, type, data) \
+         list_append(that, sizeof(type), data)
+
+#define list_stheadT(that, type, data) \
+         list_sthead(that, sizeof(type), data)
+
+#define list_insertT(that, type, node, data, front) \
+         list_insert(that, sizeof(type), node, data, front)
 
 #define list_get_dataT(node, type) \
  ((type*)list_get_data(node))
@@ -276,27 +288,15 @@ typedef struct
 #define list_get_unit_safeT(that, type, index) \
          list_get_unit_safe(that, index)
 
-#define list_deleteT(that, type, node) \
-         list_delete(that, node)
-
-#define list_appendT(that, type, data) \
- ((type*)list_append(that, sizeof(type), data))
-
-#define list_stheadT(that, type, data) \
- ((type*)list_sthead(that, sizeof(type), data))
-
-#define list_insertT(that, type, node, data, front) \
- ((type*)list_insert(that, sizeof(type), node, data, front))
-
 /***** 原生函数 *****/
-CR_API void_t   list_init (sLIST *that);
-CR_API void_t   list_free (sLIST *that);
-CR_API void_t*  list_swap (sLIST *that, sLST_UNIT *node);
-CR_API void_t   list_delete (sLIST *that, sLST_UNIT *node);
-CR_API void_t*  list_append (sLIST *that, leng_t unit, const void_t *data);
-CR_API void_t*  list_sthead (sLIST *that, leng_t unit, const void_t *data);
-CR_API void_t*  list_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
-                                const void_t *data, bool_t front);
+CR_API void_t       list_init (sLIST *that);
+CR_API void_t       list_free (sLIST *that);
+CR_API sLST_UNIT*   list_swap (sLIST *that, sLST_UNIT *node);
+CR_API void_t       list_delete (sLIST *that, sLST_UNIT *node);
+CR_API sLST_UNIT*   list_append (sLIST *that, leng_t unit, const void_t *data);
+CR_API sLST_UNIT*   list_sthead (sLIST *that, leng_t unit, const void_t *data);
+CR_API sLST_UNIT*   list_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
+                                    const void_t *data, bool_t front);
 #if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
@@ -495,21 +495,6 @@ typedef struct
 } sATREE;
 
 /***** 泛型映射 *****/
-#define atree_get_rootT(that, type) \
-         atree_get_root(that)
-
-#define atree_get_subnT(node, type) \
-         atree_get_subn(node)
-
-#define atree_go_nextT(node, type, index) \
-         atree_go_next(node, index)
-
-#define atree_go_prevT(node, type) \
-         atree_go_prev(node)
-
-#define atree_get_dataT(node, type) \
- ((type*)atree_get_data(node))
-
 #define atree_initT(that, type, count) \
          atree_init(that, sizeof(type), count)
 
@@ -524,6 +509,21 @@ typedef struct
 
 #define atree_insertT(that, type, node, data, index) \
          atree_insert(that, sizeof(type), node, data, index)
+
+#define atree_get_dataT(node, type) \
+ ((type*)atree_get_data(node))
+
+#define atree_get_rootT(that, type) \
+         atree_get_root(that)
+
+#define atree_get_subnT(node, type) \
+         atree_get_subn(node)
+
+#define atree_go_nextT(node, type, index) \
+         atree_go_next(node, index)
+
+#define atree_go_prevT(node, type) \
+         atree_go_prev(node)
 
 /***** 原生函数 *****/
 CR_API bool_t       atree_init (sATREE *that, leng_t unit,
@@ -647,7 +647,7 @@ typedef struct
     构造函数
 =======================================
 */
-cr_inline bool_t
+static bool_t
 bring_init (
   __CR_OT__ sBRING* that,
   __CR_IN__ leng_t  size
@@ -680,7 +680,7 @@ typedef struct
     构造函数
 =======================================
 */
-cr_inline void_t
+static void_t
 bring_init (
   __CR_OT__ sBRING* that
     )
@@ -695,7 +695,7 @@ bring_init (
     析构函数
 =======================================
 */
-cr_inline void_t
+static void_t
 bring_free (
   __CR_IO__ sBRING* that
     )
@@ -711,7 +711,7 @@ bring_free (
     返回环形队列大小
 =======================================
 */
-cr_inline leng_t
+static leng_t
 bring_get_size (
   __CR_IN__ const sBRING*   that
     )
@@ -728,7 +728,7 @@ bring_get_size (
     环形队列读取数据
 =======================================
 */
-cr_inline leng_t
+static leng_t
 bring_read (
   __CR_IO__ sBRING* that,
   __CR_OT__ void_t* data,
@@ -763,7 +763,7 @@ bring_read (
     环形队列写入数据
 =======================================
 */
-cr_inline leng_t
+static leng_t
 bring_write (
   __CR_IO__ sBRING*         that,
   __CR_IN__ const void_t*   data,
@@ -825,6 +825,18 @@ typedef struct
 #define pltable_freeT(that, type) \
          pltable_free(that, sizeof(type))
 
+#define pltable_clearT(that, type) \
+         pltable_clear(that, sizeof(type))
+
+#define pltable_findT(that, type, key) \
+ ((type*)pltable_find(that, sizeof(type), key))
+
+#define pltable_deleteT(that, type, key) \
+         pltable_delete(that, sizeof(type), key)
+
+#define pltable_insertT(that, type, key, data) \
+ ((type*)pltable_insert(that, sizeof(type), key, data))
+
 #define pltable_get_dataT(that, type) \
  ((type*)pltable_get_data(that))
 
@@ -839,18 +851,6 @@ typedef struct
 
 #define pltable_get_unit_safeT(that, type, index) \
  ((type*)pltable_get_unit_safe(that, sizeof(type), index))
-
-#define pltable_clearT(that, type) \
-         pltable_clear(that, sizeof(type))
-
-#define pltable_findT(that, type, key) \
- ((type*)pltable_find(that, sizeof(type), key))
-
-#define pltable_deleteT(that, type, key) \
-         pltable_delete(that, sizeof(type), key)
-
-#define pltable_insertT(that, type, key, data) \
- ((type*)pltable_insert(that, sizeof(type), key, data))
 
 /***** 原生函数 *****/
 CR_API bool_t   pltable_init (sPLTABLE *that, leng_t unit,

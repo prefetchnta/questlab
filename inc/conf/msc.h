@@ -52,7 +52,8 @@
     /*------------------------------------------------*/
 
     /* 编译器平台架构 */
-    #if     defined(_M_X64)
+    #if     defined(_M_X64) || \
+            defined(_M_AMD64)
         #define _CR_AR_X64_     /* AMD64 & EM64T */
 
     #elif   defined(_M_IX86)
@@ -71,7 +72,8 @@
             defined(_M_MPPC)
         #define _CR_AR_PPC_     /* PowerPC (MAC) */
 
-    #elif   defined(_M_IA64)
+    #elif   defined(_M_IA64) || \
+            defined(_M_IX64)
         #define _CR_AR_IA64_    /* IA64 */
 
     #elif   defined(_M_ALPHA)
