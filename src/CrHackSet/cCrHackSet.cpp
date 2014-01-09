@@ -8,20 +8,20 @@ typedef iGFX2*  (*create_surf_t) (uint_t, uint_t, uint_t,
 typedef void_t  (*flldraw_t) (const sIMAGE*, const sFILL*,
                               cpix_t, const sRECT*);
 /* 全局绘制参数 */
-static iFONT*       s_font;     /* 文字绘制 */
-static egui_t       s_resx;     /* 外部资源 */
-static int32u       s_mode;     /* 绘制模式 */
-static sint_t       s_posx;     /* 当前坐标 */
-static sint_t       s_posy;     /* 当前坐标 */
-static cpix_t       s_color;    /* 绘制颜色 */
-static cpix_t       s_trans;    /* 透明颜色 */
-static cpix_t       s_bkcolor;  /* 背景颜色 */
-static pixdraw_t    s_pixdraw;  /* 绘制模式 */
-static flldraw_t    s_flldraw;  /* 填充模式 */
+static iFONT*       s_font = NULL;                  /* 文字绘制 */
+static egui_t       s_resx = NULL;                  /* 外部资源 */
+static int32u       s_mode = CR_BLT_SET;            /* 绘制模式 */
+static sint_t       s_posx = 0;                     /* 当前坐标 */
+static sint_t       s_posy = 0;                     /* 当前坐标 */
+static cpix_t       s_color   = { 0xFF000000 };     /* 绘制颜色 */
+static cpix_t       s_trans   = { 0x00000000 };     /* 透明颜色 */
+static cpix_t       s_bkcolor = { 0xFFFFFFFF };     /* 背景颜色 */
+static pixdraw_t    s_pixdraw = pixel_set32z;       /* 绘制模式 */
+static flldraw_t    s_flldraw = fill_set32_c;       /* 填充模式 */
 
 /* 用到的 GFX2_GDI.dll 里的函数 */
-static create_font_t    s_create_gdi_fontA;
-static create_surf_t    s_create_gdi_bitmap;
+static create_font_t    s_create_gdi_fontA  = NULL;
+static create_surf_t    s_create_gdi_bitmap = NULL;
 
 /*
 ---------------------------------------
@@ -48,22 +48,11 @@ qst_crh_init (
   __CR_IN__ ansi_t**    argv
     )
 {
+    sbin_t  sbin;
+
     CR_NOUSE(parm);
     CR_NOUSE(argc);
     CR_NOUSE(argv);
-
-    /* 设为默认值 */
-    s_font = NULL;
-    s_resx = NULL;
-    s_mode = CR_BLT_SET;
-    s_posx = s_posy = 0;
-    s_pixdraw = pixel_set32z;
-    s_flldraw = fill_set32_c;
-    s_color.val = 0xFF000000;
-    s_trans.val = 0x00000000;
-    s_bkcolor.val = 0xFFFFFFFF;
-
-    sbin_t  sbin;
 
     /* 两个用到的外部函数 */
     sbin = sbin_testA("GFX2_GDI.dll");
