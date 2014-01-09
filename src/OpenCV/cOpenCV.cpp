@@ -5,11 +5,11 @@
 using namespace cv;
 
 /* 全局绘制参数 */
-static sint_t   s_posx;     /* 当前坐标 */
-static sint_t   s_posy;     /* 当前坐标 */
-static Scalar   s_color;    /* 绘制颜色 */
-static sint_t   s_thick;    /* 绘制宽度 */
-static sint_t   s_tline;    /* 线条类型 */
+static sint_t   s_posx  = 0;                        /* 当前坐标 */
+static sint_t   s_posy  = 0;                        /* 当前坐标 */
+static sint_t   s_thick = 1;                        /* 绘制宽度 */
+static sint_t   s_tline = 8;                        /* 线条类型 */
+static Scalar   s_color = Scalar(0, 0, 0, 255);     /* 绘制颜色 */
 
 /*
 ---------------------------------------
@@ -26,11 +26,6 @@ qst_ocv_init (
     CR_NOUSE(parm);
     CR_NOUSE(argc);
     CR_NOUSE(argv);
-
-    s_thick = 1;
-    s_tline = 8;
-    s_posx = s_posy = 0;
-    s_color = Scalar(0, 0, 0, 255);
     return (TRUE);
 }
 
