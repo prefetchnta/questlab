@@ -4,8 +4,7 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)fmtz.$(O) \
-         .$(L)e_dshow.$(O) \
-         ..$(L)..$(L)lib$(L)crhack$(L)coff$(L)CrH_EXTZ.lib
+         .$(L)e_dshow.$(O)
 
 SRC_LIST=.$(L)fmtz.$(C) \
          .$(L)e_dshow.$(C)

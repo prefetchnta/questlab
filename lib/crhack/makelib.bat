@@ -29,18 +29,11 @@ coff2omf CrH_BLIT.lib omf\CrH_BLIT.lib
 move CrH_BLIT.lib coff\CrH_BLIT.lib
 rem ========================================
 :crh_core
-if not exist CrH_CORE.lib goto crh_extz
+if not exist CrH_CORE.lib goto crh_fmtz
 del coff\CrH_CORE.lib
 del omf\CrH_CORE.lib
 coff2omf CrH_CORE.lib omf\CrH_CORE.lib
 move CrH_CORE.lib coff\CrH_CORE.lib
-rem ========================================
-:crh_extz
-if not exist CrH_EXTZ.lib goto crh_fmtz
-del coff\CrH_EXTZ.lib
-del omf\CrH_EXTZ.lib
-coff2omf CrH_EXTZ.lib omf\CrH_EXTZ.lib
-move CrH_EXTZ.lib coff\CrH_EXTZ.lib
 rem ========================================
 :crh_fmtz
 if not exist CrH_FMTZ.lib goto crh_math

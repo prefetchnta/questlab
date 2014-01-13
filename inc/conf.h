@@ -336,6 +336,10 @@
 #elif   defined(_CR_OS_NAKED_)
     #define _CR_OS_STR_ "@NAKED"
 
+/* Android */
+#elif   defined(_CR_OS_ANDROID_)
+    #define _CR_OS_STR_ "@ANDROID"
+
 /* LINUX */
 #elif   defined(_CR_OS_LINUX_)
     #define _CR_OS_STR_ "@LINUX"
@@ -366,8 +370,7 @@
 
 /* 文件系统的位数 */
 #if defined(_CR_OS_UNIX_) || \
-    defined(_CR_OS_WIN32_) || \
-    defined(_CR_OS_WIN64_)
+    defined(_CR_OS_MSWIN_)
     #define _CR_FILE64_
 #else
     #define _CR_FILE32_
@@ -384,9 +387,7 @@
 
 /* 不支持映射文件 */
 #if !defined(_CR_OS_UNIX_) && \
-    !defined(_CR_OS_WINCE_) && \
-    !defined(_CR_OS_WIN32_) && \
-    !defined(_CR_OS_WIN64_)
+    !defined(_CR_OS_MSWIN_)
     #define _CR_NO_VPAGE_
 #endif
 

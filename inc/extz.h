@@ -1,7 +1,7 @@
 /*****************************************************************************/
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2012-05-08  */
-/*     #######          ###    ###      [EXTZ]      ###  ~~~~~~~~~~~~~~~~~~  */
+/*     #######          ###    ###      [CORE]      ###  ~~~~~~~~~~~~~~~~~~  */
 /*    ########          ###    ###                  ###  MODIFY: XXXX-XX-XX  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
@@ -21,6 +21,31 @@
 #define __CR_EXTZ_H__ 0x8F2AFE27UL
 
 #include "defs.h"
+
+/*****************************************************************************/
+/*                               CUI 输出控制                                */
+/*****************************************************************************/
+
+/* 字符属性位 (前8位 VGA 兼容) */
+#define CR_CUI_TEXT_BLUE    0x0001  /* 前景蓝色 */
+#define CR_CUI_TEXT_GREEN   0x0002  /* 前景绿色 */
+#define CR_CUI_TEXT_RED     0x0004  /* 前景红色 */
+#define CR_CUI_TEXT_LIGHT   0x0008  /* 前景高亮 */
+#define CR_CUI_BACK_BLUE    0x0010  /* 背景蓝色 */
+#define CR_CUI_BACK_GREEN   0x0020  /* 背景绿色 */
+#define CR_CUI_BACK_RED     0x0040  /* 背景红色 */
+#define CR_CUI_BACK_LIGHT   0x0080  /* 背景高亮 */
+#define CR_CUI_REVERSE      0x0100  /* 反转显示 */
+#define CR_CUI_UNDERSCORE   0x0200  /* 带下滑线 */
+
+/* 字符颜色控制 */
+CR_API bool_t   cui_set_color (int16u  color);
+CR_API bool_t   cui_get_color (int16u *color);
+CR_API int16u   cui_make_attr (int16u  color, uint_t attrib);
+
+/* 输出位置控制 */
+CR_API bool_t   cui_set_xy (int16u  x, int16u  y);
+CR_API bool_t   cui_get_xy (int16u *x, int16u *y);
 
 /*****************************************************************************/
 /*                                多媒体接口                                 */
@@ -108,6 +133,34 @@ CR_API bool_t   win_ftp_putfileW (wftp_t ftps, const wide_t *root,
 /***** HTTP 操作接口 *****/
 CR_API bool_t   win_http_getfileA (const ansi_t *url, const ansi_t *name);
 CR_API bool_t   win_http_getfileW (const wide_t *url, const wide_t *name);
+
+/*****************************************************************************/
+/*                               系统相关杂项                                */
+/*****************************************************************************/
+
+/* 应用程序窗口风格 */
+#define CR_WSTYLE_MAXVV         2
+#define CR_WSTYLE_BLANK         0       /* 固定大小无标题窗口 */
+#define CR_WSTYLE_FIXED         1       /* 固定大小有标题窗口 */
+#define CR_WSTYLE_NORMAL        2       /* 可变大小有标题窗口 */
+#define CR_WSTYLE_TOPMOST   0x8000      /* 是否为最上层的窗口 */
+
+/* 应用程序窗口创建 */
+CR_API hwnd_t   window_open (void_t *instance, void_t *msg_proc,
+                             sint_t x, sint_t y, uint_t w, uint_t h,
+                             const ansi_t *title, const ansi_t *name,
+                             const ansi_t *icon, uint_t style);
+/* 应用程序窗口销毁 */
+CR_API bool_t   window_kill (hwnd_t hwnd, void_t *instance,
+                             const ansi_t *name);
+/* 应用程序按键输入 */
+CR_API bool_t   key_input_test (uint_t vkey);
+CR_API bool_t   key_input_click (uint_t vkey);
+
+/* 应用程序鼠标相关 */
+CR_API void_t   mouse_toggle (bool_t show);
+CR_API bool_t   mouse_set_pos (sint_t x, sint_t y);
+CR_API bool_t   mouse_get_pos (sint_t *x, sint_t *y);
 
 #endif  /* !__CR_EXTZ_H__ */
 

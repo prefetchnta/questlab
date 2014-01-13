@@ -41,34 +41,51 @@ CR_API void_t   set_gui_hwnd (hwnd_t hwnd);
 /* 获取系统本地编码值 */
 CR_API uint_t   get_sys_codepage (void_t);
 
+/* 设置系统本地编码值 (部分支持) */
+CR_API void_t   set_sys_codepage (uint_t cpage);
+
 /*****************************************************************************/
-/*                              系统 GUI 相关                                */
+/*                                消息提示框                                 */
 /*****************************************************************************/
 
-/* 应用程序窗口风格 */
-#define CR_WSTYLE_MAXVV         2
-#define CR_WSTYLE_BLANK         0       /* 固定大小无标题窗口 */
-#define CR_WSTYLE_FIXED         1       /* 固定大小有标题窗口 */
-#define CR_WSTYLE_NORMAL        2       /* 可变大小有标题窗口 */
-#define CR_WSTYLE_TOPMOST   0x8000      /* 是否为最上层的窗口 */
+/* 自定义提示 */
+#define CR_STOP     0   /* 严重错误 */
+#define CR_WARN     1   /* 警告错误 */
+#define CR_DONE     2   /* 成功提示 */
+#define CR_ASKU     3   /* 询问提示 */
+typedef bool_t  (*msgboxA_t) (const ansi_t*, const ansi_t*, uint_t);
+typedef bool_t  (*msgboxW_t) (const wide_t*, const wide_t*, uint_t);
 
-/* 应用程序窗口创建 */
-CR_API hwnd_t   window_open (void_t *instance, void_t *msg_proc,
-                             sint_t x, sint_t y, uint_t w, uint_t h,
-                             const ansi_t *title, const ansi_t *name,
-                             const ansi_t *icon, uint_t style);
-/* 应用程序窗口销毁 */
-CR_API bool_t   window_kill (hwnd_t hwnd, void_t *instance,
-                             const ansi_t *name);
-/* 应用程序按键输入 */
-CR_API bool_t   key_input_test (uint_t vkey);
-CR_API bool_t   key_input_click (uint_t vkey);
-CR_API uint_t   key_input_read (bool_t async);
+CR_API void_t   set_msg_callA (msgboxA_t func);
+CR_API void_t   set_msg_callW (msgboxW_t func);
 
-/* 应用程序鼠标相关 */
-CR_API void_t   mouse_toggle (bool_t show);
-CR_API bool_t   mouse_set_pos (sint_t x, sint_t y);
-CR_API bool_t   mouse_get_pos (sint_t *x, sint_t *y);
+/* 消息提示函数 */
+CR_API void_t   msg_stopA (const ansi_t *text, const ansi_t *title);
+CR_API void_t   msg_warnA (const ansi_t *text, const ansi_t *title);
+CR_API void_t   msg_doneA (const ansi_t *text, const ansi_t *title);
+CR_API bool_t   msg_askuA (const ansi_t *text, const ansi_t *title);
+
+CR_API void_t   msg_stopW (const wide_t *text, const wide_t *title);
+CR_API void_t   msg_warnW (const wide_t *text, const wide_t *title);
+CR_API void_t   msg_doneW (const wide_t *text, const wide_t *title);
+CR_API bool_t   msg_askuW (const wide_t *text, const wide_t *title);
+
+/*****************************************************************************/
+/*                                系统定时器                                 */
+/*****************************************************************************/
+
+/* 定时器类型 */
+typedef void_t*     timer_t;
+
+/* 定时器生成释放 */
+CR_API timer_t  timer_new (void_t);
+CR_API void_t   timer_del (timer_t timer);
+CR_API int32u   timer_get32 (void_t);
+CR_API int64u   timer_get64 (void_t);
+
+/* 定时器获取时差 */
+CR_API void_t   timer_set_base  (timer_t timer);
+CR_API fp32_t   timer_get_delta (timer_t timer);
 
 #endif  /* !__CR_APPLIB_H__ */
 

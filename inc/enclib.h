@@ -26,12 +26,6 @@
 /*                               数据压缩解压                                */
 /*****************************************************************************/
 
-/* aPLib */
-CR_API leng_t   compr_aplib (void_t *dst, leng_t dstlen,
-                             const void_t *src, leng_t srclen);
-
-CR_API leng_t   uncompr_aplib (void_t *dst, leng_t dstlen,
-                               const void_t *src, leng_t srclen);
 /* BZip2 */
 CR_API leng_t   compr_bzip2 (void_t *dst, leng_t dstlen,
                              const void_t *src, leng_t srclen,
@@ -46,13 +40,6 @@ CR_API leng_t   compr_pkzip (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_pkzip (void_t *dst, leng_t dstlen,
                                const void_t *src, leng_t srclen);
-/* JCALG1 */
-CR_API leng_t   compr_jcalg1 (void_t *dst, leng_t dstlen,
-                              const void_t *src, leng_t srclen,
-                              uint_t winlen CR_DEFAULT(8192));
-
-CR_API leng_t   uncompr_jcalg1 (void_t *dst, leng_t dstlen,
-                                const void_t *src, leng_t srclen);
 /* Win32 LZ32 */
 CR_API leng_t   compr_lz32 (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen);

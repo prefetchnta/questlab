@@ -143,7 +143,10 @@
             defined(__linux) || defined(__linux__)
         #define _CR_OS_UNIX_
 
-        #if defined(linux) || defined(__linux) || \
+        #if     defined(__ANDROID__)
+            #define _CR_OS_ANDROID_
+
+        #elif   defined(linux) || defined(__linux) || \
             defined(__linux__)
             #define _CR_OS_LINUX_
         #endif
@@ -295,18 +298,11 @@
 
     /* LIBC 支持64位STDIO文件偏移 */
     #if defined(_CR_OS_DOS32_) || \
-        defined(_CR_OS_MSWIN_)
+        defined(_CR_OS_MSWIN_) || \
+        defined(_CR_OS_ANDROID_)
         #define _CR_NO_STDIO64_
     #endif
     #undef  _CR_MS_STDIO64_
-    /*------------------------------------------------*/
-
-    /* LIBC 支持64位POSIX文件偏移 */
-    #if defined(_CR_OS_DOS32_) || \
-        defined(_CR_OS_MSWIN_)
-        #define _CR_NO_POSIX64_
-    #endif
-    #undef  _CR_MS_POSIX64_
     /*------------------------------------------------*/
 
     /* LIBC 支持 C99 数学函数设置 */

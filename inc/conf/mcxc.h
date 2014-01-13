@@ -237,11 +237,6 @@
     #undef  _CR_MS_STDIO64_
     /*------------------------------------------------*/
 
-    /* LIBC 支持64位POSIX文件偏移 */
-    #define _CR_NO_POSIX64_
-    #undef  _CR_MS_POSIX64_
-    /*------------------------------------------------*/
-
     /* LIBC 支持 C99 数学函数设置 */
     #if defined(_CR_CC_XC8_)
         #define _CR_NO_MATHC99_

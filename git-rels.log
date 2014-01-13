@@ -5,6 +5,9 @@
     ~~~~~~~~~~~~~~~~
     [m] plugin/xCrHackSet.dll
     [m] plugin/xOpenCV.dll
+    [m] CrH_CORE.dll
+    [-] CrH_EXTZ.dll
+    [m] plugin/zDShow.dll
 +
 +
 +

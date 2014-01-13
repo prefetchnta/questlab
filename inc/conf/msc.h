@@ -277,14 +277,6 @@
     #endif
     /*------------------------------------------------*/
 
-    /* LIBC 支持64位POSIX文件偏移 */
-    #if defined(_CR_OS_WINCE_)
-        #define _CR_NO_POSIX64_
-    #else
-        #define _CR_MS_POSIX64_
-    #endif
-    /*------------------------------------------------*/
-
     /* LIBC 支持 C99 数学函数设置 */
     #if defined(_CR_OS_WINCE_)
         #define _CR_NO_MATHC99_
