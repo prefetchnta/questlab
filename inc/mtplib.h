@@ -64,7 +64,7 @@ CR_API void_t   thread_sleep (uint_t time_ms CR_DEFAULT(0));
 /*                                 线程同步                                  */
 /*****************************************************************************/
 
-#ifndef _CR_NO_MT_
+#if !defined(_CR_NO_MT_)
 
 /* 原子算术运算 */
 CR_API void_t   atom_inc (sint_t volatile *dst);
@@ -79,16 +79,6 @@ CR_API void_t   crisec_del (crsc_t crisec);
 CR_API void_t   crisec_enter (crsc_t crisec);
 CR_API void_t   crisec_leave (crsc_t crisec);
 
-/* 临界区操作简化宏 */
-#define crisec_acquire() \
-                        crsc_t  crisec; \
-                        crisec = crisec_new(); \
-                        if (crisec != NULL) \
-                            crisec_enter(crisec)
-#define crisec_release() \
-                        if (crisec != NULL) { \
-                            crisec_leave(crisec); \
-                            crisec_del(crisec); }
 /* 多线程锁相关操作 */
 CR_API void_t   mtlock_init (lock_t volatile *lock);
 CR_API void_t   mtlock_free (lock_t volatile *lock);
@@ -178,8 +168,6 @@ atom_set (
 #define crisec_del(crisec)
 #define crisec_enter(crisec)
 #define crisec_leave(crisec)
-#define crisec_acquire()
-#define crisec_release()
 #define mtlock_init(lock)
 #define mtlock_free(lock)
 #define mtlock_acquire(lock)

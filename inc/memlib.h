@@ -64,116 +64,15 @@ CR_API void_t*  mem_size (const void_t *ptr, leng_t *size);
 /*                               内存基本操作                                */
 /*****************************************************************************/
 
-/* 16bit 巨模式基本操作映射 */
-#if     defined(_CR_LARGE_)
-    #define mem_set     mem_far_set
-    #define mem_cpy     mem_far_cpy
-    #define mem_cmp     mem_far_cmp
-    #define mem_mov     mem_far_mov
-    #define mem_zero    mem_far_zero
-    #define mem_setw    mem_far_setw
-    #define mem_setd    mem_far_setd
-    #define mem_setq    mem_far_setq
-    #define mem_sett    mem_far_sett
+/* 使用 LIBC 内存操作 (默认) */
+#ifndef _CR_NO_STDC_
+    #define mem_set     memset
+    #define mem_cpy     memcpy
+    #define mem_cmp     memcmp
+    #define mem_mov     memmove
+#endif
 
-CR_API void_t*  mem_far_set (void_t *dst, byte_t val, leng_t len);
-CR_API void_t*  mem_far_cpy (void_t *dst, const void_t *src, leng_t len);
-CR_API sint_t   mem_far_cmp (const void_t *dst, const void_t *src, leng_t len);
-CR_API void_t*  mem_far_mov (void_t *dst, const void_t *src, leng_t len);
-CR_API void_t*  mem_far_zero (void_t *dst, leng_t len);
-CR_API void_t*  mem_far_setw (void_t *dst, int16u val, leng_t len);
-CR_API void_t*  mem_far_setd (void_t *dst, int32u val, leng_t len);
-CR_API void_t*  mem_far_setq (void_t *dst, int64u val, leng_t len);
-CR_API void_t*  mem_far_sett (void_t *dst, const byte_t val[3], leng_t len);
-
-#endif  /* 函数 mem_****() 重映射 */
-
-/* 使用 LIBC 提供的内存操作 (默认) */
-#if !defined(_CR_NO_STDC_) && \
-    !defined(mem_set) && !defined(mem_cpy) && \
-    !defined(mem_cmp) && !defined(mem_mov)
-    #define mem_set     mem_set_stdc
-    #define mem_cpy     mem_cpy_stdc
-    #define mem_cmp     mem_cmp_stdc
-    #define mem_mov     mem_mov_stdc
-/*
-=======================================
-    STDC 内存填充
-=======================================
-*/
-#if defined(_CR_NO_INLINE_)
-    #define mem_set_stdc    memset
-#else
-cr_inline void_t*
-mem_set_stdc (
-  __CR_OT__ void_t* dst,
-  __CR_IN__ byte_t  val,
-  __CR_IN__ leng_t  len
-    )
-{
-    return (memset(dst, val, len));
-}
-#endif  /* _CR_NO_INLINE_ */
-
-/*
-=======================================
-    STDC 内存复制
-=======================================
-*/
-#if defined(_CR_NO_INLINE_)
-    #define mem_cpy_stdc    memcpy
-#else
-cr_inline void_t*
-mem_cpy_stdc (
-  __CR_OT__ void_t*         dst,
-  __CR_IN__ const void_t*   src,
-  __CR_IN__ leng_t          len
-    )
-{
-    return (memcpy(dst, src, len));
-}
-#endif  /* _CR_NO_INLINE_ */
-
-/*
-=======================================
-    STDC 内存比较
-=======================================
-*/
-#if defined(_CR_NO_INLINE_)
-    #define mem_cmp_stdc    memcmp
-#else
-cr_inline sint_t
-mem_cmp_stdc (
-  __CR_IN__ const void_t*   dst,
-  __CR_IN__ const void_t*   src,
-  __CR_IN__ leng_t          len
-    )
-{
-    return (memcmp(dst, src, len));
-}
-#endif  /* _CR_NO_INLINE_ */
-
-/*
-=======================================
-    STDC 内存移动
-=======================================
-*/
-#if defined(_CR_NO_INLINE_)
-    #define mem_mov_stdc    memmove
-#else
-cr_inline void_t*
-mem_mov_stdc (
-  __CR_OT__ void_t*         dst,
-  __CR_IN__ const void_t*   src,
-  __CR_IN__ leng_t          len
-    )
-{
-    return (memmove(dst, src, len));
-}
-#endif  /* _CR_NO_INLINE_ */
-
-#endif  /* !_CR_NO_STDC_ && !mem_set() && !mem_cpy() &&
-                            !mem_cpy() && !mem_mov() */
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     内存填充
@@ -278,27 +177,6 @@ mem_mov (
 }
 #endif  /* !mem_mov() */
 
-/*
-=======================================
-    内存清零
-=======================================
-*/
-#ifndef mem_zero
-#if defined(_CR_NO_INLINE_)
-    #define mem_zero(d, n)  mem_set(d, 0, n)
-#else
-cr_inline void_t*
-mem_zero (
-  __CR_OT__ void_t* dst,
-  __CR_IN__ leng_t  len
-    )
-{
-    return (mem_set(dst, 0, len));
-}
-#endif  /* _CR_NO_INLINE_ */
-#endif  /* !mem_zero() */
-
-#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     单字填充
@@ -412,6 +290,7 @@ mem_sett (
 #define  chr_cmpW(d, s, n)  (sint_t)mem_cmp(d, s, (n) * sizeof(wide_t))
 
 /* 结构数组清除操作宏 */
+#define mem_zero(d, n)      mem_set(d, 0, n)
 #define mem_tzero(d, n, t)  mem_czero(d, n, sizeof(t))
 #define mem_czero(d, n, s)  mem_zero(d, (leng_t)(n) * (leng_t)(s))
 

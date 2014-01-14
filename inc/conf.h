@@ -458,6 +458,16 @@
 /*                               依赖开关配置                                */
 /*****************************************************************************/
 
+/* C 函数库相关 */
+#if defined(_CR_NO_MT_)
+    #undef  CR_BTEX_FAIL
+#endif
+#if defined(_CR_NO_STDC_)
+    #undef  CR_BTEX_FAIL
+    #undef  _CR_HAVE_WCS_
+    #define _CR_NO_ERRNO_
+#endif
+
 /* 字节顺序相关 */
 #if defined(_CR_NO_CSWAP_)
     #define _CR_NO_CSWAP32_
@@ -517,11 +527,6 @@
     /*
 #undef  _CR_NO_STDC_
     */
-#if defined(_CR_NO_STDC_)
-    #undef  CR_BTEX_FAIL
-    #undef  _CR_HAVE_WCS_
-    #define _CR_NO_ERRNO_
-#endif
 
 /* 关闭内存分配调试计数
    默认: 不关闭 */
