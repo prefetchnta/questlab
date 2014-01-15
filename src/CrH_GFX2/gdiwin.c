@@ -1293,6 +1293,41 @@ create_gdi_fontW (
     return ((iFONT*)font);
 }
 
+/*****************************************************************************/
+/*                                 接口导出                                  */
+/*****************************************************************************/
+
+static const sGDI_CALL _rom_ s_gdi_call =
+{
+    /* 创建 */
+    create_gdi_bitmap,
+    create_gdi_fontA,
+    create_gdi_fontW,
+
+    /* 绘制 */
+    fill_gdi_draw,
+    blit_gdi_copy,
+    blit_gdi_zoom,
+#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
+    blit_gdi_tran,
+#endif
+#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0500)
+    blit_gdi_blend,
+    blit_gdi_alpha,
+#endif
+};
+
+/*
+=======================================
+    获取 GDI 调用接口表
+=======================================
+*/
+CR_API const sGDI_CALL*
+gdi_call_get (void_t)
+{
+    return (&s_gdi_call);
+}
+
 #endif  /* !__CR_GDIWIN_C__ */
 
 /*****************************************************************************/

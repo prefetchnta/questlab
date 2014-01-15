@@ -97,6 +97,48 @@ typedef struct
 CR_API iFONT*   create_gdi_fontA (const LOGFONTA *lplf);
 CR_API iFONT*   create_gdi_fontW (const LOGFONTW *lplf);
 
+/*****************************************************************************/
+/*                                 接口导出                                  */
+/*****************************************************************************/
+
+/* GDI 调用接口表 */
+typedef struct
+{
+    /* 离屏表面 */
+    iGFX2_GDI*  (*create_bitmap) (uint_t width, uint_t height,
+                                  uint_t crh_fmt, int32u ext_fmt,
+                                  const int32u *param, uint_t count);
+    /* 文字生成 */
+    iFONT*  (*create_fontA) (const LOGFONTA *lplf);
+
+    iFONT*  (*create_fontW) (const LOGFONTW *lplf);
+
+    /* 原生绘图 */
+    bool_t  (*fill_draw) (const iGFX2_GDI *dst, const sFILL *fill,
+                          cl32_t color);
+
+    bool_t  (*blit_copy) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
+                          const sBLIT *blit);
+
+    bool_t  (*blit_zoom) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
+                          const sZOOM *zoom);
+
+#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
+    bool_t  (*blit_tran) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
+                          const sBLIT *blit, cl32_t trans);
+#endif
+#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0500)
+    bool_t  (*blit_blend) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
+                           const sBLIT *blit);
+
+    bool_t  (*blit_alpha) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
+                           const sBLIT *blit, uint_t alpha);
+#endif
+} sGDI_CALL;
+
+/* 获取 GDI 调用接口表 */
+CR_API const sGDI_CALL* gdi_call_get (void_t);
+
 #endif  /* !__CR_GDIWIN_H__ */
 
 /*****************************************************************************/
