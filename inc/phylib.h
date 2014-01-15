@@ -120,7 +120,7 @@ CR_API byte_t   color_step_do (cstep_t cstep, byte_t dst[3], sint_t hue);
     A - 青蓝    B - 蓝色    C - 蓝紫    D - 紫色    E - 紫红
 ****************************************************************
 */
-CR_API const byte_t _rom_ g_cstep_pal[64];
+CR_API void_t   color_step_pal (int32u *pal, uint_t count);
 
 /*****************************************************************************/
 /*                                   图像                                    */
