@@ -125,7 +125,7 @@ WinMain (
     sbin = sbin_loadA("GFX2_GDI.dll");
     if (sbin == NULL)
         return (QST_ERROR);
-    func = sbin_exportT(sbin, "create_gdi_canvas", create_gfx2_t);
+    func = sbin_exportT(sbin, "create_canvas", create_gfx2_t);
     if (func == NULL)
         return (QST_ERROR);
 
