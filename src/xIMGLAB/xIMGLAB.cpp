@@ -14,9 +14,6 @@ typedef bool_t  (*ilab_init_t) (uint_t, ansi_t**);
 typedef bool_t  (*ilab_main_t) (sILAB_OUTPUT*, const sILAB_INPUT*);
 typedef void_t  (*ilab_kill_t) (void_t);
 
-/* 生成字体用的接口类型 */
-typedef iFONT*  (*create_font_t) (const LOGFONTA*);
-
 /* OpenCV 转换工具函数类型 */
 typedef bool_t  (*ipl2img_set_t) (sIMAGE*, const ipls_t*);
 typedef bool_t  (*img2ipl_set_t) (ipls_t*, const sIMAGE*);
@@ -230,18 +227,18 @@ WinMain (
         ilab_inpt.ilab_img2ipl_dup == NULL)
         return (QST_ERROR);
 
-    create_gfx2_t   gfx2_func;
-    create_font_t   gdi_fontA;
+    create_gfx2_t       gfx2_func;
+    const sGDI_CALL*    gdi_calls;
 
     /* 加载 GDI 绘制插件 (限制到 GDI) */
     sbin = sbin_loadA("GFX2_GDI.dll");
     if (sbin == NULL)
         return (QST_ERROR);
-    gfx2_func = sbin_exportT(sbin, "create_gdi_canvas", create_gfx2_t);
+    gfx2_func = sbin_exportT(sbin, "create_canvas", create_gfx2_t);
     if (gfx2_func == NULL)
         return (QST_ERROR);
-    gdi_fontA = sbin_exportT(sbin, "create_gdi_fontA", create_font_t);
-    if (gdi_fontA == NULL)
+    gdi_calls = sbin_callgetT(sbin, "gdi_call_get", sGDI_CALL);
+    if (gdi_calls == NULL)
         return (QST_ERROR);
 
     HWND    hwnd;
@@ -344,7 +341,7 @@ WinMain (
     fnta.lfQuality = ANTIALIASED_QUALITY;
     fnta.lfHeight = 12;
     str_cpyA(fnta.lfFaceName, "Fixedsys");
-    font = gdi_fontA(&fnta);
+    font = gdi_calls->create_fontA(&fnta);
     if (font == NULL || !CR_VCALL(font)->bind(font, draw)) {
         fmtz_free(fmtz);
         window_kill(hwnd, curt_app, WIN_CLASS);

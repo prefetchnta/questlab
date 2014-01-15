@@ -49,7 +49,7 @@ CR_API void_t*  sbin_callget (sbin_t sbin, const ansi_t *name);
                 (type)sbin_export(sbin, name)
 
 #define sbin_callgetT(sbin, name, type) \
-            (const type)sbin_callget(sbin, name)
+            (const type*)sbin_callget(sbin, name)
 
 #endif  /* !__CR_PLUGIN_H__ */
 
