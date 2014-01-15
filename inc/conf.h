@@ -516,8 +516,8 @@
 #undef  _CR_ALL_ERROR_INFO_
     */
 
-/* 建立 DLL 时定义 (SO 不用)
-   默认: 不建立 DLL */
+/* 建立 DLL 或 SO 时定义
+   默认: 不建立 DLL/SO */
     /*
 #undef  _CR_BUILD_DLL_
     */

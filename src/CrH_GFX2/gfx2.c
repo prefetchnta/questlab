@@ -23,6 +23,7 @@
 #include "defs.h"
 
 /* DLL 自定义入口点 */
+#if defined(_CR_OS_MSWIN_)
 #if defined(_CR_BUILD_DLL_)
 
 #include <windows.h>
@@ -62,6 +63,7 @@ DllMain (
 }
 
 #endif  /* _CR_BUILD_DLL_ */
+#endif  /* _CR_OS_MSWIN_ */
 
 #endif  /* !__CR_GFX2_C__ */
 
