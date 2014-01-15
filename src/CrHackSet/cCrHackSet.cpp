@@ -2,9 +2,6 @@
 #include "../QstView2D/QstView2D.h"
 
 /* 有用的函数类型 */
-typedef iFONT*  (*create_font_t) (const LOGFONTA*);
-typedef iGFX2*  (*create_surf_t) (uint_t, uint_t, uint_t,
-                                int32u, const int32u*, uint_t);
 typedef void_t  (*flldraw_t) (const sIMAGE*, const sFILL*,
                               cpix_t, const sRECT*);
 /* 全局绘制参数 */
@@ -20,8 +17,7 @@ static pixdraw_t    s_pixdraw = pixel_set32z;       /* 绘制模式 */
 static flldraw_t    s_flldraw = fill_set32_c;       /* 填充模式 */
 
 /* 用到的 GFX2_GDI.dll 里的函数 */
-static create_font_t    s_create_gdi_fontA  = NULL;
-static create_surf_t    s_create_gdi_bitmap = NULL;
+static const sGDI_CALL* s_gdi_calls = NULL;
 
 /*
 ---------------------------------------
@@ -54,20 +50,13 @@ qst_crh_init (
     CR_NOUSE(argc);
     CR_NOUSE(argv);
 
-    /* 两个用到的外部函数 */
+    /* 用到的外部函数 */
+    s_gdi_calls = NULL;
     sbin = sbin_testA("GFX2_GDI.dll");
     if (sbin == NULL)
         sbin = sbin_loadA("GFX2_GDI.dll");
-    if (sbin == NULL) {
-        s_create_gdi_fontA = NULL;
-        s_create_gdi_bitmap = NULL;
-    }
-    else {
-        s_create_gdi_fontA = sbin_exportT(sbin,
-                        "create_gdi_fontA", create_font_t);
-        s_create_gdi_bitmap = sbin_exportT(sbin,
-                        "create_gdi_bitmap", create_surf_t);
-    }
+    if (sbin != NULL)
+        s_gdi_calls = sbin_callgetT(sbin, "gdi_call_get", sGDI_CALL);
     return (TRUE);
 }
 
@@ -692,8 +681,8 @@ qst_crh_text_int (
     if (is_gdi_text_out())
     {
         /* 创建一个临时 GDI 表面然后复制输出的结果到目标画布 */
-        gfx2 = s_create_gdi_bitmap(draw->position.ww, draw->position.hh,
-                                   CR_ARGB8888, 0, NULL, 0);
+        gfx2 = (iGFX2*)s_gdi_calls->create_bitmap(draw->position.ww,
+                        draw->position.hh, CR_ARGB8888, 0, NULL, 0);
         if (gfx2 == NULL)
             return (FALSE);
 
@@ -867,8 +856,7 @@ qst_crh_winfont (
                 [StrikeOut] [Escapement] [Orientation] */
     if (argc < 3)
         return (FALSE);
-    if (s_create_gdi_fontA == NULL ||
-        s_create_gdi_bitmap == NULL)
+    if (s_gdi_calls == NULL)
         return (FALSE);
 
     /* 填充字体生成结构 */
@@ -901,7 +889,7 @@ qst_crh_winfont (
     /* 生成文字输出对象 */
     if (s_font != NULL)
         CR_VCALL(s_font)->release(s_font);
-    s_font = s_create_gdi_fontA(&font);
+    s_font = s_gdi_calls->create_fontA(&font);
     if (s_font == NULL)
         return (FALSE);
     return (TRUE);
