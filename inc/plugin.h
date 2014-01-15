@@ -34,15 +34,22 @@ CR_API sbin_t   sbin_loadA (const ansi_t *name);
 CR_API sbin_t   sbin_loadW (const wide_t *name);
 CR_API bool_t   sbin_unload (sbin_t sbin);
 
-/* 导出项的类型包装宏 */
-#define sbin_exportT(sbin, name, type) \
-                            (type)sbin_export(sbin, name)
 /* 获取模块导出项地址 */
 CR_API void_t*  sbin_export (sbin_t sbin, const ansi_t *name);
 
 /* 获取已加载的模块 */
 CR_API sbin_t   sbin_testA (const ansi_t *name);
 CR_API sbin_t   sbin_testW (const wide_t *name);
+
+/* 调用接口获取接口表 */
+CR_API void_t*  sbin_callget (sbin_t sbin, const ansi_t *name);
+
+/* 导出项的类型包装宏 */
+#define sbin_exportT(sbin, name, type) \
+                (type)sbin_export(sbin, name)
+
+#define sbin_callgetT(sbin, name, type) \
+                (type)sbin_callget(sbin, name)
 
 #endif  /* !__CR_PLUGIN_H__ */
 
