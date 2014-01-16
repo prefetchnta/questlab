@@ -1,5 +1,8 @@
 @echo off
 call build.bat
+cd CrH_BLIT
+call build.bat
+cd..
 cd CrH_FMTZ
 call build.bat
 cd..
