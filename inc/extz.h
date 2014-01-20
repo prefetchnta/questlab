@@ -71,10 +71,6 @@ CR_API bool_t   win_wav_play  (const void_t *data, int32u flags);
 CR_API bool_t   win_wav_playA (const ansi_t *name, int32u flags);
 CR_API bool_t   win_wav_playW (const wide_t *name, int32u flags);
 
-/* Windows MCI 媒体播放 */
-CR_API bool_t   mci_cd_play (uint_t track);
-CR_API bool_t   mci_cd_stop (void_t);
-
 /* DirectShow 媒体播放 */
 typedef void_t*     dshow_t;
 

@@ -41,6 +41,7 @@ CR_API bool_t       egui_res_load_s (egui_t egui, const ansi_t *text,
 CR_API bool_t       egui_res_load_f (egui_t egui, const ansi_t *name,
                                      uint_t type, engine_init_t port);
 CR_API bool_t       egui_res_set_root (egui_t egui, const ansi_t *root);
+CR_API void_t       egui_res_set_cpage (egui_t egui, uint_t cpage);
 
 /* 查找资源对象 */
 CR_API sFMTZ*       egui_res_get (egui_t egui, const ansi_t *name);
@@ -52,7 +53,9 @@ CR_API sIMAGE*      egui_res_get_img (egui_t egui, const ansi_t *name,
                                       int32u index, sRECT *rect);
 CR_API sRECT*       egui_res_get_rct (egui_t egui, const ansi_t *name);
 CR_API ansi_t*      egui_res_get_txt (egui_t egui, const ansi_t *name);
-CR_API sFMT_PIC*    egui_res_get_anm (egui_t egui, const ansi_t *name);
+CR_API iPICTURE*    egui_res_get_anm (egui_t egui, const ansi_t *name);
+CR_API iPACKAGE*    egui_res_get_pak (egui_t egui, const ansi_t *name);
+CR_API iXMMEDIA*    egui_res_get_xmm (egui_t egui, const ansi_t *name);
 
 /*****************************************************************************/
 /*                                 绘制布局                                  */
