@@ -367,7 +367,7 @@ WinMain (
     fmtz_free((sFMTZ*)picz);
     struct_zero(&ilab_outp, sILAB_OUTPUT);
 
-    timer_t log = timer_new();
+    xtime_t log = timer_new();
 
     /* 消息循环 */
     for (;;)

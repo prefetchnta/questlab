@@ -1024,7 +1024,7 @@ qst_v2d_main (
     exec_t      obj;
     uint_t      tim;
     fp32_t      tot;
-    timer_t     log;
+    xtime_t     log;
     sQstView2D* ctx;
 
     /* 加载命令表 */
