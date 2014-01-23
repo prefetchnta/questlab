@@ -27,7 +27,8 @@
 /*****************************************************************************/
 
 /* 函数调用规范 */
-#if defined(_CR_AR_X86_)
+#if defined(_CR_AR_X86_) && \
+    defined(_CR_OS_WIN32_)
     #define CCCCALL     __cdecl
     #define STDCALL     __stdcall
     #define REGCALL     __fastcall

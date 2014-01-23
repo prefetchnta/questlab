@@ -67,7 +67,7 @@
     /*------------------------------------------------*/
 
     /* 编译器版本过滤 */
-    #if (_CR_CC_VER_ < 20700)
+    #if (_CR_CC_VER_ < 40200)
         #error "gcc.h: CC TYPE not supported yet!"
     #endif
     /*------------------------------------------------*/
@@ -251,15 +251,9 @@
     /*------------------------------------------------*/
 
     /* 编译器分支优化指示 */
-    #if (_CR_CC_VER_ < 20900)
-        #define surely(x)   (x)
-        #define mostly(x)   (x)
-        #define rarely(x)   (x)
-    #else
-        #define surely(x)   (x)
-        #define mostly(x)   __builtin_expect(!!(x), 1)
-        #define rarely(x)   __builtin_expect(!!(x), 0)
-    #endif
+    #define surely(x)   (x)
+    #define mostly(x)   __builtin_expect(!!(x), 1)
+    #define rarely(x)   __builtin_expect(!!(x), 0)
     /*------------------------------------------------*/
 
     /* 编译器不支持多线程 */

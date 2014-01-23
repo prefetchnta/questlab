@@ -23,11 +23,9 @@
 #include "defs.h"
 
 /* 用到的数据类型 */
+typedef uint_t      lock_t;     /* 多线程锁类型 */
 typedef void_t*     thrd_t;     /* 线程句柄类型 */
 typedef void_t*     crsc_t;     /* 临界区的类型 */
-typedef void_t*     lock_t;     /* 多线程锁类型 */
-typedef void_t*     mtpool_t;   /* 线程缓冲类型 */
-typedef void_t*     mtunit_t;   /* 线程单元类型 */
 
 /*****************************************************************************/
 /*                                 线程控制                                  */
@@ -50,7 +48,7 @@ CR_API sint_t   thread_prrt_max (void_t);
 CR_API thrd_t   thread_new (uint_t stack_size, mt_main_t main,
                             void_t *param, bool_t suspended,
                             sint_t priority CR_DEFAULT(CR_PRRT_NRM),
-                            uint_t *addition CR_DEFAULT(NULL));
+                            size_t *addition CR_DEFAULT(NULL));
 CR_API void_t   thread_del (thrd_t thread);
 
 /* 线程控制操作 */
@@ -178,29 +176,6 @@ atom_set (
 #define splock_release(lock)
 
 #endif  /* !_CR_NO_MT_ */
-
-/*****************************************************************************/
-/*                                 线程缓冲                                  */
-/*****************************************************************************/
-
-/***** 原生函数 *****/
-CR_API void_t   thread_unit_over (mtunit_t self);
-CR_API void_t   thread_unit_done (mtunit_t self);
-CR_API bool_t   thread_unit_quit (mtunit_t self);
-CR_API void_t*  thread_unit_user (mtunit_t self);
-CR_API mtpool_t thread_pool_new (leng_t unit, uint_t count,
-                                 uint_t stack_size, mt_main_t work_proc);
-CR_API void_t   thread_pool_del (mtpool_t pool, uint_t timeout);
-CR_API uint_t   thread_pool_info (mtpool_t pool, uint_t *cn_free,
-                                  uint_t *cn_over);
-CR_API bool_t   thread_pool_wakeup (mtpool_t pool, const void_t *param);
-
-/***** 类型封装 *****/
-#define thread_unit_userT(type, self) \
- ((type*)thread_unit_user(self))
-
-#define thread_pool_newT(type, count, stack_size, work_proc) \
-         thread_pool_new(sizeof(type), count, stack_size, work_proc)
 
 #endif  /* !__CR_MTPLIB_H__ */
 
