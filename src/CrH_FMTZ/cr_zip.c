@@ -332,6 +332,7 @@ load_cr_zip (
     leng_t          len;
     leng_t          read;
     sARRAY          list;
+    int32u          tags;
     ansi_t*         name;
     ansi_t*         utf8;
     fdist_t         offs;
@@ -477,6 +478,27 @@ load_cr_zip (
                     "load_cr_zip()", "array_push_growT() failure");
             mem_free(utf8);
             goto _failure;
+        }
+
+        /* 可能会有数据描述区 */
+        unit.flags = WORD_LE(unit.flags);
+        if (unit.flags & 8) {
+            if (!CR_VCALL(datin)->getd_no(datin, &tags)) {
+                err_set(__CR_ZIP_C__, FALSE,
+                        "load_cr_zip()", "iDATIN::getd_no() failure");
+                goto _failure;
+            }
+
+            /* 可能会没有头部标志 */
+            if (tags == mk_tag4("PK\x07\x08"))
+                offs = 3 * sizeof(int32u);
+            else
+                offs = 2 * sizeof(int32u);
+            if (!CR_VCALL(datin)->seek(datin, offs, SEEK_CUR)) {
+                err_set(__CR_ZIP_C__, FALSE,
+                        "load_cr_zip()", "iDATIN::seek() failure");
+                goto _failure;
+            }
         }
     }
 
