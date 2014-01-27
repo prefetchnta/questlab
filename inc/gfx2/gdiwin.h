@@ -28,14 +28,11 @@
 /*                                 绘制接口                                  */
 /*****************************************************************************/
 
-/* 目前只使用通用的虚函数表 */
-#define iGFX2_GDI_vtbl  iGFX2_vtbl
-
 /* GDI 具体实现结构 */
 typedef struct
 {
         /* 虚函数表 */
-        const iGFX2_GDI_vtbl*   __vptr__;
+        const iGFX2_vtbl*   __vptr__;
 
         /* 数据成员 */
         sIMAGE  __back__;   /* 显示屏的后台缓冲 */
@@ -74,14 +71,11 @@ CR_API bool_t   blit_gdi_alpha (const iGFX2_GDI *dst, const iGFX2_GDI *src,
 /*                                 文字接口                                  */
 /*****************************************************************************/
 
-/* 目前只使用通用的虚函数表 */
-#define iFONT_GDI_vtbl  iFONT_vtbl
-
 /* GDI 具体实现结构 */
 typedef struct
 {
         /* 虚函数表 */
-        const iFONT_GDI_vtbl*   __vptr__;
+        const iFONT_vtbl*   __vptr__;
 
         /* 数据成员 */
         int32u  __draw_mode__;              /* 模式 (平台相关) */

@@ -34,13 +34,11 @@
     #pragma comment (lib, "gx.lib")
 #endif
 
-#define iGFX2_GX_vtbl   iGFX2_vtbl
-
 /* 接口内部数据结构 */
 typedef struct
 {
         /* 虚函数表 */
-        const iGFX2_GX_vtbl*    __vptr__;
+        const iGFX2_vtbl*   __vptr__;
 
         /* 数据成员 */
         sIMAGE  __back__;   /* 显示屏的缓冲 */
@@ -295,14 +293,14 @@ iGFX2_GX_setPal (
 }
 
 /* 接口虚函数表 */
-static const iGFX2_GX_vtbl _rom_ s_main_vtbl =
+static const iGFX2_vtbl _rom_ s_main_vtbl =
 {
     iGFX2_GX_rel_main, iGFX2_GX_getMore,
     iGFX2_GX_reset, iGFX2_GX_lock_main, iGFX2_GX_unlock_main,
     iGFX2_GX_flip_main, iGFX2_GX_clear_main, iGFX2_GX_setPal,
 };
 
-static const iGFX2_GX_vtbl _rom_ s_back_vtbl =
+static const iGFX2_vtbl _rom_ s_back_vtbl =
 {
     iGFX2_GX_rel_back, iGFX2_GX_getMore,
     iGFX2_GX_reset, iGFX2_GX_lock_back, iGFX2_GX_unlock_back,
