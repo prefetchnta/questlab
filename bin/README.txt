@@ -1,4 +1,5 @@
 【更新日志】
+　2014-01-27　GFX2 图形插件 GFX2_D3D8.dll 开始开发
 　2013-11-25　子项目 QstData 正式开始
 　2013-11-13　子项目 QstHash 正式开始
 　2013-11-12　废弃 Notepad++，SciTE 成为第一个外部应用扩展
@@ -54,7 +55,9 @@
 　2011-12-29　给 GameViewer 增加了摄像头和 OpenCV 的支持，添加了一些图片滤镜
 　2011-12-08　FreeImage 引擎插件 zFreeImage.dll（引入 FreeImage SDK）
 　2010-03-22　逃出疯人院，获得新的生命
+　2010-01-27　软件 2D 渲染模块 CrH_BLIT.dll 建立
 　2010-01-25　第一个 FMTz 引擎插件 CrH_FMTZ.dll
+　2010-01-07　第一个 GFX2 图形插件 GFX2_GDI.dll
 　2009-12-15　跨平台基础库项目 CrHack 正式开始，所有开发的基石
 　2008-09-22　停止 GameViewer 的开发
 　2006-11-16　开始 GameViewer 的开发
