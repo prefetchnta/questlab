@@ -607,6 +607,44 @@ CR_API sIMAGE*  img_auto_to_xx (sIMAGE *dst, const sIMAGE *src);
 /*                              常用的颜色常数                               */
 /*****************************************************************************/
 
+/* 标准颜色常数 */
+#define clrAqua         CR_CRGBA(0x00, 0xFF, 0xFF, 255) /* 水绿色 */
+#define clrBlack        CR_CRGBA(0x00, 0x00, 0x00, 255) /* 黑  色 */
+#define clrBlue         CR_CRGBA(0x00, 0x00, 0xFF, 255) /* 蓝  色 */
+#define clrFuchsia      CR_CRGBA(0xFF, 0x00, 0xFF, 255) /* 紫红色 */
+#define clrGray         CR_CRGBA(0x80, 0x80, 0x80, 255) /* 灰  色 */
+#define clrGreen        CR_CRGBA(0x00, 0x80, 0x00, 255) /* 绿  色 */
+#define clrLime         CR_CRGBA(0x00, 0xFF, 0x00, 255) /* 酸橙绿 */
+#define clrMaroon       CR_CRGBA(0x80, 0x00, 0x00, 255) /* 褐红色 */
+#define clrNavy         CR_CRGBA(0x00, 0x00, 0x80, 255) /* 海军蓝 */
+#define clrOlive        CR_CRGBA(0x00, 0x80, 0x00, 255) /* 橄榄绿 */
+#define clrOrange       CR_CRGBA(0xFF, 0xA5, 0x00, 255) /* 橙  色 */
+#define clrPurple       CR_CRGBA(0x80, 0x00, 0x80, 255) /* 紫  色 */
+#define clrRed          CR_CRGBA(0xFF, 0x00, 0x00, 255) /* 红  色 */
+#define clrSilver       CR_CRGBA(0xC0, 0xC0, 0xC0, 255) /* 银  色 */
+#define clrTeal         CR_CRGBA(0x00, 0x80, 0x80, 255) /* 蓝绿色 */
+#define clrWhite        CR_CRGBA(0xFF, 0xFF, 0xFF, 255) /* 白  色 */
+#define clrYellow       CR_CRGBA(0xFF, 0xFF, 0x00, 255) /* 黄  色 */
+
+/* WEB 颜色常数 */
+#define webAqua         CR_CRGBA(0x7F, 0xDB, 0xFF, 255) /* 水绿色 */
+#define webBlack        CR_CRGBA(0x11, 0x11, 0x11, 255) /* 黑  色 */
+#define webBlue         CR_CRGBA(0x00, 0x74, 0xD9, 255) /* 蓝  色 */
+#define webFuchsia      CR_CRGBA(0xF0, 0x12, 0xBE, 255) /* 紫红色 */
+#define webGray         CR_CRGBA(0xAA, 0xAA, 0xAA, 255) /* 灰  色 */
+#define webGreen        CR_CRGBA(0x2E, 0xCC, 0x40, 255) /* 绿  色 */
+#define webLime         CR_CRGBA(0x01, 0xFF, 0x70, 255) /* 酸橙绿 */
+#define webMaroon       CR_CRGBA(0x85, 0x14, 0x4B, 255) /* 褐红色 */
+#define webNavy         CR_CRGBA(0x00, 0x1F, 0x3F, 255) /* 海军蓝 */
+#define webOlive        CR_CRGBA(0x3D, 0x99, 0x70, 255) /* 橄榄绿 */
+#define webOrange       CR_CRGBA(0xFF, 0x85, 0x1B, 255) /* 橙  色 */
+#define webPurple       CR_CRGBA(0xB1, 0x0D, 0xC9, 255) /* 紫  色 */
+#define webRed          CR_CRGBA(0xFF, 0x41, 0x36, 255) /* 红  色 */
+#define webSilver       CR_CRGBA(0xDD, 0xDD, 0xDD, 255) /* 银  色 */
+#define webTeal         CR_CRGBA(0x39, 0xCC, 0xCC, 255) /* 蓝绿色 */
+#define webWhite        CR_CRGBA(0xFF, 0xFF, 0xFF, 255) /* 白  色 */
+#define webYellow       CR_CRGBA(0xFF, 0xDC, 0x00, 255) /* 黄  色 */
+
 /* VCL 颜色常数 */
 #define vclAqua         CR_CRGBA(0x00, 0xFF, 0xFF, 255) /* 水绿色 */
 #define vclBlack        CR_CRGBA(0x00, 0x00, 0x00, 255) /* 黑  色 */
