@@ -62,6 +62,7 @@ typedef struct
         sIMAGE  __back__;   /* 显示屏的后台缓冲 */
 
         /* 个性部分 */
+        iGFX2_DX8M* m_device;   /* 设备对象 */
         sD3D8_TEXR* m_texture;  /* 纹理对象 */
 
 } iGFX2_DX8S;
@@ -71,7 +72,8 @@ CR_API iGFX2*   create_dx8_canvas (void_t *handle, uint_t scn_cw,
                             uint_t scn_ch, uint_t scn_fmt, bool_t full,
                                 const int32u *param, uint_t count);
 /* 生成 DX8 图形离屏表面 */
-CR_API iGFX2_DX8S*  create_dx8_bitmap (sD3D8_TEXR *texture);
+CR_API iGFX2_DX8S*  create_dx8_bitmap (iGFX2_DX8M *device,
+                                       sD3D8_TEXR *texture);
 
 /*****************************************************************************/
 /*                                 接口导出                                  */
@@ -81,7 +83,7 @@ CR_API iGFX2_DX8S*  create_dx8_bitmap (sD3D8_TEXR *texture);
 typedef struct
 {
     /* 离屏表面 */
-    iGFX2_DX8S* (*create_bitmap) (sD3D8_TEXR *texture);
+    iGFX2_DX8S* (*create_bitmap) (iGFX2_DX8M *device, sD3D8_TEXR *texture);
 
 } sDX8_CALL;
 
