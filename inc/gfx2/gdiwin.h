@@ -123,17 +123,14 @@ typedef struct
     bool_t  (*blit_zoom) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
                           const sZOOM *zoom);
 
-#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
     bool_t  (*blit_tran) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
                           const sBLIT *blit, cl32_t trans);
-#endif
-#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0500)
+
     bool_t  (*blit_blend) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
                            const sBLIT *blit);
 
     bool_t  (*blit_alpha) (const iGFX2_GDI *dst, const iGFX2_GDI *src,
                            const sBLIT *blit, uint_t alpha);
-#endif
 } sGDI_CALL;
 
 /* 获取 GDI 调用接口表 */

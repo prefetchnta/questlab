@@ -651,6 +651,10 @@ create_canvas (
 }
 #endif  /* _CR_BUILD_DLL_ */
 
+/*****************************************************************************/
+/*                                 原生绘制                                  */
+/*****************************************************************************/
+
 /*
 =======================================
     直接填充操作
@@ -736,9 +740,6 @@ blit_gdi_zoom (
     return (TRUE);
 }
 
-/* Windows CE 4.0+ 支持 */
-#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
-
 /*
 =======================================
     透明 BLT 操作
@@ -752,6 +753,9 @@ blit_gdi_tran (
   __CR_IN__ cl32_t              trans
     )
 {
+    /* Windows CE 4.0+ 支持 */
+#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
+
     if (trans == 0x00000000UL)
         return (blit_gdi_copy(dst, src, blit));
 
@@ -766,12 +770,16 @@ blit_gdi_tran (
         return (FALSE);
     }
     return (TRUE);
-}
+#else
+
+    CR_NOUSE(dst);
+    CR_NOUSE(src);
+    CR_NOUSE(blit);
+    CR_NOUSE(trans);
+    return (FALSE);
 
 #endif  /* OS TYPE predefines */
-
-/* Windows CE 5.0+ 支持 */
-#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0500)
+}
 
 /*
 =======================================
@@ -785,6 +793,9 @@ blit_gdi_blend (
   __CR_IN__ const sBLIT*        blit
     )
 {
+    /* Windows CE 5.0+ 支持 */
+#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0500)
+
     BLENDFUNCTION   blend;
 
     blend.BlendOp = AC_SRC_OVER;
@@ -802,6 +813,14 @@ blit_gdi_blend (
         return (FALSE);
     }
     return (TRUE);
+#else
+
+    CR_NOUSE(dst);
+    CR_NOUSE(src);
+    CR_NOUSE(blit);
+    return (FALSE);
+
+#endif  /* OS TYPE predefines */
 }
 
 /*
@@ -817,6 +836,9 @@ blit_gdi_alpha (
   __CR_IN__ uint_t              alpha
     )
 {
+    /* Windows CE 5.0+ 支持 */
+#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0500)
+
     BLENDFUNCTION   blend;
 
     blend.BlendOp = AC_SRC_OVER;
@@ -834,9 +856,16 @@ blit_gdi_alpha (
         return (FALSE);
     }
     return (TRUE);
-}
+#else
+
+    CR_NOUSE(dst);
+    CR_NOUSE(src);
+    CR_NOUSE(blit);
+    CR_NOUSE(alpha);
+    return (FALSE);
 
 #endif  /* OS TYPE predefines */
+}
 
 /*****************************************************************************/
 /*                                 文字接口                                  */
@@ -975,7 +1004,7 @@ iFONT_GDI_setColor (
   __CR_IN__ cl32_t  color
     )
 {
-/* Windows CE 4.0+ 支持 */
+    /* Windows CE 4.0+ 支持 */
 #if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
 
     COLORREF    temp;
@@ -1308,13 +1337,9 @@ static const sGDI_CALL _rom_ s_gdi_call =
     fill_gdi_draw,
     blit_gdi_copy,
     blit_gdi_zoom,
-#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0400)
     blit_gdi_tran,
-#endif
-#if !defined(_CR_OS_WINCE_) || (_WIN32_WCE >= 0x0500)
     blit_gdi_blend,
     blit_gdi_alpha,
-#endif
 };
 
 /*
