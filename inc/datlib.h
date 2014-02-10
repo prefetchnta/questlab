@@ -647,7 +647,7 @@ atree_sibling_next (
 {
     sATR_UNIT** ptr;
 
-    if (node->prev == NULL || node->npos + 1 >= node->next.__cnts__)
+    if (node->prev == NULL || node->npos + 1 >= node->prev->next.__cnts__)
         return (NULL);
     ptr = array_get_unitT(&node->prev->next, sATR_UNIT*, node->npos + 1);
     return (ptr[0]);
