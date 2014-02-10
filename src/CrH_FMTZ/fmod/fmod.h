@@ -1,6 +1,6 @@
 
 /* ============================================================================================ */
-/* FMOD Ex - Main C/C++ header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2011. */
+/* FMOD Ex - Main C/C++ header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2014. */
 /*                                                                                              */
 /* This header is the base header for all other FMOD headers.  If you are programming in C      */
 /* use this exclusively, or if you are programming C++ use this in conjunction with FMOD.HPP    */
@@ -15,7 +15,7 @@
     0xaaaabbcc -> aaaa = major version number.  bb = minor version number.  cc = development version number.
 */
 
-#define FMOD_VERSION    0x00044427
+#define FMOD_VERSION    0x00044430
 
 /*
     Compiler specific settings.
@@ -747,6 +747,7 @@ typedef enum
 #define FMOD_INIT_DISABLE_MYEARS_AUTODETECT  0x08000000 /* Win32 - Disables automatic setting of FMOD_SPEAKERMODE_STEREO to FMOD_SPEAKERMODE_MYEARS if the MyEars profile exists on the PC.  MyEars is HRTF 7.1 downmixing through headphones. */
 #define FMOD_INIT_PS3_DISABLEDTS             0x10000000 /* PS3 only - Disable DTS output mode selection */
 #define FMOD_INIT_PS3_DISABLEDOLBYDIGITAL    0x20000000 /* PS3 only - Disable Dolby Digital output mode selection */
+#define FMOD_INIT_7POINT1_DOLBYMAPPING       0x40000000 /* PS3/PS4 only - FMOD uses the WAVEFORMATEX Microsoft 7.1 speaker mapping where the last 2 pairs of speakers are 'rears' then 'sides', but on PS3/PS4 these are mapped to 'surrounds' and 'backs'.  Use this flag to swap fmod's last 2 pair of speakers on PS3/PS4 to avoid needing to do a special case for these platforms. */
 /* [DEFINE_END] */
 
 
@@ -1035,7 +1036,7 @@ typedef enum
     
     <b>Note!</b> Using FMOD_SYSTEM_CALLBACKTYPE_DEVICELISTCHANGED (on Mac only) requires the application to be running an event loop which will allow external changes to device list to be detected by FMOD.
     
-    <b>Note!</b> The 'system' object pointer will be null for FMOD_SYSTEM_CALLBACKTYPE_THREADCREATED and FMOD_SYSTEM_CALLBACKTYPE_MEMORYALLOCATIONFAILED callbacks.
+    <b>Note!</b> The 'system' object pointer will be null for FMOD_SYSTEM_CALLBACKTYPE_MEMORYALLOCATIONFAILED callback.
 
     [PLATFORMS]
     Win32, Win64, Linux, Linux64, Macintosh, Xbox360, PlayStation Portable, PlayStation 3, Wii, iPhone, 3GS, NGP, Android
@@ -1052,9 +1053,10 @@ typedef enum
     FMOD_SYSTEM_CALLBACKTYPE_DEVICELISTCHANGED,         /* Called from System::update when the enumerated list of devices has changed. */
     FMOD_SYSTEM_CALLBACKTYPE_DEVICELOST,                /* Called from System::update when an output device has been lost due to control panel parameter changes and FMOD cannot automatically recover. */
     FMOD_SYSTEM_CALLBACKTYPE_MEMORYALLOCATIONFAILED,    /* Called directly when a memory allocation fails somewhere in FMOD.  (NOTE - 'system' will be NULL in this callback type.)*/
-    FMOD_SYSTEM_CALLBACKTYPE_THREADCREATED,             /* Called directly when a thread is created. (NOTE - 'system' will be NULL in this callback type.) */
+    FMOD_SYSTEM_CALLBACKTYPE_THREADCREATED,             /* Called directly when a thread is created. */
     FMOD_SYSTEM_CALLBACKTYPE_BADDSPCONNECTION,          /* Called when a bad connection was made with DSP::addInput. Usually called from mixer thread because that is where the connections are made.  */
     FMOD_SYSTEM_CALLBACKTYPE_BADDSPLEVEL,               /* Called when too many effects were added exceeding the maximum tree depth of 128.  This is most likely caused by accidentally adding too many DSP effects. Usually called from mixer thread because that is where the connections are made.  */
+    FMOD_SYSTEM_CALLBACKTYPE_THREADDESTROYED,           /* Called directly when a thread is destroyed. */
 
     FMOD_SYSTEM_CALLBACKTYPE_MAX,                       /* Maximum number of callback types supported. */
     FMOD_SYSTEM_CALLBACKTYPE_FORCEINT = 65536           /* Makes sure this enum is signed 32bit. */
