@@ -699,7 +699,7 @@ cmd_exec_init (
         return (NULL);
 
     /* 初始化表 */
-    if (!curbead_initT(&rett->table, sQST_CMD, count))
+    if (!curbead_initT(&rett->table, sQST_CMD, 0))
         goto _failure;
     rett->table.find = unit_find;
     rett->table.comp = unit_comp;
