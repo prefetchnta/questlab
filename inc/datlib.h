@@ -479,6 +479,7 @@ typedef struct  _sATR_UNIT
 {
         sARRAY              next;   /* 下一层节点 */
         struct _sATR_UNIT*  prev;   /* 上一个节点 */
+        leng_t              npos;   /* 上层索引号 */
 #if 0
         byte_t  udata[unit_size];   /* 用户的数据 */
 #endif
@@ -504,8 +505,8 @@ typedef struct
 #define atree_deleteT(that, type, node) \
          atree_delete(that, node)
 
-#define atree_appendT(that, type, node, data, index) \
-         atree_append(that, sizeof(type), node, data, index)
+#define atree_appendT(that, type, node, data) \
+         atree_append(that, sizeof(type), node, data)
 
 #define atree_insertT(that, type, node, data, index) \
          atree_insert(that, sizeof(type), node, data, index)
@@ -525,14 +526,19 @@ typedef struct
 #define atree_go_prevT(node, type) \
          atree_go_prev(node)
 
+#define atree_sibling_prevT(node, type) \
+         atree_sibling_prev(node)
+
+#define atree_sibling_nextT(node, type) \
+         atree_sibling_next(node)
+
 /***** 原生函数 *****/
 CR_API bool_t       atree_init (sATREE *that, leng_t unit,
                                 leng_t count CR_DEFAULT(0));
 CR_API void_t       atree_free (sATREE *that);
 CR_API void_t       atree_delete (const sATREE *that, sATR_UNIT *node);
 CR_API sATR_UNIT*   atree_append (const sATREE *that, leng_t unit,
-                                  sATR_UNIT *node, const void_t *data,
-                                  leng_t index);
+                                  sATR_UNIT *node, const void_t *data);
 CR_API sATR_UNIT*   atree_insert (const sATREE *that, leng_t unit,
                                   sATR_UNIT *node, const void_t *data,
                                   leng_t index);
@@ -609,6 +615,42 @@ atree_go_prev (
     )
 {
     return ((sATR_UNIT*)node->prev);
+}
+
+/*
+=======================================
+    返回同级上一个节点
+=======================================
+*/
+cr_inline sATR_UNIT*
+atree_sibling_prev (
+  __CR_IN__ const sATR_UNIT*    node
+    )
+{
+    sATR_UNIT** ptr;
+
+    if (node->prev == NULL || node->npos == 0)
+        return (NULL);
+    ptr = array_get_unitT(&node->prev->next, sATR_UNIT*, node->npos - 1);
+    return (ptr[0]);
+}
+
+/*
+=======================================
+    返回同级下一个节点
+=======================================
+*/
+cr_inline sATR_UNIT*
+atree_sibling_next (
+  __CR_IN__ const sATR_UNIT*    node
+    )
+{
+    sATR_UNIT** ptr;
+
+    if (node->prev == NULL || node->npos + 1 >= node->next.__cnts__)
+        return (NULL);
+    ptr = array_get_unitT(&node->prev->next, sATR_UNIT*, node->npos + 1);
+    return (ptr[0]);
 }
 
 #endif  /* !_CR_SICK_INLINE_ */
