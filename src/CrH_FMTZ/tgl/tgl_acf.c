@@ -213,7 +213,7 @@ load_tgl_acf (
     }
     if (vals == mk_tag4("0FCA")) {
         file = NULL;
-        type = 0;   /* 无压缩，颠倒 */
+        type = 0;   /* 无压缩, 颠倒 */
     }
     else
     if (vals == mk_tag4("1FCA")) {
@@ -277,12 +277,12 @@ load_tgl_acf (
             mem_free(file);
             return (NULL);
         }
-        type = 1;   /* RLE 压缩，颠倒 */
+        type = 1;   /* RLE 压缩, 颠倒 */
     }
     else
     if (vals == mk_tag4("2FCA")) {
         file = NULL;
-        type = 2;   /* 无压缩，不颠倒 */
+        type = 2;   /* 无压缩, 不颠倒 */
     }
     else {
         err_set(__CR_TGL_ACF_C__, vals,

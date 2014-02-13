@@ -391,7 +391,7 @@ int main (int argc, char *argv[])
         return (QST_ERROR);
 
     /* 在 Win7 下以 CREATE_NO_WINDOW 标志运行
-       进程会造成这个函数失败，但 XP 下则不会 */
+       进程会造成这个函数失败, 但 XP 下则不会 */
     s_hwnd = GetConsoleWindow();
     if (s_hwnd != NULL) {
         misc_desk_init(WIN_ICONF, &x1, &y1, &ww, &hh,

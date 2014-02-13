@@ -263,8 +263,8 @@ qst_dat_ldr_file (
     frm = (TfrmMain*)(ctx->form);
 
     /* 打开目标文件 */
-    /* WinXP 下，在非主线程里连续设置两次
-       TEdit::Text 属性程序会崩溃，Win7 下不会 */
+    /* WinXP 下, 在非主线程里连续设置两次
+       TEdit::Text 属性程序会崩溃, Win7 下不会 */
     frm->txtValue->Clear();
     if (ctx->datin != NULL)
         CR_VCALL(ctx->datin)->release(ctx->datin);
