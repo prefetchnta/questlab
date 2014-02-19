@@ -313,7 +313,7 @@ static const iGFX2_vtbl _rom_ s_bitmap_vtbl =
     生成 GDI 图形绘制接口
 =======================================
 */
-CR_API iGFX2*
+CR_API iGFX2_GDI*
 create_gdi_canvas (
   __CR_IN__ void_t*         handle,
   __CR_IN__ uint_t          scn_cw,
@@ -329,9 +329,8 @@ create_gdi_canvas (
     RECT        rect;
     iGFX2_GDI*  canvas;
 
-    hwnd = (HWND)handle;
-
     /* 全屏时重设窗口大小 */
+    hwnd = (HWND)handle;
     if (full) {
         scn_cw = GetSystemMetrics(SM_CXSCREEN);
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
@@ -375,7 +374,7 @@ create_gdi_canvas (
     canvas->m_main = hdc;
     canvas->m_hwnd = hwnd;
     canvas->__vptr__ = &s_canvas_vtbl;
-    return ((iGFX2*)canvas);
+    return (canvas);
 }
 
 /*
@@ -646,8 +645,8 @@ create_canvas (
   __CR_IN__ uint_t          count
     )
 {
-    return (create_gdi_canvas(handle, scn_cw, scn_ch, scn_fmt,
-                              full, param, count));
+    return ((iGFX2*)create_gdi_canvas(handle, scn_cw, scn_ch,
+                        scn_fmt, full, param, count));
 }
 #endif  /* _CR_BUILD_DLL_ */
 

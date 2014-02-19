@@ -46,14 +46,18 @@ typedef struct
 } iGFX2_GDI;
 
 /* 生成 GDI 图形绘制接口 (附加参数: 无用) */
-CR_API iGFX2*   create_gdi_canvas (void_t *handle, uint_t scn_cw,
-                            uint_t scn_ch, uint_t scn_fmt, bool_t full,
-                                const int32u *param, uint_t count);
+CR_API iGFX2_GDI*   create_gdi_canvas (void_t *handle, uint_t scn_cw,
+                                uint_t scn_ch, uint_t scn_fmt, bool_t full,
+                                    const int32u *param, uint_t count);
 /* 生成 GDI 图形离屏表面 */
 CR_API iGFX2_GDI*   create_gdi_bitmap (uint_t width, uint_t height,
                                        uint_t crh_fmt, int32u ext_fmt,
                                        const int32u *param, uint_t count);
-/* 几个 GDI 原生绘图函数 */
+
+/*****************************************************************************/
+/*                                 原生绘制                                  */
+/*****************************************************************************/
+
 CR_API bool_t   fill_gdi_draw (const iGFX2_GDI *dst, const sFILL *fill,
                                cl32_t color);
 CR_API bool_t   blit_gdi_copy (const iGFX2_GDI *dst, const iGFX2_GDI *src,
