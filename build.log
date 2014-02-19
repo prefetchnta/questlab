@@ -11,7 +11,7 @@
     SINCE 2014-01-24
     ~~~~~~~~~~~~~~~~
     [m] CrH_FMTZ.dll
-    [+] GFX2_D3D8.dll
+    [+] GFX2_DX8.dll
     [m] CrH_CORE.dll
     [m] QstLibs.dll
     [m] fmodex.dll
