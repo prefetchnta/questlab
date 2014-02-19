@@ -7,7 +7,7 @@ OBJ_LIST=.$(L)gfx2.$(O) \
          .$(L)dx8win.$(O)
 
 SRC_LIST=.$(L)gfx2.$(C) \
-         .$(L)dx8win.$(C)
+         .$(L)dx8win.$(P)
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" $(SRC_LIST)
