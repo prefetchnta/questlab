@@ -74,14 +74,32 @@ iGFX2_DX8M_reset (
   __CR_IN__ iGFX2*  that
     )
 {
+    RECT        rect;
     iGFX2_DX8M* real;
 
+    /* 重新获取窗口大小 */
     real = (iGFX2_DX8M*)that;
-    if (!real->m_hdle.call->main_reset(real->m_main, FALSE, 0, 0,
-            D3DFMT_UNKNOWN, D3DFMT_UNKNOWN, FALSE, D3DMULTISAMPLE_NONE)) {
-        err_set(__CR_DX8WIN_CPP__, FALSE,
-                "iGFX2::reset()", "d3d8_main_reset() failure");
+    if (!GetClientRect((HWND)real->m_hdle.hwnd, &rect)) {
+        err_set(__CR_DX8WIN_CPP__, GetLastError(),
+                "iGFX2::reset()", "GetClientRect() failure");
         return (FALSE);
+    }
+
+    /* 如果发生了改变则复位设备 */
+    if ((uint_t)rect.right  != that->__back__.position.ww ||
+        (uint_t)rect.bottom != that->__back__.position.hh)
+    {
+        real->m_sprt->OnLostDevice();
+        if (!real->m_hdle.call->main_reset(real->m_main, FALSE,
+                rect.right, rect.bottom, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
+                                FALSE, D3DMULTISAMPLE_NONE)) {
+            err_set(__CR_DX8WIN_CPP__, FALSE,
+                    "iGFX2::reset()", "d3d8_main_reset() failure");
+            return (FALSE);
+        }
+        real->m_sprt->OnResetDevice();
+        rect_set_wh(&that->__back__.clip_win, 0, 0, rect.right, rect.bottom);
+        struct_cpy(&that->__back__.position, &that->__back__.clip_win, sRECT);
     }
     return (TRUE);
 }
@@ -209,6 +227,7 @@ create_dx8_canvas (
   __CR_IN__ uint_t          count
     )
 {
+    RECT        rect;
     HRESULT     retc;
     sDX8_HDLE*  hdle;
     iGFX2_DX8M* rett;
@@ -224,10 +243,21 @@ create_dx8_canvas (
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
         if (!SetWindowPos((HWND)hdle->hwnd, HWND_TOP, 0, 0,
                           scn_cw, scn_ch, SWP_SHOWWINDOW)) {
-            err_set(__CR_GDIWIN_C__, GetLastError(),
+            err_set(__CR_DX8WIN_CPP__, GetLastError(),
                     "create_dx8_canvas()", "SetWindowPos() failure");
             return (NULL);
         }
+    }
+    else if (scn_cw == 0 || scn_ch == 0)
+    {
+        /* 非法宽高, 获取窗口大小 */
+        if (!GetClientRect((HWND)hdle->hwnd, &rect)) {
+            err_set(__CR_DX8WIN_CPP__, GetLastError(),
+                    "create_dx8_canvas()", "GetClientRect() failure");
+            return (NULL);
+        }
+        scn_cw = rect.right;
+        scn_ch = rect.bottom;
     }
 
     /* 生成对象 */
@@ -240,8 +270,9 @@ create_dx8_canvas (
     struct_zero(&rett->__back__, sIMAGE);
 
     /* 创建 D3D8 设备 */
-    rett->m_main = hdle->call->create_main(hdle->hwnd, FALSE, 0, 0,
-            D3DFMT_UNKNOWN, D3DFMT_UNKNOWN, FALSE, D3DMULTISAMPLE_NONE);
+    rett->m_main = hdle->call->create_main(hdle->hwnd, FALSE,
+                        scn_cw, scn_ch, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
+                                    FALSE, D3DMULTISAMPLE_NONE);
     if (rett->m_main == NULL) {
         err_set(__CR_DX8WIN_CPP__, CR_NULL,
                 "create_dx8_canvas()", "d3d8_create_main() failure");
@@ -256,9 +287,11 @@ create_dx8_canvas (
         goto _failure2;
     }
 
-    /* 设置参数 */
+    /* 返回生成的对象 */
     rett->__vptr__ = &s_canvas_vtbl;
     struct_cpy(&rett->m_hdle, hdle, sDX8_HDLE);
+    rect_set_wh(&rett->__back__.clip_win, 0, 0, scn_cw, scn_ch);
+    struct_cpy(&rett->__back__.position, &rett->__back__.clip_win, sRECT);
     return (rett);
 
 _failure2:
@@ -535,7 +568,7 @@ create_dx8_bitmap (
         struct_cpy(&rett->__back__.position, &rett->__back__.clip_win, sRECT);
     }
 
-    /* 设置参数 */
+    /* 返回生成的对象 */
     rett->__vptr__ = &s_bitmap_vtbl;
     rett->m_flags = dynamic ? D3DLOCK_DISCARD : 0;
     rett->m_device = device;
