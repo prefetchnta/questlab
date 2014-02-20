@@ -476,8 +476,7 @@ create_gdi_bitmap (
                 "create_gdi_bitmap()", "mem_malloc() failure");
         goto _failure2;
     }
-    mem_zero(bmpinfo, sizeof(BITMAPINFO) +
-                      sizeof(RGBQUAD) * 255);
+    mem_zero(bmpinfo, sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 255);
     bmpinfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmpinfo->bmiHeader.biWidth  = width;
     bmpinfo->bmiHeader.biHeight = height + 1;   /* 多分配一行, 由于是
@@ -1113,11 +1112,10 @@ iFONT_GDI_draw_tran (
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
     }
 
-    /* 据说用 ExtTextOut 绘制最快 */
-    if (!ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                    &temp, utf16, (UINT)leng, NULL)) {
+    /* 支持输出多行文本 */
+    if (!DrawTextW(real->m_draw, utf16, (UINT)leng, &temp, DT_LEFT)) {
         err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::draw_tran()", "ExtTextOutW() failure");
+                "iFONT::draw_tran()", "DrawTextW() failure");
         rett = FALSE;
     }
 
@@ -1172,14 +1170,15 @@ iFONT_GDI_draw_text (
         }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
     }
-    rett = TRUE;
 
-    /* 据说用 ExtTextOut 绘制最快 */
-    if (!ExtTextOutW(real->m_draw, temp.left, temp.top, ETO_CLIPPED,
-                    &temp, utf16, (UINT)leng, NULL)) {
+    /* 支持输出多行文本 */
+    if (!DrawTextW(real->m_draw, utf16, (UINT)leng, &temp, DT_LEFT)) {
         err_set(__CR_GDIWIN_C__, GetLastError(),
-                "iFONT::draw_text()", "ExtTextOutW() failure");
+                "iFONT::draw_text()", "DrawTextW() failure");
         rett = FALSE;
+    }
+    else {
+        rett = TRUE;
     }
 
     if (utf16 != (wide_t*)text)
