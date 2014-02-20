@@ -145,6 +145,7 @@ mode_dx9_add (
     )
 {
     dst->m_sprt->Begin(0);
+    dst->m_main->dev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
     dst->m_main->dev->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     dst->m_main->dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
     dst->m_main->dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
@@ -161,6 +162,7 @@ mode_dx9_sub (
     )
 {
     dst->m_sprt->Begin(0);
+    dst->m_main->dev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
     dst->m_main->dev->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
     dst->m_main->dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
     dst->m_main->dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
@@ -172,7 +174,7 @@ mode_dx9_sub (
 =======================================
 */
 cr_inline void_t
-mode_dx9_quit (
+mode_dx9_clr (
   __CR_IN__ iGFX2_DX9M* dst
     )
 {
@@ -215,13 +217,13 @@ typedef struct
     iGFX2_DX9S* (*create_bitmap) (iGFX2_DX9M *device,
                         sD3D9_TEXR *texture, bool_t dynamic);
     /* 模式设置 */
-    void_t  (*do_enter)  (iGFX2_DX9M *dst);
-    void_t  (*do_leave)  (iGFX2_DX9M *dst);
-    void_t  (*mode_set)  (iGFX2_DX9M *dst);
-    void_t  (*mode_alp)  (iGFX2_DX9M *dst);
-    void_t  (*mode_add)  (iGFX2_DX9M *dst);
-    void_t  (*mode_sub)  (iGFX2_DX9M *dst);
-    void_t  (*mode_quit) (iGFX2_DX9M *dst);
+    void_t  (*do_enter) (iGFX2_DX9M *dst);
+    void_t  (*do_leave) (iGFX2_DX9M *dst);
+    void_t  (*mode_set) (iGFX2_DX9M *dst);
+    void_t  (*mode_alp) (iGFX2_DX9M *dst);
+    void_t  (*mode_add) (iGFX2_DX9M *dst);
+    void_t  (*mode_sub) (iGFX2_DX9M *dst);
+    void_t  (*mode_clr) (iGFX2_DX9M *dst);
 
     /* 原生绘图 */
     bool_t  (*blit_copy) (const iGFX2_DX9M *dst, const iGFX2_DX9S *src,

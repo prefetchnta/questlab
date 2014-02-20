@@ -812,7 +812,7 @@ static const sDX9_CALL _rom_ s_dx9call =
     mode_dx9_alp,
     mode_dx9_add,
     mode_dx9_sub,
-    mode_dx9_quit,
+    mode_dx9_clr,
 
     /* 绘制 */
     blit_dx9_copy,
