@@ -78,15 +78,9 @@ d3d9_create_main (
     /* 设置后台缓冲参数 */
     if (format == D3DFMT_UNKNOWN)
         format = mode.Format;
-    if (!full) {
-        parm.BackBufferWidth = 0;
-        parm.BackBufferHeight = 0;
-    }
-    else {
-        mode.Format = format;
-        parm.BackBufferWidth = width;
-        parm.BackBufferHeight = height;
-    }
+    parm.BackBufferWidth = width;
+    parm.BackBufferHeight = height;
+    if (full) mode.Format = format;
     retc = rett->obj->CheckDeviceType(D3DADAPTER_DEFAULT,
                         D3DDEVTYPE_HAL, mode.Format, format, !full);
     if (FAILED(retc)) {
@@ -242,15 +236,9 @@ d3d9_main_reset (
     /* 设置后台缓冲参数 */
     if (format == D3DFMT_UNKNOWN)
         format = mode.Format;
-    if (!full) {
-        parm.BackBufferWidth = 0;
-        parm.BackBufferHeight = 0;
-    }
-    else {
-        mode.Format = format;
-        parm.BackBufferWidth = width;
-        parm.BackBufferHeight = height;
-    }
+    parm.BackBufferWidth = width;
+    parm.BackBufferHeight = height;
+    if (full) mode.Format = format;
     retc = main->obj->CheckDeviceType(D3DADAPTER_DEFAULT,
                         D3DDEVTYPE_HAL, mode.Format, format, !full);
     if (FAILED(retc)) {
