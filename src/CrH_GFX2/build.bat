@@ -6,3 +6,5 @@ nmake -fgdiwin.mak
 rem =====================
 nmake -fdx8win.mak
 rem =====================
+nmake -fdx9win.mak
+rem =====================

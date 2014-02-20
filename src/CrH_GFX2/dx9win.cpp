@@ -1,6 +1,6 @@
 /*****************************************************************************/
 /*                                                  ###                      */
-/*       #####          ###    ###                  ###  CREATE: 2014-01-27  */
+/*       #####          ###    ###                  ###  CREATE: 2014-02-20  */
 /*     #######          ###    ###      [GFX2]      ###  ~~~~~~~~~~~~~~~~~~  */
 /*    ########          ###    ###                  ###  MODIFY: XXXX-XX-XX  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
@@ -13,35 +13,35 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>>>> CrHack DX8 图形绘制接口实现 <<<<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>>>>>> CrHack DX9 图形绘制接口实现 <<<<<<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_DX8WIN_CPP__
-#define __CR_DX8WIN_CPP__ 0x0DF450E7UL
+#ifndef __CR_DX9WIN_CPP__
+#define __CR_DX9WIN_CPP__ 0xE2363BD9UL
 
 #include "memlib.h"
 #include "strlib.h"
-#include "gfx2/dx8win.h"
+#include "gfx2/dx9win.h"
 
 /*****************************************************************************/
 /*                                 绘制接口                                  */
 /*****************************************************************************/
 
-#if defined(_CR_HAVE_D3D8_)
+#if defined(_CR_HAVE_D3D9_)
 /*
 ---------------------------------------
     释放图形绘制接口
 ---------------------------------------
 */
 static void_t
-iGFX2_DX8M_release (
+iGFX2_DX9M_release (
   __CR_IN__ iGFX2*  that
     )
 {
-    iGFX2_DX8M* real;
+    iGFX2_DX9M* real;
 
-    real = (iGFX2_DX8M*)that;
+    real = (iGFX2_DX9M*)that;
     real->m_sprt->Release();
     real->m_hdle.call->release_main(real->m_main);
     mem_free(that);
@@ -53,13 +53,13 @@ iGFX2_DX8M_release (
 ---------------------------------------
 */
 static void_t*
-iGFX2_DX8M_getMore (
+iGFX2_DX9M_getMore (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ port_t  iid
     )
 {
     /* 判断一下名称 */
-    if (str_cmpA(iid, "iGFX2::DX8M") != 0)
+    if (str_cmpA(iid, "iGFX2::DX9M") != 0)
         return (NULL);
     return ((void_t*)that);
 }
@@ -70,17 +70,17 @@ iGFX2_DX8M_getMore (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8M_reset (
+iGFX2_DX9M_reset (
   __CR_IN__ iGFX2*  that
     )
 {
     RECT        rect;
-    iGFX2_DX8M* real;
+    iGFX2_DX9M* real;
 
     /* 重新获取窗口大小 */
-    real = (iGFX2_DX8M*)that;
+    real = (iGFX2_DX9M*)that;
     if (!GetClientRect((HWND)real->m_hdle.hwnd, &rect)) {
-        err_set(__CR_DX8WIN_CPP__, GetLastError(),
+        err_set(__CR_DX9WIN_CPP__, GetLastError(),
                 "iGFX2::reset()", "GetClientRect() failure");
         return (FALSE);
     }
@@ -93,8 +93,8 @@ iGFX2_DX8M_reset (
         if (!real->m_hdle.call->main_reset(real->m_main, FALSE,
                 rect.right, rect.bottom, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
                                 FALSE, D3DMULTISAMPLE_NONE)) {
-            err_set(__CR_DX8WIN_CPP__, FALSE,
-                    "iGFX2::reset()", "d3d8_main_reset() failure");
+            err_set(__CR_DX9WIN_CPP__, FALSE,
+                    "iGFX2::reset()", "d3d9_main_reset() failure");
             return (FALSE);
         }
         real->m_sprt->OnResetDevice();
@@ -110,7 +110,7 @@ iGFX2_DX8M_reset (
 ---------------------------------------
 */
 static sIMAGE*
-iGFX2_DX8M_lock (
+iGFX2_DX9M_lock (
   __CR_IN__ iGFX2*  that
     )
 {
@@ -125,7 +125,7 @@ iGFX2_DX8M_lock (
 ---------------------------------------
 */
 static void_t
-iGFX2_DX8M_unlock (
+iGFX2_DX9M_unlock (
   __CR_IN__ iGFX2*  that
     )
 {
@@ -138,19 +138,19 @@ iGFX2_DX8M_unlock (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8M_flip (
+iGFX2_DX9M_flip (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ bool_t  sync
     )
 {
     HRESULT     retc;
-    iGFX2_DX8M* real;
+    iGFX2_DX9M* real;
 
-    real = (iGFX2_DX8M*)that;
+    real = (iGFX2_DX9M*)that;
     retc = real->m_main->dev->Present(NULL, NULL, NULL, NULL);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "iGFX2::flip()", "IDirect3D8::Present() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "iGFX2::flip()", "IDirect3D9::Present() failure");
         return (FALSE);
     }
     CR_NOUSE(sync);
@@ -163,21 +163,21 @@ iGFX2_DX8M_flip (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8M_clear (
+iGFX2_DX9M_clear (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ cl32_t  color,
   __CR_IN__ int32u  param
     )
 {
     HRESULT     retc;
-    iGFX2_DX8M* real;
+    iGFX2_DX9M* real;
 
-    real = (iGFX2_DX8M*)that;
+    real = (iGFX2_DX9M*)that;
     retc = real->m_main->dev->Clear(0, NULL, D3DCLEAR_TARGET,
                                     color, 1.0f, 0);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "iGFX2::clear()", "IDirect3D8::Clear() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "iGFX2::clear()", "IDirect3D9::Clear() failure");
         return (FALSE);
     }
     CR_NOUSE(param);
@@ -190,7 +190,7 @@ iGFX2_DX8M_clear (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8M_setPal (
+iGFX2_DX9M_setPal (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ uint_t  start,
   __CR_IN__ uint_t  count
@@ -206,18 +206,18 @@ iGFX2_DX8M_setPal (
 /* 接口虚函数表 */
 static const iGFX2_vtbl _rom_ s_canvas_vtbl =
 {
-    iGFX2_DX8M_release, iGFX2_DX8M_getMore,
-    iGFX2_DX8M_reset, iGFX2_DX8M_lock, iGFX2_DX8M_unlock,
-    iGFX2_DX8M_flip, iGFX2_DX8M_clear, iGFX2_DX8M_setPal,
+    iGFX2_DX9M_release, iGFX2_DX9M_getMore,
+    iGFX2_DX9M_reset, iGFX2_DX9M_lock, iGFX2_DX9M_unlock,
+    iGFX2_DX9M_flip, iGFX2_DX9M_clear, iGFX2_DX9M_setPal,
 };
 
 /*
 =======================================
-    生成 DX8 图形绘制接口
+    生成 DX9 图形绘制接口
 =======================================
 */
-CR_API iGFX2_DX8M*
-create_dx8_canvas (
+CR_API iGFX2_DX9M*
+create_dx9_canvas (
   __CR_IN__ void_t*         handle,
   __CR_IN__ uint_t          scn_cw,
   __CR_IN__ uint_t          scn_ch,
@@ -229,22 +229,22 @@ create_dx8_canvas (
 {
     RECT        rect;
     HRESULT     retc;
-    sDX8_HDLE*  hdle;
-    iGFX2_DX8M* rett;
+    sDX9_HDLE*  hdle;
+    iGFX2_DX9M* rett;
 
     CR_NOUSE(param);
     CR_NOUSE(count);
     CR_NOUSE(scn_fmt);
 
     /* 使用伪全屏 */
-    hdle = (sDX8_HDLE*)handle;
+    hdle = (sDX9_HDLE*)handle;
     if (full) {
         scn_cw = GetSystemMetrics(SM_CXSCREEN);
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
         if (!SetWindowPos((HWND)hdle->hwnd, HWND_TOP, 0, 0,
                           scn_cw, scn_ch, SWP_SHOWWINDOW)) {
-            err_set(__CR_DX8WIN_CPP__, GetLastError(),
-                    "create_dx8_canvas()", "SetWindowPos() failure");
+            err_set(__CR_DX9WIN_CPP__, GetLastError(),
+                    "create_dx9_canvas()", "SetWindowPos() failure");
             return (NULL);
         }
     }
@@ -252,8 +252,8 @@ create_dx8_canvas (
     {
         /* 非法宽高, 获取窗口大小 */
         if (!GetClientRect((HWND)hdle->hwnd, &rect)) {
-            err_set(__CR_DX8WIN_CPP__, GetLastError(),
-                    "create_dx8_canvas()", "GetClientRect() failure");
+            err_set(__CR_DX9WIN_CPP__, GetLastError(),
+                    "create_dx9_canvas()", "GetClientRect() failure");
             return (NULL);
         }
         scn_cw = rect.right;
@@ -261,35 +261,35 @@ create_dx8_canvas (
     }
 
     /* 生成对象 */
-    rett = struct_new(iGFX2_DX8M);
+    rett = struct_new(iGFX2_DX9M);
     if (rett == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_canvas()", "struct_new() failure");
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_canvas()", "struct_new() failure");
         return (NULL);
     }
     struct_zero(&rett->__back__, sIMAGE);
 
-    /* 创建 D3D8 设备 */
+    /* 创建 D3D9 设备 */
     rett->m_main = hdle->call->create_main(hdle->hwnd, FALSE,
                         scn_cw, scn_ch, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
                                     FALSE, D3DMULTISAMPLE_NONE);
     if (rett->m_main == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_canvas()", "d3d8_create_main() failure");
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_canvas()", "d3d9_create_main() failure");
         goto _failure1;
     }
 
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(rett->m_main->dev, &rett->m_sprt);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_canvas()", "D3DXCreateSprite() failure");
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_canvas()", "D3DXCreateSprite() failure");
         goto _failure2;
     }
 
     /* 返回生成的对象 */
     rett->__vptr__ = &s_canvas_vtbl;
-    struct_cpy(&rett->m_hdle, hdle, sDX8_HDLE);
+    struct_cpy(&rett->m_hdle, hdle, sDX9_HDLE);
     rect_set_wh(&rett->__back__.clip_win, 0, 0, scn_cw, scn_ch);
     struct_cpy(&rett->__back__.position, &rett->__back__.clip_win, sRECT);
     return (rett);
@@ -318,7 +318,7 @@ create_canvas (
   __CR_IN__ uint_t          count
     )
 {
-    return ((iGFX2*)create_dx8_canvas(handle, scn_cw, scn_ch,
+    return ((iGFX2*)create_dx9_canvas(handle, scn_cw, scn_ch,
                         scn_fmt, full, param, count));
 }
 #endif  /* _CR_BUILD_DLL_ */
@@ -333,14 +333,14 @@ create_canvas (
 ---------------------------------------
 */
 static void_t
-iGFX2_DX8S_release (
+iGFX2_DX9S_release (
   __CR_IN__ iGFX2*  that
     )
 {
-    sDX8_HDLE*  hdle;
-    iGFX2_DX8S* real;
+    sDX9_HDLE*  hdle;
+    iGFX2_DX9S* real;
 
-    real = (iGFX2_DX8S*)that;
+    real = (iGFX2_DX9S*)that;
     hdle = &real->m_device->m_hdle;
     hdle->call->release_texr(real->m_texture);
     mem_free(that);
@@ -352,13 +352,13 @@ iGFX2_DX8S_release (
 ---------------------------------------
 */
 static void_t*
-iGFX2_DX8S_getMore (
+iGFX2_DX9S_getMore (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ port_t  iid
     )
 {
     /* 判断一下名称 */
-    if (str_cmpA(iid, "iGFX2::DX8S") != 0)
+    if (str_cmpA(iid, "iGFX2::DX9S") != 0)
         return (NULL);
     return ((void_t*)that);
 }
@@ -369,7 +369,7 @@ iGFX2_DX8S_getMore (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8S_reset (
+iGFX2_DX9S_reset (
   __CR_IN__ iGFX2*  that
     )
 {
@@ -383,20 +383,20 @@ iGFX2_DX8S_reset (
 ---------------------------------------
 */
 static sIMAGE*
-iGFX2_DX8S_lock (
+iGFX2_DX9S_lock (
   __CR_IN__ iGFX2*  that
     )
 {
     HRESULT         retc;
-    iGFX2_DX8S*     real;
+    iGFX2_DX9S*     real;
     D3DLOCKED_RECT  info;
 
-    real = (iGFX2_DX8S*)that;
+    real = (iGFX2_DX9S*)that;
     retc = real->m_texture->obj.tex2->LockRect(0, &info, NULL,
                                                real->m_flags);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "iGFX2::lock()", "IDirect3DTexture8::LockRect() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "iGFX2::lock()", "IDirect3DTexture9::LockRect() failure");
         return (NULL);
     }
     real->__back__.data = (byte_t*)info.pBits;
@@ -412,11 +412,11 @@ iGFX2_DX8S_lock (
 ---------------------------------------
 */
 static void_t
-iGFX2_DX8S_unlock (
+iGFX2_DX9S_unlock (
   __CR_IN__ iGFX2*  that
     )
 {
-    ((iGFX2_DX8S*)that)->m_texture->obj.tex2->UnlockRect(0);
+    ((iGFX2_DX9S*)that)->m_texture->obj.tex2->UnlockRect(0);
 }
 
 /*
@@ -425,7 +425,7 @@ iGFX2_DX8S_unlock (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8S_flip (
+iGFX2_DX9S_flip (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ bool_t  sync
     )
@@ -440,12 +440,12 @@ iGFX2_DX8S_flip (
     清除回调
 ---------------------------------------
 */
-static void_t
+static void_t WINAPI
 tex_fill (
-  __CR_OT__ D3DXVECTOR4*    pOut,
-  __CR_IN__ D3DXVECTOR2*    pTexCoord,
-  __CR_IN__ D3DXVECTOR2*    pTexelSize,
-  __CR_IN__ LPVOID          pData
+  __CR_OT__ D3DXVECTOR4*        pOut,
+  __CR_IN__ CONST D3DXVECTOR2*  pTexCoord,
+  __CR_IN__ CONST D3DXVECTOR2*  pTexelSize,
+  __CR_IN__ LPVOID              pData
     )
 {
     D3DXVECTOR4*    fill;
@@ -466,7 +466,7 @@ tex_fill (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8S_clear (
+iGFX2_DX9S_clear (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ cl32_t  color,
   __CR_IN__ int32u  param
@@ -474,7 +474,7 @@ iGFX2_DX8S_clear (
 {
     sint_t      vals;
     HRESULT     retc;
-    iGFX2_DX8S* real;
+    iGFX2_DX9S* real;
     D3DXVECTOR4 fill;
 
     /* R */
@@ -494,10 +494,10 @@ iGFX2_DX8S_clear (
     fill.w = (fp32_t)(vals + (vals >> 7)) / 256.0f;
 
     /* 填充 */
-    real = (iGFX2_DX8S*)that;
+    real = (iGFX2_DX9S*)that;
     retc = D3DXFillTexture(real->m_texture->obj.tex2, tex_fill, &fill);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
+        err_set(__CR_DX9WIN_CPP__, retc,
                 "iGFX2::clear()", "D3DXFillTexture() failure");
         return (FALSE);
     }
@@ -511,7 +511,7 @@ iGFX2_DX8S_clear (
 ---------------------------------------
 */
 static bool_t
-iGFX2_DX8S_setPal (
+iGFX2_DX9S_setPal (
   __CR_IN__ iGFX2*  that,
   __CR_IN__ uint_t  start,
   __CR_IN__ uint_t  count
@@ -527,37 +527,37 @@ iGFX2_DX8S_setPal (
 /* 接口虚函数表 */
 static const iGFX2_vtbl _rom_ s_bitmap_vtbl =
 {
-    iGFX2_DX8S_release, iGFX2_DX8S_getMore,
-    iGFX2_DX8S_reset, iGFX2_DX8S_lock, iGFX2_DX8S_unlock,
-    iGFX2_DX8S_flip, iGFX2_DX8S_clear, iGFX2_DX8S_setPal,
+    iGFX2_DX9S_release, iGFX2_DX9S_getMore,
+    iGFX2_DX9S_reset, iGFX2_DX9S_lock, iGFX2_DX9S_unlock,
+    iGFX2_DX9S_flip, iGFX2_DX9S_clear, iGFX2_DX9S_setPal,
 };
 
 /*
 =======================================
-    生成 DX8 图形离屏表面
+    生成 DX9 图形离屏表面
 =======================================
 */
-CR_API iGFX2_DX8S*
-create_dx8_bitmap (
-  __CR_IN__ iGFX2_DX8M* device,
-  __CR_IN__ sD3D8_TEXR* texture,
+CR_API iGFX2_DX9S*
+create_dx9_bitmap (
+  __CR_IN__ iGFX2_DX9M* device,
+  __CR_IN__ sD3D9_TEXR* texture,
   __CR_IN__ bool_t      dynamic
     )
 {
-    iGFX2_DX8S* rett;
+    iGFX2_DX9S* rett;
 
     /* 必须是 2D 贴图 */
     if (texture->face != 1) {
-        err_set(__CR_DX8WIN_CPP__, texture->face,
-                "create_dx8_bitmap()", "2d texture needed");
+        err_set(__CR_DX9WIN_CPP__, texture->face,
+                "create_dx9_bitmap()", "2d texture needed");
         return (NULL);
     }
 
     /* 生成对象并设置图片参数 */
-    rett = struct_new(iGFX2_DX8S);
+    rett = struct_new(iGFX2_DX9S);
     if (rett == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_bitmap()", "struct_new() failure");
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_bitmap()", "struct_new() failure");
         return (NULL);
     }
     if (!image_set(&rett->__back__, NULL, (leng_t)(-1L), 0, 0,
@@ -586,16 +586,17 @@ create_dx8_bitmap (
 =======================================
 */
 CR_API bool_t
-blit_dx8_copy (
-  __CR_IO__ const iGFX2_DX8M*   dst,
-  __CR_IN__ const iGFX2_DX8S*   src,
+blit_dx9_copy (
+  __CR_IO__ const iGFX2_DX9M*   dst,
+  __CR_IN__ const iGFX2_DX9S*   src,
   __CR_IN__ const sBLIT*        blit,
   __CR_IN__ cl32_t              color
     )
 {
-    RECT        rect;
-    HRESULT     retc;
-    D3DXVECTOR2 dpos;
+    RECT            rect;
+    HRESULT         retc;
+    D3DXVECTOR2     dpos;
+    D3DXMATRIXA16   matx;
 
     dpos.x = (fp32_t)blit->dx;
     dpos.y = (fp32_t)blit->dy;
@@ -603,11 +604,18 @@ blit_dx8_copy (
     rect.top    = (LONG)blit->sy;
     rect.right  = (LONG)(rect.left + blit->sw);
     rect.bottom = (LONG)(rect.top  + blit->sh);
-    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
-                             NULL, NULL, 0.0f, &dpos, color);
+    D3DXMatrixTransformation2D(&matx, NULL, 0.0f, NULL, NULL, 0.0f, &dpos);
+    retc = dst->m_sprt->SetTransform(&matx);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_copy()", "ID3DXSprite::Draw() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_copy()", "ID3DXSprite::SetTransform() failure");
+        return (FALSE);
+    }
+    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
+                             NULL, NULL, color);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_copy()", "ID3DXSprite::Draw() failure");
         return (FALSE);
     }
     return (TRUE);
@@ -619,17 +627,18 @@ blit_dx8_copy (
 =======================================
 */
 CR_API bool_t
-blit_dx8_zoom (
-  __CR_IO__ const iGFX2_DX8M*   dst,
-  __CR_IN__ const iGFX2_DX8S*   src,
+blit_dx9_zoom (
+  __CR_IO__ const iGFX2_DX9M*   dst,
+  __CR_IN__ const iGFX2_DX9S*   src,
   __CR_IN__ const sZOOM*        zoom,
   __CR_IN__ cl32_t              color
     )
 {
-    RECT        rect;
-    HRESULT     retc;
-    D3DXVECTOR2 dpos;
-    D3DXVECTOR2 scle;
+    RECT            rect;
+    HRESULT         retc;
+    D3DXVECTOR2     dpos;
+    D3DXVECTOR2     scle;
+    D3DXMATRIXA16   matx;
 
     dpos.x = (fp32_t)zoom->dx;
     dpos.y = (fp32_t)zoom->dy;
@@ -639,11 +648,18 @@ blit_dx8_zoom (
     rect.bottom = (LONG)(rect.top  + zoom->sh);
     scle.x = (fp32_t)zoom->dw / (fp32_t)zoom->sw;
     scle.y = (fp32_t)zoom->dh / (fp32_t)zoom->sh;
-    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
-                             &scle, NULL, 0.0f, &dpos, color);
+    D3DXMatrixTransformation2D(&matx, NULL, 0.0f, &scle, NULL, 0.0f, &dpos);
+    retc = dst->m_sprt->SetTransform(&matx);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_zoom()", "ID3DXSprite::Draw() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_zoom()", "ID3DXSprite::SetTransform() failure");
+        return (FALSE);
+    }
+    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
+                             NULL, NULL, color);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_zoom()", "ID3DXSprite::Draw() failure");
         return (FALSE);
     }
     return (TRUE);
@@ -655,9 +671,9 @@ blit_dx8_zoom (
 =======================================
 */
 CR_API bool_t
-blit_dx8_rote (
-  __CR_IO__ const iGFX2_DX8M*   dst,
-  __CR_IN__ const iGFX2_DX8S*   src,
+blit_dx9_rote (
+  __CR_IO__ const iGFX2_DX9M*   dst,
+  __CR_IN__ const iGFX2_DX9S*   src,
   __CR_IN__ const sBLIT*        blit,
   __CR_IN__ fp32_t              cx,
   __CR_IN__ fp32_t              cy,
@@ -665,10 +681,11 @@ blit_dx8_rote (
   __CR_IN__ cl32_t              color
     )
 {
-    RECT        rect;
-    HRESULT     retc;
-    D3DXVECTOR2 dpos;
-    D3DXVECTOR2 cntr;
+    RECT            rect;
+    HRESULT         retc;
+    D3DXVECTOR2     dpos;
+    D3DXVECTOR2     cntr;
+    D3DXMATRIXA16   matx;
 
     dpos.x = (fp32_t)blit->dx;
     dpos.y = (fp32_t)blit->dy;
@@ -678,11 +695,18 @@ blit_dx8_rote (
     rect.bottom = (LONG)(rect.top  + blit->sh);
     cntr.x = (fp32_t)blit->sw * cx;
     cntr.y = (fp32_t)blit->sh * cy;
-    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
-                             NULL, &cntr, ccw, &dpos, color);
+    D3DXMatrixTransformation2D(&matx, NULL, 0.0f, NULL, &cntr, ccw, &dpos);
+    retc = dst->m_sprt->SetTransform(&matx);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_rote()", "ID3DXSprite::Draw() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_rote()", "ID3DXSprite::SetTransform() failure");
+        return (FALSE);
+    }
+    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
+                             NULL, NULL, color);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_rote()", "ID3DXSprite::Draw() failure");
         return (FALSE);
     }
     return (TRUE);
@@ -694,9 +718,9 @@ blit_dx8_rote (
 =======================================
 */
 CR_API bool_t
-blit_dx8_full (
-  __CR_IO__ const iGFX2_DX8M*   dst,
-  __CR_IN__ const iGFX2_DX8S*   src,
+blit_dx9_full (
+  __CR_IO__ const iGFX2_DX9M*   dst,
+  __CR_IN__ const iGFX2_DX9S*   src,
   __CR_IN__ const sZOOM*        zoom,
   __CR_IN__ fp32_t              cx,
   __CR_IN__ fp32_t              cy,
@@ -704,11 +728,12 @@ blit_dx8_full (
   __CR_IN__ cl32_t              color
     )
 {
-    RECT        rect;
-    HRESULT     retc;
-    D3DXVECTOR2 dpos;
-    D3DXVECTOR2 cntr;
-    D3DXVECTOR2 scle;
+    RECT            rect;
+    HRESULT         retc;
+    D3DXVECTOR2     dpos;
+    D3DXVECTOR2     cntr;
+    D3DXVECTOR2     scle;
+    D3DXMATRIXA16   matx;
 
     dpos.x = (fp32_t)zoom->dx;
     dpos.y = (fp32_t)zoom->dy;
@@ -722,11 +747,18 @@ blit_dx8_full (
     scle.y  = (fp32_t)zoom->dh;
     cntr.y  = scle.y * cy;
     scle.y /= (fp32_t)zoom->sh;
-    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
-                             &scle, &cntr, ccw, &dpos, color);
+    D3DXMatrixTransformation2D(&matx, NULL, 0.0f, &scle, &cntr, ccw, &dpos);
+    retc = dst->m_sprt->SetTransform(&matx);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_full()", "ID3DXSprite::Draw() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_full()", "ID3DXSprite::SetTransform() failure");
+        return (FALSE);
+    }
+    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
+                             NULL, NULL, color);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_full()", "ID3DXSprite::Draw() failure");
         return (FALSE);
     }
     return (TRUE);
@@ -738,9 +770,9 @@ blit_dx8_full (
 =======================================
 */
 CR_API bool_t
-blit_dx8_matx (
-  __CR_IO__ const iGFX2_DX8M*   dst,
-  __CR_IN__ const iGFX2_DX8S*   src,
+blit_dx9_matx (
+  __CR_IO__ const iGFX2_DX9M*   dst,
+  __CR_IN__ const iGFX2_DX9S*   src,
   __CR_IN__ const RECT*         rect,
   __CR_IN__ const D3DXMATRIX*   matx,
   __CR_IN__ cl32_t              color
@@ -748,11 +780,17 @@ blit_dx8_matx (
 {
     HRESULT retc;
 
-    retc = dst->m_sprt->DrawTransform(src->m_texture->obj.tex2,
-                                      rect, matx, color);
+    retc = dst->m_sprt->SetTransform(matx);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_matx()", "ID3DXSprite::DrawTransform() failure");
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_matx()", "ID3DXSprite::SetTransform() failure");
+        return (FALSE);
+    }
+    retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, rect,
+                             NULL, NULL, color);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "blit_dx9_matx()", "ID3DXSprite::Draw() failure");
         return (FALSE);
     }
     return (TRUE);
@@ -762,37 +800,42 @@ blit_dx8_matx (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sDX8_CALL _rom_ s_dx8call =
+static const sDX9_CALL _rom_ s_dx9call =
 {
     /* 创建 */
-    create_dx8_bitmap,
+    create_dx9_bitmap,
 
     /* 模式 */
-    do_dx8_enter,
-    do_dx8_leave,
+    do_dx9_enter,
+    do_dx9_leave,
+    mode_dx9_set,
+    mode_dx9_alp,
+    mode_dx9_add,
+    mode_dx9_sub,
+    mode_dx9_quit,
 
     /* 绘制 */
-    blit_dx8_copy,
-    blit_dx8_zoom,
-    blit_dx8_rote,
-    blit_dx8_full,
-    blit_dx8_matx,
+    blit_dx9_copy,
+    blit_dx9_zoom,
+    blit_dx9_rote,
+    blit_dx9_full,
+    blit_dx9_matx,
 };
 
 /*
 =======================================
-    获取 DX8 调用接口表
+    获取 DX9 调用接口表
 =======================================
 */
-CR_API const sDX8_CALL*
-dx8call_get (void_t)
+CR_API const sDX9_CALL*
+dx9call_get (void_t)
 {
-    return (&s_dx8call);
+    return (&s_dx9call);
 }
 
-#endif  /* _CR_HAVE_D3D8_ */
+#endif  /* _CR_HAVE_D3D9_ */
 
-#endif  /* !__CR_DX8WIN_CPP__ */
+#endif  /* !__CR_DX9WIN_CPP__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

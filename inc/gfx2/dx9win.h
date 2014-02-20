@@ -1,6 +1,6 @@
 /*****************************************************************************/
 /*                                                  ###                      */
-/*       #####          ###    ###                  ###  CREATE: 2014-01-27  */
+/*       #####          ###    ###                  ###  CREATE: 2014-02-20  */
 /*     #######          ###    ###      [GFX2]      ###  ~~~~~~~~~~~~~~~~~~  */
 /*    ########          ###    ###                  ###  MODIFY: XXXX-XX-XX  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
@@ -13,17 +13,17 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>>>> CrHack DX8 图形绘制接口定义 <<<<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>>>>>> CrHack DX9 图形绘制接口定义 <<<<<<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_DX8WIN_H__
-#define __CR_DX8WIN_H__ 0x4D19E38CUL
+#ifndef __CR_DX9WIN_H__
+#define __CR_DX9WIN_H__ 0x81B3E312UL
 
-#define _CR_USE_D3D8_
+#define _CR_USE_D3D9_
 #include "gfx3.h"
 
-#if defined(_CR_HAVE_D3D8_)
+#if defined(_CR_HAVE_D3D9_)
 
 /*****************************************************************************/
 /*                                 绘制接口                                  */
@@ -33,11 +33,11 @@
 typedef struct
 {
         hwnd_t              hwnd;   /* 窗口句柄 */
-        const sD3D8_CALL*   call;   /* 调用接口 */
+        const sD3D9_CALL*   call;   /* 调用接口 */
 
-} sDX8_HDLE;
+} sDX9_HDLE;
 
-/* DX8 绘制表面实现结构 */
+/* DX9 绘制表面实现结构 */
 typedef struct
 {
         /* 虚函数表 */
@@ -47,13 +47,13 @@ typedef struct
         sIMAGE  __back__;   /* 显示屏的后台缓冲 */
 
         /* 个性部分 */
-        sDX8_HDLE       m_hdle;     /* 设备句柄结构 */
-        sD3D8_MAIN*     m_main;     /* D3D8 设备对象 */
+        sDX9_HDLE       m_hdle;     /* 设备句柄结构 */
+        sD3D9_MAIN*     m_main;     /* D3D9 设备对象 */
         LPD3DXSPRITE    m_sprt;     /* 用于绘制纹理 */
 
-} iGFX2_DX8M;
+} iGFX2_DX9M;
 
-/* DX8 离屏表面实现结构 */
+/* DX9 离屏表面实现结构 */
 typedef struct
 {
         /* 虚函数表 */
@@ -64,18 +64,18 @@ typedef struct
 
         /* 个性部分 */
         DWORD       m_flags;    /* 锁定标志 */
-        iGFX2_DX8M* m_device;   /* 设备对象 */
-        sD3D8_TEXR* m_texture;  /* 纹理对象 */
+        iGFX2_DX9M* m_device;   /* 设备对象 */
+        sD3D9_TEXR* m_texture;  /* 纹理对象 */
 
-} iGFX2_DX8S;
+} iGFX2_DX9S;
 
-/* 生成 DX8 图形绘制接口 (附加参数: 无用) */
-CR_API iGFX2_DX8M*  create_dx8_canvas (void_t *handle, uint_t scn_cw,
+/* 生成 DX9 图形绘制接口 (附加参数: 无用) */
+CR_API iGFX2_DX9M*  create_dx9_canvas (void_t *handle, uint_t scn_cw,
                             uint_t scn_ch, uint_t scn_fmt, bool_t full,
                                 const int32u *param, uint_t count);
-/* 生成 DX8 图形离屏表面 */
-CR_API iGFX2_DX8S*  create_dx8_bitmap (iGFX2_DX8M *device,
-                            sD3D8_TEXR *texture, bool_t dynamic);
+/* 生成 DX9 图形离屏表面 */
+CR_API iGFX2_DX9S*  create_dx9_bitmap (iGFX2_DX9M *device,
+                            sD3D9_TEXR *texture, bool_t dynamic);
 
 /*****************************************************************************/
 /*                                 原生绘制                                  */
@@ -88,12 +88,11 @@ CR_API iGFX2_DX8S*  create_dx8_bitmap (iGFX2_DX8M *device,
 =======================================
 */
 cr_inline void_t
-do_dx8_enter (
-  __CR_IN__ iGFX2_DX8M* dst
+do_dx9_enter (
+  __CR_IN__ iGFX2_DX9M* dst
     )
 {
     dst->m_main->dev->BeginScene();
-    dst->m_sprt->Begin();
 }
 
 /*
@@ -102,36 +101,106 @@ do_dx8_enter (
 =======================================
 */
 cr_inline void_t
-do_dx8_leave (
-  __CR_IN__ iGFX2_DX8M* dst
+do_dx9_leave (
+  __CR_IN__ iGFX2_DX9M* dst
+    )
+{
+    dst->m_main->dev->EndScene();
+}
+
+/*
+=======================================
+    进入直接复制模式
+=======================================
+*/
+cr_inline void_t
+mode_dx9_set (
+  __CR_IN__ iGFX2_DX9M* dst
+    )
+{
+    dst->m_sprt->Begin(0);
+}
+
+/*
+=======================================
+    进入透明混合模式
+=======================================
+*/
+cr_inline void_t
+mode_dx9_alp (
+  __CR_IN__ iGFX2_DX9M* dst
+    )
+{
+    dst->m_sprt->Begin(D3DXSPRITE_ALPHABLEND);
+}
+
+/*
+=======================================
+    进入饱和加法模式
+=======================================
+*/
+cr_inline void_t
+mode_dx9_add (
+  __CR_IN__ iGFX2_DX9M* dst
+    )
+{
+    dst->m_sprt->Begin(0);
+    dst->m_main->dev->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+    dst->m_main->dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+    dst->m_main->dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+}
+
+/*
+=======================================
+    进入饱和减法模式
+=======================================
+*/
+cr_inline void_t
+mode_dx9_sub (
+  __CR_IN__ iGFX2_DX9M* dst
+    )
+{
+    dst->m_sprt->Begin(0);
+    dst->m_main->dev->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+    dst->m_main->dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+    dst->m_main->dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+}
+
+/*
+=======================================
+    退出绘制模式
+=======================================
+*/
+cr_inline void_t
+mode_dx9_quit (
+  __CR_IN__ iGFX2_DX9M* dst
     )
 {
     dst->m_sprt->End();
-    dst->m_main->dev->EndScene();
 }
 
 #endif  /* !_CR_SICK_INLINE_ */
 
-CR_API bool_t   blit_dx8_copy (const iGFX2_DX8M *dst,
-                               const iGFX2_DX8S *src,
+CR_API bool_t   blit_dx9_copy (const iGFX2_DX9M *dst,
+                               const iGFX2_DX9S *src,
                                const sBLIT *blit, cl32_t color);
 
-CR_API bool_t   blit_dx8_zoom (const iGFX2_DX8M *dst,
-                               const iGFX2_DX8S *src,
+CR_API bool_t   blit_dx9_zoom (const iGFX2_DX9M *dst,
+                               const iGFX2_DX9S *src,
                                const sZOOM *zoom, cl32_t color);
 
-CR_API bool_t   blit_dx8_rote (const iGFX2_DX8M *dst,
-                               const iGFX2_DX8S *src,
+CR_API bool_t   blit_dx9_rote (const iGFX2_DX9M *dst,
+                               const iGFX2_DX9S *src,
                                const sBLIT *blit, fp32_t cx, fp32_t cy,
                                fp32_t ccw, cl32_t color);
 
-CR_API bool_t   blit_dx8_full (const iGFX2_DX8M *dst,
-                               const iGFX2_DX8S *src,
+CR_API bool_t   blit_dx9_full (const iGFX2_DX9M *dst,
+                               const iGFX2_DX9S *src,
                                const sZOOM *zoom, fp32_t cx, fp32_t cy,
                                fp32_t ccw, cl32_t color);
 
-CR_API bool_t   blit_dx8_matx (const iGFX2_DX8M *dst,
-                               const iGFX2_DX8S *src,
+CR_API bool_t   blit_dx9_matx (const iGFX2_DX9M *dst,
+                               const iGFX2_DX9S *src,
                                const RECT *rect, const D3DXMATRIX *matx,
                                cl32_t color);
 
@@ -139,42 +208,47 @@ CR_API bool_t   blit_dx8_matx (const iGFX2_DX8M *dst,
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-/* DX8 调用接口表 */
+/* DX9 调用接口表 */
 typedef struct
 {
     /* 离屏表面 */
-    iGFX2_DX8S* (*create_bitmap) (iGFX2_DX8M *device,
-                        sD3D8_TEXR *texture, bool_t dynamic);
+    iGFX2_DX9S* (*create_bitmap) (iGFX2_DX9M *device,
+                        sD3D9_TEXR *texture, bool_t dynamic);
     /* 模式设置 */
-    void_t  (*do_enter) (iGFX2_DX8M *dst);
-    void_t  (*do_leave) (iGFX2_DX8M *dst);
+    void_t  (*do_enter)  (iGFX2_DX9M *dst);
+    void_t  (*do_leave)  (iGFX2_DX9M *dst);
+    void_t  (*mode_set)  (iGFX2_DX9M *dst);
+    void_t  (*mode_alp)  (iGFX2_DX9M *dst);
+    void_t  (*mode_add)  (iGFX2_DX9M *dst);
+    void_t  (*mode_sub)  (iGFX2_DX9M *dst);
+    void_t  (*mode_quit) (iGFX2_DX9M *dst);
 
     /* 原生绘图 */
-    bool_t  (*blit_copy) (const iGFX2_DX8M *dst, const iGFX2_DX8S *src,
+    bool_t  (*blit_copy) (const iGFX2_DX9M *dst, const iGFX2_DX9S *src,
                           const sBLIT *blit, cl32_t color);
 
-    bool_t  (*blit_zoom) (const iGFX2_DX8M *dst, const iGFX2_DX8S *src,
+    bool_t  (*blit_zoom) (const iGFX2_DX9M *dst, const iGFX2_DX9S *src,
                           const sZOOM *zoom, cl32_t color);
 
-    bool_t  (*blit_rote) (const iGFX2_DX8M *dst, const iGFX2_DX8S *src,
+    bool_t  (*blit_rote) (const iGFX2_DX9M *dst, const iGFX2_DX9S *src,
                           const sBLIT *blit, fp32_t cx, fp32_t cy,
                           fp32_t ccw, cl32_t color);
 
-    bool_t  (*blit_full) (const iGFX2_DX8M *dst, const iGFX2_DX8S *src,
+    bool_t  (*blit_full) (const iGFX2_DX9M *dst, const iGFX2_DX9S *src,
                           const sZOOM *zoom, fp32_t cx, fp32_t cy,
                           fp32_t ccw, cl32_t color);
 
-    bool_t  (*blit_matx) (const iGFX2_DX8M *dst, const iGFX2_DX8S *src,
+    bool_t  (*blit_matx) (const iGFX2_DX9M *dst, const iGFX2_DX9S *src,
                           const RECT *rect, const D3DXMATRIX *matx,
                           cl32_t color);
-} sDX8_CALL;
+} sDX9_CALL;
 
-/* 获取 DX8 调用接口表 */
-CR_API const sDX8_CALL* dx8call_get (void_t);
+/* 获取 DX9 调用接口表 */
+CR_API const sDX9_CALL* dx9call_get (void_t);
 
-#endif  /* _CR_HAVE_D3D8_ */
+#endif  /* _CR_HAVE_D3D9_ */
 
-#endif  /* !__CR_DX8WIN_H__ */
+#endif  /* !__CR_DX9WIN_H__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
