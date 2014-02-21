@@ -43,6 +43,7 @@ iGFX2_DX9M_release (
 
     real = (iGFX2_DX9M*)that;
     real->m_sprt->Release();
+    CR_VCALL(real->m_fill)->release(real->m_fill);
     real->m_hdle.call->release_main(real->m_main);
     mem_free(that);
 }
@@ -230,6 +231,7 @@ create_dx9_canvas (
     RECT        rect;
     HRESULT     retc;
     sDX9_HDLE*  hdle;
+    sD3D9_TEXR* fill;
     iGFX2_DX9M* rett;
 
     CR_NOUSE(param);
@@ -279,12 +281,33 @@ create_dx9_canvas (
         goto _failure1;
     }
 
+    /* 创建填充用的纹理 */
+    fill = hdle->call->create_tex2(rett->m_main, 1, 1, D3DFMT_A8R8G8B8,
+                                   D3DPOOL_MANAGED, 0, 1);
+    if (fill == NULL) {
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_canvas()", "d3d9_create_tex2() failure");
+        goto _failure2;
+    }
+    rett->m_fill = (iGFX2*)create_dx9_bitmap(rett, fill, FALSE);
+    if (rett->m_fill == NULL) {
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_canvas()", "create_dx9_bitmap() failure");
+        hdle->call->release_texr(fill);
+        goto _failure2;
+    }
+    if (!CR_VCALL(rett->m_fill)->clear(rett->m_fill, 0xFFFFFFFFUL, 0)) {
+        err_set(__CR_DX9WIN_CPP__, FALSE,
+                "create_dx9_canvas()", "iGFX2::clear() failure");
+        goto _failure3;
+    }
+
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(rett->m_main->dev, &rett->m_sprt);
     if (FAILED(retc)) {
         err_set(__CR_DX9WIN_CPP__, CR_NULL,
                 "create_dx9_canvas()", "D3DXCreateSprite() failure");
-        goto _failure2;
+        goto _failure3;
     }
 
     /* 返回生成的对象 */
@@ -294,6 +317,8 @@ create_dx9_canvas (
     struct_cpy(&rett->__back__.position, &rett->__back__.clip_win, sRECT);
     return (rett);
 
+_failure3:
+    CR_VCALL(rett->m_fill)->release(rett->m_fill);
 _failure2:
     hdle->call->release_main(rett->m_main);
 _failure1:
@@ -582,6 +607,34 @@ create_dx9_bitmap (
 
 /*
 =======================================
+    直接填充操作
+=======================================
+*/
+CR_API bool_t
+fill_dx9_draw (
+  __CR_IO__ const iGFX2_DX9M*   dst,
+  __CR_IN__ const sFILL*        fill,
+  __CR_IN__ cl32_t              color
+    )
+{
+    sZOOM   zoom;
+
+    zoom.dx = fill->dx;
+    zoom.dy = fill->dy;
+    zoom.dw = fill->dw;
+    zoom.dh = fill->dh;
+    zoom.sx = zoom.sy = 0;
+    zoom.sw = zoom.sh = 1;
+    if (!blit_dx9_zoom(dst, (iGFX2_DX9S*)dst->m_fill, &zoom, color)) {
+        err_set(__CR_DX9WIN_CPP__, FALSE,
+                "fill_dx9_draw()", "blit_dx9_zoom() failure");
+        return (FALSE);
+    }
+    return (TRUE);
+}
+
+/*
+=======================================
     直接 BLT 操作
 =======================================
 */
@@ -812,9 +865,10 @@ static const sDX9_CALL _rom_ s_dx9call =
     mode_dx9_alp,
     mode_dx9_add,
     mode_dx9_sub,
-    mode_dx9_clr,
+    mode_dx9_end,
 
     /* 绘制 */
+    fill_dx9_draw,
     blit_dx9_copy,
     blit_dx9_zoom,
     blit_dx9_rote,

@@ -44,9 +44,10 @@ typedef struct
         const iGFX2_vtbl*   __vptr__;
 
         /* 数据成员 */
-        sIMAGE  __back__;   /* 显示屏的后台缓冲 */
+        sIMAGE  __back__;   /* 只有宽高是有用的 */
 
         /* 个性部分 */
+        iGFX2*          m_fill;     /* 填充用的纹理 */
         sDX8_HDLE       m_hdle;     /* 设备句柄结构 */
         sD3D8_MAIN*     m_main;     /* D3D8 设备对象 */
         LPD3DXSPRITE    m_sprt;     /* 用于绘制纹理 */
@@ -60,7 +61,7 @@ typedef struct
         const iGFX2_vtbl*   __vptr__;
 
         /* 数据成员 */
-        sIMAGE  __back__;   /* 显示屏的后台缓冲 */
+        sIMAGE  __back__;   /* 锁定时可以操作 */
 
         /* 个性部分 */
         DWORD       m_flags;    /* 锁定标志 */
@@ -112,6 +113,9 @@ do_dx8_leave (
 
 #endif  /* !_CR_SICK_INLINE_ */
 
+CR_API bool_t   fill_dx8_draw (const iGFX2_DX8M *dst,
+                               const sFILL *fill, cl32_t color);
+
 CR_API bool_t   blit_dx8_copy (const iGFX2_DX8M *dst,
                                const iGFX2_DX8S *src,
                                const sBLIT *blit, cl32_t color);
@@ -150,6 +154,9 @@ typedef struct
     void_t  (*do_leave) (iGFX2_DX8M *dst);
 
     /* 原生绘图 */
+    bool_t  (*fill_draw) (const iGFX2_DX8M *dst, const sFILL *fill,
+                          cl32_t color);
+
     bool_t  (*blit_copy) (const iGFX2_DX8M *dst, const iGFX2_DX8S *src,
                           const sBLIT *blit, cl32_t color);
 
