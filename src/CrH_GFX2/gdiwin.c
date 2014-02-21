@@ -1090,7 +1090,6 @@ iFONT_GDI_draw_tran (
                 "iFONT::draw_tran()", "SetBkMode() failure");
         return (FALSE);
     }
-    rett = TRUE;
     temp.left   = rect->x1;
     temp.top    = rect->y1 + 1;     /* 这里的加1很重要 */
     temp.right  = rect->x2 + 1;
@@ -1102,7 +1101,7 @@ iFONT_GDI_draw_tran (
         leng = str_lenW(utf16);
     }
     else {
-        utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
+        utf16 = (wide_t*)str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
         if (utf16 == NULL) {
             err_set(__CR_GDIWIN_C__, CR_NULL,
                     "iFONT::draw_tran()", "str_acp2uni() failure");
@@ -1113,10 +1112,13 @@ iFONT_GDI_draw_tran (
     }
 
     /* 支持输出多行文本 */
-    if (!DrawTextW(real->m_draw, utf16, (UINT)leng, &temp, DT_LEFT)) {
+    if (!DrawTextW(real->m_draw, utf16, (int)leng, &temp, DT_LEFT)) {
         err_set(__CR_GDIWIN_C__, GetLastError(),
                 "iFONT::draw_tran()", "DrawTextW() failure");
         rett = FALSE;
+    }
+    else {
+        rett = TRUE;
     }
 
     if (utf16 != (wide_t*)text)
@@ -1162,7 +1164,7 @@ iFONT_GDI_draw_text (
         leng = str_lenW(utf16);
     }
     else {
-        utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
+        utf16 = (wide_t*)str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
         if (utf16 == NULL) {
             err_set(__CR_GDIWIN_C__, CR_NULL,
                     "iFONT::draw_text()", "str_acp2uni() failure");
@@ -1172,7 +1174,7 @@ iFONT_GDI_draw_text (
     }
 
     /* 支持输出多行文本 */
-    if (!DrawTextW(real->m_draw, utf16, (UINT)leng, &temp, DT_LEFT)) {
+    if (!DrawTextW(real->m_draw, utf16, (int)leng, &temp, DT_LEFT)) {
         err_set(__CR_GDIWIN_C__, GetLastError(),
                 "iFONT::draw_text()", "DrawTextW() failure");
         rett = FALSE;
@@ -1221,7 +1223,7 @@ iFONT_GDI_calc_rect (
         utf16 = (wide_t*)text;
     }
     else {
-        utf16 = str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
+        utf16 = (wide_t*)str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
         if (utf16 == NULL) {
             err_set(__CR_GDIWIN_C__, CR_NULL,
                     "iFONT::calc_rect()", "str_acp2uni() failure");
@@ -1231,7 +1233,7 @@ iFONT_GDI_calc_rect (
     }
 
     /* 测量文字输出范围 */
-    if (!DrawTextW(real->m_draw, utf16, (UINT)leng, &temp,
+    if (!DrawTextW(real->m_draw, utf16, (int)leng, &temp,
                    DT_LEFT | DT_CALCRECT)) {
         err_set(__CR_GDIWIN_C__, GetLastError(),
                 "iFONT::calc_rect()", "DrawTextW() failure");

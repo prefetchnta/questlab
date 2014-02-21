@@ -305,7 +305,7 @@ create_dx8_canvas (
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(rett->m_main->dev, &rett->m_sprt);
     if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
+        err_set(__CR_DX8WIN_CPP__, retc,
                 "create_dx8_canvas()", "D3DXCreateSprite() failure");
         goto _failure3;
     }

@@ -305,7 +305,7 @@ create_dx9_canvas (
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(rett->m_main->dev, &rett->m_sprt);
     if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+        err_set(__CR_DX9WIN_CPP__, retc,
                 "create_dx9_canvas()", "D3DXCreateSprite() failure");
         goto _failure3;
     }
@@ -850,6 +850,340 @@ blit_dx9_matx (
 }
 
 /*****************************************************************************/
+/*                                 文字接口                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    释放文字绘制接口
+---------------------------------------
+*/
+static void_t
+iFONT_DX9_release (
+  __CR_IN__ iFONT*  that
+    )
+{
+    iFONT_DX9*  real;
+
+    real = (iFONT_DX9*)that;
+    real->m_sprt->Release();
+    real->m_font->Release();
+    mem_free(that);
+}
+
+/*
+---------------------------------------
+    获取扩展的文字接口
+---------------------------------------
+*/
+static void_t*
+iFONT_DX9_getMore (
+  __CR_IN__ iFONT*  that,
+  __CR_IN__ port_t  iid
+    )
+{
+    /* 判断一下名称 */
+    if (str_cmpA(iid, "iFONT::DX9") != 0)
+        return (NULL);
+    return ((void_t*)that);
+}
+
+/*
+---------------------------------------
+    开始批绘制
+---------------------------------------
+*/
+static void_t
+iFONT_DX9_enter (
+  __CR_IN__ iFONT*  that
+    )
+{
+    ((iFONT_DX9*)that)->m_sprt->Begin(D3DXSPRITE_ALPHABLEND |
+                                      D3DXSPRITE_SORT_TEXTURE);
+}
+
+/*
+---------------------------------------
+    结束批绘制
+---------------------------------------
+*/
+static void_t
+iFONT_DX9_leave (
+  __CR_IN__ iFONT*  that
+    )
+{
+    ((iFONT_DX9*)that)->m_sprt->End();
+}
+
+/*
+---------------------------------------
+    绑定绘制接口
+---------------------------------------
+*/
+static bool_t
+iFONT_DX9_bind (
+  __CR_IO__ iFONT*  that,
+  __CR_IN__ iGFX2*  gfx2
+    )
+{
+    /* 不用绑定 */
+    CR_NOUSE(that);
+    CR_NOUSE(gfx2);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    设置绘制模式 (平台相关)
+---------------------------------------
+*/
+static bool_t
+iFONT_DX9_setMode (
+  __CR_IO__ iFONT*  that,
+  __CR_IN__ int32u  mode
+    )
+{
+    that->__draw_mode__ = mode;
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    设置前景色 (标准32位色)
+---------------------------------------
+*/
+static bool_t
+iFONT_DX9_setColor (
+  __CR_IO__ iFONT*  that,
+  __CR_IN__ cl32_t  color
+    )
+{
+    that->__color__ = color;
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    设置背景色 (标准32位色)
+---------------------------------------
+*/
+static bool_t
+iFONT_DX9_setBkColor (
+  __CR_IO__ iFONT*  that,
+  __CR_IN__ cl32_t  color
+    )
+{
+    that->__bkcolor__ = color;
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    绘制文字 (透明)
+---------------------------------------
+*/
+static bool_t
+iFONT_DX9_draw_tran (
+  __CR_IN__ iFONT*          that,
+  __CR_IN__ const void_t*   text,
+  __CR_IN__ const sRECT*    rect,
+  __CR_IN__ uint_t          cpage
+    )
+{
+    RECT        temp;
+    leng_t      leng;
+    bool_t      rett;
+    wide_t*     utf16;
+    iFONT_DX9*  real = (iFONT_DX9*)that;
+
+    /* 统一转换到 UTF-16 */
+    if (cpage == CR_UTF16X) {
+        utf16 = (wide_t*)text;
+        leng = str_lenW(utf16);
+    }
+    else {
+        utf16 = (wide_t*)str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
+        if (utf16 == NULL) {
+            err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                    "iFONT::draw_tran()", "str_acp2uni() failure");
+            return (FALSE);
+        }
+        leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
+    }
+
+    /* 支持输出多行文本 */
+    temp.left   = rect->x1;
+    temp.top    = rect->y1;
+    temp.right  = rect->x2 + 1;
+    temp.bottom = rect->y2 + 1;
+    if (real->m_font->DrawTextW(real->m_sprt, utf16,
+            (INT)leng, &temp, DT_LEFT, real->__color__) == 0) {
+        err_set(__CR_DX9WIN_CPP__, 0L,
+                "iFONT::draw_tran()", "ID3DXFont::DrawTextW() failure");
+        rett = FALSE;
+    }
+    else {
+        rett = TRUE;
+    }
+
+    if (utf16 != (wide_t*)text)
+        mem_free(utf16);
+    return (rett);
+}
+
+/*
+---------------------------------------
+    测量文字输出范围
+---------------------------------------
+*/
+static bool_t
+iFONT_DX9_calc_rect (
+  __CR_IN__ iFONT*          that,
+  __CR_IN__ const void_t*   text,
+  __CR_IO__ sRECT*          rect,
+  __CR_IN__ uint_t          cpage
+    )
+{
+    RECT        temp;
+    leng_t      leng;
+    bool_t      rett;
+    wide_t*     utf16;
+    iFONT_DX9*  real = (iFONT_DX9*)that;
+
+    /* 统一转换到 UTF-16 */
+    if (cpage == CR_UTF16X) {
+        utf16 = (wide_t*)text;
+        leng = str_lenW(utf16);
+    }
+    else {
+        utf16 = (wide_t*)str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
+        if (utf16 == NULL) {
+            err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                    "iFONT::calc_rect()", "str_acp2uni() failure");
+            return (FALSE);
+        }
+        leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
+    }
+
+    /* 支持输出多行文本 */
+    temp.left   = 0;
+    temp.top    = 0;
+    temp.right  = rect->ww;
+    temp.bottom = rect->hh;
+    if (real->m_font->DrawTextW(real->m_sprt, utf16,
+            (INT)leng, &temp, DT_LEFT | DT_CALCRECT, 0) == 0) {
+        err_set(__CR_DX9WIN_CPP__, 0L,
+                "iFONT::calc_rect()", "ID3DXFont::DrawTextW() failure");
+        rett = FALSE;
+    }
+    else {
+        rett = TRUE;
+        rect_set_wh(rect, rect->x1, rect->y1, temp.right, temp.bottom);
+    }
+
+    if (utf16 != (wide_t*)text)
+        mem_free(utf16);
+    return (rett);
+}
+
+/* 接口虚函数表 */
+static const iFONT_vtbl _rom_ s_font_vtbl =
+{
+    iFONT_DX9_release, iFONT_DX9_getMore,
+    iFONT_DX9_enter, iFONT_DX9_leave, iFONT_DX9_bind,
+    iFONT_DX9_setMode, iFONT_DX9_setColor, iFONT_DX9_setBkColor,
+    iFONT_DX9_draw_tran, iFONT_DX9_draw_tran, iFONT_DX9_calc_rect,
+};
+
+/*
+=======================================
+    生成 DX9 文字绘制接口A
+=======================================
+*/
+CR_API iFONT*
+create_dx9_fontA (
+  __CR_IN__ iGFX2_DX9M*             devs,
+  __CR_IN__ const D3DXFONT_DESCA*   desc
+    )
+{
+    HRESULT     retc;
+    iFONT_DX9*  font;
+
+    font = struct_new(iFONT_DX9);
+    if (font == NULL) {
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_fontA()", "struct_new() failure");
+        return (NULL);
+    }
+    struct_zero(font, iFONT_DX9);
+
+    /* 生成字体对象 */
+    retc = D3DXCreateFontIndirectA(devs->m_main->dev, desc, &font->m_font);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "create_dx9_fontA()", "D3DXCreateFontIndirectA() failure");
+        mem_free(font);
+        return (NULL);
+    }
+
+    /* 生成精灵绘制对象 */
+    retc = D3DXCreateSprite(devs->m_main->dev, &font->m_sprt);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "create_dx9_fontA()", "D3DXCreateSprite() failure");
+        font->m_font->Release();
+        mem_free(font);
+        return (NULL);
+    }
+    font->__vptr__ = &s_font_vtbl;
+    return ((iFONT*)font);
+}
+
+/*
+=======================================
+    生成 DX9 文字绘制接口W
+=======================================
+*/
+CR_API iFONT*
+create_dx9_fontW (
+  __CR_IN__ iGFX2_DX9M*             devs,
+  __CR_IN__ const D3DXFONT_DESCW*   desc
+    )
+{
+    HRESULT     retc;
+    iFONT_DX9*  font;
+
+    font = struct_new(iFONT_DX9);
+    if (font == NULL) {
+        err_set(__CR_DX9WIN_CPP__, CR_NULL,
+                "create_dx9_fontW()", "struct_new() failure");
+        return (NULL);
+    }
+    struct_zero(font, iFONT_DX9);
+
+    /* 生成字体对象 */
+    retc = D3DXCreateFontIndirectW(devs->m_main->dev, desc, &font->m_font);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "create_dx9_fontW()", "D3DXCreateFontIndirectW() failure");
+        mem_free(font);
+        return (NULL);
+    }
+
+    /* 生成精灵绘制对象 */
+    retc = D3DXCreateSprite(devs->m_main->dev, &font->m_sprt);
+    if (FAILED(retc)) {
+        err_set(__CR_DX9WIN_CPP__, retc,
+                "create_dx9_fontW()", "D3DXCreateSprite() failure");
+        font->m_font->Release();
+        mem_free(font);
+        return (NULL);
+    }
+    font->__vptr__ = &s_font_vtbl;
+    return ((iFONT*)font);
+}
+
+/*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
@@ -857,6 +1191,12 @@ static const sDX9_CALL _rom_ s_dx9call =
 {
     /* 创建 */
     create_dx9_bitmap,
+    create_dx9_fontA,
+    create_dx9_fontW,
+
+    /* 设备 */
+    font_dx9_losts,
+    font_dx9_reset,
 
     /* 模式 */
     do_dx9_enter,

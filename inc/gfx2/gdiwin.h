@@ -108,7 +108,6 @@ typedef struct
                                   const int32u *param, uint_t count);
     /* 文字生成 */
     iFONT*  (*create_fontA) (const LOGFONTA *lplf);
-
     iFONT*  (*create_fontW) (const LOGFONTW *lplf);
 
     /* 原生绘图 */

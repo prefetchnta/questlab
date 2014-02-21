@@ -76,7 +76,8 @@ CR_API iGFX2_DX9M*  create_dx9_canvas (void_t *handle, uint_t scn_cw,
                                 const int32u *param, uint_t count);
 /* 生成 DX9 图形离屏表面 */
 CR_API iGFX2_DX9S*  create_dx9_bitmap (iGFX2_DX9M *device,
-                            sD3D9_TEXR *texture, bool_t dynamic);
+                                       sD3D9_TEXR *texture,
+                                       bool_t dynamic);
 
 /*****************************************************************************/
 /*                                 原生绘制                                  */
@@ -211,6 +212,60 @@ CR_API bool_t   blit_dx9_matx (const iGFX2_DX9M *dst,
                                cl32_t color);
 
 /*****************************************************************************/
+/*                                 文字接口                                  */
+/*****************************************************************************/
+
+/* DX9 具体实现结构 */
+typedef struct
+{
+        /* 虚函数表 */
+        const iFONT_vtbl*   __vptr__;
+
+        /* 数据成员 */
+        int32u  __draw_mode__;              /* 模式 (平台相关) */
+        int32u  __color__, __bkcolor__;     /* 颜色 (平台相关) */
+
+        /* 个性部分 */
+        LPD3DXFONT      m_font;     /* 字体对象 */
+        LPD3DXSPRITE    m_sprt;     /* 绘制对象 */
+
+} iFONT_DX9;
+
+/* 生成 DX9 文字绘制接口 */
+CR_API iFONT*   create_dx9_fontA (iGFX2_DX9M *devs,
+                            const D3DXFONT_DESCA *desc);
+
+CR_API iFONT*   create_dx9_fontW (iGFX2_DX9M *devs,
+                            const D3DXFONT_DESCW *desc);
+/*
+=======================================
+    设备丢失时调用
+=======================================
+*/
+cr_inline void_t
+font_dx9_losts (
+  __CR_IN__ iFONT_DX9*  dst
+    )
+{
+    dst->m_font->OnLostDevice();
+    dst->m_sprt->OnLostDevice();
+}
+
+/*
+=======================================
+    设备复位时调用
+=======================================
+*/
+cr_inline void_t
+font_dx9_reset (
+  __CR_IN__ iFONT_DX9*  dst
+    )
+{
+    dst->m_font->OnResetDevice();
+    dst->m_sprt->OnResetDevice();
+}
+
+/*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
@@ -219,7 +274,16 @@ typedef struct
 {
     /* 离屏表面 */
     iGFX2_DX9S* (*create_bitmap) (iGFX2_DX9M *device,
-                        sD3D9_TEXR *texture, bool_t dynamic);
+                                  sD3D9_TEXR *texture,
+                                  bool_t dynamic);
+    /* 文字生成 */
+    iFONT*  (*create_fontA) (iGFX2_DX9M *devs, const D3DXFONT_DESCA *desc);
+    iFONT*  (*create_fontW) (iGFX2_DX9M *devs, const D3DXFONT_DESCW *desc);
+
+    /* 设备管理 */
+    void_t  (*font_losts) (iFONT_DX9 *dst);
+    void_t  (*font_reset) (iFONT_DX9 *dst);
+
     /* 模式设置 */
     void_t  (*do_enter) (iGFX2_DX9M *dst);
     void_t  (*do_leave) (iGFX2_DX9M *dst);
