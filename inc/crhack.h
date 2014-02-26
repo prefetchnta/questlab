@@ -27,7 +27,6 @@
 #include "extz.h"
 #include "fmtz.h"
 #include "gfx2.h"
-#include "gfx3.h"
 #include "hash.h"
 #include "safe.h"
 #include "applib.h"
