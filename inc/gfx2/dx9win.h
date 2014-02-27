@@ -237,6 +237,8 @@ CR_API iFONT*   create_dx9_fontA (iGFX2_DX9M *devs,
 
 CR_API iFONT*   create_dx9_fontW (iGFX2_DX9M *devs,
                             const D3DXFONT_DESCW *desc);
+
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     设备丢失时调用
@@ -264,6 +266,8 @@ font_dx9_reset (
     dst->m_font->OnResetDevice();
     dst->m_sprt->OnResetDevice();
 }
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 /*****************************************************************************/
 /*                                 接口导出                                  */

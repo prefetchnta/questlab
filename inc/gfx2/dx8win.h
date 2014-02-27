@@ -76,7 +76,8 @@ CR_API iGFX2_DX8M*  create_dx8_canvas (void_t *handle, uint_t scn_cw,
                                 const int32u *param, uint_t count);
 /* 生成 DX8 图形离屏表面 */
 CR_API iGFX2_DX8S*  create_dx8_bitmap (iGFX2_DX8M *device,
-                            sD3D8_TEXR *texture, bool_t dynamic);
+                                       sD3D8_TEXR *texture,
+                                       bool_t dynamic);
 
 /*****************************************************************************/
 /*                                 原生绘制                                  */
@@ -148,7 +149,8 @@ typedef struct
 {
     /* 离屏表面 */
     iGFX2_DX8S* (*create_bitmap) (iGFX2_DX8M *device,
-                        sD3D8_TEXR *texture, bool_t dynamic);
+                                  sD3D8_TEXR *texture,
+                                  bool_t dynamic);
     /* 模式设置 */
     void_t  (*do_enter) (iGFX2_DX8M *dst);
     void_t  (*do_leave) (iGFX2_DX8M *dst);
