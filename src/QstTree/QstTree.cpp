@@ -138,11 +138,13 @@ qst_try_load (
         return;
     }
 
-    /* 重新获取文件大小 */
-    size = file_sizeW(data->path);
-    if (size == (fsize_t)-1)
-        return;
-    data->size = size;
+    /* 设备文件不更新大小 */
+    if (data->path[0] != CR_WC(':')) {
+        size = file_sizeW(data->path);
+        if (size == (fsize_t)-1)
+            return;
+        data->size = size;
+    }
 
     /* 发送磁盘文件请求 */
     path = utf16_to_local(data->page, data->path);
