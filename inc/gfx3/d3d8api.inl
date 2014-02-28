@@ -20,6 +20,7 @@
 #ifndef __CR_D3D8API_INL__
 #define __CR_D3D8API_INL__ 0xFB0455CFUL
 
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     绑定网格 (VB)
@@ -296,6 +297,8 @@ d3d8_do_flip (
 {
     return (main->dev->Present(NULL, NULL, NULL, NULL));
 }
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 #endif  /* !__CR_D3D8API_INL__ */
 

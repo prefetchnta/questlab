@@ -20,6 +20,7 @@
 #ifndef __CR_D3D9API_INL__
 #define __CR_D3D9API_INL__ 0x14C63EF1UL
 
+#if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
     绑定网格 (VB)
@@ -368,6 +369,8 @@ d3d9_do_flip (
 {
     return (main->dev->Present(NULL, NULL, NULL, NULL));
 }
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 #endif  /* !__CR_D3D9API_INL__ */
 

@@ -20,6 +20,9 @@
 #ifndef __CR_D3D11API_INL__
 #define __CR_D3D11API_INL__ 0xA075FE73UL
 
+#if !defined(_CR_SICK_INLINE_)
+
+#endif  /* !_CR_SICK_INLINE_ */
 
 #endif  /* !__CR_D3D11API_INL__ */
 
