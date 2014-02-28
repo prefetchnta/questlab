@@ -2,17 +2,6 @@
 #include "xOpenCV.h"
 #include "../CrH_FMTZ/fmtint.h"
 
-/* 接口内部数据结构 */
-typedef struct
-{
-        /* 通用部分 */
-        iPICTURE    pics;
-
-        /* 个性部分 */
-        camera_t    m_cam;
-
-} iPIC_OCV;
-
 /*
 ---------------------------------------
     OpenCV 图片信息
@@ -62,6 +51,21 @@ opencv_info (
     }
     return (TRUE);
 }
+
+/*****************************************************************************/
+/*                                摄像头接口                                 */
+/*****************************************************************************/
+
+/* 接口内部数据结构 */
+typedef struct
+{
+        /* 通用部分 */
+        iPICTURE    pics;
+
+        /* 个性部分 */
+        camera_t    m_cam;
+
+} iPIC_OCV;
 
 /*
 ---------------------------------------
@@ -220,6 +224,177 @@ load_ocv_cam (
     return (rett);
 }
 
+/*****************************************************************************/
+/*                               视频文件接口                                */
+/*****************************************************************************/
+
+/* 接口内部数据结构 */
+typedef struct
+{
+        /* 通用部分 */
+        iPICTURE    pics;
+
+        /* 个性部分 */
+        xvideo_t    m_avi;
+
+} iPIC_AVI;
+
+/*
+---------------------------------------
+    释放接口
+---------------------------------------
+*/
+static void_t
+iPIC_AVI_release (
+  __CR_IN__ iPICTURE*   that
+    )
+{
+    iPIC_AVI*   real;
+
+    real = (iPIC_AVI*)that;
+    ilab_video_del(real->m_avi);
+    mem_free(that);
+}
+
+/*
+---------------------------------------
+    扩展接口
+---------------------------------------
+*/
+static void_t*
+iPIC_AVI_getMore (
+  __CR_IN__ iPICTURE*   that,
+  __CR_IN__ port_t      iid
+    )
+{
+    /* 判断一下名称 */
+    if (str_cmpA(iid, "iPICTURE::OCV_AVI") != 0)
+        return (NULL);
+    return ((void_t*)that);
+}
+
+/*
+---------------------------------------
+    获取图片帧
+---------------------------------------
+*/
+static sFMT_PIC*
+iPIC_AVI_get (
+  __CR_IN__ iPICTURE*   that,
+  __CR_IN__ int32u      index
+    )
+{
+    ipls_t*     ipls;
+    iPIC_AVI*   real;
+    sFMT_PIC*   rett;
+    sFMT_FRAME  temp;
+
+    /* 获取摄像头一帧图像 */
+    real = (iPIC_AVI*)that;
+    ipls = ilab_video_get(real->m_avi);
+    if (ipls == NULL) {
+        ilab_video_rewind(real->m_avi);
+        ipls = ilab_video_get(real->m_avi);
+        if (ipls == NULL)
+            return (NULL);
+    }
+
+    /* 复制到 sIMAGE 结构并填充信息 */
+    if (!opencv_info(&temp, ipls)) {
+        ilab_ipl_del(ipls);
+        return (NULL);
+    }
+    ilab_ipl_del(ipls);
+
+    /* 返回读取的文件数据 */
+    rett = struct_new(sFMT_PIC);
+    if (rett == NULL) {
+        image_del(temp.pic);
+        return (NULL);
+    }
+    rett->frame = struct_dup(&temp, sFMT_FRAME);
+    if (rett->frame == NULL) {
+        image_del(temp.pic);
+        mem_free(rett);
+        return (NULL);
+    }
+    CR_NOUSE(index);
+    rett->type = CR_FMTZ_PIC;
+    rett->count = 1;
+    rett->infor = "Video file supported by OpenCV";
+    return (rett);
+}
+
+/* 接口虚函数表 */
+static const iPICTURE_vtbl _rom_ s_avis_vtbl =
+{
+    iPIC_AVI_release, iPIC_AVI_getMore, iPIC_AVI_get,
+};
+
+/*
+=======================================
+    OpenCV 视频文件读取
+=======================================
+*/
+CR_API sFMT_PRT*
+load_ocv_avi (
+  __CR_IO__ iDATIN*         datin,
+  __CR_IN__ const sLOADER*  param
+    )
+{
+    int64u      num;
+    xvideo_t    oavi;
+    sFMT_PRT*   rett;
+    iPIC_AVI*   port;
+
+    switch (param->type)
+    {
+        case CR_LDR_ANSI:
+            oavi = ilab_video_newA(param->name.ansi);
+            break;
+
+        case CR_LDR_WIDE:
+            oavi = ilab_video_newW(param->name.wide);
+            break;
+
+        default:
+            return (NULL);
+    }
+    if (oavi == NULL)
+        return (NULL);
+
+    /* 生成多帧图片接口对象 */
+    port = struct_new(iPIC_AVI);
+    if (port == NULL) {
+        ilab_video_del(oavi);
+        return (NULL);
+    }
+    port->m_avi = oavi;
+    num = ilab_video_count(oavi);
+    if (num == 0 || num > 0xFFFFFFFFUL)
+        port->pics.__count__ = 256;
+    else
+        port->pics.__count__ = (int32u)num;
+    port->pics.__vptr__ = &s_avis_vtbl;
+
+    /* 返回读取的文件数据 */
+    rett = struct_new(sFMT_PRT);
+    if (rett == NULL) {
+        iPIC_AVI_release((iPICTURE*)port);
+        return (NULL);
+    }
+    CR_NOUSE(datin);
+    rett->type = CR_FMTZ_PRT;
+    rett->port = (iPORT*)port;
+    rett->more = "iPICTURE";
+    rett->infor = "Video file supported by OpenCV";
+    return (rett);
+}
+
+/*****************************************************************************/
+/*                               图片文件接口                                */
+/*****************************************************************************/
+
 /*
 =======================================
     OpenCV 图片文件读取
@@ -282,6 +457,10 @@ load_ocv_pic (
     return (rett);
 }
 
+/*****************************************************************************/
+/*                                 引擎接口                                  */
+/*****************************************************************************/
+
 /*
 ---------------------------------------
     文件格式加载接口
@@ -301,8 +480,11 @@ engine_ocv_load (
 
     /* 优先判定摄像头 */
     fmtz = (sFMTZ*)load_ocv_cam(NULL, loader);
-    if (fmtz == NULL)
+    if (fmtz == NULL) {
         fmtz = (sFMTZ*)load_ocv_pic(NULL, loader);
+        if (fmtz == NULL)
+            fmtz = (sFMTZ*)load_ocv_avi(NULL, loader);
+    }
     return (fmtz);
 }
 

@@ -269,7 +269,12 @@ ilab_camera_new (
   __CR_IN__ uint_t  id
     )
 {
-    return ((camera_t)cvCaptureFromCAM((int)id));
+    CvCapture*  cap;
+
+    cap = cvCaptureFromCAM((int)id);
+    if (cap != NULL)
+        cvSetCaptureProperty(cap, CV_CAP_PROP_CONVERT_RGB, 1.0);
+    return ((camera_t)cap);
 }
 
 /*
@@ -379,7 +384,12 @@ ilab_video_newA (
   __CR_IN__ const ansi_t*   name
     )
 {
-    return ((xvideo_t)cvCaptureFromFile(name));
+    CvCapture*  cap;
+
+    cap = cvCaptureFromFile(name);
+    if (cap != NULL)
+        cvSetCaptureProperty(cap, CV_CAP_PROP_CONVERT_RGB, 1.0);
+    return ((xvideo_t)cap);
 }
 
 /*
@@ -400,6 +410,8 @@ ilab_video_newW (
         return (NULL);
     cap = cvCaptureFromFile(tmp);
     mem_free(tmp);
+    if (cap != NULL)
+        cvSetCaptureProperty(cap, CV_CAP_PROP_CONVERT_RGB, 1.0);
     return ((xvideo_t)cap);
 }
 
@@ -450,6 +462,19 @@ ilab_video_count (
     int64s  value;
 
     value = (int64s)cvGetCaptureProperty((CvCapture*)avi,
-                                CV_CAP_PROP_FRAME_COUNT);
+                                    CV_CAP_PROP_FRAME_COUNT);
     return ((int64u)value);
+}
+
+/*
+=======================================
+    视频定位到开始
+=======================================
+*/
+CR_API void_t
+ilab_video_rewind (
+  __CR_IN__ xvideo_t    avi
+    )
+{
+    cvSetCaptureProperty((CvCapture*)avi, CV_CAP_PROP_POS_MSEC, 0.0);
 }
