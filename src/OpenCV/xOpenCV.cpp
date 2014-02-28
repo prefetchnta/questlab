@@ -5,25 +5,9 @@ using namespace cv;
 
 /* 外部库引用 */
 #ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "opencv_calib3d247.lib")
-    #pragma comment (lib, "opencv_contrib247.lib")
-    #pragma comment (lib, "opencv_core247.lib")
-    #pragma comment (lib, "opencv_features2d247.lib")
-    #pragma comment (lib, "opencv_flann247.lib")
-    #pragma comment (lib, "opencv_gpu247.lib")
-    #pragma comment (lib, "opencv_highgui247.lib")
-    #pragma comment (lib, "opencv_imgproc247.lib")
-    #pragma comment (lib, "opencv_legacy247.lib")
-    #pragma comment (lib, "opencv_ml247.lib")
-    #pragma comment (lib, "opencv_nonfree247.lib")
-    #pragma comment (lib, "opencv_objdetect247.lib")
-    #pragma comment (lib, "opencv_ocl247.lib")
-    #pragma comment (lib, "opencv_photo247.lib")
-    #pragma comment (lib, "opencv_stitching247.lib")
-    #pragma comment (lib, "opencv_superres247.lib")
-    #pragma comment (lib, "opencv_ts247.lib")
-    #pragma comment (lib, "opencv_video247.lib")
-    #pragma comment (lib, "opencv_videostab247.lib")
+    #pragma comment (lib, "opencv_core248.lib")
+    #pragma comment (lib, "opencv_highgui248.lib")
+    #pragma comment (lib, "opencv_imgproc248.lib")
 #endif
 
 #if defined(_CR_BUILD_DLL_)
