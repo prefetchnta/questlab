@@ -298,7 +298,12 @@ ilab_camera_get (
   __CR_IN__ camera_t    cam
     )
 {
-    return (cvQueryFrame((CvCapture*)cam));
+    IplImage*   arr;
+
+    arr = cvQueryFrame((CvCapture*)cam);
+    if (arr == NULL)
+        return (NULL);
+    return (cvCloneImage(arr));
 }
 
 /*****************************************************************************/
