@@ -269,16 +269,7 @@ ilab_camera_new (
   __CR_IN__ uint_t  id
     )
 {
-    VideoCapture*   cap;
-
-    cap = new VideoCapture ((int)id);
-    if (cap == NULL)
-        return (NULL);
-    if (!cap->isOpened()) {
-        delete cap;
-        return (NULL);
-    }
-    return ((camera_t)cap);
+    return ((camera_t)cvCaptureFromCAM((int)id));
 }
 
 /*
@@ -291,10 +282,10 @@ ilab_camera_del (
   __CR_IN__ camera_t    cam
     )
 {
-    VideoCapture*   cap;
+    CvCapture*  cap;
 
-    cap = (VideoCapture*)cam;
-    delete cap;
+    cap = (CvCapture*)cam;
+    cvReleaseCapture(&cap);
 }
 
 /*
@@ -307,14 +298,7 @@ ilab_camera_get (
   __CR_IN__ camera_t    cam
     )
 {
-    Mat             img;
-    IplImage        tmp;
-    VideoCapture*   cap;
-
-    cap = (VideoCapture*)cam;
-    *cap >> img;
-    tmp = (IplImage)img;
-    return (cvCloneImage(&tmp));
+    return (cvQueryFrame((CvCapture*)cam));
 }
 
 /*****************************************************************************/
