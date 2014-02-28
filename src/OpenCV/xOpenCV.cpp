@@ -261,7 +261,7 @@ ilab_img2ipl_dup (
 
 /*
 =======================================
-    OpenCV 获取摄像头对象
+    获取摄像头对象
 =======================================
 */
 CR_API camera_t
@@ -274,7 +274,7 @@ ilab_camera_new (
 
 /*
 =======================================
-    OpenCV 释放摄像头对象
+    释放摄像头对象
 =======================================
 */
 CR_API void_t
@@ -290,7 +290,7 @@ ilab_camera_del (
 
 /*
 =======================================
-    OpenCV 获取一帧图像
+    获取一帧图像
 =======================================
 */
 CR_API ipls_t*
@@ -363,4 +363,93 @@ ilab_load_mem (
         return (NULL);
     mat = cvMat(1, (int)cvt, CV_8UC1, (void_t*)data);
     return (cvDecodeImage(&mat, CV_LOAD_IMAGE_COLOR));
+}
+
+/*****************************************************************************/
+/*                               视频文件加载                                */
+/*****************************************************************************/
+
+/*
+=======================================
+    获取视频文件对象A
+=======================================
+*/
+CR_API xvideo_t
+ilab_video_newA (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    return ((xvideo_t)cvCaptureFromFile(name));
+}
+
+/*
+=======================================
+    获取视频文件对象W
+=======================================
+*/
+CR_API xvideo_t
+ilab_video_newW (
+  __CR_IN__ const wide_t*   name
+    )
+{
+    ansi_t*     tmp;
+    CvCapture*  cap;
+
+    tmp = utf16_to_local(CR_LOCAL, name);
+    if (tmp == NULL)
+        return (NULL);
+    cap = cvCaptureFromFile(tmp);
+    mem_free(tmp);
+    return ((xvideo_t)cap);
+}
+
+/*
+=======================================
+    释放视频文件对象
+=======================================
+*/
+CR_API void_t
+ilab_video_del (
+  __CR_IN__ xvideo_t    avi
+    )
+{
+    CvCapture*  cap;
+
+    cap = (CvCapture*)avi;
+    cvReleaseCapture(&cap);
+}
+
+/*
+=======================================
+    获取一帧图像
+=======================================
+*/
+CR_API ipls_t*
+ilab_video_get (
+  __CR_IN__ xvideo_t    avi
+    )
+{
+    IplImage*   arr;
+
+    arr = cvQueryFrame((CvCapture*)avi);
+    if (arr == NULL)
+        return (NULL);
+    return (cvCloneImage(arr));
+}
+
+/*
+=======================================
+    返回视频的帧数 (为0表示无法获取)
+=======================================
+*/
+CR_API int64u
+ilab_video_count (
+  __CR_IN__ xvideo_t    avi
+    )
+{
+    int64s  value;
+
+    value = (int64s)cvGetCaptureProperty((CvCapture*)avi,
+                                CV_CAP_PROP_FRAME_COUNT);
+    return ((int64u)value);
 }

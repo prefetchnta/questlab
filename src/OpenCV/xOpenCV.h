@@ -55,6 +55,15 @@ CR_API ipls_t*  ilab_load_fileA (const ansi_t *name);
 CR_API ipls_t*  ilab_load_fileW (const wide_t *name);
 CR_API ipls_t*  ilab_load_mem (const void_t *data, leng_t size);
 
+/* OpenCV 视频文件类型 */
+typedef void_t*     xvideo_t;
+
+CR_API xvideo_t ilab_video_newA (const ansi_t *name);
+CR_API xvideo_t ilab_video_newW (const wide_t *name);
+CR_API void_t   ilab_video_del (xvideo_t avi);
+CR_API ipls_t*  ilab_video_get (xvideo_t avi);
+CR_API int64u   ilab_video_count (xvideo_t avi);
+
 /*****************************************************************************/
 /*                                格式库部分                                 */
 /*****************************************************************************/
