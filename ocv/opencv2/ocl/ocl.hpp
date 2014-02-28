@@ -118,6 +118,7 @@ namespace cv
             const PlatformInfo* platform;
 
             DeviceInfo();
+            ~DeviceInfo();
         };
 
         struct PlatformInfo
@@ -136,6 +137,7 @@ namespace cv
             std::vector<const DeviceInfo*> devices;
 
             PlatformInfo();
+            ~PlatformInfo();
         };
 
         //////////////////////////////// Initialization & Info ////////////////////////
@@ -150,6 +152,10 @@ namespace cv
 
         // set device you want to use
         CV_EXPORTS void setDevice(const DeviceInfo* info);
+
+        // Initialize from OpenCL handles directly.
+        // Argument types is (pointers): cl_platform_id*, cl_context*, cl_device_id*
+        CV_EXPORTS void initializeContext(void* pClPlatform, void* pClContext, void* pClDevice);
 
         //////////////////////////////// Error handling ////////////////////////
         CV_EXPORTS void error(const char *error_string, const char *file, const int line, const char *func);
@@ -378,14 +384,6 @@ namespace cv
             Size size() const;
             //! returns true if oclMatrix data is NULL
             bool empty() const;
-
-            //! returns pointer to y-th row
-            uchar* ptr(int y = 0);
-            const uchar *ptr(int y = 0) const;
-
-            //! template version of the above method
-            template<typename _Tp> _Tp *ptr(int y = 0);
-            template<typename _Tp> const _Tp *ptr(int y = 0) const;
 
             //! matrix transposition
             oclMat t() const;
@@ -708,17 +706,17 @@ namespace cv
 
         //! returns the separable linear filter engine
         CV_EXPORTS Ptr<FilterEngine_GPU> createSeparableLinearFilter_GPU(int srcType, int dstType, const Mat &rowKernel,
-                const Mat &columnKernel, const Point &anchor = Point(-1, -1), double delta = 0.0, int bordertype = BORDER_DEFAULT);
+                const Mat &columnKernel, const Point &anchor = Point(-1, -1), double delta = 0.0, int bordertype = BORDER_DEFAULT, Size imgSize = Size(-1,-1));
 
         //! returns the separable filter engine with the specified filters
         CV_EXPORTS Ptr<FilterEngine_GPU> createSeparableFilter_GPU(const Ptr<BaseRowFilter_GPU> &rowFilter,
                 const Ptr<BaseColumnFilter_GPU> &columnFilter);
 
         //! returns the Gaussian filter engine
-        CV_EXPORTS Ptr<FilterEngine_GPU> createGaussianFilter_GPU(int type, Size ksize, double sigma1, double sigma2 = 0, int bordertype = BORDER_DEFAULT);
+        CV_EXPORTS Ptr<FilterEngine_GPU> createGaussianFilter_GPU(int type, Size ksize, double sigma1, double sigma2 = 0, int bordertype = BORDER_DEFAULT, Size imgSize = Size(-1,-1));
 
         //! returns filter engine for the generalized Sobel operator
-        CV_EXPORTS Ptr<FilterEngine_GPU> createDerivFilter_GPU( int srcType, int dstType, int dx, int dy, int ksize, int borderType = BORDER_DEFAULT );
+        CV_EXPORTS Ptr<FilterEngine_GPU> createDerivFilter_GPU( int srcType, int dstType, int dx, int dy, int ksize, int borderType = BORDER_DEFAULT, Size imgSize = Size(-1,-1) );
 
         //! applies Laplacian operator to the image
         // supports only ksize = 1 and ksize = 3
@@ -861,17 +859,16 @@ namespace cv
         CV_EXPORTS void warpPerspective(const oclMat &src, oclMat &dst, const Mat &M, Size dsize, int flags = INTER_LINEAR);
 
         //! computes the integral image and integral for the squared image
-        // sum will have CV_32S type, sqsum - CV32F type
+        // sum will support CV_32S, CV_32F, sqsum - support CV32F, CV_64F
         // supports only CV_8UC1 source type
-        CV_EXPORTS void integral(const oclMat &src, oclMat &sum, oclMat &sqsum);
-        CV_EXPORTS void integral(const oclMat &src, oclMat &sum);
+        CV_EXPORTS void integral(const oclMat &src, oclMat &sum, oclMat &sqsum, int sdepth=-1 );
+        CV_EXPORTS void integral(const oclMat &src, oclMat &sum, int sdepth=-1 );
         CV_EXPORTS void cornerHarris(const oclMat &src, oclMat &dst, int blockSize, int ksize, double k, int bordertype = cv::BORDER_DEFAULT);
         CV_EXPORTS void cornerHarris_dxdy(const oclMat &src, oclMat &dst, oclMat &Dx, oclMat &Dy,
             int blockSize, int ksize, double k, int bordertype = cv::BORDER_DEFAULT);
         CV_EXPORTS void cornerMinEigenVal(const oclMat &src, oclMat &dst, int blockSize, int ksize, int bordertype = cv::BORDER_DEFAULT);
         CV_EXPORTS void cornerMinEigenVal_dxdy(const oclMat &src, oclMat &dst, oclMat &Dx, oclMat &Dy,
             int blockSize, int ksize, int bordertype = cv::BORDER_DEFAULT);
-
         /////////////////////////////////// ML ///////////////////////////////////////////
 
         //! Compute closest centers for each lines in source and lable it after center's index
@@ -879,7 +876,7 @@ namespace cv
         // supports NORM_L1 and NORM_L2 distType
         // if indices is provided, only the indexed rows will be calculated and their results are in the same
         // order of indices
-        CV_EXPORTS void distanceToCenters(oclMat &dists, oclMat &labels, const oclMat &src, const oclMat &centers, int distType = NORM_L2SQR, const oclMat &indices = oclMat());
+        CV_EXPORTS void distanceToCenters(const oclMat &src, const oclMat &centers, Mat &dists, Mat &labels, int distType = NORM_L2SQR);
 
         //!Does k-means procedure on GPU
         // supports CV_32FC1/CV_32FC2/CV_32FC4 data type
@@ -939,7 +936,7 @@ namespace cv
             Size m_maxSize;
             vector<CvSize> sizev;
             vector<float> scalev;
-            oclMat gimg1, gsum, gsqsum;
+            oclMat gimg1, gsum, gsqsum, gsqsum_t;
             void * buffers;
         };
 
@@ -1383,8 +1380,10 @@ namespace cv
             oclMat Dx_;
             oclMat Dy_;
             oclMat eig_;
+            oclMat eig_minmax_;
             oclMat minMaxbuf_;
             oclMat tmpCorners_;
+            oclMat counter_;
         };
 
         inline GoodFeaturesToTrackDetector_OCL::GoodFeaturesToTrackDetector_OCL(int maxCorners_, double qualityLevel_, double minDistance_,

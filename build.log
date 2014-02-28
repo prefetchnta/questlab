@@ -5,6 +5,13 @@
     ~~~~~~~~~~~~~~~~
     [m] plugin/xOpenCV.dll
     [m] QstTree.exe
+    [-] opencv_core247.dll
+    [-] opencv_highgui247.dll
+    [-] opencv_imgproc247.dll
+    [+] opencv_core248.dll
+    [+] opencv_highgui248.dll
+    [+] opencv_imgproc248.dll
+    [+] opencv_ffmpeg248.dll
 +
 +
 +
