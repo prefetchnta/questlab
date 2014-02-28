@@ -124,7 +124,7 @@
 
 ##xOpenCV (VS2010 SP1)
 
-<p>基于 <b>OpenCV</b> 库的复合扩展插件，为 <b>QstView2D</b> 提供一些图像处理识别相关的图片滤镜和图形绘制命令扩展，并支持摄像头图片的输入以及支持加载以下几种图片格式：</p>
+<p>基于 <b>OpenCV</b> 库的复合扩展插件，为 <b>QstView2D</b> 提供一些图像处理识别相关的图片滤镜和图形绘制命令扩展，并支持摄像头与视频文件的图片输入以及支持加载以下几种图片格式：</p>
  - Windows bitmaps - \*.bmp, \*.dib
  - JPEG files - \*.jpeg, \*.jpg, \*.jpe
  - JPEG 2000 files - \*.jp2
