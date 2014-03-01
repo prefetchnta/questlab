@@ -21,7 +21,6 @@
 #define __CR_E_RAR_C__ 0xAC350385UL
 
 #include "fmtint.h"
-#include "mtplib.h"
 #include "strlib.h"
 #include "fmtz/rar.h"
 
@@ -56,7 +55,6 @@ typedef struct
         HANDLE  m_rar;      /* RAR 对象 */
         leng_t  m_cnt;      /* 文件个数 */
         leng_t  m_cur;      /* 当前序号 */
-        lock_t  m_lock;     /* 多线程的锁 */
         ansi_t* m_pass;     /* 保存的密码 */
         ansi_t* m_ansi;     /* 保存的文件名A */
         wide_t* m_wide;     /* 保存的文件名W */
@@ -120,7 +118,6 @@ iPAK_RAR_release (
     }
     if (real->m_rar != NULL)
         RARCloseArchive(real->m_rar);
-    mtlock_free(&real->m_lock);
     TRY_FREE(real->m_ansi)
     TRY_FREE(real->m_wide)
     TRY_FREE(real->m_pass)
@@ -210,7 +207,6 @@ iPAK_RAR_getFileData (
         }
 
         /* RAR 只能顺序读取文件 */
-        mtlock_acquire(&real->m_lock);
         if (real->m_rar == NULL || item->id < real->m_cur)
         {
             /* 需要重新打开封包 */
@@ -269,7 +265,6 @@ iPAK_RAR_getFileData (
             goto _failure2;
         }
         real->m_cur += 1;
-        mtlock_release(&real->m_lock);
     }
 
     /* 返回文件数据 */
@@ -280,7 +275,6 @@ _failure2:
     real->m_rar = NULL;
 _failure1:
     real->m_cur = (leng_t)-1;
-    mtlock_release(&real->m_lock);
     mem_free(data);
     return (FALSE);
 }
@@ -528,7 +522,6 @@ load_rar (
                 "load_rar()", "pack_init_list() failure");
         goto _failure4;
     }
-    mtlock_init(&port->m_lock);
     RARCloseArchive(rar);
 
     /* 返回读取的文件数据 */
