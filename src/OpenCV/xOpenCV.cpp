@@ -452,13 +452,15 @@ ilab_video_count (
 
 /*
 =======================================
-    视频定位到开始
+    视频定位到指定帧
 =======================================
 */
 CR_API void_t
-ilab_video_rewind (
-  __CR_IN__ xvideo_t    avi
+ilab_video_seek (
+  __CR_IN__ xvideo_t    avi,
+  __CR_IN__ int64u      frame
     )
 {
-    cvSetCaptureProperty((CvCapture*)avi, CV_CAP_PROP_POS_MSEC, 0.0);
+    cvSetCaptureProperty((CvCapture*)avi, CV_CAP_PROP_POS_FRAMES,
+                         (double)frame);
 }

@@ -235,6 +235,7 @@ typedef struct
         iPICTURE    pics;
 
         /* 个性部分 */
+        int32u      m_cur;
         xvideo_t    m_avi;
 
 } iPIC_AVI;
@@ -289,15 +290,22 @@ iPIC_AVI_get (
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;
 
-    /* 获取摄像头一帧图像 */
+    /* 帧号过滤 */
+    if (index >= that->__count__)
+        return (NULL);
+
+    /* 定位视频帧 */
     real = (iPIC_AVI*)that;
-    ipls = ilab_video_get(real->m_avi);
-    if (ipls == NULL) {
-        ilab_video_rewind(real->m_avi);
-        ipls = ilab_video_get(real->m_avi);
-        if (ipls == NULL)
-            return (NULL);
+    if (index != real->m_cur) {
+        ilab_video_seek(real->m_avi, index);
+        real->m_cur = index;
     }
+
+    /* 获取摄像头一帧图像 */
+    ipls = ilab_video_get(real->m_avi);
+    if (ipls == NULL)
+        return (NULL);
+    real->m_cur += 1;
 
     /* 复制到 sIMAGE 结构并填充信息 */
     if (!opencv_info(&temp, ipls)) {
@@ -362,6 +370,12 @@ load_ocv_avi (
     }
     if (oavi == NULL)
         return (NULL);
+    num = ilab_video_count(oavi);
+    if (num == 0) {
+        ilab_video_del(oavi);
+        return (NULL);
+    }
+
 
     /* 生成多帧图片接口对象 */
     port = struct_new(iPIC_AVI);
@@ -369,10 +383,10 @@ load_ocv_avi (
         ilab_video_del(oavi);
         return (NULL);
     }
+    port->m_cur = 0UL;
     port->m_avi = oavi;
-    num = ilab_video_count(oavi);
-    if (num == 0 || num > 0xFFFFFFFFUL)
-        port->pics.__count__ = 256;
+    if (num >= 0xFFFFFFFFUL)
+        port->pics.__count__ = 0xFFFFFFFFUL;
     else
         port->pics.__count__ = (int32u)num;
     port->pics.__vptr__ = &s_avis_vtbl;

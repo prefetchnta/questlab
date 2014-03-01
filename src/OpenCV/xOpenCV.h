@@ -63,7 +63,7 @@ CR_API xvideo_t ilab_video_newW (const wide_t *name);
 CR_API void_t   ilab_video_del (xvideo_t avi);
 CR_API ipls_t*  ilab_video_get (xvideo_t avi);
 CR_API int64u   ilab_video_count (xvideo_t avi);
-CR_API void_t   ilab_video_rewind (xvideo_t avi);
+CR_API void_t   ilab_video_seek (xvideo_t avi, int64u frame);
 
 /*****************************************************************************/
 /*                                格式库部分                                 */
