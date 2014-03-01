@@ -443,11 +443,19 @@ ilab_video_count (
   __CR_IN__ xvideo_t    avi
     )
 {
-    int64s  value;
+    int64s      bak;
+    int64s      tmp;
+    CvCapture*  cap;
 
-    value = (int64s)cvGetCaptureProperty((CvCapture*)avi,
-                                    CV_CAP_PROP_FRAME_COUNT);
-    return ((int64u)value);
+    /* 获取实际的帧数 */
+    cap = (CvCapture*)avi;
+    tmp = (int64s)cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_COUNT);
+    if (tmp == 0) return (0);
+    bak = (int64s)cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES);
+    cvSetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES, (double)tmp);
+    tmp = (int64s)cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES);
+    cvSetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES, (double)bak);
+    return ((int64u)tmp);
 }
 
 /*
@@ -455,12 +463,19 @@ ilab_video_count (
     视频定位到指定帧
 =======================================
 */
-CR_API void_t
+CR_API int64u
 ilab_video_seek (
   __CR_IN__ xvideo_t    avi,
   __CR_IN__ int64u      frame
     )
 {
-    cvSetCaptureProperty((CvCapture*)avi, CV_CAP_PROP_POS_FRAMES,
-                         (double)frame);
+    int64u      tmp;
+    CvCapture*  cap;
+
+    cap = (CvCapture*)avi;
+    cvSetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES, (double)frame);
+    tmp = (int64s)cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES);
+    for (; tmp < frame; tmp++) cvQueryFrame(cap);
+    tmp = (int64s)cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES);
+    return ((int64u)tmp);
 }

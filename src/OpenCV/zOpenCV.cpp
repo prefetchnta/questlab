@@ -296,10 +296,8 @@ iPIC_AVI_get (
 
     /* 定位视频帧 */
     real = (iPIC_AVI*)that;
-    if (index != real->m_cur) {
-        ilab_video_seek(real->m_avi, index);
-        real->m_cur = index;
-    }
+    if (index != real->m_cur)
+        real->m_cur = (int32u)ilab_video_seek(real->m_avi, index);
 
     /* 获取摄像头一帧图像 */
     ipls = ilab_video_get(real->m_avi);
@@ -371,7 +369,7 @@ load_ocv_avi (
     if (oavi == NULL)
         return (NULL);
     num = ilab_video_count(oavi);
-    if (num == 0) {
+    if (num == 0UL) {
         ilab_video_del(oavi);
         return (NULL);
     }
