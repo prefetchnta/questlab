@@ -129,12 +129,15 @@ WinMain (
             if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 sprintf(exec, "cmd.exe /c copy " QST_PATH_EXT3RD "wscite\\"
                         "%s\\*.* " QST_PATH_EXT3RD "wscite\\", conf_name);
-                misc_call_exe(exec, FALSE, TRUE);
+                misc_call_exe(exec, TRUE, TRUE);
             }
             FindClose(find);
         }
     }
-
+    misc_call_exe("cmd.exe /c copy /b " QST_PATH_EXT3RD "wscite\\"
+            "SciTEGlobal.properties+" QST_PATH_WINDOW "wscite.ini "
+                QST_PATH_EXT3RD "wscite\\SciTEGlobal.properties",
+                                FALSE, TRUE);
     sINIu*  ini;
     ansi_t* str;
 
