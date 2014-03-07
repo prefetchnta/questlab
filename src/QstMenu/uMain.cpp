@@ -11,6 +11,7 @@
 #pragma resource "*.dfm"
 TfrmMain *frmMain;
 //---------------------------------------------------------------------------
+CR_API void_t   qst_quit_all_3rd (void_t);
 CR_API void_t   qst_mnu_win_save2 (void_t);
 CR_API void_t   qst_mnu_win_load2 (void_t);
 CR_API void_t   qst_send_cmdz (const ansi_t *cmd);
@@ -43,6 +44,7 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 void __fastcall TfrmMain::FormClose(TObject *Sender, TCloseAction &Action)
 {
     /* 关闭时全部退出 */
+    qst_quit_all_3rd();
     qst_send_cmdz("app:exit");
 }
 //---------------------------------------------------------------------------

@@ -180,6 +180,38 @@ qst_load_menu (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    窗口枚举回调
+---------------------------------------
+*/
+static BOOL CALLBACK
+qst_window_enum (
+  __CR_IN__ HWND    hwnd,
+  __CR_IN__ LPARAM  param
+    )
+{
+    ansi_t  name[256];
+
+    if (GetClassName(hwnd, name, 256)) {
+        if (str_cmpA(name, "SciTEWindow") == 0)
+            PostMessage(hwnd, WM_CLOSE, 0, 0);
+    }
+    CR_NOUSE(param);
+    return (TRUE);
+}
+
+/*
+=======================================
+    关闭所有外部工具
+=======================================
+*/
+CR_API void_t
+qst_quit_all_3rd (void_t)
+{
+    EnumWindows((WNDENUMPROC)qst_window_enum, 0);
+}
+
 /*****************************************************************************/
 /*                               公用命令单元                                */
 /*****************************************************************************/
