@@ -56,6 +56,7 @@
     /*------------------------------------------------*/
 
     /* 编译器全局定义 */
+    #include <intrins.h>
     #ifndef _CR_USE_51_DATA_
         #define data    _nouse_data_
     #endif
@@ -149,11 +150,6 @@
     /*------------------------------------------------*/
 
     /* 编译器指令函数优化 */
-    #define _CR_NO_CSWAP_
-    #undef  _CR_NO_CROT32_
-    #define _CR_NO_CROT64_
-    #undef  _CR_NO_IROTSM_
-    #undef  _CR_NO_INTRIN_
     #define cr_rotl08   _crol_
     #define cr_rotr08   _cror_
     #define cr_rotl16   _irol_
@@ -190,7 +186,6 @@
 
     /* 处理器架构的空指令宏设置 */
     #define CR_NOP  _nop_()
-    extern void _nop_ (void);
     /*------------------------------------------------*/
 
 #endif  /* __C51__ || __CX51__ */

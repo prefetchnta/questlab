@@ -67,7 +67,7 @@
     /*------------------------------------------------*/
 
     /* 编译器版本过滤 */
-    #if (_CR_CC_VER_ < 40200)
+    #if (_CR_CC_VER_ < 40300)
         #error "gcc.h: CC TYPE not supported yet!"
     #endif
     /*------------------------------------------------*/
@@ -251,9 +251,15 @@
     /*------------------------------------------------*/
 
     /* 编译器分支优化指示 */
-    #define surely(x)   (x)
-    #define mostly(x)   __builtin_expect(!!(x), 1)
-    #define rarely(x)   __builtin_expect(!!(x), 0)
+    #if (_CR_CC_VER_ < 20900)
+        #define surely(x)   (x)
+        #define mostly(x)   (x)
+        #define rarely(x)   (x)
+    #else
+        #define surely(x)   (x)
+        #define mostly(x)   __builtin_expect(!!(x), 1)
+        #define rarely(x)   __builtin_expect(!!(x), 0)
+    #endif
     /*------------------------------------------------*/
 
     /* 编译器不支持多线程 */
@@ -268,11 +274,13 @@
     /*------------------------------------------------*/
 
     /* 编译器指令函数优化 */
-    #define _CR_NO_CSWAP_
-    #define _CR_NO_CROT32_
-    #define _CR_NO_CROT64_
-    #define _CR_NO_IROTSM_
-    #define _CR_NO_INTRIN_
+    #if (_CR_CC_VER_ >= 40800)
+        #define cr_byteswap16   __builtin_bswap16
+    #endif
+    #if (_CR_CC_VER_ >= 40300)
+        #define cr_byteswap32   __builtin_bswap32
+        #define cr_byteswap64   __builtin_bswap64
+    #endif
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */

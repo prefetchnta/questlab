@@ -468,15 +468,6 @@
     #define _CR_NO_ERRNO_
 #endif
 
-/* 字节顺序相关 */
-#if defined(_CR_NO_CSWAP_)
-    #define _CR_NO_CSWAP32_
-    #define _CR_NO_CSWAP64_
-#endif
-#if defined(_CR_NO_CSWAP32_)
-    #define _CR_NO_CSWAP64_
-#endif
-
 /* 成员对齐相关 */
 #ifndef CR_ALIGN01
     #define CR_ALIGN01  CR_ALIGN(1)
@@ -574,12 +565,6 @@
    默认: 不使用 (8位机编译器用) */
     /*
 #undef  _CR_USE_51_DATA_
-    */
-
-/* 是否开启环形队列内联函数
-   默认: 不开启 */
-    /*
-#undef  _CR_USE_BRING_INL_
     */
 
 /* 是否使用单像素转换函数

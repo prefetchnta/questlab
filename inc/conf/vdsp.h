@@ -168,17 +168,10 @@
     /*------------------------------------------------*/
 
     /* 编译器指令函数优化 */
-    #define _CR_NO_CROT32_
-    #define _CR_NO_CROT64_
-    #define _CR_NO_IROTSM_
-    #ifndef _CR_CC_ADSPBF_
-        #define _CR_NO_CSWAP_
-        #define _CR_NO_INTRIN_
-    #else
-        #define _CR_NO_CSWAP64_
+    #if defined(_CR_CC_ADSPBF_)
+        #define cr_byteswap16   byteswap2
+        #define cr_byteswap32   byteswap4
     #endif
-    #define cr_byteswap16   byteswap2
-    #define cr_byteswap32   byteswap4
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */

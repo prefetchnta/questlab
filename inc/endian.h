@@ -22,13 +22,6 @@
 
 #include "defs.h"
 
-/* KeilC15 */
-#if defined(_CR_CC_CX51_)
-    #ifndef _CR_NO_INTRIN_
-        #include <intrins.h>
-    #endif
-#endif
-
 /* Visual C++ */
 #if defined(_CR_CC_MSC_)
     #ifndef _CR_NO_INTRIN_
@@ -37,18 +30,7 @@
         #else
             #include <cmnintrin.h>
         #endif
-    #endif
-    #if !defined(_CR_NO_CSWAP_) || \
-        !defined(_CR_NO_CROT32_) || \
-        !defined(_CR_NO_CROT64_)
         #include <stdlib.h>
-    #endif
-#endif
-
-/* VisualDSP++ */
-#if defined(_CR_CC_VDSP_)
-    #ifndef _CR_NO_INTRIN_
-        #include <builtins.h>
     #endif
 #endif
 
@@ -61,8 +43,7 @@
     字节循环左移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_IROTSM_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotl08)
     #define rotl_byte_t(val, shift) \
             cr_rotl08(val, (unsigned char)(shift))
 #else
@@ -73,7 +54,7 @@ rotl_byte_t (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_IROTSM_)
+#if     defined(cr_rotl08)
     return (cr_rotl08(val, (unsigned char)shift));
 
 /* AT&T style inline asm (X86) */
@@ -86,15 +67,14 @@ rotl_byte_t (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_IROTSM_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotl08 */
 
 /*
 =======================================
     字节循环右移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_IROTSM_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotr08)
     #define rotr_byte_t(val, shift) \
             cr_rotr08(val, (unsigned char)(shift))
 #else
@@ -105,7 +85,7 @@ rotr_byte_t (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_IROTSM_)
+#if     defined(cr_rotr08)
     return (cr_rotr08(val, (unsigned char)shift));
 
 /* AT&T style inline asm (X86) */
@@ -118,15 +98,14 @@ rotr_byte_t (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_IROTSM_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotr08 */
 
 /*
 =======================================
     单字循环左移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_IROTSM_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotl16)
     #define rotl_int16u(val, shift) \
             cr_rotl16(val, (unsigned char)(shift))
 #else
@@ -137,7 +116,7 @@ rotl_int16u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_IROTSM_)
+#if     defined(cr_rotl16)
     return (cr_rotl16(val, (unsigned char)shift));
 
 /* AT&T style inline asm (X86) */
@@ -150,15 +129,14 @@ rotl_int16u (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_IROTSM_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotl16 */
 
 /*
 =======================================
     单字循环右移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_IROTSM_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotr16)
     #define rotr_int16u(val, shift) \
             cr_rotr16(val, (unsigned char)(shift))
 #else
@@ -169,7 +147,7 @@ rotr_int16u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_IROTSM_)
+#if     defined(cr_rotr16)
     return (cr_rotr16(val, (unsigned char)shift));
 
 /* AT&T style inline asm (X86) */
@@ -182,15 +160,14 @@ rotr_int16u (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_IROTSM_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotr16 */
 
 /*
 =======================================
     双字循环左移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_CROT32_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotl32)
     #define rotl_int32u(val, shift) \
             cr_rotl32(val, (unsigned char)(shift))
 #else
@@ -201,7 +178,7 @@ rotl_int32u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_CROT32_)
+#if     defined(cr_rotl32)
     return (cr_rotl32(val, (unsigned char)shift));
 
 /* AT&T style inline asm (X86) */
@@ -214,15 +191,14 @@ rotl_int32u (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_CROT32_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotl32 */
 
 /*
 =======================================
     双字循环右移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_CROT32_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotr32)
     #define rotr_int32u(val, shift) \
             cr_rotr32(val, (unsigned char)(shift))
 #else
@@ -233,7 +209,7 @@ rotr_int32u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_CROT32_)
+#if     defined(cr_rotr32)
     return (cr_rotr32(val, (unsigned char)shift));
 
 /* AT&T style inline asm (X86) */
@@ -246,15 +222,14 @@ rotr_int32u (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_CROT32_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotr32 */
 
 /*
 =======================================
     四字循环左移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_CROT64_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotl64)
     #define rotl_int64u(val, shift) \
             cr_rotl64(val, (unsigned char)(shift))
 #else
@@ -265,7 +240,7 @@ rotl_int64u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_CROT64_)
+#if     defined(cr_rotl64)
     return (cr_rotl64(val, (unsigned char)shift));
 
 #else
@@ -273,15 +248,14 @@ rotl_int64u (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_CROT64_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotl64 */
 
 /*
 =======================================
     四字循环右移 [port]
 =======================================
 */
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_CROT64_)
+#if defined(_CR_NO_INLINE_) && defined(cr_rotr64)
     #define rotr_int64u(val, shift) \
             cr_rotr64(val, (unsigned char)(shift))
 #else
@@ -292,7 +266,7 @@ rotr_int64u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_CROT64_)
+#if     defined(cr_rotr64)
     return (cr_rotr64(val, (unsigned char)shift));
 
 #else
@@ -300,7 +274,7 @@ rotr_int64u (
 
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_CROT64_ */
+#endif  /* _CR_NO_INLINE_ && cr_rotr64 */
 
 /*****************************************************************************/
 /*                                 字节顺序                                  */
@@ -389,11 +363,6 @@ xchg_cint64u (
                      (((int64u)(((byte_t*)(&val))[7])))));
 }
 
-#if defined(_CR_NO_INLINE_) && \
-   !defined(_CR_NO_IROTSM_) && !defined(_CR_CC_CX51_)
-    #define xchg_int16u(val) \
-                rotr_int16u(val, 8)
-#else
 /*
 =======================================
     单字交换顺序 [port]
@@ -405,7 +374,7 @@ xchg_int16u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_CSWAP_)
+#if     defined(cr_byteswap16)
     return (cr_byteswap16(val));
 
 /* Intel style inline asm (ARM) */
@@ -429,14 +398,13 @@ xchg_int16u (
     return (val);
 
 #else
-    #if !defined(_CR_NO_IROTSM_) && !defined(_CR_CC_CX51_)
+    #if !defined(_CR_CC_CX51_)
         return (rotr_int16u(val, 8));
     #else
         return ((int16u)((val >> 8) | (val << 8)));
     #endif
 #endif  /* AR & CP TYPE predefines */
 }
-#endif  /* _CR_NO_INLINE_ && !_CR_NO_IROTSM_ */
 
 /*
 =======================================
@@ -449,7 +417,7 @@ xchg_int32u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_CSWAP32_)
+#if     defined(cr_byteswap32)
     return (cr_byteswap32(val));
 
 /* Intel style inline asm (ARM) */
@@ -498,7 +466,7 @@ xchg_int64u (
     )
 {
 /* Compiler intrinsic support */
-#if     !defined(_CR_NO_CSWAP64_)
+#if     defined(cr_byteswap64)
     return (cr_byteswap64(val));
 
 /* AT&T style inline asm (X86) */

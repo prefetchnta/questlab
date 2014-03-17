@@ -659,184 +659,22 @@ atree_sibling_next (
 /*                                 环形队列                                  */
 /*****************************************************************************/
 
-/* 开启环形队列才能使用 */
-#if defined(_CR_USE_BRING_INL_)
-
-/* 默认数据类型 */
-#ifndef BRING_TYPE
-    #define BRING_NO_COPY
-    #define BRING_TYPE      byte_t
-#endif
-#define BRING_UNIT  sizeof(BRING_TYPE)
-
-#if !defined(BRING_SIZE)
-
 /***** 数据结构 *****/
 typedef struct
 {
-        bool_t      buf_full;       /* 缓冲区是否满 */
-        leng_t      head, tail;     /* 队列的头和尾 */
-        leng_t          size;       /* 环形队列大小 */
-        BRING_TYPE*     data;       /* 环形队列数据 */
+        bool_t  buf_full;       /* 缓冲区是否满 */
+        leng_t  head, tail;     /* 队列的头和尾 */
+        leng_t      size;       /* 环形队列大小 */
+        byte_t*     data;       /* 环形队列数据 */
 
 } sBRING;
 
-/* 映射到结构里的成员 */
-#define BRING_SIZE  (that->size)
-
-/*
-=======================================
-    构造函数
-=======================================
-*/
-static bool_t
-bring_init (
-  __CR_OT__ sBRING* that,
-  __CR_IN__ leng_t  size
-    )
-{
-    struct_zero(that, sBRING);
-    that->data = mem_talloc(size, BRING_TYPE);
-    if (that->data == NULL) {
-        err_set(__CR_DATLIB_H__, CR_NULL,
-                "bring_init()", "mem_talloc() failure");
-        return (FALSE);
-    }
-    that->size = size;
-    return (TRUE);
-}
-
-#else
-
-/***** 数据结构 *****/
-typedef struct
-{
-        bool_t      buf_full;           /* 缓冲区是否满 */
-        leng_t      head, tail;         /* 队列的头和尾 */
-        BRING_TYPE  data[BRING_SIZE];   /* 环形队列数据 */
-
-} sBRING;
-
-/*
-=======================================
-    构造函数
-=======================================
-*/
-static void_t
-bring_init (
-  __CR_OT__ sBRING* that
-    )
-{
-    struct_zero(that, sBRING);
-}
-
-#endif  /* !BRING_SIZE */
-
-/*
-=======================================
-    析构函数
-=======================================
-*/
-static void_t
-bring_free (
-  __CR_IO__ sBRING* that
-    )
-{
-#ifndef BRING_SIZE
-    TRY_FREE(that->data)
-#endif
-    struct_zero(that, sBRING);
-}
-
-/*
-=======================================
-    返回环形队列大小
-=======================================
-*/
-static leng_t
-bring_get_size (
-  __CR_IN__ const sBRING*   that
-    )
-{
-    if (that->tail == that->head)
-        return (that->buf_full ? BRING_SIZE : 0);
-    if (that->tail  < that->head)
-        return (BRING_SIZE - that->head + that->tail);
-    return (that->tail - that->head);
-}
-
-/*
-=======================================
-    环形队列读取数据
-=======================================
-*/
-static leng_t
-bring_read (
-  __CR_IO__ sBRING* that,
-  __CR_OT__ void_t* data,
-  __CR_IN__ leng_t  size
-    )
-{
-    leng_t  total;
-
-    if (size == 0)
-        return (0);
-    total = bring_get_size(that);
-    if (size > total)
-        size = total;
-    for (total = size; size != 0; size--)
-    {
-#if defined(BRING_NO_COPY)
-        *(BRING_TYPE*)data = that->data[that->head];
-#else
-        mem_cpy(data, &that->data[that->head], BRING_UNIT);
-#endif
-        that->head += 1;
-        if (that->head >= BRING_SIZE)
-            that->head = 0;
-        data = (byte_t*)data + BRING_UNIT;
-    }
-    that->buf_full = FALSE;
-    return (total);
-}
-
-/*
-=======================================
-    环形队列写入数据
-=======================================
-*/
-static leng_t
-bring_write (
-  __CR_IO__ sBRING*         that,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
-    )
-{
-    leng_t  total;
-
-    if (size == 0)
-        return (0);
-    for (total = size; size != 0; size--)
-    {
-#if defined(BRING_NO_COPY)
-        that->data[that->tail] = *(BRING_TYPE*)data;
-#else
-        mem_cpy(&that->data[that->tail], data, BRING_UNIT);
-#endif
-        that->tail += 1;
-        if (that->tail >= BRING_SIZE)
-            that->tail = 0;
-        if (that->buf_full)
-            that->head = that->tail;
-        else
-        if (that->tail == that->head)
-            that->buf_full = TRUE;
-        data = (byte_t*)data + BRING_UNIT;
-    }
-    return (total);
-}
-
-#endif  /* _CR_USE_BRING_INL_ */
+/***** 原生函数 *****/
+CR_API bool_t   bring_init (sBRING *that, leng_t size);
+CR_API void_t   bring_free (sBRING *that);
+CR_API leng_t   bring_get_size (const sBRING *that);
+CR_API leng_t   bring_read (sBRING *that, void_t *data, leng_t size);
+CR_API leng_t   bring_write (sBRING *that, const void_t *data, leng_t size);
 
 /*****************************************************************************/
 /*                                平面哈希表                                 */

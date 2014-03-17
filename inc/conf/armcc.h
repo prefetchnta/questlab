@@ -187,10 +187,6 @@
     /*------------------------------------------------*/
 
     /* 编译器指令函数优化 */
-    #define _CR_NO_CSWAP_
-    #define _CR_NO_CROT32_
-    #define _CR_NO_CROT64_
-    #define _CR_NO_IROTSM_
     #define _CR_NO_INTRIN_
     /*------------------------------------------------*/
 

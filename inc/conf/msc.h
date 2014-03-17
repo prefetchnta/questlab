@@ -233,30 +233,25 @@
     /*------------------------------------------------*/
 
     /* 编译器指令函数优化 */
-    #undef  _CR_NO_CSWAP_
-    #undef  _CR_NO_CROT32_
-    #undef  _CR_NO_CROT64_
-
-    #if     (_CR_CC_VER_ < 1400)
-        #define _CR_NO_IROTSM_
+    #if (_CR_CC_VER_ < 1400)
         #define _CR_NO_INTRIN_
-
-    #elif   !defined(_CR_AR_X86_) && \
-            !defined(_CR_AR_X64_) && \
-            !defined(_CR_AR_IA64_)
-        #define _CR_NO_IROTSM_
+    #else
+        #if defined(_CR_AR_X86_) || \
+            defined(_CR_AR_X64_) || \
+            defined(_CR_AR_IA64_)
+            #define cr_rotl08   _rotl8
+            #define cr_rotr08   _rotr8
+            #define cr_rotl16   _rotl16
+            #define cr_rotr16   _rotr16
+        #endif
+        #define cr_rotl32       _rotl
+        #define cr_rotr32       _rotr
+        #define cr_rotl64       _rotl64
+        #define cr_rotr64       _rotr64
+        #define cr_byteswap16   _byteswap_ushort
+        #define cr_byteswap32   _byteswap_ulong
+        #define cr_byteswap64   _byteswap_uint64
     #endif
-    #define cr_rotl08       _rotl8
-    #define cr_rotr08       _rotr8
-    #define cr_rotl16       _rotl16
-    #define cr_rotr16       _rotr16
-    #define cr_rotl32       _rotl
-    #define cr_rotr32       _rotr
-    #define cr_rotl64       _rotl64
-    #define cr_rotr64       _rotr64
-    #define cr_byteswap16   _byteswap_ushort
-    #define cr_byteswap32   _byteswap_ulong
-    #define cr_byteswap64   _byteswap_uint64
     /*------------------------------------------------*/
 
     /* LIBC printf() 整数宽度前缀 */
