@@ -322,13 +322,13 @@
     ocv:circle <X> <Y> <Radius>
         绘制一个指定的正圆
 
-    ocv:ellps_arc <X> <Y> <Width> <Height> <Angle> <StartAngle> <EndAngle>
+    ocv:ellps_arc <X> <Y> <Width> <Height> <fAngle> <fStartAngle> <fEndAngle>
         以圆弧的方式绘制一个椭圆/圆弧
 
-    ocv:ellps_agl <X> <Y> <Width> <Height> <Angle>
+    ocv:ellps_agl <X> <Y> <Width> <Height> <fAngle>
         以角度的方式绘制一个椭圆/圆弧
 
-    ocv:text <X> <Y> <FontFace> <FontScale> <EscText>
+    ocv:text <X> <Y> <FontFace> <fFontScale> <EscText>
         绘制一段指定的文字（目前只支持字母），FontFace 可取值为：
             CV_FONT_HERSHEY_SIMPLEX        = 0
             CV_FONT_HERSHEY_PLAIN          = 1
