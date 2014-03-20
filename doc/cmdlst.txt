@@ -182,3 +182,110 @@
     部件使用的信息编号值
         1 - QstView2D       2 - QstMount        3 - QstMedia
         4 - QstText
+
+（三）CrHackSet 绘图命令列表
+
+    crh:init
+        加载 GDI 字体输出的外部模块
+
+    crh:color <Red> <Green> <Blue> [Alpha]
+        设置当前绘制前景色，Alpha 默认为255，缺省为黑色
+
+    crh:mode <Mode>
+        设置当前绘制模式
+            set - 直接绘制（默认）  lrp - 插值绘制
+            add - 饱和加法          sub - 饱和减法
+            xor - 异或绘制          and - [与]绘制
+            orr - [或]绘制          not - 取反绘制/Alpha 混合/目标关键色
+
+    crh:moveto <X> <Y>
+        设置当前绘制点的坐标
+
+    crh:lineto <X> <Y>
+        从当前点绘制直线到目标点，并移动当前点到目标点
+
+    crh:pixel <X> <Y>
+        在指定点处绘制一个像素
+
+    crh:line <X1> <Y1> <X2> <Y2>
+        绘制一条指定的直线
+
+    crh:rect_xy <X1> <Y1> <X2> <Y2>
+        以坐标的方式绘制一个方框
+
+    crh:rect_wh <X> <Y> <Width> <Height>
+        以宽高的方式绘制一个方框
+
+    crh:circle <X> <Y> <Radius>
+        绘制一个指定的正圆
+
+    crh:ellps_xy <X1> <Y1> <X2> <Y2>
+        以坐标的方式绘制一个椭圆
+
+    crh:ellps_wh <X> <Y> <Width> <Height>
+        以宽高的方式绘制一个椭圆
+
+    crh:fill_xy <X1> <Y1> <X2> <Y2>
+        以坐标的方式绘制一个填充
+
+    crh:fill_wh <X> <Y> <Width> <Height>
+        以宽高的方式绘制一个填充
+
+    crh:bkcolor <Red> <Green> <Blue> [Alpha]
+        设置当前绘制背景色，Alpha 默认为255，缺省为白色
+
+    crh:ucfont <Size> <XSpace> <YSpace> [Suffix]
+        切换到 UCDOS 点阵字库文字绘制模式，加载的字库文件为：
+            ./source/ucfont/ASC[Size]           ASCII 字库
+            ./source/ucfont/HZK[Size]T          符号点阵字库
+            ./source/ucfont/HZK[Size][Suffix]   汉字点阵字库
+        XSpace 与 YSpace 为行间距
+
+    crh:btfont <Size> <XSpace> <YSpace> <Type>
+        切换到自定义点阵字库文字绘制模式，加载的字库文件为：
+            ./source/btfont/[Type]_[Size].half  ASCII 字库
+            ./source/btfont/[Type]_[Size].full  汉字点阵字库
+        XSpace 与 YSpace 为行间距，目前 Type 只支持 GBK 与 GB2312
+
+    crh:texts <X> <Y> <EscText> [Width Height Align]
+        使用当前文字绘制对象绘制背景填充的文字，EscText 为支持 C 转义的字符串
+        Align 为文字的对齐方式，可取的值为（上下两排可以相加组合）：
+            1 - 水平左对齐      2 - 水平右对齐      3 - 水平中对齐
+            4 - 垂直顶对齐      8 - 垂直底对齐     12 - 垂直中对齐
+
+    crh:textt <X> <Y> <EscText> [Width Height Align]
+        同命令 crh:texts，只是绘制模式为背景透明模式（不用背景色填充）
+
+    crh:sleep <TimeMS>
+        延时一段时间，单位：毫秒
+
+    crh:winfont <Height> <FaceName> [Weight] [Width] [CharSet] [Quality]
+                [Italic] [Underline] [StrikeOut] [Escapement] [Orientation]
+        切换到 GDI 文字绘制模式，输入的参数对应到 LOGFONT 结构的相应成员
+
+    crh:trans <Red> <Green> <Blue> [Alpha]
+        设置当前绘制关键色，Alpha 默认为255，缺省为0
+
+    crh:loadres <ResFile> [RootDir]
+        加载外部资源描述文件（一个 XML 文件），缺省的资源根目录为当前目录
+
+    crh:blit <X> <Y> <SpriteName> [Index] [Width Height Align]
+        绘制指定的精灵（精灵在资源描述文件里指定），Index 为多帧图片的帧号
+        缺省值为0，Align 指定精灵在目标框内的对齐方式，其值详见文字输出命令
+            当前绘制关键色为0的时候，not 绘制模式对应 Alpha 通道混合模式
+                否则对应目标关键色绘制模式，set 模式对应源关键色绘制模式
+
+    crh:blit2 <SpriteName> <RectName> <Align> [Index]
+        同命令 crh:blit，只是目标矩形框由资源描述文件指定
+
+    crh:rect_ex <RectName>
+        绘制一个方框，坐标参数由资源描述文件指定
+
+    crh:fill_ex <RectName>
+        绘制一个填充，坐标参数由资源描述文件指定
+
+    crh:texts_ex <EscText/TextName> <RectName> <Align> [IsTextName]
+        同命令 crh:texts，只是目标框和文本内容可以由资源描述文件指定
+
+    crh:textt_ex <EscText/TextName> <RectName> <Align> [IsTextName]
+        同命令 crh:textt，只是目标框和文本内容可以由资源描述文件指定
