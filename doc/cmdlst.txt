@@ -199,7 +199,7 @@
             orr - [或]绘制          not - 取反绘制/Alpha 混合/目标关键色
 
     crh:moveto <X> <Y>
-        设置当前绘制点的坐标
+        设置当前绘制点的坐标，启动时为 (0, 0)
 
     crh:lineto <X> <Y>
         从当前点绘制直线到目标点，并移动当前点到目标点
@@ -289,3 +289,53 @@
 
     crh:textt_ex <EscText/TextName> <RectName> <Align> [IsTextName]
         同命令 crh:textt，只是目标框和文本内容可以由资源描述文件指定
+
+（四）OpenCV 绘图命令列表
+
+    ocv:init
+        目前没用干任何事情
+
+    ocv:color <Red> <Green> <Blue> [Alpha]
+        设置当前绘制前景色，Alpha 默认为255，缺省为黑色
+
+    ocv:width <Width>
+        设置当前绘制线条的宽度，默认为1
+
+    ocv:tline <Type>
+        设置当前绘制线条的类型，默认为8，可取4/8/16（CV_AA）
+
+    ocv:moveto <X> <Y>
+        设置当前绘制点的坐标，启动时为 (0, 0)
+
+    ocv:lineto <X> <Y>
+        从当前点绘制直线到目标点，并移动当前点到目标点
+
+    ocv:line <X1> <Y1> <X2> <Y2>
+        绘制一条指定的直线
+
+    ocv:rect_xy <X1> <Y1> <X2> <Y2>
+        以坐标的方式绘制一个方框
+
+    ocv:rect_wh <X> <Y> <Width> <Height>
+        以宽高的方式绘制一个方框
+
+    ocv:circle <X> <Y> <Radius>
+        绘制一个指定的正圆
+
+    ocv:ellps_arc <X> <Y> <Width> <Height> <Angle> <StartAngle> <EndAngle>
+        以圆弧的方式绘制一个椭圆/圆弧
+
+    ocv:ellps_agl <X> <Y> <Width> <Height> <Angle>
+        以角度的方式绘制一个椭圆/圆弧
+
+    ocv:text <X> <Y> <FontFace> <FontScale> <EscText>
+        绘制一段指定的文字（目前只支持字母），FontFace 可取值为：
+            CV_FONT_HERSHEY_SIMPLEX        = 0
+            CV_FONT_HERSHEY_PLAIN          = 1
+            CV_FONT_HERSHEY_DUPLEX         = 2
+            CV_FONT_HERSHEY_COMPLEX        = 3
+            CV_FONT_HERSHEY_TRIPLEX        = 4
+            CV_FONT_HERSHEY_COMPLEX_SMALL  = 5
+            CV_FONT_HERSHEY_SCRIPT_SIMPLEX = 6
+            CV_FONT_HERSHEY_SCRIPT_COMPLEX = 7
+            CV_FONT_ITALIC                 + 16
