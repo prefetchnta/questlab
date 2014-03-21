@@ -205,13 +205,12 @@ bring_write (
         that->tail += 1;
         if (that->tail >= BRING_SIZE)
             that->tail = 0;
-        if (that->buf_full)
-            that->head = that->tail;
-        else
         if (that->tail == that->head)
             that->buf_full = TRUE;
         data = (byte_t*)data + BRING_UNIT;
     }
+    if (that->buf_full)
+        that->head = that->tail;
     return (total);
 }
 

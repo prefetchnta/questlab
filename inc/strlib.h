@@ -276,6 +276,9 @@ CR_API ansi_t*  text_wrap1 (const ansi_t *text, uint_t count,
                             offs_cha_t get_offs);
 CR_API ansi_t*  text_wrap2 (const ansi_t *text, uint_t count,
                             offs_cha_t get_offs);
+/* URL 编码转换 */
+CR_API ansi_t*  url_encode (const ansi_t *str);
+CR_API ansi_t*  url_decode (const ansi_t *str);
 
 /*****************************************************************************/
 /*                              字符串编码转换                               */
@@ -348,6 +351,10 @@ CR_API void_t*  str_fmtX (uint_t codepage, leng_t *size,
                           const ansi_t *format, ...);
 /* 兼容老代码的映射 */
 #define str_format  str_fmtX
+
+/* HTML/XML 转义字符处理 */
+CR_API ansi_t*  html_to_stringU (const ansi_t *str);
+CR_API wide_t*  html_to_stringW (const wide_t *str);
 
 #endif  /* !__CR_STRLIB_H__ */
 

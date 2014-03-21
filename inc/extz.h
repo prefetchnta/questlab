@@ -158,6 +158,14 @@ CR_API void_t   mouse_toggle (bool_t show);
 CR_API bool_t   mouse_set_pos (sint_t x, sint_t y);
 CR_API bool_t   mouse_get_pos (sint_t *x, sint_t *y);
 
+/* 显示分辨率的更改 */
+typedef void_t*     dispmode_t;
+
+CR_API dispmode_t   disp_mode_get (void_t);
+CR_API bool_t       disp_mode_set (dispmode_t mode, uint_t width,
+                                   uint_t height, uint_t bpp);
+CR_API void_t       disp_mode_del (dispmode_t mode);
+
 #endif  /* !__CR_EXTZ_H__ */
 
 /*****************************************************************************/
