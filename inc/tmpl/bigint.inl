@@ -33,7 +33,9 @@
     #endif
 #endif
 
-#if !defined(CR_NO_STRUCT)
+#if defined(CR_NO_STRUCT)
+    #define static  CR_API
+#else
 
 /* 大整数数据结构 */
 typedef struct
@@ -43,7 +45,7 @@ typedef struct
 
 } sBIGINT;
 
-#endif  /* !CR_NO_STRUCT */
+#endif  /* CR_NO_STRUCT */
 
 /*
 ---------------------------------------
@@ -957,6 +959,10 @@ bigint_count_bits (
         cnt += count_bits32(bi->val[idx]);
     return (cnt);
 }
+
+#if defined(CR_NO_STRUCT)
+    #undef  static
+#endif
 
 #endif  /* !__CR_BIGINT_INL__ */
 

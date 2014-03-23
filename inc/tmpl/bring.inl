@@ -31,7 +31,9 @@
 
 #if !defined(BRING_SIZE)
 
-#if !defined(CR_NO_STRUCT)
+#if defined(CR_NO_STRUCT)
+    #define static  CR_API
+#else
 
 /* 环形队列数据结构 */
 typedef struct
@@ -43,7 +45,7 @@ typedef struct
 
 } sBRING;
 
-#endif  /* !CR_NO_STRUCT */
+#endif  /* CR_NO_STRUCT */
 
 /* 映射到结构里的成员 */
 #define BRING_SIZE  (that->size)
@@ -86,7 +88,9 @@ bring_free (
 
 #else
 
-#if !defined(CR_NO_STRUCT)
+#if defined(CR_NO_STRUCT)
+    #define static  CR_API
+#else
 
 /* 环形队列数据结构 */
 typedef struct
@@ -97,7 +101,7 @@ typedef struct
 
 } sBRING;
 
-#endif  /* !CR_NO_STRUCT */
+#endif  /* CR_NO_STRUCT */
 
 /*
 ---------------------------------------
@@ -213,6 +217,10 @@ bring_write (
         that->head = that->tail;
     return (total);
 }
+
+#if defined(CR_NO_STRUCT)
+    #undef  static
+#endif
 
 #endif  /* !__CR_BRING_INL__ */
 
