@@ -37,10 +37,7 @@ CR_API sint_t   rand_get (void_t);
 CR_API sint_t   rand_getx (sint_t mod);
 
 /* 快速数值计算 */
-CR_API fp32_t   fast_inv_sqrt (fp32_t val);
-CR_API fp32_t   fast_dist3d (fp32_t x, fp32_t y, fp32_t z);
 CR_API int16u   sqrt_int32 (int32u val);
-CR_API sint_t   fast_dist2d (sint_t x, sint_t y);
 
 /* 快速排序算法 */
 CR_API void_t   quick_sort (void_t *base, leng_t num, leng_t width,
