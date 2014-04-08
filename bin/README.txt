@@ -56,6 +56,7 @@
 　2012-06-27　第一个部件 QstServ 开始，QuestLAB 项目走出酝酿期，正式开始动手
 　2011-12-29　给 GameViewer 增加了摄像头和 OpenCV 的支持，添加了一些图片滤镜
 　2011-12-08　FreeImage 引擎插件 zFreeImage.dll（引入 FreeImage SDK）
+　2011-11-21　数学物理计算模块 CrH_MATH.dll 建立
 　2010-03-22　逃出疯人院，获得新的生命
 　2010-01-27　软件 2D 渲染模块 CrH_BLIT.dll 建立
 　2010-01-25　第一个 FMTz 引擎插件 CrH_FMTZ.dll
