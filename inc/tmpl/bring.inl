@@ -13,7 +13,7 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>>>>> CrHack 环形队列函数库模板 <<<<<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>>>>> CrHack 字节环形队列函数库模板 <<<<<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
@@ -180,6 +180,41 @@ bring_read (
         data = (byte_t*)data + BRING_UNIT;
     }
     that->buf_full = FALSE;
+    return (total);
+}
+
+/*
+---------------------------------------
+    环形队列偷窥数据
+---------------------------------------
+*/
+static leng_t
+bring_peek (
+  __CR_IN__ const sBRING*   that,
+  __CR_OT__ void_t*         data,
+  __CR_IN__ leng_t          size
+    )
+{
+    leng_t  head, total;
+
+    if (size == 0)
+        return (0);
+    total = bring_get_size(that);
+    if (size > total)
+        size = total;
+    head = that->head;
+    for (total = size; size != 0; size--)
+    {
+#if defined(BRING_NO_COPY)
+        *(BRING_TYPE*)data = that->data[head];
+#else
+        mem_cpy(data, &that->data[head], BRING_UNIT);
+#endif
+        head += 1;
+        if (head >= BRING_SIZE)
+            head = 0;
+        data = (byte_t*)data + BRING_UNIT;
+    }
     return (total);
 }
 

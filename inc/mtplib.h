@@ -26,6 +26,7 @@
 typedef uint_t      lock_t;     /* 多线程锁类型 */
 typedef void_t*     thrd_t;     /* 线程句柄类型 */
 typedef void_t*     crsc_t;     /* 临界区的类型 */
+typedef void_t*     evts_t;     /* 事件信号类型 */
 
 /*****************************************************************************/
 /*                                 线程控制                                  */
@@ -38,7 +39,6 @@ typedef void_t*     crsc_t;     /* 临界区的类型 */
 #define CR_INFINITE     ((uint_t)-1)
 
 /* 线程回调函数类型 */
-typedef void_t  (        *mt_cnvt_t) (void_t*);
 typedef uint_t  (STDCALL *mt_main_t) (void_t*);
 
 /* 线程生成释放 */
@@ -54,8 +54,9 @@ CR_API void_t   thread_del (thrd_t thread);
 /* 线程控制操作 */
 CR_API bool_t   thread_stop (thrd_t thread);
 CR_API bool_t   thread_goon (thrd_t thread);
-CR_API bool_t   thread_wait (thrd_t thread,
-                             uint_t time_ms CR_DEFAULT(CR_INFINITE));
+CR_API void_t   thread_wake (thrd_t thread);
+CR_API bool_t   thread_wait (thrd_t thread, uint_t time_ms
+                             CR_DEFAULT(CR_INFINITE));
 CR_API void_t   thread_sleep (uint_t time_ms CR_DEFAULT(0));
 
 /*****************************************************************************/
@@ -88,6 +89,12 @@ CR_API void_t   splock_init (lock_t volatile *lock);
 CR_API void_t   splock_free (lock_t volatile *lock);
 CR_API void_t   splock_acquire (lock_t volatile *lock);
 CR_API void_t   splock_release (lock_t volatile *lock);
+
+/* 事件信号相关操作 */
+CR_API evts_t   event_new (void_t);
+CR_API void_t   event_del (evts_t event);
+CR_API bool_t   event_wait (evts_t event);
+CR_API bool_t   event_fire (evts_t event, bool_t broadcast);
 
 #else
 #if !defined(_CR_SICK_INLINE_)

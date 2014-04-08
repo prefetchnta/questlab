@@ -674,6 +674,7 @@ CR_API bool_t   bring_init (sBRING *that, leng_t size);
 CR_API void_t   bring_free (sBRING *that);
 CR_API leng_t   bring_get_size (const sBRING *that);
 CR_API leng_t   bring_read (sBRING *that, void_t *data, leng_t size);
+CR_API leng_t   bring_peek (const sBRING *that, void_t *data, leng_t size);
 CR_API leng_t   bring_write (sBRING *that, const void_t *data, leng_t size);
 
 /*****************************************************************************/
