@@ -138,7 +138,8 @@ qst_hash_update (
 */
 static void_t
 qst_hash_finish (
-  __CR_IO__ sQHSH_CTX*  ctx
+  __CR_IO__ sQHSH_CTX*  ctx,
+  __CR_IN__ bool_t      show
     )
 {
     leng_t          idx;
@@ -155,9 +156,11 @@ qst_hash_finish (
         if (ctx->ctxs[idx] != NULL) {
             rett = list[idx]->hash_finish(ctx->ctxs[idx]);
             if (rett != NULL) {
-                text = AnsiString(list[idx]->name);
-                text += AnsiString(rett);
-                ctx->form->txtResult->Lines->Append(text);
+                if (show) {
+                    text = AnsiString(list[idx]->name);
+                    text += AnsiString(rett);
+                    ctx->form->txtResult->Lines->Append(text);
+                }
                 mem_free(rett);
             }
         }
@@ -183,7 +186,7 @@ qst_hash_memory (
     _ENTER_HSH_SINGLE_
     if (qst_hash_init(ctx, title)) {
         qst_hash_update(ctx, data, size);
-        qst_hash_finish(ctx);
+        qst_hash_finish(ctx, TRUE);
     }
     _LEAVE_HSH_SINGLE_
 }
@@ -244,7 +247,7 @@ qst_hash_disk (
     }
     file_raw_close(file);
     mem_free(data);
-    qst_hash_finish(ctx);
+    qst_hash_finish(ctx, TRUE);
     _LEAVE_HSH_SINGLE_
     return;
 
@@ -253,8 +256,7 @@ _failure3:
 _failure2:
     mem_free(data);
 _failure1:
-    qst_hash_finish(ctx);
-    ctx->form->txtResult->Clear();
+    qst_hash_finish(ctx, FALSE);
     _LEAVE_HSH_SINGLE_
 }
 
