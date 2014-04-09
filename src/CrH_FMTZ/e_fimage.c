@@ -116,6 +116,10 @@ fimage_type (
             info = "Independent JPEG Group (*.JPG, *.JIF, *.JPEG, *.JPE)";
             break;
 
+        case FIF_JXR:
+            info = "JPEG XR image format (*.JXR, *.WDP, *.HDP)";
+            break;
+
         case FIF_KOALA:
             info = "Commodore 64 Koala format (*.KOA)";
             break;
@@ -194,6 +198,10 @@ fimage_type (
 
         case FIF_WBMP:
             info = "Wireless Bitmap (*.WBMP)";
+            break;
+
+        case FIF_WEBP:
+            info = "Google WebP image format (*.WEBP)";
             break;
 
         case FIF_XBM:
@@ -1065,6 +1073,21 @@ load_fi_jpg (
 
 /*
 =======================================
+    JXR 文件读取
+=======================================
+*/
+CR_API sFMTZ*
+load_fi_jxr (
+  __CR_IO__ iDATIN*         datin,
+  __CR_IN__ const sLOADER*  param
+    )
+{
+    CR_NOUSE(datin);
+    return (fimage_load(FIF_JXR, param, JXR_DEFAULT));
+}
+
+/*
+=======================================
     KOA 文件读取
 =======================================
 */
@@ -1328,6 +1351,21 @@ load_fi_wbmp (
 {
     CR_NOUSE(datin);
     return (fimage_load(FIF_WBMP, param, WBMP_DEFAULT));
+}
+
+/*
+=======================================
+    WEBP 文件读取
+=======================================
+*/
+CR_API sFMTZ*
+load_fi_webp (
+  __CR_IO__ iDATIN*         datin,
+  __CR_IN__ const sLOADER*  param
+    )
+{
+    CR_NOUSE(datin);
+    return (fimage_load(FIF_WEBP, param, WEBP_DEFAULT));
 }
 
 /*

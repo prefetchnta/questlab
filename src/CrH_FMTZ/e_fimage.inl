@@ -131,6 +131,21 @@ static const sMATCHx _rom_ s_findx[] =
     },
     {
         CR_FMTZ_MASK_PIC,
+        NULL, CR_STR(".jxr"),
+        CR_VFUNC(load_fi_jxr)
+    },
+    {
+        CR_FMTZ_MASK_PIC,
+        NULL, CR_STR(".wdp"),
+        CR_VFUNC(load_fi_jxr)
+    },
+    {
+        CR_FMTZ_MASK_PIC,
+        NULL, CR_STR(".hdp"),
+        CR_VFUNC(load_fi_jxr)
+    },
+    {
+        CR_FMTZ_MASK_PIC,
         NULL, CR_STR(".koa"),
         CR_VFUNC(load_fi_koa)
     },
@@ -228,6 +243,11 @@ static const sMATCHx _rom_ s_findx[] =
         CR_FMTZ_MASK_PIC,
         NULL, CR_STR(".wbmp"),
         CR_VFUNC(load_fi_wbmp)
+    },
+    {
+        CR_FMTZ_MASK_PIC,
+        NULL, CR_STR(".webp"),
+        CR_VFUNC(load_fi_webp)
     },
     {
         CR_FMTZ_MASK_PIC,
