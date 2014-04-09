@@ -182,10 +182,8 @@ qst_hash_memory (
 {
     _ENTER_HSH_SINGLE_
     if (qst_hash_init(ctx, title)) {
-        if (size != 0) {
-            qst_hash_update(ctx, data, size);
-            qst_hash_finish(ctx);
-        }
+        qst_hash_update(ctx, data, size);
+        qst_hash_finish(ctx);
     }
     _LEAVE_HSH_SINGLE_
 }
@@ -212,41 +210,51 @@ qst_hash_disk (
     fsize_t size;
 
     _ENTER_HSH_SINGLE_
-    if (!qst_hash_init(ctx, title))
-        goto _func_out;
+    if (!qst_hash_init(ctx, title)) {
+        _LEAVE_HSH_SINGLE_
+        return;
+    }
 
     /* 打开目标文件 */
     size = file_sizeA(name);
-    if ((fdist_t)size <= 0)
-        goto _func_out;
-    data = mem_malloc(HSH_BLOCK);
+    if ((fdist_t)size < 0)
+        goto _failure1;
+    if (size >= HSH_BLOCK)
+        data = mem_malloc(HSH_BLOCK);
+    else
+        data = mem_malloc((leng_t)size + 1);
     if (data == NULL)
-        goto _func_out;
+        goto _failure1;
     file = file_raw_openA(name, CR_FO_RO | CR_FO_SEQ);
     if (file == NULL)
-        goto _failure1;
+        goto _failure2;
 
     /* 分块读取计算 */
     blks = (leng_t)(size / HSH_BLOCK);
     rsts = (leng_t)(size % HSH_BLOCK);
     for (; blks != 0; blks--) {
         if (file_raw_read(data, HSH_BLOCK, file) != HSH_BLOCK)
-            goto _failure2;
+            goto _failure3;
         qst_hash_update(ctx, data, HSH_BLOCK);
     }
     if (rsts != 0) {
         if (file_raw_read(data, rsts, file) != rsts)
-            goto _failure2;
+            goto _failure3;
         qst_hash_update(ctx, data, rsts);
     }
-
-    /* 结束释放资源 */
-    qst_hash_finish(ctx);
-_failure2:
     file_raw_close(file);
-_failure1:
     mem_free(data);
-_func_out:
+    qst_hash_finish(ctx);
+    _LEAVE_HSH_SINGLE_
+    return;
+
+_failure3:
+    file_raw_close(file);
+_failure2:
+    mem_free(data);
+_failure1:
+    qst_hash_finish(ctx);
+    ctx->form->txtResult->Clear();
     _LEAVE_HSH_SINGLE_
 }
 
