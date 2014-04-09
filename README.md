@@ -256,6 +256,7 @@
  - JPEG Network Graphics (\*.JNG)
  - JPEG-2000 File Format (\*.JP2)
  - Independent JPEG Group (\*.JPG, \*.JIF, \*.JPEG, \*.JPE)
+ - JPEG XR image format (\*.JXR, \*.WDP, \*.HDP)
  - Commodore 64 Koala format (\*.KOA)
  - Multiple Network Graphics (\*.MNG)
  - Portable Bitmap (ASCII) (\*.PBM)
@@ -276,6 +277,7 @@
  - Truevision Targa files (\*.TGA, \*.TARGA)
  - Tagged Image File Format (\*.TIF, \*.TIFF)
  - Wireless Bitmap (\*.WBMP)
+ - Google WebP image format (\*.WEBP)
  - X11 Bitmap Format (\*.XBM)
  - X11 Pixmap Format (\*.XPM)
 
