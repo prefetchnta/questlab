@@ -189,6 +189,7 @@ typedef struct
 
 } sBIGINT;
 
+CR_API void_t   bigint_adj (sBIGINT *bi);
 CR_API void_t   bigint_clr (sBIGINT *bi);
 CR_API void_t   bigint_cpy (sBIGINT *biA, const sBIGINT *biB);
 CR_API void_t   bigint_set (sBIGINT *bi, int64u val);

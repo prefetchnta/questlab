@@ -49,6 +49,25 @@ typedef struct
 
 /*
 ---------------------------------------
+    大整数调整
+---------------------------------------
+*/
+static void_t
+bigint_adj (
+  __CR_IO__ sBIGINT*    bi
+    )
+{
+    sint_t  idx;
+
+    for (idx = bi->len - 1; idx > 0; idx--) {
+        if (bi->val[idx] != 0UL)
+            break;
+    }
+    bi->len = idx + 1;
+}
+
+/*
+---------------------------------------
     大整数清零
 ---------------------------------------
 */
@@ -768,12 +787,12 @@ bigint_to (
     leng_t          idx;
     const ansi_t*   str;
 
-    if (size == 0)
-        return (0);
     mem_zero(data, size);
 
     /* 二进制型 */
     if (type != 2 && type != 8 && type != 16 && type != 10) {
+        if (size < bi->len * sizeof(int32u))
+            return (0);
         if (size > bi->len * sizeof(int32u))
             size = bi->len * sizeof(int32u);
         for (idx = 0; idx < size; idx++) {
@@ -785,27 +804,31 @@ bigint_to (
 
     /* 字符串型 */
     if ((bi->len == 1) && (bi->val[0] == 0UL)) {
+        if (size <= 1)
+            return (0);
         ((ansi_t*)data)[0] = '0';
-        return ((size == 1) ? 1 : 2);
+        return (2);
     }
     idx = 0;
     bigint_cpy(&X, bi);
     str = "0123456789ABCDEF";
     while (X.val[X.len - 1] != 0UL) {
         if (idx >= size)
-            break;
+            return (0);
         cha = bigint_modI(&X, type) & 15;
         ((ansi_t*)data)[idx++] = str[cha];
         bigint_divI(&X, &X, type);
     }
 
     /* 字符颠倒 */
+    if (idx >= size)
+        return (0);
     for (num = idx, idx = 0; idx < num / 2; idx++) {
         tmp = ((ansi_t*)data)[idx];
         ((ansi_t*)data)[idx] = ((ansi_t*)data)[num - idx - 1];
         ((ansi_t*)data)[num - idx - 1] = tmp;
     }
-    return ((size == num) ? num : num + 1);
+    return (num + 1);
 }
 
 /*
@@ -898,6 +921,7 @@ bigint_from (
                 bi->val[idx >> 2] |= (cha << ((idx & 3) * 8));
             }
             bi->len = ((size + 3) >> 2);
+            bigint_adj(bi);
             break;
     }
 }
