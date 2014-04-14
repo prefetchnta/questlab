@@ -189,10 +189,10 @@ iPAK_ZIP_getFileData (
             if (item->ftype == 8)
             {
                 /* Deflate (32K) */
-                read = uncompr_pkzip(data, (leng_t)size, temp, (leng_t)pack);
+                read = uncompr_flate(data, (leng_t)size, temp, (leng_t)pack);
                 if (read != (leng_t)size) {
                     err_set(__CR_ZIP_C__, read,
-                        "iPACKAGE::getFileData()", "uncompr_pkzip() failure");
+                        "iPACKAGE::getFileData()", "uncompr_flate() failure");
                     goto _failure2;
                 }
             }

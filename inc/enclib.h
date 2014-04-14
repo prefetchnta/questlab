@@ -33,12 +33,12 @@ CR_API leng_t   compr_bzip2 (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_bzip2 (void_t *dst, leng_t dstlen,
                                const void_t *src, leng_t srclen);
-/* PKZip */
-CR_API leng_t   compr_pkzip (void_t *dst, leng_t dstlen,
+/* FLATE */
+CR_API leng_t   compr_flate (void_t *dst, leng_t dstlen,
                              const void_t *src, leng_t srclen,
                              uint_t level CR_DEFAULT(9));
 
-CR_API leng_t   uncompr_pkzip (void_t *dst, leng_t dstlen,
+CR_API leng_t   uncompr_flate (void_t *dst, leng_t dstlen,
                                const void_t *src, leng_t srclen);
 /* Win32 LZ32 */
 CR_API leng_t   compr_lz32 (void_t *dst, leng_t dstlen,

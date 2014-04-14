@@ -23,7 +23,60 @@
 #include "defs.h"
 
 /*****************************************************************************/
-/*                                 常用算法                                  */
+/*                                密码学相关                                 */
+/*****************************************************************************/
+
+/* 获取一张小素数表 */
+CR_API sint_t           prime_tbl_num (void_t);
+CR_API const sint_t*    prime_tbl_ptr (void_t);
+
+/* 4096位正整数结构 */
+typedef struct
+{
+        sint_t  len;
+        int32u  val[128];
+
+} sBIGINT;
+
+CR_API void_t   bigint_adj (sBIGINT *bi);
+CR_API void_t   bigint_clr (sBIGINT *bi);
+CR_API void_t   bigint_cpy (sBIGINT *biA, const sBIGINT *biB);
+CR_API void_t   bigint_set (sBIGINT *bi, int64u val);
+CR_API sint_t   bigint_cmp (const sBIGINT *biA, const sBIGINT *biB);
+CR_API void_t   bigint_add (sBIGINT *biX, const sBIGINT *biA,
+                            const sBIGINT *biB);
+CR_API void_t   bigint_sub (sBIGINT *biX, const sBIGINT *biA,
+                            const sBIGINT *biB);
+CR_API void_t   bigint_mul (sBIGINT *biX, const sBIGINT *biA,
+                            const sBIGINT *biB);
+CR_API void_t   bigint_div (sBIGINT *biX, const sBIGINT *biA,
+                            const sBIGINT *biB);
+CR_API void_t   bigint_mod (sBIGINT *biX, const sBIGINT *biA,
+                            const sBIGINT *biB);
+CR_API void_t   bigint_addI (sBIGINT *biX, const sBIGINT *biA, int32u val);
+CR_API void_t   bigint_subI (sBIGINT *biX, const sBIGINT *biA, int32u val);
+CR_API void_t   bigint_mulI (sBIGINT *biX, const sBIGINT *biA, int32u val);
+CR_API void_t   bigint_divI (sBIGINT *biX, const sBIGINT *biA, int32u val);
+CR_API int32u   bigint_modI (const sBIGINT *bi, int32u val);
+CR_API void_t   bigint_euc (sBIGINT *biX, const sBIGINT *biA,
+                            const sBIGINT *biB);
+CR_API void_t   bigint_rsa (sBIGINT *biX, const sBIGINT *biA,
+                            const sBIGINT *biB, const sBIGINT *biC);
+CR_API bool_t   bigint_rab (const sBIGINT *bi);
+CR_API void_t   bigint_prime (sBIGINT *bi, sint_t bits);
+CR_API uint_t   bigint_bits (const sBIGINT *bi);
+CR_API leng_t   bigint_to (const sBIGINT *bi, void_t *data,
+                           leng_t size, uint_t type);
+CR_API void_t   bigint_from (sBIGINT *bi, const void_t *data,
+                             leng_t size, uint_t type);
+CR_API void_t   bigint_private (sBIGINT *biD, sBIGINT *biN,
+                                const sBIGINT *biP, const sBIGINT *biQ,
+                                const sBIGINT *biE);
+CR_API void_t   bigint_fill2top (sBIGINT *bi);
+CR_API uint_t   bigint_count_bits (const sBIGINT *bi);
+
+/*****************************************************************************/
+/*                               加密解密算法                                */
 /*****************************************************************************/
 
 /* AES */
@@ -115,7 +168,7 @@ typedef struct
 } sDES;
 
 CR_API void_t   crypto_des_key (sDES *ctx, const byte_t key[8],
-                                bool_t is_dec CR_DEFAULT(TRUE));
+                                bool_t is_dec);
 CR_API void_t   crypto_des_ops (const sDES *ctx, byte_t dst[8],
                                 const byte_t src[8]);
 /* 3DES */
@@ -153,12 +206,27 @@ CR_API void_t   crypto_rc2_enc (const sRC2 *ctx, byte_t dst[8],
 CR_API void_t   crypto_rc2_dec (const sRC2 *ctx, byte_t dst[8],
                                 const byte_t src[8]);
 CR_API void_t   crypto_rc2_key (sRC2 *ctx, const void_t *key, leng_t keylen,
-                                uint_t bits CR_DEFAULT(1024));
+                                uint_t bits CR_DEFAULT(0));
+/* RSA */
+typedef struct
+{
+        uint_t      block;
+        uint_t      split;
+        sBIGINT     N, E;
+
+} sRSA;
+
+CR_API leng_t   crypto_rsa_enc (const sRSA *pub, void_t *dst,
+                                const void_t *src, leng_t size);
+CR_API leng_t   crypto_rsa_dec (const sRSA *prv, void_t *dst,
+                                const void_t *src, leng_t size);
+CR_API void_t   crypto_rsa_key (sRSA *pub, sRSA *prv, const ansi_t *e10,
+                                uint_t bits, uint_t split CR_DEFAULT(0));
 /* TEA */
 CR_API void_t   crypto_tea_enc (int32u data[2], const int32u key[4],
-                                uint_t round CR_DEFAULT(16));
+                                uint_t round CR_DEFAULT(32));
 CR_API void_t   crypto_tea_dec (int32u data[2], const int32u key[4],
-                                uint_t round CR_DEFAULT(16));
+                                uint_t round CR_DEFAULT(32));
 /* TWOFISH */
 typedef struct
 {
@@ -172,59 +240,16 @@ CR_API void_t   crypto_tfish_enc (const sTF *ctx, int32u dst[4],
                                   const int32u src[4]);
 CR_API void_t   crypto_tfish_dec (const sTF *ctx, int32u dst[4],
                                   const int32u src[4]);
-
-/*****************************************************************************/
-/*                                密码学算法                                 */
-/*****************************************************************************/
-
-/* 获取一张小素数表 */
-CR_API sint_t           prime_tbl_num (void_t);
-CR_API const sint_t*    prime_tbl_ptr (void_t);
-
-/* 2048位正整数结构 */
-typedef struct
-{
-        sint_t  len;
-        int32u  val[64];
-
-} sBIGINT;
-
-CR_API void_t   bigint_adj (sBIGINT *bi);
-CR_API void_t   bigint_clr (sBIGINT *bi);
-CR_API void_t   bigint_cpy (sBIGINT *biA, const sBIGINT *biB);
-CR_API void_t   bigint_set (sBIGINT *bi, int64u val);
-CR_API sint_t   bigint_cmp (const sBIGINT *biA, const sBIGINT *biB);
-CR_API void_t   bigint_add (sBIGINT *biX, const sBIGINT *biA,
-                            const sBIGINT *biB);
-CR_API void_t   bigint_sub (sBIGINT *biX, const sBIGINT *biA,
-                            const sBIGINT *biB);
-CR_API void_t   bigint_mul (sBIGINT *biX, const sBIGINT *biA,
-                            const sBIGINT *biB);
-CR_API void_t   bigint_div (sBIGINT *biX, const sBIGINT *biA,
-                            const sBIGINT *biB);
-CR_API void_t   bigint_mod (sBIGINT *biX, const sBIGINT *biA,
-                            const sBIGINT *biB);
-CR_API void_t   bigint_addI (sBIGINT *biX, const sBIGINT *biA, int32u val);
-CR_API void_t   bigint_subI (sBIGINT *biX, const sBIGINT *biA, int32u val);
-CR_API void_t   bigint_mulI (sBIGINT *biX, const sBIGINT *biA, int32u val);
-CR_API void_t   bigint_divI (sBIGINT *biX, const sBIGINT *biA, int32u val);
-CR_API int32u   bigint_modI (const sBIGINT *bi, int32u val);
-CR_API void_t   bigint_euc (sBIGINT *biX, const sBIGINT *biA,
-                            const sBIGINT *biB);
-CR_API void_t   bigint_rsa (sBIGINT *biX, const sBIGINT *biA,
-                            const sBIGINT *biB, const sBIGINT *biC);
-CR_API bool_t   bigint_rab (const sBIGINT *bi);
-CR_API void_t   bigint_prime (sBIGINT *bi, sint_t bits);
-CR_API uint_t   bigint_bits (const sBIGINT *bi);
-CR_API leng_t   bigint_to (const sBIGINT *bi, void_t *data,
-                           leng_t size, uint_t type);
-CR_API void_t   bigint_from (sBIGINT *bi, const void_t *data,
-                             leng_t size, uint_t type);
-CR_API void_t   bigint_private (sBIGINT *biD, sBIGINT *biN,
-                                const sBIGINT *biP, const sBIGINT *biQ,
-                                const sBIGINT *biE);
-CR_API void_t   bigint_fill2top (sBIGINT *bi);
-CR_API uint_t   bigint_count_bits (const sBIGINT *bi);
+/* XTEA */
+CR_API void_t   crypto_xtea_enc (int32u data[2], const int32u key[4],
+                                 uint_t round CR_DEFAULT(32));
+CR_API void_t   crypto_xtea_dec (int32u data[2], const int32u key[4],
+                                 uint_t round CR_DEFAULT(32));
+/* XXTEA */
+CR_API void_t   crypto_xxtea_enc (int32u *data, leng_t num,
+                                  const int32u key[4]);
+CR_API void_t   crypto_xxtea_dec (int32u *data, leng_t num,
+                                  const int32u key[4]);
 
 #endif  /* !__CR_CRYPTO_H__ */
 
