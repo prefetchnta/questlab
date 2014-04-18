@@ -246,12 +246,6 @@ qst_srv_main (
         if (string == NULL)
             break;
 
-        /* 过滤非法的命令字符串 */
-        if (!cmd_type_okay(string)) {
-            mem_free(string);
-            break;
-        }
-
         _ENTER_SHOW_SAY_
         printf("[%s] say: %s\n", ctx->name, string);
         _LEAVE_SHOW_SAY_
