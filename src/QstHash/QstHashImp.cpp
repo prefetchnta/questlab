@@ -1086,7 +1086,7 @@ md5_finish (
 }
 
 /*****************************************************************************/
-/*                                   SHA1                                    */
+/*                                  SHA-1                                    */
 /*****************************************************************************/
 
 /*
@@ -1133,6 +1133,214 @@ sha1_finish (
     byte_t  result[20];
 
     hash_sha1_finish(result, (sSHA1*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 SHA-224                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+sha224_init (void_t)
+{
+    sSHA224*    ctx;
+
+    ctx = struct_new(sSHA224);
+    if (ctx != NULL)
+        hash_sha224_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+sha224_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_sha224_update((sSHA224*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+sha224_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[28];
+
+    hash_sha224_finish(result, (sSHA224*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 SHA-256                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+sha256_init (void_t)
+{
+    sSHA256*    ctx;
+
+    ctx = struct_new(sSHA256);
+    if (ctx != NULL)
+        hash_sha256_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+sha256_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_sha256_update((sSHA256*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+sha256_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[32];
+
+    hash_sha256_finish(result, (sSHA256*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 SHA-384                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+sha384_init (void_t)
+{
+    sSHA384*    ctx;
+
+    ctx = struct_new(sSHA384);
+    if (ctx != NULL)
+        hash_sha384_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+sha384_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_sha384_update((sSHA384*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+sha384_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[48];
+
+    hash_sha384_finish(result, (sSHA384*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 SHA-512                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+sha512_init (void_t)
+{
+    sSHA512*    ctx;
+
+    ctx = struct_new(sSHA512);
+    if (ctx != NULL)
+        hash_sha512_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+sha512_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_sha512_update((sSHA512*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+sha512_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[64];
+
+    hash_sha512_finish(result, (sSHA512*)ctx);
     mem_free(ctx);
     return (hex_to_str(result, sizeof(result)));
 }
@@ -1436,7 +1644,11 @@ CR_API const sQHSH_UNIT hasher[] = {
 { "ED2K-B", TRUE, ed2k_init, ed2k_update, ed2k_finish2 },
 { "MD4", TRUE, md4_init, md4_update, md4_finish },
 { "MD5", TRUE, md5_init, md5_update, md5_finish },
-{ "SHA1", TRUE, sha1_init, sha1_update, sha1_finish },
+{ "SHA-1", TRUE, sha1_init, sha1_update, sha1_finish },
+{ "SHA-224", TRUE, sha224_init, sha224_update, sha224_finish },
+{ "SHA-256", TRUE, sha256_init, sha256_update, sha256_finish },
+{ "SHA-384", TRUE, sha384_init, sha384_update, sha384_finish },
+{ "SHA-512", TRUE, sha512_init, sha512_update, sha512_finish },
 { "STR-AP", FALSE, string_init, str_ap_update, string_finish },
 { "STR-BKDR", FALSE, string_init, str_bkdr_update, string_finish },
 { "STR-BP", FALSE, string_init, str_bp_update, string_finish },
