@@ -40,6 +40,9 @@ static HWND     s_hwnd = NULL;
 /* 控制台输出句柄 */
 static HANDLE   s_hcui = NULL;
 
+/* 直接输出标志 */
+static bool_t   s_diro = FALSE;
+
 /* 缺省的窗口大小 */
 #define QCMD_DEF_WIDTH  668
 #define QCMD_DEF_HEIGHT 434
@@ -254,17 +257,30 @@ exec_one_line (
             return (TRUE);
         }
 
+        /* 本地命令 - 开启直接输出 */
+        if (chr_cmpA(&cmd[1], "direct on", 10) == 0) {
+            s_diro = TRUE;
+            return (TRUE);
+        }
+
+        /* 本地命令 - 关闭直接输出 */
+        if (chr_cmpA(&cmd[1], "direct off", 11) == 0) {
+            s_diro = FALSE;
+            return (TRUE);
+        }
+
         /* 本地命令 - 显示帮助 */
         if (chr_cmpA(&cmd[1], "help", 5) == 0) {
             cui_set_color(s_color_help);
-            printf("\t$call <...> --- make an external call\n");
-            printf("\t$continue? ---- continue or quit running\n");
-            printf("\t$del <file> --- delete a disk file\n");
-            printf("\t$exec <file> -- execute a batch file\n");
-            printf("\t$exit --------- exit current program\n");
-            printf("\t$fclose ------- close current file\n");
-            printf("\t$fopen <file> - create an output file\n");
-            printf("\t$help --------- print this message\n");
+            printf("\t$call <...> ------ make an external call\n");
+            printf("\t$continue? ------- continue or quit running\n");
+            printf("\t$del <file> ------ delete a disk file\n");
+            printf("\t$direct <on/off> - direct output mode on/off\n");
+            printf("\t$exec <file> ----- execute a batch file\n");
+            printf("\t$exit ------------ exit current program\n");
+            printf("\t$fclose ---------- close current file\n");
+            printf("\t$fopen <file> ---- create an output file\n");
+            printf("\t$help ------------ print this message\n");
             cui_set_color(s_color_text);
             return (TRUE);
         }
@@ -276,6 +292,10 @@ exec_one_line (
     }
     else
     {
+        /* 直接发送输入内容 */
+        if (s_diro)
+            return (netw_cmd_send(netw, cmd));
+
         /* 输入重定向到文件 */
         if (s_fp != NULL) {
             fprintf(s_fp, "%s\n", cmd);
@@ -408,6 +428,7 @@ int main (int argc, char *argv[])
     if (netw == NULL)
         return (QST_ERROR);
     s_fp = NULL;
+    s_diro = FALSE;
 
     thrd_t  thrd;
 
