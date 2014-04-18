@@ -135,11 +135,12 @@ typedef struct
 } sBZZ5;
 
 CR_API void_t   hash_bzz5_init (sBZZ5 *ctx);
-CR_API void_t   hash_bzz5_update (sBZZ5 *ctx, const void_t *data, leng_t size);
+CR_API void_t   hash_bzz5_update (sBZZ5 *ctx, const void_t *data,
+                                  leng_t size);
 CR_API void_t   hash_bzz5_finish (int32u hash[5], sBZZ5 *ctx);
 CR_API void_t   hash_bzz5_total (int32u hash[5], const void_t *data,
                                  leng_t size);
-/* MD 系列 */
+/* MD4, MD5 */
 typedef struct
 {
         int32u  count[2];
@@ -150,33 +151,80 @@ typedef struct
 
 /* MD4 */
 CR_API void_t   hash_md4_init (sMD4 *ctx);
-CR_API void_t   hash_md4_update (sMD4 *ctx, const void_t *data, int32u size);
+CR_API void_t   hash_md4_update (sMD4 *ctx, const void_t *data,
+                                 leng_t size);
 CR_API void_t   hash_md4_finish (byte_t hash[16], sMD4 *ctx);
 CR_API void_t   hash_md4_total (byte_t hash[16], const void_t *data,
                                 leng_t size);
 /* MD5 */
 CR_API void_t   hash_md5_init (sMD5 *ctx);
-CR_API void_t   hash_md5_update (sMD5 *ctx, const void_t *data, int32u size);
+CR_API void_t   hash_md5_update (sMD5 *ctx, const void_t *data,
+                                 leng_t size);
 CR_API void_t   hash_md5_finish (byte_t hash[16], sMD5 *ctx);
 CR_API void_t   hash_md5_total (byte_t hash[16], const void_t *data,
                                 leng_t size);
-/* SHA 系列 */
+/* SHA-1 */
 typedef struct
 {
-        uint_t  count;
-        int32u  nblocks;
-        int32u  h0, h1;
-        int32u  h2, h3, h4;
-        byte_t  buf[64];
+        int32u  count[2];
+        int32u  state[5];
+        byte_t  buffer[64];
 } sSHA1;
 
 /* SHA-1 */
 CR_API void_t   hash_sha1_init (sSHA1 *ctx);
-CR_API void_t   hash_sha1_update (sSHA1 *ctx, const void_t *data, leng_t size);
+CR_API void_t   hash_sha1_update (sSHA1 *ctx, const void_t *data,
+                                  leng_t size);
 CR_API void_t   hash_sha1_finish (byte_t hash[20], sSHA1 *ctx);
 CR_API void_t   hash_sha1_total (byte_t hash[20], const void_t *data,
                                  leng_t size);
-/* ED2K 系列 */
+/* SHA-224, SHA-256 */
+typedef struct
+{
+        int32u  count[2];
+        int32u  state[8];
+        byte_t  buffer[64];
+
+} sSHA224, sSHA256;
+
+/* SHA-224 */
+CR_API void_t   hash_sha224_init (sSHA224 *ctx);
+CR_API void_t   hash_sha224_update (sSHA224 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_sha224_finish (byte_t hash[28], sSHA224 *ctx);
+CR_API void_t   hash_sha224_total (byte_t hash[28], const void_t *data,
+                                   leng_t size);
+/* SHA-256 */
+CR_API void_t   hash_sha256_init (sSHA256 *ctx);
+CR_API void_t   hash_sha256_update (sSHA256 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_sha256_finish (byte_t hash[32], sSHA256 *ctx);
+CR_API void_t   hash_sha256_total (byte_t hash[32], const void_t *data,
+                                   leng_t size);
+/* SHA-384, SHA-512 */
+typedef struct
+{
+        int64u  count[2];
+        int64u  state[8];
+        byte_t  buffer[128];
+
+} sSHA384, sSHA512;
+
+/* SHA-384 */
+CR_API void_t   hash_sha384_init (sSHA384 *ctx);
+CR_API void_t   hash_sha384_update (sSHA384 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_sha384_finish (byte_t hash[48], sSHA384 *ctx);
+CR_API void_t   hash_sha384_total (byte_t hash[48], const void_t *data,
+                                   leng_t size);
+/* SHA-512 */
+CR_API void_t   hash_sha512_init (sSHA512 *ctx);
+CR_API void_t   hash_sha512_update (sSHA512 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_sha512_finish (byte_t hash[64], sSHA512 *ctx);
+CR_API void_t   hash_sha512_total (byte_t hash[64], const void_t *data,
+                                   leng_t size);
+/* ED2K */
 typedef struct
 {
         sMD4    md4dat;
