@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DEVLIB_H__
-#define __CR_DEVLIB_H__ 0x75DED116UL
+#define __CR_DEVLIB_H__
 
 #include "defs.h"
 

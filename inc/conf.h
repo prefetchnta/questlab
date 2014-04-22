@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_CONF_H__
-#define __CR_CONF_H__ 0xEC610E9EUL
+#define __CR_CONF_H__
 
 /*****************************************************************************/
 /*                               编译器的配置                                */
@@ -442,13 +442,6 @@
     #define CR_NL   "\r\n"      /* DOS 风格 */
 #endif
 
-/* 调试信息的取舍 */
-#if defined(_CR_OS_NAKED_)
-    #ifndef _CR_ALL_ERROR_INFO_
-        #define _CR_NO_ERROR_SET_
-    #endif
-#endif
-
 /*  网络 SOCKET 不支持 PEEK 操作 */
 #if defined(_CR_OS_WINCE_)
     #define _CR_NET_NO_PEEK_
@@ -465,7 +458,6 @@
 #if defined(_CR_NO_STDC_)
     #undef  CR_BTEX_FAIL
     #undef  _CR_HAVE_WCS_
-    #define _CR_NO_ERRNO_
 #endif
 
 /* 成员对齐相关 */
@@ -488,24 +480,6 @@
 /*****************************************************************************/
 /*                               功能开关说明                                */
 /*****************************************************************************/
-
-/* 不使用错误信息时的定义
-   默认: 使用 */
-    /*
-#undef  _CR_NO_ERROR_SET_
-    */
-
-/* 不使用错误字符串时定义
-   默认: 使用 */
-    /*
-#undef  _CR_NO_ERROR_STR_
-    */
-
-/* 打开所有错误信息 (裸机用)
-   默认: 不打开 */
-    /*
-#undef  _CR_ALL_ERROR_INFO_
-    */
 
 /* 建立 DLL 或 SO 时定义
    默认: 不建立 DLL/SO */

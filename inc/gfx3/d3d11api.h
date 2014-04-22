@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_D3D11API_H__
-#define __CR_D3D11API_H__ 0xC5406E85UL
+#define __CR_D3D11API_H__
 
 #include <dxgi.h>
 #include <d3dcommon.h>

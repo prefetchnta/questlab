@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_TGA_C__
-#define __CR_TGA_C__ 0xFC42B9D3UL
-
 #include "fmtz.h"
 
 /* TGA 内部结构 (LE) */
@@ -86,66 +83,31 @@ load_cr_tga (
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;
 
+    CR_NOUSE(param);
+
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_TGA_C__, CR_NULL,
-                "load_cr_tga()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sTGA_HDR))) {
-        err_set(__CR_TGA_C__, FALSE,
-                "load_cr_tga()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sTGA_HDR)))
         return (NULL);
-    }
-    if (head.map_type != 0) {
-        err_set(__CR_TGA_C__, head.map_type,
-                "load_cr_tga()", "invalid TGA format");
+    if (head.map_type != 0 || head.first_idx != 0 ||
+        head.map_length != 0 || head.map_item_size != 0 ||
+        (head.img_attr >> 6) != 0)
         return (NULL);
-    }
-    if (head.img_type != 2 && head.img_type != 10) {
-        err_set(__CR_TGA_C__, head.img_type,
-                "load_cr_tga()", "invalid TGA format");
+    if (head.img_type != 2 && head.img_type != 10)
         return (NULL);
-    }
-    if (head.first_idx != 0) {
-        err_set(__CR_TGA_C__, head.first_idx,
-                "load_cr_tga()", "invalid TGA format");
-        return (NULL);
-    }
-    if (head.map_length != 0) {
-        err_set(__CR_TGA_C__, head.map_length,
-                "load_cr_tga()", "invalid TGA format");
-        return (NULL);
-    }
-    if (head.map_item_size != 0) {
-        err_set(__CR_TGA_C__, head.map_item_size,
-                "load_cr_tga()", "invalid TGA format");
-        return (NULL);
-    }
-    if (head.bpp == 0) {
+    if (head.bpp == 0)
         head.bpp = 32;
-    }
     else
-    if (head.bpp != 24 && head.bpp != 32) {
-        err_set(__CR_TGA_C__, head.bpp,
-                "load_cr_tga()", "invalid TGA format");
+    if (head.bpp != 24 && head.bpp != 32)
         return (NULL);
-    }
-    if ((head.img_attr >> 6) != 0) {
-        err_set(__CR_TGA_C__, head.img_attr,
-                "load_cr_tga()", "invalid TGA format");
-        return (NULL);
-    }
 
     /* 跳过图片标识数据 */
     if (head.id_len != 0) {
-        if (!CR_VCALL(datin)->seek(datin, head.id_len, SEEK_CUR)) {
-            err_set(__CR_TGA_C__, FALSE,
-                    "load_cr_tga()", "iDATIN::seek() failure");
+        if (!CR_VCALL(datin)->seek(datin, head.id_len, SEEK_CUR))
             return (NULL);
-        }
     }
 
     /* 获取图片宽高 */
@@ -180,11 +142,8 @@ load_cr_tga (
     /* TGA 没有行字节对齐 */
     temp.pic = image_new(WORD_LE(head.x1), WORD_LE(head.y1),
                          ww, hh, fcrh, flip, 4);
-    if (temp.pic == NULL) {
-        err_set(__CR_TGA_C__, CR_NULL,
-                "load_cr_tga()", "image_new() failure");
+    if (temp.pic == NULL)
         return (NULL);
-    }
 
     /* 读取图片数据 */
     by = head.bpp / 8;
@@ -194,11 +153,8 @@ load_cr_tga (
     if (head.img_type == 2) {
         for (; hh != 0; hh--) {
             read = CR_VCALL(datin)->read(datin, line, bpl);
-            if (read != bpl) {
-                err_set(__CR_TGA_C__, read,
-                        "load_cr_tga()", "iDATIN::read() failure");
+            if (read != bpl)
                 goto _failure;
-            }
             line += temp.pic->bpl;
         }
     }
@@ -206,26 +162,17 @@ load_cr_tga (
         for (; hh != 0; hh--) {
             ptr = line;
             for (ii = 0; ii < ww; ii++) {
-                if (!CR_VCALL(datin)->getb_no(datin, pixel)) {
-                    err_set(__CR_TGA_C__, FALSE,
-                            "load_cr_tga()", "iDATIN::getb_no() failure");
+                if (!CR_VCALL(datin)->getb_no(datin, pixel))
                     goto _failure;
-                }
                 jj = (pixel[0] & 0x7F) + 1;
-                if (jj > ww - ii) {
-                    err_set(__CR_TGA_C__, pixel[0],
-                            "load_cr_tga()", "invalid TGA format");
+                if (jj > ww - ii)
                     goto _failure;
-                }
                 repeat = jj;
                 repeat *= by;
                 if (!(pixel[0] & 0x80)) {
                     read = CR_VCALL(datin)->read(datin, ptr, repeat);
-                    if (read != repeat) {
-                        err_set(__CR_TGA_C__, read,
-                                "load_cr_tga()", "iDATIN::read() failure");
+                    if (read != repeat)
                         goto _failure;
-                    }
                     ii  += jj - 1;
                     ptr += repeat;
                     continue;
@@ -233,11 +180,8 @@ load_cr_tga (
 
                 /* 读取需要重复的像素 */
                 read = CR_VCALL(datin)->read(datin, pixel, by);
-                if (read != by) {
-                    err_set(__CR_TGA_C__, read,
-                            "load_cr_tga()", "iDATIN::read() failure");
+                if (read != by)
                     goto _failure;
-                }
                 for (; jj != 0; jj--, ii++) {
                     mem_cpy(ptr, pixel, by);
                     ptr += by;
@@ -250,19 +194,13 @@ load_cr_tga (
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
-    if (rett == NULL) {
-        err_set(__CR_TGA_C__, CR_NULL,
-                "load_cr_tga()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
-        err_set(__CR_TGA_C__, CR_NULL,
-                "load_cr_tga()", "struct_dup() failure");
         mem_free(rett);
         goto _failure;
     }
-    CR_NOUSE(param);
     rett->type = CR_FMTZ_PIC;
     rett->count = 1;
     rett->infor = "Truevision Targa (TGA)";
@@ -272,8 +210,6 @@ _failure:
     image_del(temp.pic);
     return (NULL);
 }
-
-#endif  /* !__CR_TGA_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

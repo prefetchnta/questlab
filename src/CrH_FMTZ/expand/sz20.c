@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_SZ20_C__
-#define __CR_SZ20_C__ 0xA31BBBE8UL
-
 #include "enclib.h"
 #include "fmtz/expand.h"
 
@@ -58,59 +55,40 @@ load_ms_sz20 (
     sFMT_DAT*   rett;
     sSZ20_HDR   head;
 
+    CR_NOUSE(param);
+
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_SZ20_C__, CR_NULL,
-                "load_ms_sz20()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sSZ20_HDR))) {
-        err_set(__CR_SZ20_C__, FALSE,
-                "load_ms_sz20()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sSZ20_HDR)))
         return (NULL);
-    }
-    if (mem_cmp(head.tag, "SZ\x20\x88\xF0\x27\x33\xD1", 8) != 0) {
-        err_set(__CR_SZ20_C__, CR_ERROR,
-                "load_ms_sz20()", "invalid SZ format");
+    if (mem_cmp(head.tag, "SZ\x20\x88\xF0\x27\x33\xD1", 8) != 0)
         return (NULL);
-    }
 
     /* 读取所有后续数据 */
     temp = CR_VCALL(datin)->get(datin, &pksz, FALSE);
-    if (temp == NULL) {
-        err_set(__CR_SZ20_C__, CR_NULL,
-                "load_ms_sz20()", "iDATIN::get() failure");
+    if (temp == NULL)
         return (NULL);
-    }
 
     /* 分配目标数据缓冲 */
     head.unsize = DWORD_LE(head.unsize);
     data = mem_malloc32(head.unsize);
     if (data == NULL) {
-        err_set(__CR_SZ20_C__, CR_NULL,
-                "load_ms_sz20()", "mem_malloc32() failure");
         mem_free(temp);
         return (NULL);
     }
     unsz = (leng_t)(head.unsize);
     pksz = uncompr_lzss(data, unsz, temp, pksz, 0x20);
     mem_free(temp);
-    if (pksz != unsz) {
-        err_set(__CR_SZ20_C__, pksz,
-                "load_ms_sz20()", "uncompr_lzss() failure");
+    if (pksz != unsz)
         goto _failure;
-    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_DAT);
-    if (rett == NULL) {
-        err_set(__CR_SZ20_C__, CR_NULL,
-                "load_ms_sz20()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
-    CR_NOUSE(param);
     rett->type = CR_FMTZ_DEC;
     rett->unsz = unsz;
     rett->pksz = dati_get_size(datin);
@@ -122,8 +100,6 @@ _failure:
     mem_free(data);
     return (NULL);
 }
-
-#endif  /* !__CR_SZ20_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

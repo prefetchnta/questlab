@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_KRKR_XP3_C__
-#define __CR_KRKR_XP3_C__ 0x3A7B22FBUL
-
 #include "hash.h"
 #include "enclib.h"
 #include "strlib.h"
@@ -130,11 +127,8 @@ iPAK_XP3_getFileData (
     /* 定位文件索引 */
     CR_NOUSE(hash);
     real = (iPAK_XP3*)that;
-    if (index >= real->m_cnt) {
-        err_set(__CR_KRKR_XP3_C__, index,
-                "iPACKAGE::getFileData()", "index: out of bounds");
+    if (index >= real->m_cnt)
         return (FALSE);
-    }
     item = (sPAK_XP3_FILE*)real->pack.__filelst__;
     item += (leng_t)index;
 
@@ -142,28 +136,19 @@ iPAK_XP3_getFileData (
     size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "iPACKAGE::getFileData()", "mem_malloc() failure");
+        if (data == NULL)
             return (FALSE);
-        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         pack = item->base.pack;
         temp = mem_malloc64(pack);
-        if (temp == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
+        if (temp == NULL)
             return (FALSE);
-        }
         data = mem_malloc64(size);
-        if (data == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
+        if (data == NULL)
             goto _failure1;
-        }
         file = real->m_file;
 
         /* 定位到文件并读起数据 */
@@ -171,37 +156,25 @@ iPAK_XP3_getFileData (
         {
             /* 逐块读取文件 */
             if (!CR_VCALL(file)->seek64(file,
-                            item->segm_lst[segm].offset, SEEK_SET)) {
-                err_set(__CR_KRKR_XP3_C__, FALSE,
-                        "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
+                        item->segm_lst[segm].offset, SEEK_SET))
                 goto _failure2;
-            }
 
             /* 是否为 ZLib 压缩 */
             if (item->segm_lst[segm].zlib) {
                 read = CR_VCALL(file)->read(file, temp,
                             (leng_t)item->segm_lst[segm].pksize);
-                if (read != (leng_t)item->segm_lst[segm].pksize) {
-                    err_set(__CR_KRKR_XP3_C__, read,
-                          "iPACKAGE::getFileData()", "iDATIN::read() failure");
+                if (read != (leng_t)item->segm_lst[segm].pksize)
                     goto _failure2;
-                }
                 read = uncompr_zlib((byte_t*)data + pntr,
                             (leng_t)size - pntr, temp, read);
-                if (read != (leng_t)item->segm_lst[segm].unsize) {
-                    err_set(__CR_KRKR_XP3_C__, read,
-                          "iPACKAGE::getFileData()", "uncompr_zlib() failure");
+                if (read != (leng_t)item->segm_lst[segm].unsize)
                     goto _failure2;
-                }
             }
             else {
                 read = CR_VCALL(file)->read(file, (byte_t*)data + pntr,
                             (leng_t)item->segm_lst[segm].unsize);
-                if (read != (leng_t)item->segm_lst[segm].unsize) {
-                    err_set(__CR_KRKR_XP3_C__, read,
-                          "iPACKAGE::getFileData()", "iDATIN::read() failure");
+                if (read != (leng_t)item->segm_lst[segm].unsize)
                     goto _failure2;
-                }
             }
 
             /* 数据块解密 */
@@ -244,11 +217,8 @@ iPAK_XP3_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_XP3*)that;
-    if (index >= real->m_cnt) {
-        err_set(__CR_KRKR_XP3_C__, index,
-                "iPACKAGE::getFileInfo()", "index: out of bounds");
+    if (index >= real->m_cnt)
         return (FALSE);
-    }
     idx = (leng_t)index;
     list = (sPAK_XP3_FILE*)real->pack.__filelst__;
 
@@ -363,99 +333,59 @@ load_krkr_xp3 (
 
     /* 必须使用自己私有的读取接口 */
     datin = create_file_inX(param);
-    if (datin == NULL) {
-        err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                "load_krkr_xp3()", "create_file_inX() failure");
+    if (datin == NULL)
         return (NULL);
-    }
     array_initT(&list, sPAK_XP3_FILE);
     list.free = xp3_free;
 
     /* 读取文件头信息 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sXP3_HDR))) {
-        err_set(__CR_KRKR_XP3_C__, FALSE,
-                "load_krkr_xp3()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sXP3_HDR)))
         goto _failure1;
-    }
-    if (mem_cmp(head.tag, "XP3\r\n \n\x1A\x8B\x67\x01", 11) != 0) {
-        err_set(__CR_KRKR_XP3_C__, CR_ERROR,
-                "load_krkr_xp3()", "invalid XP3 format");
+    if (mem_cmp(head.tag, "XP3\r\n \n\x1A\x8B\x67\x01", 11) != 0)
         goto _failure1;
-    }
     head.idx_pos = QWORD_LE(head.idx_pos);
 
     /* 读取文件索引表 */
-    if (!CR_VCALL(datin)->seek64(datin, head.idx_pos, SEEK_SET)) {
-        err_set(__CR_KRKR_XP3_C__, FALSE,
-                "load_krkr_xp3()", "iDATIN::seek64() failure");
+    if (!CR_VCALL(datin)->seek64(datin, head.idx_pos, SEEK_SET))
         goto _failure1;
-    }
-    if (!CR_VCALL(datin)->getb_no(datin, head.tag)) {
-        err_set(__CR_KRKR_XP3_C__, FALSE,
-                "load_krkr_xp3()", "iDATIN::getb_no() failure");
+    if (!CR_VCALL(datin)->getb_no(datin, head.tag))
         goto _failure1;
-    }
     if (head.tag[0])
     {
         /* ZLib 压缩的索引表 */
-        if (!CR_VCALL(datin)->getq_le(datin, &pksz)) {
-            err_set(__CR_KRKR_XP3_C__, FALSE,
-                    "load_krkr_xp3()", "iDATIN::getq_le() failure");
+        if (!CR_VCALL(datin)->getq_le(datin, &pksz))
             goto _failure1;
-        }
-        if (!CR_VCALL(datin)->getq_le(datin, &unsz)) {
-            err_set(__CR_KRKR_XP3_C__, FALSE,
-                    "load_krkr_xp3()", "iDATIN::getq_le() failure");
+        if (!CR_VCALL(datin)->getq_le(datin, &unsz))
             goto _failure1;
-        }
         pntr = (byte_t*)mem_malloc64(pksz);
-        if (pntr == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "load_krkr_xp3()", "mem_malloc64() failure");
+        if (pntr == NULL)
             goto _failure1;
-        }
         read = CR_VCALL(datin)->read(datin, pntr, (leng_t)pksz);
         if (read != (leng_t)pksz) {
-            err_set(__CR_KRKR_XP3_C__, read,
-                    "load_krkr_xp3()", "iDATIN::read() failure");
             mem_free(pntr);
             goto _failure1;
         }
         info = (byte_t*)mem_malloc64(unsz);
         if (info == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "load_krkr_xp3()", "mem_malloc64() failure");
             mem_free(pntr);
             goto _failure1;
         }
         read = uncompr_zlib(info, (leng_t)unsz, pntr, (leng_t)pksz);
         mem_free(pntr);
-        if (read != (leng_t)unsz) {
-            err_set(__CR_KRKR_XP3_C__, read,
-                    "load_krkr_xp3()", "uncompr_zlib() failure");
+        if (read != (leng_t)unsz)
             goto _failure2;
-        }
     }
     else
     {
         /* 直接读起索引表 */
-        if (!CR_VCALL(datin)->getq_le(datin, &unsz)) {
-            err_set(__CR_KRKR_XP3_C__, FALSE,
-                    "load_krkr_xp3()", "iDATIN::getq_le() failure");
+        if (!CR_VCALL(datin)->getq_le(datin, &unsz))
             goto _failure1;
-        }
         info = (byte_t*)mem_malloc64(unsz);
-        if (info == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "load_krkr_xp3()", "mem_malloc64() failure");
+        if (info == NULL)
             goto _failure1;
-        }
         read = CR_VCALL(datin)->read(datin, info, (leng_t)unsz);
-        if (read != (leng_t)unsz) {
-            err_set(__CR_KRKR_XP3_C__, read,
-                    "load_krkr_xp3()", "iDATIN::read() failure");
+        if (read != (leng_t)unsz)
             goto _failure2;
-        }
     }
 
     /* 设置加密类型 (如果有的话) */
@@ -474,26 +404,17 @@ load_krkr_xp3 (
         mem_cpy(&tots, pntr + 4, sizeof(int64u));
         tots = QWORD_LE(tots);
         pntr += 12; pksz += 12;
-        if (tots <= 12 + 22 + 12 + 28 || tots > unsz - pksz) {
-            err_set(__CR_KRKR_XP3_C__, tots,
-                    "load_krkr_xp3()", "invalid XP3 format");
+        if (tots <= 12 + 22 + 12 + 28 || tots > unsz - pksz)
             goto _failure2;
-        }
 
         /* "info" 文件总信息 */
-        if (mem_cmp(pntr, "info", 4) != 0) {
-            err_set(__CR_KRKR_XP3_C__, CR_ERROR,
-                    "load_krkr_xp3()", "invalid XP3 format");
+        if (mem_cmp(pntr, "info", 4) != 0)
             goto _failure2;
-        }
         mem_cpy(&tsz1, pntr + 4, sizeof(int64u));
         tsz1 = QWORD_LE(tsz1);
         pntr += 12; pksz += 12;
-        if (tsz1 <= 22 || tsz1 > tots - 12 - 12 - 28) {
-            err_set(__CR_KRKR_XP3_C__, tsz1,
-                    "load_krkr_xp3()", "invalid XP3 format");
+        if (tsz1 <= 22 || tsz1 > tots - 12 - 12 - 28)
             goto _failure2;
-        }
 
         /* 填充一些文件信息结构成员 */
         struct_zero(&temp, sPAK_XP3_FILE);
@@ -509,17 +430,11 @@ load_krkr_xp3 (
         /* 读取文件名 UTF-16 无\0结尾 */
         mem_cpy(&len, pntr + 20, sizeof(int16u));
         len = WORD_LE(len);
-        if ((int64u)len > tsz1 - 22) {
-            err_set(__CR_KRKR_XP3_C__, len,
-                    "load_krkr_xp3()", "invalid XP3 format");
+        if ((int64u)len > tsz1 - 22)
             goto _failure2;
-        }
         name = str_allocW(len + 1);
-        if (name == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "load_krkr_xp3()", "str_allocW() failure");
+        if (name == NULL)
             goto _failure2;
-        }
         for (idx = 0; idx < len; idx++) {
             mem_cpy(&name[idx], pntr + 22 + ((leng_t)idx) * 2, 2);
             name[idx] = WORD_LE(name[idx]);
@@ -527,37 +442,25 @@ load_krkr_xp3 (
         name[idx] = 0x0000;
         temp.base.name = utf16_to_utf8(name);
         mem_free(name);
-        if (temp.base.name == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "load_krkr_xp3()", "utf16_to_utf8() failure");
+        if (temp.base.name == NULL)
             goto _failure2;
-        }
         pntr += (leng_t)tsz1;
         pksz += (leng_t)tsz1;
 
         /* "segm" 文件分段信息 */
-        if (mem_cmp(pntr, "segm", 4) != 0) {
-            err_set(__CR_KRKR_XP3_C__, CR_ERROR,
-                    "load_krkr_xp3()", "invalid XP3 format");
+        if (mem_cmp(pntr, "segm", 4) != 0)
             goto _failure3;
-        }
         mem_cpy(&tsz2, pntr + 4, sizeof(int64u));
         tsz2 = QWORD_LE(tsz2);
         pntr += 12; pksz += 12;
         if (tsz2 < 28 || tsz2 % 28 != 0 ||
-            tsz2 > tots - 12 - tsz1 - 12) {
-            err_set(__CR_KRKR_XP3_C__, tsz2,
-                    "load_krkr_xp3()", "invalid XP3 format");
+            tsz2 > tots - 12 - tsz1 - 12)
             goto _failure3;
-        }
 
         /* 读取所有分段信息 */
         temp.segm_lst = mem_talloc64(tsz2 / 28, sPAK_XP3_SEGM);
-        if (temp.segm_lst == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "load_krkr_xp3()", "mem_talloc64() failure");
+        if (temp.segm_lst == NULL)
             goto _failure3;
-        }
         temp.segm_cnt = (leng_t)(tsz2 / 28);
         mem_cpy(temp.segm_lst, pntr, (leng_t)tsz2);
         for (read = 0; read < temp.segm_cnt; read++) {
@@ -565,16 +468,10 @@ load_krkr_xp3 (
             temp.segm_lst[read].offset = QWORD_LE(temp.segm_lst[read].offset);
             temp.segm_lst[read].unsize = QWORD_LE(temp.segm_lst[read].unsize);
             temp.segm_lst[read].pksize = QWORD_LE(temp.segm_lst[read].pksize);
-            if (temp.segm_lst[read].unsize > temp.base.size) {
-                err_set(__CR_KRKR_XP3_C__, temp.segm_lst[read].unsize,
-                        "load_krkr_xp3()", "invalid XP3 format");
+            if (temp.segm_lst[read].unsize > temp.base.size)
                 goto _failure4;
-            }
-            if (temp.segm_lst[read].pksize > temp.base.pack) {
-                err_set(__CR_KRKR_XP3_C__, temp.segm_lst[read].pksize,
-                        "load_krkr_xp3()", "invalid XP3 format");
+            if (temp.segm_lst[read].pksize > temp.base.pack)
                 goto _failure4;
-            }
         }
         pntr += (leng_t)tsz2;
         pksz += (leng_t)tsz2;
@@ -586,11 +483,8 @@ load_krkr_xp3 (
 
             /* "adlr" 附加数据 */
             if (mem_cmp(pntr, "adlr", 4) == 0) {
-                if (tots < 16) {
-                    err_set(__CR_KRKR_XP3_C__, tots,
-                            "load_krkr_xp3()", "invalid XP3 format");
+                if (tots < 16)
                     goto _failure4;
-                }
                 mem_cpy(&temp.adlr_key, pntr + 4, sizeof(int32u));
                 temp.adlr_key = DWORD_LE(temp.adlr_key);
             }
@@ -615,35 +509,24 @@ load_krkr_xp3 (
         }
 
         /* 文件信息压入列表 */
-        if (array_push_growT(&list, sPAK_XP3_FILE, &temp) == NULL) {
-            err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                    "load_cr_zip()", "array_push_growT() failure");
+        if (array_push_growT(&list, sPAK_XP3_FILE, &temp) == NULL)
             goto _failure4;
-        }
     }
     mem_free(info);
 
     /* 固定一下列表大小 */
-    if (!array_no_growT(&list, sPAK_XP3_FILE)) {
-        err_set(__CR_KRKR_XP3_C__, FALSE,
-                "load_krkr_xp3()", "array_no_growT() failure");
+    if (!array_no_growT(&list, sPAK_XP3_FILE))
         goto _failure1;
-    }
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_XP3);
-    if (port == NULL) {
-        err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                "load_krkr_xp3()", "struct_new() failure");
+    if (port == NULL)
         goto _failure1;
-    }
     port->m_file = datin;
     port->m_cnt = array_get_sizeT(&list, sPAK_XP3_FILE);
     port->pack.__filelst__ = array_get_dataT(&list, sPAK_FILE);
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
-        err_set(__CR_KRKR_XP3_C__, FALSE,
-                "load_krkr_xp3()", "pack_init_list() failure");
         mem_free(port);
         goto _failure1;
     }
@@ -660,8 +543,6 @@ load_krkr_xp3 (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
-        err_set(__CR_KRKR_XP3_C__, CR_NULL,
-                "load_krkr_xp3()", "struct_new() failure");
         iPAK_XP3_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -682,8 +563,6 @@ _failure1:
     CR_VCALL(datin)->release(datin);
     return (NULL);
 }
-
-#endif  /* !__CR_KRKR_XP3_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

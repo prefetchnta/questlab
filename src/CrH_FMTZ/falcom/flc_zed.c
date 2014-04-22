@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_FLC_ZED_C__
-#define __CR_FLC_ZED_C__ 0xE99C4EDFUL
-
 #include "hash.h"
 #include "enclib.h"
 #include "fmtz/falcom.h"
@@ -59,62 +56,43 @@ load_flc_zed (
     sZED_HDR    head;
     sFMT_DAT*   rett;
 
+    CR_NOUSE(param);
+
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_FLC_ZED_C__, CR_NULL,
-                "load_flc_zed()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sZED_HDR))) {
-        err_set(__CR_FLC_ZED_C__, FALSE,
-                "load_flc_zed()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sZED_HDR)))
         return (NULL);
-    }
 
     /* 读取所有后续数据 */
     temp = CR_VCALL(datin)->get(datin, &pksz, FALSE);
-    if (temp == NULL) {
-        err_set(__CR_FLC_ZED_C__, CR_NULL,
-                "load_flc_zed()", "iDATIN::get() failure");
+    if (temp == NULL)
         return (NULL);
-    }
 
     /* 分配目标数据缓冲 */
     head.unsize = DWORD_LE(head.unsize);
     data = mem_malloc32(head.unsize);
     if (data == NULL) {
-        err_set(__CR_FLC_ZED_C__, CR_NULL,
-                "load_flc_zed()", "mem_malloc32() failure");
         mem_free(temp);
         return (NULL);
     }
     unsz = (leng_t)(head.unsize);
     pksz = uncompr_zlib(data, unsz, temp, pksz);
     mem_free(temp);
-    if (pksz != unsz) {
-        err_set(__CR_FLC_ZED_C__, pksz,
-                "load_flc_zed()", "uncompr_zlib() failure");
+    if (pksz != unsz)
         goto _failure;
-    }
 
     /* 文件数据校验 (需要吗？) */
     head.unsize = hash_crc32i_total(data, unsz);
-    if (head.unsize != DWORD_LE(head.crc32)) {
-        err_set(__CR_FLC_ZED_C__, head.unsize,
-                "load_flc_zed()", "invalid Z format");
+    if (head.unsize != DWORD_LE(head.crc32))
         goto _failure;
-    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_DAT);
-    if (rett == NULL) {
-        err_set(__CR_FLC_ZED_C__, CR_NULL,
-                "load_flc_zed()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
-    CR_NOUSE(param);
     rett->type = CR_FMTZ_DEC;
     rett->unsz = unsz;
     rett->pksz = dati_get_size(datin);
@@ -126,8 +104,6 @@ _failure:
     mem_free(data);
     return (NULL);
 }
-
-#endif  /* !__CR_FLC_ZED_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

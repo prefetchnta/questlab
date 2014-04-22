@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_GCAX_CPP__
-#define __CR_GCAX_CPP__ 0xAAA5B9D8UL
-
 #include "strlib.h"
 #include "fmtz/syn.h"
 #include "../fmtint.h"
@@ -125,14 +122,12 @@ iPAK_GCA_getFileData (
     iPAK_GCA*       real;
     sPAK_GCA_FILE*  item;
 
-    /* 定位文件索引 */
     CR_NOUSE(hash);
+
+    /* 定位文件索引 */
     real = (iPAK_GCA*)that;
-    if (index >= real->m_cnt) {
-        err_set(__CR_GCAX_CPP__, index,
-                "iPACKAGE::getFileData()", "index: out of bounds");
+    if (index >= real->m_cnt)
         return (FALSE);
-    }
     item = (sPAK_GCA_FILE*)real->pack.__filelst__;
     item += (uint_t)index;
 
@@ -140,25 +135,16 @@ iPAK_GCA_getFileData (
     size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL) {
-            err_set(__CR_GCAX_CPP__, CR_NULL,
-                    "iPACKAGE::getFileData()", "mem_malloc() failure");
+        if (data == NULL)
             return (FALSE);
-        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         data = mem_malloc64(size);
-        if (data == NULL) {
-            err_set(__CR_GCAX_CPP__, CR_NULL,
-                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
+        if (data == NULL)
             return (FALSE);
-        }
         if (!real->m_gca->ExtractFileToMemory((int)index, (BYTE*)data)) {
-            err_set(__CR_GCAX_CPP__, FALSE,
-                    "iPACKAGE::getFileData()",
-                    "CGca::ExtractFileToMemory() failure");
             mem_free(data);
             return (FALSE);
         }
@@ -186,11 +172,8 @@ iPAK_GCA_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_GCA*)that;
-    if (index >= real->m_cnt) {
-        err_set(__CR_GCAX_CPP__, index,
-                "iPACKAGE::getFileInfo()", "index: out of bounds");
+    if (index >= real->m_cnt)
         return (FALSE);
-    }
     idx = (uint_t)index;
     list = (sPAK_GCA_FILE*)real->pack.__filelst__;
 
@@ -220,11 +203,8 @@ load_syn_gca (
 {
     /* 只支持磁盘文件 */
     if (param->type != CR_LDR_ANSI &&
-        param->type != CR_LDR_WIDE) {
-        err_set(__CR_GCAX_CPP__, param->type,
-                "load_syn_gca()", "invalid param: param->type");
+        param->type != CR_LDR_WIDE)
         return (NULL);
-    }
 
     leng_t  read;
     byte_t  tag[4];
@@ -234,38 +214,23 @@ load_syn_gca (
     struct_cpy(&loader, param, sLOADER);
     loader.head = loader.tail = 0;
     datin = create_file_inX(&loader);
-    if (datin == NULL) {
-        err_set(__CR_GCAX_CPP__, CR_NULL,
-                "load_syn_gca()", "create_file_inX() failure");
+    if (datin == NULL)
         return (NULL);
-    }
     read = CR_VCALL(datin)->read(datin, tag, sizeof(tag));
     CR_VCALL(datin)->release(datin);
-    if (read != sizeof(tag)) {
-        err_set(__CR_GCAX_CPP__, read,
-                "load_syn_gca()", "iDATIN::read() failure");
+    if (read != sizeof(tag))
         return (NULL);
-    }
     if (mem_cmp(tag, "GCAX", 4) != 0 &&
-        mem_cmp(tag,  "MZ" , 2) != 0) {
-        err_set(__CR_GCAX_CPP__, CR_ERROR,
-                "load_syn_gca()", "invalid GCA format");
+        mem_cmp(tag,  "MZ" , 2) != 0)
         return (NULL);
-    }
 
     CGca*   gca = new CGca ();
 
     /* 初始化 GCA 对象 */
-    if (gca == NULL) {
-        err_set(__CR_GCAX_CPP__, CR_NULL,
-                "load_syn_gca()", "new() failure");
+    if (gca == NULL)
         return (NULL);
-    }
-    if (!gca->Init()) {
-        err_set(__CR_GCAX_CPP__, FALSE,
-                "load_syn_gca()", "CGca::Init() failure");
+    if (!gca->Init())
         goto _failure1;
-    }
 
     const ansi_t*   memo;
 
@@ -275,11 +240,8 @@ load_syn_gca (
     }
     else {
         memo = utf16_to_local(CR_LOCAL, param->name.wide);
-        if (memo == NULL) {
-            err_set(__CR_GCAX_CPP__, CR_NULL,
-                    "load_syn_gca()", "utf16_to_local() failure");
+        if (memo == NULL)
             goto _failure2;
-        }
     }
     gca->SetArcFilePath(memo);
 
@@ -304,11 +266,8 @@ load_syn_gca (
         offset = GetStartOffset(memo);
         if (memo != param->name.ansi)
             mem_free(memo);
-        if (offset == 0) {
-            err_set(__CR_GCAX_CPP__, offset,
-                    "load_syn_gca()", "invalid GCA format");
+        if (offset == 0)
             goto _failure2;
-        }
         gca->SetStartOffset(offset);
     }
     else {
@@ -318,11 +277,8 @@ load_syn_gca (
     }
 
     /* 打开 GCA 压缩包 */
-    if (!gca->OpenArchive()) {
-        err_set(__CR_GCAX_CPP__, FALSE,
-                "load_syn_gca()", "CGca::OpenArchive() failure");
+    if (!gca->OpenArchive())
         goto _failure2;
-    }
 
     uint_t          idx;
     uint_t          cnt;
@@ -332,11 +288,8 @@ load_syn_gca (
     cnt = gca->GetNumFiles();
     if (cnt != 0) {
         list = mem_talloc(cnt, sPAK_GCA_FILE);
-        if (list == NULL) {
-            err_set(__CR_GCAX_CPP__, CR_NULL,
-                    "load_syn_gca()", "mem_talloc() failure");
+        if (list == NULL)
             goto _failure3;
-        }
         mem_tzero(list, cnt, sPAK_GCA_FILE);
         memo = (gca->GetArcType() == CGca::GCA0) ? "GCA0" : "GCA1";
     }
@@ -351,11 +304,8 @@ load_syn_gca (
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].base.name = local_to_utf8(param->page, name.c_str());
-        if (list[idx].base.name == NULL) {
-            err_set(__CR_GCAX_CPP__, CR_NULL,
-                    "load_syn_gca()", "local_to_utf8() failure");
+        if (list[idx].base.name == NULL)
             goto _failure4;
-        }
 
         /* 设置公用文件属性 (偏移没有实际用处) */
         list[idx].base.skip = sizeof(sPAK_GCA_FILE);
@@ -379,18 +329,13 @@ load_syn_gca (
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_GCA);
-    if (port == NULL) {
-        err_set(__CR_GCAX_CPP__, CR_NULL,
-                "load_syn_gca()", "struct_new() failure");
+    if (port == NULL)
         goto _failure4;
-    }
     port->m_gca = gca;
     port->m_cnt = cnt;
     port->pack.__filelst__ = (sPAK_FILE*)list;
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
-        err_set(__CR_GCAX_CPP__, FALSE,
-                "load_syn_gca()", "pack_init_list() failure");
         mem_free(port);
         goto _failure4;
     }
@@ -400,8 +345,6 @@ load_syn_gca (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
-        err_set(__CR_GCAX_CPP__, CR_NULL,
-                "load_syn_gca()", "struct_new() failure");
         iPAK_GCA_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -429,8 +372,6 @@ _failure1:
 }
 
 #endif  /* _CR_HAVE_PAK_GCA_ */
-
-#endif  /* !__CR_GCAX_CPP__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_M25PEXX_H__
-#define __CR_M25PEXX_H__ 0xFF3FBC43UL
+#define __CR_M25PEXX_H__
 
 #include "defs.h"
 

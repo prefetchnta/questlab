@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_D3D9API_CPP__
-#define __CR_D3D9API_CPP__ 0xFB8C5CE8UL
-
 #define _CR_USE_D3D9_
 #include "gfx3.h"
 #include "memlib.h"
@@ -54,26 +51,16 @@ d3d9_create_main (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_MAIN);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_main()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 建立 D3D9 对象 */
     rett->obj = Direct3DCreate9(D3D_SDK_VERSION);
-    if (rett->obj == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_main()", "Direct3DCreate9() failure");
+    if (rett->obj == NULL)
         goto _failure1;
-    }
     retc = rett->obj->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &mode);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_main()",
-                "IDirect3D9::GetAdapterDisplayMode() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 设置后台缓冲参数 */
     if (format == D3DFMT_UNKNOWN)
@@ -82,34 +69,23 @@ d3d9_create_main (
     parm.BackBufferHeight = height;
     if (full) mode.Format = format;
     retc = rett->obj->CheckDeviceType(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, format, !full);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_main()", "IDirect3D9::CheckDeviceType() failure");
+                D3DDEVTYPE_HAL, mode.Format, format, !full);
+    if (FAILED(retc))
         goto _failure2;
-    }
     parm.BackBufferFormat = format;
     parm.BackBufferCount = 1;
 
     /* 设置深度缓冲参数 */
     if (depth != D3DFMT_UNKNOWN) {
         retc = rett->obj->CheckDeviceFormat(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
-                                    D3DRTYPE_SURFACE, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_main()",
-                    "IDirect3D9::CheckDeviceFormat() failure");
+                    D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
+                            D3DRTYPE_SURFACE, depth);
+        if (FAILED(retc))
             goto _failure2;
-        }
         retc = rett->obj->CheckDepthStencilMatch(D3DADAPTER_DEFAULT,
-                            D3DDEVTYPE_HAL, mode.Format, format, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_main()",
-                    "IDirect3D9::CheckDepthStencilMatch() failure");
+                    D3DDEVTYPE_HAL, mode.Format, format, depth);
+        if (FAILED(retc))
             goto _failure2;
-        }
         parm.EnableAutoDepthStencil = TRUE;
     }
     else {
@@ -120,12 +96,12 @@ d3d9_create_main (
     /* 设置抗锯齿参数 */
     if (fsaa != D3DMULTISAMPLE_NONE) {
         retc = rett->obj->CheckDeviceMultiSampleType(
-                        D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full,
-                                    fsaa, NULL);
+                D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full,
+                                fsaa, NULL);
         if (SUCCEEDED(retc)) {
             if (depth != D3DFMT_UNKNOWN) {
                 retc = rett->obj->CheckDeviceMultiSampleType(
-                        D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, depth, !full,
+                    D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, depth, !full,
                                     fsaa, NULL);
                 if (FAILED(retc))
                     fsaa = D3DMULTISAMPLE_NONE;
@@ -152,11 +128,8 @@ d3d9_create_main (
     /* 获取顶点的硬件加速能力 */
     retc = rett->obj->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
                                     &rett->cap);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_main()", "IDirect3D9::GetDeviceCaps() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 生成 D3D9 设备对象 */
     if (rett->cap.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
@@ -165,11 +138,8 @@ d3d9_create_main (
         vp = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
     retc = rett->obj->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
                                    (HWND)hwnd, vp, &parm, &rett->dev);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_main()", "IDirect3D9::CreateDevice() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 没有 Z 缓冲关闭之 */
     rett->dev->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -226,12 +196,8 @@ d3d9_main_reset (
     D3DPRESENT_PARAMETERS   parm;
 
     retc = main->obj->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &mode);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_main_reset()",
-                "IDirect3D9::GetAdapterDisplayMode() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
 
     /* 设置后台缓冲参数 */
     if (format == D3DFMT_UNKNOWN)
@@ -240,34 +206,23 @@ d3d9_main_reset (
     parm.BackBufferHeight = height;
     if (full) mode.Format = format;
     retc = main->obj->CheckDeviceType(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, format, !full);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_main_reset()", "IDirect3D9::CheckDeviceType() failure");
+                D3DDEVTYPE_HAL, mode.Format, format, !full);
+    if (FAILED(retc))
         return (FALSE);
-    }
     parm.BackBufferFormat = format;
     parm.BackBufferCount = 1;
 
     /* 设置深度缓冲参数 */
     if (depth != D3DFMT_UNKNOWN) {
         retc = main->obj->CheckDeviceFormat(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
-                                    D3DRTYPE_SURFACE, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_main_reset()",
-                    "IDirect3D9::CheckDeviceFormat() failure");
+                    D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
+                                D3DRTYPE_SURFACE, depth);
+        if (FAILED(retc))
             return (FALSE);
-        }
         retc = main->obj->CheckDepthStencilMatch(D3DADAPTER_DEFAULT,
-                            D3DDEVTYPE_HAL, mode.Format, format, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_main_reset()",
-                    "IDirect3D9::CheckDepthStencilMatch() failure");
+                    D3DDEVTYPE_HAL, mode.Format, format, depth);
+        if (FAILED(retc))
             return (FALSE);
-        }
         parm.EnableAutoDepthStencil = TRUE;
     }
     else {
@@ -278,12 +233,12 @@ d3d9_main_reset (
     /* 设置抗锯齿参数 */
     if (fsaa != D3DMULTISAMPLE_NONE) {
         retc = main->obj->CheckDeviceMultiSampleType(
-                        D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full,
-                                    fsaa, NULL);
+                D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full,
+                                fsaa, NULL);
         if (SUCCEEDED(retc)) {
             if (depth != D3DFMT_UNKNOWN) {
                 retc = main->obj->CheckDeviceMultiSampleType(
-                        D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, depth, !full,
+                    D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, depth, !full,
                                     fsaa, NULL);
                 if (FAILED(retc))
                     fsaa = D3DMULTISAMPLE_NONE;
@@ -310,11 +265,8 @@ d3d9_main_reset (
 
     /* 重置 D3D9 设备对象 */
     retc = main->dev->Reset(&parm);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_main_reset()", "IDirect3DDevice9::Reset() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
 
     /* 没有 Z 缓冲关闭之 */
     main->dev->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -380,11 +332,8 @@ d3d9_create_mesh_vb (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_MESH);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_mesh_vb()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     struct_zero(rett, sD3D9_MESH);
 
     /* 生成 D3D9 VB 对象 */
@@ -395,9 +344,6 @@ d3d9_create_mesh_vb (
     retc = main->dev->CreateVertexBuffer(rett->vsize, usage, fvf, pool,
                                          &rett->vbuf, NULL);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_mesh_vb()",
-                "IDirect3DDevice9::CreateVertexBuffer() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -432,19 +378,13 @@ d3d9_create_mesh_ib (
     sD3D9_MESH* rett;
 
     /* 过滤参数 */
-    if (bpi != 2 && bpi != 4) {
-        err_set(__CR_D3D9API_CPP__, bpi,
-                "d3d9_create_mesh_ib()", "invalid param: bpi");
+    if (bpi != 2 && bpi != 4)
         return (NULL);
-    }
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_MESH);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_mesh_ib()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     struct_zero(rett, sD3D9_MESH);
 
     /* 生成 D3D9 IB 对象 */
@@ -456,9 +396,6 @@ d3d9_create_mesh_ib (
     retc = main->dev->CreateIndexBuffer(rett->isize, usage, ifmt, pool,
                                         &rett->ibuf, NULL);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_mesh_ib()",
-                "IDirect3DDevice9::CreateIndexBuffer() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -499,11 +436,8 @@ d3d9_create_mesh_vib (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_MESH);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_mesh_vib()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 VB 对象 */
     rett->vnum  = vnum;
@@ -512,12 +446,8 @@ d3d9_create_mesh_vib (
     rett->fvf   = fvf;
     retc = main->dev->CreateVertexBuffer(rett->vsize, vusage, fvf, vpool,
                                          &rett->vbuf, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_mesh_vib()",
-                "IDirect3DDevice9::CreateVertexBuffer() failure");
+    if (FAILED(retc))
         goto _failure1;
-    }
 
     /* 生成 D3D9 IB 对象 */
     rett->inum = inum;
@@ -534,12 +464,8 @@ d3d9_create_mesh_vib (
     rett->ntri = inum / 3;
     retc = main->dev->CreateIndexBuffer(rett->isize, iusage, ifmt, ipool,
                                         &rett->ibuf, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_mesh_vib()",
-                "IDirect3DDevice9::CreateIndexBuffer() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 根据需要初始化数据 */
     if (vbuf != NULL) {
@@ -593,20 +519,13 @@ d3d9_mesh_vb_set (
     void_t* copy;
     HRESULT retc;
 
-    if (mesh->vbuf == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_mesh_vb_set()", "invalid param: mesh");
+    if (mesh->vbuf == NULL)
         return (FALSE);
-    }
     start *= mesh->nbpv;
     count *= mesh->nbpv;
     retc = mesh->vbuf->Lock(start, count, &copy, flags);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_mesh_vb_set()",
-                "IDirect3DVertexBuffer9::Lock() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     mem_cpy(copy, data, count);
     mesh->vbuf->Unlock();
     return (TRUE);
@@ -629,20 +548,13 @@ d3d9_mesh_ib_set (
     void_t* copy;
     HRESULT retc;
 
-    if (mesh->ibuf == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_mesh_ib_set()", "invalid param: mesh");
+    if (mesh->ibuf == NULL)
         return (FALSE);
-    }
     start *= mesh->nbpi;
     count *= mesh->nbpi;
     retc = mesh->ibuf->Lock(start, count, &copy, flags);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_mesh_ib_set()",
-                "IDirect3DIndexBuffer9::Lock() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     mem_cpy(copy, data, count);
     mesh->ibuf->Unlock();
     return (TRUE);
@@ -669,11 +581,8 @@ d3d9_create_tex2 (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex2()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 2D 纹理对象 */
     rett->face = 1;
@@ -687,9 +596,6 @@ d3d9_create_tex2 (
     retc = main->dev->CreateTexture(width, height, level, usage, format,
                                     pool, &rett->obj.tex2, NULL);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex2()",
-                "IDirect3DDevice9::CreateTexture() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -717,11 +623,8 @@ d3d9_create_tex2_fileA (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex2_fileA()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 2D 纹理对象 */
     rett->face = 1;
@@ -729,9 +632,6 @@ d3d9_create_tex2_fileA (
                 level, usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex2);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex2_fileA()",
-                "D3DXCreateTextureFromFileExA() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -759,11 +659,8 @@ d3d9_create_tex2_fileW (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex2_fileW()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 2D 纹理对象 */
     rett->face = 1;
@@ -771,9 +668,6 @@ d3d9_create_tex2_fileW (
                 level, usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex2);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex2_fileW()",
-                "D3DXCreateTextureFromFileExW() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -802,11 +696,8 @@ d3d9_create_tex2_mem (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex2_mem()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 2D 纹理对象 */
     rett->face = 1;
@@ -815,9 +706,6 @@ d3d9_create_tex2_mem (
                         pool, D3DX_DEFAULT, mip_type, keycolor,
                             &rett->info, NULL, &rett->obj.tex2);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex2_mem()",
-                "D3DXCreateTextureFromFileInMemoryEx() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -850,25 +738,16 @@ d3d9_create_tex2_crh (
     D3DLOCKED_RECT  info;
 
     tfmt = (D3DFORMAT)image_crh_to_d3d(image->fmt);
-    if (tfmt == D3DFMT_UNKNOWN) {
-        err_set(__CR_D3D9API_CPP__, image->fmt,
-                "d3d9_create_tex2_crh()", "invalid param: image");
+    if (tfmt == D3DFMT_UNKNOWN)
         return (NULL);
-    }
     rett = d3d9_create_tex2(main, image->position.ww,
                     image->position.hh, tfmt, pool, usage, level);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex2_crh()", "d3d9_create_tex2() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 锁定纹理对象复制数据 */
     retc = rett->obj.tex2->LockRect(0, &info, NULL, 0);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex2_crh()",
-                "IDirect3DTexture9::LockRect() failure");
         rett->obj.tex2->Release();
         mem_free(rett);
         return (NULL);
@@ -897,11 +776,7 @@ d3d9_create_tex2_crh (
         }
     }
     rett->obj.tex2->UnlockRect(0);
-    retc = D3DXFilterTexture(rett->obj.base, NULL, 0, mip_type);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex2_crh()", "D3DXFilterTexture() failure");
-    }
+    D3DXFilterTexture(rett->obj.base, NULL, 0, mip_type);
     return (rett);
 }
 
@@ -925,11 +800,8 @@ d3d9_create_tex3 (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex3()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 3D 纹理对象 */
     rett->face = 6;
@@ -943,9 +815,6 @@ d3d9_create_tex3 (
     retc = main->dev->CreateCubeTexture(size, level, usage, format,
                                         pool, &rett->obj.tex3, NULL);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex3()",
-                "IDirect3DDevice9::CreateCubeTexture() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -973,11 +842,8 @@ d3d9_create_tex3_fileA (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex3_fileA()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 3D 纹理对象 */
     rett->face = 6;
@@ -985,9 +851,6 @@ d3d9_create_tex3_fileA (
                     usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex3);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex3_fileA()",
-                "D3DXCreateCubeTextureFromFileExA() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1015,11 +878,8 @@ d3d9_create_tex3_fileW (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex3_fileW()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 3D 纹理对象 */
     rett->face = 6;
@@ -1027,9 +887,6 @@ d3d9_create_tex3_fileW (
                     usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex3);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex3_fileW()",
-                "D3DXCreateCubeTextureFromFileExW() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1058,11 +915,8 @@ d3d9_create_tex3_mem (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tex3_mem()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 3D 纹理对象 */
     rett->face = 6;
@@ -1071,9 +925,6 @@ d3d9_create_tex3_mem (
                             D3DX_DEFAULT, mip_type, keycolor,
                             &rett->info, NULL, &rett->obj.tex3);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_tex3_mem()",
-                "D3DXCreateCubeTextureFromFileInMemoryEx() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1102,11 +953,8 @@ d3d9_create_texv (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_texv()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 体积纹理对象 */
     rett->face = 3;
@@ -1120,9 +968,6 @@ d3d9_create_texv (
     retc = main->dev->CreateVolumeTexture(width, height, depth, level,
                                 usage, format, pool, &rett->obj.texv, NULL);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_texv()",
-                "IDirect3DDevice9::CreateVolumeTexture() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1150,11 +995,8 @@ d3d9_create_texv_fileA (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_texv_fileA()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 体积纹理对象 */
     rett->face = 3;
@@ -1162,9 +1004,6 @@ d3d9_create_texv_fileA (
                 level, usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.texv);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_texv_fileA()",
-                "D3DXCreateVolumeTextureFromFileExA() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1192,11 +1031,8 @@ d3d9_create_texv_fileW (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_texv_fileW()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 体积纹理对象 */
     rett->face = 3;
@@ -1204,9 +1040,6 @@ d3d9_create_texv_fileW (
                 level, usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.texv);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_texv_fileW()",
-                "D3DXCreateVolumeTextureFromFileExW() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1235,11 +1068,8 @@ d3d9_create_texv_mem (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_texv_mem()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 体积纹理对象 */
     rett->face = 3;
@@ -1248,9 +1078,6 @@ d3d9_create_texv_mem (
                         pool, D3DX_DEFAULT, mip_type, keycolor,
                             &rett->info, NULL, &rett->obj.texv);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_texv_mem()",
-                "D3DXCreateVolumeTextureFromFileInMemoryEx() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1288,29 +1115,18 @@ d3d9_create_vs_data (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_VSH);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_vs_data()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成顶点声明对象 */
     retc = main->dev->CreateVertexDeclaration(decl, &rett->decl);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_vs_data()",
-                "IDirect3DDevice9::CreateVertexDeclaration() failure");
+    if (FAILED(retc))
         goto _failure1;
-    }
 
     /* 生成 D3D9 VS 对象 */
     retc = main->dev->CreateVertexShader((DWORD*)data, &rett->obj);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_vs_data()",
-                "IDirect3DDevice9::CreateVertexShader() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
     return (rett);
 
 _failure2:
@@ -1342,44 +1158,25 @@ d3d9_create_vs_fileA (
     /* 未指定版本使用最高版本编译 HLSL */
     if (entry != NULL && profile == NULL) {
         profile = D3DXGetVertexShaderProfile(main->dev);
-        if (profile == NULL) {
-            err_set(__CR_D3D9API_CPP__, CR_NULL,
-                    "d3d9_create_vs_fileA()",
-                    "device not support vertex shader");
+        if (profile == NULL)
             return (NULL);
-        }
     }
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
         retc = D3DXAssembleShaderFromFileA(name, NULL, NULL,
-                                           flags, &code, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_vs_fileA()",
-                    "D3DXAssembleShaderFromFileA() failure");
-            return (NULL);
-        }
+                                    flags, &code, NULL);
     }
     else {
         retc = D3DXCompileShaderFromFileA(name, NULL, NULL, entry, profile,
                                           flags, &code, NULL, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_vs_fileA()",
-                    "D3DXCompileShaderFromFileA() failure");
-            return (NULL);
-        }
     }
+    if (FAILED(retc))
+        return (NULL);
 
     /* 生成 D3D9 VS 对象 */
     rett = d3d9_create_vs_data(main, decl, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_vs_fileA()", "d3d9_create_vs_data() failure");
-        return (NULL);
-    }
     return (rett);
 }
 
@@ -1405,44 +1202,25 @@ d3d9_create_vs_fileW (
     /* 未指定版本使用最高版本编译 HLSL */
     if (entry != NULL && profile == NULL) {
         profile = D3DXGetVertexShaderProfile(main->dev);
-        if (profile == NULL) {
-            err_set(__CR_D3D9API_CPP__, CR_NULL,
-                    "d3d9_create_vs_fileW()",
-                    "device not support vertex shader");
+        if (profile == NULL)
             return (NULL);
-        }
     }
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
         retc = D3DXAssembleShaderFromFileW(name, NULL, NULL,
-                                           flags, &code, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_vs_fileW()",
-                    "D3DXAssembleShaderFromFileW() failure");
-            return (NULL);
-        }
+                                    flags, &code, NULL);
     }
     else {
         retc = D3DXCompileShaderFromFileW(name, NULL, NULL, entry, profile,
                                           flags, &code, NULL, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_vs_fileW()",
-                    "D3DXCompileShaderFromFileW() failure");
-            return (NULL);
-        }
     }
+    if (FAILED(retc))
+        return (NULL);
 
     /* 生成 D3D9 VS 对象 */
     rett = d3d9_create_vs_data(main, decl, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_vs_fileW()", "d3d9_create_vs_data() failure");
-        return (NULL);
-    }
     return (rett);
 }
 
@@ -1468,42 +1246,25 @@ d3d9_create_vs_text (
     /* 未指定版本使用最高版本编译 HLSL */
     if (entry != NULL && profile == NULL) {
         profile = D3DXGetVertexShaderProfile(main->dev);
-        if (profile == NULL) {
-            err_set(__CR_D3D9API_CPP__, CR_NULL,
-                    "d3d9_create_vs_text()",
-                    "device not support vertex shader");
+        if (profile == NULL)
             return (NULL);
-        }
     }
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
         retc = D3DXAssembleShader(text, str_sizeA(text), NULL, NULL,
                                   flags, &code, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_vs_text()", "D3DXAssembleShader() failure");
-            return (NULL);
-        }
     }
     else {
         retc = D3DXCompileShader(text, str_sizeA(text), NULL, NULL, entry,
                                  profile, flags, &code, NULL, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_vs_text()", "D3DXCompileShader() failure");
-            return (NULL);
-        }
     }
+    if (FAILED(retc))
+        return (NULL);
 
     /* 生成 D3D9 VS 对象 */
     rett = d3d9_create_vs_data(main, decl, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_vs_text()", "d3d9_create_vs_data() failure");
-        return (NULL);
-    }
     return (rett);
 }
 
@@ -1519,6 +1280,7 @@ d3d9_release_vs (
     )
 {
     CR_NOUSE(main);
+
     vsh->decl->Release();
     vsh->obj->Release();
     mem_free(vsh);
@@ -1540,18 +1302,12 @@ d3d9_create_ps_data (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_PSH);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_ps_data()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D9 PS 对象 */
     retc = main->dev->CreatePixelShader((DWORD*)data, &rett->obj);
     if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_ps_data()",
-                "IDirect3DDevice9::CreatePixelShader() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1579,44 +1335,25 @@ d3d9_create_ps_fileA (
     /* 未指定版本使用最高版本编译 HLSL */
     if (entry != NULL && profile == NULL) {
         profile = D3DXGetPixelShaderProfile(main->dev);
-        if (profile == NULL) {
-            err_set(__CR_D3D9API_CPP__, CR_NULL,
-                    "d3d9_create_ps_fileA()",
-                    "device not support pixel shader");
+        if (profile == NULL)
             return (NULL);
-        }
     }
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
         retc = D3DXAssembleShaderFromFileA(name, NULL, NULL,
-                                           flags, &code, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_ps_fileA()",
-                    "D3DXAssembleShaderFromFileA() failure");
-            return (NULL);
-        }
+                                    flags, &code, NULL);
     }
     else {
         retc = D3DXCompileShaderFromFileA(name, NULL, NULL, entry, profile,
                                           flags, &code, NULL, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_ps_fileA()",
-                    "D3DXCompileShaderFromFileA() failure");
-            return (NULL);
-        }
     }
+    if (FAILED(retc))
+        return (NULL);
 
     /* 生成 D3D9 PS 对象 */
     rett = d3d9_create_ps_data(main, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_ps_fileA()", "d3d9_create_ps_data() failure");
-        return (NULL);
-    }
     return (rett);
 }
 
@@ -1641,44 +1378,25 @@ d3d9_create_ps_fileW (
     /* 未指定版本使用最高版本编译 HLSL */
     if (entry != NULL && profile == NULL) {
         profile = D3DXGetPixelShaderProfile(main->dev);
-        if (profile == NULL) {
-            err_set(__CR_D3D9API_CPP__, CR_NULL,
-                    "d3d9_create_ps_fileW()",
-                    "device not support pixel shader");
+        if (profile == NULL)
             return (NULL);
-        }
     }
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
         retc = D3DXAssembleShaderFromFileW(name, NULL, NULL,
-                                           flags, &code, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_ps_fileW()",
-                    "D3DXAssembleShaderFromFileW() failure");
-            return (NULL);
-        }
+                                    flags, &code, NULL);
     }
     else {
         retc = D3DXCompileShaderFromFileW(name, NULL, NULL, entry, profile,
                                           flags, &code, NULL, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_ps_fileW()",
-                    "D3DXCompileShaderFromFileW() failure");
-            return (NULL);
-        }
     }
+    if (FAILED(retc))
+        return (NULL);
 
     /* 生成 D3D9 PS 对象 */
     rett = d3d9_create_ps_data(main, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_ps_fileW()", "d3d9_create_ps_data() failure");
-        return (NULL);
-    }
     return (rett);
 }
 
@@ -1703,42 +1421,25 @@ d3d9_create_ps_text (
     /* 未指定版本使用最高版本编译 HLSL */
     if (entry != NULL && profile == NULL) {
         profile = D3DXGetPixelShaderProfile(main->dev);
-        if (profile == NULL) {
-            err_set(__CR_D3D9API_CPP__, CR_NULL,
-                    "d3d9_create_ps_text()",
-                    "device not support pixel shader");
+        if (profile == NULL)
             return (NULL);
-        }
     }
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
         retc = D3DXAssembleShader(text, str_sizeA(text), NULL, NULL,
                                   flags, &code, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_ps_text()", "D3DXAssembleShader() failure");
-            return (NULL);
-        }
     }
     else {
         retc = D3DXCompileShader(text, str_sizeA(text), NULL, NULL, entry,
                                  profile, flags, &code, NULL, NULL);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D9API_CPP__, retc,
-                    "d3d9_create_ps_text()", "D3DXCompileShader() failure");
-            return (NULL);
-        }
     }
+    if (FAILED(retc))
+        return (NULL);
 
     /* 生成 D3D9 PS 对象 */
     rett = d3d9_create_ps_data(main, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_ps_text()", "d3d9_create_ps_data() failure");
-        return (NULL);
-    }
     return (rett);
 }
 
@@ -1754,6 +1455,7 @@ d3d9_release_ps (
     )
 {
     CR_NOUSE(main);
+
     psh->obj->Release();
     mem_free(psh);
 }
@@ -1774,11 +1476,8 @@ d3d9_create_tran (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D9_TRAN);
-    if (rett == NULL) {
-        err_set(__CR_D3D9API_CPP__, CR_NULL,
-                "d3d9_create_tran()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 初始化成员 */
     rett->fovy = fovy * CR_DTOR;
@@ -1910,7 +1609,7 @@ d3d9_tran_update_mwvp (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sD3D9_CALL _rom_ s_d3d9call =
+static const sD3D9_CALL s_d3d9call =
 {
     /* 设备对象 */
     d3d9_create_main,
@@ -1979,8 +1678,6 @@ d3d9call_get (void_t)
 }
 
 #endif  /* _CR_HAVE_D3D9_ */
-
-#endif  /* !__CR_D3D9API_CPP__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

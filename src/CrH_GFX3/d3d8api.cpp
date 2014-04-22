@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_D3D8API_CPP__
-#define __CR_D3D8API_CPP__ 0x144E37D6UL
-
 #define _CR_USE_D3D8_
 #include "gfx3.h"
 #include "memlib.h"
@@ -54,26 +51,16 @@ d3d8_create_main (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_MAIN);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_main()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 建立 D3D8 对象 */
     rett->obj = Direct3DCreate8(D3D_SDK_VERSION);
-    if (rett->obj == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_main()", "Direct3DCreate8() failure");
+    if (rett->obj == NULL)
         goto _failure1;
-    }
     retc = rett->obj->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &mode);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_main()",
-                "IDirect3D8::GetAdapterDisplayMode() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 设置后台缓冲参数 */
     if (format == D3DFMT_UNKNOWN)
@@ -82,34 +69,23 @@ d3d8_create_main (
     parm.BackBufferHeight = height;
     if (full) mode.Format = format;
     retc = rett->obj->CheckDeviceType(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, format, !full);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_main()", "IDirect3D8::CheckDeviceType() failure");
+                D3DDEVTYPE_HAL, mode.Format, format, !full);
+    if (FAILED(retc))
         goto _failure2;
-    }
     parm.BackBufferFormat = format;
     parm.BackBufferCount = 1;
 
     /* 设置深度缓冲参数 */
     if (depth != D3DFMT_UNKNOWN) {
         retc = rett->obj->CheckDeviceFormat(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
-                                    D3DRTYPE_SURFACE, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D8API_CPP__, retc,
-                    "d3d8_create_main()",
-                    "IDirect3D8::CheckDeviceFormat() failure");
+                    D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
+                            D3DRTYPE_SURFACE, depth);
+        if (FAILED(retc))
             goto _failure2;
-        }
         retc = rett->obj->CheckDepthStencilMatch(D3DADAPTER_DEFAULT,
-                            D3DDEVTYPE_HAL, mode.Format, format, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D8API_CPP__, retc,
-                    "d3d8_create_main()",
-                    "IDirect3D8::CheckDepthStencilMatch() failure");
+                    D3DDEVTYPE_HAL, mode.Format, format, depth);
+        if (FAILED(retc))
             goto _failure2;
-        }
         parm.EnableAutoDepthStencil = TRUE;
     }
     else {
@@ -120,7 +96,7 @@ d3d8_create_main (
     /* 设置抗锯齿参数 */
     if (fsaa != D3DMULTISAMPLE_NONE) {
         retc = rett->obj->CheckDeviceMultiSampleType(
-                    D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full, fsaa);
+                D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full, fsaa);
         if (SUCCEEDED(retc)) {
             if (depth != D3DFMT_UNKNOWN) {
                 retc = rett->obj->CheckDeviceMultiSampleType(
@@ -152,11 +128,8 @@ d3d8_create_main (
     /* 获取顶点的硬件加速能力 */
     retc = rett->obj->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
                                     &rett->cap);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_main()", "IDirect3D8::GetDeviceCaps() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 生成 D3D8 设备对象 */
     if (rett->cap.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
@@ -165,11 +138,8 @@ d3d8_create_main (
         vp = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
     retc = rett->obj->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
                                    (HWND)hwnd, vp, &parm, &rett->dev);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_main()", "IDirect3D8::CreateDevice() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 没有 Z 缓冲关闭之 */
     rett->dev->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -224,12 +194,8 @@ d3d8_main_reset (
     D3DPRESENT_PARAMETERS   parm;
 
     retc = main->obj->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &mode);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_main_reset()",
-                "IDirect3D8::GetAdapterDisplayMode() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
 
     /* 设置后台缓冲参数 */
     if (format == D3DFMT_UNKNOWN)
@@ -238,34 +204,23 @@ d3d8_main_reset (
     parm.BackBufferHeight = height;
     if (full) mode.Format = format;
     retc = main->obj->CheckDeviceType(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, format, !full);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_main_reset()", "IDirect3D8::CheckDeviceType() failure");
+                D3DDEVTYPE_HAL, mode.Format, format, !full);
+    if (FAILED(retc))
         return (FALSE);
-    }
     parm.BackBufferFormat = format;
     parm.BackBufferCount = 1;
 
     /* 设置深度缓冲参数 */
     if (depth != D3DFMT_UNKNOWN) {
         retc = main->obj->CheckDeviceFormat(D3DADAPTER_DEFAULT,
-                        D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
-                                    D3DRTYPE_SURFACE, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D8API_CPP__, retc,
-                    "d3d8_main_reset()",
-                    "IDirect3D8::CheckDeviceFormat() failure");
+                    D3DDEVTYPE_HAL, mode.Format, D3DUSAGE_DEPTHSTENCIL,
+                                D3DRTYPE_SURFACE, depth);
+        if (FAILED(retc))
             return (FALSE);
-        }
         retc = main->obj->CheckDepthStencilMatch(D3DADAPTER_DEFAULT,
-                            D3DDEVTYPE_HAL, mode.Format, format, depth);
-        if (FAILED(retc)) {
-            err_set(__CR_D3D8API_CPP__, retc,
-                    "d3d8_main_reset()",
-                    "IDirect3D8::CheckDepthStencilMatch() failure");
+                    D3DDEVTYPE_HAL, mode.Format, format, depth);
+        if (FAILED(retc))
             return (FALSE);
-        }
         parm.EnableAutoDepthStencil = TRUE;
     }
     else {
@@ -276,7 +231,7 @@ d3d8_main_reset (
     /* 设置抗锯齿参数 */
     if (fsaa != D3DMULTISAMPLE_NONE) {
         retc = main->obj->CheckDeviceMultiSampleType(
-                    D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full, fsaa);
+                D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, format, !full, fsaa);
         if (SUCCEEDED(retc)) {
             if (depth != D3DFMT_UNKNOWN) {
                 retc = main->obj->CheckDeviceMultiSampleType(
@@ -307,11 +262,8 @@ d3d8_main_reset (
 
     /* 重置 D3D8 设备对象 */
     retc = main->dev->Reset(&parm);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_main_reset()", "IDirect3DDevice8::Reset() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
 
     /* 没有 Z 缓冲关闭之 */
     main->dev->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -345,11 +297,8 @@ d3d8_create_mesh_vb (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_MESH);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_mesh_vb()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     struct_zero(rett, sD3D8_MESH);
 
     /* 生成 D3D8 VB 对象 */
@@ -360,9 +309,6 @@ d3d8_create_mesh_vb (
     retc = main->dev->CreateVertexBuffer(rett->vsize, usage, fvf, pool,
                                          &rett->vbuf);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_mesh_vb()",
-                "IDirect3DDevice8::CreateVertexBuffer() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -397,19 +343,13 @@ d3d8_create_mesh_ib (
     sD3D8_MESH* rett;
 
     /* 过滤参数 */
-    if (bpi != 2 && bpi != 4) {
-        err_set(__CR_D3D8API_CPP__, bpi,
-                "d3d8_create_mesh_ib()", "invalid param: bpi");
+    if (bpi != 2 && bpi != 4)
         return (NULL);
-    }
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_MESH);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_mesh_ib()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     struct_zero(rett, sD3D8_MESH);
 
     /* 生成 D3D8 IB 对象 */
@@ -421,9 +361,6 @@ d3d8_create_mesh_ib (
     retc = main->dev->CreateIndexBuffer(rett->isize, usage, ifmt, pool,
                                         &rett->ibuf);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_mesh_ib()",
-                "IDirect3DDevice8::CreateIndexBuffer() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -464,11 +401,8 @@ d3d8_create_mesh_vib (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_MESH);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_mesh_vib()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 VB 对象 */
     rett->vnum  = vnum;
@@ -477,12 +411,8 @@ d3d8_create_mesh_vib (
     rett->fvf   = fvf;
     retc = main->dev->CreateVertexBuffer(rett->vsize, vusage, fvf, vpool,
                                          &rett->vbuf);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_mesh_vib()",
-                "IDirect3DDevice8::CreateVertexBuffer() failure");
+    if (FAILED(retc))
         goto _failure1;
-    }
 
     /* 生成 D3D8 IB 对象 */
     rett->inum = inum;
@@ -499,12 +429,8 @@ d3d8_create_mesh_vib (
     rett->ntri = inum / 3;
     retc = main->dev->CreateIndexBuffer(rett->isize, iusage, ifmt, ipool,
                                         &rett->ibuf);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_mesh_vib()",
-                "IDirect3DDevice8::CreateIndexBuffer() failure");
+    if (FAILED(retc))
         goto _failure2;
-    }
 
     /* 根据需要初始化数据 */
     if (vbuf != NULL) {
@@ -558,20 +484,13 @@ d3d8_mesh_vb_set (
     BYTE*   copy;
     HRESULT retc;
 
-    if (mesh->vbuf == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_mesh_vb_set()", "invalid param: mesh");
+    if (mesh->vbuf == NULL)
         return (FALSE);
-    }
     start *= mesh->nbpv;
     count *= mesh->nbpv;
     retc = mesh->vbuf->Lock(start, count, &copy, flags);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_mesh_vb_set()",
-                "IDirect3DVertexBuffer8::Lock() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     mem_cpy(copy, data, count);
     mesh->vbuf->Unlock();
     return (TRUE);
@@ -594,20 +513,13 @@ d3d8_mesh_ib_set (
     BYTE*   copy;
     HRESULT retc;
 
-    if (mesh->ibuf == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_mesh_ib_set()", "invalid param: mesh");
+    if (mesh->ibuf == NULL)
         return (FALSE);
-    }
     start *= mesh->nbpi;
     count *= mesh->nbpi;
     retc = mesh->ibuf->Lock(start, count, &copy, flags);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_mesh_ib_set()",
-                "IDirect3DIndexBuffer8::Lock() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     mem_cpy(copy, data, count);
     mesh->ibuf->Unlock();
     return (TRUE);
@@ -634,11 +546,8 @@ d3d8_create_tex2 (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex2()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 2D 纹理对象 */
     rett->face = 1;
@@ -650,9 +559,6 @@ d3d8_create_tex2 (
     retc = main->dev->CreateTexture(width, height, level, usage, format,
                                     pool, &rett->obj.tex2);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex2()",
-                "IDirect3DDevice8::CreateTexture() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -680,11 +586,8 @@ d3d8_create_tex2_fileA (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex2_fileA()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 2D 纹理对象 */
     rett->face = 1;
@@ -692,9 +595,6 @@ d3d8_create_tex2_fileA (
                 level, usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex2);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex2_fileA()",
-                "D3DXCreateTextureFromFileExA() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -722,11 +622,8 @@ d3d8_create_tex2_fileW (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex2_fileW()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 2D 纹理对象 */
     rett->face = 1;
@@ -734,9 +631,6 @@ d3d8_create_tex2_fileW (
                 level, usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex2);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex2_fileW()",
-                "D3DXCreateTextureFromFileExW() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -765,11 +659,8 @@ d3d8_create_tex2_mem (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex2_mem()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 2D 纹理对象 */
     rett->face = 1;
@@ -778,9 +669,6 @@ d3d8_create_tex2_mem (
                         pool, D3DX_DEFAULT, mip_type, keycolor,
                             &rett->info, NULL, &rett->obj.tex2);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex2_mem()",
-                "D3DXCreateTextureFromFileInMemoryEx() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -813,25 +701,16 @@ d3d8_create_tex2_crh (
     D3DLOCKED_RECT  info;
 
     tfmt = (D3DFORMAT)image_crh_to_d3d(image->fmt);
-    if (tfmt == D3DFMT_UNKNOWN) {
-        err_set(__CR_D3D8API_CPP__, image->fmt,
-                "d3d8_create_tex2_crh()", "invalid param: image");
+    if (tfmt == D3DFMT_UNKNOWN)
         return (NULL);
-    }
     rett = d3d8_create_tex2(main, image->position.ww,
                     image->position.hh, tfmt, pool, usage, level);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex2_crh()", "d3d8_create_tex2() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 锁定纹理对象复制数据 */
     retc = rett->obj.tex2->LockRect(0, &info, NULL, 0);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex2_crh()",
-                "IDirect3DTexture8::LockRect() failure");
         rett->obj.tex2->Release();
         mem_free(rett);
         return (NULL);
@@ -860,11 +739,7 @@ d3d8_create_tex2_crh (
         }
     }
     rett->obj.tex2->UnlockRect(0);
-    retc = D3DXFilterTexture(rett->obj.base, NULL, 0, mip_type);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex2_crh()", "D3DXFilterTexture() failure");
-    }
+    D3DXFilterTexture(rett->obj.base, NULL, 0, mip_type);
     return (rett);
 }
 
@@ -888,11 +763,8 @@ d3d8_create_tex3 (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex3()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 3D 纹理对象 */
     rett->face = 6;
@@ -904,9 +776,6 @@ d3d8_create_tex3 (
     retc = main->dev->CreateCubeTexture(size, level, usage, format,
                                         pool, &rett->obj.tex3);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex3()",
-                "IDirect3DDevice8::CreateCubeTexture() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -934,11 +803,8 @@ d3d8_create_tex3_fileA (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex3_fileA()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 3D 纹理对象 */
     rett->face = 6;
@@ -946,9 +812,6 @@ d3d8_create_tex3_fileA (
                     usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex3);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex3_fileA()",
-                "D3DXCreateCubeTextureFromFileExA() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -976,11 +839,8 @@ d3d8_create_tex3_fileW (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex3_fileW()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 3D 纹理对象 */
     rett->face = 6;
@@ -988,9 +848,6 @@ d3d8_create_tex3_fileW (
                     usage, D3DFMT_UNKNOWN, pool, D3DX_DEFAULT, mip_type,
                         keycolor, &rett->info, NULL, &rett->obj.tex3);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex3_fileW()",
-                "D3DXCreateCubeTextureFromFileExW() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1019,11 +876,8 @@ d3d8_create_tex3_mem (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TEXR);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tex3_mem()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 3D 纹理对象 */
     rett->face = 6;
@@ -1032,9 +886,6 @@ d3d8_create_tex3_mem (
                             D3DX_DEFAULT, mip_type, keycolor,
                             &rett->info, NULL, &rett->obj.tex3);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_tex3_mem()",
-                "D3DXCreateCubeTextureFromFileInMemoryEx() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1072,19 +923,13 @@ d3d8_create_vs_data (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_VSH);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_vs_data()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 VS 对象 */
     retc = main->dev->CreateVertexShader((DWORD*)decl, (DWORD*)data,
                                          &rett->obj, 0);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_vs_data()",
-                "IDirect3DDevice8::CreateVertexShader() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1110,25 +955,17 @@ d3d8_create_vs_fileA (
     sD3D8_VSH*      rett;
     LPD3DXBUFFER    code;
 
+    CR_NOUSE(entry);
+    CR_NOUSE(profile);
+
     /* 只支持汇编 */
     retc = D3DXAssembleShaderFromFileA(name, flags, NULL, &code, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_vs_fileA()",
-                "D3DXAssembleShaderFromFileA() failure");
+    if (FAILED(retc))
         return (NULL);
-    }
 
     /* 生成 D3D8 VS 对象 */
     rett = d3d8_create_vs_data(main, decl, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_vs_fileA()", "d3d8_create_vs_data() failure");
-        return (NULL);
-    }
-    CR_NOUSE(entry);
-    CR_NOUSE(profile);
     return (rett);
 }
 
@@ -1151,25 +988,17 @@ d3d8_create_vs_fileW (
     sD3D8_VSH*      rett;
     LPD3DXBUFFER    code;
 
+    CR_NOUSE(entry);
+    CR_NOUSE(profile);
+
     /* 只支持汇编 */
     retc = D3DXAssembleShaderFromFileW(name, flags, NULL, &code, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_vs_fileW()",
-                "D3DXAssembleShaderFromFileW() failure");
+    if (FAILED(retc))
         return (NULL);
-    }
 
     /* 生成 D3D8 VS 对象 */
     rett = d3d8_create_vs_data(main, decl, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_vs_fileW()", "d3d8_create_vs_data() failure");
-        return (NULL);
-    }
-    CR_NOUSE(entry);
-    CR_NOUSE(profile);
     return (rett);
 }
 
@@ -1192,25 +1021,18 @@ d3d8_create_vs_text (
     sD3D8_VSH*      rett;
     LPD3DXBUFFER    code;
 
+    CR_NOUSE(entry);
+    CR_NOUSE(profile);
+
     /* 只支持汇编 */
     retc = D3DXAssembleShader(text, str_sizeA(text), flags,
                               NULL, &code, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_vs_text()", "D3DXAssembleShader() failure");
+    if (FAILED(retc))
         return (NULL);
-    }
 
     /* 生成 D3D8 VS 对象 */
     rett = d3d8_create_vs_data(main, decl, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_vs_text()", "d3d8_create_vs_data() failure");
-        return (NULL);
-    }
-    CR_NOUSE(entry);
-    CR_NOUSE(profile);
     return (rett);
 }
 
@@ -1245,18 +1067,12 @@ d3d8_create_ps_data (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_PSH);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_ps_data()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 生成 D3D8 PS 对象 */
     retc = main->dev->CreatePixelShader((DWORD*)data, &rett->obj);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_ps_data()",
-                "IDirect3DDevice8::CreatePixelShader() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -1281,25 +1097,17 @@ d3d8_create_ps_fileA (
     sD3D8_PSH*      rett;
     LPD3DXBUFFER    code;
 
+    CR_NOUSE(entry);
+    CR_NOUSE(profile);
+
     /* 只支持汇编 */
     retc = D3DXAssembleShaderFromFileA(name, flags, NULL, &code, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_ps_fileA()",
-                "D3DXAssembleShaderFromFileA() failure");
+    if (FAILED(retc))
         return (NULL);
-    }
 
     /* 生成 D3D8 PS 对象 */
     rett = d3d8_create_ps_data(main, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_ps_fileA()", "d3d8_create_ps_data() failure");
-        return (NULL);
-    }
-    CR_NOUSE(entry);
-    CR_NOUSE(profile);
     return (rett);
 }
 
@@ -1321,25 +1129,17 @@ d3d8_create_ps_fileW (
     sD3D8_PSH*      rett;
     LPD3DXBUFFER    code;
 
+    CR_NOUSE(entry);
+    CR_NOUSE(profile);
+
     /* 只支持汇编 */
     retc = D3DXAssembleShaderFromFileW(name, flags, NULL, &code, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_ps_fileW()",
-                "D3DXAssembleShaderFromFileW() failure");
+    if (FAILED(retc))
         return (NULL);
-    }
 
     /* 生成 D3D8 PS 对象 */
     rett = d3d8_create_ps_data(main, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_ps_fileW()", "d3d8_create_ps_data() failure");
-        return (NULL);
-    }
-    CR_NOUSE(entry);
-    CR_NOUSE(profile);
     return (rett);
 }
 
@@ -1361,25 +1161,18 @@ d3d8_create_ps_text (
     sD3D8_PSH*      rett;
     LPD3DXBUFFER    code;
 
+    CR_NOUSE(entry);
+    CR_NOUSE(profile);
+
     /* 只支持汇编 */
     retc = D3DXAssembleShader(text, str_sizeA(text), flags,
                               NULL, &code, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
-                "d3d8_create_ps_text()", "D3DXAssembleShader() failure");
+    if (FAILED(retc))
         return (NULL);
-    }
 
     /* 生成 D3D8 PS 对象 */
     rett = d3d8_create_ps_data(main, code->GetBufferPointer());
     code->Release();
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_ps_text()", "d3d8_create_ps_data() failure");
-        return (NULL);
-    }
-    CR_NOUSE(entry);
-    CR_NOUSE(profile);
     return (rett);
 }
 
@@ -1414,11 +1207,8 @@ d3d8_create_tran (
 
     /* 分配对象结构 */
     rett = struct_new(sD3D8_TRAN);
-    if (rett == NULL) {
-        err_set(__CR_D3D8API_CPP__, CR_NULL,
-                "d3d8_create_tran()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
 
     /* 初始化成员 */
     rett->fovy = fovy * CR_DTOR;
@@ -1550,7 +1340,7 @@ d3d8_tran_update_mwvp (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sD3D8_CALL _rom_ s_d3d8call =
+static const sD3D8_CALL s_d3d8call =
 {
     /* 设备对象 */
     d3d8_create_main,
@@ -1613,8 +1403,6 @@ d3d8call_get (void_t)
 }
 
 #endif  /* _CR_HAVE_D3D8_ */
-
-#endif  /* !__CR_D3D8API_CPP__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

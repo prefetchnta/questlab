@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_E_FIMAGE_C__
-#define __CR_E_FIMAGE_C__ 0x672C23F9UL
-
 #include "safe.h"
 #include "fmtint.h"
 #include "msclib.h"
@@ -402,11 +399,8 @@ fimage_info (
     ng = FreeImage_GetWidth(bitmap);
     nb = FreeImage_GetHeight(bitmap);
     frame->pic = image_new(0, 0, ng, nb, CR_ARGB8888, FALSE, 8);
-    if (frame->pic == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "fimage_info()", "image_new() failure");
+    if (frame->pic == NULL)
         return (FALSE);
-    }
 
     /* 统一转换到32位图格式 */
     cnvt = FreeImage_ConvertTo32Bits(bitmap);
@@ -499,40 +493,27 @@ iPIC_FI_get (
     sFMT_FRAME  temp;
 
     /* 帧号过滤 */
-    if (index >= that->__count__) {
-        err_set(__CR_E_FIMAGE_C__, index,
-                "iPICTURE::get()", "index: out of bounds");
+    if (index >= that->__count__)
         return (NULL);
-    }
 
     /* 获取指定帧 */
     real = (iPIC_FI*)that;
     imgs = FreeImage_LockPage(real->m_multi, (int)index);
-    if (imgs == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "iPICTURE::get()", "FreeImage_LockPage() failure");
+    if (imgs == NULL)
         return (NULL);
-    }
     okay = fimage_info(&temp, imgs);
     FreeImage_UnlockPage(real->m_multi, imgs, FALSE);
-    if (!okay) {
-        err_set(__CR_E_FIMAGE_C__, FALSE,
-                "iPICTURE::get()", "fimage_info() failure");
+    if (!okay)
         return (NULL);
-    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
     if (rett == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "iPICTURE::get()", "struct_new() failure");
         image_del(temp.pic);
         return (NULL);
     }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "iPICTURE::get()", "struct_dup() failure");
         image_del(temp.pic);
         mem_free(rett);
         return (NULL);
@@ -590,11 +571,8 @@ fimage_load (
             case CR_LDR_WIDE:
 #ifndef _CR_OS_MSWIN_
                 path = utf16_to_local(CR_LOCAL, loader->name.wide);
-                if (path == NULL) {
-                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                            "fimage_load()", "utf16_to_local() failure");
+                if (path == NULL)
                     return (NULL);
-                }
                 format = FreeImage_GetFileType(path, 0);
                 if (format == FIF_UNKNOWN)
                     format = FreeImage_GetFIFFromFilename(path);
@@ -607,33 +585,22 @@ fimage_load (
                 break;
 
             case CR_LDR_BUFF:
-                if (cut_size(&size, loader->buff.size)) {
-                    err_set(__CR_E_FIMAGE_C__, loader->buff.size,
-                            "fimage_load()", "<loader->buff.size> truncated");
+                if (cut_size(&size, loader->buff.size))
                     return (NULL);
-                }
                 memio = FreeImage_OpenMemory((BYTE*)loader->buff.data, size);
-                if (memio == NULL) {
-                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                            "fimage_load()", "FreeImage_OpenMemory() failure");
+                if (memio == NULL)
                     return (NULL);
-                }
                 format = FreeImage_GetFileTypeFromMemory(memio, 0);
                 FreeImage_CloseMemory(memio);
                 break;
 
             default:
-                err_set(__CR_E_FIMAGE_C__, loader->type,
-                        "fimage_load()", "invalid param: loader->type");
                 return (NULL);
         }
 
         /* 还是无法确定格式 */
-        if (format == FIF_UNKNOWN) {
-            err_set(__CR_E_FIMAGE_C__, format,
-                    "fimage_load()", "invalid FreeImage format");
+        if (format == FIF_UNKNOWN)
             return (NULL);
-        }
 
         /* 确定格式的加载标志 */
         if (format == FIF_GIF)
@@ -662,11 +629,8 @@ fimage_load (
                 memio = NULL;
 #ifndef _CR_OS_MSWIN_
                 path = utf16_to_local(CR_LOCAL, loader->name.wide);
-                if (path == NULL) {
-                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                            "fimage_load()", "utf16_to_local() failure");
+                if (path == NULL)
                     return (NULL);
-                }
                 image = FreeImage_Load(format, path, flags);
                 mem_free(path);
 #else
@@ -675,30 +639,20 @@ fimage_load (
                 break;
 
             case CR_LDR_BUFF:
-                if (cut_size(&size, loader->buff.size)) {
-                    err_set(__CR_E_FIMAGE_C__, loader->buff.size,
-                            "fimage_load()", "<loader->buff.size> truncated");
+                if (cut_size(&size, loader->buff.size))
                     return (NULL);
-                }
                 memio = FreeImage_OpenMemory((BYTE*)loader->buff.data, size);
-                if (memio == NULL) {
-                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                            "fimage_load()", "FreeImage_OpenMemory() failure");
+                if (memio == NULL)
                     return (NULL);
-                }
                 image = FreeImage_LoadFromMemory(format, memio, flags);
                 break;
 
             default:
-                err_set(__CR_E_FIMAGE_C__, loader->type,
-                        "fimage_load()", "invalid param: loader->type");
                 return (NULL);
         }
 
         /* 图片加载失败 */
         if (image == NULL) {
-            err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                    "fimage_load()", "invalid FreeImage format");
             if (memio != NULL)
                 FreeImage_CloseMemory(memio);
             return (NULL);
@@ -709,24 +663,17 @@ fimage_load (
         FreeImage_Unload(image);
         if (memio != NULL)
             FreeImage_CloseMemory(memio);
-        if (!okay) {
-            err_set(__CR_E_FIMAGE_C__, FALSE,
-                    "fimage_load()", "fimage_info() failure");
+        if (!okay)
             return (NULL);
-        }
 
         /* 返回读取的文件数据 */
         rets = struct_new(sFMT_PIC);
         if (rets == NULL) {
-            err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                    "fimage_load()", "struct_new() failure");
             image_del(temp.pic);
             return (NULL);
         }
         rets->frame = struct_dup(&temp, sFMT_FRAME);
         if (rets->frame == NULL) {
-            err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                    "fimage_load()", "struct_dup() failure");
             image_del(temp.pic);
             mem_free(rets);
             return (NULL);
@@ -751,83 +698,56 @@ fimage_load (
             data = NULL;
             memio = NULL;
             path = utf16_to_local(CR_LOCAL, loader->name.wide);
-            if (path == NULL) {
-                err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                        "fimage_load()", "utf16_to_local() failure");
+            if (path == NULL)
                 return (NULL);
-            }
             multi = FreeImage_OpenMultiBitmap(format,
                             path, FALSE, TRUE, FALSE, flags);
             mem_free(path);
             break;
 
         case CR_LDR_BUFF:
-            if (cut_size(&size, loader->buff.size)) {
-                err_set(__CR_E_FIMAGE_C__, loader->buff.size,
-                        "fimage_load()", "<loader->buff.size> truncated");
+            if (cut_size(&size, loader->buff.size))
                 return (NULL);
-            }
             data = mem_dup(loader->buff.data, loader->buff.size);
-            if (data == NULL) {
-                err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                        "fimage_load()", "mem_dup() failure");
+            if (data == NULL)
                 return (NULL);
-            }
             memio = FreeImage_OpenMemory((BYTE*)data, size);
-            if (memio == NULL) {
-                err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                        "fimage_load()", "FreeImage_OpenMemory() failure");
+            if (memio == NULL)
                 goto _failure1;
-            }
             multi = FreeImage_LoadMultiBitmapFromMemory(format, memio, flags);
             break;
 
         default:
-            err_set(__CR_E_FIMAGE_C__, loader->type,
-                    "fimage_load()", "invalid param: loader->type");
             return (NULL);
     }
 
     /* 图片加载失败 */
-    if (multi == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "fimage_load()", "invalid FreeImage format");
+    if (multi == NULL)
         goto _failure2;
-    }
 
     /* 单帧图片不使用流接口 */
     cnts = FreeImage_GetPageCount(multi);
     if (cnts == 1) {
         image = FreeImage_LockPage(multi, 0);
-        if (image == NULL) {
-            err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                    "fimage_load()", "FreeImage_LockPage() failure");
+        if (image == NULL)
             goto _failure3;
-        }
         okay = fimage_info(&temp, image);
         FreeImage_UnlockPage(multi, image, FALSE);
         FreeImage_CloseMultiBitmap(multi, 0);
         if (memio != NULL)
             FreeImage_CloseMemory(memio);
         TRY_FREE(data)
-        if (!okay) {
-            err_set(__CR_E_FIMAGE_C__, FALSE,
-                    "fimage_load()", "fimage_info() failure");
+        if (!okay)
             return (NULL);
-        }
 
         /* 返回读取的文件数据 */
         rets = struct_new(sFMT_PIC);
         if (rets == NULL) {
-            err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                    "fimage_load()", "struct_new() failure");
             image_del(temp.pic);
             return (NULL);
         }
         rets->frame = struct_dup(&temp, sFMT_FRAME);
         if (rets->frame == NULL) {
-            err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                    "fimage_load()", "struct_dup() failure");
             image_del(temp.pic);
             mem_free(rets);
             return (NULL);
@@ -840,11 +760,8 @@ fimage_load (
 
     /* 生成多帧图片接口对象 */
     port = struct_new(iPIC_FI);
-    if (port == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "fimage_load()", "struct_new() failure");
+    if (port == NULL)
         goto _failure3;
-    }
     port->m_fdata = data;
     port->m_memio = memio;
     port->m_multi = multi;
@@ -855,8 +772,6 @@ fimage_load (
     /* 返回读取的文件数据 */
     retm = struct_new(sFMT_PRT);
     if (retm == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "fimage_load()", "struct_new() failure");
         iPIC_FI_release((iPICTURE*)port);
         return (NULL);
     }
@@ -1130,6 +1045,7 @@ load_fi_pbm (
     sFMTZ*  pic;
 
     CR_NOUSE(datin);
+
     pic = fimage_load(FIF_PBM, param, PBM_DEFAULT);
     if (pic != NULL) return (pic);
     return (fimage_load(FIF_PBMRAW, param, PBM_DEFAULT));
@@ -1194,6 +1110,7 @@ load_fi_pgm (
     sFMTZ*  pic;
 
     CR_NOUSE(datin);
+
     pic = fimage_load(FIF_PGM, param, PGM_DEFAULT);
     if (pic != NULL) return (pic);
     return (fimage_load(FIF_PGMRAW, param, PGM_DEFAULT));
@@ -1243,6 +1160,7 @@ load_fi_ppm (
     sFMTZ*  pic;
 
     CR_NOUSE(datin);
+
     pic = fimage_load(FIF_PPM, param, PPM_DEFAULT);
     if (pic != NULL) return (pic);
     return (fimage_load(FIF_PPMRAW, param, PPM_DEFAULT));
@@ -1447,11 +1365,8 @@ engine_fimage (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
-                "engine_fimage()", "engine_init() failure");
+    if (engine == NULL)
         return (NULL);
-    }
     engine->fmtz_load = engine_fimage_load;
     engine->info = "FreeImage FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -1469,8 +1384,6 @@ engine_get (void_t)
     return (engine_fimage());
 }
 #endif  /* _CR_BUILD_DLL_ */
-
-#endif  /* !__CR_E_FIMAGE_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

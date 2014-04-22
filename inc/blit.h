@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_BLIT_H__
-#define __CR_BLIT_H__ 0x1606E0C7UL
+#define __CR_BLIT_H__
 
 #include "gfx2.h"
 #include "fileio.h"
