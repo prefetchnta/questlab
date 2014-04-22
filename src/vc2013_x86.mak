@@ -48,7 +48,8 @@ MFLAGS=/outputresource:$(BIN_NAME)^;^#2 /manifest ".\\2.manifest"
 ##
 CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /Oy- /WX- /Gm- /sdl /MD /W4 \
        /wd4819 /Zc:wchar_t- /arch:SSE2 /errorReport:prompt /I "..\..\inc" \
-       /D "NDEBUG" /D "WIN32" /D "_WIN32" /D "UNICODE" /D "_UNICODE"
+       /D "NDEBUG" /D "WIN32" /D "_WIN32" /D "UNICODE" /D "_UNICODE" \
+       /D "_CR_NO_ERROR_SET_"
 
 ##
 ##=====================================

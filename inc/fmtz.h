@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_FMTZ_H__
-#define __CR_FMTZ_H__
+#define __CR_FMTZ_H__ 0x34434AADUL
 
 #include "gfx2.h"
 #include "datlib.h"
@@ -433,9 +433,17 @@ xmms_replay (
   __CR_IN__ iXMMEDIA*   that
     )
 {
-    if (CR_VCALL(that)->stop(that))
-        return (CR_VCALL(that)->play(that));
-    return (FALSE);
+    if (!CR_VCALL(that)->stop(that)) {
+        err_set(__CR_FMTZ_H__, FALSE,
+                "xmms_replay()", "iXMMEDIA::stop() failure");
+        return (FALSE);
+    }
+    if (!CR_VCALL(that)->play(that)) {
+        err_set(__CR_FMTZ_H__, FALSE,
+                "xmms_replay()", "iXMMEDIA::play() failure");
+        return (FALSE);
+    }
+    return (TRUE);
 }
 
 /*
@@ -449,7 +457,13 @@ xmms_adj_volume (
   __CR_IN__ sint_t      value
     )
 {
-    return (CR_VCALL(that)->set_volume(that, value + that->__volume__));
+    value += that->__volume__;
+    if (!CR_VCALL(that)->set_volume(that, value)) {
+        err_set(__CR_FMTZ_H__, FALSE,
+                "xmms_adj_volume()", "iXMMEDIA::set_volume() failure");
+        return (FALSE);
+    }
+    return (TRUE);
 }
 
 #endif  /* !_CR_SICK_INLINE_ */

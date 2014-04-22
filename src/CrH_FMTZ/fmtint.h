@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_FMTINT_H__
-#define __CR_FMTINT_H__
+#define __CR_FMTINT_H__ 0x284BD973UL
 
 #include "fmtz.h"
 

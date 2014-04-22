@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_MSCLIB_H__
-#define __CR_MSCLIB_H__
+#define __CR_MSCLIB_H__ 0x624AFE68UL
 
 #include "defs.h"
 

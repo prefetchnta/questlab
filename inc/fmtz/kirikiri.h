@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_KIRIKIRI_H__
-#define __CR_KIRIKIRI_H__
+#define __CR_KIRIKIRI_H__ 0x892509D5UL
 
 #include "fmtz.h"
 

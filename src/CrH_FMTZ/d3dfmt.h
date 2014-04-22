@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_D3DFMT_H__
-#define __CR_D3DFMT_H__
+#define __CR_D3DFMT_H__ 0x18B82265UL
 
 #include "defs.h"
 

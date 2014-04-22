@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_E_FALCOM_C__
+#define __CR_E_FALCOM_C__ 0x5BE259FAUL
+
 #include "fmtint.h"
 #include "fmtz/falcom.h"
 
@@ -56,8 +59,11 @@ engine_falcom (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_E_FALCOM_C__, CR_NULL,
+                "engine_falcom()", "engine_init() failure");
         return (NULL);
+    }
     engine->fmtz_load = engine_flc_load;
     engine->info = "FALCOM FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -75,6 +81,8 @@ engine_get (void_t)
     return (engine_falcom());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_E_FALCOM_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

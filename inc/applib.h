@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_APPLIB_H__
-#define __CR_APPLIB_H__
+#define __CR_APPLIB_H__ 0xB3CF14EBUL
 
 #include "defs.h"
 
@@ -38,8 +38,10 @@ CR_API bool_t   set_app_type (uint_t type);
 CR_API bool_t   set_app_mode (bool_t full);
 CR_API void_t   set_gui_hwnd (hwnd_t hwnd);
 
-/* 系统本地的编码值 */
+/* 获取系统本地编码值 */
 CR_API uint_t   get_sys_codepage (void_t);
+
+/* 设置系统本地编码值 (部分支持) */
 CR_API void_t   set_sys_codepage (uint_t cpage);
 
 /*****************************************************************************/

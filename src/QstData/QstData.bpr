@@ -27,7 +27,7 @@
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
     <LINKER value="ilink32"/>
-    <USERDEFINES value=""/>
+    <USERDEFINES value="_CR_NO_ERROR_SET_"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="QstData.cpp"/>
     <INCLUDEPATH value=".;..\..\inc;$(BCB)\include;$(BCB)\include\vcl"/>
@@ -36,7 +36,8 @@
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I. -I..\..\inc -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
+    <IDLCFLAGS value="-I. -I..\..\inc -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp 
+      -D_CR_NO_ERROR_SET_ -boa"/>
     <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -RT- -X- -a8 -6 -b- -d -k- -vi -c 
       -tW -tWM -dc"/>
     <PFLAGS value="-N2..\..\tmp -N0..\..\tmp -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
@@ -99,6 +100,10 @@ Item0=.;..\..\lib\crhack\omf;$(BCB)\lib\obj;$(BCB)\lib\psdk;$(BCB)\lib
 [HistoryLists\hlDebugSourcePath]
 Count=1
 Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_CR_NO_ERROR_SET_
 
 [HistoryLists\hlIntOutputDir]
 Count=1

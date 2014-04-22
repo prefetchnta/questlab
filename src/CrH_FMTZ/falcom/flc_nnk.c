@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_FLC_NNK_C__
+#define __CR_FLC_NNK_C__ 0x929A9110UL
+
 #include "strlib.h"
 #include "../fmtint.h"
 #include "fmtz/falcom.h"
@@ -111,12 +114,14 @@ iPAK_NNK_getFileData (
     iPAK_NNK*       real;
     sPAK_NNK_FILE*  item;
 
-    CR_NOUSE(hash);
-
     /* 定位文件索引 */
+    CR_NOUSE(hash);
     real = (iPAK_NNK*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_FLC_NNK_C__, index,
+                "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
+    }
     item = (sPAK_NNK_FILE*)real->pack.__filelst__;
     item += (leng_t)index;
 
@@ -124,23 +129,35 @@ iPAK_NNK_getFileData (
     size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_FLC_NNK_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc() failure");
             return (FALSE);
+        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         data = mem_malloc64(size);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_FLC_NNK_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
+        }
         file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET))
+        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET)) {
+            err_set(__CR_FLC_NNK_C__, FALSE,
+                    "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure;
+        }
         read = CR_VCALL(file)->read(file, data, (leng_t)size);
-        if (read != (leng_t)size)
+        if (read != (leng_t)size) {
+            err_set(__CR_FLC_NNK_C__, read,
+                    "iPACKAGE::getFileData()", "iDATIN::read() failure");
             goto _failure;
+        }
     }
 
     /* 返回文件数据 */
@@ -169,8 +186,11 @@ iPAK_NNK_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_NNK*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_FLC_NNK_C__, index,
+                "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
+    }
     idx = (leng_t)index;
     list = (sPAK_NNK_FILE*)real->pack.__filelst__;
 
@@ -264,8 +284,11 @@ load_flc_nnk (
     if (param->type == CR_LDR_ANSI) {
         size = str_lenA(param->name.ansi) + 4;
         ldrs.name.ansi = str_allocA(size);
-        if (ldrs.name.ansi == NULL)
+        if (ldrs.name.ansi == NULL) {
+            err_set(__CR_FLC_NNK_C__, CR_NULL,
+                    "load_flc_nnk()", "str_allocA() failure");
             return (NULL);
+        }
         filext_changeA((ansi_t*)ldrs.name.ansi,
             param->name.ansi, CR_AS(".ni"));
     }
@@ -273,12 +296,17 @@ load_flc_nnk (
     if (param->type == CR_LDR_WIDE) {
         size = str_lenW(param->name.wide) + 4;
         ldrs.name.wide = str_allocW(size);
-        if (ldrs.name.wide == NULL)
+        if (ldrs.name.wide == NULL) {
+            err_set(__CR_FLC_NNK_C__, CR_NULL,
+                    "load_flc_nnk()", "str_allocW() failure");
             return (NULL);
+        }
         filext_changeW((wide_t*)ldrs.name.wide,
             param->name.wide, CR_WS(".ni"));
     }
     else {
+        err_set(__CR_FLC_NNK_C__, param->type,
+                "load_flc_nnk()", "invalid param: param->type");
         return (NULL);
     }
 
@@ -288,50 +316,77 @@ load_flc_nnk (
         mem_free(ldrs.name.ansi);
     else
         mem_free(ldrs.name.wide);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_FLC_NNK_C__, CR_NULL,
+                "load_flc_nnk()", "create_file_inX() failure");
         return (NULL);
+    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sNNK_HDR)))
+    if (!(CR_VCALL(datin)->geType(datin, &head, sNNK_HDR))) {
+        err_set(__CR_FLC_NNK_C__, FALSE,
+                "load_flc_nnk()", "iDATIN::geType() failure");
         goto _failure1;
-    if (head.magic != mk_tag4("NNI"))
+    }
+    if (head.magic != mk_tag4("NNI")) {
+        err_set(__CR_FLC_NNK_C__, head.magic,
+                "load_flc_nnk()", "invalid NNK format");
         goto _failure1;
+    }
 
     /* 读取文件索引表 */
     head.count = DWORD_LE(head.count);
     info = mem_talloc32(head.count, sNNK_FILE);
-    if (info == NULL)
+    if (info == NULL) {
+        err_set(__CR_FLC_NNK_C__, CR_NULL,
+                "load_flc_nnk()", "mem_talloc32() failure");
         goto _failure1;
+    }
     size = (leng_t)head.count;
     size *= sizeof(sNNK_FILE);
     read = CR_VCALL(datin)->read(datin, info, size);
-    if (read != size)
+    if (read != size) {
+        err_set(__CR_FLC_NNK_C__, read,
+                "load_flc_nnk()", "iDATIN::read() failure");
         goto _failure2;
+    }
     cnt = head.count;
     nnk_decode(0x7C53F961UL, (byte_t*)info, read);
 
     /* 读取文件名表 */
     head.name_size = DWORD_LE(head.name_size);
     name = mem_malloc32(head.name_size);
-    if (name == NULL)
+    if (name == NULL) {
+        err_set(__CR_FLC_NNK_C__, CR_NULL,
+                "load_flc_nnk()", "mem_malloc32() failure");
         goto _failure2;
+    }
     read = CR_VCALL(datin)->read(datin, name, (leng_t)head.name_size);
-    if (read != (leng_t)head.name_size)
+    if (read != (leng_t)head.name_size) {
+        err_set(__CR_FLC_NNK_C__, read,
+                "load_flc_nnk()", "iDATIN::read() failure");
         goto _failure3;
+    }
     nnk_decode(0x7C53F961UL, (byte_t*)name, read);
 
     /* 必须使用自己私有的读取接口 */
     flna = create_file_inX(param);
-    if (flna == NULL)
+    if (flna == NULL) {
+        err_set(__CR_FLC_NNK_C__, CR_NULL,
+                "load_flc_nnk()", "create_file_inX() failure");
         goto _failure3;
+    }
     CR_VCALL(datin)->release(datin);
     datin = flna;
 
     /* 分配子文件属性表 */
     if (cnt != 0) {
         list = mem_talloc32(cnt, sPAK_NNK_FILE);
-        if (list == NULL)
+        if (list == NULL) {
+            err_set(__CR_FLC_NNK_C__, CR_NULL,
+                    "load_flc_nnk()", "mem_talloc32() failure");
             goto _failure3;
+        }
         mem_tzero(list, cnt, sPAK_NNK_FILE);
     }
     else {
@@ -343,14 +398,20 @@ load_flc_nnk (
     {
         /* 文件名偏移过滤 */
         info[idx].name = DWORD_LE(info[idx].name);
-        if (info[idx].name >= head.name_size)
+        if (info[idx].name >= head.name_size) {
+            err_set(__CR_FLC_NNK_C__, info[idx].name,
+                    "load_flc_nnk()", "invalid NNK format");
             goto _failure4;
+        }
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].base.name = local_to_utf8(
                             param->page, &name[info[idx].name]);
-        if (list[idx].base.name == NULL)
+        if (list[idx].base.name == NULL) {
+            err_set(__CR_FLC_NNK_C__, CR_NULL,
+                    "load_flc_nnk()", "local_to_utf8() failure");
             goto _failure4;
+        }
 
         /* 设置公用文件属性 */
         list[idx].base.skip = sizeof(sPAK_NNK_FILE);
@@ -366,13 +427,18 @@ load_flc_nnk (
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_NNK);
-    if (port == NULL)
+    if (port == NULL) {
+        err_set(__CR_FLC_NNK_C__, CR_NULL,
+                "load_flc_nnk()", "struct_new() failure");
         goto _failure4;
+    }
     port->m_file = datin;
     port->m_cnt = (leng_t)cnt;
     port->pack.__filelst__ = (sPAK_FILE*)list;
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
+        err_set(__CR_FLC_NNK_C__, FALSE,
+                "load_flc_nnk()", "pack_init_list() failure");
         mem_free(port);
         goto _failure4;
     }
@@ -382,6 +448,8 @@ load_flc_nnk (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
+        err_set(__CR_FLC_NNK_C__, CR_NULL,
+                "load_flc_nnk()", "struct_new() failure");
         iPAK_NNK_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -407,6 +475,8 @@ _failure1:
     CR_VCALL(datin)->release(datin);
     return (NULL);
 }
+
+#endif  /* !__CR_FLC_NNK_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

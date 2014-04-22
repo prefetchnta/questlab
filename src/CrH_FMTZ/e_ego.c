@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_E_EGO_C__
+#define __CR_E_EGO_C__ 0x406511EBUL
+
 #include "fmtint.h"
 #include "fmtz/ego.h"
 
@@ -54,8 +57,11 @@ engine_ego (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_E_EGO_C__, CR_NULL,
+                "engine_ego()", "engine_init() failure");
         return (NULL);
+    }
     engine->fmtz_load = engine_ego_load;
     engine->info = "Studio e.go! FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -73,6 +79,8 @@ engine_get (void_t)
     return (engine_ego());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_E_EGO_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

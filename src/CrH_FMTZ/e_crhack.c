@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_E_HACK_C__
+#define __CR_E_HACK_C__ 0x0BCA9EE8UL
+
 #include "fmtint.h"
 
 /* 引擎常数表 */
@@ -54,8 +57,11 @@ engine_crhack (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_E_HACK_C__, CR_NULL,
+                "engine_crhack()", "engine_init() failure");
         return (NULL);
+    }
     engine->fmtz_load = engine_crhack_load;
     engine->info = "CrHack FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -73,6 +79,8 @@ engine_get (void_t)
     return (engine_crhack());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_E_HACK_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

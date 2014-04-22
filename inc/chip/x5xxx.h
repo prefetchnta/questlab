@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_X5XXX_H__
-#define __CR_X5XXX_H__
+#define __CR_X5XXX_H__ 0x76DDE18DUL
 
 #include "defs.h"
 

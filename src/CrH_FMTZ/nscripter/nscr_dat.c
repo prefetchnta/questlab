@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_NSCR_DAT_C__
+#define __CR_NSCR_DAT_C__ 0x33674606UL
+
 #include "fmtz/nscripter.h"
 
 /*
@@ -35,16 +38,20 @@ load_nscr_dat (
     byte_t*     text;
     sFMT_TXT*   rett;
 
-    CR_NOUSE(param);
-
     /* 这个参数可能为空 */
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_NSCR_DAT_C__, CR_NULL,
+                "load_nscr_dat()", "invalid param: datin");
         return (NULL);
+    }
 
     /* 读取所有文件数据 */
     text = CR_VCALL(datin)->get(datin, &size, FALSE);
-    if (text == NULL)
+    if (text == NULL) {
+        err_set(__CR_NSCR_DAT_C__, CR_NULL,
+                "load_nscr_dat()", "iDATIN::get() failure");
         return (NULL);
+    }
 
     /* 文本数据解密 */
     for (idx = 0; idx < size; idx++)
@@ -53,15 +60,20 @@ load_nscr_dat (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_TXT);
     if (rett == NULL) {
+        err_set(__CR_NSCR_DAT_C__, CR_NULL,
+                "load_nscr_dat()", "struct_new() failure");
         mem_free(text);
         return (NULL);
     }
+    CR_NOUSE(param);
     rett->type = CR_FMTZ_TXT;
     rett->size = size;
     rett->text = text;
     rett->infor = "NScripter script file (nscript.dat)";
     return (rett);
 }
+
+#endif  /* !__CR_NSCR_DAT_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

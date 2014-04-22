@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_HASH_H__
-#define __CR_HASH_H__
+#define __CR_HASH_H__ 0xE14CC6B1UL
 
 #include "defs.h"
 
@@ -140,22 +140,6 @@ CR_API void_t   hash_bzz5_update (sBZZ5 *ctx, const void_t *data,
 CR_API void_t   hash_bzz5_finish (int32u hash[5], sBZZ5 *ctx);
 CR_API void_t   hash_bzz5_total (int32u hash[5], const void_t *data,
                                  leng_t size);
-/* MD2 */
-typedef struct
-{
-        leng_t  left;
-        byte_t  cksum[16];
-        byte_t  state[48];
-        byte_t  buffer[16];
-} sMD2;
-
-/* MD2 */
-CR_API void_t   hash_md2_init (sMD2 *ctx);
-CR_API void_t   hash_md2_update (sMD2 *ctx, const void_t *data,
-                                 leng_t size);
-CR_API void_t   hash_md2_finish (byte_t hash[16], sMD2 *ctx);
-CR_API void_t   hash_md2_total (byte_t hash[16], const void_t *data,
-                                leng_t size);
 /* MD4, MD5 */
 typedef struct
 {
@@ -251,8 +235,7 @@ typedef struct
 } sED2K;
 
 CR_API void_t   hash_ed2k_init (sED2K *ctx);
-CR_API void_t   hash_ed2k_update (sED2K *ctx, const void_t *data,
-                                  leng_t size);
+CR_API void_t   hash_ed2k_update (sED2K *ctx, const void_t *data, leng_t size);
 CR_API void_t   hash_ed2k_finish1 (byte_t hash[16], sED2K *ctx);
 CR_API void_t   hash_ed2k_finish2 (byte_t hash[16], sED2K *ctx);
 CR_API void_t   hash_ed2k_total1 (byte_t hash[16], const void_t *data,

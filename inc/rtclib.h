@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_RTCLIB_H__
-#define __CR_RTCLIB_H__
+#define __CR_RTCLIB_H__ 0xD08E49C4UL
 
 #include "defs.h"
 

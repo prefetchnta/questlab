@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_E_TGL_C__
+#define __CR_E_TGL_C__ 0xC66CFC41UL
+
 #include "fmtint.h"
 #include "fmtz/tgl.h"
 
@@ -56,8 +59,11 @@ engine_tgl (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_E_TGL_C__, CR_NULL,
+                "engine_tgl()", "engine_init() failure");
         return (NULL);
+    }
     engine->fmtz_load = engine_tgl_load;
     engine->info = "TGL FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -75,6 +81,8 @@ engine_get (void_t)
     return (engine_tgl());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_E_TGL_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

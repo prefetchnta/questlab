@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_PIXELS_H__
-#define __CR_PIXELS_H__
+#define __CR_PIXELS_H__ 0x30F07BF0UL
 
 #include "gfx2.h"
 #include "endian.h"
@@ -339,7 +339,7 @@ argb32_to_gdi (
     )
 {
     *(int32u*)color &= CDWORD_LE(0x00FFFFFFUL);
-    return (swap_rb32(color));
+    return ((int32u)swap_rb32(color));
 }
 
 #endif  /* !_CR_SICK_INLINE_ */

@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_PARSER_H__
-#define __CR_PARSER_H__
+#define __CR_PARSER_H__ 0x048914ACUL
 
 #include "defs.h"
 

@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_NSCR_SAR_C__
+#define __CR_NSCR_SAR_C__ 0x1E5E11E6UL
+
 #include "strlib.h"
 #include "../fmtint.h"
 #include "fmtz/nscripter.h"
@@ -109,12 +112,14 @@ iPAK_SAR_getFileData (
     iPAK_SAR*   real;
     sPAK_FILE*  item;
 
-    CR_NOUSE(hash);
-
     /* 定位文件索引 */
+    CR_NOUSE(hash);
     real = (iPAK_SAR*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_NSCR_SAR_C__, index,
+                "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
+    }
     item = real->pack.__filelst__;
     item += (uint_t)index;
 
@@ -122,23 +127,35 @@ iPAK_SAR_getFileData (
     size = item->size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_NSCR_SAR_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc() failure");
             return (FALSE);
+        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         data = mem_malloc64(size);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_NSCR_SAR_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
+        }
         file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        if (!CR_VCALL(file)->seek64(file, item->offs, SEEK_SET))
+        if (!CR_VCALL(file)->seek64(file, item->offs, SEEK_SET)) {
+            err_set(__CR_NSCR_SAR_C__, FALSE,
+                    "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure;
+        }
         read = CR_VCALL(file)->read(file, data, (leng_t)size);
-        if (read != (leng_t)size)
+        if (read != (leng_t)size) {
+            err_set(__CR_NSCR_SAR_C__, read,
+                    "iPACKAGE::getFileData()", "iDATIN::read() failure");
             goto _failure;
+        }
     }
 
     /* 返回文件数据 */
@@ -166,8 +183,11 @@ iPAK_SAR_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_SAR*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_NSCR_SAR_C__, index,
+                "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
+    }
 
     /* 返回文件信息 */
     idx = (uint_t)index;
@@ -209,51 +229,90 @@ load_nscr_sar (
 
     /* 必须使用自己私有的读取接口 */
     datin = create_file_inX(param);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_NSCR_SAR_C__, CR_NULL,
+                "load_nscr_sar()", "create_file_inX() failure");
         return (NULL);
+    }
 
     /* 读取文件头信息 */
-    if (!CR_VCALL(datin)->getw_be(datin, &cnt))
+    if (!CR_VCALL(datin)->getw_be(datin, &cnt)) {
+        err_set(__CR_NSCR_SAR_C__, FALSE,
+                "load_nscr_sar()", "iDATIN::getw_be() failure");
         goto _failure1;
-    if (cnt == 0)
+    }
+    if (cnt == 0) {
+        err_set(__CR_NSCR_SAR_C__, cnt,
+                "load_nscr_sar()", "invalid SAR format");
         goto _failure1;
-    if (!CR_VCALL(datin)->getd_be(datin, &beg))
+    }
+    if (!CR_VCALL(datin)->getd_be(datin, &beg)) {
+        err_set(__CR_NSCR_SAR_C__, FALSE,
+                "load_nscr_sar()", "iDATIN::getd_be() failure");
         goto _failure1;
-    if (beg > dati_get_size(datin))
+    }
+    if (beg > dati_get_size(datin)) {
+        err_set(__CR_NSCR_SAR_C__, beg,
+                "load_nscr_sar()", "invalid SAR format");
         goto _failure1;
+    }
 
     /* 分配子文件属性表 */
     list = mem_talloc(cnt, sPAK_FILE);
-    if (list == NULL)
+    if (list == NULL) {
+        err_set(__CR_NSCR_SAR_C__, CR_NULL,
+                "load_nscr_sar()", "mem_talloc() failure");
         goto _failure1;
+    }
     mem_tzero(list, cnt, sPAK_FILE);
     for (idx = 0; idx < cnt; idx++)
     {
         /* 读取文件名\0结尾 */
         for (cha = 1, tmp = 0; tmp < sizeof(str); tmp++) {
-            if (!CR_VCALL(datin)->getb_no(datin, &cha))
+            if (!CR_VCALL(datin)->getb_no(datin, &cha)) {
+                err_set(__CR_NSCR_SAR_C__, FALSE,
+                        "load_nscr_sar()", "iDATIN::getb_no() failure");
                 goto _failure2;
+            }
             str[tmp] = (ansi_t)cha;
             if (cha == 0x00)
                 break;
         }
-        if (cha != 0x00 || tmp == 0)
+        if (cha != 0x00 || tmp == 0) {
+            err_set(__CR_NSCR_SAR_C__, idx,
+                    "load_nscr_sar()", "invalid SAR format");
             goto _failure2;
+        }
 
         /* 文件偏移和大小 */
-        if (!CR_VCALL(datin)->getd_be(datin, &offs))
+        if (!CR_VCALL(datin)->getd_be(datin, &offs)) {
+            err_set(__CR_NSCR_SAR_C__, FALSE,
+                    "load_nscr_sar()", "iDATIN::getd_be() failure");
             goto _failure2;
-        if (offs > dati_get_size(datin) - beg)
+        }
+        if (offs > dati_get_size(datin) - beg) {
+            err_set(__CR_NSCR_SAR_C__, offs,
+                    "load_nscr_sar()", "invalid SAR format");
             goto _failure2;
-        if (!CR_VCALL(datin)->getd_be(datin, &size))
+        }
+        if (!CR_VCALL(datin)->getd_be(datin, &size)) {
+            err_set(__CR_NSCR_SAR_C__, FALSE,
+                    "load_nscr_sar()", "iDATIN::getd_be() failure");
             goto _failure2;
-        if (size > dati_get_size(datin) - beg - offs)
+        }
+        if (size > dati_get_size(datin) - beg - offs) {
+            err_set(__CR_NSCR_SAR_C__, size,
+                    "load_nscr_sar()", "invalid SAR format");
             goto _failure2;
+        }
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].name = local_to_utf8(param->page, str);
-        if (list[idx].name == NULL)
+        if (list[idx].name == NULL) {
+            err_set(__CR_NSCR_SAR_C__, CR_NULL,
+                    "load_nscr_sar()", "local_to_utf8() failure");
             goto _failure2;
+        }
 
         /* 设置文件属性 */
         list[idx].skip = sizeof(sPAK_FILE);
@@ -267,13 +326,18 @@ load_nscr_sar (
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_SAR);
-    if (port == NULL)
+    if (port == NULL) {
+        err_set(__CR_NSCR_SAR_C__, CR_NULL,
+                "load_nscr_sar()", "struct_new() failure");
         goto _failure2;
+    }
     port->m_cnt = cnt;
     port->m_file = datin;
     port->pack.__filelst__ = list;
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
+        err_set(__CR_NSCR_SAR_C__, FALSE,
+                "load_nscr_sar()", "pack_init_list() failure");
         mem_free(port);
         goto _failure2;
     }
@@ -281,6 +345,8 @@ load_nscr_sar (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
+        err_set(__CR_NSCR_SAR_C__, CR_NULL,
+                "load_nscr_sar()", "struct_new() failure");
         iPAK_SAR_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -300,6 +366,8 @@ _failure1:
     CR_VCALL(datin)->release(datin);
     return (NULL);
 }
+
+#endif  /* !__CR_NSCR_SAR_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

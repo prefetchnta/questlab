@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_GDIWIN_H__
-#define __CR_GDIWIN_H__
+#define __CR_GDIWIN_H__ 0x8C2078E4UL
 
 #include "gfx2.h"
 

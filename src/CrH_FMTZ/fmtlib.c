@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_FMTLIB_C__
+#define __CR_FMTLIB_C__ 0x84834BAFUL
+
 #include "hash.h"
 #include "safe.h"
 #include "fmtint.h"
@@ -111,8 +114,11 @@ engine_init (
     sENGINE_INT*    engine;
 
     engine = struct_new(sENGINE_INT);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_FMTLIB_C__, CR_NULL,
+                "engine_init()", "struct_new() failure");
         return (NULL);
+    }
     struct_zero(engine, sENGINE_INT);
 
     /* 生成两个哈希表并注册文件类型匹配 */
@@ -122,14 +128,20 @@ engine_init (
                 break;
         }
         if (count != 0) {
-            if (!curtain_initT(&engine->m_finda, sMATCHa, count, 0))
+            if (!curtain_initT(&engine->m_finda, sMATCHa, count, 0)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "engine_init()", "curtain_initT() failure");
                 goto _failure1;
+            }
             engine->m_finda.find = match_findA;
 
             while (finda->loader != NULL) {
                 if (curtain_insertT(&engine->m_finda, sMATCHa,
-                                    finda->filext, finda) == NULL)
+                                    finda->filext, finda) == NULL) {
+                    err_set(__CR_FMTLIB_C__, CR_NULL,
+                            "engine_init()", "curtain_insertT() failure");
                     goto _failure2;
+                }
                 finda++;
             }
         }
@@ -140,14 +152,20 @@ engine_init (
                 break;
         }
         if (count != 0) {
-            if (!curtain_initT(&engine->m_findw, sMATCHw, count, 0))
+            if (!curtain_initT(&engine->m_findw, sMATCHw, count, 0)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "engine_init()", "curtain_initT() failure");
                 goto _failure2;
+            }
             engine->m_findw.find = match_findW;
 
             while (findw->loader != NULL) {
                 if (curtain_insertT(&engine->m_findw, sMATCHw,
-                                    findw->filext, findw) == NULL)
+                                    findw->filext, findw) == NULL) {
+                    err_set(__CR_FMTLIB_C__, CR_NULL,
+                            "engine_init()", "curtain_insertT() failure");
                     goto _failure3;
+                }
                 findw++;
             }
         }
@@ -193,8 +211,11 @@ fmtz_find (
 
     /* 尝试打开文件 */
     datin = create_file_inX(loader);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_FMTLIB_C__, CR_NULL,
+                "fmtz_find()", "create_file_inX() failure");
         return (NULL);
+    }
     fmtz = NULL;
 
     /* 单字节匹配优先 */
@@ -202,8 +223,11 @@ fmtz_find (
         if (real->m_finda.__list__ == NULL)
             goto _func_out;
         name_a = str_dupA(loader->name.ansi);
-        if (name_a == NULL)
+        if (name_a == NULL) {
+            err_set(__CR_FMTLIB_C__, CR_NULL,
+                    "fmtz_find()", "str_dupA() failure");
             goto _func_out;
+        }
 
         /* 文件名规则匹配 */
         flname_extractA(name_a, loader->name.ansi);
@@ -233,6 +257,8 @@ fmtz_find (
 
             /* 复位文件读取指针 */
             if (!CR_VCALL(datin)->rewind(datin)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "fmtz_find()", "iDATIN::rewind() failure");
                 mem_free(name_a);
                 goto _func_out;
             }
@@ -260,8 +286,11 @@ fmtz_find (
                     break;
 
                 /* 复位文件读取指针 */
-                if (!CR_VCALL(datin)->rewind(datin))
+                if (!CR_VCALL(datin)->rewind(datin)) {
+                    err_set(__CR_FMTLIB_C__, FALSE,
+                            "fmtz_find()", "iDATIN::rewind() failure");
                     break;
+                }
             }
         }
         mem_free(name_a);
@@ -271,8 +300,11 @@ fmtz_find (
         if (real->m_findw.__list__ == NULL)
             goto _func_out;
         name_w = str_dupW(loader->name.wide);
-        if (name_w == NULL)
+        if (name_w == NULL) {
+            err_set(__CR_FMTLIB_C__, CR_NULL,
+                    "fmtz_find()", "str_dupW() failure");
             goto _func_out;
+        }
 
         /* 文件名规则匹配 */
         flname_extractW(name_w, loader->name.wide);
@@ -302,6 +334,8 @@ fmtz_find (
 
             /* 复位文件读取指针 */
             if (!CR_VCALL(datin)->rewind(datin)) {
+                err_set(__CR_FMTLIB_C__, FALSE,
+                        "fmtz_find()", "iDATIN::rewind() failure");
                 mem_free(name_w);
                 goto _func_out;
             }
@@ -329,8 +363,11 @@ fmtz_find (
                     break;
 
                 /* 复位文件读取指针 */
-                if (!CR_VCALL(datin)->rewind(datin))
+                if (!CR_VCALL(datin)->rewind(datin)) {
+                    err_set(__CR_FMTLIB_C__, FALSE,
+                            "fmtz_find()", "iDATIN::rewind() failure");
                     break;
+                }
             }
         }
         mem_free(name_w);
@@ -394,6 +431,8 @@ fmtz_free (
             break;
 
         default:
+            err_set(__CR_FMTLIB_C__, fmtz->type,
+                    "fmtz_free()", "invalid param: fmtz->type");
             return (FALSE);
     }
     mem_free(fmtz);
@@ -413,11 +452,17 @@ fmtz_get_imgo (
 {
     const sFMT_PIC* fmt_pic;
 
-    if (fmtz->type != CR_FMTZ_PIC)
+    if (fmtz->type != CR_FMTZ_PIC) {
+        err_set(__CR_FMTLIB_C__, fmtz->type,
+                "fmtz_get_imgo()", "invalid param: fmtz");
         return (NULL);
+    }
     fmt_pic = (const sFMT_PIC*)fmtz;
-    if (index >= fmt_pic->count)
+    if (index >= fmt_pic->count) {
+        err_set(__CR_FMTLIB_C__, index,
+                "fmtz_get_imgo()", "index: out of bounds");
         return (NULL);
+    }
     return (fmt_pic->frame[index].pic);
 }
 
@@ -433,11 +478,17 @@ fmtz_get_pack (
 {
     const sFMT_PRT* fmt_prt;
 
-    if (fmtz->type != CR_FMTZ_PRT)
+    if (fmtz->type != CR_FMTZ_PRT) {
+        err_set(__CR_FMTLIB_C__, fmtz->type,
+                "fmtz_get_pack()", "invalid param: fmtz");
         return (NULL);
+    }
     fmt_prt = (const sFMT_PRT*)fmtz;
-    if (str_cmpA(fmt_prt->more, "iPACKAGE") != 0)
+    if (str_cmpA(fmt_prt->more, "iPACKAGE") != 0) {
+        err_set(__CR_FMTLIB_C__, CR_ERROR,
+                "fmtz_get_pack()", "invalid param: fmtz");
         return (NULL);
+    }
     return ((iPACKAGE*)fmt_prt->port);
 }
 
@@ -453,11 +504,17 @@ fmtz_get_xmms (
 {
     const sFMT_PRT* fmt_prt;
 
-    if (fmtz->type != CR_FMTZ_PRT)
+    if (fmtz->type != CR_FMTZ_PRT) {
+        err_set(__CR_FMTLIB_C__, fmtz->type,
+                "fmtz_get_xmms()", "invalid param: fmtz");
         return (NULL);
+    }
     fmt_prt = (const sFMT_PRT*)fmtz;
-    if (str_cmpA(fmt_prt->more, "iXMMEDIA") != 0)
+    if (str_cmpA(fmt_prt->more, "iXMMEDIA") != 0) {
+        err_set(__CR_FMTLIB_C__, CR_ERROR,
+                "fmtz_get_xmms()", "invalid param: fmtz");
         return (NULL);
+    }
     return ((iXMMEDIA*)fmt_prt->port);
 }
 
@@ -473,11 +530,17 @@ fmtz_get_pict (
 {
     const sFMT_PRT* fmt_prt;
 
-    if (fmtz->type != CR_FMTZ_PRT)
+    if (fmtz->type != CR_FMTZ_PRT) {
+        err_set(__CR_FMTLIB_C__, fmtz->type,
+                "fmtz_get_pict()", "invalid param: fmtz");
         return (NULL);
+    }
     fmt_prt = (const sFMT_PRT*)fmtz;
-    if (str_cmpA(fmt_prt->more, "iPICTURE") != 0)
+    if (str_cmpA(fmt_prt->more, "iPICTURE") != 0) {
+        err_set(__CR_FMTLIB_C__, CR_ERROR,
+                "fmtz_get_pict()", "invalid param: fmtz");
         return (NULL);
+    }
     return ((iPICTURE*)fmt_prt->port);
 }
 
@@ -506,10 +569,16 @@ pack_init_list (
     sPAK_FILE*  ptr;
 
     num = pack_file_num(pack);
-    if (cut_int64u(&cnt, num))
+    if (cut_int64u(&cnt, num)) {
+        err_set(__CR_FMTLIB_C__, num,
+                "pack_init_list()", "<file_num> truncated");
         return (FALSE);
-    if (!curtain_initT(&pack->__search__, sFINDER, cnt, 0))
+    }
+    if (!curtain_initT(&pack->__search__, sFINDER, cnt, 0)) {
+        err_set(__CR_FMTLIB_C__, FALSE,
+                "pack_init_list()", "curtain_initT() failure");
         return (FALSE);
+    }
     pack->__caseless__ = caseless;
 
     if (pack->__filelst__ == NULL)
@@ -524,6 +593,8 @@ pack_init_list (
             ii = str_lenA(ptr->name);
             ptr->find = (ansi_t*)mem_dup(ptr->name, ii + 1);
             if (ptr->find == NULL) {
+                err_set(__CR_FMTLIB_C__, CR_NULL,
+                        "pack_init_list()", "mem_dup() failure");
                 curtain_freeT(&pack->__search__, sFINDER);
                 return (FALSE);
             }
@@ -550,6 +621,8 @@ pack_init_list (
         }
         if (ii >= nod->__cnts__) {
             if (array_push_growT(nod, sFINDER, &tmp) == NULL) {
+                err_set(__CR_FMTLIB_C__, CR_NULL,
+                        "pack_init_list()", "array_push_growT() failure");
                 curtain_freeT(&pack->__search__, sFINDER);
                 return (FALSE);
             }
@@ -592,8 +665,11 @@ pack_find_fileU (
     /* 统一文件目录风格 */
     idx = str_lenA(name);
     find = (ansi_t*)mem_dup(name, idx + 1);
-    if (find == NULL)
+    if (find == NULL) {
+        err_set(__CR_FMTLIB_C__, CR_NULL,
+                "pack_find_fileU()", "mem_dup() failure");
         return (FALSE);
+    }
     if (pack->__caseless__)
         flname_uniqueA(find);
     else
@@ -612,7 +688,7 @@ pack_find_fileU (
     if (idx >= node->__cnts__)
         return (FALSE);
     if (index != NULL)
-        *index = unit->index;
+       *index  = unit->index;
     return (TRUE);
 }
 
@@ -632,8 +708,11 @@ pack_find_fileW (
     ansi_t* utf8;
 
     utf8 = utf16_to_utf8(name);
-    if (utf8 == NULL)
+    if (utf8 == NULL) {
+        err_set(__CR_FMTLIB_C__, CR_NULL,
+                "pack_find_fileW()", "utf16_to_utf8() failure");
         return (FALSE);
+    }
     rett = pack_find_fileU(pack, index, utf8);
     mem_free(utf8);
     return (rett);
@@ -656,8 +735,11 @@ pack_find_fileA (
     ansi_t* utf8;
 
     utf8 = local_to_utf8(cpage, name);
-    if (utf8 == NULL)
+    if (utf8 == NULL) {
+        err_set(__CR_FMTLIB_C__, CR_NULL,
+                "pack_find_fileA()", "local_to_utf8() failure");
         return (FALSE);
+    }
     rett = pack_find_fileU(pack, index, utf8);
     mem_free(utf8);
     return (rett);
@@ -860,6 +942,8 @@ filex_free (
             break;
     }
 }
+
+#endif  /* !__CR_FMTLIB_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

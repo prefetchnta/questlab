@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_PNG_C__
+#define __CR_PNG_C__ 0xA04239A8UL
+
 #include "fmtz.h"
 #include "safe.h"
 #include "enclib.h"
@@ -41,8 +44,11 @@ png_filter (
     uint_t  aa, bb, cc, pp, yy;
     byte_t  type, *dst = data;
 
-    if (size < (bpl + 1) * height)
+    if (size < (bpl + 1) * height) {
+        err_set(__CR_PNG_C__, size,
+                "png_filter()", "source buffer overflow");
         return (FALSE);
+    }
 
     /* 第一行超出边界的点都按0来算 */
     type = *data++;
@@ -67,6 +73,8 @@ png_filter (
             break;
 
         default:
+            err_set(__CR_PNG_C__, type,
+                    "png_filter()", "invalid PNG filter type");
             return (FALSE);
     }
 
@@ -130,6 +138,8 @@ png_filter (
                 break;
 
             default:
+                err_set(__CR_PNG_C__, type,
+                        "png_filter()", "invalid PNG filter type");
                 return (FALSE);
         }
     }
@@ -256,26 +266,51 @@ load_cr_png (
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;
 
-    CR_NOUSE(param);
-
     /* 这个参数可能为空 */
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_PNG_C__, CR_NULL,
+                "load_cr_png()", "invalid param: datin");
         return (NULL);
+    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sPNG_HDR)))
+    if (!(CR_VCALL(datin)->geType(datin, &head, sPNG_HDR))) {
+        err_set(__CR_PNG_C__, FALSE,
+                "load_cr_png()", "iDATIN::geType() failure");
         return (NULL);
-    if (mem_cmp(&head, "\x89PNG\r\n\x1A\n\0\0\0\x0DIHDR", 16) != 0)
+    }
+    if (mem_cmp(&head, "\x89PNG\r\n\x1A\n\0\0\0\x0DIHDR", 16) != 0) {
+        err_set(__CR_PNG_C__, CR_ERROR,
+                "load_cr_png()", "invalid PNG format");
         return (NULL);
-    if (head.info.compr != 0 || head.info.filter != 0 ||
-        head.info.interlace != 0)
+    }
+    if (head.info.compr != 0) {
+        err_set(__CR_PNG_C__, head.info.compr,
+                "load_cr_png()", "invalid PNG format");
         return (NULL);
+    }
+    if (head.info.filter != 0) {
+        err_set(__CR_PNG_C__, head.info.filter,
+                "load_cr_png()", "invalid PNG format");
+        return (NULL);
+    }
+    if (head.info.interlace != 0) {
+        err_set(__CR_PNG_C__, head.info.interlace,
+                "load_cr_png()", "invalid PNG format");
+        return (NULL);
+    }
 
     /* 对宽高的截断检查 */
-    if (cut_int32_u(&ww, DWORD_BE(head.info.w)))
+    if (cut_int32_u(&ww, DWORD_BE(head.info.w))) {
+        err_set(__CR_PNG_C__, head.info.w,
+                "load_cr_png()", "image width truncated");
         return (NULL);
-    if (cut_int32_u(&hh, DWORD_BE(head.info.h)))
+    }
+    if (cut_int32_u(&hh, DWORD_BE(head.info.h))) {
+        err_set(__CR_PNG_C__, head.info.h,
+                "load_cr_png()", "image height truncated");
         return (NULL);
+    }
 
     /* 生成图片对象 */
     mem_zero(temp.wh, sizeof(temp.wh));
@@ -284,8 +319,11 @@ load_cr_png (
         case 0: /* 灰度图像 */
             if (head.info.depth != 1 && head.info.depth != 2 &&
                 head.info.depth != 4 && head.info.depth != 8 &&
-                head.info.depth != 16)
+                head.info.depth != 16) {
+                err_set(__CR_PNG_C__, head.info.depth,
+                        "load_cr_png()", "invalid PNG format");
                 return (NULL);
+            }
             fcrh = CR_INDEX8;
             temp.fmt = CR_PIC_GREY;
             temp.bpp = head.info.depth;
@@ -294,8 +332,12 @@ load_cr_png (
             break;
 
         case 2: /* 真彩图像 */
-            if (head.info.depth != 8 && head.info.depth != 16)
+            if (head.info.depth != 8 &&
+                head.info.depth != 16) {
+                err_set(__CR_PNG_C__, head.info.depth,
+                        "load_cr_png()", "invalid PNG format");
                 return (NULL);
+            }
             fcrh = CR_ARGB888;
             temp.fmt = CR_PIC_ARGB;
             temp.bpp = head.info.depth * 3;
@@ -307,8 +349,11 @@ load_cr_png (
 
         case 3: /* 索引图像 */
             if (head.info.depth != 1 && head.info.depth != 2 &&
-                head.info.depth != 4 && head.info.depth != 8)
+                head.info.depth != 4 && head.info.depth != 8) {
+                err_set(__CR_PNG_C__, head.info.depth,
+                        "load_cr_png()", "invalid PNG format");
                 return (NULL);
+            }
             fcrh = CR_INDEX8;
             temp.fmt = CR_PIC_PALS;
             temp.bpp = head.info.depth;
@@ -317,8 +362,12 @@ load_cr_png (
             break;
 
         case 4: /* α灰度图像 */
-            if (head.info.depth != 8 && head.info.depth != 16)
+            if (head.info.depth != 8 &&
+                head.info.depth != 16) {
+                err_set(__CR_PNG_C__, head.info.depth,
+                        "load_cr_png()", "invalid PNG format");
                 return (NULL);
+            }
             fcrh = CR_ARGB8888;
             temp.fmt = CR_PIC_GREY;
             temp.bpp = head.info.depth * 2;
@@ -328,8 +377,12 @@ load_cr_png (
             break;
 
         case 6: /* α真彩图像 */
-            if (head.info.depth != 8 && head.info.depth != 16)
+            if (head.info.depth != 8 &&
+                head.info.depth != 16) {
+                err_set(__CR_PNG_C__, head.info.depth,
+                        "load_cr_png()", "invalid PNG format");
                 return (NULL);
+            }
             fcrh = CR_ARGB8888;
             temp.fmt = CR_PIC_ARGB;
             temp.bpp = head.info.depth * 4;
@@ -341,12 +394,17 @@ load_cr_png (
             break;
 
         default:
+            err_set(__CR_PNG_C__, head.info.color,
+                    "load_cr_png()", "invalid PNG format");
             return (NULL);
     }
     sbpp = (temp.bpp - 1) / 8 + 1;
     temp.pic = image_new(0, 0, ww, hh, fcrh, FALSE, 4);
-    if (temp.pic == NULL)
+    if (temp.pic == NULL) {
+        err_set(__CR_PNG_C__, CR_NULL,
+                "load_cr_png()", "image_new() failure");
         return (NULL);
+    }
 
     /* 生成灰度调色板 */
     if (temp.fmt == CR_PIC_GREY)
@@ -354,12 +412,18 @@ load_cr_png (
 
     /* 分配 IDAT 的内存 */
     fsze = dati_get_size(datin);
-    if (fsze <= sizeof(sPNG_HDR) + sizeof(sIEND) * 2)
+    if (fsze <= sizeof(sPNG_HDR) + sizeof(sIEND) * 2) {
+        err_set(__CR_PNG_C__, fsze,
+                "load_cr_png()", "invalid PNG format");
         goto _failure1;
+    }
     fsze -= sizeof(sPNG_HDR) + sizeof(sIEND) * 2;
     ddata = (byte_t*)mem_malloc64(fsze);
-    if (ddata == NULL)
+    if (ddata == NULL) {
+        err_set(__CR_PNG_C__, CR_NULL,
+                "load_cr_png()", "mem_malloc64() failure");
         goto _failure1;
+    }
     dsize = (leng_t)fsze;
 
     /* 读取数据块 */
@@ -368,21 +432,32 @@ load_cr_png (
     do
     {
         /* 数据块大小 */
-        if (!(CR_VCALL(datin)->geType(datin, &head.info, sCHUNK)))
+        if (!(CR_VCALL(datin)->geType(datin, &head.info, sCHUNK))) {
+            err_set(__CR_PNG_C__, FALSE,
+                    "load_cr_png()", "iDATIN::geType() failure");
             goto _failure2;
+        }
         ssize = DWORD_BE(head.info.head.size);
-        if (ssize > fsze)
+        if (ssize > fsze) {
+            err_set(__CR_PNG_C__, ssize,
+                    "load_cr_png()", "invalid PNG format");
             goto _failure2;
+        }
 
         if (head.info.head.name == mk_tag4("PLTE"))
         {
             /* 调色板, 安全检查 */
-            if (ssize > 768 || ssize % 3 != 0)
+            if (ssize > 768 || ssize % 3 != 0) {
+                err_set(__CR_PNG_C__, ssize,
+                        "load_cr_png()", "invalid PNG format");
                 goto _failure2;
+            }
             read = CR_VCALL(datin)->read(datin, pal, (leng_t)ssize);
-            if (read != (leng_t)ssize)
+            if (read != (leng_t)ssize) {
+                err_set(__CR_PNG_C__, read,
+                        "load_cr_png()", "iDATIN::read() failure");
                 goto _failure2;
-
+            }
             /* 转换到 4B 格式 */
             fcrh = (uint_t)ssize / 3;
             pal_3b_to_4b_sw(temp.pic->pal, pal, fcrh);
@@ -391,11 +466,17 @@ load_cr_png (
         if (head.info.head.name == mk_tag4("IDAT"))
         {
             /* 检查缓冲溢出 */
-            if (dsize < ssize)
+            if (dsize < ssize) {
+                err_set(__CR_PNG_C__, dptr,
+                        "load_cr_png()", "invalid PNG format");
                 goto _failure2;
+            }
             read = CR_VCALL(datin)->read(datin, ddata + dptr, (leng_t)ssize);
-            if (read != (leng_t)ssize)
+            if (read != (leng_t)ssize) {
+                err_set(__CR_PNG_C__, read,
+                        "load_cr_png()", "iDATIN::read() failure");
                 goto _failure2;
+            }
             dptr  += (leng_t)ssize;
             dsize -= (leng_t)ssize;
         }
@@ -405,12 +486,17 @@ load_cr_png (
             /* 透明数据 */
             if (head.info.color == 0)
             {
-                if (ssize != 2)
+                if (ssize != 2) {
+                    err_set(__CR_PNG_C__, ssize,
+                            "load_cr_png()", "invalid PNG format");
                     goto _failure2;
+                }
                 read = CR_VCALL(datin)->read(datin, pal, 2);
-                if (read != 2)
+                if (read != 2) {
+                    err_set(__CR_PNG_C__, read,
+                            "load_cr_png()", "iDATIN::read() failure");
                     goto _failure2;
-
+                }
                 /* 调色板的这个颜色为透明色 */
                 if (head.info.depth != 16)
                     temp.pic->pal[pal[1]] &= CDWORD_LE(0x00FFFFFFUL);
@@ -418,12 +504,17 @@ load_cr_png (
             else
             if (head.info.color == 2)
             {
-                if (ssize != 6)
+                if (ssize != 6) {
+                    err_set(__CR_PNG_C__, ssize,
+                            "load_cr_png()", "invalid PNG format");
                     goto _failure2;
+                }
                 read = CR_VCALL(datin)->read(datin, pal, 6);
-                if (read != 6)
+                if (read != 6) {
+                    err_set(__CR_PNG_C__, read,
+                            "load_cr_png()", "iDATIN::read() failure");
                     goto _failure2;
-
+                }
                 /* 这个颜色为透明色, 这里只能展开来写
                    否则 C++Builder 2010 编译器编译时会崩溃 */
                 if (head.info.depth != 16) {
@@ -439,50 +530,75 @@ load_cr_png (
             else
             if (head.info.color == 3)
             {
-                if (ssize > fcrh)
+                if (ssize > fcrh) {
+                    err_set(__CR_PNG_C__, ssize,
+                            "load_cr_png()", "invalid PNG format");
                     goto _failure2;
+                }
                 read = CR_VCALL(datin)->read(datin, pal, (leng_t)ssize);
-                if (read != (leng_t)ssize)
+                if (read != (leng_t)ssize) {
+                    err_set(__CR_PNG_C__, read,
+                            "load_cr_png()", "iDATIN::read() failure");
                     goto _failure2;
-
+                }
                 /* 设置调色板的 Alpha 通道 */
                 for (fcrh = (uint_t)ssize, index = 0; index < fcrh; index++)
                     ((uchar*)temp.pic->pal)[index * 4 + 3] = pal[index];
             }
             else
             {
+                err_set(__CR_PNG_C__, head.info.color,
+                        "load_cr_png()", "invalid PNG format");
                 goto _failure2;
             }
         }
         else
         {
             /* 跳过其他数据块 */
-            if (!CR_VCALL(datin)->seek(datin, ssize, SEEK_CUR))
+            if (!CR_VCALL(datin)->seek(datin, ssize, SEEK_CUR)) {
+                err_set(__CR_PNG_C__, FALSE,
+                        "load_cr_png()", "iDATIN::seek() failure");
                 goto _failure2;
+            }
         }
 
         /* 跳过 CRC-32 */
-        if (!CR_VCALL(datin)->seek(datin, 4, SEEK_CUR))
+        if (!CR_VCALL(datin)->seek(datin, 4, SEEK_CUR)) {
+            err_set(__CR_PNG_C__, FALSE,
+                    "load_cr_png()", "iDATIN::seek() failure");
             goto _failure2;
+        }
     } while (head.info.head.name != mk_tag4("IEND"));
 
     /* 无 IDAT 块 */
-    if (dptr == 0)
+    if (dptr == 0) {
+        err_set(__CR_PNG_C__, dptr,
+                "load_cr_png()", "invalid PNG format");
         goto _failure2;
+    }
 
     /* 分配带 filter 的图形内存 */
-    if (cut_mad(&dsize, ww, sbpp * hh, hh))
+    if (cut_mad(&dsize, ww, sbpp * hh, hh)) {
+        err_set(__CR_PNG_C__, CR_ERROR,
+                "load_cr_png()", "arithmetic mad overflow");
         goto _failure2;
+    }
     sdata = (byte_t*)mem_malloc(dsize);
-    if (sdata == NULL)
+    if (sdata == NULL) {
+        err_set(__CR_PNG_C__, CR_NULL,
+                "load_cr_png()", "mem_malloc() failure");
         goto _failure2;
+    }
 
     /* 解压图形数据 */
     dptr = uncompr_zlib(sdata, dsize, ddata, dptr);
     mem_free(ddata);
     ddata = sdata;
-    if (dptr <= hh)
+    if (dptr <= hh) {
+        err_set(__CR_PNG_C__, dptr,
+                "load_cr_png()", "uncompr_zlib() failure");
         goto _failure2;
+    }
     image = temp.pic->data;
 
     /* 文件解码完毕, 解析图片的像素数据 */
@@ -495,9 +611,11 @@ load_cr_png (
                     read = ww / 8;
                 else
                     read = ww / 8 + 1;
-                if (!png_filter(ddata, read, 1, hh, dptr))
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
+                    err_set(__CR_PNG_C__, FALSE,
+                            "load_cr_png()", "png_filter() failure");
                     goto _failure2;
-
+                }
                 /* 逐行处理数据 */
                 for (index = hh; index != 0; index--) {
                     sdata = (uchar*)font1_h2l(image, sdata, ww);
@@ -510,9 +628,11 @@ load_cr_png (
                     read = ww / 4;
                 else
                     read = ww / 4 + 1;
-                if (!png_filter(ddata, read, 1, hh, dptr))
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
+                    err_set(__CR_PNG_C__, FALSE,
+                            "load_cr_png()", "png_filter() failure");
                     goto _failure2;
-
+                }
                 /* 逐行处理数据 */
                 for (index = hh; index != 0; index--) {
                     sdata = (uchar*)font2_h2l(image, sdata, ww);
@@ -525,9 +645,11 @@ load_cr_png (
                     read = ww / 2;
                 else
                     read = ww / 2 + 1;
-                if (!png_filter(ddata, read, 1, hh, dptr))
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
+                    err_set(__CR_PNG_C__, FALSE,
+                            "load_cr_png()", "png_filter() failure");
                     goto _failure2;
-
+                }
                 /* 逐行处理数据 */
                 for (index = hh; index != 0; index--) {
                     sdata = (uchar*)font4_h2l(image, sdata, ww);
@@ -537,9 +659,11 @@ load_cr_png (
 
             case 8:
                 read = ww;
-                if (!png_filter(ddata, read, 1, hh, dptr))
+                if (!png_filter(ddata, read, 1, hh, dptr)) {
+                    err_set(__CR_PNG_C__, FALSE,
+                            "load_cr_png()", "png_filter() failure");
                     goto _failure2;
-
+                }
                 /* 逐行处理数据 */
                 for (index = hh; index != 0; index--)
                 {
@@ -553,9 +677,11 @@ load_cr_png (
             default:
                 read = ww;
                 read *= 2;
-                if (!png_filter(ddata, read, 2, hh, dptr))
+                if (!png_filter(ddata, read, 2, hh, dptr)) {
+                    err_set(__CR_PNG_C__, FALSE,
+                            "load_cr_png()", "png_filter() failure");
                     goto _failure2;
-
+                }
                 /* 逐行处理数据 */
                 for (index = hh; index != 0; index--) {
                     for (fcrh = 0; fcrh < ww; fcrh++, sdata += 2)
@@ -568,8 +694,11 @@ load_cr_png (
     else
     {
         read = ww * sbpp;
-        if (!png_filter(ddata, read, sbpp, hh, dptr))
+        if (!png_filter(ddata, read, sbpp, hh, dptr)) {
+            err_set(__CR_PNG_C__, FALSE,
+                    "load_cr_png()", "png_filter() failure");
             goto _failure2;
+        }
         read = ww * temp.pic->bpc;
 
         switch (head.info.color)
@@ -683,13 +812,19 @@ load_cr_png (
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
-    if (rett == NULL)
+    if (rett == NULL) {
+        err_set(__CR_PNG_C__, CR_NULL,
+                "load_cr_png()", "struct_new() failure");
         goto _failure1;
+    }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
+        err_set(__CR_PNG_C__, CR_NULL,
+                "load_cr_png()", "struct_dup() failure");
         mem_free(rett);
         goto _failure1;
     }
+    CR_NOUSE(param);
     rett->type = CR_FMTZ_PIC;
     rett->count = 1;
     rett->infor = "Portable Network Graphics (PNG)";
@@ -701,6 +836,8 @@ _failure1:
     image_del(temp.pic);
     return (NULL);
 }
+
+#endif  /* !__CR_PNG_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

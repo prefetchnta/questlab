@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_DDS_C__
+#define __CR_DDS_C__ 0x07289351UL
+
 #include "fmtz.h"
 #include "safe.h"
 #include "d3dfmt.h"
@@ -99,36 +102,63 @@ load_cr_dds (
     uint_t  ww, hh;
     int32u  d3dfmt;
     byte_t* imgdat;
-    /* --------- */
+    /* ----------- */
     sDDS_HDR    head;
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;
 
-    CR_NOUSE(param);
-
     /* 这个参数可能为空 */
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_DDS_C__, CR_NULL,
+                "load_cr_dds()", "invalid param: datin");
         return (NULL);
+    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sDDS_HDR)))
+    if (!(CR_VCALL(datin)->geType(datin, &head, sDDS_HDR))) {
+        err_set(__CR_DDS_C__, FALSE,
+                "load_cr_dds()", "iDATIN::geType() failure");
         return (NULL);
-    if (head.dwMagic != mk_tag4("DDS ") ||
-        head.dwSize != CDWORD_LE(124) ||
-        head.ddpf.dwSize != CDWORD_LE(32))
+    }
+    if (head.dwMagic != mk_tag4("DDS ")) {
+        err_set(__CR_DDS_C__, head.dwMagic,
+                "load_cr_dds()", "invalid DDS format");
         return (NULL);
+    }
+    if (head.dwSize != CDWORD_LE(124)) {
+        err_set(__CR_DDS_C__, head.dwSize,
+                "load_cr_dds()", "invalid DDS format");
+        return (NULL);
+    }
+    if (head.ddpf.dwSize != CDWORD_LE(32)) {
+        err_set(__CR_DDS_C__, head.ddpf.dwSize,
+                "load_cr_dds()", "invalid DDS format");
+        return (NULL);
+    }
     head.dwFlags = DWORD_LE(head.dwFlags);
-    if (head.dwFlags & DDSD_DEPTH)
+    if (head.dwFlags & DDSD_DEPTH) {
+        err_set(__CR_DDS_C__, head.dwFlags,
+                "load_cr_dds()", "invalid DDS format");
         return (NULL);
+    }
     head.ddpf.dwFlags = DWORD_LE(head.ddpf.dwFlags);
-    if (head.ddpf.dwFlags & DDPF_YUV)
+    if (head.ddpf.dwFlags & DDPF_YUV) {
+        err_set(__CR_DDS_C__, head.ddpf.dwFlags,
+                "load_cr_dds()", "invalid DDS format");
         return (NULL);
+    }
 
     /* 对宽高的截断检查 */
-    if (cut_int32_u(&ww, DWORD_LE(head.dwWidth)))
+    if (cut_int32_u(&ww, DWORD_LE(head.dwWidth))) {
+        err_set(__CR_DDS_C__, head.dwWidth,
+                "load_cr_dds()", "image width truncated");
         return (NULL);
-    if (cut_int32_u(&hh, DWORD_LE(head.dwHeight)))
+    }
+    if (cut_int32_u(&hh, DWORD_LE(head.dwHeight))) {
+        err_set(__CR_DDS_C__, head.dwHeight,
+                "load_cr_dds()", "image height truncated");
         return (NULL);
+    }
 
     /* 判断图片像素格式 */
     mem_zero(temp.wh, sizeof(temp.wh));
@@ -162,6 +192,8 @@ load_cr_dds (
                 case D3DFMT_DXT5: temp.clr = "DXT5"; break;
 
                 default:
+                    err_set(__CR_DDS_C__, head.ddpf.dwFourCC,
+                            "load_cr_dds()", "invalid DDS format");
                     return (NULL);
             }
             d3dfmt = head.ddpf.dwFourCC;
@@ -240,6 +272,8 @@ load_cr_dds (
                 d3dfmt = D3DFMT_A2B10G10R10;
             }
             else {
+                err_set(__CR_DDS_C__, CR_ERROR,
+                        "load_cr_dds()", "invalid DDS format");
                 return (NULL);
             }
         }
@@ -256,6 +290,8 @@ load_cr_dds (
                 d3dfmt = D3DFMT_R8G8B8;
             }
             else {
+                err_set(__CR_DDS_C__, CR_ERROR,
+                        "load_cr_dds()", "invalid DDS format");
                 return (NULL);
             }
         }
@@ -318,6 +354,8 @@ load_cr_dds (
                 d3dfmt = D3DFMT_A8R3G3B2;
             }
             else {
+                err_set(__CR_DDS_C__, CR_ERROR,
+                        "load_cr_dds()", "invalid DDS format");
                 return (NULL);
             }
         }
@@ -334,10 +372,14 @@ load_cr_dds (
                 d3dfmt = D3DFMT_R3G3B2;
             }
             else {
+                err_set(__CR_DDS_C__, CR_ERROR,
+                        "load_cr_dds()", "invalid DDS format");
                 return (NULL);
             }
         }
         else {
+            err_set(__CR_DDS_C__, head.ddpf.dwRGBBitCount,
+                    "load_cr_dds()", "invalid DDS format");
             return (NULL);
         }
     }
@@ -362,6 +404,8 @@ load_cr_dds (
                 d3dfmt = D3DFMT_A4L4;
             }
             else {
+                err_set(__CR_DDS_C__, head.ddpf.dwRBitMask,
+                        "load_cr_dds()", "invalid DDS format");
                 return (NULL);
             }
         }
@@ -382,10 +426,14 @@ load_cr_dds (
                 d3dfmt = D3DFMT_A8L8;
             }
             else {
+                err_set(__CR_DDS_C__, head.ddpf.dwRBitMask,
+                        "load_cr_dds()", "invalid DDS format");
                 return (NULL);
             }
         }
         else {
+            err_set(__CR_DDS_C__, head.ddpf.dwRGBBitCount,
+                    "load_cr_dds()", "invalid DDS format");
             return (NULL);
         }
     }
@@ -393,9 +441,16 @@ load_cr_dds (
     if (head.ddpf.dwFlags & DDPF_ALPHA)
     {
         /* 透明通道位图 */
-        if (head.ddpf.dwRGBBitCount != 8 ||
-            head.ddpf.dwABitMask != 0xFFUL)
+        if (head.ddpf.dwRGBBitCount != 8) {
+            err_set(__CR_DDS_C__, head.ddpf.dwRGBBitCount,
+                    "load_cr_dds()", "invalid DDS format");
             return (NULL);
+        }
+        if (head.ddpf.dwABitMask != 0xFFUL) {
+            err_set(__CR_DDS_C__, head.ddpf.dwABitMask,
+                    "load_cr_dds()", "invalid DDS format");
+            return (NULL);
+        }
         temp.fmt = CR_PIC_GREY;
         temp.bpp = 8;
         temp.clr = "A";
@@ -405,30 +460,44 @@ load_cr_dds (
     else
     {
         /* 未知格式位图 */
+        err_set(__CR_DDS_C__, head.ddpf.dwFlags,
+                "load_cr_dds()", "invalid DDS format");
         return (NULL);
     }
 
     /* 读取图片数据 */
     imgdat = CR_VCALL(datin)->get(datin, &size, FALSE);
-    if (imgdat == NULL)
+    if (imgdat == NULL) {
+        err_set(__CR_DDS_C__, CR_NULL,
+                "load_cr_dds()", "iDATIN::get() failure");
         return (NULL);
+    }
 
     /* 转到32位色位图 */
     temp.pic = img_d3dx_to_32(NULL, 0, 0, imgdat, size, ww, hh,
                               NULL, d3dfmt, sizeof(int32u));
     mem_free(imgdat);
-    if (temp.pic == NULL)
+    if (temp.pic == NULL) {
+        err_set(__CR_DDS_C__, CR_NULL,
+                "load_cr_dds()", "img_d3dx_to_32() failure");
         return (NULL);
+    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
-    if (rett == NULL)
+    if (rett == NULL) {
+        err_set(__CR_DDS_C__, CR_NULL,
+                "load_cr_dds()", "struct_new() failure");
         goto _failure;
+    }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
+        err_set(__CR_DDS_C__, CR_NULL,
+                "load_cr_dds()", "struct_dup() failure");
         mem_free(rett);
         goto _failure;
     }
+    CR_NOUSE(param);
     rett->type = CR_FMTZ_PIC;
     rett->count = 1;
     rett->infor = "DirectDraw Surface (DDS)";
@@ -438,6 +507,8 @@ _failure:
     image_del(temp.pic);
     return (NULL);
 }
+
+#endif  /* !__CR_DDS_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

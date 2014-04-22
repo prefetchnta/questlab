@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_NSCR_NSA_C__
+#define __CR_NSCR_NSA_C__ 0x7109A22AUL
+
 #include "safe.h"
 #include "strlib.h"
 #include "../fmtint.h"
@@ -56,8 +59,11 @@ uncompr_lzss8 (
 
     /* 建立位流输入对象 */
     datin = create_buff_in(src, srclen, FALSE);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                "uncompr_lzss8()", "create_buff_in() failure");
         return (0);
+    }
     bitin_init(&bitin, datin, sizeof(byte_t));
 
     o_ptr = 0;
@@ -69,22 +75,37 @@ uncompr_lzss8 (
         if (!bitin_hi_push(&bitin, &cc, 1))
             break;
         if (cc) {
-            if (!bitin_hi_push(&bitin, &cc, 8))
+            if (!bitin_hi_push(&bitin, &cc, 8)) {
+                err_set(__CR_NSCR_NSA_C__, FALSE,
+                        "uncompr_lzss8()", "source buffer overflow");
                 goto _failure;
-            if (o_ptr >= dstlen)
+            }
+            if (o_ptr >= dstlen) {
+                err_set(__CR_NSCR_NSA_C__, o_ptr,
+                        "uncompr_lzss8()", "dest buffer overflow");
                 goto _failure;
+            }
             win[rr++] = (byte_t)cc;
             o_buf[o_ptr++] = (byte_t)cc;
             rr &= (LZSS_N - 1);
         }
         else {
-            if (!bitin_hi_push(&bitin, &ii, LZSS_EI))
+            if (!bitin_hi_push(&bitin, &ii, LZSS_EI)) {
+                err_set(__CR_NSCR_NSA_C__, FALSE,
+                        "uncompr_lzss8()", "source buffer overflow");
                 goto _failure;
-            if (!bitin_hi_push(&bitin, &jj, LZSS_EJ))
+            }
+            if (!bitin_hi_push(&bitin, &jj, LZSS_EJ)) {
+                err_set(__CR_NSCR_NSA_C__, FALSE,
+                        "uncompr_lzss8()", "source buffer overflow");
                 goto _failure;
+            }
             for (kk = 0; kk <= jj + 1; kk++) {
-                if (o_ptr >= dstlen)
+                if (o_ptr >= dstlen) {
+                    err_set(__CR_NSCR_NSA_C__, o_ptr,
+                            "uncompr_lzss8()", "dest buffer overflow");
                     goto _failure;
+                }
                 cc = win[(ii + kk) & (LZSS_N - 1)];
                 win[rr++] = (byte_t)cc;
                 o_buf[o_ptr++] = (byte_t)cc;
@@ -152,28 +173,52 @@ decode_spb (
 
     /* 建立位流输入对象 */
     datin = create_buff_in(src, srclen, FALSE);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                "decode_spb()", "create_buff_in() failure");
         return (0);
+    }
     bitin_init(&bitin, datin, sizeof(byte_t));
 
     /* 读取图片宽高 */
-    if (!CR_VCALL(datin)->getw_be(datin, &ww))
+    if (!CR_VCALL(datin)->getw_be(datin, &ww)) {
+        err_set(__CR_NSCR_NSA_C__, FALSE,
+                "decode_spb()", "iDATIN::getw_be() failure");
         goto _failure1;
-    if (!CR_VCALL(datin)->getw_be(datin, &hh))
+    }
+    if (!CR_VCALL(datin)->getw_be(datin, &hh)) {
+        err_set(__CR_NSCR_NSA_C__, FALSE,
+                "decode_spb()", "iDATIN::getw_be() failure");
         goto _failure1;
-    if (cut_mul(&bpl, ww, 3))
+    }
+    if (cut_mul(&bpl, ww, 3)) {
+        err_set(__CR_NSCR_NSA_C__, ww,
+                "decode_spb()", "invalid image width");
         goto _failure1;
+    }
     size = (leng_t)CR_PADDED(bpl, 4);
-    if (cut_addu(&bpl, bpl, size))
+    if (cut_addu(&bpl, bpl, size)) {
+        err_set(__CR_NSCR_NSA_C__, ww,
+                "decode_spb()", "invalid image width");
         goto _failure1;
-    if (cut_mul(&img_size, bpl, hh))
+    }
+    if (cut_mul(&img_size, bpl, hh)) {
+        err_set(__CR_NSCR_NSA_C__, hh,
+                "decode_spb()", "invalid image height");
         goto _failure1;
-    if (cut_addu(&bmp_size, img_size, sizeof(s_bmp)))
+    }
+    if (cut_addu(&bmp_size, img_size, sizeof(s_bmp))) {
+        err_set(__CR_NSCR_NSA_C__, bmp_size,
+                "decode_spb()", "invalid image size");
         goto _failure1;
+    }
 
     /* 安全检查 */
-    if (dstlen < bmp_size)
+    if (dstlen < bmp_size) {
+        err_set(__CR_NSCR_NSA_C__, dstlen,
+                "decode_spb()", "dest buffer overflow");
         goto _failure1;
+    }
     mem_cpy(dst, s_bmp, sizeof(s_bmp));
     image = (byte_t*)dst + sizeof(s_bmp);
 
@@ -181,21 +226,30 @@ decode_spb (
     size  = ww;
     size *= hh;
     channel = (byte_t*)mem_malloc(size + 4);
-    if (channel == NULL)
+    if (channel == NULL) {
+        err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                "decode_spb()", "mem_malloc() failure");
         goto _failure1;
+    }
 
     /* 是三个通道分开压缩的 */
     for (ii = 0; ii < 3; ii++)
     {
         count = 0;
-        if (!bitin_hi_push(&bitin, &cc, 8))
+        if (!bitin_hi_push(&bitin, &cc, 8)) {
+            err_set(__CR_NSCR_NSA_C__, FALSE,
+                    "decode_spb()", "source buffer overflow");
             goto _failure2;
+        }
 
         /* 解码一个颜色通道 */
         channel[count++] = (byte_t)cc;
         while (count < size) {
-            if (!bitin_hi_push(&bitin, &nn, 3))
+            if (!bitin_hi_push(&bitin, &nn, 3)) {
+                err_set(__CR_NSCR_NSA_C__, FALSE,
+                        "decode_spb()", "source buffer overflow");
                 goto _failure2;
+            }
             if (nn == 0) {
                 channel[count++] = (byte_t)cc;
                 channel[count++] = (byte_t)cc;
@@ -204,8 +258,11 @@ decode_spb (
                 continue;
             }
             if (nn == 7) {
-                if (!bitin_hi_push(&bitin, &mm, 1))
+                if (!bitin_hi_push(&bitin, &mm, 1)) {
+                    err_set(__CR_NSCR_NSA_C__, FALSE,
+                            "decode_spb()", "source buffer overflow");
                     goto _failure2;
+                }
                 mm += 1;
             }
             else {
@@ -214,12 +271,18 @@ decode_spb (
 
             for (jj = 0; jj < 4; jj++) {
                 if (mm == 8) {
-                    if (!bitin_hi_push(&bitin, &cc, 8))
+                    if (!bitin_hi_push(&bitin, &cc, 8)) {
+                        err_set(__CR_NSCR_NSA_C__, FALSE,
+                                "decode_spb()", "source buffer overflow");
                         goto _failure2;
+                    }
                 }
                 else {
-                    if (!bitin_hi_push(&bitin, &kk, mm))
+                    if (!bitin_hi_push(&bitin, &kk, mm)) {
+                        err_set(__CR_NSCR_NSA_C__, FALSE,
+                                "decode_spb()", "source buffer overflow");
                         goto _failure2;
+                    }
                     if (kk & 1)
                         cc += (kk >> 1) + 1;
                     else
@@ -360,41 +423,58 @@ iPAK_NSA_getFileData (
     iPAK_NSA*       real;
     sPAK_NSA_FILE*  item;
 
-    CR_NOUSE(hash);
-
     /* 定位文件索引 */
+    CR_NOUSE(hash);
     real = (iPAK_NSA*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_NSCR_NSA_C__, index,
+                "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
+    }
     item = (sPAK_NSA_FILE*)real->pack.__filelst__;
     item += (uint_t)index;
 
     /* 提前过滤压缩类型 */
-    if (item->ftype != 0 && item->ftype != 1 && item->ftype != 2)
+    if (item->ftype != 0 && item->ftype != 1 && item->ftype != 2) {
+        err_set(__CR_NSCR_NSA_C__, item->ftype,
+                "iPACKAGE::getFileData()", "invalid compression type");
         return (FALSE);
+    }
 
     /* 获取文件数据 (0大小文件分配1个字节) */
     size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc() failure");
             return (FALSE);
+        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         pack = item->base.pack;
         temp = mem_malloc64(pack);
-        if (temp == NULL)
+        if (temp == NULL) {
+            err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
+        }
         file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET))
+        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET)) {
+            err_set(__CR_NSCR_NSA_C__, FALSE,
+                    "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure1;
+        }
         read = CR_VCALL(file)->read(file, temp, (leng_t)pack);
-        if (read != (leng_t)pack)
+        if (read != (leng_t)pack) {
+            err_set(__CR_NSCR_NSA_C__, read,
+                    "iPACKAGE::getFileData()", "iDATIN::read() failure");
             goto _failure1;
+        }
 
         /* 根据压缩类型解码数据 */
         if (item->ftype == 0)
@@ -406,15 +486,21 @@ iPAK_NSA_getFileData (
         else
         {
             data = mem_malloc64(size);
-            if (data == NULL)
+            if (data == NULL) {
+                err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                        "iPACKAGE::getFileData()", "mem_malloc64() failure");
                 goto _failure1;
+            }
 
             if (item->ftype == 1)
             {
                 /* SPB (BMP) */
                 read = decode_spb(data, (leng_t)size, temp, (leng_t)pack);
-                if (read == 0)
+                if (read == 0) {
+                    err_set(__CR_NSCR_NSA_C__, read,
+                            "iPACKAGE::getFileData()", "decode_spb() failure");
                     goto _failure2;
+                }
                 size = read;
             }
             else
@@ -422,8 +508,11 @@ iPAK_NSA_getFileData (
             {
                 /* LZSS-8 */
                 read = uncompr_lzss8(data, (leng_t)size, temp, (leng_t)pack);
-                if (read != (leng_t)size)
+                if (read != (leng_t)size) {
+                    err_set(__CR_NSCR_NSA_C__, read,
+                        "iPACKAGE::getFileData()", "uncompr_lzss8() failure");
                     goto _failure2;
+                }
             }
             mem_free(temp);
         }
@@ -457,8 +546,11 @@ iPAK_NSA_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_NSA*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_NSCR_NSA_C__, index,
+                "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
+    }
     idx = (uint_t)index;
     list = (sPAK_NSA_FILE*)real->pack.__filelst__;
 
@@ -502,72 +594,123 @@ load_nscr_nsa (
 
     /* 必须使用自己私有的读取接口 */
     datin = create_file_inX(param);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                "load_nscr_nsa()", "create_file_inX() failure");
         return (NULL);
+    }
 
     /* 读取文件头信息 (开头可能会填充两个0字节) */
-    if (!CR_VCALL(datin)->getw_be(datin, &cnt))
+    if (!CR_VCALL(datin)->getw_be(datin, &cnt)) {
+        err_set(__CR_NSCR_NSA_C__, FALSE,
+                "load_nscr_nsa()", "iDATIN::getw_be() failure");
         goto _failure1;
+    }
     if (cnt == 0) {
-        if (!CR_VCALL(datin)->getw_be(datin, &cnt))
+        if (!CR_VCALL(datin)->getw_be(datin, &cnt)) {
+            err_set(__CR_NSCR_NSA_C__, FALSE,
+                    "load_nscr_nsa()", "iDATIN::getw_be() failure");
             goto _failure1;
+        }
         cha = TRUE;
     }
     else {
         cha = FALSE;
     }
-    if (cnt == 0)
+    if (cnt == 0) {
+        err_set(__CR_NSCR_NSA_C__, cnt,
+                "load_nscr_nsa()", "invalid NSA format");
         goto _failure1;
-    if (!CR_VCALL(datin)->getd_be(datin, &beg))
+    }
+    if (!CR_VCALL(datin)->getd_be(datin, &beg)) {
+        err_set(__CR_NSCR_NSA_C__, FALSE,
+                "load_nscr_nsa()", "iDATIN::getd_be() failure");
         goto _failure1;
+    }
     if (cha) {
-        if (beg > dati_get_size(datin) - sizeof(int16u))
+        if (beg > dati_get_size(datin) - sizeof(int16u)) {
+            err_set(__CR_NSCR_NSA_C__, beg,
+                    "load_nscr_nsa()", "invalid NSA format");
             goto _failure1;
+        }
         beg += sizeof(int16u);
     }
     else {
-        if (beg > dati_get_size(datin))
+        if (beg > dati_get_size(datin)) {
+            err_set(__CR_NSCR_NSA_C__, beg,
+                    "load_nscr_nsa()", "invalid NSA format");
             goto _failure1;
+        }
     }
 
     /* 分配子文件属性表 */
     list = mem_talloc(cnt, sPAK_NSA_FILE);
-    if (list == NULL)
+    if (list == NULL) {
+        err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                "load_nscr_nsa()", "mem_talloc() failure");
         goto _failure1;
+    }
     mem_tzero(list, cnt, sPAK_NSA_FILE);
     for (idx = 0; idx < cnt; idx++)
     {
         /* 读取文件名\0结尾 */
         for (cha = 1, tmp = 0; tmp < sizeof(str); tmp++) {
-            if (!CR_VCALL(datin)->getb_no(datin, &cha))
+            if (!CR_VCALL(datin)->getb_no(datin, &cha)) {
+                err_set(__CR_NSCR_NSA_C__, FALSE,
+                        "load_nscr_nsa()", "iDATIN::getb_no() failure");
                 goto _failure2;
+            }
             str[tmp] = (ansi_t)cha;
             if (cha == 0x00)
                 break;
         }
-        if (cha != 0x00 || tmp == 0)
+        if (cha != 0x00 || tmp == 0) {
+            err_set(__CR_NSCR_NSA_C__, idx,
+                    "load_nscr_nsa()", "invalid NSA format");
             goto _failure2;
+        }
 
         /* 文件压缩类型 */
-        if (!CR_VCALL(datin)->getb_no(datin, &cha))
+        if (!CR_VCALL(datin)->getb_no(datin, &cha)) {
+            err_set(__CR_NSCR_NSA_C__, FALSE,
+                    "load_nscr_nsa()", "iDATIN::getb_no() failure");
             goto _failure2;
+        }
 
         /* 文件偏移和大小 */
-        if (!CR_VCALL(datin)->getd_be(datin, &offs))
+        if (!CR_VCALL(datin)->getd_be(datin, &offs)) {
+            err_set(__CR_NSCR_NSA_C__, FALSE,
+                    "load_nscr_nsa()", "iDATIN::getd_be() failure");
             goto _failure2;
-        if (offs > dati_get_size(datin) - beg)
+        }
+        if (offs > dati_get_size(datin) - beg) {
+            err_set(__CR_NSCR_NSA_C__, offs,
+                    "load_nscr_nsa()", "invalid NSA format");
             goto _failure2;
-        if (!CR_VCALL(datin)->getd_be(datin, &pack))
+        }
+        if (!CR_VCALL(datin)->getd_be(datin, &pack)) {
+            err_set(__CR_NSCR_NSA_C__, FALSE,
+                    "load_nscr_nsa()", "iDATIN::getd_be() failure");
             goto _failure2;
-        if (pack > dati_get_size(datin) - beg - offs)
+        }
+        if (pack > dati_get_size(datin) - beg - offs) {
+            err_set(__CR_NSCR_NSA_C__, pack,
+                    "load_nscr_nsa()", "invalid NSA format");
             goto _failure2;
-        if (!CR_VCALL(datin)->getd_be(datin, &size))
+        }
+        if (!CR_VCALL(datin)->getd_be(datin, &size)) {
+            err_set(__CR_NSCR_NSA_C__, FALSE,
+                    "load_nscr_nsa()", "iDATIN::getd_be() failure");
             goto _failure2;
+        }
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].base.name = local_to_utf8(param->page, str);
-        if (list[idx].base.name == NULL)
+        if (list[idx].base.name == NULL) {
+            err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                    "load_nscr_nsa()", "local_to_utf8() failure");
             goto _failure2;
+        }
 
         /* 设置公用文件属性 */
         list[idx].base.skip = sizeof(sPAK_NSA_FILE);
@@ -592,13 +735,18 @@ load_nscr_nsa (
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_NSA);
-    if (port == NULL)
+    if (port == NULL) {
+        err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                "load_nscr_nsa()", "struct_new() failure");
         goto _failure2;
+    }
     port->m_cnt = cnt;
     port->m_file = datin;
     port->pack.__filelst__ = (sPAK_FILE*)list;
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
+        err_set(__CR_NSCR_NSA_C__, FALSE,
+                "load_nscr_nsa()", "pack_init_list() failure");
         mem_free(port);
         goto _failure2;
     }
@@ -606,6 +754,8 @@ load_nscr_nsa (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
+        err_set(__CR_NSCR_NSA_C__, CR_NULL,
+                "load_nscr_nsa()", "struct_new() failure");
         iPAK_NSA_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -625,6 +775,8 @@ _failure1:
     CR_VCALL(datin)->release(datin);
     return (NULL);
 }
+
+#endif  /* !__CR_NSCR_NSA_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

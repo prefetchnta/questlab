@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DEVIL_H__
-#define __CR_DEVIL_H__
+#define __CR_DEVIL_H__ 0x9DAC5A59UL
 
 #include "fmtz.h"
 

@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_ZIP_C__
+#define __CR_ZIP_C__ 0xCBF71DCCUL
+
 #include "hash.h"
 #include "enclib.h"
 #include "fmtint.h"
@@ -117,37 +120,55 @@ iPAK_ZIP_getFileData (
 
     /* 定位文件索引 */
     real = (iPAK_ZIP*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_ZIP_C__, index,
+                "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
+    }
     item = (sPAK_ZIP_FILE*)real->pack.__filelst__;
     item += (leng_t)index;
 
     /* 提前过滤压缩类型 */
-    if (item->ftype != 0 && item->ftype != 8 && item->ftype != 12)
+    if (item->ftype != 0 && item->ftype != 8 && item->ftype != 12) {
+        err_set(__CR_ZIP_C__, item->ftype,
+                "iPACKAGE::getFileData()", "invalid compression type");
         return (FALSE);
+    }
 
     /* 获取文件数据 (0大小文件分配1个字节) */
     size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_ZIP_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc() failure");
             return (FALSE);
+        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         pack = item->base.pack;
         temp = mem_malloc64(pack);
-        if (temp == NULL)
+        if (temp == NULL) {
+            err_set(__CR_ZIP_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
+        }
         file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET))
+        if (!CR_VCALL(file)->seek64(file, item->base.offs, SEEK_SET)) {
+            err_set(__CR_ZIP_C__, FALSE,
+                    "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure1;
+        }
         read = CR_VCALL(file)->read(file, temp, (leng_t)pack);
-        if (read != (leng_t)pack)
+        if (read != (leng_t)pack) {
+            err_set(__CR_ZIP_C__, read,
+                    "iPACKAGE::getFileData()", "iDATIN::read() failure");
             goto _failure1;
+        }
 
         /* 根据压缩类型解码数据 */
         if (item->ftype == 0)
@@ -159,23 +180,32 @@ iPAK_ZIP_getFileData (
         else
         {
             data = mem_malloc64(size);
-            if (data == NULL)
+            if (data == NULL) {
+                err_set(__CR_ZIP_C__, CR_NULL,
+                        "iPACKAGE::getFileData()", "mem_malloc64() failure");
                 goto _failure1;
+            }
 
             if (item->ftype == 8)
             {
                 /* Deflate (32K) */
                 read = uncompr_flate(data, (leng_t)size, temp, (leng_t)pack);
-                if (read != (leng_t)size)
+                if (read != (leng_t)size) {
+                    err_set(__CR_ZIP_C__, read,
+                        "iPACKAGE::getFileData()", "uncompr_flate() failure");
                     goto _failure2;
+                }
             }
             else
             if (item->ftype == 12)
             {
                 /* BZip2 */
                 read = uncompr_bzip2(data, (leng_t)size, temp, (leng_t)pack);
-                if (read != (leng_t)size)
+                if (read != (leng_t)size) {
+                    err_set(__CR_ZIP_C__, read,
+                        "iPACKAGE::getFileData()", "uncompr_bzip2() failure");
                     goto _failure2;
+                }
             }
             mem_free(temp);
         }
@@ -185,6 +215,8 @@ iPAK_ZIP_getFileData (
     if (hash) {
         cksm = hash_crc32i_total(data, (leng_t)item->base.size);
         if (cksm != item->crc32) {
+            err_set(__CR_ZIP_C__, cksm,
+                    "iPACKAGE::getFileData()", "file checksum error");
             mem_free(data);
             return (FALSE);
         }
@@ -218,8 +250,11 @@ iPAK_ZIP_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_ZIP*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_ZIP_C__, index,
+                "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
+    }
     idx = (leng_t)index;
     list = (sPAK_ZIP_FILE*)real->pack.__filelst__;
 
@@ -308,8 +343,11 @@ load_cr_zip (
 
     /* 必须使用自己私有的读取接口 */
     datin = create_file_inX(param);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_ZIP_C__, CR_NULL,
+                "load_cr_zip()", "create_file_inX() failure");
         return (NULL);
+    }
 
     /* 开始逐个文件读取信息并定位 */
     array_initT(&list, sPAK_ZIP_FILE);
@@ -317,25 +355,36 @@ load_cr_zip (
     for (;;)
     {
         /* 读取一个文件记录头 */
-        if (!(CR_VCALL(datin)->geType(datin, &unit, sZIP_FILE)))
+        if (!(CR_VCALL(datin)->geType(datin, &unit, sZIP_FILE))) {
+            err_set(__CR_ZIP_C__, FALSE,
+                    "load_cr_zip()", "iDATIN::geType() failure");
             goto _failure;
+        }
 
         /* 文件数据区结束 */
         if (unit.magic == mk_tag4("PK\x01\x02"))
             break;
 
         /* 非法或损坏的 ZIP 文件 */
-        if (unit.magic != mk_tag4("PK\x03\x04"))
+        if (unit.magic != mk_tag4("PK\x03\x04")) {
+            err_set(__CR_ZIP_C__, unit.magic,
+                    "load_cr_zip()", "invalid ZIP format");
             goto _failure;
+        }
 
         /* 填充文件信息结构 */
         struct_zero(&temp, sPAK_ZIP_FILE);
         len = WORD_LE(unit.name_len);
         name = str_allocA(len + 1);
-        if (name == NULL)
+        if (name == NULL) {
+            err_set(__CR_ZIP_C__, CR_NULL,
+                    "load_cr_zip()", "str_allocA() failure");
             goto _failure;
+        }
         read = CR_VCALL(datin)->read(datin, name, len);
         if (read != len) {
+            err_set(__CR_ZIP_C__, read,
+                    "load_cr_zip()", "iDATIN::read() failure");
             mem_free(name);
             goto _failure;
         }
@@ -344,6 +393,8 @@ load_cr_zip (
         /* 跳过附加数据 */
         offs = WORD_LE(unit.ext_len);
         if (!CR_VCALL(datin)->seek(datin, offs, SEEK_CUR)) {
+            err_set(__CR_ZIP_C__, FALSE,
+                    "load_cr_zip()", "iDATIN::seek() failure");
             mem_free(name);
             goto _failure;
         }
@@ -357,6 +408,8 @@ load_cr_zip (
         /* 记录当前的文件偏移位置 */
         offs = CR_VCALL(datin)->tell(datin);
         if (offs == (fdist_t)-1) {
+            err_set(__CR_ZIP_C__, -1L,
+                    "load_cr_zip()", "iDATIN::tell() failure");
             mem_free(name);
             goto _failure;
         }
@@ -368,8 +421,11 @@ load_cr_zip (
         else {
             utf8 = local_to_utf8(param->page, name);
             mem_free(name);
-            if (utf8 == NULL)
+            if (utf8 == NULL) {
+                err_set(__CR_ZIP_C__, CR_NULL,
+                        "load_cr_zip()", "local_to_utf8() failure");
                 goto _failure;
+            }
         }
 
         /* 设置公用文件属性 */
@@ -410,12 +466,16 @@ load_cr_zip (
         /* 跳过文件数据 */
         offs = DWORD_LE(unit.pksize);
         if (!CR_VCALL(datin)->seek(datin, offs, SEEK_CUR)) {
+            err_set(__CR_ZIP_C__, FALSE,
+                    "load_cr_zip()", "iDATIN::seek() failure");
             mem_free(utf8);
             goto _failure;
         }
 
         /* 文件信息压入列表 */
         if (array_push_growT(&list, sPAK_ZIP_FILE, &temp) == NULL) {
+            err_set(__CR_ZIP_C__, CR_NULL,
+                    "load_cr_zip()", "array_push_growT() failure");
             mem_free(utf8);
             goto _failure;
         }
@@ -423,32 +483,46 @@ load_cr_zip (
         /* 可能会有数据描述区 */
         unit.flags = WORD_LE(unit.flags);
         if (unit.flags & 8) {
-            if (!CR_VCALL(datin)->getd_no(datin, &tags))
+            if (!CR_VCALL(datin)->getd_no(datin, &tags)) {
+                err_set(__CR_ZIP_C__, FALSE,
+                        "load_cr_zip()", "iDATIN::getd_no() failure");
                 goto _failure;
+            }
 
             /* 可能会没有头部标志 */
             if (tags == mk_tag4("PK\x07\x08"))
                 offs = 3 * sizeof(int32u);
             else
                 offs = 2 * sizeof(int32u);
-            if (!CR_VCALL(datin)->seek(datin, offs, SEEK_CUR))
+            if (!CR_VCALL(datin)->seek(datin, offs, SEEK_CUR)) {
+                err_set(__CR_ZIP_C__, FALSE,
+                        "load_cr_zip()", "iDATIN::seek() failure");
                 goto _failure;
+            }
         }
     }
 
     /* 固定一下列表大小 */
-    if (!array_no_growT(&list, sPAK_ZIP_FILE))
+    if (!array_no_growT(&list, sPAK_ZIP_FILE)) {
+        err_set(__CR_ZIP_C__, FALSE,
+                "load_cr_zip()", "array_no_growT() failure");
         goto _failure;
+    }
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_ZIP);
-    if (port == NULL)
+    if (port == NULL) {
+        err_set(__CR_ZIP_C__, CR_NULL,
+                "load_cr_zip()", "struct_new() failure");
         goto _failure;
+    }
     port->m_file = datin;
     port->m_cnt = array_get_sizeT(&list, sPAK_ZIP_FILE);
     port->pack.__filelst__ = array_get_dataT(&list, sPAK_FILE);
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
+        err_set(__CR_ZIP_C__, FALSE,
+                "load_cr_zip()", "pack_init_list() failure");
         mem_free(port);
         goto _failure;
     }
@@ -456,6 +530,8 @@ load_cr_zip (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
+        err_set(__CR_ZIP_C__, CR_NULL,
+                "load_cr_zip()", "struct_new() failure");
         iPAK_ZIP_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -470,6 +546,8 @@ _failure:
     CR_VCALL(datin)->release(datin);
     return (NULL);
 }
+
+#endif  /* !__CR_ZIP_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_EGO_GDAT_C__
+#define __CR_EGO_GDAT_C__ 0x18F77806UL
+
 #include "strlib.h"
 #include "fmtz/ego.h"
 #include "../fmtint.h"
@@ -109,12 +112,14 @@ iPAK_GDAT_getFileData (
     iPAK_GDAT*  real;
     sPAK_FILE*  item;
 
-    CR_NOUSE(hash);
-
     /* 定位文件索引 */
+    CR_NOUSE(hash);
     real = (iPAK_GDAT*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_EGO_GDAT_C__, index,
+                "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
+    }
     item = real->pack.__filelst__;
     item += (leng_t)index;
 
@@ -122,23 +127,35 @@ iPAK_GDAT_getFileData (
     size = item->size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc() failure");
             return (FALSE);
+        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         data = mem_malloc64(size);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
+        }
         file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        if (!CR_VCALL(file)->seek64(file, item->offs, SEEK_SET))
+        if (!CR_VCALL(file)->seek64(file, item->offs, SEEK_SET)) {
+            err_set(__CR_EGO_GDAT_C__, FALSE,
+                    "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
             goto _failure;
+        }
         read = CR_VCALL(file)->read(file, data, (leng_t)size);
-        if (read != (leng_t)size)
+        if (read != (leng_t)size) {
+            err_set(__CR_EGO_GDAT_C__, read,
+                    "iPACKAGE::getFileData()", "iDATIN::read() failure");
             goto _failure;
+        }
     }
 
     /* 返回文件数据 */
@@ -166,8 +183,11 @@ iPAK_GDAT_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_GDAT*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_EGO_GDAT_C__, index,
+                "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
+    }
 
     /* 返回文件信息 */
     idx = (leng_t)index;
@@ -227,73 +247,121 @@ load_ego_gdat (
 
     /* 必须使用自己私有的读取接口 */
     datin = create_file_inX(param);
-    if (datin == NULL)
+    if (datin == NULL) {
+        err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                "load_ego_gdat()", "create_file_inX() failure");
         return (NULL);
+    }
     high = 0;
     array_initT(&list, sPAK_FILE);
     list.free = gdat_free;
 
     /* 文件索引表大小 */
-    if (!CR_VCALL(datin)->getd_le(datin, &sdat))
+    if (!CR_VCALL(datin)->getd_le(datin, &sdat)) {
+        err_set(__CR_EGO_GDAT_C__, FALSE,
+                "load_ego_gdat()", "iDATIN::getd_le() failure");
         goto _failure;
+    }
     fbeg = sdat + 4;
     if (sdat <= 12 + 1 ||
         sdat > dati_get_size(datin) ||
-        fbeg > dati_get_size(datin))
+        fbeg > dati_get_size(datin)) {
+        err_set(__CR_EGO_GDAT_C__, sdat,
+                "load_ego_gdat()", "invalid EGO DAT format");
         goto _failure;
+    }
 
     /* 开始读取文件索引 */
     while (sdat != 0)
     {
         /* 读取一个文件的索引大小 (这个值可能是64位的) */
-        if (!CR_VCALL(datin)->getd_le(datin, &unit))
+        if (!CR_VCALL(datin)->getd_le(datin, &unit)) {
+            err_set(__CR_EGO_GDAT_C__, FALSE,
+                    "load_ego_gdat()", "iDATIN::getd_le() failure");
             goto _failure;
-        if (!CR_VCALL(datin)->getd_le(datin, &high))
+        }
+        if (!CR_VCALL(datin)->getd_le(datin, &high)) {
+            err_set(__CR_EGO_GDAT_C__, FALSE,
+                    "load_ego_gdat()", "iDATIN::getd_le() failure");
             goto _failure;
-        if (unit > sdat)
+        }
+        if (unit > sdat) {
+            err_set(__CR_EGO_GDAT_C__, unit,
+                    "load_ego_gdat()", "invalid EGO DAT format");
             goto _failure;
+        }
         sdat -= unit;
 
         /* 如果不是64位的这个值就是文件偏移 */
         if (high != 0) {
-            if (unit <= 12 + 1)
+            if (unit <= 12 + 1) {
+                err_set(__CR_EGO_GDAT_C__, unit,
+                        "load_ego_gdat()", "invalid EGO DAT format");
                 goto _failure;
+            }
             unit -= 12;
             offs = high;
         }
         else {
-            if (unit <= 16 + 1)
+            if (unit <= 16 + 1) {
+                err_set(__CR_EGO_GDAT_C__, unit,
+                        "load_ego_gdat()", "invalid EGO DAT format");
                 goto _failure;
-            if (!CR_VCALL(datin)->getd_le(datin, &offs))
+            }
+            if (!CR_VCALL(datin)->getd_le(datin, &offs)) {
+                err_set(__CR_EGO_GDAT_C__, FALSE,
+                        "load_ego_gdat()", "iDATIN::getd_le() failure");
                 goto _failure;
+            }
             unit -= 16;
         }
-        if (offs < fbeg || offs > dati_get_size(datin))
+        if (offs < fbeg || offs > dati_get_size(datin)) {
+            err_set(__CR_EGO_GDAT_C__, offs,
+                    "load_ego_gdat()", "invalid EGO DAT format");
             goto _failure;
+        }
 
         /* 接下来是文件的大小 */
-        if (!CR_VCALL(datin)->getd_le(datin, &size))
+        if (!CR_VCALL(datin)->getd_le(datin, &size)) {
+            err_set(__CR_EGO_GDAT_C__, FALSE,
+                    "load_ego_gdat()", "iDATIN::getd_le() failure");
             goto _failure;
-        if (size > dati_get_size(datin) - offs)
+        }
+        if (size > dati_get_size(datin) - offs) {
+            err_set(__CR_EGO_GDAT_C__, size,
+                    "load_ego_gdat()", "invalid EGO DAT format");
             goto _failure;
+        }
 
         /* 剩下的全是文件名 (有\0结尾) */
-        if (unit > sizeof(str))
+        if (unit > sizeof(str)) {
+            err_set(__CR_EGO_GDAT_C__, unit,
+                    "load_ego_gdat()", "invalid EGO DAT format");
             goto _failure;
+        }
         read = CR_VCALL(datin)->read(datin, str, (leng_t)unit);
-        if (read != (leng_t)unit)
+        if (read != (leng_t)unit) {
+            err_set(__CR_EGO_GDAT_C__, read,
+                    "load_ego_gdat()", "iDATIN::read() failure");
             goto _failure;
+        }
         read -= 1;
-        if (str[read] != 0x00 || str_lenA(str) != read)
+        if (str[read] != 0x00 || str_lenA(str) != read) {
+            err_set(__CR_EGO_GDAT_C__, read,
+                    "load_ego_gdat()", "invalid EGO DAT format");
             goto _failure;
+        }
 
         /* 填充文件信息结构 */
         struct_zero(&temp, sPAK_FILE);
 
         /* 文件名统一使用 UTF-8 编码 */
         temp.name = local_to_utf8(param->page, str);
-        if (temp.name == NULL)
+        if (temp.name == NULL) {
+            err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                    "load_ego_gdat()", "local_to_utf8() failure");
             goto _failure;
+        }
 
         /* 设置公用文件属性 */
         temp.skip = sizeof(sPAK_FILE);
@@ -305,28 +373,41 @@ load_ego_gdat (
 
         /* 文件信息压入列表 */
         if (array_push_growT(&list, sPAK_FILE, &temp) == NULL) {
+            err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                    "load_ego_gdat()", "array_push_growT() failure");
             mem_free(temp.name);
             goto _failure;
         }
     }
 
     /* 不包含文件视为非法 */
-    if (array_get_dataT(&list, sPAK_FILE) == NULL)
+    if (array_get_dataT(&list, sPAK_FILE) == NULL) {
+        err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                "load_ego_gdat()", "invalid EGO DAT format");
         goto _failure;
+    }
 
     /* 固定一下列表大小 */
-    if (!array_no_growT(&list, sPAK_FILE))
+    if (!array_no_growT(&list, sPAK_FILE)) {
+        err_set(__CR_EGO_GDAT_C__, FALSE,
+                "load_ego_gdat()", "array_no_growT() failure");
         goto _failure;
+    }
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_GDAT);
-    if (port == NULL)
+    if (port == NULL) {
+        err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                "load_ego_gdat()", "struct_new() failure");
         goto _failure;
+    }
     port->m_file = datin;
     port->m_cnt = array_get_sizeT(&list, sPAK_FILE);
     port->pack.__filelst__ = array_get_dataT(&list, sPAK_FILE);
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
+        err_set(__CR_EGO_GDAT_C__, FALSE,
+                "load_ego_gdat()", "pack_init_list() failure");
         mem_free(port);
         goto _failure;
     }
@@ -334,6 +415,8 @@ load_ego_gdat (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
+        err_set(__CR_EGO_GDAT_C__, CR_NULL,
+                "load_ego_gdat()", "struct_new() failure");
         iPAK_GDAT_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -351,6 +434,8 @@ _failure:
     CR_VCALL(datin)->release(datin);
     return (NULL);
 }
+
+#endif  /* !__CR_EGO_GDAT_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_E_NSCRIPTER_C__
+#define __CR_E_NSCRIPTER_C__ 0x8F9AE459UL
+
 #include "fmtint.h"
 #include "fmtz/nscripter.h"
 
@@ -55,8 +58,11 @@ engine_nscr (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_E_NSCRIPTER_C__, CR_NULL,
+                "engine_nscr()", "engine_init() failure");
         return (NULL);
+    }
     engine->fmtz_load = engine_nscr_load;
     engine->info = "NScripter FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -74,6 +80,8 @@ engine_get (void_t)
     return (engine_nscr());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_E_NSCRIPTER_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

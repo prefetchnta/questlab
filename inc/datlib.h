@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DATLIB_H__
-#define __CR_DATLIB_H__
+#define __CR_DATLIB_H__ 0x6A178767UL
 
 #include "memlib.h"
 
@@ -156,8 +156,11 @@ array_get_unit_safe (
   __CR_IN__ leng_t          index
     )
 {
-    if (index >= that->__cnts__)
+    if (index >= that->__cnts__) {
+        err_set(__CR_DATLIB_H__, index,
+                "array_get_unit_safe()", "index: out of bounds");
         return (NULL);
+    }
     return (that->__buff__ + index * unit);
 }
 
@@ -293,7 +296,7 @@ CR_API void_t       list_delete (sLIST *that, sLST_UNIT *node);
 CR_API sLST_UNIT*   list_append (sLIST *that, leng_t unit, const void_t *data);
 CR_API sLST_UNIT*   list_sthead (sLIST *that, leng_t unit, const void_t *data);
 CR_API sLST_UNIT*   list_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
-                                 const void_t *data, bool_t front);
+                                    const void_t *data, bool_t front);
 #if !defined(_CR_SICK_INLINE_)
 /*
 =======================================
@@ -357,7 +360,7 @@ list_go_next (
   __CR_IN__ const sLST_UNIT*    node
     )
 {
-    return (node->next);
+    return ((sLST_UNIT*)node->next);
 }
 
 /*
@@ -370,7 +373,7 @@ list_go_prev (
   __CR_IN__ const sLST_UNIT*    node
     )
 {
-    return (node->prev);
+    return ((sLST_UNIT*)node->prev);
 }
 
 /*
@@ -405,8 +408,11 @@ list_get_unit_safe (
 {
     sLST_UNIT*  node;
 
-    if (index >= that->__size__)
+    if (index >= that->__size__) {
+        err_set(__CR_DATLIB_H__, index,
+                "list_get_unit_safe()", "index: out of bounds");
         return (NULL);
+    }
     node = that->__head__;
     for (; index != 0; index--)
         node = node->next;
@@ -589,10 +595,13 @@ atree_go_next (
 {
     sATR_UNIT** next;
 
-    if (index >= node->next.__cnts__)
+    if (index >= node->next.__cnts__) {
+        err_set(__CR_DATLIB_H__, index,
+                "atree_go_next()", "index: out of bounds");
         return (NULL);
+    }
     next = array_get_unitT(&node->next, sATR_UNIT*, index);
-    return (next[0]);
+    return ((sATR_UNIT*)(next[0]));
 }
 
 /*
@@ -605,7 +614,7 @@ atree_go_prev (
   __CR_IN__ const sATR_UNIT*    node
     )
 {
-    return (node->prev);
+    return ((sATR_UNIT*)node->prev);
 }
 
 /*
@@ -804,8 +813,11 @@ pltable_get_unit_safe (
   __CR_IN__ leng_t          index
     )
 {
-    if (index >= that->__size__)
+    if (index >= that->__size__) {
+        err_set(__CR_DATLIB_H__, index,
+                "pltable_get_unit_safe()", "index: out of bounds");
         return (NULL);
+    }
     if (!that->__info__[index])
         return (NULL);
     return (that->__buff__ + index * unit);

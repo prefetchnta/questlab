@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_CNVRT_H__
-#define __CR_CNVRT_H__
+#define __CR_CNVRT_H__ 0x9D2605DDUL
 
 #if !defined(_CR_SICK_INLINE_)
 /*
@@ -53,7 +53,7 @@ fsize_hi (
 {
 #if defined(_CR_FILE32_)
     CR_NOUSE(size);
-    return ((int32u)0x00000000UL);
+    return ((int32u)0x00UL);
 #else   /* (_CR_FILE64_) */
     return ((int32u)(size >> bitsof(int32u)));
 #endif

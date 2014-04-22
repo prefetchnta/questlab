@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_E_RAR_C__
+#define __CR_E_RAR_C__ 0xAC350385UL
+
 #include "fmtint.h"
 #include "strlib.h"
 #include "fmtz/rar.h"
@@ -175,8 +178,11 @@ iPAK_RAR_getFileData (
     /* 定位文件索引 */
     CR_NOUSE(hash);
     real = (iPAK_RAR*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_E_RAR_C__, index,
+                "iPACKAGE::getFileData()", "index: out of bounds");
         return (FALSE);
+    }
     item = (sPAK_RAR_FILE*)real->pack.__filelst__;
     item += (leng_t)index;
 
@@ -184,16 +190,21 @@ iPAK_RAR_getFileData (
     size = item->base.size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_E_RAR_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc() failure");
             return (FALSE);
+        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
-        data = mem_malloc64(size);
-        if (data == NULL)
+        real->m_temp = data = mem_malloc64(size);
+        if (data == NULL) {
+            err_set(__CR_E_RAR_C__, CR_NULL,
+                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
             return (FALSE);
-        real->m_temp = data;
+        }
 
         /* RAR 只能顺序读取文件 */
         if (real->m_rar == NULL || item->id < real->m_cur)
@@ -212,8 +223,11 @@ iPAK_RAR_getFileData (
             open.Callback = rar_mem_copy;
             open.UserData = (LPARAM)(&real->m_temp);
             real->m_rar = RAROpenArchiveEx(&open);
-            if (real->m_rar == NULL)
+            if (real->m_rar == NULL) {
+                err_set(__CR_E_RAR_C__, open.OpenResult,
+                    "iPACKAGE::getFileData()", "RAROpenArchiveEx() failure");
                 goto _failure1;
+            }
             if (real->m_pass != NULL)
                 RARSetPassword(real->m_rar, real->m_pass);
             real->m_cur = 0;
@@ -223,21 +237,33 @@ iPAK_RAR_getFileData (
         struct_zero(&info, RARHeaderDataEx);
         while (real->m_cur != item->id) {
             rett = RARReadHeaderEx(real->m_rar, &info);
-            if (rett != 0)
+            if (rett != 0) {
+                err_set(__CR_E_RAR_C__, rett,
+                    "iPACKAGE::getFileData()", "RARReadHeaderEx() failure");
                 goto _failure2;
+            }
             rett = RARProcessFile(real->m_rar, RAR_SKIP, NULL, NULL);
-            if (rett != 0 && rett != ERAR_BAD_DATA)
+            if (rett != 0 && rett != ERAR_BAD_DATA) {
+                err_set(__CR_E_RAR_C__, rett,
+                    "iPACKAGE::getFileData()", "RARProcessFile() failure");
                 goto _failure2;
+            }
             real->m_cur += 1;
         }
 
         /* 测试目标文件就不会有磁盘操作了 */
         rett = RARReadHeaderEx(real->m_rar, &info);
-        if (rett != 0)
+        if (rett != 0) {
+            err_set(__CR_E_RAR_C__, rett,
+                    "iPACKAGE::getFileData()", "RARReadHeaderEx() failure");
             goto _failure2;
+        }
         rett = RARProcessFile(real->m_rar, RAR_TEST, NULL, NULL);
-        if (rett != 0)
+        if (rett != 0) {
+            err_set(__CR_E_RAR_C__, rett,
+                    "iPACKAGE::getFileData()", "RARProcessFile() failure");
             goto _failure2;
+        }
         real->m_cur += 1;
     }
 
@@ -271,8 +297,11 @@ iPAK_RAR_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_RAR*)that;
-    if (index >= real->m_cnt)
+    if (index >= real->m_cnt) {
+        err_set(__CR_E_RAR_C__, index,
+                "iPACKAGE::getFileInfo()", "index: out of bounds");
         return (FALSE);
+    }
     idx = (leng_t)index;
     list = (sPAK_RAR_FILE*)real->pack.__filelst__;
 
@@ -328,12 +357,13 @@ load_rar (
     RARHeaderDataEx         info;
     RAROpenArchiveDataEx    open;
 
-    CR_NOUSE(datin);
-
     /* 只支持磁盘文件 */
     if (param->type != CR_LDR_ANSI &&
-        param->type != CR_LDR_WIDE)
+        param->type != CR_LDR_WIDE) {
+        err_set(__CR_E_RAR_C__, param->type,
+                "load_rar()", "invalid param: param->type");
         return (NULL);
+    }
 
     /* 列表模式打开 RAR 文件 */
     struct_zero(&open, RAROpenArchiveDataEx);
@@ -343,8 +373,11 @@ load_rar (
         open.ArcNameW = (wide_t*)param->name.wide;
     open.OpenMode = RAR_OM_LIST;
     rar = RAROpenArchiveEx(&open);
-    if (rar == NULL)
+    if (rar == NULL) {
+        err_set(__CR_E_RAR_C__, open.OpenResult,
+                "load_rar()", "RAROpenArchiveEx() failure");
         return (NULL);
+    }
     if (param->aprm != NULL &&
         *(byte_t*)param->aprm != 0x00) {
         RARSetPassword(rar, (ansi_t*)param->aprm);
@@ -364,22 +397,31 @@ load_rar (
         retc = RARReadHeaderEx(rar, &info);
         if (retc == ERAR_END_ARCHIVE)
             break;
-        if (retc != 0)
+        if (retc != 0) {
+            err_set(__CR_E_RAR_C__, retc,
+                    "load_rar()", "RARReadHeaderEx() failure");
             goto _failure1;
+        }
 
         /* 目录文件不加入列表 */
         if ((info.Flags & 0xE0) == 0xE0) {
             retc = RARProcessFile(rar, RAR_SKIP, NULL, NULL);
-            if (retc != 0)
+            if (retc != 0) {
+                err_set(__CR_E_RAR_C__, retc,
+                        "load_rar()", "RARProcessFile() failure");
                 goto _failure1;
+            }
             continue;
         }
 
         /* 文件名统一使用 UTF-8 编码 */
         struct_zero(&temp, sPAK_RAR_FILE);
         temp.base.name = local_to_utf8(param->page, info.FileName);
-        if (temp.base.name == NULL)
+        if (temp.base.name == NULL) {
+            err_set(__CR_E_RAR_C__, CR_NULL,
+                    "load_rar()", "local_to_utf8() failure");
             goto _failure1;
+        }
 
         /* 设置公用文件属性 (偏移没有实际用处) */
         temp.base.skip = sizeof(sPAK_RAR_FILE);
@@ -409,24 +451,35 @@ load_rar (
 
         /* 文件信息压入列表 */
         if (array_push_growT(&list, sPAK_RAR_FILE, &temp) == NULL) {
+            err_set(__CR_E_RAR_C__, CR_NULL,
+                    "load_rar()", "array_push_growT() failure");
             mem_free(temp.base.name);
             goto _failure1;
         }
 
         /* 跳过当前已读文件 */
         retc = RARProcessFile(rar, RAR_SKIP, NULL, NULL);
-        if (retc != 0 && retc != ERAR_BAD_DATA)
+        if (retc != 0 && retc != ERAR_BAD_DATA) {
+            err_set(__CR_E_RAR_C__, retc,
+                    "load_rar()", "RARProcessFile() failure");
             goto _failure1;
+        }
     }
 
     /* 固定一下列表大小 */
-    if (!array_no_growT(&list, sPAK_RAR_FILE))
+    if (!array_no_growT(&list, sPAK_RAR_FILE)) {
+        err_set(__CR_E_RAR_C__, FALSE,
+                "load_rar()", "array_no_growT() failure");
         goto _failure1;
+    }
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_RAR);
-    if (port == NULL)
+    if (port == NULL) {
+        err_set(__CR_E_RAR_C__, CR_NULL,
+                "load_rar()", "struct_new() failure");
         goto _failure1;
+    }
 
     /* 保存需要用到的参数 */
     port->m_temp = NULL;
@@ -435,36 +488,51 @@ load_rar (
     }
     else {
         port->m_pass = str_dupA((ansi_t*)param->aprm);
-        if (port->m_pass == NULL)
+        if (port->m_pass == NULL) {
+            err_set(__CR_E_RAR_C__, CR_NULL,
+                    "load_rar()", "str_dupA() failure");
             goto _failure2;
+        }
     }
     if (param->type == CR_LDR_ANSI) {
         port->m_wide = NULL;
         port->m_ansi = str_dupA(param->name.ansi);
-        if (port->m_ansi == NULL)
+        if (port->m_ansi == NULL) {
+            err_set(__CR_E_RAR_C__, CR_NULL,
+                    "load_rar()", "str_dupA() failure");
             goto _failure3;
+        }
     }
     else {
         port->m_ansi = NULL;
         port->m_wide = str_dupW(param->name.wide);
-        if (port->m_wide == NULL)
+        if (port->m_wide == NULL) {
+            err_set(__CR_E_RAR_C__, CR_NULL,
+                    "load_rar()", "str_dupW() failure");
             goto _failure3;
+        }
     }
     port->m_rar = NULL;
     port->m_cur = (leng_t)-1;
     port->m_cnt = array_get_sizeT(&list, sPAK_RAR_FILE);
     port->pack.__filelst__ = array_get_dataT(&list, sPAK_FILE);
     port->pack.__vptr__ = &s_pack_vtbl;
-    if (!pack_init_list((iPACKAGE*)port, TRUE))
+    if (!pack_init_list((iPACKAGE*)port, TRUE)) {
+        err_set(__CR_E_RAR_C__, FALSE,
+                "load_rar()", "pack_init_list() failure");
         goto _failure4;
+    }
     RARCloseArchive(rar);
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
+        err_set(__CR_E_RAR_C__, CR_NULL,
+                "load_rar()", "struct_new() failure");
         iPAK_RAR_release((iPACKAGE*)port);
         return (NULL);
     }
+    CR_NOUSE(datin);
     rett->type = CR_FMTZ_PRT;
     rett->port = (iPORT*)port;
     rett->more = "iPACKAGE";
@@ -511,8 +579,11 @@ engine_rar (void_t)
     sENGINE*    engine;
 
     engine = engine_init(NULL, NULL, NULL, NULL);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_E_RAR_C__, CR_NULL,
+                "engine_rar()", "engine_init() failure");
         return (NULL);
+    }
     engine->fmtz_load = engine_rar_load;
     engine->info = "RAR FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -530,6 +601,8 @@ engine_get (void_t)
     return (engine_rar());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_E_RAR_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

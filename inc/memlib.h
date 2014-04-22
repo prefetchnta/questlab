@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_MEMLIB_H__
-#define __CR_MEMLIB_H__
+#define __CR_MEMLIB_H__ 0xA81AD7A1UL
 
 #include "defs.h"
 
@@ -139,12 +139,12 @@ mem_cmp (
         dv = *(ansi_t*)dst;
         sv = *(ansi_t*)src;
         if (dv != sv)
-            return (dv - sv);
+            return ((sint_t)(dv - sv));
 
         dst = (uchar*)dst + 1;
         src = (uchar*)src + 1;
     }
-    return (0);
+    return ((sint_t)0x0000);
 }
 #endif  /* !mem_cmp() */
 
@@ -337,7 +337,7 @@ load_misali16 (
     int16u  val;
 
     mem_cpy(&val, ptr, sizeof(int16u));
-    return (val);
+    return ((int16u)val);
     #endif
 #endif
 }
@@ -362,7 +362,7 @@ load_misali32 (
     int32u  val;
 
     mem_cpy(&val, ptr, sizeof(int32u));
-    return (val);
+    return ((int32u)val);
     #endif
 #endif
 }
@@ -387,7 +387,7 @@ load_misali64 (
     int64u  val;
 
     mem_cpy(&val, ptr, sizeof(int64u));
-    return (val);
+    return ((int64u)val);
     #endif
 #endif
 }
@@ -488,8 +488,11 @@ buffer_init (
 {
     if (data == NULL) {
         data = mem_malloc(size);
-        if (data == NULL)
+        if (data == NULL) {
+            err_set(__CR_MEMLIB_H__, CR_NULL,
+                    "buffer_init()", "mem_malloc() failure");
             return (FALSE);
+        }
         is_free = TRUE;
     }
     if (!is_free)

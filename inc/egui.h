@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_EGUI_H__
-#define __CR_EGUI_H__
+#define __CR_EGUI_H__ 0xF2A02CF7UL
 
 #include "fmtz.h"
 

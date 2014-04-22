@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_DX9WIN_H__
-#define __CR_DX9WIN_H__
+#define __CR_DX9WIN_H__ 0x81B3E312UL
 
 #define _CR_USE_D3D9_
 #include "gfx3.h"

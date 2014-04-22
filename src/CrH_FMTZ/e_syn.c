@@ -17,6 +17,9 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
+#ifndef __CR_E_SYN_C__
+#define __CR_E_SYN_C__ 0x40D7F244UL
+
 #include "fmtint.h"
 #include "fmtz/syn.h"
 
@@ -60,8 +63,11 @@ engine_syn (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL)
+    if (engine == NULL) {
+        err_set(__CR_E_SYN_C__, CR_NULL,
+                "engine_syn()", "engine_init() failure");
         return (NULL);
+    }
     engine->fmtz_load = engine_syn_load;
     engine->info = "SYN FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -79,6 +85,8 @@ engine_get (void_t)
     return (engine_syn());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+#endif  /* !__CR_E_SYN_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
