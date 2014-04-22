@@ -108,17 +108,6 @@ CR_API void_t   crypto_anubis_dec (sANUBIS *ctx, int32u dst[4],
                                    const int32u src[4]);
 CR_API void_t   crypto_anubis_key (sANUBIS *ctx, const void_t *key,
                                    leng_t keylen);
-/* ARC4 */
-typedef struct
-{
-        byte_t  x, y;
-        byte_t  s[256];
-} sARC4;
-
-CR_API void_t   crypto_arc4_key (sARC4 *ctx, const void_t *key,
-                                 leng_t keylen);
-CR_API void_t   crypto_arc4_ops (sARC4 *ctx, void_t *data, leng_t size);
-
 /* BLOWFISH */
 typedef struct
 {
@@ -207,6 +196,16 @@ CR_API void_t   crypto_rc2_dec (const sRC2 *ctx, byte_t dst[8],
                                 const byte_t src[8]);
 CR_API void_t   crypto_rc2_key (sRC2 *ctx, const void_t *key, leng_t keylen,
                                 uint_t bits CR_DEFAULT(0));
+/* RC4 */
+typedef struct
+{
+        byte_t  x, y;
+        byte_t  s[256];
+} sRC4;
+
+CR_API void_t   crypto_rc4_key (sRC4 *ctx, const void_t *key, leng_t keylen);
+CR_API void_t   crypto_rc4_ops (sRC4 *ctx, void_t *data, leng_t size);
+
 /* RSA */
 typedef struct
 {
