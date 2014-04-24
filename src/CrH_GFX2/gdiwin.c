@@ -294,14 +294,14 @@ iGFX2_GDI_surf_flip (
 }
 
 /* 接口虚函数表 */
-static const iGFX2_vtbl _rom_ s_canvas_vtbl =
+static const iGFX2_vtbl s_canvas_vtbl =
 {
     iGFX2_GDI_release, iGFX2_GDI_getMore,
     iGFX2_GDI_reset, iGFX2_GDI_lock, iGFX2_GDI_unlock,
     iGFX2_GDI_flip, iGFX2_GDI_clear, iGFX2_GDI_setPal,
 };
 
-static const iGFX2_vtbl _rom_ s_bitmap_vtbl =
+static const iGFX2_vtbl s_bitmap_vtbl =
 {
     iGFX2_GDI_release, iGFX2_GDI_getMore,
     iGFX2_GDI_surf_reset, iGFX2_GDI_lock, iGFX2_GDI_unlock,
@@ -1250,7 +1250,7 @@ iFONT_GDI_calc_rect (
 }
 
 /* 接口虚函数表 */
-static const iFONT_vtbl _rom_ s_font_vtbl =
+static const iFONT_vtbl s_font_vtbl =
 {
     iFONT_GDI_release, iFONT_GDI_getMore,
     iFONT_GDI_enter, iFONT_GDI_leave, iFONT_GDI_bind,
@@ -1326,7 +1326,7 @@ create_gdi_fontW (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sGDI_CALL _rom_ s_gdi_call =
+static const sGDI_CALL s_gdi_call =
 {
     /* 创建 */
     create_gdi_bitmap,

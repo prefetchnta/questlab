@@ -401,7 +401,7 @@ fmtz_free (
         case CR_FMTZ_NOP:
         case CR_FMTZ_DEC:
             fmt_dat = (const sFMT_DAT*)fmtz;
-            TRY_FREE(fmt_dat->data)
+            TRY_FREE(fmt_dat->data);
             break;
 
         /* 释放图片文件 */
@@ -415,13 +415,13 @@ fmtz_free (
         /* 释放区域文件 */
         case CR_FMTZ_RCT:
             fmt_rct = (const sFMT_RCT*)fmtz;
-            TRY_FREE(fmt_rct->pict)
+            TRY_FREE(fmt_rct->pict);
             break;
 
         /* 释放文本文件 */
         case CR_FMTZ_TXT:
             fmt_txt = (const sFMT_TXT*)fmtz;
-            TRY_FREE(fmt_txt->text)
+            TRY_FREE(fmt_txt->text);
             break;
 
         /* 释放对象文件 */
@@ -930,15 +930,15 @@ filex_free (
             break;
 
         case CR_LDR_ANSI:
-            TRY_FREE(filex->ex_file.name.ansi)
+            TRY_FREE(filex->ex_file.name.ansi);
             break;
 
         case CR_LDR_WIDE:
-            TRY_FREE(filex->ex_file.name.wide)
+            TRY_FREE(filex->ex_file.name.wide);
             break;
 
         case CR_LDR_BUFF:
-            TRY_FREE(filex->ex_file.buff.data)
+            TRY_FREE(filex->ex_file.buff.data);
             break;
     }
 }

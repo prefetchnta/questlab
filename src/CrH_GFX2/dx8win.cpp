@@ -205,7 +205,7 @@ iGFX2_DX8M_setPal (
 }
 
 /* 接口虚函数表 */
-static const iGFX2_vtbl _rom_ s_canvas_vtbl =
+static const iGFX2_vtbl s_canvas_vtbl =
 {
     iGFX2_DX8M_release, iGFX2_DX8M_getMore,
     iGFX2_DX8M_reset, iGFX2_DX8M_lock, iGFX2_DX8M_unlock,
@@ -550,7 +550,7 @@ iGFX2_DX8S_setPal (
 }
 
 /* 接口虚函数表 */
-static const iGFX2_vtbl _rom_ s_bitmap_vtbl =
+static const iGFX2_vtbl s_bitmap_vtbl =
 {
     iGFX2_DX8S_release, iGFX2_DX8S_getMore,
     iGFX2_DX8S_reset, iGFX2_DX8S_lock, iGFX2_DX8S_unlock,
@@ -815,7 +815,7 @@ blit_dx8_matx (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sDX8_CALL _rom_ s_dx8call =
+static const sDX8_CALL s_dx8call =
 {
     /* 创建 */
     create_dx8_bitmap,

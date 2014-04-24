@@ -559,6 +559,9 @@ typedef struct
 } sERROR;
 
 #define CR_ERROR            (-1L)
+#define CR_U_ERROR      (( uint_t)-1)
+#define CR_F_ERROR      ((fsize_t)-1)
+#define CR_P_ERROR      (( leng_t)-1)
 #define CR_ERRS(id) (((id) << 16) | __LINE__)
 #define CR_FAIL(id) (((id) >> 16) & 0xFFFFUL)
 #define CR_SUCC(id)     (!CR_FAIL(id))

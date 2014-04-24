@@ -206,7 +206,7 @@ iXMM_FMOD_release (
     real = (iXMM_FMOD*)that;
     FMOD_Channel_Stop(real->m_chn);
     FMOD_Sound_Release(real->m_snd);
-    TRY_FREE(real->m_dat)
+    TRY_FREE(real->m_dat);
     mem_free(that);
 }
 
@@ -887,7 +887,7 @@ _failure3:
 _failure2:
     FMOD_Sound_Release(sound);
 _failure1:
-    TRY_FREE(data)
+    TRY_FREE(data);
     return (NULL);
 }
 

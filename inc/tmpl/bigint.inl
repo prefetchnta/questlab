@@ -712,8 +712,11 @@ bigint_prime (
     sBIGINT     S, A, I, K;
 
     bits /= 32;
-    if (bits > BI_MAXLEN)
+    if (bits > BI_MAXLEN) {
+        err_set(__CR_BIGINT_INL__, bits * 32,
+                "bigint_prime()", "invalid param: bits");
         return;
+    }
     bigint_clr(bi);
     bi->len = bits;
     num = prime_tbl_num();
@@ -791,8 +794,11 @@ bigint_to (
 
     /* 二进制型 */
     if (type != 2 && type != 8 && type != 16 && type != 10) {
-        if (size < bi->len * sizeof(int32u))
+        if (size < bi->len * sizeof(int32u)) {
+            err_set(__CR_BIGINT_INL__, size,
+                    "bigint_to()", "dest buffer overflow");
             return (0);
+        }
         if (size > bi->len * sizeof(int32u))
             size = bi->len * sizeof(int32u);
         for (idx = 0; idx < size; idx++) {
@@ -804,8 +810,11 @@ bigint_to (
 
     /* 字符串型 */
     if ((bi->len == 1) && (bi->val[0] == 0UL)) {
-        if (size <= 1)
+        if (size <= 1) {
+            err_set(__CR_BIGINT_INL__, size,
+                    "bigint_to()", "dest buffer overflow");
             return (0);
+        }
         ((ansi_t*)data)[0] = '0';
         return (2);
     }
@@ -813,16 +822,22 @@ bigint_to (
     bigint_cpy(&X, bi);
     str = "0123456789ABCDEF";
     while (X.val[X.len - 1] != 0UL) {
-        if (idx >= size)
+        if (idx >= size) {
+            err_set(__CR_BIGINT_INL__, size,
+                    "bigint_to()", "dest buffer overflow");
             return (0);
+        }
         cha = bigint_modI(&X, type) & 15;
         ((ansi_t*)data)[idx++] = str[cha];
         bigint_divI(&X, &X, type);
     }
 
     /* 字符颠倒 */
-    if (idx >= size)
+    if (idx >= size) {
+        err_set(__CR_BIGINT_INL__, size,
+                "bigint_to()", "dest buffer overflow");
         return (0);
+    }
     for (num = idx, idx = 0; idx < num / 2; idx++) {
         tmp = ((ansi_t*)data)[idx];
         ((ansi_t*)data)[idx] = ((ansi_t*)data)[num - idx - 1];

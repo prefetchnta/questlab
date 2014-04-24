@@ -414,7 +414,7 @@ load_syn_gca (
 _failure4:
     if (list != NULL) {
         for (cnt = 0; cnt < idx; cnt++) {
-            TRY_FREE(list[cnt].base.find)
+            TRY_FREE(list[cnt].base.find);
             mem_free(list[cnt].base.name);
         }
         mem_free(list);

@@ -82,7 +82,7 @@ bring_free (
   __CR_IO__ sBRING* that
     )
 {
-    TRY_FREE(that->data)
+    TRY_FREE(that->data);
     struct_zero(that, sBRING);
 }
 

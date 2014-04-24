@@ -216,7 +216,7 @@ gdat_free (
     sPAK_FILE*  unit;
 
     unit = (sPAK_FILE*)obj;
-    TRY_FREE(unit->find)
+    TRY_FREE(unit->find);
     mem_free(unit->name);
 }
 

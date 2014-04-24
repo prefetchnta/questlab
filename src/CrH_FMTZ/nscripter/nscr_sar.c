@@ -358,7 +358,7 @@ load_nscr_sar (
 
 _failure2:
     for (cnt = 0; cnt < idx; cnt++) {
-        TRY_FREE(list[cnt].find)
+        TRY_FREE(list[cnt].find);
         mem_free(list[cnt].name);
     }
     mem_free(list);

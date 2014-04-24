@@ -314,7 +314,7 @@ zip_free (
     sPAK_ZIP_FILE*  unit;
 
     unit = (sPAK_ZIP_FILE*)obj;
-    TRY_FREE(unit->base.find)
+    TRY_FREE(unit->base.find);
     mem_free(unit->base.name);
 }
 
@@ -388,7 +388,7 @@ load_cr_zip (
             mem_free(name);
             goto _failure;
         }
-        name[len] = NIL;
+        name[len] = CR_AC(NIL);
 
         /* 跳过附加数据 */
         offs = WORD_LE(unit.ext_len);
@@ -407,7 +407,7 @@ load_cr_zip (
 
         /* 记录当前的文件偏移位置 */
         offs = CR_VCALL(datin)->tell(datin);
-        if (offs == (fdist_t)-1) {
+        if (offs <= 0) {
             err_set(__CR_ZIP_C__, -1L,
                     "load_cr_zip()", "iDATIN::tell() failure");
             mem_free(name);

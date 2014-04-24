@@ -328,7 +328,7 @@ xp3_free (
 
     unit = (sPAK_XP3_FILE*)obj;
     mem_free(unit->segm_lst);
-    TRY_FREE(unit->base.find)
+    TRY_FREE(unit->base.find);
     mem_free(unit->base.name);
 }
 

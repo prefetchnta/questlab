@@ -1910,7 +1910,7 @@ d3d9_tran_update_mwvp (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sD3D9_CALL _rom_ s_d3d9call =
+static const sD3D9_CALL s_d3d9call =
 {
     /* 设备对象 */
     d3d9_create_main,

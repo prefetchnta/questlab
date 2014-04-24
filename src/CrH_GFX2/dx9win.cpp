@@ -205,7 +205,7 @@ iGFX2_DX9M_setPal (
 }
 
 /* 接口虚函数表 */
-static const iGFX2_vtbl _rom_ s_canvas_vtbl =
+static const iGFX2_vtbl s_canvas_vtbl =
 {
     iGFX2_DX9M_release, iGFX2_DX9M_getMore,
     iGFX2_DX9M_reset, iGFX2_DX9M_lock, iGFX2_DX9M_unlock,
@@ -550,7 +550,7 @@ iGFX2_DX9S_setPal (
 }
 
 /* 接口虚函数表 */
-static const iGFX2_vtbl _rom_ s_bitmap_vtbl =
+static const iGFX2_vtbl s_bitmap_vtbl =
 {
     iGFX2_DX9S_release, iGFX2_DX9S_getMore,
     iGFX2_DX9S_reset, iGFX2_DX9S_lock, iGFX2_DX9S_unlock,
@@ -1087,7 +1087,7 @@ iFONT_DX9_calc_rect (
 }
 
 /* 接口虚函数表 */
-static const iFONT_vtbl _rom_ s_font_vtbl =
+static const iFONT_vtbl s_font_vtbl =
 {
     iFONT_DX9_release, iFONT_DX9_getMore,
     iFONT_DX9_enter, iFONT_DX9_leave, iFONT_DX9_bind,
@@ -1187,7 +1187,7 @@ create_dx9_fontW (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sDX9_CALL _rom_ s_dx9call =
+static const sDX9_CALL s_dx9call =
 {
     /* 创建 */
     create_dx9_bitmap,

@@ -1550,7 +1550,7 @@ d3d8_tran_update_mwvp (
 /*                                 接口导出                                  */
 /*****************************************************************************/
 
-static const sD3D8_CALL _rom_ s_d3d8call =
+static const sD3D8_CALL s_d3d8call =
 {
     /* 设备对象 */
     d3d8_create_main,

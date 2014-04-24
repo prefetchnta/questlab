@@ -149,7 +149,6 @@ typedef struct
         byte_t  buffer[16];
 } sMD2;
 
-/* MD2 */
 CR_API void_t   hash_md2_init (sMD2 *ctx);
 CR_API void_t   hash_md2_update (sMD2 *ctx, const void_t *data,
                                  leng_t size);
@@ -187,7 +186,6 @@ typedef struct
         byte_t  buffer[64];
 } sSHA1;
 
-/* SHA-1 */
 CR_API void_t   hash_sha1_init (sSHA1 *ctx);
 CR_API void_t   hash_sha1_update (sSHA1 *ctx, const void_t *data,
                                   leng_t size);
@@ -259,6 +257,48 @@ CR_API void_t   hash_ed2k_total1 (byte_t hash[16], const void_t *data,
                                   leng_t size);
 CR_API void_t   hash_ed2k_total2 (byte_t hash[16], const void_t *data,
                                   leng_t size);
+/* RMD-128 */
+typedef sMD5    sRMD128;
+
+CR_API void_t   hash_rmd128_init (sRMD128 *ctx);
+CR_API void_t   hash_rmd128_update (sRMD128 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_rmd128_finish (byte_t hash[16], sRMD128 *ctx);
+CR_API void_t   hash_rmd128_total (byte_t hash[16], const void_t *data,
+                                   leng_t size);
+/* RMD-160 */
+typedef sSHA1   sRMD160;
+
+CR_API void_t   hash_rmd160_init (sRMD160 *ctx);
+CR_API void_t   hash_rmd160_update (sRMD160 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_rmd160_finish (byte_t hash[20], sRMD160 *ctx);
+CR_API void_t   hash_rmd160_total (byte_t hash[20], const void_t *data,
+                                   leng_t size);
+/* RMD-256 */
+typedef sSHA256 sRMD256;
+
+CR_API void_t   hash_rmd256_init (sRMD256 *ctx);
+CR_API void_t   hash_rmd256_update (sRMD256 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_rmd256_finish (byte_t hash[32], sRMD256 *ctx);
+CR_API void_t   hash_rmd256_total (byte_t hash[32], const void_t *data,
+                                   leng_t size);
+/* RMD-320 */
+typedef struct
+{
+        int32u  count[2];
+        int32u  state[10];
+        byte_t  buffer[64];
+
+} sRMD320;
+
+CR_API void_t   hash_rmd320_init (sRMD320 *ctx);
+CR_API void_t   hash_rmd320_update (sRMD320 *ctx, const void_t *data,
+                                    leng_t size);
+CR_API void_t   hash_rmd320_finish (byte_t hash[40], sRMD320 *ctx);
+CR_API void_t   hash_rmd320_total (byte_t hash[40], const void_t *data,
+                                   leng_t size);
 
 /*****************************************************************************/
 /*                                字符串哈希                                 */

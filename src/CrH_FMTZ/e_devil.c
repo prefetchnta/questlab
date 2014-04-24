@@ -430,7 +430,7 @@ iPIC_IL_release (
 
     real = (iPIC_IL*)that;
     ilDeleteImages(1, &real->m_image);
-    TRY_FREE(real->m_fdata)
+    TRY_FREE(real->m_fdata);
     mem_free(that);
 }
 
@@ -697,7 +697,7 @@ devil_load (
             goto _failure;
         }
         ilDeleteImages(1, &imgs);
-        TRY_FREE(data)
+        TRY_FREE(data);
 
         /* 返回读取的文件数据 */
         rets = struct_new(sFMT_PIC);
@@ -750,7 +750,7 @@ devil_load (
 
 _failure:
     ilDeleteImages(1, &imgs);
-    TRY_FREE(data)
+    TRY_FREE(data);
     return (NULL);
 }
 

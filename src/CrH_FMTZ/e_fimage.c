@@ -460,7 +460,7 @@ iPIC_FI_release (
     FreeImage_CloseMultiBitmap(real->m_multi, 0);
     if (real->m_memio != NULL)
         FreeImage_CloseMemory(real->m_memio);
-    TRY_FREE(real->m_fdata)
+    TRY_FREE(real->m_fdata);
     mem_free(that);
 }
 
@@ -809,7 +809,7 @@ fimage_load (
         FreeImage_CloseMultiBitmap(multi, 0);
         if (memio != NULL)
             FreeImage_CloseMemory(memio);
-        TRY_FREE(data)
+        TRY_FREE(data);
         if (!okay) {
             err_set(__CR_E_FIMAGE_C__, FALSE,
                     "fimage_load()", "fimage_info() failure");
@@ -872,7 +872,7 @@ _failure2:
     if (memio != NULL)
         FreeImage_CloseMemory(memio);
 _failure1:
-    TRY_FREE(data)
+    TRY_FREE(data);
     return (NULL);
 }
 

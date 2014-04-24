@@ -274,7 +274,7 @@ load_tgl_ipac (
                     "load_tgl_ipac()", "mem_talloc() failure");
             goto _failure1;
         }
-        str[16] = NIL;
+        str[16] = CR_AC(NIL);
         mem_tzero(list, cnt, sPAK_FILE);
     }
     else {
@@ -356,7 +356,7 @@ load_tgl_ipac (
 _failure2:
     if (list != NULL) {
         for (cnt = 0; cnt < idx; cnt++) {
-            TRY_FREE(list[cnt].find)
+            TRY_FREE(list[cnt].find);
             mem_free(list[cnt].name);
         }
         mem_free(list);

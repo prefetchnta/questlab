@@ -118,9 +118,9 @@ iPAK_RAR_release (
     }
     if (real->m_rar != NULL)
         RARCloseArchive(real->m_rar);
-    TRY_FREE(real->m_ansi)
-    TRY_FREE(real->m_wide)
-    TRY_FREE(real->m_pass)
+    TRY_FREE(real->m_ansi);
+    TRY_FREE(real->m_wide);
+    TRY_FREE(real->m_pass);
     mem_free(that);
 }
 
@@ -331,7 +331,7 @@ rar_free (
     sPAK_RAR_FILE*  unit;
 
     unit = (sPAK_RAR_FILE*)obj;
-    TRY_FREE(unit->base.find)
+    TRY_FREE(unit->base.find);
     mem_free(unit->base.name);
 }
 
@@ -540,10 +540,10 @@ load_rar (
     return (rett);
 
 _failure4:
-    TRY_FREE(port->m_ansi)
-    TRY_FREE(port->m_wide)
+    TRY_FREE(port->m_ansi);
+    TRY_FREE(port->m_wide);
 _failure3:
-    TRY_FREE(port->m_pass)
+    TRY_FREE(port->m_pass);
 _failure2:
     mem_free(port);
 _failure1:
