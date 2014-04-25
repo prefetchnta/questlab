@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
   Left = 657
   Top = 272
-  Width = 600
+  Width = 678
   Height = 600
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
@@ -9,9 +9,9 @@ object frmMain: TfrmMain
   Caption = 'QstData'
   Color = clBtnFace
   Constraints.MaxHeight = 600
-  Constraints.MaxWidth = 600
+  Constraints.MaxWidth = 678
   Constraints.MinHeight = 600
-  Constraints.MinWidth = 600
+  Constraints.MinWidth = 678
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -33,12 +33,12 @@ object frmMain: TfrmMain
   object edtInput: TEdit
     Left = 64
     Top = 8
-    Width = 465
+    Width = 542
     Height = 21
     TabOrder = 1
   end
   object btnBE: TButton
-    Left = 536
+    Left = 613
     Top = 8
     Width = 49
     Height = 25
@@ -49,7 +49,7 @@ object frmMain: TfrmMain
   object pgeMain: TPageControl
     Left = 8
     Top = 40
-    Width = 577
+    Width = 654
     Height = 521
     ActivePage = tabValue
     TabIndex = 0
@@ -59,7 +59,7 @@ object frmMain: TfrmMain
       object txtValue: TMemo
         Left = 0
         Top = 0
-        Width = 569
+        Width = 646
         Height = 493
         Align = alClient
         ReadOnly = True
