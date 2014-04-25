@@ -1,10 +1,12 @@
 object frmMain: TfrmMain
   Left = 872
   Top = 545
+  AlphaBlend = True
+  AlphaBlendValue = 0
   BorderIcons = []
   BorderStyle = bsNone
-  Caption = 'frmMain'
-  ClientHeight = 0
+  Caption = 'xSelectFile'
+  ClientHeight = 32
   ClientWidth = 111
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET

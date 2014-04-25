@@ -23,7 +23,52 @@ ximp_stop_running (void_t)
         fputc('x', fp);
         fclose(fp);
     }
+    file_deleteA(QST_LOAD_FILEX);
+    file_deleteA(QST_SAVE_FILEX);
 }
+
+/*
+=======================================
+    写入打开结果
+=======================================
+*/
+CR_API void_t
+ximp_load_write (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    FILE*   fp;
+
+    fp = fopen(QST_LOAD_FILEX, "w");
+    if (fp != NULL) {
+        file_deleteA(QST_STOPS_NEXT);
+        fprintf(fp, "%s", name);
+        fclose(fp);
+    }
+}
+
+/*
+=======================================
+    写入保存结果
+=======================================
+*/
+CR_API void_t
+ximp_save_write (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    FILE*   fp;
+
+    fp = fopen(QST_SAVE_FILEX, "w");
+    if (fp != NULL) {
+        file_deleteA(QST_STOPS_NEXT);
+        fprintf(fp, "%s", name);
+        fclose(fp);
+    }
+}
+
+/* 使用哪个对话框 */
+bool_t  g_is_load = FALSE;
 
 /*
 =======================================
@@ -56,6 +101,17 @@ WinMain (
 
     /* 获取命令行参数, 不包括进程文件名 */
     argv = misc_get_param(cmd_line, &argc);
+
+    /* 参数解析 <load/save> */
+    if (argc < 1)
+        return (QST_ERROR);
+    if (str_cmpA(argv[0], "load") == 0)
+        g_is_load = TRUE;
+    else
+    if (str_cmpA(argv[0], "save") == 0)
+        g_is_load = FALSE;
+    else
+        return (QST_ERROR);
 
     try
     {

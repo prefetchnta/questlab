@@ -68,6 +68,8 @@
 #define QST_IMPORT_LST  ".\\output\\__dir__.xml"    /* 导入文件列表 */
 #define QST_IMP_SCRIPT  ".\\output\\__imp__.xml"    /* 临时导入脚本 */
 #define QST_TMP_SCRIPT  ".\\output\\__scr__.txt"    /* 临时执行脚本 */
+#define QST_LOAD_FILEX  ".\\output\\__ldr__.txt"    /* 打开文件结果 */
+#define QST_SAVE_FILEX  ".\\output\\__sav__.txt"    /* 保存文件结果 */
 
 /* 一些字符串常数 */
 #define QST_STR_GLOBALS     "|GLOBALS|"     /* 全局封包文件 */
