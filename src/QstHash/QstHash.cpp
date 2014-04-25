@@ -564,6 +564,10 @@ WinMain (
         return (QST_ERROR);
     mem_zero(&s_wrk_ctx, sizeof(s_wrk_ctx));
 
+    /* 配置文件必须要有 */
+    if (!file_existA(QST_PATH_CONFIG WIN_ICONF))
+        return (QST_ERROR);
+
     /* 初始化网络 */
     if (!socket_init())
         return (QST_ERROR);
