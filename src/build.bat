@@ -66,6 +66,12 @@ make -fxSelectDir.mak
 del ..\..\bin\*.tds /Q
 cd..
 rem =====================
+cd xSelectFile
+del ..\..\tmp\*.obj /Q
+make -fxSelectFile.mak
+del ..\..\bin\*.tds /Q
+cd..
+rem =====================
 call "%VS90COMNTOOLS%vsvars32.bat"
 rem =====================
 cd ocr3rd
