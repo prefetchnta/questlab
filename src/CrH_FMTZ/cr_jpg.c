@@ -47,7 +47,7 @@ jpg_in_func (
 
     datin = ((sIODEV*)jd->device)->datin;
     if (buff != NULL)
-        return ((UINT)CR_VCALL(datin)->read(datin, buff, nbyte));
+        return ((UINT)(CR_VCALL(datin)->read(datin, buff, nbyte)));
 
     if (!CR_VCALL(datin)->seek(datin, nbyte, SEEK_CUR)) {
         err_set(__CR_JPG_C__, FALSE,
@@ -109,7 +109,7 @@ load_cr_jpg (
     sIODEV  devid;
     byte_t  head[11];
     /* ----------- */
-    JRESULT     res;
+    JRESULT     retc;
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;
 
@@ -121,8 +121,8 @@ load_cr_jpg (
     }
 
     /* 读取 & 检查头部 */
-    read = CR_VCALL(datin)->read(datin, head, sizeof(head));
-    if (read != sizeof(head)) {
+    read = CR_VCALL(datin)->read(datin, head, 11);
+    if (read != 11) {
         err_set(__CR_JPG_C__, read,
                 "load_cr_jpg()", "iDATIN::read() failure");
         return (NULL);
@@ -146,9 +146,9 @@ load_cr_jpg (
         return (NULL);
     }
     devid.datin = datin;
-    res = jd_prepare(&jdec, jpg_in_func, work, 3100, &devid);
-    if (res != JDR_OK) {
-        err_set(__CR_JPG_C__, res,
+    retc = jd_prepare(&jdec, jpg_in_func, work, 3100, &devid);
+    if (retc != JDR_OK) {
+        err_set(__CR_JPG_C__, retc,
                 "load_cr_jpg()", "jd_prepare() failure");
         mem_free(work);
         return (NULL);
@@ -173,10 +173,10 @@ load_cr_jpg (
 
     /* 读取图片数据 */
     devid.image = temp.pic;
-    res = jd_decomp(&jdec, jpg_out_func, 0);
+    retc = jd_decomp(&jdec, jpg_out_func, 0);
     mem_free(work);
-    if (res != JDR_OK) {
-        err_set(__CR_JPG_C__, res,
+    if (retc != JDR_OK) {
+        err_set(__CR_JPG_C__, retc,
                 "load_cr_jpg()", "jd_decomp() failure");
         goto _failure;
     }
