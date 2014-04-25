@@ -982,6 +982,58 @@ ed2k_finish2 (
 }
 
 /*****************************************************************************/
+/*                                   MD2                                     */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+md2_init (void_t)
+{
+    sMD2*   ctx;
+
+    ctx = struct_new(sMD2);
+    if (ctx != NULL)
+        hash_md2_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+md2_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_md2_update((sMD2*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+md2_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[16];
+
+    hash_md2_finish(result, (sMD2*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
 /*                                   MD4                                     */
 /*****************************************************************************/
 
@@ -1081,6 +1133,214 @@ md5_finish (
     byte_t  result[16];
 
     hash_md5_finish(result, (sMD5*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 RMD-128                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+rmd128_init (void_t)
+{
+    sRMD128*    ctx;
+
+    ctx = struct_new(sRMD128);
+    if (ctx != NULL)
+        hash_rmd128_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+rmd128_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_rmd128_update((sRMD128*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+rmd128_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[16];
+
+    hash_rmd128_finish(result, (sRMD128*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 RMD-160                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+rmd160_init (void_t)
+{
+    sRMD160*    ctx;
+
+    ctx = struct_new(sRMD160);
+    if (ctx != NULL)
+        hash_rmd160_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+rmd160_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_rmd160_update((sRMD160*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+rmd160_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[20];
+
+    hash_rmd160_finish(result, (sRMD160*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 RMD-256                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+rmd256_init (void_t)
+{
+    sRMD256*    ctx;
+
+    ctx = struct_new(sRMD256);
+    if (ctx != NULL)
+        hash_rmd256_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+rmd256_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_rmd256_update((sRMD256*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+rmd256_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[32];
+
+    hash_rmd256_finish(result, (sRMD256*)ctx);
+    mem_free(ctx);
+    return (hex_to_str(result, sizeof(result)));
+}
+
+/*****************************************************************************/
+/*                                 RMD-320                                   */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+rmd320_init (void_t)
+{
+    sRMD320*    ctx;
+
+    ctx = struct_new(sRMD320);
+    if (ctx != NULL)
+        hash_rmd320_init(ctx);
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+rmd320_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    hash_rmd320_update((sRMD320*)ctx, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+rmd320_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t  result[40];
+
+    hash_rmd320_finish(result, (sRMD320*)ctx);
     mem_free(ctx);
     return (hex_to_str(result, sizeof(result)));
 }
@@ -1642,8 +1902,13 @@ CR_API const sQHSH_UNIT hasher[] = {
 { "CRC-64/ECMA-182", TRUE, crc64e_init, crc64e_update, crc64e_finish },
 { "ED2K-A", TRUE, ed2k_init, ed2k_update, ed2k_finish1 },
 { "ED2K-B", TRUE, ed2k_init, ed2k_update, ed2k_finish2 },
+{ "MD2", TRUE, md2_init, md2_update, md2_finish },
 { "MD4", TRUE, md4_init, md4_update, md4_finish },
 { "MD5", TRUE, md5_init, md5_update, md5_finish },
+{ "RMD-128", TRUE, rmd128_init, rmd128_update, rmd128_finish },
+{ "RMD-160", TRUE, rmd160_init, rmd160_update, rmd160_finish },
+{ "RMD-256", TRUE, rmd256_init, rmd256_update, rmd256_finish },
+{ "RMD-320", TRUE, rmd320_init, rmd320_update, rmd320_finish },
 { "SHA-1", TRUE, sha1_init, sha1_update, sha1_finish },
 { "SHA-224", TRUE, sha224_init, sha224_update, sha224_finish },
 { "SHA-256", TRUE, sha256_init, sha256_update, sha256_finish },
