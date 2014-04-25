@@ -213,7 +213,12 @@ exec_one_line (
         return (TRUE);
 
     /* 输出命令行 */
-    if (show) printf("> %s\n", cmd);
+    if (show) {
+        if (s_diro)
+            printf("~ %s\n", cmd);
+        else
+            printf("> %s\n", cmd);
+    }
 
     /* 命令解析 */
     if (cmd[0] == '$')
@@ -469,7 +474,10 @@ int main (int argc, char *argv[])
             ansi_t  cmd[512];
 
             /* 获取输入 */
-            printf("> ");
+            if (s_diro)
+                printf("~ ");
+            else
+                printf("> ");
             fgets(cmd, sizeof(cmd), stdin);
 
             /* 执行命令, 严重错误直接退出 */
