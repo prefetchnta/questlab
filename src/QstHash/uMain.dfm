@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
   Left = 657
   Top = 272
-  Width = 600
+  Width = 678
   Height = 600
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
@@ -9,9 +9,9 @@ object frmMain: TfrmMain
   Caption = 'QstHash'
   Color = clBtnFace
   Constraints.MaxHeight = 600
-  Constraints.MaxWidth = 600
+  Constraints.MaxWidth = 678
   Constraints.MinHeight = 600
-  Constraints.MinWidth = 600
+  Constraints.MinWidth = 678
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -33,12 +33,12 @@ object frmMain: TfrmMain
   object edtInput: TEdit
     Left = 64
     Top = 8
-    Width = 465
+    Width = 542
     Height = 21
     TabOrder = 1
   end
   object btnSTR: TButton
-    Left = 536
+    Left = 613
     Top = 8
     Width = 49
     Height = 25
@@ -58,7 +58,7 @@ object frmMain: TfrmMain
   object txtResult: TMemo
     Left = 232
     Top = 40
-    Width = 353
+    Width = 430
     Height = 521
     ReadOnly = True
     ScrollBars = ssBoth
