@@ -316,6 +316,54 @@ _func_out:
     return (FALSE);
 }
 
+/*
+---------------------------------------
+    保存一张图片
+---------------------------------------
+*/
+static bool_t
+qst_save_img (
+  __CR_IN__ const sIMAGE*       image,
+  __CR_IN__ const sQstView2D*   parm,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[]
+    )
+{
+    leng_t      idx;
+    leng_t      cnts;
+    ansi_t*     func;
+    ansi_t*     fext;
+    sENGINE**   unit;
+
+    /* 抽出扩展名 */
+    fext = str_allocA(str_sizeA(name));
+    if (fext == NULL)
+        return (FALSE);
+    filext_extractA(fext, name);
+    func = str_fmtA("save_img_%s", fext + 1);
+    mem_free(fext);
+    if (func == NULL)
+        return (FALSE);
+
+    save_img_fmtz_t     save_call = NULL;
+
+    /* 根据扩展名获取保存接口 */
+    cnts = array_get_sizeT(&parm->extz, sENGINE*);
+    for (idx = 0; idx < cnts; idx++) {
+        unit = array_get_unitT(&parm->extz, sENGINE*, idx);
+        save_call = sbin_exportT(unit[0]->sbin, func, save_img_fmtz_t);
+        if (save_call != NULL)
+            break;
+    }
+    mem_free(func);
+    if (save_call == NULL)
+        return (FALSE);
+
+    /* 保存图片文件 */
+    return (save_call(image, name, argc, argv));
+}
+
 /*****************************************************************************/
 /*                                 内容渲染                                  */
 /*****************************************************************************/
@@ -657,4 +705,142 @@ qst_set_index (
     parm->index = index;
     qst_make_image(parm);
     qst_draw_image(parm);
+}
+
+/*****************************************************************************/
+/*                                 图片保存                                  */
+/*****************************************************************************/
+
+/*
+=======================================
+    保存当前图片
+=======================================
+*/
+CR_API bool_t
+qst_save_now (
+  __CR_IN__ const sQstView2D*   parm,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[]
+    )
+{
+    int32u      idx;
+    sFMT_PIC*   pic;
+
+    if (parm->paint == NULL && parm->fmtz == NULL)
+        return (FALSE);
+    if (parm->paint != NULL)
+        return (qst_save_img(parm->paint, parm, name, argc, argv));
+    idx = (parm->slide != NULL) ? 0 : parm->index;
+    pic = (sFMT_PIC*)parm->fmtz;
+    return (qst_save_img(pic->frame[idx].pic, parm, name, argc, argv));
+}
+
+/*
+=======================================
+    保存所有图片
+=======================================
+*/
+CR_API bool_t
+qst_save_all (
+  __CR_IN__ const sQstView2D*   parm,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[]
+    )
+{
+    int32u      idx;
+    int32u      cnt;
+    ansi_t*     str;
+    ansi_t*     fle;
+    ansi_t*     ext;
+    ansi_t*     fmt;
+    sFMT_PIC*   pic;
+
+    if (parm->paint != NULL)
+        return (qst_save_now(parm, name, argc, argv));
+    if (parm->fmtz == NULL)
+        return (FALSE);
+    if (parm->slide == NULL) {
+        pic = (sFMT_PIC*)parm->fmtz;
+        if (pic->count == 1)
+            return (qst_save_now(parm, name, argc, argv));
+        fle = str_dupA(name);
+        if (fle == NULL)
+            return (FALSE);
+        ext = str_allocA(str_sizeA(name));
+        if (ext == NULL) {
+            mem_free(fle);
+            return (FALSE);
+        }
+        filext_removeA(fle);
+        filext_extractA(ext, name);
+        for (idx = 0; idx < pic->count; idx++) {
+            str = str_fmtA("%s_%02u%s", fle, idx, ext);
+            if (str == NULL) {
+                mem_free(ext);
+                mem_free(fle);
+                return (FALSE);
+            }
+            if (!qst_save_img(pic->frame[idx].pic, parm, str, argc, argv)) {
+                mem_free(str);
+                mem_free(ext);
+                mem_free(fle);
+                return (FALSE);
+            }
+            mem_free(str);
+        }
+        mem_free(ext);
+        mem_free(fle);
+    }
+    else {
+        fle = str_dupA(name);
+        if (fle == NULL)
+            return (FALSE);
+        ext = str_allocA(str_sizeA(name));
+        if (ext == NULL) {
+            mem_free(fle);
+            return (FALSE);
+        }
+        filext_removeA(fle);
+        filext_extractA(ext, name);
+        cnt = pict_get_count(parm->slide);
+        if      (cnt > 999999999UL) fmt = "%s_%010u%s";
+        else if (cnt > 99999999UL) fmt = "%s_%09u%s";
+        else if (cnt > 9999999UL) fmt = "%s_%08u%s";
+        else if (cnt > 999999UL) fmt = "%s_%07u%s";
+        else if (cnt > 99999UL) fmt = "%s_%06u%s";
+        else if (cnt > 9999UL) fmt = "%s_%05u%s";
+        else if (cnt > 999UL) fmt = "%s_%04u%s";
+        else if (cnt > 99UL) fmt = "%s_%03u%s";
+        else if (cnt > 9UL) fmt = "%s_%02u%s";
+        else               fmt = "%s_%u%s";
+        for (idx = 0; idx < cnt; idx++) {
+            pic = CR_VCALL(parm->slide)->get(parm->slide, idx);
+            if (pic == NULL) {
+                mem_free(ext);
+                mem_free(fle);
+                return (FALSE);
+            }
+            str = str_fmtA(fmt, fle, idx, ext);
+            if (str == NULL) {
+                fmtz_free((sFMTZ*)pic);
+                mem_free(ext);
+                mem_free(fle);
+                return (FALSE);
+            }
+            if (!qst_save_img(pic->frame->pic, parm, str, argc, argv)) {
+                fmtz_free((sFMTZ*)pic);
+                mem_free(str);
+                mem_free(ext);
+                mem_free(fle);
+                return (FALSE);
+            }
+            fmtz_free((sFMTZ*)pic);
+            mem_free(str);
+        }
+        mem_free(ext);
+        mem_free(fle);
+    }
+    return (TRUE);
 }
