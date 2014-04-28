@@ -768,40 +768,29 @@ qst_save_all (
         fle = str_dupA(name);
         if (fle == NULL)
             return (FALSE);
+        QST_SET_CURSOR(parm->hwnd, parm->cur_busy);
         ext = str_allocA(str_sizeA(name));
-        if (ext == NULL) {
-            mem_free(fle);
-            return (FALSE);
-        }
+        if (ext == NULL)
+            goto _failure1;
         filext_removeA(fle);
         filext_extractA(ext, name);
         for (idx = 0; idx < pic->count; idx++) {
             str = str_fmtA("%s_%02u%s", fle, idx, ext);
-            if (str == NULL) {
-                mem_free(ext);
-                mem_free(fle);
-                return (FALSE);
-            }
-            if (!qst_save_img(pic->frame[idx].pic, parm, str, argc, argv)) {
-                mem_free(str);
-                mem_free(ext);
-                mem_free(fle);
-                return (FALSE);
-            }
+            if (str == NULL)
+                goto _failure2;
+            if (!qst_save_img(pic->frame[idx].pic, parm, str, argc, argv))
+                goto _failure3;
             mem_free(str);
         }
-        mem_free(ext);
-        mem_free(fle);
     }
     else {
         fle = str_dupA(name);
         if (fle == NULL)
             return (FALSE);
+        QST_SET_CURSOR(parm->hwnd, parm->cur_busy);
         ext = str_allocA(str_sizeA(name));
-        if (ext == NULL) {
-            mem_free(fle);
-            return (FALSE);
-        }
+        if (ext == NULL)
+            goto _failure1;
         filext_removeA(fle);
         filext_extractA(ext, name);
         cnt = pict_get_count(parm->slide);
@@ -816,31 +805,31 @@ qst_save_all (
         else if (cnt > 9UL) fmt = "%s_%02u%s";
         else               fmt = "%s_%u%s";
         for (idx = 0; idx < cnt; idx++) {
-            pic = CR_VCALL(parm->slide)->get(parm->slide, idx);
-            if (pic == NULL) {
-                mem_free(ext);
-                mem_free(fle);
-                return (FALSE);
-            }
             str = str_fmtA(fmt, fle, idx, ext);
-            if (str == NULL) {
-                fmtz_free((sFMTZ*)pic);
-                mem_free(ext);
-                mem_free(fle);
-                return (FALSE);
-            }
+            if (str == NULL)
+                goto _failure2;
+            pic = CR_VCALL(parm->slide)->get(parm->slide, idx);
+            if (pic == NULL)
+                goto _failure3;
             if (!qst_save_img(pic->frame->pic, parm, str, argc, argv)) {
                 fmtz_free((sFMTZ*)pic);
-                mem_free(str);
-                mem_free(ext);
-                mem_free(fle);
-                return (FALSE);
+                goto _failure3;
             }
             fmtz_free((sFMTZ*)pic);
             mem_free(str);
         }
-        mem_free(ext);
-        mem_free(fle);
     }
+    mem_free(ext);
+    mem_free(fle);
+    QST_SET_CURSOR(parm->hwnd, parm->cur_free);
     return (TRUE);
+
+_failure3:
+    mem_free(str);
+_failure2:
+    mem_free(ext);
+_failure1:
+    mem_free(fle);
+    QST_SET_CURSOR(parm->hwnd, parm->cur_free);
+    return (FALSE);
 }
