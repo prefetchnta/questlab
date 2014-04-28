@@ -49,8 +49,9 @@ typedef struct
 } sFMTZ;
 
 /* 用得到的函数类型 */
-typedef sFMTZ*  (*load_fmtz_t) (iDATIN*, const sLOADER*);
-
+typedef sFMTZ*  (*load_fmtz_t) (iDATIN *datin, const sLOADER *param);
+typedef bool_t  (*save_img_fmtz_t) (const sIMAGE *img, const ansi_t *name,
+                                    uint_t argc, ansi_t *argv[]);
 /* 格式最终结果掩码 */
 #define CR_FMTZ_MASK_DAT    0x00000001UL    /* 数据文件 */
 #define CR_FMTZ_MASK_PIC    0x00000002UL    /* 图片文件 */
@@ -117,6 +118,20 @@ CR_API sFMT_PIC*    load_cr_jpg (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_pcx (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_png (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_tga (iDATIN *datin, const sLOADER *param);
+
+/***** 文件保存 API 组 *****/
+CR_API bool_t   save_img_565  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_888  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_X555 (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_1555 (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_4444 (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_8888 (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
 
 /*****************************************************************************/
 /*                               区域文件格式                                */
