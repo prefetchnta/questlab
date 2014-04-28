@@ -14,6 +14,12 @@ CR_API void_t   qst_set_index (sQstView2D *parm, int32u index);
 CR_API void_t   qst_render_data (sQstView2D *parm, sLOADER *ldrs);
 CR_API void_t   qst_move_xy (sQstView2D *parm, sint_t delta_x,
                              sint_t delta_y);
+CR_API bool_t   qst_save_now (const sQstView2D *parm,
+                              const ansi_t *name, uint_t argc,
+                              ansi_t *argv[]);
+CR_API bool_t   qst_save_all (const sQstView2D *parm,
+                              const ansi_t *name, uint_t argc,
+                              ansi_t *argv[]);
 /*
 ---------------------------------------
     FMTZ 插件释放回调
@@ -900,6 +906,56 @@ qst_v2d_g2d_refresh (
 
 /*
 ---------------------------------------
+    保存当前浏览图片
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_save (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    bool_t      ret;
+    sQstView2D* ctx;
+
+    /* 参数解析 <文件名> [...] */
+    if (argc < 2)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    ret = qst_save_now(ctx, argv[1], argc - 2, &argv[2]);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
+    保存当前所有图片
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_saveall (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    bool_t      ret;
+    sQstView2D* ctx;
+
+    /* 参数解析 <文件名> [...] */
+    if (argc < 2)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    ret = qst_save_all(ctx, argv[1], argc - 2, &argv[2]);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
     设置资源根目录路径
 ---------------------------------------
 */
@@ -999,6 +1055,8 @@ static const sQST_CMD   s_cmdz[] =
     { "g2d:clear",   qst_v2d_g2d_clear   },
     { "g2d:canvas",  qst_v2d_g2d_canvas  },
     { "g2d:refresh", qst_v2d_g2d_refresh },
+    { "g2d:save",    qst_v2d_g2d_save    },
+    { "g2d:saveall", qst_v2d_g2d_saveall },
 
     /***** 二维插件命令 *****/
     { "g2d:ext:free", qst_v2d_ext_free },
