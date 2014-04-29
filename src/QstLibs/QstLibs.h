@@ -155,7 +155,7 @@ typedef struct
 
 } sQST_CTX;
 
-CR_API void_t   STDCALL misc_async_call (mt_main_t call, sQST_CTX *param);
+CR_API void_t   STDCALL misc_async_call (mt_main_t func, sQST_CTX *param);
 CR_API void_t   STDCALL misc_async_okay (sQST_CTX *param);
 
 #endif  /* !__QL_QSTLIBS_H__ */

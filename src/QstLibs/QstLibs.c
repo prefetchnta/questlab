@@ -1164,14 +1164,14 @@ misc_cui_setwin (
 */
 CR_API void_t STDCALL
 misc_async_call (
-  __CR_IN__ mt_main_t   call,
+  __CR_IN__ mt_main_t   func,
   __CR_IO__ sQST_CTX*   param
     )
 {
     thrd_t  thrd;
 
     param->copyed = FALSE;
-    thrd = thread_new(0, call, param, FALSE,
+    thrd = thread_new(0, func, param, FALSE,
                       CR_PRRT_NRM, NULL);
     if (thrd != NULL) {
         thread_del(thrd);
