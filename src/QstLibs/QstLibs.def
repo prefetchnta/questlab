@@ -8,6 +8,8 @@ EXPORTS
     misc_desk_save
     misc_desk_load
     misc_desk_init
+    misc_async_call
+    misc_async_okay 
     cmd_ini_get
     cmd_ini_send
     cmd_xml_get

@@ -148,4 +148,14 @@ CR_API bool_t   STDCALL misc_desk_load (const ansi_t *name,
 CR_API void_t   STDCALL misc_desk_init (const ansi_t *name, sint_t *left,
                             sint_t *top, uint_t *width, uint_t *height,
                                         uint_t def_w, uint_t def_h);
+/* 异步执行结构头 */
+typedef struct
+{
+        volatile sint_t copyed;
+
+} sQST_CTX;
+
+CR_API void_t   STDCALL misc_async_call (mt_main_t call, sQST_CTX *param);
+CR_API void_t   STDCALL misc_async_okay (sQST_CTX *param);
+
 #endif  /* !__QL_QSTLIBS_H__ */

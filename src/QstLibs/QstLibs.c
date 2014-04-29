@@ -1156,3 +1156,39 @@ misc_cui_setwin (
     return (SetWindowPos(hwnd, HWND_TOP, (int)x, (int)y,
                  (int)w, (int)h, SWP_SHOWWINDOW));
 }
+
+/*
+=======================================
+    异步调用一个函数
+=======================================
+*/
+CR_API void_t STDCALL
+misc_async_call (
+  __CR_IN__ mt_main_t   call,
+  __CR_IO__ sQST_CTX*   param
+    )
+{
+    thrd_t  thrd;
+
+    param->copyed = FALSE;
+    thrd = thread_new(0, call, param, FALSE,
+                      CR_PRRT_NRM, NULL);
+    if (thrd != NULL) {
+        thread_del(thrd);
+        while (!param->copyed)
+            thread_sleep(1);
+    }
+}
+
+/*
+=======================================
+    异步上下文复制完毕
+=======================================
+*/
+CR_API void_t STDCALL
+misc_async_okay (
+  __CR_IO__ sQST_CTX*   param
+    )
+{
+    atom_inc(&param->copyed);
+}
