@@ -364,6 +364,28 @@ qst_save_img (
     return (save_call(image, name, argc, argv));
 }
 
+/*
+---------------------------------------
+    返回计数的格式串
+---------------------------------------
+*/
+static const ansi_t*
+qst_count_fmt (
+  __CR_IN__ int32u  count
+    )
+{
+    if      (count > 999999999UL) return ("%s_%010u%s");
+    else if (count > 99999999UL) return ("%s_%09u%s");
+    else if (count > 9999999UL) return ("%s_%08u%s");
+    else if (count > 999999UL) return ("%s_%07u%s");
+    else if (count > 99999UL) return ("%s_%06u%s");
+    else if (count > 9999UL) return ("%s_%05u%s");
+    else if (count > 999UL) return ("%s_%04u%s");
+    else if (count > 99UL) return ("%s_%03u%s");
+    else if (count > 9UL) return ("%s_%02u%s");
+    return ("%s_%u%s");
+}
+
 /*****************************************************************************/
 /*                                 内容渲染                                  */
 /*****************************************************************************/
@@ -749,33 +771,40 @@ qst_save_all (
   __CR_IN__ ansi_t*             argv[]
     )
 {
-    int32u      idx;
-    int32u      cnt;
-    ansi_t*     str;
-    ansi_t*     fle;
-    ansi_t*     ext;
-    ansi_t*     fmt;
-    sFMT_PIC*   pic;
+    int32u          idx;
+    int32u          cnt;
+    ansi_t*         str;
+    ansi_t*         fle;
+    ansi_t*         ext;
+    sFMT_PIC*       pic;
+    const ansi_t*   fmt;
 
     if (parm->paint != NULL)
         return (qst_save_now(parm, name, argc, argv));
     if (parm->fmtz == NULL)
         return (FALSE);
+    pic = (sFMT_PIC*)parm->fmtz;
     if (parm->slide == NULL) {
-        pic = (sFMT_PIC*)parm->fmtz;
         if (pic->count == 1)
             return (qst_save_now(parm, name, argc, argv));
-        fle = str_dupA(name);
-        if (fle == NULL)
-            return (FALSE);
-        QST_SET_CURSOR(parm->hwnd, parm->cur_busy);
-        ext = str_allocA(str_sizeA(name));
-        if (ext == NULL)
-            goto _failure1;
-        filext_removeA(fle);
-        filext_extractA(ext, name);
-        for (idx = 0; idx < pic->count; idx++) {
-            str = str_fmtA("%s_%02u%s", fle, idx, ext);
+        cnt = pic->count;
+    }
+    else {
+        cnt = pict_get_count(parm->slide);
+    }
+    fle = str_dupA(name);
+    if (fle == NULL)
+        return (FALSE);
+    QST_SET_CURSOR(parm->hwnd, parm->cur_busy);
+    ext = str_allocA(str_sizeA(name));
+    if (ext == NULL)
+        goto _failure1;
+    filext_removeA(fle);
+    filext_extractA(ext, name);
+    fmt = qst_count_fmt(cnt);
+    if (parm->slide == NULL) {
+        for (idx = 0; idx < cnt; idx++) {
+            str = str_fmtA(fmt, fle, idx, ext);
             if (str == NULL)
                 goto _failure2;
             if (!qst_save_img(pic->frame[idx].pic, parm, str, argc, argv))
@@ -784,26 +813,6 @@ qst_save_all (
         }
     }
     else {
-        fle = str_dupA(name);
-        if (fle == NULL)
-            return (FALSE);
-        QST_SET_CURSOR(parm->hwnd, parm->cur_busy);
-        ext = str_allocA(str_sizeA(name));
-        if (ext == NULL)
-            goto _failure1;
-        filext_removeA(fle);
-        filext_extractA(ext, name);
-        cnt = pict_get_count(parm->slide);
-        if      (cnt > 999999999UL) fmt = "%s_%010u%s";
-        else if (cnt > 99999999UL) fmt = "%s_%09u%s";
-        else if (cnt > 9999999UL) fmt = "%s_%08u%s";
-        else if (cnt > 999999UL) fmt = "%s_%07u%s";
-        else if (cnt > 99999UL) fmt = "%s_%06u%s";
-        else if (cnt > 9999UL) fmt = "%s_%05u%s";
-        else if (cnt > 999UL) fmt = "%s_%04u%s";
-        else if (cnt > 99UL) fmt = "%s_%03u%s";
-        else if (cnt > 9UL) fmt = "%s_%02u%s";
-        else               fmt = "%s_%u%s";
         for (idx = 0; idx < cnt; idx++) {
             str = str_fmtA(fmt, fle, idx, ext);
             if (str == NULL)
