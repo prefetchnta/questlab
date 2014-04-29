@@ -112,7 +112,7 @@ void __fastcall TfrmMain::subG2dAlphaClick(TObject *Sender)
 //---------------------------------------------------------------------------
 typedef struct
 {
-        sint_t      cpy;
+        sQST_CTX    ctx;
         bool_t      all;
         TfrmMain*   frm;
 
@@ -133,7 +133,7 @@ g2d_img_save (
     sG2dSaveCtx temp;
 
     struct_cpy(&temp, param, sG2dSaveCtx);
-    atom_inc(&(((sG2dSaveCtx*)param)->cpy));
+    misc_async_okay((sQST_CTX*)param);
     temp.frm->Enabled = false;
     misc_call_exe("xSelectFile.exe save", TRUE, FALSE);
     if (file_existA(QST_STOPS_NEXT))
@@ -160,36 +160,22 @@ _func_out:
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subG2dSaveNowClick(TObject *Sender)
 {
-    thrd_t          thrd;
-    sG2dSaveCtx     parm;
+    sG2dSaveCtx parm;
 
     /* 保存当前图片帧 */
-    parm.cpy = FALSE;
-    parm.all = FALSE;
     parm.frm = this;
-    thrd = thread_new(0, g2d_img_save, &parm, FALSE);
-    if (thrd != NULL) {
-        thread_del(thrd);
-        while (!parm.cpy)
-            thread_sleep(1);
-    }
+    parm.all = FALSE;
+    misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subG2dSaveAllClick(TObject *Sender)
 {
-    thrd_t          thrd;
-    sG2dSaveCtx     parm;
+    sG2dSaveCtx parm;
 
     /* 保存所有图片帧 */
-    parm.cpy = FALSE;
-    parm.all = TRUE;
     parm.frm = this;
-    thrd = thread_new(0, g2d_img_save, &parm, FALSE);
-    if (thrd != NULL) {
-        thread_del(thrd);
-        while (!parm.cpy)
-            thread_sleep(1);
-    }
+    parm.all = TRUE;
+    misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subWinShowClick(TObject *Sender)
