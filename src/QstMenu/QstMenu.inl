@@ -7,6 +7,8 @@ void __fastcall subQstRunClick(TObject *Sender);
 void __fastcall subTreeCloseClick(TObject *Sender);
 void __fastcall subG2dColorClick(TObject *Sender);
 void __fastcall subG2dAlphaClick(TObject *Sender);
+void __fastcall subG2dSaveNowClick(TObject *Sender);
+void __fastcall subG2dSaveAllClick(TObject *Sender);
 void __fastcall subWinShowClick(TObject *Sender);
 void __fastcall subWinLoadClick(TObject *Sender);
 void __fastcall subWinSaveClick(TObject *Sender);
@@ -106,6 +108,52 @@ void __fastcall TfrmMain::subG2dAlphaClick(TObject *Sender)
     /* 显示图片透明通道 */
     qst_send_cmdz("g2d:alpha");
     ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subG2dSaveNowClick(TObject *Sender)
+{
+    ansi_t* file;
+    ansi_t* send;
+
+    /* 保存当前图片帧 */
+    misc_call_exe("xSelectFile.exe save" , TRUE, FALSE);
+    if (file_existA(QST_STOPS_NEXT))
+        return;
+    file = file_load_as_strA(QST_SAVE_FILEX);
+    if (file == NULL)
+        return;
+
+    /* 不加引号可输入附加参数
+       但是文件名里就不支持空格了 */
+    send = str_fmtA("g2d:save %s", file);
+    mem_free(file);
+    if (send != NULL) {
+        qst_send_cmdz(send);
+        mem_free(send);
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subG2dSaveAllClick(TObject *Sender)
+{
+    ansi_t* file;
+    ansi_t* send;
+
+    /* 保存所有图片帧 */
+    misc_call_exe("xSelectFile.exe save" , TRUE, FALSE);
+    if (file_existA(QST_STOPS_NEXT))
+        return;
+    file = file_load_as_strA(QST_SAVE_FILEX);
+    if (file == NULL)
+        return;
+
+    /* 不加引号可输入附加参数
+       但是文件名里就不支持空格了 */
+    send = str_fmtA("g2d:saveall %s", file);
+    mem_free(file);
+    if (send != NULL) {
+        qst_send_cmdz(send);
+        mem_free(send);
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subWinShowClick(TObject *Sender)
@@ -574,6 +622,8 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subTreeClose);
     QST_MENU_EVENT(subG2dColor);
     QST_MENU_EVENT(subG2dAlpha);
+    QST_MENU_EVENT(subG2dSaveNow);
+    QST_MENU_EVENT(subG2dSaveAll);
     QST_MENU_EVENT(subWinShow);
     QST_MENU_EVENT(subWinLoad);
     QST_MENU_EVENT(subWinSave);

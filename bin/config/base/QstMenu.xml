@@ -8,10 +8,13 @@
         <MenuItem name="subG2dColor" text="显示图片色彩通道(&B)" radio="1" group="1" checked="1" />
         <MenuItem name="subG2dAlpha" text="显示图片透明通道(&A)" radio="1" group="1" />
         <MenuItem name="xxxSepOper2" text="-" />
+        <MenuItem name="subG2dSaveNow" text="保存当前图片帧(&N)..." scut="Ctrl+N" />
+        <MenuItem name="subG2dSaveAll" text="保存所有图片帧(&M)..." scut="Ctrl+M" />
+        <MenuItem name="xxxSepOper3" text="-" />
         <MenuItem name="subWinShow" text="显示所有窗口(&R)" scut="Ctrl+R" />
         <MenuItem name="subWinLoad" text="加载窗口位置(&L)" scut="Ctrl+L" />
         <MenuItem name="subWinSave" text="保存窗口位置(&S)" />
-        <MenuItem name="xxxSepOper3" text="-" />
+        <MenuItem name="xxxSepOper4" text="-" />
         <MenuItem name="subExit" text="退出整个系统(&X)" />
     </MenuItem>
     <MenuItem name="subPartShow" text="打开(&S)">
