@@ -110,49 +110,85 @@ void __fastcall TfrmMain::subG2dAlphaClick(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMain::subG2dSaveNowClick(TObject *Sender)
+typedef struct
 {
-    ansi_t* file;
-    ansi_t* send;
+        sint_t      cpy;
+        bool_t      all;
+        TfrmMain*   frm;
 
-    /* 保存当前图片帧 */
-    misc_call_exe("xSelectFile.exe save" , TRUE, FALSE);
+} sG2dSaveCtx;
+
+/*
+---------------------------------------
+    保存当前图片帧线程
+---------------------------------------
+*/
+static uint_t STDCALL
+g2d_img_save (
+  __CR_IN__ void_t* param
+    )
+{
+    ansi_t*     file;
+    ansi_t*     send;
+    sG2dSaveCtx temp;
+
+    struct_cpy(&temp, param, sG2dSaveCtx);
+    atom_inc(&(((sG2dSaveCtx*)param)->cpy));
+    temp.frm->Enabled = false;
+    misc_call_exe("xSelectFile.exe save", TRUE, FALSE);
     if (file_existA(QST_STOPS_NEXT))
-        return;
+        goto _func_out;
     file = file_load_as_strA(QST_SAVE_FILEX);
     if (file == NULL)
-        return;
+        goto _func_out;
 
     /* 不加引号可输入附加参数
        但是文件名里就不支持空格了 */
-    send = str_fmtA("g2d:save %s", file);
+    if (!temp.all)
+        send = str_fmtA("g2d:save %s", file);
+    else
+        send = str_fmtA("g2d:saveall %s", file);
     mem_free(file);
     if (send != NULL) {
         qst_send_cmdz(send);
         mem_free(send);
     }
+_func_out:
+    temp.frm->Enabled = true;
+    return (TRUE);
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subG2dSaveNowClick(TObject *Sender)
+{
+    thrd_t          thrd;
+    sG2dSaveCtx     parm;
+
+    /* 保存当前图片帧 */
+    parm.cpy = FALSE;
+    parm.all = FALSE;
+    parm.frm = this;
+    thrd = thread_new(0, g2d_img_save, &parm, FALSE);
+    if (thrd != NULL) {
+        thread_del(thrd);
+        while (!parm.cpy)
+            thread_sleep(1);
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subG2dSaveAllClick(TObject *Sender)
 {
-    ansi_t* file;
-    ansi_t* send;
+    thrd_t          thrd;
+    sG2dSaveCtx     parm;
 
     /* 保存所有图片帧 */
-    misc_call_exe("xSelectFile.exe save" , TRUE, FALSE);
-    if (file_existA(QST_STOPS_NEXT))
-        return;
-    file = file_load_as_strA(QST_SAVE_FILEX);
-    if (file == NULL)
-        return;
-
-    /* 不加引号可输入附加参数
-       但是文件名里就不支持空格了 */
-    send = str_fmtA("g2d:saveall %s", file);
-    mem_free(file);
-    if (send != NULL) {
-        qst_send_cmdz(send);
-        mem_free(send);
+    parm.cpy = FALSE;
+    parm.all = TRUE;
+    parm.frm = this;
+    thrd = thread_new(0, g2d_img_save, &parm, FALSE);
+    if (thrd != NULL) {
+        thread_del(thrd);
+        while (!parm.cpy)
+            thread_sleep(1);
     }
 }
 //---------------------------------------------------------------------------
