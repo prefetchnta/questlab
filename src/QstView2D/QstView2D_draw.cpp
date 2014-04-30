@@ -784,14 +784,12 @@ qst_save_all (
     if (parm->fmtz == NULL)
         return (FALSE);
     pic = (sFMT_PIC*)parm->fmtz;
-    if (parm->slide == NULL) {
-        if (pic->count == 1)
-            return (qst_save_now(parm, name, argc, argv));
+    if (parm->slide == NULL)
         cnt = pic->count;
-    }
-    else {
+    else
         cnt = pict_get_count(parm->slide);
-    }
+    if (cnt == 1)
+        return (qst_save_now(parm, name, argc, argv));
     fle = str_dupA(name);
     if (fle == NULL)
         return (FALSE);
