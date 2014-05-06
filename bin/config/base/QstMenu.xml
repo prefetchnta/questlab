@@ -19,6 +19,7 @@
     </MenuItem>
     <MenuItem name="subPartShow" text="打开(&S)">
         <MenuItem name="subOpenQstCmdz" text="QstCmdz" />
+        <MenuItem name="subOpenQstComm" text="QstComm" />
         <MenuItem name="subOpenQstData" text="QstData" />
         <MenuItem name="subOpenQstHash" text="QstHash" />
         <MenuItem name="subOpenQstIndex" text="QstIndex" />
@@ -32,6 +33,7 @@
     </MenuItem>
     <MenuItem name="subPartKill" text="关闭(&K)">
         <MenuItem name="subKillQstCmdz" text="QstCmdz" />
+        <MenuItem name="subKillQstComm" text="QstComm" />
         <MenuItem name="subKillQstData" text="QstData" />
         <MenuItem name="subKillQstHash" text="QstHash" />
         <MenuItem name="subKillQstIndex" text="QstIndex" />
