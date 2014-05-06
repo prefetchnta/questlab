@@ -30,11 +30,9 @@
 #include <string.h>
 
 /* 外部库引用 */
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "CrH_CORE.lib")
-    #ifndef _CR_BUILD_DLL_
-        #pragma comment (lib, "QstLibs.lib")
-    #endif
+#pragma comment (lib, "CrH_CORE.lib")
+#ifndef _CR_BUILD_DLL_
+    #pragma comment (lib, "QstLibs.lib")
 #endif
 
 /*****************************************************************************/

@@ -2,10 +2,8 @@
 #include "QstView2D.h"
 
 /* 外部库引用 */
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "CrH_BLIT.lib")
-    #pragma comment (lib, "ResLoader.lib")
-#endif
+#pragma comment (lib, "CrH_BLIT.lib")
+#pragma comment (lib, "ResLoader.lib")
 
 /* 缺省的窗口大小 */
 #define QV2D_DEF_WIDTH  800

@@ -7,9 +7,7 @@
 using namespace tesseract;
 
 /* 外部库引用 */
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "libtesseract302.lib")
-#endif
+#pragma comment (lib, "libtesseract302.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*

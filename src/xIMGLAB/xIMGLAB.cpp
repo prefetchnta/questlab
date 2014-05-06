@@ -2,9 +2,7 @@
 #include "xIMGLAB.h"
 
 /* 外部库引用 */
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "CrH_BLIT.lib")
-#endif
+#pragma comment (lib, "CrH_BLIT.lib")
 
 /* 显示画面索引 */
 static uint_t   s_img_idx;

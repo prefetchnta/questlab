@@ -4,11 +4,9 @@
 using namespace cv;
 
 /* 外部库引用 */
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "opencv_core248.lib")
-    #pragma comment (lib, "opencv_highgui248.lib")
-    #pragma comment (lib, "opencv_imgproc248.lib")
-#endif
+#pragma comment (lib, "opencv_core248.lib")
+#pragma comment (lib, "opencv_highgui248.lib")
+#pragma comment (lib, "opencv_imgproc248.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*

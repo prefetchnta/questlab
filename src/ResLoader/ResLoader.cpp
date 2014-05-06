@@ -23,9 +23,7 @@
 #include "../QstLibs/QstLibs.h"
 
 /* 外部库引用 */
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "QstLibs.lib")
-#endif
+#pragma comment (lib, "QstLibs.lib")
 
 /* 从宿主传过来的参数 */
 static socket_t         s_netw = NULL;

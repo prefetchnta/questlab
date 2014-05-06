@@ -23,9 +23,7 @@
 #include "../QstLibs/QstLibs.h"
 
 /* 外部库引用 */
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "CrH_BLIT.lib")
-#endif
+#pragma comment (lib, "CrH_BLIT.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*
