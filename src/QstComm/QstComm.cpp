@@ -82,13 +82,26 @@ WinMain (
         & (~Qt::WindowMaximizeButtonHint));
     qt_win.move(x1, y1);
     qt_win.resize(ww, hh);
-    if (!GetWindowRect((HWND)qt_win.winId(), &w_rect))
+    s_wrk_ctx.hwnd = (HWND)qt_win.winId();
+    if (!GetWindowRect(s_wrk_ctx.hwnd, &w_rect))
         return (QST_ERROR);
     s_wrk_ctx.fw = w_rect.right - w_rect.left - ww;
     s_wrk_ctx.fh = w_rect.bottom - w_rect.top - hh;
     qt_win.setMinimumSize(QCOM_DEF_WIDTH  - s_wrk_ctx.fw,
                           QCOM_DEF_HEIGHT - s_wrk_ctx.fh);
     qt_win.resize(ww - s_wrk_ctx.fw, hh - s_wrk_ctx.fh);
+
+    QWidget*        cent = new QWidget (&qt_win);
+    QTextEdit*      edit = new QTextEdit (cent);
+    QHBoxLayout*    hori = new QHBoxLayout (cent);
+
+    /* 创建窗体里的控件 */
+    hori->setSpacing(6);
+    hori->setContentsMargins(8, 8, 8, 8);
+    hori->addWidget(edit);
+    qt_win.setCentralWidget(cent);
+    s_wrk_ctx.view = (void_t*)(edit);
+    s_wrk_ctx.form = (void_t*)(&qt_win);
 
     /* 初始化网络 */
     if (!socket_init())
@@ -104,16 +117,17 @@ WinMain (
 
     /* 生成工作线程 */
     s_wrk_ctx.quit = FALSE;
-/*
     thrd = thread_new(0, qst_com_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL)
         return (QST_ERROR);
-*/
+
     /* 开始 Qt 流程 */
     qt_win.show();
     qt_app.exec();
 
-    /* 等待线程结束 */
+    /* 关闭线程直接退出 */
+    if (!s_wrk_ctx.quit)
+        s_wrk_ctx.quit = TRUE;
     thread_wait(thrd);
     thread_del(thrd);
     netw_cli_close(s_wrk_ctx.netw);

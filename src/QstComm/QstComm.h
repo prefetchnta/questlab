@@ -38,7 +38,10 @@
 typedef struct
 {
         /* 应用程序参数 */
+        HWND        hwnd;       /* 窗口句柄 */
         bool_t      quit;       /* 是否退出 */
+        void_t*     form;       /* 窗口对象 */
+        void_t*     view;       /* 显示对象 */
         socket_t    netw;       /* 网络连接 */
         sint_t      fw, fh;     /* 边框宽高 */
 

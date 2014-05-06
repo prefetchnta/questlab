@@ -4,9 +4,11 @@ BIN_NAME=$(PROJECT).exe
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)QstComm.$(O) \
+         .$(L)QstComm_main.$(O) \
          .$(L)$(PROJECT).res
 
-SRC_LIST=.$(L)QstComm.$(P)
+SRC_LIST=.$(L)QstComm.$(P) \
+         .$(L)QstComm_main.$(P)
 
 build_all:
     $(RC) $(RFLAGS)
