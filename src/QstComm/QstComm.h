@@ -38,8 +38,9 @@
 typedef struct
 {
         /* 应用程序参数 */
-        bool_t      quit;   /* 是否退出 */
-        socket_t    netw;   /* 网络连接 */
+        bool_t      quit;       /* 是否退出 */
+        socket_t    netw;       /* 网络连接 */
+        sint_t      fw, fh;     /* 边框宽高 */
 
 } sQstComm;
 

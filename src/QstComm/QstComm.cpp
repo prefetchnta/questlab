@@ -73,18 +73,22 @@ WinMain (
     if (ww < QCOM_DEF_WIDTH)  ww = QCOM_DEF_WIDTH;
     if (hh < QCOM_DEF_HEIGHT) hh = QCOM_DEF_HEIGHT;
 
-    QSize           wsize;
+    RECT            w_rect;
     QMainWindow     qt_win;
 
-    qt_win.setMinimumSize(QCOM_DEF_WIDTH, QCOM_DEF_HEIGHT);
+    /* Qt 里的宽高都不包括边框
+       需要自己用 Win32 API 获取 */
     qt_win.setWindowFlags(qt_win.windowFlags()
         & (~Qt::WindowMaximizeButtonHint));
     qt_win.move(x1, y1);
     qt_win.resize(ww, hh);
-    wsize = qt_win.frameSize();
-    ww -= (wsize.width()  - ww);
-    hh -= (wsize.height() - hh);
-    qt_win.resize(ww, hh);
+    if (!GetWindowRect((HWND)qt_win.winId(), &w_rect))
+        return (QST_ERROR);
+    s_wrk_ctx.fw = w_rect.right - w_rect.left - ww;
+    s_wrk_ctx.fh = w_rect.bottom - w_rect.top - hh;
+    qt_win.setMinimumSize(QCOM_DEF_WIDTH  - s_wrk_ctx.fw,
+                          QCOM_DEF_HEIGHT - s_wrk_ctx.fh);
+    qt_win.resize(ww - s_wrk_ctx.fw, hh - s_wrk_ctx.fh);
 
     /* 初始化网络 */
     if (!socket_init())
@@ -105,7 +109,7 @@ WinMain (
     if (thrd == NULL)
         return (QST_ERROR);
 */
-    /* 开始 QT 流程 */
+    /* 开始 Qt 流程 */
     qt_win.show();
     qt_app.exec();
 
