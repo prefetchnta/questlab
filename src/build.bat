@@ -84,6 +84,10 @@ cd QstCmdz
 nmake -fQstCmdz.mak
 cd..
 rem =====================
+cd QstComm
+nmake -fQstComm.mak
+cd..
+rem =====================
 cd QstLibs
 nmake -fQstLibs.mak
 cd..
