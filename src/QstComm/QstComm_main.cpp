@@ -67,22 +67,20 @@ qst_set_viewer (
     /* 设置全局字体 (默认 Fixedsys 字体) */
     QFont   font("Fixedsys", 12, QFont::Normal, false);
 
-    _ENTER_COM_SINGLE_
     if (cfg->font_face != NULL) {
         font.setFamily(cfg->font_face);
         font.setPointSize(cfg->font_size);
     }
-    edt->setFont(font);
 
     ansi_t  tmp[64];
 
-    /* 设置默认前景和背景颜色 */
-    edt->setTextColor(cfg->color);
-    edt->setTextBackgroundColor(cfg->bkcolor);
+    /* 设置默认前景和背景颜色
+       使用 CSS 不会改变已有 HTML 文字的属性 */
     sprintf(tmp, "background-color: #%06X; color: #%06X;",
                   cfg->bkcolor, cfg->color);
+    _ENTER_COM_SINGLE_
+    edt->setFont(font);
     edt->setStyleSheet(tmp);
-    edt->setPlainText("");
     _LEAVE_COM_SINGLE_
 }
 
