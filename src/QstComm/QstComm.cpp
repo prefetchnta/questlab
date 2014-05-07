@@ -97,8 +97,12 @@ WinMain (
     hori->setContentsMargins(8, 8, 8, 8);
     hori->addWidget(edit);
     qt_win.setCentralWidget(cent);
+
+    CTextOper   oper(edit);
+
     s_wrk_ctx.view = (void_t*)(edit);
     s_wrk_ctx.form = (void_t*)(&qt_win);
+    s_wrk_ctx.oper = (void_t*)(&oper);
     qst_set_viewer(&s_wrk_ctx);
     SetClassLongPtr(s_wrk_ctx.hwnd, GCLP_HICON, (LONG_PTR)
                     LoadIconA(curt_app, (ansi_t*)101));

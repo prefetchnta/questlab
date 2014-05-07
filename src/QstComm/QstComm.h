@@ -53,6 +53,7 @@ typedef struct
         lock_t      lock;       /* 同步的锁 */
         void_t*     form;       /* 窗口对象 */
         void_t*     view;       /* 显示对象 */
+        void_t*     oper;       /* 操作对象 */
         socket_t    netw;       /* 网络连接 */
         sQCOM_conf  cfgs;       /* 配置参数 */
         sint_t      fw, fh;     /* 边框宽高 */
