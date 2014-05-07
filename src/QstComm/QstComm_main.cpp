@@ -76,7 +76,7 @@ qst_set_viewer (
     cfg = &parm->cfgs;
     edt = (QTextEdit*)(parm->view);
 
-    /* 设置全局字体和颜色 (默认 Fixedsys 字体) */
+    /* 设置全局字体 (默认 Fixedsys 字体) */
     QFont   font("Fixedsys", 12, QFont::Normal, false);
 
     _ENTER_COM_SINGLE_
@@ -84,9 +84,11 @@ qst_set_viewer (
         font.setFamily(cfg->font_face);
         font.setPointSize(cfg->font_size);
     }
+    edt->setFont(font);
 
     ansi_t  tmp[64];
 
+    /* 设置默认前景和背景颜色 */
     edt->setTextColor(cfg->color);
     edt->setTextBackgroundColor(cfg->bkcolor);
     sprintf(tmp, "background-color: #%06X; color: #%06X;",
