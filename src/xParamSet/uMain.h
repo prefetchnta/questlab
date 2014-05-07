@@ -37,12 +37,21 @@ __published:    // IDE-managed Components
         TLabeledEdit *edtQEDT_max_size_kb;
         TButton *btnQEDT_font;
         TFontDialog *dlgFont;
+        TGroupBox *grpQstComm;
+        TButton *btnQCOM_font;
+        TStaticText *txtQCOM_color;
+        TStaticText *txtQCOM_bkcolor;
+        TLabel *Label3;
+        TLabel *Label4;
         void __fastcall btnOKClick(TObject *Sender);
         void __fastcall btnApplyClick(TObject *Sender);
         void __fastcall btnCancelClick(TObject *Sender);
         void __fastcall txtQV2D_bkcolorClick(TObject *Sender);
         void __fastcall txtQV2D_def_keycolorClick(TObject *Sender);
         void __fastcall btnQEDT_fontClick(TObject *Sender);
+        void __fastcall btnQCOM_fontClick(TObject *Sender);
+        void __fastcall txtQCOM_colorClick(TObject *Sender);
+        void __fastcall txtQCOM_bkcolorClick(TObject *Sender);
 private:        // User declarations
 public:         // User declarations
         __fastcall TfrmMain(TComponent* Owner);

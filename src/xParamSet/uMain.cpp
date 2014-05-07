@@ -103,7 +103,7 @@ _qst_text:
     edtQEDT_max_size_kb->Text = "20480";
     str = file_load_as_strA(QST_PATH_CONFIG "QstText.ini");
     if (str == NULL)
-        goto _func_out;
+        goto _qst_comm;
     ini = ini_parseU(str);
     mem_free(str);
     if (ini == NULL)
@@ -132,6 +132,44 @@ _qst_text:
     size = ini_key_intxU("qedt::max_size_kb", 20480, ini);
     if (size < 0) size = 0;
     edtQEDT_max_size_kb->Text = IntToStr(size);
+    ini_closeU(ini);
+
+_qst_comm:
+    /*******************/
+    /***** QstComm *****/
+    /*******************/
+    txtQCOM_color->Color = rgb2gdi(0xFFC0C0C0UL);
+    txtQCOM_bkcolor->Color = rgb2gdi(0xFF000000UL);
+    btnQCOM_font->Caption = "Fixedsys, 12";
+    str = file_load_as_strA(QST_PATH_CONFIG "QstComm.ini");
+    if (str == NULL)
+        goto _func_out;
+    ini = ini_parseU(str);
+    mem_free(str);
+    if (ini == NULL)
+        goto _func_out;
+    color = ini_key_intx32U("qcom::color", 0xFFC0C0C0UL, ini);
+    txtQCOM_color->Color = rgb2gdi(color);
+    color = ini_key_intx32U("qcom::bkcolor", 0xFF000000UL, ini);
+    txtQCOM_bkcolor->Color = rgb2gdi(color);
+    size = ini_key_intxU("qcom::font_size", 12, ini);
+    name = ini_key_stringU("qcom::font_face", ini);
+    if (name != NULL) {
+        str = name;
+        name = utf8_to_local(CR_LOCAL, str);
+        mem_free(str);
+    }
+    if (name == NULL) {
+        str = str_fmtA("Fixedsys, %d", size);
+    }
+    else {
+        str = str_fmtA("%s, %d", name, size);
+        mem_free(name);
+    }
+    if (str != NULL) {
+        btnQCOM_font->Caption = AnsiString(str);
+        mem_free(str);
+    }
     ini_closeU(ini);
 
 _func_out:
@@ -207,7 +245,7 @@ _qst_text:
     /*******************/
     fp = fopen(QST_PATH_CONFIG "QstText.ini", "w");
     if (fp == NULL)
-        goto _func_out;
+        goto _qst_comm;
     stemp = btnQEDT_font->Caption;
     name = stemp.c_str();
     str = str_chrA(name, CR_AC(','));
@@ -232,6 +270,37 @@ _qst_text:
     fprintf(fp, "qedt::max_size_kb = %u\n", size);
     fclose(fp);
 
+_qst_comm:
+    /*******************/
+    /***** QstComm *****/
+    /*******************/
+    fp = fopen(QST_PATH_CONFIG "QstComm.ini", "w");
+    if (fp == NULL)
+        goto _func_out;
+    color = gdi2rgb(txtQCOM_color->Color);
+    fprintf(fp, "qcom::color = 0x%08X\n", color | 0xFF000000UL);
+    color = gdi2rgb(txtQCOM_bkcolor->Color);
+    fprintf(fp, "qcom::bkcolor = 0x%08X\n", color | 0xFF000000UL);
+    stemp = btnQCOM_font->Caption;
+    name = stemp.c_str();
+    str = str_chrA(name, CR_AC(','));
+    if (str == NULL) {
+        fprintf(fp, "qcom::font_size = 12\n");
+    }
+    else {
+        *str = NIL;
+        fprintf(fp, "qcom::font_size = %s\n", str + 2);
+    }
+    str = local_to_utf8(CR_LOCAL, name);
+    if (str == NULL) {
+        fprintf(fp, "qcom::font_face = \"Fixedsys\"\n");
+    }
+    else {
+        fprintf(fp, "qcom::font_face = \"%s\"\n", str);
+        mem_free(str);
+    }
+    fclose(fp);
+
 _func_out:
     /* 发送参数加载命令 */
     misc_call_exe("QstCmdz.exe " QST_PATH_SCRIPT
@@ -246,7 +315,7 @@ void __fastcall TfrmMain::btnCancelClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::txtQV2D_bkcolorClick(TObject *Sender)
 {
-    /* 选择背景颜色 */
+    /* QstView2D 选择背景颜色 */
     dlgColor->Color = txtQV2D_bkcolor->Color;
     if (!dlgColor->Execute())
         return;
@@ -255,7 +324,7 @@ void __fastcall TfrmMain::txtQV2D_bkcolorClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::txtQV2D_def_keycolorClick(TObject *Sender)
 {
-    /* 选择关键颜色 */
+    /* QstView2D 选择关键颜色 */
     dlgColor->Color = txtQV2D_def_keycolor->Color;
     if (!dlgColor->Execute())
         return;
@@ -269,7 +338,7 @@ void __fastcall TfrmMain::btnQEDT_fontClick(TObject *Sender)
     sint_t      size;
     AnsiString  stemp;
 
-    /* 选择全局字体 */
+    /* QstText 选择全局字体 */
     stemp = btnQEDT_font->Caption;
     name = stemp.c_str();
     str = str_chrA(name, CR_AC(','));
@@ -288,5 +357,51 @@ void __fastcall TfrmMain::btnQEDT_fontClick(TObject *Sender)
     btnQEDT_font->Caption = dlgFont->Font->Name;
     btnQEDT_font->Caption = btnQEDT_font->Caption + ", ";
     btnQEDT_font->Caption = btnQEDT_font->Caption + stemp;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::btnQCOM_fontClick(TObject *Sender)
+{
+    ansi_t*     str;
+    ansi_t*     name;
+    sint_t      size;
+    AnsiString  stemp;
+
+    /* QstComm 选择全局字体 */
+    stemp = btnQCOM_font->Caption;
+    name = stemp.c_str();
+    str = str_chrA(name, CR_AC(','));
+    if (str == NULL) {
+        size = 12;
+    }
+    else {
+        *str = NIL;
+        size = StrToIntDef(str + 2, 12);
+    }
+    dlgFont->Font->Name = AnsiString(name);
+    dlgFont->Font->Size = size;
+    if (!dlgFont->Execute())
+        return;
+    stemp = IntToStr(dlgFont->Font->Size);
+    btnQCOM_font->Caption = dlgFont->Font->Name;
+    btnQCOM_font->Caption = btnQCOM_font->Caption + ", ";
+    btnQCOM_font->Caption = btnQCOM_font->Caption + stemp;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::txtQCOM_colorClick(TObject *Sender)
+{
+    /* QstComm 选择前景色 */
+    dlgColor->Color = txtQCOM_color->Color;
+    if (!dlgColor->Execute())
+        return;
+    txtQCOM_color->Color = dlgColor->Color;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::txtQCOM_bkcolorClick(TObject *Sender)
+{
+    /* QstComm 选择背景色 */
+    dlgColor->Color = txtQCOM_bkcolor->Color;
+    if (!dlgColor->Execute())
+        return;
+    txtQCOM_bkcolor->Color = dlgColor->Color;
 }
 //---------------------------------------------------------------------------

@@ -158,6 +158,58 @@ object frmMain: TfrmMain
           OnClick = btnQEDT_fontClick
         end
       end
+      object grpQstComm: TGroupBox
+        Left = 176
+        Top = 96
+        Width = 449
+        Height = 81
+        Caption = 'QstComm'
+        TabOrder = 3
+        object Label3: TLabel
+          Left = 312
+          Top = 56
+          Width = 49
+          Height = 20
+          AutoSize = False
+          Caption = #21069#26223#33394
+        end
+        object Label4: TLabel
+          Left = 384
+          Top = 56
+          Width = 49
+          Height = 20
+          AutoSize = False
+          Caption = #32972#26223#33394
+        end
+        object btnQCOM_font: TButton
+          Left = 16
+          Top = 24
+          Width = 273
+          Height = 41
+          TabOrder = 0
+          OnClick = btnQCOM_fontClick
+        end
+        object txtQCOM_color: TStaticText
+          Left = 304
+          Top = 16
+          Width = 58
+          Height = 33
+          AutoSize = False
+          BorderStyle = sbsSingle
+          TabOrder = 1
+          OnClick = txtQCOM_colorClick
+        end
+        object txtQCOM_bkcolor: TStaticText
+          Left = 376
+          Top = 16
+          Width = 58
+          Height = 33
+          AutoSize = False
+          BorderStyle = sbsSingle
+          TabOrder = 2
+          OnClick = txtQCOM_bkcolorClick
+        end
+      end
     end
   end
   object btnOK: TButton
