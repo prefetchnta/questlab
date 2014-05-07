@@ -44,7 +44,6 @@ WinMain (
     uint_t      argc;
     ansi_t**    argv;
 
-    CR_NOUSE(curt_app);
     CR_NOUSE(prev_app);
     CR_NOUSE(cmd_show);
 
@@ -109,7 +108,8 @@ WinMain (
     s_wrk_ctx.view = (void_t*)(edit);
     s_wrk_ctx.form = (void_t*)(&qt_win);
     qst_set_viewer(&s_wrk_ctx);
-
+    SetClassLongPtr(s_wrk_ctx.hwnd, GCLP_HICON, (LONG_PTR)
+                    LoadIconA(curt_app, (ansi_t*)101));
     /* 初始化网络 */
     if (!socket_init())
         return (QST_ERROR);
