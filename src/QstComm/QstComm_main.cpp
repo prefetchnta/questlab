@@ -1,10 +1,5 @@
 
-#include "QstComm.h"
-#pragma warning (disable: 4127)
-#pragma warning (disable: 4512)
-
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QTextEdit>
+#include "QstCommInt.h"
 
 /* 多线程锁简化宏 */
 #define _ENTER_COM_SINGLE_  \
@@ -43,13 +38,6 @@ qst_load_cfg (
     cfgs->bkcolor = ini_key_intx32U("qcom::bkcolor", 0xFF000000UL, ini);
     cfgs->font_size = ini_key_intxU("qcom::font_size", 12, ini);
     cfgs->font_face = ini_key_stringU("qcom::font_face", ini);
-/*
-    if (cfgs->font_face != NULL) {
-        str = cfgs->font_face;
-        cfgs->font_face = utf8_to_local(CR_LOCAL, str);
-        mem_free(str);
-    }
-*/
     ini_closeU(ini);
     return;
 
@@ -94,6 +82,7 @@ qst_set_viewer (
     sprintf(tmp, "background-color: #%06X; color: #%06X;",
                   cfg->bkcolor, cfg->color);
     edt->setStyleSheet(tmp);
+    edt->setPlainText("");
     _LEAVE_COM_SINGLE_
 }
 

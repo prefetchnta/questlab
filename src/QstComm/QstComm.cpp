@@ -1,13 +1,5 @@
 
-#include "QstComm.h"
-#pragma warning (disable: 4127)
-#pragma warning (disable: 4512)
-
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QWidget>
+#include "QstCommInt.h"
 
 /* 外部库引用 */
 #pragma comment (lib, "Qt5Core.lib")
