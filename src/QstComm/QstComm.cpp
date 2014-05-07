@@ -24,6 +24,10 @@ static sQstComm     s_wrk_ctx;
 /* 工作线程的声明 */
 CR_API uint_t STDCALL qst_com_main (void_t *param);
 
+/* 内部函数的声明 */
+CR_API void_t   qst_load_cfg (sQCOM_conf *cfgs);
+CR_API void_t   qst_set_viewer (sQstComm *parm);
+
 /*
 =======================================
     WinMain 程序入口
@@ -68,6 +72,8 @@ WinMain (
     uint_t  ww, hh;
 
     /* 生成一个可变大小的窗口 */
+    mtlock_init(&s_wrk_ctx.lock);
+    qst_load_cfg(&s_wrk_ctx.cfgs);
     misc_desk_init(WIN_ICONF, &x1, &y1, &ww, &hh,
                    QCOM_DEF_WIDTH, QCOM_DEF_HEIGHT);
     if (ww < QCOM_DEF_WIDTH)  ww = QCOM_DEF_WIDTH;
@@ -102,6 +108,7 @@ WinMain (
     qt_win.setCentralWidget(cent);
     s_wrk_ctx.view = (void_t*)(edit);
     s_wrk_ctx.form = (void_t*)(&qt_win);
+    qst_set_viewer(&s_wrk_ctx);
 
     /* 初始化网络 */
     if (!socket_init())

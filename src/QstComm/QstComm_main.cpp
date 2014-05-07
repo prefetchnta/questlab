@@ -6,11 +6,94 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QTextEdit>
 
+/* 多线程锁简化宏 */
+#define _ENTER_COM_SINGLE_  \
+    mtlock_acquire(&(((sQstComm*)parm)->lock));
+#define _LEAVE_COM_SINGLE_  \
+    mtlock_release(&(((sQstComm*)parm)->lock));
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
 
+/*
+=======================================
+    读入配置文件
+=======================================
+*/
+CR_API void_t
+qst_load_cfg (
+  __CR_OT__ sQCOM_conf* cfgs
+    )
+{
+    sINIu*  ini;
+    ansi_t* str;
 
+    /* 加载配置文件 */
+    str = file_load_as_strA(QST_PATH_CONFIG WIN_ICONF);
+    if (str == NULL)
+        goto _load_defs;
+    ini = ini_parseU(str);
+    mem_free(str);
+    if (ini == NULL)
+        goto _load_defs;
+
+    /* 读入配置参数 */
+    cfgs->color = ini_key_intx32U("qcom::color", 0xFFC0C0C0UL, ini);
+    cfgs->bkcolor = ini_key_intx32U("qcom::bkcolor", 0xFF000000UL, ini);
+    cfgs->font_size = ini_key_intxU("qcom::font_size", 12, ini);
+    cfgs->font_face = ini_key_stringU("qcom::font_face", ini);
+/*
+    if (cfgs->font_face != NULL) {
+        str = cfgs->font_face;
+        cfgs->font_face = utf8_to_local(CR_LOCAL, str);
+        mem_free(str);
+    }
+*/
+    ini_closeU(ini);
+    return;
+
+_load_defs:
+    cfgs->color = 0xFFC0C0C0UL;
+    cfgs->bkcolor = 0xFF000000UL;
+    cfgs->font_size = 12;
+    cfgs->font_face = NULL;
+}
+
+/*
+=======================================
+    刷新浏览器设置
+=======================================
+*/
+CR_API void_t
+qst_set_viewer (
+  __CR_IO__ sQstComm*   parm
+    )
+{
+    QTextEdit*  edt;
+    sQCOM_conf* cfg;
+
+    cfg = &parm->cfgs;
+    edt = (QTextEdit*)(parm->view);
+
+    /* 设置全局字体和颜色 (默认 Fixedsys 字体) */
+    QFont   font("Fixedsys", 12, QFont::Normal, false);
+
+    _ENTER_COM_SINGLE_
+    if (cfg->font_face != NULL) {
+        font.setFamily(cfg->font_face);
+        font.setPointSize(cfg->font_size);
+    }
+
+    ansi_t  tmp[64];
+
+    edt->setTextColor(cfg->color);
+    edt->setTextBackgroundColor(cfg->bkcolor);
+    sprintf(tmp, "background-color: #%06X; color: #%06X;",
+                  cfg->bkcolor, cfg->color);
+    edt->setStyleSheet(tmp);
+    _LEAVE_COM_SINGLE_
+}
 
 /*****************************************************************************/
 /*                               公用命令单元                                */
@@ -124,6 +207,29 @@ qst_com_win_load (
                  (int)ww, (int)hh, SWP_SHOWWINDOW));
 }
 
+/*
+---------------------------------------
+    加载配置文件
+---------------------------------------
+*/
+static bool_t
+qst_com_cfg_load (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sQstComm*   ctx;
+
+    CR_NOUSE(argc);
+    CR_NOUSE(argv);
+
+    ctx = (sQstComm*)parm;
+    qst_load_cfg(&ctx->cfgs);
+    qst_set_viewer(ctx);
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -131,10 +237,11 @@ qst_com_win_load (
 static const sQST_CMD   s_cmdz[] =
 {
     /***** 公用系统命令 *****/
-    { "app:exit",  qst_com_app_exit },
-    { "win:load",  qst_com_win_load },
-    { "win:save",  qst_com_win_save },
-    { "win:show",  qst_com_win_show },
+    { "app:exit", qst_com_app_exit },
+    { "cfg:load", qst_com_cfg_load },
+    { "win:load", qst_com_win_load },
+    { "win:save", qst_com_win_save },
+    { "win:show", qst_com_win_show },
 
     /***** 私有命令映射 *****/
     { "qcom:app:exit", qst_com_app_exit },
