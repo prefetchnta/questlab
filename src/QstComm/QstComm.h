@@ -57,7 +57,10 @@ typedef struct
             socket_t    netw;   /* TCPv4/UDPv4 */
         } obj;
 
-        /* 发送调用 */
+        /* 数据变换 (默认直接发送) */
+        void_t* (*tran) (const ansi_t *string, leng_t *ot_size);
+
+        /* 发送调用 (由通讯类型决定) */
         void_t  (*send) (void_t *obj, const void_t *data, leng_t size);
 
 } sQCOM_ctx;

@@ -331,7 +331,23 @@ qst_com_main (
 
         /* 非命令直接交由发送函数处理 */
         if (!cmd_type_okay(string) && ctx->comm.send != NULL) {
-            ctx->comm.send(ctx->comm.obj.parm, string, str_lenA(string));
+            if (ctx->comm.tran == NULL)
+            {
+                /* 直接发送 */
+                ctx->comm.send(ctx->comm.obj.parm, string, str_lenA(string));
+            }
+            else
+            {
+                leng_t  size;
+                void_t* send;
+
+                /* 变换后发送 */
+                send = ctx->comm.tran(string, &size);
+                if (send != NULL) {
+                    ctx->comm.send(ctx->comm.obj.parm, send, size);
+                    mem_free(send);
+                }
+            }
             mem_free(string);
             continue;
         }
