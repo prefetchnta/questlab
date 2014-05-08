@@ -63,6 +63,9 @@ typedef struct
         /* 发送调用 (由通讯类型决定) */
         void_t  (*send) (void_t *obj, const void_t *data, leng_t size);
 
+        /* 接收数据的渲染 (默认直接显示) */
+        void_t  (*render) (void_t *ctx, const void_t *data, leng_t size);
+
 } sQCOM_ctx;
 
 /* 工作上下文结构 */
