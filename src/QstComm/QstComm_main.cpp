@@ -1,6 +1,12 @@
 
 #include "QstCommInt.h"
 
+/* 接收线程的声明 */
+CR_API uint_t STDCALL qst_rs232_main (void_t *param);
+
+/* 发送函数的声明 */
+CR_API void_t   qst_rs232_send (void_t *obj, const void_t *data, leng_t size);
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
@@ -254,7 +260,82 @@ qst_com_rs232 (
   __CR_IN__ ansi_t**    argv
     )
 {
-    return (FALSE);
+    int32u  baud;
+    uint_t  port, bits;
+    uint_t  stop, parity;
+
+    /* 参数解析 <串口号> [波特率] [数据位] [校验位] [停止位] */
+    if (argc < 2)
+        return (FALSE);
+    bits = 8;
+    baud = 115200UL;
+    stop = CR_SIO_STOP10;
+    parity = CR_SIO_NOP;
+    port = str2intxA(argv[1]);
+    if (argc > 2) {
+        baud = str2intx32A(argv[2]);
+        if (argc > 3) {
+            bits = str2intxA(argv[3]);
+            if (argc > 4) {
+                if (str_cmpA(argv[4], "nouse") == 0)
+                    parity = CR_SIO_NOP;
+                else
+                if (str_cmpA(argv[4], "odd") == 0)
+                    parity = CR_SIO_ODD;
+                else
+                if (str_cmpA(argv[4], "even") == 0)
+                    parity = CR_SIO_EVEN;
+                else
+                if (str_cmpA(argv[4], "mark") == 0)
+                    parity = CR_SIO_MARK;
+                else
+                if (str_cmpA(argv[4], "space") == 0)
+                    parity = CR_SIO_SPCE;
+                if (argc > 5) {
+                    if (str_cmpA(argv[5], "1") == 0)
+                        stop = CR_SIO_STOP10;
+                    else
+                    if (str_cmpA(argv[5], "1.5") == 0)
+                        stop = CR_SIO_STOP15;
+                    else
+                    if (str_cmpA(argv[5], "2") == 0)
+                        stop = CR_SIO_STOP20;
+                }
+            }
+        }
+    }
+
+    ansi_t      title[256];
+    sQstComm*   ctx = (sQstComm*)parm;
+
+    /* 是否已经打开接口 */
+    if (ctx->comm.thrd != NULL)
+        return (FALSE);
+
+    /* 打开串口 */
+    if (!sio_open(port))
+        return (FALSE);
+    sio_setup(port, baud, bits, parity, stop);
+    sio_set_buffer(port, 1024, 1024);
+    sio_set_rd_timeout(port, 0, 0, 500);
+    sio_set_wr_timeout(port, 0, 0);
+    sio_clear_error(port);
+    sio_flush(port, CR_SIO_FLU_RT);
+
+    /* 设置工作参数 */
+    ctx->comm.obj.port = port;
+    ctx->comm.send = qst_rs232_send;
+
+    /* 启动接收线程 */
+    ctx->comm.thrd = thread_new(0, qst_rs232_main, parm, FALSE);
+    if (ctx->comm.thrd == NULL) {
+        sio_close(port);
+        return (FALSE);
+    }
+    sprintf(title, WIN_TITLE " - COM%u, %u, %u, %s, %s",
+                port, baud, bits, argv[4], argv[5]);
+    SetWindowTextA(ctx->hwnd, title);
+    return (TRUE);
 }
 
 /*

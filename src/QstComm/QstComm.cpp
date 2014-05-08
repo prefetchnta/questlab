@@ -121,9 +121,11 @@ WinMain (
 
     /* 生成工作线程 */
     s_wrk_ctx.quit = FALSE;
+    s_wrk_ctx.comm.quit = FALSE;
     thrd = thread_new(0, qst_com_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL)
         return (QST_ERROR);
+    sio_init();
 
     /* 开始 Qt 流程 */
     qt_win.show();
@@ -135,5 +137,6 @@ WinMain (
     thread_wait(thrd);
     thread_del(thrd);
     netw_cli_close(s_wrk_ctx.netw);
+    sio_free();
     return (QST_OKAY);
 }
