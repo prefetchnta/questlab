@@ -106,6 +106,7 @@ qst_direct_show (
     sQstComm*   ctx = (sQstComm*)parm;
     CTextOper*  opr = (CTextOper*)ctx->oper;
 
+    /* 过滤无法显示的字符 */
     for (uint_t idx = 0; idx < size; idx++) {
         cha = *(ansi_t*)data;
         data = (ansi_t*)data + 1;

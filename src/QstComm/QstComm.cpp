@@ -90,7 +90,7 @@ WinMain (
     qt_win.resize(ww - fw, hh - fh);
 
     QWidget*        cent = new QWidget (&qt_win);
-    QTextEdit*      edit = new QTextEdit (cent);
+    CTextEdit*      edit = new CTextEdit (cent);
     QHBoxLayout*    hori = new QHBoxLayout (cent);
 
     /* 创建窗体里的控件 */

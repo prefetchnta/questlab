@@ -19,6 +19,29 @@
 #define _LEAVE_COM_SINGLE_  \
     mtlock_release(&(((sQstComm*)parm)->lock));
 
+/************************/
+/* 实现自动滚动的文本框 */
+/************************/
+class CTextEdit : public QTextEdit
+{
+    Q_OBJECT
+
+public:
+    CTextEdit (QWidget* parent = 0) : QTextEdit(parent)
+    {
+    }
+
+public slots:
+    void autoScroll ()
+    {
+        QTextCursor cursor = this->textCursor();
+
+        cursor.movePosition(QTextCursor::End);
+
+        this->setTextCursor(cursor);
+    }
+};
+
 /**************************************************/
 /* 为了解决多线程问题的信号类 (需要人肉 moc 处理) */
 /**************************************************/
@@ -29,6 +52,8 @@ class CTextOper : public QObject
 public:
     CTextOper (QTextEdit* edit)
     {
+        connect(this, SIGNAL(gotoEnd()),
+                edit, SLOT(autoScroll()));
         connect(this, SIGNAL(allClear()),
                 edit, SLOT(clear()));
         connect(this, SIGNAL(setText(const QString&)),
@@ -44,14 +69,17 @@ public:
     }
     void text (const QString& text)
     {
+        emit gotoEnd();
         emit setText(text);
     }
     void html (const QString& html)
     {
+        emit gotoEnd();
         emit setHtml(html);
     }
 
 signals:
+    void gotoEnd ();
     void allClear ();
     void setText (const QString& text);
     void setHtml (const QString& html);
