@@ -7,6 +7,11 @@ CR_API uint_t STDCALL qst_rs232_main (void_t *param);
 /* 发送函数的声明 */
 CR_API void_t   qst_rs232_send (void_t *obj, const void_t *data, uint_t size);
 
+/* 数据变换的声明 */
+CR_API void_t*  qst_dos_tran (const ansi_t *string, uint_t *ot_size);
+CR_API void_t*  qst_unx_tran (const ansi_t *string, uint_t *ot_size);
+CR_API void_t*  qst_mac_tran (const ansi_t *string, uint_t *ot_size);
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
@@ -359,8 +364,8 @@ qst_com_rs232 (
     if (!sio_open(port))
         return (FALSE);
     sio_setup(port, baud, bits, parity, stop);
-    sio_set_buffer(port, 1024, 1024);
-    sio_set_rd_timeout(port, 0, 0, 500);
+    sio_set_buffer(port, 1024, 0);
+    sio_set_rd_timeout(port, 0xFFFFFFFF, 0, 0);
     sio_set_wr_timeout(port, 0, 0);
     sio_clear_error(port);
     sio_flush(port, CR_SIO_FLU_RT);
@@ -396,6 +401,40 @@ qst_com_tcpv4 (
     return (FALSE);
 }
 
+/*
+---------------------------------------
+    设置通讯发送模式
+---------------------------------------
+*/
+static bool_t
+qst_com_stype (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <发送模式> */
+    if (argc < 2)
+        return (FALSE);
+
+    sQstComm*   ctx = (sQstComm*)parm;
+
+    if (str_cmpA(argv[1], "text") == 0)
+        ctx->comm.tran = NULL;
+    else
+    if (str_cmpA(argv[1], "dos") == 0)
+        ctx->comm.tran = qst_dos_tran;
+    else
+    if (str_cmpA(argv[1], "unix") == 0)
+        ctx->comm.tran = qst_unx_tran;
+    else
+    if (str_cmpA(argv[1], "mac") == 0)
+        ctx->comm.tran = qst_mac_tran;
+    else
+        return (FALSE);
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -413,6 +452,7 @@ static const sQST_CMD   s_cmdz[] =
     { "com:close", qst_com_close },
     { "com:rs232", qst_com_rs232 },
     { "com:tcpv4", qst_com_tcpv4 },
+    { "com:stype", qst_com_stype },
 
     /***** 私有命令映射 *****/
     { "qcom:app:exit", qst_com_app_exit },

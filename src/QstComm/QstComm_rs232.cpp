@@ -19,8 +19,10 @@ qst_rs232_main (
     while (!ctx->comm.quit)
     {
         /* 一个个字节读 */
-        if (sio_read(ctx->comm.obj.port, cha, 1) != 1)
+        if (sio_read(ctx->comm.obj.port, cha, 1) != 1) {
+            thread_sleep(1);
             continue;
+        }
         if (cha[0] == CR_AC('\n') && cha[1] == CR_AC('\r')) {
             cha[1] = cha[0];
             continue;
