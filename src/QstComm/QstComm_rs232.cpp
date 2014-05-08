@@ -12,28 +12,32 @@ qst_rs232_main (
     )
 {
     void_t*     parm = param;
+    ansi_t      cha[2] = { 0, 0 };
     sQstComm*   ctx = (sQstComm*)param;
 
     /* 工作循环 */
     while (!ctx->comm.quit)
     {
-        ansi_t  cha;
-
         /* 一个个字节读 */
-        if (sio_read(ctx->comm.obj.port, &cha, 1) != 1)
+        if (sio_read(ctx->comm.obj.port, cha, 1) != 1)
             continue;
+        if (cha[0] == CR_AC('\n') && cha[1] == CR_AC('\r')) {
+            cha[1] = cha[0];
+            continue;
+        }
+        cha[1] = cha[0];
 
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
         if (ctx->comm.render != NULL)
         {
             /* 自定义渲染器 */
-            ctx->comm.render(parm, &cha, 1);
+            ctx->comm.render(parm, cha, 1);
         }
         else
         {
             /* 直接显示内容 */
-            qst_direct_show(parm, &cha, 1);
+            qst_direct_show(parm, cha, 1);
         }
         _LEAVE_COM_SINGLE_
     }
