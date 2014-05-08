@@ -1,12 +1,6 @@
 
 #include "QstCommInt.h"
 
-/* 多线程锁简化宏 */
-#define _ENTER_COM_SINGLE_  \
-    mtlock_acquire(&(((sQstComm*)parm)->lock));
-#define _LEAVE_COM_SINGLE_  \
-    mtlock_release(&(((sQstComm*)parm)->lock));
-
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/

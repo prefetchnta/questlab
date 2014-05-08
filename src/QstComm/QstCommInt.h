@@ -13,6 +13,12 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
 
+/* 多线程锁简化宏 */
+#define _ENTER_COM_SINGLE_  \
+    mtlock_acquire(&(((sQstComm*)parm)->lock));
+#define _LEAVE_COM_SINGLE_  \
+    mtlock_release(&(((sQstComm*)parm)->lock));
+
 /**************************************************/
 /* 为了解决多线程问题的信号类 (需要人肉 moc 处理) */
 /**************************************************/
