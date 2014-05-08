@@ -129,6 +129,7 @@ CR_API bool_t   STDCALL cmd_exec_addn (exec_t objs, const sQST_CMD* list);
 CR_API bool_t   STDCALL cmd_exec_main (exec_t objs, void_t *param,
                                        const ansi_t *cmdz);
 /* 杂项功能函数 */
+CR_API bool_t   STDCALL misc_dir_exist (const ansi_t *path);
 CR_API void_t   STDCALL misc_bring2top (hwnd_t hwnd, hwnd_t parent);
 CR_API void_t   STDCALL misc_mem_free (const void_t *data);
 CR_API bool_t   STDCALL misc_cui_setwin (hwnd_t hwnd, hcui_t hcui,

@@ -1192,3 +1192,28 @@ misc_async_okay (
 {
     atom_inc(&param->copyed);
 }
+
+/*
+=======================================
+    判断目录是否存在
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_dir_exist (
+  __CR_IN__ const ansi_t*   path
+    )
+{
+    bool_t              rett;
+    HANDLE              find;
+    WIN32_FIND_DATAA    wfda;
+
+    find = FindFirstFileA(path, &wfda);
+    if (find == INVALID_HANDLE_VALUE)
+        return (FALSE);
+    if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        rett = TRUE;
+    else
+        rett = FALSE;
+    FindClose(find);
+    return (rett);
+}

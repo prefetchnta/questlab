@@ -1,4 +1,5 @@
 EXPORTS
+    misc_dir_exist
     misc_bring2top
     misc_mem_free
     misc_cui_setwin
