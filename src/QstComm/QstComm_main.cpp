@@ -5,7 +5,7 @@
 CR_API uint_t STDCALL qst_rs232_main (void_t *param);
 
 /* 发送函数的声明 */
-CR_API void_t   qst_rs232_send (void_t *obj, const void_t *data, leng_t size);
+CR_API void_t   qst_rs232_send (void_t *obj, const void_t *data, uint_t size);
 
 /*****************************************************************************/
 /*                                 内部函数                                  */
@@ -82,6 +82,41 @@ qst_set_viewer (
     edt->setFont(font);
     edt->setStyleSheet(tmp);
     _LEAVE_COM_SINGLE_
+}
+
+/*
+=======================================
+    直接显示内容
+=======================================
+*/
+CR_API void_t
+qst_direct_show (
+  __CR_IN__ void_t*         parm,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ uint_t          size
+    )
+{
+    ansi_t  cha;
+    ansi_t* tmp;
+
+    tmp = str_allocA(size + 1);
+    if (tmp == NULL)
+        return;
+
+    sQstComm*   ctx = (sQstComm*)parm;
+    CTextOper*  opr = (CTextOper*)ctx->oper;
+
+    for (uint_t idx = 0; idx < size; idx++) {
+        cha = *(ansi_t*)data;
+        data = (ansi_t*)data + 1;
+        if (cha != CR_AC('\n') &&
+            cha != CR_AC('\r') && !is_printA(cha))
+            cha = CR_AC(' ');
+        tmp[idx] = cha;
+    }
+    tmp[size] = NIL;
+    opr->text(tmp);
+    mem_free(tmp);
 }
 
 /*****************************************************************************/
@@ -263,6 +298,9 @@ qst_com_rs232 (
     int32u  baud;
     uint_t  port, bits;
     uint_t  stop, parity;
+    /* --------------- */
+    const ansi_t*   sstop;
+    const ansi_t*   sparity;
 
     /* 参数解析 <串口号> [波特率] [数据位] [校验位] [停止位] */
     if (argc < 2)
@@ -271,13 +309,16 @@ qst_com_rs232 (
     baud = 115200UL;
     stop = CR_SIO_STOP10;
     parity = CR_SIO_NOP;
+    sstop = "1";
+    sparity = "no";
     port = str2intxA(argv[1]);
     if (argc > 2) {
         baud = str2intx32A(argv[2]);
         if (argc > 3) {
             bits = str2intxA(argv[3]);
             if (argc > 4) {
-                if (str_cmpA(argv[4], "nouse") == 0)
+                sparity = argv[4];
+                if (str_cmpA(argv[4], "no") == 0)
                     parity = CR_SIO_NOP;
                 else
                 if (str_cmpA(argv[4], "odd") == 0)
@@ -292,6 +333,7 @@ qst_com_rs232 (
                 if (str_cmpA(argv[4], "space") == 0)
                     parity = CR_SIO_SPCE;
                 if (argc > 5) {
+                    sstop = argv[5];
                     if (str_cmpA(argv[5], "1") == 0)
                         stop = CR_SIO_STOP10;
                     else
@@ -333,7 +375,7 @@ qst_com_rs232 (
         return (FALSE);
     }
     sprintf(title, WIN_TITLE " - COM%u, %u, %u, %s, %s",
-                port, baud, bits, argv[4], argv[5]);
+                port, baud, bits, sparity, sstop);
     SetWindowTextA(ctx->hwnd, title);
     return (TRUE);
 }
@@ -419,7 +461,7 @@ qst_com_main (
             }
             else
             {
-                leng_t  size;
+                uint_t  size;
                 void_t* send;
 
                 /* 变换后发送 */

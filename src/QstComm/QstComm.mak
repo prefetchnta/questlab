@@ -6,11 +6,13 @@ QT=..\moc
 
 OBJ_LIST=.$(L)QstComm.$(O) \
          .$(L)QstCommInt.$(O) \
+         .$(L)QstComm_rs232.$(O) \
          .$(L)QstComm_main.$(O) \
          .$(L)$(PROJECT).res
 
 SRC_LIST=.$(L)QstComm.$(P) \
          .$(L)QstCommInt.$(P) \
+         .$(L)QstComm_rs232.$(P) \
          .$(L)QstComm_main.$(P)
 
 build_all:

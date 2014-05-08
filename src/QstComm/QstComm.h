@@ -58,13 +58,13 @@ typedef struct
         } obj;
 
         /* 数据变换 (默认直接发送) */
-        void_t* (*tran) (const ansi_t *string, leng_t *ot_size);
+        void_t* (*tran) (const ansi_t *string, uint_t *ot_size);
 
         /* 发送调用 (由通讯类型决定) */
-        void_t  (*send) (void_t *obj, const void_t *data, leng_t size);
+        void_t  (*send) (void_t *obj, const void_t *data, uint_t size);
 
         /* 接收数据的渲染 (默认直接显示) */
-        void_t  (*render) (void_t *parm, const void_t *data, leng_t size);
+        void_t  (*render) (void_t *parm, const void_t *data, uint_t size);
 
 } sQCOM_ctx;
 

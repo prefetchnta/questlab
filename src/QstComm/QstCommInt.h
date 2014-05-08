@@ -32,9 +32,9 @@ public:
         connect(this, SIGNAL(allClear()),
                 edit, SLOT(clear()));
         connect(this, SIGNAL(setText(const QString&)),
-                edit, SLOT(setPlainText(const QString&)));
+                edit, SLOT(insertPlainText(const QString&)));
         connect(this, SIGNAL(setHtml(const QString&)),
-                edit, SLOT(setHtml(const QString&)));
+                edit, SLOT(insertHtml(const QString&)));
     }
 
 public:
@@ -56,5 +56,9 @@ signals:
     void setText (const QString& text);
     void setHtml (const QString& html);
 };
+
+/* 大家都要用的函数 */
+CR_API void_t   qst_direct_show (void_t *parm, const void_t *data,
+                                 uint_t size);
 
 #endif  /* !__QL_QSTCOMMINT_H__ */
