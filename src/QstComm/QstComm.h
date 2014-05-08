@@ -44,6 +44,24 @@ typedef struct
 
 } sQCOM_conf;
 
+/* 通讯线程上下文结构 */
+typedef struct
+{
+        bool_t  quit;   /* 是否结束 */
+        thrd_t  thrd;   /* 线程句柄 */
+
+        /* 通讯对象 */
+        union {
+            void_t*     parm;   /* 传值用的 */
+            uint_t      port;   /* RS232 */
+            socket_t    netw;   /* TCPv4/UDPv4 */
+        } obj;
+
+        /* 发送调用 */
+        void_t  (*send) (void_t *obj, const void_t *data, leng_t size);
+
+} sQCOM_ctx;
+
 /* 工作上下文结构 */
 typedef struct
 {
@@ -55,8 +73,8 @@ typedef struct
         void_t*     view;       /* 显示对象 */
         void_t*     oper;       /* 操作对象 */
         socket_t    netw;       /* 网络连接 */
+        sQCOM_ctx   comm;       /* 通讯结构 */
         sQCOM_conf  cfgs;       /* 配置参数 */
-        sint_t      fw, fh;     /* 边框宽高 */
 
 } sQstComm;
 

@@ -71,6 +71,7 @@ WinMain (
     if (hh < QCOM_DEF_HEIGHT) hh = QCOM_DEF_HEIGHT;
 
     RECT            w_rect;
+    sint_t          fw, fh;
     QMainWindow     qt_win;
 
     /* Qt 里的宽高都不包括边框
@@ -82,11 +83,11 @@ WinMain (
     s_wrk_ctx.hwnd = (HWND)qt_win.winId();
     if (!GetWindowRect(s_wrk_ctx.hwnd, &w_rect))
         return (QST_ERROR);
-    s_wrk_ctx.fw = w_rect.right - w_rect.left - ww;
-    s_wrk_ctx.fh = w_rect.bottom - w_rect.top - hh;
-    qt_win.setMinimumSize(QCOM_DEF_WIDTH  - s_wrk_ctx.fw,
-                          QCOM_DEF_HEIGHT - s_wrk_ctx.fh);
-    qt_win.resize(ww - s_wrk_ctx.fw, hh - s_wrk_ctx.fh);
+    fw = w_rect.right - w_rect.left - ww;
+    fh = w_rect.bottom - w_rect.top - hh;
+    qt_win.setMinimumSize(QCOM_DEF_WIDTH  - fw,
+                          QCOM_DEF_HEIGHT - fh);
+    qt_win.resize(ww - fw, hh - fh);
 
     QWidget*        cent = new QWidget (&qt_win);
     QTextEdit*      edit = new QTextEdit (cent);

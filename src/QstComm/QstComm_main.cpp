@@ -213,6 +213,65 @@ qst_com_cfg_load (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    关闭通讯接口
+---------------------------------------
+*/
+static bool_t
+qst_com_close (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sQstComm*   ctx;
+
+    CR_NOUSE(argc);
+    CR_NOUSE(argv);
+
+    ctx = (sQstComm*)parm;
+    if (ctx->comm.thrd == NULL)
+        return (FALSE);
+    ctx->comm.quit = TRUE;
+    thread_wait(ctx->comm.thrd);
+    thread_del(ctx->comm.thrd);
+    ctx->comm.thrd = NULL;
+    ctx->comm.quit = FALSE;
+    SetWindowTextA(ctx->hwnd, WIN_TITLE);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    打开 RS232 通讯接口
+---------------------------------------
+*/
+static bool_t
+qst_com_rs232 (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    打开 TCPv4 通讯接口
+---------------------------------------
+*/
+static bool_t
+qst_com_tcpv4 (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    return (FALSE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -225,6 +284,11 @@ static const sQST_CMD   s_cmdz[] =
     { "win:load", qst_com_win_load },
     { "win:save", qst_com_win_save },
     { "win:show", qst_com_win_show },
+
+    /***** 通讯控制命令 *****/
+    { "com:close", qst_com_close },
+    { "com:rs232", qst_com_rs232 },
+    { "com:tcpv4", qst_com_tcpv4 },
 
     /***** 私有命令映射 *****/
     { "qcom:app:exit", qst_com_app_exit },
@@ -265,9 +329,23 @@ qst_com_main (
             continue;
         }
 
+        /* 非命令直接交由发送函数处理 */
+        if (!cmd_type_okay(string) && ctx->comm.send != NULL) {
+            ctx->comm.send(ctx->comm.obj.parm, string, str_lenA(string));
+            mem_free(string);
+            continue;
+        }
+
         /* 执行这条命令 */
         cmd_exec_main(obj, ctx, string);
         mem_free(string);
+    }
+
+    /* 等待通讯线程结束 */
+    if (ctx->comm.thrd != NULL) {
+        ctx->comm.quit = TRUE;
+        thread_wait(ctx->comm.thrd);
+        thread_del(ctx->comm.thrd);
     }
     cmd_exec_free(obj);
     return (QST_OKAY);
