@@ -75,22 +75,15 @@ WinMain (
     else
         conf_name = argv[0];
 
-    HANDLE              find;
-    WIN32_FIND_DATAA    wfda;
-
     /* 复制指定的配置文件 */
     misc_call_exe("cmd.exe /c copy " QST_PATH_CONFIG
                   "base\\*.* " QST_PATH_CONFIG, TRUE, TRUE);
     if (conf_name != NULL) {
         sprintf(exec, QST_PATH_CONFIG "%s", conf_name);
-        find = FindFirstFileA(exec, &wfda);
-        if (find != INVALID_HANDLE_VALUE) {
-            if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                sprintf(exec, "cmd.exe /c copy " QST_PATH_CONFIG
-                        "%s\\*.* " QST_PATH_CONFIG, conf_name);
-                misc_call_exe(exec, TRUE, TRUE);
-            }
-            FindClose(find);
+        if (misc_dir_exist(exec)) {
+            sprintf(exec, "cmd.exe /c copy " QST_PATH_CONFIG
+                    "%s\\*.* " QST_PATH_CONFIG, conf_name);
+            misc_call_exe(exec, TRUE, TRUE);
         }
     }
 
@@ -103,15 +96,11 @@ WinMain (
     misc_call_exe(exec, TRUE, TRUE);
     if (conf_name != NULL) {
         sprintf(exec, QST_PATH_WINDOW "%s", conf_name);
-        find = FindFirstFileA(exec, &wfda);
-        if (find != INVALID_HANDLE_VALUE) {
-            if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                sprintf(exec, "cmd.exe /c copy " QST_PATH_WINDOW
-                        "%s\\%ux%u\\*.* " QST_PATH_WINDOW, conf_name,
-                                    scn_w, scn_h);
-                misc_call_exe(exec, TRUE, TRUE);
-            }
-            FindClose(find);
+        if (misc_dir_exist(exec)) {
+            sprintf(exec, "cmd.exe /c copy " QST_PATH_WINDOW
+                    "%s\\%ux%u\\*.* " QST_PATH_WINDOW, conf_name,
+                                scn_w, scn_h);
+            misc_call_exe(exec, TRUE, TRUE);
         }
     }
 
@@ -124,14 +113,10 @@ WinMain (
                   "base\\*.* " QST_PATH_EXT3RD "wscite\\", TRUE, TRUE);
     if (conf_name != NULL) {
         sprintf(exec, QST_PATH_EXT3RD "wscite\\%s", conf_name);
-        find = FindFirstFileA(exec, &wfda);
-        if (find != INVALID_HANDLE_VALUE) {
-            if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                sprintf(exec, "cmd.exe /c copy " QST_PATH_EXT3RD "wscite\\"
-                        "%s\\*.* " QST_PATH_EXT3RD "wscite\\", conf_name);
-                misc_call_exe(exec, TRUE, TRUE);
-            }
-            FindClose(find);
+        if (misc_dir_exist(exec)) {
+            sprintf(exec, "cmd.exe /c copy " QST_PATH_EXT3RD "wscite\\"
+                    "%s\\*.* " QST_PATH_EXT3RD "wscite\\", conf_name);
+            misc_call_exe(exec, TRUE, TRUE);
         }
     }
     misc_call_exe("cmd.exe /c copy /b " QST_PATH_EXT3RD "wscite\\"
