@@ -121,16 +121,9 @@ WinMain (
     g_root = NULL;
     if (argc > 0)
     {
-        HANDLE              find;
-        WIN32_FIND_DATAA    wfda;
-
         /* 验证目录是否存在 */
-        find = FindFirstFileA(argv[0], &wfda);
-        if (find != INVALID_HANDLE_VALUE) {
-            if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                g_root = argv[0];
-            FindClose(find);
-        }
+        if (misc_dir_exist(argv[0]))
+            g_root = argv[0];
     }
 
     /* 未指定目录则使用上次结果 */
