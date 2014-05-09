@@ -4,10 +4,12 @@
 /* 接收线程的声明 */
 CR_API uint_t STDCALL qst_rs232_main (void_t *param);
 CR_API uint_t STDCALL qst_tcpv4_main (void_t *param);
+CR_API uint_t STDCALL qst_udpv4_main (void_t *param);
 
 /* 发送函数的声明 */
 CR_API void_t   qst_rs232_send (void_t *obj, const void_t *data, uint_t size);
 CR_API void_t   qst_tcpv4_send (void_t *obj, const void_t *data, uint_t size);
+CR_API void_t   qst_udpv4_send (void_t *obj, const void_t *data, uint_t size);
 
 /* 数据变换的声明 */
 CR_API void_t*  qst_dos_tran (const ansi_t *string, uint_t *ot_size);
@@ -441,6 +443,56 @@ qst_com_tcpv4 (
 
 /*
 ---------------------------------------
+    打开 UDPv4 通讯接口
+---------------------------------------
+*/
+static bool_t
+qst_com_udpv4 (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    uint_t      port;
+    socket_t    netw;
+
+    /* 参数解析 <目标地址> <端口号> */
+    if (argc < 3)
+        return (FALSE);
+    port = str2intxA(argv[2]);
+    if (port > 65535)
+        return (FALSE);
+
+    ansi_t*     title;
+    sQstComm*   ctx = (sQstComm*)parm;
+
+    /* 关闭当前接口并打开 UDPv4 连接 */
+    netw = client_udp_open(argv[1], (int16u)port);
+    if (netw == NULL)
+        return (FALSE);
+    socket_set_timeout(netw, -1, 50);
+
+    /* 设置工作参数 */
+    qst_com_close(parm, argc, argv);
+    ctx->comm.obj.netw = netw;
+    ctx->comm.send = qst_udpv4_send;
+
+    /* 启动接收线程 */
+    ctx->comm.thrd = thread_new(0, qst_udpv4_main, parm, FALSE);
+    if (ctx->comm.thrd == NULL) {
+        socket_close(netw);
+        return (FALSE);
+    }
+    title = str_fmtA(WIN_TITLE " - UDPv4 [%s], %u", argv[1], port);
+    if (title != NULL) {
+        SetWindowTextA(ctx->hwnd, title);
+        mem_free(title);
+    }
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     设置通讯发送模式
 ---------------------------------------
 */
@@ -490,6 +542,7 @@ static const sQST_CMD   s_cmdz[] =
     { "com:close", qst_com_close },
     { "com:rs232", qst_com_rs232 },
     { "com:tcpv4", qst_com_tcpv4 },
+    { "com:udpv4", qst_com_udpv4 },
     { "com:stype", qst_com_stype },
 
     /***** 私有命令映射 *****/
