@@ -47,7 +47,8 @@ qst_udpv4_main (
             }
             if (idx == rett - 1)
                 ptr[size++] = cha[idx];
-            qst_direct_show(parm, cha, size);
+            if (size != 0)
+                qst_txt_show(parm, cha, size);
         }
         _LEAVE_COM_SINGLE_
     }

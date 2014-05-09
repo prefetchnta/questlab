@@ -35,7 +35,7 @@ qst_rs232_main (
         {
             /* 直接显示内容 */
             if (cha[0] != CR_AC('\n') || cha[1] != CR_AC('\r'))
-                qst_direct_show(parm, cha, 1);
+                qst_txt_show(parm, cha, 1);
             cha[1] = cha[0];
         }
         _LEAVE_COM_SINGLE_

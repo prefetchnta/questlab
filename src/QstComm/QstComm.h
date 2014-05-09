@@ -90,7 +90,7 @@ typedef struct
 #define _LEAVE_COM_SINGLE_  \
     mtlock_release(&(((sQstComm*)parm)->lock));
 
-/* 文本直接显示函数 */
-CR_API void_t   qst_direct_show (void_t *parm, const void_t *data,
-                                 uint_t size);
+/* 公用的数据渲染声明 */
+CR_API void_t   qst_txt_show (void_t *parm, const void_t *data, uint_t size);
+
 #endif  /* !__QL_QSTCOMM_H__ */

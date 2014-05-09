@@ -8,16 +8,20 @@ OBJ_LIST=.$(L)QstComm.$(O) \
          .$(L)QstCommInt.$(O) \
          .$(L)QstComm_rs232.$(O) \
          .$(L)QstComm_tcpv4.$(O) \
+         .$(L)QstComm_udpv4.$(O) \
          .$(L)QstComm_main.$(O) \
          .$(L)QstComm_tran.$(O) \
+         .$(L)QstComm_show.$(O) \
          .$(L)$(PROJECT).res
 
 SRC_LIST=.$(L)QstComm.$(P) \
          .$(L)QstCommInt.$(P) \
          .$(L)QstComm_rs232.$(P) \
          .$(L)QstComm_tcpv4.$(P) \
+         .$(L)QstComm_udpv4.$(P) \
          .$(L)QstComm_main.$(P) \
-         .$(L)QstComm_tran.$(P)
+         .$(L)QstComm_tran.$(P) \
+         .$(L)QstComm_show.$(P)
 
 build_all:
     $(QT) QstCommInt.h > QstCommInt.$(P)

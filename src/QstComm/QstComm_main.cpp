@@ -16,6 +16,9 @@ CR_API void_t*  qst_dos_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_unx_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_mac_tran (const ansi_t *string, uint_t *ot_size);
 
+/* 数据渲染的声明 */
+CR_API void_t   qst_hex_show (void_t *parm, const void_t *data, uint_t size);
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
@@ -91,42 +94,6 @@ qst_set_viewer (
     edt->setFont(font);
     edt->setStyleSheet(tmp);
     _LEAVE_COM_SINGLE_
-}
-
-/*
-=======================================
-    直接显示内容
-=======================================
-*/
-CR_API void_t
-qst_direct_show (
-  __CR_IN__ void_t*         parm,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ uint_t          size
-    )
-{
-    ansi_t  cha;
-    ansi_t* tmp;
-
-    tmp = str_allocA(size + 1);
-    if (tmp == NULL)
-        return;
-
-    sQstComm*   ctx = (sQstComm*)parm;
-    CTextOper*  opr = (CTextOper*)ctx->oper;
-
-    /* 过滤无法显示的字符 */
-    for (uint_t idx = 0; idx < size; idx++) {
-        cha = *(ansi_t*)data;
-        data = (ansi_t*)data + 1;
-        if (cha != CR_AC('\n') &&
-            cha != CR_AC('\r') && !is_printA(cha))
-            cha = CR_AC(' ');
-        tmp[idx] = cha;
-    }
-    tmp[size] = NIL;
-    opr->text(tmp);
-    mem_free(tmp);
 }
 
 /*****************************************************************************/
