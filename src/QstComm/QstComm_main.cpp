@@ -340,6 +340,8 @@ qst_com_rs232 (
                 else
                 if (str_cmpA(argv[4], "space") == 0)
                     parity = CR_SIO_SPCE;
+                else
+                    sparity = "no";
                 if (argc > 5) {
                     sstop = argv[5];
                     if (str_cmpA(argv[5], "1") == 0)
@@ -350,12 +352,14 @@ qst_com_rs232 (
                     else
                     if (str_cmpA(argv[5], "2") == 0)
                         stop = CR_SIO_STOP20;
+                    else
+                        sstop = "1";
                 }
             }
         }
     }
 
-    ansi_t      title[256];
+    ansi_t      title[128];
     sQstComm*   ctx = (sQstComm*)parm;
 
     /* 关闭当前接口并打开串口 */
@@ -427,7 +431,7 @@ qst_com_tcpv4 (
         socket_close(netw);
         return (FALSE);
     }
-    title = str_fmtA(WIN_TITLE " - %s, %u", argv[1], port);
+    title = str_fmtA(WIN_TITLE " - TCPv4 [%s], %u", argv[1], port);
     if (title != NULL) {
         SetWindowTextA(ctx->hwnd, title);
         mem_free(title);
