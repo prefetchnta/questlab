@@ -104,3 +104,27 @@ qst_hex_tran (
     *ot_size = len;
     return (dat);
 }
+
+/*
+=======================================
+    转义字符串发送
+=======================================
+*/
+CR_API void_t*
+qst_esc_tran (
+  __CR_IN__ const ansi_t*   string,
+  __CR_OT__ uint_t*         ot_size
+    )
+{
+    leng_t  len;
+    ansi_t* dat;
+    ansi_t* str;
+
+    str = str_fmtA("\"%s\"", string);
+    if (str == NULL)
+        return (NULL);
+    dat = str_esc_dupU(str, &len);
+    mem_free(str);
+    *ot_size = len;
+    return (dat);
+}

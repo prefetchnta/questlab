@@ -16,6 +16,7 @@ CR_API void_t*  qst_dos_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_unx_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_mac_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_hex_tran (const ansi_t *string, uint_t *ot_size);
+CR_API void_t*  qst_esc_tran (const ansi_t *string, uint_t *ot_size);
 
 /* 数据渲染的声明 */
 CR_API void_t   qst_hex_show (void_t *parm, const void_t *data, uint_t size);
@@ -509,6 +510,9 @@ qst_com_stype (
     else
     if (str_cmpA(argv[1], "hex") == 0)
         ctx->comm.tran = qst_hex_tran;
+    else
+    if (str_cmpA(argv[1], "esc") == 0)
+        ctx->comm.tran = qst_esc_tran;
     else
     if (str_cmpA(argv[1], "dos") == 0)
         ctx->comm.tran = qst_dos_tran;
