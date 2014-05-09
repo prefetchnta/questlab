@@ -5,8 +5,8 @@ $call xSelectDir.exe
 $continue?
 $exec script/import/reset.qst
 g2d:ext:load CrH_FMTZ.dll
-g2d:ext:load plugin/zDevIL.dll
 g2d:ext:load plugin/zFreeImage.dll
+g2d:ext:load plugin/zDevIL.dll
 pak:ext:load plugin/zKiriKiri.dll
 xmm:ext:load plugin/zFMOD.dll
 xmm:ext:load plugin/zDShow.dll
