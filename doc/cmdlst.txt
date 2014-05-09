@@ -6,6 +6,7 @@
     app:exit
         程序退出命令
             qcmd:app:exit   只针对 QstCmdz 部件
+            qcom:app:exit   只针对 QstComm 部件
             qdat:app:exit   只针对 QstData 部件
             qedt:app:exit   只针对 QstText 部件
             qhsh:app:exit   只针对 QstHash 部件
@@ -31,6 +32,7 @@
     win:show
         显示当前窗口，窗口拉到最前面
             qcmd:win:show   只针对 QstCmdz 部件
+            qcom:win:show   只针对 QstComm 部件
             qdat:win:show   只针对 QstData 部件
             qedt:win:show   只针对 QstText 部件
             qhsh:win:show   只针对 QstHash 部件
@@ -174,6 +176,43 @@
 
     hex:in_be <16进制串>
         发送一串16进制数据串到目标部件，大端模式解析
+
+（13）通讯控制命令
+
+    com:clear
+        清除当前通讯接收文本框
+
+    com:close
+        关闭当前打开的通讯端口
+
+    com:rs232 <串口号> [波特率] [数据位] [校验位] [停止位]
+        打开 RS232 通讯端口
+            波特率  110/300/600/1200/2400/4800/9600/14400
+                    19200/38400/57600/115200/128000/256000
+            数据位  4/5/6/7/8
+            校验位  no/odd/even/mark/space
+            停止位  1/1.5/2
+        默认模式为：115200, 8, no, 1
+
+    com:tcpv4 <目标地址> <端口号>
+        打开 TCPv4 通讯端口，地址可 IP 或域名，端口号0-65535
+
+    com:udpv4 <目标地址> <端口号>
+        打开 UDPv4 通讯端口，地址可 IP 或域名，端口号0-65535
+
+    com:stype <发送模式>
+        数据/命令的发送模式，即发送前的数据变换
+            text    直接发送模式（默认）
+            hex     16进制字符串发送模式
+            dos     字符串后跟 \r\n 发送模式
+            unix    字符串后跟 \n 发送模式
+            mac     字符串后跟 \r 发送模式
+
+    com:rtype <接收模式>
+        数据/命令的接收模式，即接收后的数据渲染显示模式
+            text    文本显示模式，只显示可显示的字符（默认）
+            hex     16进制显示模式，可显示二进制数据
+            ansi    使用 ANSI 颜色属性代码的文本显示模式
 
 （二）INI 命令列表
 
