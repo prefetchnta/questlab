@@ -434,7 +434,7 @@ qst_com_tcpv4 (
         socket_close(netw);
         return (FALSE);
     }
-    title = str_fmtA(WIN_TITLE " - TCPv4 [%s], %u {s:%s, r:%s}",
+    title = str_fmtA(WIN_TITLE " - TCPv4 \"%s\", %u {s:%s, r:%s}",
             argv[1], port, ctx->comm.stype, ctx->comm.rtype);
     if (title != NULL) {
         SetWindowTextA(ctx->hwnd, title);
@@ -485,7 +485,7 @@ qst_com_udpv4 (
         socket_close(netw);
         return (FALSE);
     }
-    title = str_fmtA(WIN_TITLE " - UDPv4 [%s], %u {s:%s, r:%s}",
+    title = str_fmtA(WIN_TITLE " - UDPv4 \"%s\", %u {s:%s, r:%s}",
             argv[1], port, ctx->comm.stype, ctx->comm.rtype);
     if (title != NULL) {
         SetWindowTextA(ctx->hwnd, title);
