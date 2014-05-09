@@ -36,8 +36,18 @@ qst_udpv4_main (
         }
         else
         {
+            ansi_t  *ptr = cha;
+            uint_t  idx, size = 0;
+
             /* 直接显示内容 */
-            qst_direct_show(parm, cha, rett);
+            for (idx = 0; idx < rett - 1; idx++) {
+                ptr[size++] = cha[idx];
+                if (cha[idx] == CR_AC('\r') && cha[idx + 1] == CR_AC('\n'))
+                    idx++;
+            }
+            if (idx > rett - 1)
+                ptr[size++] = cha[rett - 1];
+            qst_direct_show(parm, cha, size);
         }
         _LEAVE_COM_SINGLE_
     }

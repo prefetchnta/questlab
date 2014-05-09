@@ -23,11 +23,6 @@ qst_tcpv4_main (
             thread_sleep(1);
             continue;
         }
-        if (cha[0] == CR_AC('\n') && cha[1] == CR_AC('\r')) {
-            cha[1] = cha[0];
-            continue;
-        }
-        cha[1] = cha[0];
 
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
@@ -39,7 +34,9 @@ qst_tcpv4_main (
         else
         {
             /* 直接显示内容 */
-            qst_direct_show(parm, cha, 1);
+            if (cha[0] != CR_AC('\n') || cha[1] != CR_AC('\r'))
+                qst_direct_show(parm, cha, 1);
+            cha[1] = cha[0];
         }
         _LEAVE_COM_SINGLE_
     }
