@@ -356,11 +356,8 @@ qst_com_rs232 (
     ansi_t      title[256];
     sQstComm*   ctx = (sQstComm*)parm;
 
-    /* 是否已经打开接口 */
-    if (ctx->comm.thrd != NULL)
-        return (FALSE);
-
-    /* 打开串口 */
+    /* 关闭当前接口并打开串口 */
+    qst_com_close(parm, argc, argv);
     if (!sio_open(port))
         return (FALSE);
     sio_setup(port, baud, bits, parity, stop);
@@ -494,7 +491,7 @@ qst_com_main (
         }
 
         /* 非命令直接交由发送函数处理 */
-        if (!cmd_type_okay(string) && ctx->comm.send != NULL) {
+        if (!cmd_type_okay(string) && ctx->comm.thrd != NULL) {
             if (ctx->comm.tran == NULL)
             {
                 /* 直接发送 */
