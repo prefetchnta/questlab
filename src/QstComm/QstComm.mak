@@ -7,6 +7,7 @@ QT=..\moc
 OBJ_LIST=.$(L)QstComm.$(O) \
          .$(L)QstCommInt.$(O) \
          .$(L)QstComm_rs232.$(O) \
+         .$(L)QstComm_tcpv4.$(O) \
          .$(L)QstComm_main.$(O) \
          .$(L)QstComm_tran.$(O) \
          .$(L)$(PROJECT).res
@@ -14,6 +15,7 @@ OBJ_LIST=.$(L)QstComm.$(O) \
 SRC_LIST=.$(L)QstComm.$(P) \
          .$(L)QstCommInt.$(P) \
          .$(L)QstComm_rs232.$(P) \
+         .$(L)QstComm_tcpv4.$(P) \
          .$(L)QstComm_main.$(P) \
          .$(L)QstComm_tran.$(P)
 

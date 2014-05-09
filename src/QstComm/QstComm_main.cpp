@@ -3,9 +3,11 @@
 
 /* 接收线程的声明 */
 CR_API uint_t STDCALL qst_rs232_main (void_t *param);
+CR_API uint_t STDCALL qst_tcpv4_main (void_t *param);
 
 /* 发送函数的声明 */
 CR_API void_t   qst_rs232_send (void_t *obj, const void_t *data, uint_t size);
+CR_API void_t   qst_tcpv4_send (void_t *obj, const void_t *data, uint_t size);
 
 /* 数据变换的声明 */
 CR_API void_t*  qst_dos_tran (const ansi_t *string, uint_t *ot_size);
@@ -357,7 +359,6 @@ qst_com_rs232 (
     sQstComm*   ctx = (sQstComm*)parm;
 
     /* 关闭当前接口并打开串口 */
-    qst_com_close(parm, argc, argv);
     if (!sio_open(port))
         return (FALSE);
     sio_setup(port, baud, bits, parity, stop);
@@ -368,6 +369,7 @@ qst_com_rs232 (
     sio_flush(port, CR_SIO_FLU_RT);
 
     /* 设置工作参数 */
+    qst_com_close(parm, argc, argv);
     ctx->comm.obj.port = port;
     ctx->comm.send = qst_rs232_send;
 
@@ -395,7 +397,42 @@ qst_com_tcpv4 (
   __CR_IN__ ansi_t**    argv
     )
 {
-    return (FALSE);
+    uint_t      port;
+    socket_t    netw;
+
+    /* 参数解析 <目标地址> <端口号> */
+    if (argc < 3)
+        return (FALSE);
+    port = str2intxA(argv[2]);
+    if (port > 65535)
+        return (FALSE);
+
+    ansi_t*     title;
+    sQstComm*   ctx = (sQstComm*)parm;
+
+    /* 关闭当前接口并打开 TCPv4 连接 */
+    netw = client_tcp_open(argv[1], (int16u)port, 5000);
+    if (netw == NULL)
+        return (FALSE);
+    socket_set_timeout(netw, -1, 50);
+
+    /* 设置工作参数 */
+    qst_com_close(parm, argc, argv);
+    ctx->comm.obj.netw = netw;
+    ctx->comm.send = qst_tcpv4_send;
+
+    /* 启动接收线程 */
+    ctx->comm.thrd = thread_new(0, qst_tcpv4_main, parm, FALSE);
+    if (ctx->comm.thrd == NULL) {
+        socket_close(netw);
+        return (FALSE);
+    }
+    title = str_fmtA(WIN_TITLE " - %s, %u", argv[1], port);
+    if (title != NULL) {
+        SetWindowTextA(ctx->hwnd, title);
+        mem_free(title);
+    }
+    return (TRUE);
 }
 
 /*
