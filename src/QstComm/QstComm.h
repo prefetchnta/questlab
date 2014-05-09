@@ -51,6 +51,10 @@ typedef struct
         thrd_t  thrd;   /* 线程句柄 */
         bool_t  text;   /* 文本模式 */
 
+        /* 收发模式 */
+        const ansi_t*   rtype;
+        const ansi_t*   stype;
+
         /* 通讯对象 */
         union {
             void_t*     parm;   /* 传值用的 */

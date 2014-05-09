@@ -285,7 +285,12 @@ qst_com_close (
     thread_del(ctx->comm.thrd);
     ctx->comm.thrd = NULL;
     ctx->comm.quit = FALSE;
-    SetWindowTextA(ctx->hwnd, WIN_TITLE);
+
+    ansi_t  title[128];
+
+    sprintf(title, WIN_TITLE " {s:%s, r:%s}",
+            ctx->comm.stype, ctx->comm.rtype);
+    SetWindowTextA(ctx->hwnd, title);
     return (TRUE);
 }
 
@@ -381,8 +386,8 @@ qst_com_rs232 (
         sio_close(port);
         return (FALSE);
     }
-    sprintf(title, WIN_TITLE " - COM%u, %u, %u, %s, %s",
-                port, baud, bits, sparity, sstop);
+    sprintf(title, WIN_TITLE " - COM%u, %u, %u, %s, %s {s:%s, r:%s}",
+        port, baud, bits, sparity, sstop, ctx->comm.stype, ctx->comm.rtype);
     SetWindowTextA(ctx->hwnd, title);
     return (TRUE);
 }
@@ -429,7 +434,8 @@ qst_com_tcpv4 (
         socket_close(netw);
         return (FALSE);
     }
-    title = str_fmtA(WIN_TITLE " - TCPv4 [%s], %u", argv[1], port);
+    title = str_fmtA(WIN_TITLE " - TCPv4 [%s], %u {s:%s, r:%s}",
+            argv[1], port, ctx->comm.stype, ctx->comm.rtype);
     if (title != NULL) {
         SetWindowTextA(ctx->hwnd, title);
         mem_free(title);
@@ -479,7 +485,8 @@ qst_com_udpv4 (
         socket_close(netw);
         return (FALSE);
     }
-    title = str_fmtA(WIN_TITLE " - UDPv4 [%s], %u", argv[1], port);
+    title = str_fmtA(WIN_TITLE " - UDPv4 [%s], %u {s:%s, r:%s}",
+            argv[1], port, ctx->comm.stype, ctx->comm.rtype);
     if (title != NULL) {
         SetWindowTextA(ctx->hwnd, title);
         mem_free(title);
@@ -505,23 +512,35 @@ qst_com_stype (
 
     sQstComm*   ctx = (sQstComm*)parm;
 
-    if (str_cmpA(argv[1], "text") == 0)
+    if (str_cmpA(argv[1], "text") == 0) {
         ctx->comm.tran = NULL;
+        ctx->comm.stype = "text";
+    }
     else
-    if (str_cmpA(argv[1], "hex") == 0)
+    if (str_cmpA(argv[1], "hex") == 0) {
         ctx->comm.tran = qst_hex_tran;
+        ctx->comm.stype = "hex";
+    }
     else
-    if (str_cmpA(argv[1], "esc") == 0)
+    if (str_cmpA(argv[1], "esc") == 0) {
         ctx->comm.tran = qst_esc_tran;
+        ctx->comm.stype = "esc";
+    }
     else
-    if (str_cmpA(argv[1], "dos") == 0)
+    if (str_cmpA(argv[1], "dos") == 0) {
         ctx->comm.tran = qst_dos_tran;
+        ctx->comm.stype = "dos";
+    }
     else
-    if (str_cmpA(argv[1], "unix") == 0)
+    if (str_cmpA(argv[1], "unix") == 0) {
         ctx->comm.tran = qst_unx_tran;
+        ctx->comm.stype = "unix";
+    }
     else
-    if (str_cmpA(argv[1], "mac") == 0)
+    if (str_cmpA(argv[1], "mac") == 0) {
         ctx->comm.tran = qst_mac_tran;
+        ctx->comm.stype = "mac";
+    }
     return (TRUE);
 }
 
@@ -547,11 +566,13 @@ qst_com_rtype (
     if (str_cmpA(argv[1], "text") == 0) {
         ctx->comm.text = TRUE;
         ctx->comm.render = qst_txt_show;
+        ctx->comm.rtype = "text";
     }
     else
     if (str_cmpA(argv[1], "hex") == 0) {
         ctx->comm.text = FALSE;
         ctx->comm.render = qst_hex_show;
+        ctx->comm.rtype = "hex";
     }
     _LEAVE_COM_SINGLE_
     return (TRUE);
