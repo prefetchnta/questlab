@@ -45,8 +45,8 @@ qst_udpv4_main (
                 if (cha[idx] == CR_AC('\r') && cha[idx + 1] == CR_AC('\n'))
                     idx++;
             }
-            if (idx > rett - 1)
-                ptr[size++] = cha[rett - 1];
+            if (idx == rett - 1)
+                ptr[size++] = cha[idx];
             qst_direct_show(parm, cha, size);
         }
         _LEAVE_COM_SINGLE_
