@@ -49,6 +49,7 @@ typedef struct
 {
         bool_t  quit;   /* 是否结束 */
         thrd_t  thrd;   /* 线程句柄 */
+        bool_t  text;   /* 文本模式 */
 
         /* 通讯对象 */
         union {

@@ -29,17 +29,12 @@ qst_udpv4_main (
 
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
-        if (ctx->comm.render != NULL)
-        {
-            /* 自定义渲染器 */
-            ctx->comm.render(parm, cha, rett);
-        }
-        else
+        if (ctx->comm.text)
         {
             ansi_t  *ptr = cha;
             uint_t  idx, size = 0;
 
-            /* 直接显示内容 */
+            /* 文本模式过滤换行符 */
             for (idx = 0; idx < rett - 1; idx++) {
                 ptr[size++] = cha[idx];
                 if (cha[idx] == CR_AC('\r') && cha[idx + 1] == CR_AC('\n'))
@@ -47,9 +42,10 @@ qst_udpv4_main (
             }
             if (idx == rett - 1)
                 ptr[size++] = cha[idx];
-            if (size != 0)
-                qst_txt_show(parm, cha, size);
+            rett = size;
         }
+        if (rett != 0)
+            ctx->comm.render(parm, cha, rett);
         _LEAVE_COM_SINGLE_
     }
 

@@ -26,17 +26,13 @@ qst_rs232_main (
 
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
-        if (ctx->comm.render != NULL)
-        {
-            /* 自定义渲染器 */
-            ctx->comm.render(parm, cha, 1);
-        }
-        else
-        {
-            /* 直接显示内容 */
+        if (ctx->comm.text) {
             if (cha[0] != CR_AC('\n') || cha[1] != CR_AC('\r'))
-                qst_txt_show(parm, cha, 1);
+                ctx->comm.render(parm, cha, 1);
             cha[1] = cha[0];
+        }
+        else {
+            ctx->comm.render(parm, cha, 1);
         }
         _LEAVE_COM_SINGLE_
     }

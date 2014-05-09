@@ -540,11 +540,15 @@ qst_com_rtype (
     sQstComm*   ctx = (sQstComm*)parm;
 
     _ENTER_COM_SINGLE_
-    if (str_cmpA(argv[1], "text") == 0)
-        ctx->comm.render = NULL;
+    if (str_cmpA(argv[1], "text") == 0) {
+        ctx->comm.text = TRUE;
+        ctx->comm.render = qst_txt_show;
+    }
     else
-    if (str_cmpA(argv[1], "hex") == 0)
+    if (str_cmpA(argv[1], "hex") == 0) {
+        ctx->comm.text = FALSE;
         ctx->comm.render = qst_hex_show;
+    }
     _LEAVE_COM_SINGLE_
     return (TRUE);
 }

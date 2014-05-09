@@ -122,6 +122,8 @@ WinMain (
     /* 生成工作线程 */
     s_wrk_ctx.quit = FALSE;
     s_wrk_ctx.comm.quit = FALSE;
+    s_wrk_ctx.comm.text = TRUE;
+    s_wrk_ctx.comm.render = qst_txt_show;
     thrd = thread_new(0, qst_com_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL)
         return (QST_ERROR);
