@@ -234,6 +234,33 @@ qst_com_cfg_load (
 
 /*
 ---------------------------------------
+    清除通讯内容
+---------------------------------------
+*/
+static bool_t
+qst_com_clear (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sQstComm*   ctx;
+    CTextOper*  opr;
+
+    CR_NOUSE(argc);
+    CR_NOUSE(argv);
+
+    ctx = (sQstComm*)parm;
+    opr = (CTextOper*)ctx->oper;
+
+    _ENTER_COM_SINGLE_
+    opr->clear();
+    _LEAVE_COM_SINGLE_
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     关闭通讯接口
 ---------------------------------------
 */
@@ -536,6 +563,7 @@ static const sQST_CMD   s_cmdz[] =
     { "win:show", qst_com_win_show },
 
     /***** 通讯控制命令 *****/
+    { "com:clear", qst_com_clear },
     { "com:close", qst_com_close },
     { "com:rs232", qst_com_rs232 },
     { "com:tcpv4", qst_com_tcpv4 },
