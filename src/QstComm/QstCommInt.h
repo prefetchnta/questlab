@@ -13,12 +13,6 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
 
-/* 多线程锁简化宏 */
-#define _ENTER_COM_SINGLE_  \
-    mtlock_acquire(&(((sQstComm*)parm)->lock));
-#define _LEAVE_COM_SINGLE_  \
-    mtlock_release(&(((sQstComm*)parm)->lock));
-
 /************************/
 /* 实现自动滚动的文本框 */
 /************************/
@@ -84,9 +78,5 @@ signals:
     void setText (const QString& text);
     void setHtml (const QString& html);
 };
-
-/* 大家都要用的函数 */
-CR_API void_t   qst_direct_show (void_t *parm, const void_t *data,
-                                 uint_t size);
 
 #endif  /* !__QL_QSTCOMMINT_H__ */

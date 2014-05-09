@@ -1,5 +1,5 @@
 
-#include "QstCommInt.h"
+#include "QstComm.h"
 
 /*
 =======================================

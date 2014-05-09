@@ -84,4 +84,13 @@ typedef struct
 
 } sQstComm;
 
+/* 多线程锁简化宏 */
+#define _ENTER_COM_SINGLE_  \
+    mtlock_acquire(&(((sQstComm*)parm)->lock));
+#define _LEAVE_COM_SINGLE_  \
+    mtlock_release(&(((sQstComm*)parm)->lock));
+
+/* 文本直接显示函数 */
+CR_API void_t   qst_direct_show (void_t *parm, const void_t *data,
+                                 uint_t size);
 #endif  /* !__QL_QSTCOMM_H__ */
