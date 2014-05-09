@@ -15,6 +15,7 @@ CR_API void_t   qst_udpv4_send (void_t *obj, const void_t *data, uint_t size);
 CR_API void_t*  qst_dos_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_unx_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_mac_tran (const ansi_t *string, uint_t *ot_size);
+CR_API void_t*  qst_hex_tran (const ansi_t *string, uint_t *ot_size);
 
 /* 数据渲染的声明 */
 CR_API void_t   qst_hex_show (void_t *parm, const void_t *data, uint_t size);
@@ -478,6 +479,9 @@ qst_com_stype (
 
     if (str_cmpA(argv[1], "text") == 0)
         ctx->comm.tran = NULL;
+    else
+    if (str_cmpA(argv[1], "hex") == 0)
+        ctx->comm.tran = qst_hex_tran;
     else
     if (str_cmpA(argv[1], "dos") == 0)
         ctx->comm.tran = qst_dos_tran;

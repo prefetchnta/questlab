@@ -73,3 +73,34 @@ qst_mac_tran (
     *ot_size = len + 1;
     return (dat);
 }
+
+/*
+=======================================
+    16进制数据发送
+=======================================
+*/
+CR_API void_t*
+qst_hex_tran (
+  __CR_IN__ const ansi_t*   string,
+  __CR_OT__ uint_t*         ot_size
+    )
+{
+    leng_t  len;
+    void_t* dat;
+
+    len = str_lenA(string);
+    if (len == 0)
+        return (NULL);
+    len += 1;
+    if (len > 1) len /= 2;
+    dat = mem_malloc(len + 1);
+    if (dat == NULL)
+        return (NULL);
+    str2datA(dat, &len, string);
+    if (len == 0) {
+        mem_free(dat);
+        return (NULL);
+    }
+    *ot_size = len;
+    return (dat);
+}
