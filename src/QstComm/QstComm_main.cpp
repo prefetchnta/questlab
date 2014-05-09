@@ -487,8 +487,34 @@ qst_com_stype (
     else
     if (str_cmpA(argv[1], "mac") == 0)
         ctx->comm.tran = qst_mac_tran;
-    else
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    设置通讯接收模式
+---------------------------------------
+*/
+static bool_t
+qst_com_rtype (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <接收模式> */
+    if (argc < 2)
         return (FALSE);
+
+    sQstComm*   ctx = (sQstComm*)parm;
+
+    _ENTER_COM_SINGLE_
+    if (str_cmpA(argv[1], "text") == 0)
+        ctx->comm.render = NULL;
+    else
+    if (str_cmpA(argv[1], "hex") == 0)
+        ctx->comm.render = qst_hex_show;
+    _LEAVE_COM_SINGLE_
     return (TRUE);
 }
 
@@ -511,6 +537,7 @@ static const sQST_CMD   s_cmdz[] =
     { "com:tcpv4", qst_com_tcpv4 },
     { "com:udpv4", qst_com_udpv4 },
     { "com:stype", qst_com_stype },
+    { "com:rtype", qst_com_rtype },
 
     /***** 私有命令映射 *****/
     { "qcom:app:exit", qst_com_app_exit },
