@@ -17,6 +17,8 @@ static sQstComm     s_wrk_ctx;
 CR_API uint_t STDCALL qst_com_main (void_t *param);
 
 /* 内部函数的声明 */
+CR_API bool_t   qst_csi_init (void_t);
+CR_API void_t   qst_csi_free (void_t);
 CR_API void_t   qst_load_cfg (sQCOM_conf *cfgs);
 CR_API void_t   qst_set_viewer (sQstComm *parm);
 CR_API void_t   qst_update_title (sQstComm *parm);
@@ -108,6 +110,11 @@ WinMain (
     qst_set_viewer(&s_wrk_ctx);
     SetClassLongPtr(s_wrk_ctx.hwnd, GCLP_HICON, (LONG_PTR)
                     LoadIconA(curt_app, (ansi_t*)101));
+
+    /* 初始化 ANSI 上下文 */
+    if (!qst_csi_init())
+        return (QST_ERROR);
+
     /* 初始化网络 */
     if (!socket_init())
         return (QST_ERROR);
@@ -145,5 +152,6 @@ WinMain (
     thread_del(thrd);
     netw_cli_close(s_wrk_ctx.netw);
     sio_free();
+    qst_csi_free();
     return (QST_OKAY);
 }

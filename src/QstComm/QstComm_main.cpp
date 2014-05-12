@@ -1,6 +1,9 @@
 
 #include "QstCommInt.h"
 
+/* 内部函数的声明 */
+CR_API void_t   qst_csi_clear (void_t);
+
 /* 接收线程的声明 */
 CR_API uint_t STDCALL qst_rs232_main (void_t *param);
 CR_API uint_t STDCALL qst_tcpv4_main (void_t *param);
@@ -20,6 +23,7 @@ CR_API void_t*  qst_esc_tran (const ansi_t *string, uint_t *ot_size);
 
 /* 数据渲染的声明 */
 CR_API void_t   qst_hex_show (void_t *parm, const void_t *data, uint_t size);
+CR_API void_t   qst_csi_show (void_t *parm, const void_t *data, uint_t size);
 
 /*****************************************************************************/
 /*                                 内部函数                                  */
@@ -587,6 +591,13 @@ qst_com_rtype (
         ctx->comm.text = FALSE;
         ctx->comm.render = qst_hex_show;
         ctx->comm.rtype = "hex";
+    }
+    else
+    if (str_cmpA(argv[1], "ansi") == 0) {
+        qst_csi_clear();
+        ctx->comm.text = TRUE;
+        ctx->comm.render = qst_csi_show;
+        ctx->comm.rtype = "ansi";
     }
     _LEAVE_COM_SINGLE_
     qst_update_title(ctx);
