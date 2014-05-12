@@ -54,6 +54,7 @@ typedef struct
         /* 收发模式 */
         const ansi_t*   rtype;
         const ansi_t*   stype;
+        const ansi_t*   title;
 
         /* 通讯对象 */
         union {

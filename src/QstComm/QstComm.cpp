@@ -125,6 +125,7 @@ WinMain (
     s_wrk_ctx.comm.text = TRUE;
     s_wrk_ctx.comm.rtype = "text";
     s_wrk_ctx.comm.stype = "text";
+    s_wrk_ctx.comm.title = NULL;
     s_wrk_ctx.comm.render = qst_txt_show;
     thrd = thread_new(0, qst_com_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL)

@@ -98,6 +98,31 @@ qst_set_viewer (
     _LEAVE_COM_SINGLE_
 }
 
+/*
+---------------------------------------
+    更新窗口标题
+---------------------------------------
+*/
+static void_t
+qst_update_title (
+  __CR_IN__ sQstComm*   parm
+    )
+{
+    ansi_t*         wntt;
+    const ansi_t*   type;
+
+    if (parm->comm.title == NULL)
+        type = "";
+    else
+        type = parm->comm.title;
+    wntt = str_fmtA(WIN_TITLE "%s {s:%s, r:%s}", type,
+                parm->comm.stype, parm->comm.rtype);
+    if (wntt != NULL) {
+        SetWindowTextA(parm->hwnd, wntt);
+        mem_free(wntt);
+    }
+}
+
 /*****************************************************************************/
 /*                               公用命令单元                                */
 /*****************************************************************************/
@@ -285,12 +310,8 @@ qst_com_close (
     thread_del(ctx->comm.thrd);
     ctx->comm.thrd = NULL;
     ctx->comm.quit = FALSE;
-
-    ansi_t  title[128];
-
-    sprintf(title, WIN_TITLE " {s:%s, r:%s}",
-            ctx->comm.stype, ctx->comm.rtype);
-    SetWindowTextA(ctx->hwnd, title);
+    SAFE_FREE(ctx->comm.title);
+    qst_update_title(ctx);
     return (TRUE);
 }
 
@@ -362,7 +383,6 @@ qst_com_rs232 (
         }
     }
 
-    ansi_t      title[128];
     sQstComm*   ctx = (sQstComm*)parm;
 
     /* 关闭当前接口并打开串口 */
@@ -386,9 +406,10 @@ qst_com_rs232 (
         sio_close(port);
         return (FALSE);
     }
-    sprintf(title, WIN_TITLE " - COM%u, %u, %u, %s, %s {s:%s, r:%s}",
-        port, baud, bits, sparity, sstop, ctx->comm.stype, ctx->comm.rtype);
-    SetWindowTextA(ctx->hwnd, title);
+    TRY_FREE(ctx->comm.title);
+    ctx->comm.title = str_fmtA(" - COM%u, %u, %u, %s, %s",
+                            port, baud, bits, sparity, sstop);
+    qst_update_title(ctx);
     return (TRUE);
 }
 
@@ -414,7 +435,6 @@ qst_com_tcpv4 (
     if (port > 65535)
         return (FALSE);
 
-    ansi_t*     title;
     sQstComm*   ctx = (sQstComm*)parm;
 
     /* 关闭当前接口并打开 TCPv4 连接 */
@@ -434,12 +454,10 @@ qst_com_tcpv4 (
         socket_close(netw);
         return (FALSE);
     }
-    title = str_fmtA(WIN_TITLE " - TCPv4 \"%s\", %u {s:%s, r:%s}",
-            argv[1], port, ctx->comm.stype, ctx->comm.rtype);
-    if (title != NULL) {
-        SetWindowTextA(ctx->hwnd, title);
-        mem_free(title);
-    }
+    TRY_FREE(ctx->comm.title);
+    ctx->comm.title = str_fmtA(" - TCPv4 \"%s\", %u",
+                               argv[1], port);
+    qst_update_title(ctx);
     return (TRUE);
 }
 
@@ -465,7 +483,6 @@ qst_com_udpv4 (
     if (port > 65535)
         return (FALSE);
 
-    ansi_t*     title;
     sQstComm*   ctx = (sQstComm*)parm;
 
     /* 关闭当前接口并打开 UDPv4 连接 */
@@ -485,12 +502,10 @@ qst_com_udpv4 (
         socket_close(netw);
         return (FALSE);
     }
-    title = str_fmtA(WIN_TITLE " - UDPv4 \"%s\", %u {s:%s, r:%s}",
-            argv[1], port, ctx->comm.stype, ctx->comm.rtype);
-    if (title != NULL) {
-        SetWindowTextA(ctx->hwnd, title);
-        mem_free(title);
-    }
+    TRY_FREE(ctx->comm.title);
+    ctx->comm.title = str_fmtA(" - UDPv4 \"%s\", %u",
+                               argv[1], port);
+    qst_update_title(ctx);
     return (TRUE);
 }
 
@@ -541,6 +556,7 @@ qst_com_stype (
         ctx->comm.tran = qst_mac_tran;
         ctx->comm.stype = "mac";
     }
+    qst_update_title(ctx);
     return (TRUE);
 }
 
@@ -575,6 +591,7 @@ qst_com_rtype (
         ctx->comm.rtype = "hex";
     }
     _LEAVE_COM_SINGLE_
+    qst_update_title(ctx);
     return (TRUE);
 }
 
