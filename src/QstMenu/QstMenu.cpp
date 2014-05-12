@@ -88,9 +88,9 @@ qst_load_item (
             scut_a = NULL;
         }
         if (name_a == NULL || text_a == NULL) {
-            TRY_FREE(name_a)
-            TRY_FREE(text_a)
-            TRY_FREE(scut_a)
+            TRY_FREE(name_a);
+            TRY_FREE(text_a);
+            TRY_FREE(scut_a);
             continue;
         }
 

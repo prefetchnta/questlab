@@ -536,8 +536,8 @@ d3d8_release_mesh (
   __CR_IN__ const sD3D8_MESH*   mesh
     )
 {
-    TRY_XREL(mesh->ibuf)
-    TRY_XREL(mesh->vbuf)
+    TRY_XREL(mesh->ibuf);
+    TRY_XREL(mesh->vbuf);
     mem_free(mesh);
 }
 

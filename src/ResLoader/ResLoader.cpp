@@ -50,7 +50,7 @@ DllMain (
             break;
 
         case DLL_PROCESS_DETACH:
-            TRY_FREE(s_root)
+            TRY_FREE(s_root);
             break;
     }
     CR_NOUSE(hinst);
@@ -77,7 +77,7 @@ res_init (
 {
     if (netw != NULL)
         s_netw = netw;
-    SAFE_FREE(s_root)
+    SAFE_FREE(s_root);
     if (root != NULL)
         s_root = str_dupA(root);
 }
@@ -91,7 +91,7 @@ static void_t
 res_kill (void_t)
 {
     s_netw = NULL;
-    SAFE_FREE(s_root)
+    SAFE_FREE(s_root);
 }
 
 /*

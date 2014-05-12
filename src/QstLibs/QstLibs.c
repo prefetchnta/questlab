@@ -420,7 +420,7 @@ netw_cli_open (
 
     /* 创建连接 */
     netw = client_tcp_open(addr, port, -1);
-    TRY_FREE(text)
+    TRY_FREE(text);
     if (netw == NULL)
         return (NULL);
     socket_set_timeout(netw, -1, QST_TCP_TOUT);

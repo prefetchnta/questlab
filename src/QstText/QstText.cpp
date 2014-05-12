@@ -68,7 +68,7 @@ qst_load_cfg (
     sint_t  size;
 
     /* 加载配置文件 */
-    TRY_FREE(cfgs->font_face)
+    TRY_FREE(cfgs->font_face);
     str = file_load_as_strA(QST_PATH_CONFIG WIN_ICONF);
     if (str == NULL)
         goto _load_defs;
@@ -163,7 +163,7 @@ qst_clear (
     parm->show = NULL;
     parm->xbom = FALSE;
     parm->page = get_sys_codepage();
-    SAFE_FREE(parm->text)
+    SAFE_FREE(parm->text);
     frm = (TfrmMain*)(parm->form);
     frm->edtCPage->Text = IntToStr(parm->page);
     crisec_enter(parm->lock);
@@ -1163,8 +1163,8 @@ qst_edt_edt_filter (
 
     /* 清匹配列表 */
     ctx->count = 0;
-    SAFE_FREE(ctx->filter)
-    SAFE_FREE(ctx->flists)
+    SAFE_FREE(ctx->filter);
+    SAFE_FREE(ctx->flists);
 
     /* 参数解析 [文件名匹配列表] */
     if (argc > 1) {

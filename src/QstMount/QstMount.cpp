@@ -133,7 +133,7 @@ mount_free (
     unit = (sQstMntNode*)obj;
     array_freeT(&unit->info, ansi_t*);
     fmtz_free((sFMTZ*)unit->fmtz);
-    TRY_FREE(unit->data)
+    TRY_FREE(unit->data);
     mem_free(unit->show);
     mem_free(unit->name);
     if (unit->type == QST_MOUNT_TEMP)
@@ -196,7 +196,7 @@ resx_free (
     unit = (sQstResNode*)obj;
     if (unit->objs != NULL)
         share_file_close(unit->objs);
-    TRY_FREE(unit->file)
+    TRY_FREE(unit->file);
     mem_free(unit->name);
 }
 
@@ -1234,7 +1234,7 @@ qst_mnt_res_load (
             share_file_close(res->objs);
             res->objs = NULL;
         }
-        SAFE_FREE(res->file)
+        SAFE_FREE(res->file);
     }
     else
     {

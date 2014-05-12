@@ -374,7 +374,7 @@ int main (int argc, char *argv[])
     if (!socket_init())
         return (QST_ERROR);
     serv = server_tcp_open(addr, port);
-    TRY_FREE(text)
+    TRY_FREE(text);
     if (serv == NULL)
         return (QST_ERROR);
 

@@ -198,7 +198,7 @@ d3d9_release_main (
   __CR_IN__ const sD3D9_MAIN*   main
     )
 {
-    TRY_XREL(main->bak)
+    TRY_XREL(main->bak);
     main->dev->Release();
     main->obj->Release();
     mem_free(main);
@@ -306,7 +306,7 @@ d3d9_main_reset (
         parm.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
     else
         parm.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-    SAFE_XREL(main->bak)
+    SAFE_XREL(main->bak);
 
     /* 重置 D3D9 设备对象 */
     retc = main->dev->Reset(&parm);
@@ -571,8 +571,8 @@ d3d9_release_mesh (
   __CR_IN__ const sD3D9_MESH*   mesh
     )
 {
-    TRY_XREL(mesh->ibuf)
-    TRY_XREL(mesh->vbuf)
+    TRY_XREL(mesh->ibuf);
+    TRY_XREL(mesh->vbuf);
     mem_free(mesh);
 }
 

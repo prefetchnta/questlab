@@ -53,8 +53,8 @@ void __fastcall TfrmMain::lstTreeFreeNode(TBaseVirtualTree *Sender,
 
     /* 释放节点数据 */
     data = (sQTEE_file*)lstTree->GetNodeData(Node);
-    TRY_FREE(data->path)
-    TRY_FREE(data->memo)
+    TRY_FREE(data->path);
+    TRY_FREE(data->memo);
     if (data->attr & QST_FILE_DIR)
         mem_free(data->name);
 }

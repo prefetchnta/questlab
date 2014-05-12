@@ -171,7 +171,7 @@ do_import_scr (
                                 file_tag_out, parm);
             mem_free(match);
         }
-        TRY_FREE(parm->memo)
+        TRY_FREE(parm->memo);
         if (!rett)
             goto _failure;
     }

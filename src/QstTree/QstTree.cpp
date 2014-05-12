@@ -534,8 +534,8 @@ qst_load_xml (
         /* 加入线性列表 */
         if (disk) {
             if (array_push_growT(&parm->list, sQTEE_file, &data) == NULL) {
-                TRY_FREE(data.path)
-                TRY_FREE(data.memo)
+                TRY_FREE(data.path);
+                TRY_FREE(data.memo);
                 continue;
             }
         }
@@ -544,8 +544,8 @@ qst_load_xml (
         if (!qst_add_node(begin, &data, node, tree)) {
             if (disk)
                 parm->list.__cnts__--;
-            TRY_FREE(data.path)
-            TRY_FREE(data.memo)
+            TRY_FREE(data.path);
+            TRY_FREE(data.memo);
             continue;
         }
     }
