@@ -99,11 +99,11 @@ qst_set_viewer (
 }
 
 /*
----------------------------------------
+=======================================
     更新窗口标题
----------------------------------------
+=======================================
 */
-static void_t
+CR_API void_t
 qst_update_title (
   __CR_IN__ sQstComm*   parm
     )
@@ -455,8 +455,7 @@ qst_com_tcpv4 (
         return (FALSE);
     }
     TRY_FREE(ctx->comm.title);
-    ctx->comm.title = str_fmtA(" - TCPv4 \"%s\", %u",
-                               argv[1], port);
+    ctx->comm.title = str_fmtA(" - TCPv4 \"%s\", %u", argv[1], port);
     qst_update_title(ctx);
     return (TRUE);
 }
@@ -503,8 +502,7 @@ qst_com_udpv4 (
         return (FALSE);
     }
     TRY_FREE(ctx->comm.title);
-    ctx->comm.title = str_fmtA(" - UDPv4 \"%s\", %u",
-                               argv[1], port);
+    ctx->comm.title = str_fmtA(" - UDPv4 \"%s\", %u", argv[1], port);
     qst_update_title(ctx);
     return (TRUE);
 }

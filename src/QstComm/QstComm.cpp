@@ -19,6 +19,7 @@ CR_API uint_t STDCALL qst_com_main (void_t *param);
 /* 内部函数的声明 */
 CR_API void_t   qst_load_cfg (sQCOM_conf *cfgs);
 CR_API void_t   qst_set_viewer (sQstComm *parm);
+CR_API void_t   qst_update_title (sQstComm *parm);
 
 /*
 =======================================
@@ -127,6 +128,7 @@ WinMain (
     s_wrk_ctx.comm.stype = "text";
     s_wrk_ctx.comm.title = NULL;
     s_wrk_ctx.comm.render = qst_txt_show;
+    qst_update_title(&s_wrk_ctx);
     thrd = thread_new(0, qst_com_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL)
         return (QST_ERROR);
