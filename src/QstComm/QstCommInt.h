@@ -4,14 +4,15 @@
 
 #include "QstComm.h"
 
+#pragma warning (push)
 #pragma warning (disable: 4127)
 #pragma warning (disable: 4512)
-
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
+#pragma warning (pop)
 
 /************************/
 /* 实现自动滚动的文本框 */
