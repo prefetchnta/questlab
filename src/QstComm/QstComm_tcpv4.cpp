@@ -28,11 +28,11 @@ qst_tcpv4_main (
         _ENTER_COM_SINGLE_
         if (ctx->comm.text) {
             if (cha[0] != CR_AC('\n') || cha[1] != CR_AC('\r'))
-                ctx->comm.render(parm, cha, 1);
+                ctx->comm.render(parm, cha[0]);
             cha[1] = cha[0];
         }
         else {
-            ctx->comm.render(parm, cha, 1);
+            ctx->comm.render(parm, cha[0]);
         }
         _LEAVE_COM_SINGLE_
     }

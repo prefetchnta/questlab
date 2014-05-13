@@ -18,7 +18,7 @@ qst_udpv4_main (
     /* 工作循环 */
     while (!ctx->comm.quit)
     {
-        uint_t  rett;
+        uint_t  idx, rett;
 
         /* 一个个封包读 */
         rett = socket_udp_recv(ctx->comm.obj.netw, cha, sizeof(cha));
@@ -31,8 +31,8 @@ qst_udpv4_main (
         _ENTER_COM_SINGLE_
         if (ctx->comm.text)
         {
-            ansi_t  *ptr = cha;
-            uint_t  idx, size = 0;
+            uint_t  size = 0;
+            ansi_t* ptr = cha;
 
             /* 文本模式过滤换行符 */
             for (idx = 0; idx < rett - 1; idx++) {
@@ -44,8 +44,8 @@ qst_udpv4_main (
                 ptr[size++] = cha[idx];
             rett = size;
         }
-        if (rett != 0)
-            ctx->comm.render(parm, cha, rett);
+        for (idx = 0; idx < rett; idx++)
+            ctx->comm.render(parm, cha[idx]);
         _LEAVE_COM_SINGLE_
     }
 

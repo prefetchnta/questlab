@@ -22,8 +22,8 @@ CR_API void_t*  qst_hex_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_esc_tran (const ansi_t *string, uint_t *ot_size);
 
 /* 数据渲染的声明 */
-CR_API void_t   qst_hex_show (void_t *parm, const void_t *data, uint_t size);
-CR_API void_t   qst_csi_show (void_t *parm, const void_t *data, uint_t size);
+CR_API void_t   qst_hex_show (void_t *parm, ansi_t cha);
+CR_API void_t   qst_csi_show (void_t *parm, ansi_t cha);
 
 /*****************************************************************************/
 /*                                 内部函数                                  */

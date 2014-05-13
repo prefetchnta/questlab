@@ -70,7 +70,7 @@ typedef struct
         void_t  (*send) (void_t *obj, const void_t *data, uint_t size);
 
         /* 接收数据的渲染 (默认直接显示) */
-        void_t  (*render) (void_t *parm, const void_t *data, uint_t size);
+        void_t  (*render) (void_t *parm, ansi_t cha);
 
 } sQCOM_ctx;
 
@@ -97,6 +97,6 @@ typedef struct
     mtlock_release(&(((sQstComm*)parm)->lock));
 
 /* 公用的数据渲染声明 */
-CR_API void_t   qst_txt_show (void_t *parm, const void_t *data, uint_t size);
+CR_API void_t   qst_txt_show (void_t *parm, ansi_t cha);
 
 #endif  /* !__QL_QSTCOMM_H__ */

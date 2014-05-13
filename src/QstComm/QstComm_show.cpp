@@ -8,33 +8,22 @@
 */
 CR_API void_t
 qst_txt_show (
-  __CR_IN__ void_t*         parm,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ uint_t          size
+  __CR_IN__ void_t* parm,
+  __CR_IN__ ansi_t  cha
     )
 {
-    ansi_t  cha;
-    ansi_t* show;
-
-    show = str_allocA(size + 1);
-    if (show == NULL)
-        return;
-
+    ansi_t      show[2];
     sQstComm*   ctx = (sQstComm*)parm;
     CTextOper*  opr = (CTextOper*)ctx->oper;
 
     /* 过滤无法显示的字符 */
-    for (uint_t idx = 0; idx < size; idx++) {
-        cha = *(ansi_t*)data;
-        data = (ansi_t*)data + 1;
-        if (cha != CR_AC('\n') &&
-            cha != CR_AC('\r') && !is_printA(cha))
-            cha = CR_AC(' ');
-        show[idx] = cha;
-    }
-    show[size] = NIL;
+    if (cha != CR_AC('\n') &&
+        cha != CR_AC('\r') && !is_printA(cha))
+        show[0] = CR_AC(' ');
+    else
+        show[0] = cha;
+    show[1] = NIL;
     opr->text(show);
-    mem_free(show);
 }
 
 /*
@@ -44,31 +33,17 @@ qst_txt_show (
 */
 CR_API void_t
 qst_hex_show (
-  __CR_IN__ void_t*         parm,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ uint_t          size
+  __CR_IN__ void_t* parm,
+  __CR_IN__ ansi_t  cha
     )
 {
-    ansi_t* ptr;
-    ansi_t* show;
-
-    show = str_allocA(size * 3 + 1);
-    if (show == NULL)
-        return;
-    ptr = show;
-
+    ansi_t      show[4];
     sQstComm*   ctx = (sQstComm*)parm;
     CTextOper*  opr = (CTextOper*)ctx->oper;
 
     /* 转换成16进制数显示 */
-    for (uint_t idx = 0; idx < size; idx++) {
-        sprintf(ptr, "%02X ", *(byte_t*)data);
-        data = (byte_t*)data + 1;
-        ptr += 3;
-    }
-    *ptr = NIL;
+    sprintf(show, "%02X ", cha);
     opr->text(show);
-    mem_free(show);
 }
 
 /* ANSI 转义处理上下文 */
@@ -121,9 +96,8 @@ qst_csi_clear (void_t)
 */
 CR_API void_t
 qst_csi_show (
-  __CR_IN__ void_t*         parm,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ uint_t          size
+  __CR_IN__ void_t* parm,
+  __CR_IN__ ansi_t  cha
     )
 {
 }
