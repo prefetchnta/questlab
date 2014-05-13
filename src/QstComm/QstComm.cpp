@@ -20,7 +20,7 @@ CR_API uint_t STDCALL qst_com_main (void_t *param);
 CR_API bool_t   qst_csi_init (void_t);
 CR_API void_t   qst_csi_free (void_t);
 CR_API void_t   qst_load_cfg (sQCOM_conf *cfgs);
-CR_API void_t   qst_set_viewer (sQstComm *parm, QTextEdit *edit);
+CR_API void_t   qst_set_viewer (sQstComm *parm);
 CR_API void_t   qst_update_title (sQstComm *parm);
 
 /*
@@ -111,7 +111,7 @@ WinMain (
     /* 初始化 ANSI 上下文 */
     if (!qst_csi_init())
         return (QST_ERROR);
-    qst_set_viewer(&s_wrk_ctx, edit);
+    qst_set_viewer(&s_wrk_ctx);
 
     /* 初始化网络 */
     if (!socket_init())

@@ -35,6 +35,10 @@ public slots:
 
         this->setTextCursor(cursor);
     }
+    void setupFont (const QFont& font)
+    {
+        this->setFont(font);
+    }
 };
 
 /**************************************************/
@@ -50,13 +54,12 @@ public:
         connect(this, SIGNAL(quit()), form, SLOT(close()));
         connect(this, SIGNAL(gotoEnd()), edit, SLOT(autoScroll()));
         connect(this, SIGNAL(allClear()), edit, SLOT(clear()));
-        connect(this, SIGNAL(allSelect()), edit, SLOT(selectAll()));
         connect(this, SIGNAL(setText(const QString&)),
                 edit, SLOT(insertPlainText(const QString&)));
         connect(this, SIGNAL(setHtml(const QString&)),
                 edit, SLOT(insertHtml(const QString&)));
         connect(this, SIGNAL(setFont(const QFont&)),
-                edit, SLOT(setCurrentFont(const QFont&)));
+                edit, SLOT(setupFont(const QFont&)));
         connect(this, SIGNAL(setStyle(const QString&)),
                 edit, SLOT(setStyleSheet(const QString&)));
     }
@@ -82,7 +85,6 @@ public:
     }
     void setup (const QFont& font, const QString& style)
     {
-        emit allSelect();
         emit setFont(font);
         emit setStyle(style);
         emit gotoEnd();
@@ -92,7 +94,6 @@ signals:
     void quit ();
     void gotoEnd ();
     void allClear ();
-    void allSelect ();
     void setText (const QString& text);
     void setHtml (const QString& html);
     void setFont (const QFont& font);

@@ -73,8 +73,7 @@ _load_defs:
 */
 CR_API void_t
 qst_set_viewer (
-  __CR_IO__ sQstComm*   parm,
-  __CR_IN__ QTextEdit*  edit
+  __CR_IO__ sQstComm*   parm
     )
 {
     CTextOper*  opr;
@@ -87,10 +86,6 @@ qst_set_viewer (
         font.setFamily(cfg->font_face);
         font.setPointSize(cfg->font_size);
     }
-
-    /* 启动时设置一下全局字体 */
-    if (edit != NULL)
-        edit->setFont(font);
 
     ansi_t  tmp[64];
 
@@ -265,7 +260,7 @@ qst_com_cfg_load (
 
     ctx = (sQstComm*)parm;
     qst_load_cfg(&ctx->cfgs);
-    qst_set_viewer(ctx, NULL);
+    qst_set_viewer(ctx);
     return (TRUE);
 }
 
