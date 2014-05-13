@@ -55,13 +55,13 @@ qst_hex_show (
 /*****************************************************************************/
 
 /* ANSI 转义处理上下文 */
+static bool_t   s_have;
+static bool_t   s_buffer;
 static uint_t   s_state;
 static uint_t   s_at_idx;
-static bool_t   s_buffer;
-static bool_t   s_type[4];      /* 高亮 + 下划线 + 闪烁 + 反色 */
+static bool_t   s_type[6];  /* 高亮 + 下划线 + 上划线 + 中划线 + 反色 + 闪烁 */
 static sint_t   s_color[2];     /* 前景色 + 背景色 */
 static ansi_t   s_attr[33];
-static ansi_t*  s_span = NULL;
 static iDATOT*  s_html = NULL;
 
 /*
@@ -73,8 +73,7 @@ CR_API bool_t
 qst_csi_init (void_t)
 {
     s_state = 0;
-    s_buffer = FALSE;
-    s_span = NULL;
+    s_have = s_buffer = FALSE;
     s_color[0] = s_color[1] = -1;
     mem_zero(s_type, sizeof(s_type));
     s_html = create_buff_out(512);
@@ -92,7 +91,6 @@ CR_API void_t
 qst_csi_free (void_t)
 {
     CR_VCALL(s_html)->release(s_html);
-    TRY_FREE(s_span);
 }
 
 /*
@@ -104,8 +102,7 @@ CR_API void_t
 qst_csi_clear (void_t)
 {
     s_state = 0;
-    s_buffer = FALSE;
-    SAFE_FREE(s_span);
+    s_have = s_buffer = FALSE;
     s_color[0] = s_color[1] = -1;
     mem_zero(s_type, sizeof(s_type));
     CR_VCALL(s_html)->reput(s_html, 0);
@@ -125,34 +122,103 @@ static const ansi_t*    s_hi_color[] =
 
 /*
 ---------------------------------------
-    处理 ANSI 转义属性
+    渲染 ANSI 字符串
 ---------------------------------------
 */
 static void_t
 qst_csi_render (
-  __CR_IN__ CTextOper*  opr
+  __CR_IN__ CTextOper*      opr,
+  __CR_IN__ const ansi_t*   tail
     )
 {
-    uint_t      at[3];
-    leng_t      count;
-    ansi_t**    attrs;
+    ansi_t*         str;
+    ansi_t*         send;
+    ansi_t*         span;
+    const ansi_t*   fg = "";
+    const ansi_t*   bk = "";
+    const ansi_t*   fc = "";
+    const ansi_t*   bc = "";
+    const ansi_t*   tx = "text-decoration:none;";
 
-    if (s_buffer)
-    {
-        ansi_t* str;
-        ansi_t* send;
+    /* 颜色风格 */
+    if (s_color[0] > 0) {
+        if (s_type[0])
+            fc = s_hi_color[s_color[0]];
+        else
+            fc = s_lo_color[s_color[0]];
+    }
+    if (s_color[1] > 0) {
+        if (s_type[0])
+            bc = s_hi_color[s_color[1]];
+        else
+            bc = s_lo_color[s_color[1]];
+    }
 
-        /* 发送之前的 HTML 串 */
-        CR_VCALL(s_html)->write(s_html, "</span>", 8);
+    /* 下划线|划线风格 */
+    if (s_type[1])
+        tx = "text-decoration:underline;";
+    else
+    if (s_type[2])
+        tx = "text-decoration:overline;";
+    else
+    if (s_type[3])
+        tx = "text-decoration:line-through;";
+
+    /* 反色风格 */
+    if (s_type[4]) {
+        if (s_color[0] > 0)
+            fg = "background-color:";
+        if (s_color[1] > 0)
+            bk = "color:";
+    }
+    else {
+        if (s_color[0] > 0)
+            fg = "color:";
+        if (s_color[1] > 0)
+            bk = "background-color:";
+    }
+
+    /* 闪烁风格 - 未实现 */
+    /*********************/
+    span = str_fmtA("<span style=\"%s%s%s%s%s\">", tx, fg, fc, bk, bc);
+    if (span != NULL) {
+        if (tail != NULL) {
+            CR_VCALL(s_html)->write(s_html, "</span>", 7);
+            CR_VCALL(s_html)->write(s_html, tail, str_sizeA(tail));
+        }
+        else {
+            CR_VCALL(s_html)->write(s_html, "</span>", 8);
+        }
         str = (ansi_t*)(CR_VCALL(s_html)->flush(s_html));
-        send = str_fmtA("%s%s", s_span, str);
+        send = str_fmtA("%s%s", span, str);
         if (send != NULL) {
             opr->html(send);
             mem_free(send);
         }
         CR_VCALL(s_html)->reput(s_html, 0);
-        SAFE_FREE(s_span);
+        s_have = FALSE;
+        mem_free(span);
     }
+}
+
+/*
+---------------------------------------
+    处理 ANSI 转义属性
+---------------------------------------
+*/
+static void_t
+qst_csi_attrib (
+  __CR_IN__ CTextOper*  opr
+    )
+{
+    leng_t      idx;
+    uint_t      at[8];
+    leng_t      count;
+    ansi_t**    attrs;
+
+    /* 发送上次结果 */
+    if (s_have)
+        qst_csi_render(opr, NULL);
 
     /* 解析转义属性 */
     attrs = str_splitA(s_attr, ';', &count);
@@ -160,27 +226,19 @@ qst_csi_render (
         return;
     if (count > cntsof(at))
         count = cntsof(at);
-    for (leng_t idx = 0; idx < count; idx++) {
+    for (idx = 0; idx < count; idx++) {
         at[idx] = str2intA(attrs[idx]);
         if (at[idx] == 0) {
+            s_have = s_buffer = FALSE;
             s_color[0] = s_color[1] = -1;
             mem_zero(s_type, sizeof(s_type));
             mem_free(attrs);
-            s_buffer = FALSE;
             return;
         }
     }
     mem_free(attrs);
     s_buffer = TRUE;
-
-    const ansi_t*   tx = "";
-    const ansi_t*   fg = "";
-    const ansi_t*   bk = "";
-    const ansi_t*   fc = "";
-    const ansi_t*   bc = "";
-
-    /* 加入相应的 HTML 标签 */
-    for (leng_t idx = 0; idx < count; idx++) {
+    for (idx = 0; idx < count; idx++) {
         switch (at[idx])
         {
             default:    /* 颜色 */
@@ -202,54 +260,35 @@ qst_csi_render (
                 s_type[1] = FALSE;
                 break;
 
-            case 5:     /* 闪烁 */
+            case 53:    /* 上划线 */
                 s_type[2] = TRUE;
                 break;
-            case 25:
+            case 55:
                 s_type[2] = FALSE;
                 break;
 
-            case 7:     /* 反色 */
+            case 9:     /* 中划线 */
                 s_type[3] = TRUE;
                 break;
-            case 27:
+            case 29:
                 s_type[3] = FALSE;
+                break;
+
+            case 7:     /* 反色 */
+                s_type[4] = TRUE;
+                break;
+            case 27:
+                s_type[4] = FALSE;
+                break;
+
+            case 5:     /* 闪烁 */
+                s_type[5] = TRUE;
+                break;
+            case 25:
+                s_type[5] = FALSE;
                 break;
         }
     }
-
-    /* 颜色风格 */
-    if (s_color[0] > 0) {
-        if (s_type[0])
-            fc = s_hi_color[s_color[0]];
-        else
-            fc = s_lo_color[s_color[0]];
-    }
-    if (s_color[1] > 0) {
-        if (s_type[0])
-            bc = s_hi_color[s_color[1]];
-        else
-            bc = s_lo_color[s_color[1]];
-    }
-
-    /* 下划线风格 */
-    if (s_type[1])
-        tx = "text-decoration:underline;";
-
-    /* 反色风格 */
-    if (s_type[3]) {
-        if (s_color[0] > 0)
-            fg = "background-color:";
-        if (s_color[1] > 0)
-            bk = "color:";
-    }
-    else {
-        if (s_color[0] > 0)
-            fg = "color:";
-        if (s_color[1] > 0)
-            bk = "background-color:";
-    }
-    s_span = str_fmtA("<span style=\"%s%s%s%s%s\">", tx, fg, fc, bk, bc);
 }
 
 /*
@@ -263,40 +302,36 @@ qst_csi_output (
   __CR_IN__ ansi_t      cha
     )
 {
-    ansi_t* str;
-    ansi_t* send;
-
     if (cha == CR_AC('\"')) {
+        s_have = TRUE;
         CR_VCALL(s_html)->write(s_html, "&quot;", 6);
     }
     else
     if (cha == CR_AC('&')) {
+        s_have = TRUE;
         CR_VCALL(s_html)->write(s_html, "&amp;", 5);
     }
     else
     if (cha == CR_AC('\'')) {
+        s_have = TRUE;
         CR_VCALL(s_html)->write(s_html, "&apos;", 6);
     }
     else
     if (cha == CR_AC('<')) {
+        s_have = TRUE;
         CR_VCALL(s_html)->write(s_html, "&lt;", 4);
     }
     else
     if (cha == CR_AC('>')) {
+        s_have = TRUE;
         CR_VCALL(s_html)->write(s_html, "&gt;", 4);
     }
     else
     if (cha == CR_AC('\r') || cha == CR_AC('\n')) {
-        CR_VCALL(s_html)->write(s_html, "</span><br>", 12);
-        str = (ansi_t*)(CR_VCALL(s_html)->flush(s_html));
-        send = str_fmtA("%s%s", s_span, str);
-        if (send != NULL) {
-            opr->html(send);
-            mem_free(send);
-        }
-        CR_VCALL(s_html)->reput(s_html, 0);
+        qst_csi_render(opr, "<br>");
     }
     else {
+        s_have = TRUE;
         CR_VCALL(s_html)->putb_no(s_html, cha);
     }
 }
@@ -365,7 +400,7 @@ qst_csi_show (
             if (cha == CR_AC('m') ||
                 s_at_idx >= sizeof(s_attr) - 1) {
                 s_attr[s_at_idx] = NIL;
-                qst_csi_render(opr);
+                qst_csi_attrib(opr);
                 s_state = 0;
             }
             else {
