@@ -87,7 +87,6 @@ public:
     {
         emit setFont(font);
         emit setStyle(style);
-        emit gotoEnd();
     }
 
 signals:

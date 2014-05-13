@@ -96,6 +96,8 @@ qst_set_viewer (
                   cfg->bkcolor, cfg->color);
     _ENTER_COM_SINGLE_
     opr->setup(font, tmp);
+    sprintf(cfg->fg, "#%06X;", cfg->color & 0x00FFFFFFUL);
+    sprintf(cfg->bg, "#%06X;", cfg->bkcolor & 0x00FFFFFFUL);
     _LEAVE_COM_SINGLE_
 }
 
@@ -106,7 +108,7 @@ qst_set_viewer (
 */
 CR_API void_t
 qst_update_title (
-  __CR_IN__ sQstComm*   parm
+  __CR_IN__ const sQstComm* parm
     )
 {
     ansi_t*         wntt;

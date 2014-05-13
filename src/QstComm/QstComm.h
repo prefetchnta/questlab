@@ -41,6 +41,7 @@ typedef struct
         cl32_t  bkcolor;    /* 默认背景颜色 */
         sint_t  font_size;  /* 全局字体大小 */
         ansi_t* font_face;  /* 全局字体名称 */
+        ansi_t  fg[9], bg[9];   /* 颜色串 */
 
 } sQCOM_conf;
 
