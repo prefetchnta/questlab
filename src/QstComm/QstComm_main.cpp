@@ -73,14 +73,12 @@ _load_defs:
 */
 CR_API void_t
 qst_set_viewer (
-  __CR_IO__ sQstComm*   parm
+  __CR_IO__ sQstComm*   parm,
+  __CR_IN__ QTextEdit*  edit
     )
 {
-    QTextEdit*  edt;
-    sQCOM_conf* cfg;
-
-    cfg = &parm->cfgs;
-    edt = (QTextEdit*)(parm->view);
+    CTextOper*  opr;
+    sQCOM_conf* cfg = &parm->cfgs;
 
     /* 设置全局字体 (默认 Fixedsys 字体) */
     QFont   font("Fixedsys", 12, QFont::Normal, false);
@@ -90,15 +88,19 @@ qst_set_viewer (
         font.setPointSize(cfg->font_size);
     }
 
+    /* 启动时设置一下全局字体 */
+    if (edit != NULL)
+        edit->setFont(font);
+
     ansi_t  tmp[64];
 
     /* 设置默认前景和背景颜色
        使用 CSS 不会改变已有 HTML 文字的属性 */
+    opr = (CTextOper*)parm->oper;
     sprintf(tmp, "background-color: #%06X; color: #%06X;",
                   cfg->bkcolor, cfg->color);
     _ENTER_COM_SINGLE_
-    edt->setFont(font);
-    edt->setStyleSheet(tmp);
+    opr->setup(font, tmp);
     _LEAVE_COM_SINGLE_
 }
 
@@ -144,13 +146,18 @@ qst_com_app_exit (
     )
 {
     sQstComm*   ctx;
+    CTextOper*  opr;
 
     CR_NOUSE(argc);
     CR_NOUSE(argv);
 
     ctx = (sQstComm*)parm;
+    opr = (CTextOper*)ctx->oper;
+
     ctx->quit = TRUE;
-    ((QMainWindow*)(ctx->form))->close();
+    _ENTER_COM_SINGLE_
+    opr->exit();
+    _LEAVE_COM_SINGLE_
     return (FALSE);
 }
 
@@ -258,7 +265,7 @@ qst_com_cfg_load (
 
     ctx = (sQstComm*)parm;
     qst_load_cfg(&ctx->cfgs);
-    qst_set_viewer(ctx);
+    qst_set_viewer(ctx, NULL);
     return (TRUE);
 }
 

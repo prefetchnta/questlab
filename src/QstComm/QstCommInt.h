@@ -45,19 +45,27 @@ class CTextOper : public QObject
     Q_OBJECT
 
 public:
-    CTextOper (QTextEdit* edit)
+    CTextOper (QMainWindow* form, QTextEdit* edit)
     {
-        connect(this, SIGNAL(gotoEnd()),
-                edit, SLOT(autoScroll()));
-        connect(this, SIGNAL(allClear()),
-                edit, SLOT(clear()));
+        connect(this, SIGNAL(quit()), form, SLOT(close()));
+        connect(this, SIGNAL(gotoEnd()), edit, SLOT(autoScroll()));
+        connect(this, SIGNAL(allClear()), edit, SLOT(clear()));
+        connect(this, SIGNAL(allSelect()), edit, SLOT(selectAll()));
         connect(this, SIGNAL(setText(const QString&)),
                 edit, SLOT(insertPlainText(const QString&)));
         connect(this, SIGNAL(setHtml(const QString&)),
                 edit, SLOT(insertHtml(const QString&)));
+        connect(this, SIGNAL(setFont(const QFont&)),
+                edit, SLOT(setCurrentFont(const QFont&)));
+        connect(this, SIGNAL(setStyle(const QString&)),
+                edit, SLOT(setStyleSheet(const QString&)));
     }
 
 public:
+    void exit ()
+    {
+        emit quit();
+    }
     void clear ()
     {
         emit allClear();
@@ -72,12 +80,23 @@ public:
         emit gotoEnd();
         emit setHtml(html);
     }
+    void setup (const QFont& font, const QString& style)
+    {
+        emit allSelect();
+        emit setFont(font);
+        emit setStyle(style);
+        emit gotoEnd();
+    }
 
 signals:
+    void quit ();
     void gotoEnd ();
     void allClear ();
+    void allSelect ();
     void setText (const QString& text);
     void setHtml (const QString& html);
+    void setFont (const QFont& font);
+    void setStyle (const QString& style);
 };
 
 #endif  /* !__QL_QSTCOMMINT_H__ */
