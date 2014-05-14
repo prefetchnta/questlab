@@ -23,7 +23,7 @@ qst_udpv4_main (
         /* 一个个封包读 */
         rett = socket_udp_recv(ctx->comm.obj.netw, cha, sizeof(cha));
         if (rett == 0 || rett > sizeof(cha)) {
-            thread_sleep(1);
+            thread_sleep(20);
             continue;
         }
 

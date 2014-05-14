@@ -20,7 +20,7 @@ qst_tcpv4_main (
     {
         /* 一个个字节读 */
         if (socket_tcp_recv(ctx->comm.obj.netw, cha, 1) != 1) {
-            thread_sleep(1);
+            thread_sleep(20);
             continue;
         }
 

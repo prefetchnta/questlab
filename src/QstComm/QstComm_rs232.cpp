@@ -20,7 +20,7 @@ qst_rs232_main (
     {
         /* 一个个字节读 */
         if (sio_read(ctx->comm.obj.port, cha, 1) != 1) {
-            thread_sleep(1);
+            thread_sleep(20);
             continue;
         }
 

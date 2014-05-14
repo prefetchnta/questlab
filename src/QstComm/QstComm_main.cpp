@@ -79,8 +79,8 @@ qst_set_viewer (
     CTextOper*  opr;
     sQCOM_conf* cfg = &parm->cfgs;
 
-    /* 设置全局字体 (默认 Fixedsys 字体) */
-    QFont   font("Fixedsys", 12, QFont::Normal, false);
+    /* 设置全局字体 (默认 Consolas 字体) */
+    QFont   font("Consolas", 12, QFont::Normal, false);
 
     if (cfg->font_face != NULL) {
         font.setFamily(cfg->font_face);
