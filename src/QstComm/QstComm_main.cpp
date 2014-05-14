@@ -43,6 +43,7 @@ qst_load_cfg (
     ansi_t* str;
 
     /* 加载配置文件 */
+    TRY_FREE(cfgs->font_face);
     str = file_load_as_strA(QST_PATH_CONFIG WIN_ICONF);
     if (str == NULL)
         goto _load_defs;
