@@ -583,6 +583,7 @@ qst_com_rtype (
         return (FALSE);
 
     sQstComm*   ctx = (sQstComm*)parm;
+    CTextOper*  opr = (CTextOper*)ctx->oper;
 
     _ENTER_COM_SINGLE_
     if (str_cmpA(argv[1], "text") == 0) {
@@ -603,6 +604,7 @@ qst_com_rtype (
         ctx->comm.render = qst_csi_show;
         ctx->comm.rtype = "ansi";
     }
+    opr->clear();
     _LEAVE_COM_SINGLE_
     qst_update_title(ctx);
     return (TRUE);
