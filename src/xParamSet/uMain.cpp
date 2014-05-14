@@ -140,7 +140,7 @@ _qst_comm:
     /*******************/
     txtQCOM_color->Color = rgb2gdi(0xFFC0C0C0UL);
     txtQCOM_bkcolor->Color = rgb2gdi(0xFF000000UL);
-    btnQCOM_font->Caption = "Fixedsys, 12";
+    btnQCOM_font->Caption = "Consolas, 12";
     str = file_load_as_strA(QST_PATH_CONFIG "QstComm.ini");
     if (str == NULL)
         goto _func_out;
@@ -160,7 +160,7 @@ _qst_comm:
         mem_free(str);
     }
     if (name == NULL) {
-        str = str_fmtA("Fixedsys, %d", size);
+        str = str_fmtA("Consolas, %d", size);
     }
     else {
         str = str_fmtA("%s, %d", name, size);
@@ -293,7 +293,7 @@ _qst_comm:
     }
     str = local_to_utf8(CR_LOCAL, name);
     if (str == NULL) {
-        fprintf(fp, "qcom::font_face = \"Fixedsys\"\n");
+        fprintf(fp, "qcom::font_face = \"Consolas\"\n");
     }
     else {
         fprintf(fp, "qcom::font_face = \"%s\"\n", str);
