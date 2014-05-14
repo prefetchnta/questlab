@@ -82,22 +82,23 @@ qst_set_viewer (
     /* 设置全局字体 (默认 Consolas 字体) */
     QFont   font("Consolas", 12, QFont::Normal, false);
 
-    if (cfg->font_face != NULL) {
+    if (cfg->font_face != NULL)
         font.setFamily(cfg->font_face);
-        font.setPointSize(cfg->font_size);
-    }
+    font.setPointSize(cfg->font_size);
 
     ansi_t  tmp[64];
 
     /* 设置默认前景和背景颜色
        使用 CSS 不会改变已有 HTML 文字的属性 */
     opr = (CTextOper*)parm->oper;
-    sprintf(tmp, "background-color: #%06X; color: #%06X;",
+    cfg->color   &= 0x00FFFFFFUL;
+    cfg->bkcolor &= 0x00FFFFFFUL;
+    sprintf(tmp, "background-color:#%06X;color:#%06X;",
                   cfg->bkcolor, cfg->color);
     _ENTER_COM_SINGLE_
     opr->setup(font, tmp);
-    sprintf(cfg->fg, "#%06X;", cfg->color & 0x00FFFFFFUL);
-    sprintf(cfg->bg, "#%06X;", cfg->bkcolor & 0x00FFFFFFUL);
+    sprintf(cfg->fg, "#%06X;", cfg->color);
+    sprintf(cfg->bg, "#%06X;", cfg->bkcolor);
     _LEAVE_COM_SINGLE_
 }
 
