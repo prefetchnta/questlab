@@ -127,17 +127,17 @@ static const ansi_t*    s_hi_color[] =
 */
 static void_t
 qst_csi_render (
-  __CR_IN__ CTextOper*      opr,
+  __CR_IN__ const sQstComm* parm,
   __CR_IN__ const ansi_t*   tail
     )
 {
     ansi_t*         str;
     ansi_t*         send;
     ansi_t*         span;
-    const ansi_t*   fg = "";
-    const ansi_t*   bk = "";
-    const ansi_t*   fc = "";
-    const ansi_t*   bc = "";
+    const ansi_t*   fg = "color:";
+    const ansi_t*   bk = "background-color:";
+    const ansi_t*   fc = parm->cfgs.fg;
+    const ansi_t*   bc = parm->cfgs.bg;
     const ansi_t*   tx = "text-decoration:none;";
 
     /* 颜色风格 */
@@ -166,16 +166,8 @@ qst_csi_render (
 
     /* 反色风格 */
     if (s_type[4]) {
-        if (s_color[0] > 0)
-            fg = "background-color:";
-        if (s_color[1] > 0)
-            bk = "color:";
-    }
-    else {
-        if (s_color[0] > 0)
-            fg = "color:";
-        if (s_color[1] > 0)
-            bk = "background-color:";
+        fg = "background-color:";
+        bk = "color:";
     }
 
     /* 闪烁风格 - 未实现 */
@@ -192,7 +184,7 @@ qst_csi_render (
         str = (ansi_t*)(CR_VCALL(s_html)->flush(s_html));
         send = str_fmtA("%s%s", span, str);
         if (send != NULL) {
-            opr->html(send);
+            ((CTextOper*)(parm->oper))->html(send);
             mem_free(send);
         }
         CR_VCALL(s_html)->reput(s_html, 0);
@@ -208,7 +200,7 @@ qst_csi_render (
 */
 static void_t
 qst_csi_attrib (
-  __CR_IN__ CTextOper*  opr
+  __CR_IN__ const sQstComm* parm
     )
 {
     leng_t      idx;
@@ -217,8 +209,8 @@ qst_csi_attrib (
     ansi_t**    attrs;
 
     /* 发送上次结果 */
-    if (s_have)
-        qst_csi_render(opr, NULL);
+    if (s_buffer && s_have)
+        qst_csi_render(parm, NULL);
 
     /* 解析转义属性 */
     attrs = str_splitA(s_attr, ';', &count);
@@ -298,41 +290,90 @@ qst_csi_attrib (
 */
 static void_t
 qst_csi_output (
-  __CR_IN__ CTextOper*  opr,
-  __CR_IN__ ansi_t      cha
+  __CR_IN__ const sQstComm* parm,
+  __CR_IN__ ansi_t          cha
     )
 {
+    ansi_t  show[2];
+
     if (cha == CR_AC('\"')) {
-        s_have = TRUE;
-        CR_VCALL(s_html)->write(s_html, "&quot;", 6);
+        if (s_buffer) {
+            s_have = TRUE;
+            CR_VCALL(s_html)->write(s_html, "&quot;", 6);
+        }
+        else {
+            ((CTextOper*)(parm->oper))->html("&quot;");
+        }
     }
     else
     if (cha == CR_AC('&')) {
-        s_have = TRUE;
-        CR_VCALL(s_html)->write(s_html, "&amp;", 5);
+        if (s_buffer) {
+            s_have = TRUE;
+            CR_VCALL(s_html)->write(s_html, "&amp;", 5);
+        }
+        else {
+            ((CTextOper*)(parm->oper))->html("&amp;");
+        }
     }
     else
     if (cha == CR_AC('\'')) {
-        s_have = TRUE;
-        CR_VCALL(s_html)->write(s_html, "&apos;", 6);
+        if (s_buffer) {
+            s_have = TRUE;
+            CR_VCALL(s_html)->write(s_html, "&apos;", 6);
+        }
+        else {
+            ((CTextOper*)(parm->oper))->html("&apos;");
+        }
     }
     else
     if (cha == CR_AC('<')) {
-        s_have = TRUE;
-        CR_VCALL(s_html)->write(s_html, "&lt;", 4);
+        if (s_buffer) {
+            s_have = TRUE;
+            CR_VCALL(s_html)->write(s_html, "&lt;", 4);
+        }
+        else {
+            ((CTextOper*)(parm->oper))->html("&lt;");
+        }
     }
     else
     if (cha == CR_AC('>')) {
-        s_have = TRUE;
-        CR_VCALL(s_html)->write(s_html, "&gt;", 4);
+        if (s_buffer) {
+            s_have = TRUE;
+            CR_VCALL(s_html)->write(s_html, "&gt;", 4);
+        }
+        else {
+            ((CTextOper*)(parm->oper))->html("&gt;");
+        }
+    }
+    else
+    if (cha == CR_AC(' ')) {
+        if (s_buffer) {
+            s_have = TRUE;
+            CR_VCALL(s_html)->write(s_html, "&nbsp;", 6);
+        }
+        else {
+            ((CTextOper*)(parm->oper))->html("&nbsp;");
+        }
     }
     else
     if (cha == CR_AC('\r') || cha == CR_AC('\n')) {
-        qst_csi_render(opr, "<br>");
+        if (s_buffer) {
+            qst_csi_render(parm, "<br>");
+        }
+        else {
+            ((CTextOper*)(parm->oper))->html("<br>");
+        }
     }
     else {
-        s_have = TRUE;
-        CR_VCALL(s_html)->putb_no(s_html, cha);
+        if (s_buffer) {
+            s_have = TRUE;
+            CR_VCALL(s_html)->putb_no(s_html, cha);
+        }
+        else {
+            show[0] = cha;
+            show[1] = NIL;
+            ((CTextOper*)(parm->oper))->html(show);
+        }
     }
 }
 
@@ -347,9 +388,8 @@ qst_csi_show (
   __CR_IN__ ansi_t  cha
     )
 {
-    ansi_t      show[4];
+    ansi_t      show[2];
     sQstComm*   ctx = (sQstComm*)parm;
-    CTextOper*  opr = (CTextOper*)ctx->oper;
 
     switch (s_state)
     {
@@ -360,11 +400,7 @@ qst_csi_show (
                     show[0] = CR_AC(' ');
                 else
                     show[0] = cha;
-                show[1] = NIL;
-                if (s_buffer)
-                    qst_csi_output(opr, show[0]);
-                else
-                    opr->text(show);
+                qst_csi_output(ctx, show[0]);
             }
             else {
                 s_state += 1;
@@ -379,14 +415,8 @@ qst_csi_show (
                     show[1] = CR_AC(' ');
                 else
                     show[1] = cha;
-                show[2] = NIL;
-                if (s_buffer) {
-                    qst_csi_output(opr, show[0]);
-                    qst_csi_output(opr, show[1]);
-                }
-                else {
-                    opr->text(show);
-                }
+                qst_csi_output(ctx, show[0]);
+                qst_csi_output(ctx, show[1]);
                 s_state = 0;
             }
             else {
@@ -400,7 +430,7 @@ qst_csi_show (
             if (cha == CR_AC('m') ||
                 s_at_idx >= sizeof(s_attr) - 1) {
                 s_attr[s_at_idx] = NIL;
-                qst_csi_attrib(opr);
+                qst_csi_attrib(ctx);
                 s_state = 0;
             }
             else {
