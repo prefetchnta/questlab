@@ -449,7 +449,7 @@ qst_com_tcpv4 (
     netw = client_tcp_open(argv[1], (int16u)port, 5000);
     if (netw == NULL)
         return (FALSE);
-    socket_set_timeout(netw, -1, 50);
+    socket_set_timeout(netw, -1, 20);
 
     /* 设置工作参数 */
     qst_com_close(parm, argc, argv);
@@ -496,7 +496,7 @@ qst_com_udpv4 (
     netw = client_udp_open(argv[1], (int16u)port);
     if (netw == NULL)
         return (FALSE);
-    socket_set_timeout(netw, -1, 50);
+    socket_set_timeout(netw, -1, 20);
 
     /* 设置工作参数 */
     qst_com_close(parm, argc, argv);

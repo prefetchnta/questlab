@@ -296,11 +296,13 @@ qst_csi_output (
 
     /* 效果复位后的第一个字符用
        HTML 方式输出用来断开前面的属性设置 */
-    if (!s_first || cha == CR_AC('\t')) {
-        show[0] = cha;
-        show[1] = NIL;
-        oper->text(show);
-        return;
+    if (!s_buffer) {
+        if (!s_first || cha == CR_AC('\t')) {
+            show[0] = cha;
+            show[1] = NIL;
+            oper->text(show);
+            return;
+        }
     }
 
     /* 用 HTML 方式输出要转义处理
@@ -359,7 +361,7 @@ qst_csi_output (
             s_first = FALSE;
         }
     }
-    else    /* Qt 里 &nbsp; 在 Fixedsys 字体下为两倍字符宽度 */
+    else    /* Qt 里 &nbsp; 在有些字体下为两倍字符宽度 */
     if (cha == CR_AC(' ')) {
         if (s_buffer) {
             s_have = TRUE;
