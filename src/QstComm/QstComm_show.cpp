@@ -55,14 +55,12 @@ qst_hex_show (
 /*****************************************************************************/
 
 /* ANSI 转义处理上下文 */
-static bool_t   s_have;
-static bool_t   s_buffer;
-static uint_t   s_state;
-static uint_t   s_at_idx;
+static iDATOT*  s_html;
 static bool_t   s_type[6];  /* 高亮 + 下划线 + 上划线 + 中划线 + 反色 + 闪烁 */
 static sint_t   s_color[2];     /* 前景色 + 背景色 */
 static ansi_t   s_attr[33];
-static iDATOT*  s_html = NULL;
+static uint_t   s_state, s_at_idx;
+static bool_t   s_have, s_buffer, s_first;
 
 /*
 =======================================
@@ -73,9 +71,9 @@ CR_API bool_t
 qst_csi_init (void_t)
 {
     s_state = 0;
-    s_have = s_buffer = FALSE;
     s_color[0] = s_color[1] = -1;
     mem_zero(s_type, sizeof(s_type));
+    s_have = s_buffer = s_first = FALSE;
     s_html = create_buff_out(512);
     if (s_html == NULL)
         return (FALSE);
@@ -102,9 +100,9 @@ CR_API void_t
 qst_csi_clear (void_t)
 {
     s_state = 0;
-    s_have = s_buffer = FALSE;
     s_color[0] = s_color[1] = -1;
     mem_zero(s_type, sizeof(s_type));
+    s_have = s_buffer = s_first = FALSE;
     CR_VCALL(s_html)->reput(s_html, 0);
 }
 
@@ -218,16 +216,8 @@ qst_csi_attrib (
         return;
     if (count > cntsof(at))
         count = cntsof(at);
-    for (idx = 0; idx < count; idx++) {
+    for (idx = 0; idx < count; idx++)
         at[idx] = str2intA(attrs[idx]);
-        if (at[idx] == 0) {
-            s_have = s_buffer = FALSE;
-            s_color[0] = s_color[1] = -1;
-            mem_zero(s_type, sizeof(s_type));
-            mem_free(attrs);
-            return;
-        }
-    }
     mem_free(attrs);
     s_buffer = TRUE;
     for (idx = 0; idx < count; idx++) {
@@ -240,6 +230,13 @@ qst_csi_attrib (
                 if (at[idx] >= 40 && at[idx] <= 47)
                     s_color[1] = at[idx] - 40;
                 break;
+
+            case 0:     /* 复位 */
+                s_first = TRUE;
+                s_buffer = FALSE;
+                s_color[0] = s_color[1] = -1;
+                mem_zero(s_type, sizeof(s_type));
+                return;
 
             case 1:     /* 高亮 */
                 s_type[0] = TRUE;
@@ -294,15 +291,28 @@ qst_csi_output (
   __CR_IN__ ansi_t          cha
     )
 {
-    ansi_t  show[2];
+    ansi_t      show[2];
+    CTextOper*  oper = (CTextOper*)parm->oper;
 
+    /* 效果复位后的第一个字符用
+       HTML 方式输出用来断开前面的属性设置 */
+    if (!s_first || cha == CR_AC('\t')) {
+        show[0] = cha;
+        show[1] = NIL;
+        oper->text(show);
+        return;
+    }
+
+    /* 用 HTML 方式输出要转义处理
+       在一个连续的属性串里要缓存字符一次性输出 */
     if (cha == CR_AC('\"')) {
         if (s_buffer) {
             s_have = TRUE;
             CR_VCALL(s_html)->write(s_html, "&quot;", 6);
         }
         else {
-            ((CTextOper*)(parm->oper))->html("&quot;");
+            oper->html("&quot;");
+            s_first = FALSE;
         }
     }
     else
@@ -312,7 +322,8 @@ qst_csi_output (
             CR_VCALL(s_html)->write(s_html, "&amp;", 5);
         }
         else {
-            ((CTextOper*)(parm->oper))->html("&amp;");
+            oper->html("&amp;");
+            s_first = FALSE;
         }
     }
     else
@@ -322,7 +333,8 @@ qst_csi_output (
             CR_VCALL(s_html)->write(s_html, "&apos;", 6);
         }
         else {
-            ((CTextOper*)(parm->oper))->html("&apos;");
+            oper->html("&apos;");
+            s_first = FALSE;
         }
     }
     else
@@ -332,7 +344,8 @@ qst_csi_output (
             CR_VCALL(s_html)->write(s_html, "&lt;", 4);
         }
         else {
-            ((CTextOper*)(parm->oper))->html("&lt;");
+            oper->html("&lt;");
+            s_first = FALSE;
         }
     }
     else
@@ -342,26 +355,29 @@ qst_csi_output (
             CR_VCALL(s_html)->write(s_html, "&gt;", 4);
         }
         else {
-            ((CTextOper*)(parm->oper))->html("&gt;");
+            oper->html("&gt;");
+            s_first = FALSE;
         }
     }
-    else
+    else    /* Qt 里 &nbsp; 在 Fixedsys 字体下为两倍字符宽度 */
     if (cha == CR_AC(' ')) {
         if (s_buffer) {
             s_have = TRUE;
             CR_VCALL(s_html)->write(s_html, "&nbsp;", 6);
         }
         else {
-            ((CTextOper*)(parm->oper))->html("&nbsp;");
+            oper->html("&nbsp;");
+            s_first = FALSE;
         }
     }
-    else
+    else    /* 遇到换行要先输出缓冲里的字符再换行 */
     if (cha == CR_AC('\r') || cha == CR_AC('\n')) {
         if (s_buffer) {
             qst_csi_render(parm, "<br>");
         }
         else {
-            ((CTextOper*)(parm->oper))->html("<br>");
+            oper->html("<br>");
+            s_first = FALSE;
         }
     }
     else {
@@ -372,7 +388,8 @@ qst_csi_output (
         else {
             show[0] = cha;
             show[1] = NIL;
-            ((CTextOper*)(parm->oper))->html(show);
+            oper->html(show);
+            s_first = FALSE;
         }
     }
 }
@@ -388,7 +405,6 @@ qst_csi_show (
   __CR_IN__ ansi_t  cha
     )
 {
-    ansi_t      show[2];
     sQstComm*   ctx = (sQstComm*)parm;
 
     switch (s_state)
@@ -397,10 +413,8 @@ qst_csi_show (
             if (cha != 0x1B) {
                 if (cha != CR_AC('\n') &&
                     cha != CR_AC('\r') && !is_printA(cha))
-                    show[0] = CR_AC(' ');
-                else
-                    show[0] = cha;
-                qst_csi_output(ctx, show[0]);
+                    cha = CR_AC(' ');
+                qst_csi_output(ctx, cha);
             }
             else {
                 s_state += 1;
@@ -409,14 +423,11 @@ qst_csi_show (
 
         case 1:     /* 查找 '[' 阶段 */
             if (cha != CR_AC('[')) {
-                show[0] = CR_AC(' ');
                 if (cha != CR_AC('\n') &&
                     cha != CR_AC('\r') && !is_printA(cha))
-                    show[1] = CR_AC(' ');
-                else
-                    show[1] = cha;
-                qst_csi_output(ctx, show[0]);
-                qst_csi_output(ctx, show[1]);
+                    cha = CR_AC(' ');
+                qst_csi_output(ctx, ' ');
+                qst_csi_output(ctx, cha);
                 s_state = 0;
             }
             else {
