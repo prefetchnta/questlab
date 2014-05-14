@@ -23,7 +23,7 @@ qst_txt_show (
     /* 过滤无法显示的字符 */
     if (cha != CR_AC('\n') &&
         cha != CR_AC('\r') && !is_printA(cha))
-        show[0] = CR_AC(' ');
+        show[0] = CR_AC('?');
     else
         show[0] = cha;
     show[1] = NIL;
@@ -415,7 +415,7 @@ qst_csi_show (
             if (cha != 0x1B) {
                 if (cha != CR_AC('\n') &&
                     cha != CR_AC('\r') && !is_printA(cha))
-                    cha = CR_AC(' ');
+                    cha = CR_AC('?');
                 qst_csi_output(ctx, cha);
             }
             else {
@@ -427,8 +427,8 @@ qst_csi_show (
             if (cha != CR_AC('[')) {
                 if (cha != CR_AC('\n') &&
                     cha != CR_AC('\r') && !is_printA(cha))
-                    cha = CR_AC(' ');
-                qst_csi_output(ctx, ' ');
+                    cha = CR_AC('?');
+                qst_csi_output(ctx, '?');
                 qst_csi_output(ctx, cha);
                 s_state = 0;
             }
