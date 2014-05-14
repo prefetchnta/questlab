@@ -290,6 +290,10 @@ exec_one_line (
             return (TRUE);
         }
 
+        /* 直接发送输入内容 */
+        if (s_diro)
+            return (netw_cmd_send(netw, cmd));
+
         /* 尚未支持的本地命令 */
         cui_set_color(s_color_errs);
         printf("command not supported yet\n");
