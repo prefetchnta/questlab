@@ -10,7 +10,7 @@ using namespace cv;
 */
 static bool_t
 gaussian_blur (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -21,7 +21,7 @@ gaussian_blur (
     uint_t  ksize_x, ksize_y;
     fp64_t  sigma_x, sigma_y;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -54,7 +54,7 @@ gaussian_blur (
 */
 static bool_t
 median_blur (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -63,7 +63,7 @@ median_blur (
     sIMAGE*     dest;
     IplImage    draw;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -89,7 +89,7 @@ median_blur (
 */
 static bool_t
 hough_circles (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -102,7 +102,7 @@ hough_circles (
     uint_t  ww, min_radius;
     uint_t  hh, max_radius;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -146,7 +146,7 @@ hough_circles (
 */
 static bool_t
 hough_lines (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -158,7 +158,7 @@ hough_lines (
     uint_t  ksize, thres;
     fp64_t  param1, param2;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);

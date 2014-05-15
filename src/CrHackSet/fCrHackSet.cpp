@@ -10,7 +10,7 @@
 */
 static bool_t
 fill_and_x86 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -19,7 +19,7 @@ fill_and_x86 (
     cpix_t  clrs;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     fill.dx = fill.dy = 0;
     fill.dw = dest->position.ww;
@@ -36,7 +36,7 @@ fill_and_x86 (
 */
 static bool_t
 fill_orr_x86 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -45,7 +45,7 @@ fill_orr_x86 (
     cpix_t  clrs;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     fill.dx = fill.dy = 0;
     fill.dw = dest->position.ww;
@@ -62,7 +62,7 @@ fill_orr_x86 (
 */
 static bool_t
 fill_not_x86 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -71,8 +71,8 @@ fill_not_x86 (
     cpix_t  clrs;
     sIMAGE* dest;
 
+    CR_NOUSE(netw);
     CR_NOUSE(param);
-    CR_NOUSE(nouse);
     dest = (sIMAGE*)image;
     fill.dx = fill.dy = 0;
     fill.dw = dest->position.ww;
@@ -89,7 +89,7 @@ fill_not_x86 (
 */
 static bool_t
 fill_xor_x86 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -98,7 +98,7 @@ fill_xor_x86 (
     cpix_t  clrs;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     fill.dx = fill.dy = 0;
     fill.dw = dest->position.ww;
@@ -115,7 +115,7 @@ fill_xor_x86 (
 */
 static bool_t
 fill_add_x86 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -124,7 +124,7 @@ fill_add_x86 (
     cpix_t  clrs;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     fill.dx = fill.dy = 0;
     fill.dw = dest->position.ww;
@@ -141,7 +141,7 @@ fill_add_x86 (
 */
 static bool_t
 fill_sub_x86 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -150,7 +150,7 @@ fill_sub_x86 (
     cpix_t  clrs;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     fill.dx = fill.dy = 0;
     fill.dw = dest->position.ww;
@@ -167,7 +167,7 @@ fill_sub_x86 (
 */
 static bool_t
 fill_lrp_x86 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -176,7 +176,7 @@ fill_lrp_x86 (
     cpix_t  clrs;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     fill.dx = fill.dy = 0;
     fill.dw = dest->position.ww;
@@ -193,12 +193,12 @@ fill_lrp_x86 (
 */
 static bool_t
 flip_vertical (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
 {
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     CR_NOUSE(param);
     image_flp((sIMAGE*)image, FALSE);
     return (TRUE);
@@ -211,7 +211,7 @@ flip_vertical (
 */
 static bool_t
 swap_red_blue (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -220,7 +220,7 @@ swap_red_blue (
     byte_t* data;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     CR_NOUSE(param);
     dest = (sIMAGE*)image;
     if (dest->fmt == CR_ARGB8888) {
@@ -244,7 +244,7 @@ swap_red_blue (
 */
 static bool_t
 image_diffuse (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -256,7 +256,7 @@ image_diffuse (
     sint_t  maxx, maxy;
     sint_t  dx, dy, ww, hh;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -294,7 +294,7 @@ image_diffuse (
 */
 static bool_t
 image_graying (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -304,7 +304,7 @@ image_graying (
     sIMAGE* dest;
     uint_t  ww, hh, ii;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     CR_NOUSE(param);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
@@ -333,7 +333,7 @@ image_graying (
 */
 static bool_t
 image_binaryz (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -344,7 +344,7 @@ image_binaryz (
     uint_t  ww, hh;
     uint_t  ii, gate;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -669,7 +669,7 @@ conv3x3_back (
 */
 static bool_t
 image_conv3x3 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -680,7 +680,7 @@ image_conv3x3 (
     sIMAGE* dest;
     sint_t  mat[9];
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -719,7 +719,7 @@ static const sint_t s_sobel_maty[9] =
 */
 static bool_t
 image_edge_sobel (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -730,7 +730,7 @@ image_edge_sobel (
     leng_t  size;
     sIMAGE* dest;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     CR_NOUSE(param);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
@@ -807,7 +807,7 @@ image_edge_sobel (
 */
 static bool_t
 image_cut_down (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -818,7 +818,7 @@ image_cut_down (
     uint_t  ww, hh;
     uint_t  ii, gate;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -963,7 +963,7 @@ static const byte_t _rom_ s_color[13 * 3] =
 */
 static bool_t
 image_clr_step (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -977,7 +977,7 @@ image_clr_step (
     sint_t  min_lt, max_lt;
     sint_t  hsl[3], hue[12];
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -1043,7 +1043,7 @@ image_clr_step (
 */
 static bool_t
 image_multiply (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -1055,7 +1055,7 @@ image_multiply (
     uint_t  ww, hh;
     fp32_t  fr, fg, fb;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -1100,7 +1100,7 @@ image_multiply (
 */
 static bool_t
 image_replace (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -1114,7 +1114,7 @@ image_replace (
     byte_t  src[LOOKUP_MAX * 3];
     byte_t  dst[LOOKUP_MAX * 3];
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -1170,7 +1170,7 @@ image_replace (
 */
 static bool_t
 image_form3x3 (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -1182,7 +1182,7 @@ image_form3x3 (
     sint_t  mat[9];
     uint_t  expand;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -1214,7 +1214,7 @@ image_form3x3 (
 */
 static bool_t
 image_solarize (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -1225,7 +1225,7 @@ image_solarize (
     uint_t  gate;
     uint_t  ww, hh;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -1256,7 +1256,7 @@ image_solarize (
 */
 static bool_t
 image_whitebl (
-  __CR_UU__ void_t*     nouse,
+  __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
     )
@@ -1268,7 +1268,7 @@ image_whitebl (
     int64u  t_r, t_g, t_b;
     fp32_t  tt, fr, fg, fb;
 
-    CR_NOUSE(nouse);
+    CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);

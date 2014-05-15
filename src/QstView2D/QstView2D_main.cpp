@@ -346,7 +346,7 @@ qst_load_filter (
     )
 {
     /* 创建 XMLCALL 对象 */
-    parm->flt_lst = xmlcall_load(NULL, 0, NULL);
+    parm->flt_lst = xmlcall_load(NULL, 0, parm->netw);
     if (parm->flt_lst == NULL)
         return;
 
