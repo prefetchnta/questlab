@@ -3,388 +3,36 @@
 
 #include <math.h>
 
-/*
----------------------------------------
-    图片逻辑-与
----------------------------------------
-*/
-static bool_t
-fill_and_x86 (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    sFILL   fill;
-    cpix_t  clrs;
-    sIMAGE* dest;
-
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    fill.dx = fill.dy = 0;
-    fill.dw = dest->position.ww;
-    fill.dh = dest->position.hh;
-    clrs.val = xml_attr_intx32U("mask", 0xFFFFFFFF, param);
-    fill_and32_c(dest, &fill, clrs, NULL);
-    return (TRUE);
-}
+/*****************************************************************************/
+/*                                 公用函数                                  */
+/*****************************************************************************/
 
 /*
 ---------------------------------------
-    图片逻辑-或
+    计算平均亮度
 ---------------------------------------
 */
-static bool_t
-fill_orr_x86 (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
+static uint_t
+image_avg_light (
+  __CR_IN__ const sIMAGE*   img
     )
 {
-    sFILL   fill;
-    cpix_t  clrs;
-    sIMAGE* dest;
+    int64u  total = 0;
+    uint_t  ww = img->position.ww;
+    uint_t  hh = img->position.hh;
+    byte_t* line = img->data;
 
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    fill.dx = fill.dy = 0;
-    fill.dw = dest->position.ww;
-    fill.dh = dest->position.hh;
-    clrs.val = xml_attr_intx32U("mask", 0x00000000, param);
-    fill_orr32_c(dest, &fill, clrs, NULL);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片逻辑-非
----------------------------------------
-*/
-static bool_t
-fill_not_x86 (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    sFILL   fill;
-    cpix_t  clrs;
-    sIMAGE* dest;
-
-    CR_NOUSE(netw);
-    CR_NOUSE(param);
-    dest = (sIMAGE*)image;
-    fill.dx = fill.dy = 0;
-    fill.dw = dest->position.ww;
-    fill.dh = dest->position.hh;
-    clrs.val = 0x00000000;
-    fill_not32_c(dest, &fill, clrs, NULL);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片逻辑异或
----------------------------------------
-*/
-static bool_t
-fill_xor_x86 (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    sFILL   fill;
-    cpix_t  clrs;
-    sIMAGE* dest;
-
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    fill.dx = fill.dy = 0;
-    fill.dw = dest->position.ww;
-    fill.dh = dest->position.hh;
-    clrs.val = xml_attr_intx32U("mask", 0x00000000, param);
-    fill_xor32_c(dest, &fill, clrs, NULL);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片饱和加法
----------------------------------------
-*/
-static bool_t
-fill_add_x86 (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    sFILL   fill;
-    cpix_t  clrs;
-    sIMAGE* dest;
-
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    fill.dx = fill.dy = 0;
-    fill.dw = dest->position.ww;
-    fill.dh = dest->position.hh;
-    clrs.val = xml_attr_intx32U("color", 0x00000000, param);
-    fill_add32_c(dest, &fill, clrs, NULL);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片饱和减法
----------------------------------------
-*/
-static bool_t
-fill_sub_x86 (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    sFILL   fill;
-    cpix_t  clrs;
-    sIMAGE* dest;
-
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    fill.dx = fill.dy = 0;
-    fill.dw = dest->position.ww;
-    fill.dh = dest->position.hh;
-    clrs.val = xml_attr_intx32U("color", 0x00000000, param);
-    fill_sub32_c(dest, &fill, clrs, NULL);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片插值填充
----------------------------------------
-*/
-static bool_t
-fill_lrp_x86 (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    sFILL   fill;
-    cpix_t  clrs;
-    sIMAGE* dest;
-
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    fill.dx = fill.dy = 0;
-    fill.dw = dest->position.ww;
-    fill.dh = dest->position.hh;
-    clrs.val = xml_attr_intx32U("color", 0x00000000, param);
-    fill_lrp32_c(dest, &fill, clrs, NULL);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片垂直翻转
----------------------------------------
-*/
-static bool_t
-flip_vertical (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    CR_NOUSE(netw);
-    CR_NOUSE(param);
-    image_flp((sIMAGE*)image, FALSE);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片 RB 互换
----------------------------------------
-*/
-static bool_t
-swap_red_blue (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    leng_t  size;
-    byte_t* data;
-    sIMAGE* dest;
-
-    CR_NOUSE(netw);
-    CR_NOUSE(param);
-    dest = (sIMAGE*)image;
-    if (dest->fmt == CR_ARGB8888) {
-        size = dest->size;
-        data = dest->data;
-        for (size /= 4; size != 0; size--) {
-            swap_rb32(data);
-            data += sizeof(int32u);
-        }
-    }
-    return (TRUE);
-}
-
-/* 颜色扩散细分 */
-#define DIFFUSE_MAX     256
-
-/*
----------------------------------------
-    图片颜色扩散
----------------------------------------
-*/
-static bool_t
-image_diffuse (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    int32u* pos1;
-    int32u* pos2;
-    sIMAGE* dest;
-    sint_t  minx, miny;
-    sint_t  maxx, maxy;
-    sint_t  dx, dy, ww, hh;
-
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    if (dest->fmt != CR_ARGB8888)
-        return (TRUE);
-    minx = (sint_t)xml_attr_intxU("min_x", (uint_t)-5, param);
-    maxx = (sint_t)xml_attr_intxU("max_x", (uint_t)+5, param);
-    miny = (sint_t)xml_attr_intxU("min_y", (uint_t)-5, param);
-    maxy = (sint_t)xml_attr_intxU("max_y", (uint_t)+5, param);
-    maxx -= minx;
-    maxy -= miny;
-    rand_seed(timer_get32());
-    ww = (sint_t)dest->position.ww;
-    hh = (sint_t)dest->position.hh;
-    for (sint_t yy = 0; yy < hh; yy++)
-    for (sint_t xx = 0; xx < ww; xx++)
-    {
-        dx = rand_getx(DIFFUSE_MAX);
-        dy = rand_getx(DIFFUSE_MAX);
-        dx = (dx * maxx) / DIFFUSE_MAX + minx;
-        dy = (dy * maxy) / DIFFUSE_MAX + miny;
-        pos1 = pixel_addr4(dest, xx, yy);
-        if (xx + dx < 0 || xx + dx >= ww)
-            dx = 0;
-        if (yy + dy < 0 || yy + dy >= hh)
-            dy = 0;
-        pos2 = pixel_addr4(dest, xx + dx, yy + dy);
-        pos2[0] = pos1[0];
-    }
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片灰度转换
----------------------------------------
-*/
-static bool_t
-image_graying (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    byte_t* ptr;
-    byte_t* line;
-    sIMAGE* dest;
-    uint_t  ww, hh, ii;
-
-    CR_NOUSE(netw);
-    CR_NOUSE(param);
-    dest = (sIMAGE*)image;
-    if (dest->fmt != CR_ARGB8888)
-        return (TRUE);
-    line = dest->data;
-    ww = dest->position.ww;
-    hh = dest->position.hh;
     for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
+        byte_t* ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
-            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-            ptr[0] = (byte_t)ii;
-            ptr[1] = (byte_t)ii;
-            ptr[2] = (byte_t)ii;
+            total += rgb2light(ptr[2], ptr[1], ptr[0]);
             ptr += sizeof(int32u);
         }
-        line += dest->bpl;
+        line += img->bpl;
     }
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    图片二值转换
----------------------------------------
-*/
-static bool_t
-image_binaryz (
-  __CR_IN__ void_t*     netw,
-  __CR_IO__ void_t*     image,
-  __CR_IN__ sXNODEu*    param
-    )
-{
-    byte_t* ptr;
-    byte_t* line;
-    sIMAGE* dest;
-    uint_t  ww, hh;
-    uint_t  ii, gate;
-
-    CR_NOUSE(netw);
-    dest = (sIMAGE*)image;
-    if (dest->fmt != CR_ARGB8888)
-        return (TRUE);
-    ww = dest->position.ww;
-    hh = dest->position.hh;
-    gate = xml_attr_intxU("gate", 127, param);
-    if (!param->found)
-    {
-        int64u  total = 0;
-
-        /* 没有参数使用平均值 */
-        line = dest->data;
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                total += ii;
-                ptr += sizeof(int32u);
-            }
-            line += dest->bpl;
-        }
-        total /= ww;
-        total /= hh;
-        gate = (uint_t)total;
-    }
-
-    /* 二值化计算 */
-    line = dest->data;
-    for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
-        for (uint_t xx = 0; xx < ww; xx++) {
-            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-            ptr[0] = (ii > gate) ? 255 : 0;
-            ptr[1] = ptr[0];
-            ptr[2] = ptr[0];
-            ptr += sizeof(int32u);
-        }
-        line += dest->bpl;
-    }
-    return (TRUE);
+    total /= ww;
+    total /= hh;
+    return ((uint_t)total);
 }
 
 /*
@@ -662,6 +310,375 @@ conv3x3_back (
     }
 }
 
+/*****************************************************************************/
+/*                                 滤镜接口                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    图片逻辑-与
+---------------------------------------
+*/
+static bool_t
+fill_and_x86 (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sFILL   fill;
+    cpix_t  clrs;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    fill.dx = fill.dy = 0;
+    fill.dw = dest->position.ww;
+    fill.dh = dest->position.hh;
+    clrs.val = xml_attr_intx32U("mask", 0xFFFFFFFF, param);
+    fill_and32_c(dest, &fill, clrs, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片逻辑-或
+---------------------------------------
+*/
+static bool_t
+fill_orr_x86 (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sFILL   fill;
+    cpix_t  clrs;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    fill.dx = fill.dy = 0;
+    fill.dw = dest->position.ww;
+    fill.dh = dest->position.hh;
+    clrs.val = xml_attr_intx32U("mask", 0x00000000, param);
+    fill_orr32_c(dest, &fill, clrs, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片逻辑-非
+---------------------------------------
+*/
+static bool_t
+fill_not_x86 (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sFILL   fill;
+    cpix_t  clrs;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    fill.dx = fill.dy = 0;
+    fill.dw = dest->position.ww;
+    fill.dh = dest->position.hh;
+    clrs.val = 0x00000000;
+    fill_not32_c(dest, &fill, clrs, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片逻辑异或
+---------------------------------------
+*/
+static bool_t
+fill_xor_x86 (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sFILL   fill;
+    cpix_t  clrs;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    fill.dx = fill.dy = 0;
+    fill.dw = dest->position.ww;
+    fill.dh = dest->position.hh;
+    clrs.val = xml_attr_intx32U("mask", 0x00000000, param);
+    fill_xor32_c(dest, &fill, clrs, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片饱和加法
+---------------------------------------
+*/
+static bool_t
+fill_add_x86 (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sFILL   fill;
+    cpix_t  clrs;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    fill.dx = fill.dy = 0;
+    fill.dw = dest->position.ww;
+    fill.dh = dest->position.hh;
+    clrs.val = xml_attr_intx32U("color", 0x00000000, param);
+    fill_add32_c(dest, &fill, clrs, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片饱和减法
+---------------------------------------
+*/
+static bool_t
+fill_sub_x86 (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sFILL   fill;
+    cpix_t  clrs;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    fill.dx = fill.dy = 0;
+    fill.dw = dest->position.ww;
+    fill.dh = dest->position.hh;
+    clrs.val = xml_attr_intx32U("color", 0x00000000, param);
+    fill_sub32_c(dest, &fill, clrs, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片插值填充
+---------------------------------------
+*/
+static bool_t
+fill_lrp_x86 (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sFILL   fill;
+    cpix_t  clrs;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    fill.dx = fill.dy = 0;
+    fill.dw = dest->position.ww;
+    fill.dh = dest->position.hh;
+    clrs.val = xml_attr_intx32U("color", 0x00000000, param);
+    fill_lrp32_c(dest, &fill, clrs, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片垂直翻转
+---------------------------------------
+*/
+static bool_t
+flip_vertical (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    image_flp((sIMAGE*)image, FALSE);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片 RB 互换
+---------------------------------------
+*/
+static bool_t
+swap_red_blue (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    leng_t  size;
+    byte_t* data;
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt == CR_ARGB8888) {
+        size = dest->size;
+        data = dest->data;
+        for (size /= 4; size != 0; size--) {
+            swap_rb32(data);
+            data += sizeof(int32u);
+        }
+    }
+    return (TRUE);
+}
+
+/* 颜色扩散细分 */
+#define DIFFUSE_MAX     256
+
+/*
+---------------------------------------
+    图片颜色扩散
+---------------------------------------
+*/
+static bool_t
+image_diffuse (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    int32u* pos1;
+    int32u* pos2;
+    sIMAGE* dest;
+    sint_t  minx, miny;
+    sint_t  maxx, maxy;
+    sint_t  dx, dy, ww, hh;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    minx = xml_attr_intxU("min_x", (uint_t)-5, param);
+    maxx = xml_attr_intxU("max_x", (uint_t)+5, param);
+    miny = xml_attr_intxU("min_y", (uint_t)-5, param);
+    maxy = xml_attr_intxU("max_y", (uint_t)+5, param);
+    maxx -= minx;
+    maxy -= miny;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    rand_seed(timer_get32());
+    for (sint_t yy = 0; yy < hh; yy++)
+    for (sint_t xx = 0; xx < ww; xx++)
+    {
+        dx = rand_getx(DIFFUSE_MAX);
+        dy = rand_getx(DIFFUSE_MAX);
+        dx = (dx * maxx) / DIFFUSE_MAX + minx;
+        dy = (dy * maxy) / DIFFUSE_MAX + miny;
+        pos1 = pixel_addr4(dest, xx, yy);
+        if (xx + dx < 0 || xx + dx >= ww)
+            dx = 0;
+        if (yy + dy < 0 || yy + dy >= hh)
+            dy = 0;
+        pos2 = pixel_addr4(dest, xx + dx, yy + dy);
+        pos2[0] = pos1[0];
+    }
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片灰度转换
+---------------------------------------
+*/
+static bool_t
+image_graying (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  ww, hh, ii;
+
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    line = dest->data;
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        byte_t* ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+            ptr[0] = (byte_t)ii;
+            ptr[1] = (byte_t)ii;
+            ptr[2] = (byte_t)ii;
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片二值转换
+---------------------------------------
+*/
+static bool_t
+image_binaryz (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    byte_t* line;
+    sIMAGE* dest;
+    uint_t  gate;
+    uint_t  ww, hh, ii;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    ww = dest->position.ww;
+    hh = dest->position.hh;
+    gate = xml_attr_intxU("gate", 127, param);
+    if (!param->found)
+        gate = image_avg_light(dest);
+
+    /* 二值化计算 */
+    line = dest->data;
+    for (uint_t yy = 0; yy < hh; yy++) {
+        byte_t* ptr = line;
+        for (uint_t xx = 0; xx < ww; xx++) {
+            ii = rgb2light(ptr[2], ptr[1], ptr[0]);
+            ptr[0] = (ii > gate) ? 255 : 0;
+            ptr[1] = ptr[0];
+            ptr[2] = ptr[0];
+            ptr += sizeof(int32u);
+        }
+        line += dest->bpl;
+    }
+    return (TRUE);
+}
+
 /*
 ---------------------------------------
     图片卷积运算 (3 x 3)
@@ -812,11 +829,10 @@ image_cut_down (
   __CR_IN__ sXNODEu*    param
     )
 {
-    byte_t* ptr;
     byte_t* line;
     sIMAGE* dest;
-    uint_t  ww, hh;
-    uint_t  ii, gate;
+    uint_t  gate;
+    uint_t  ww, hh, ii;
 
     CR_NOUSE(netw);
     dest = (sIMAGE*)image;
@@ -826,29 +842,12 @@ image_cut_down (
     hh = dest->position.hh;
     gate = xml_attr_intxU("gate", 97, param);
     if (!param->found)
-    {
-        int64u  total = 0;
-
-        /* 没有参数使用平均值 */
-        line = dest->data;
-        for (uint_t yy = 0; yy < hh; yy++) {
-            ptr = line;
-            for (uint_t xx = 0; xx < ww; xx++) {
-                ii = rgb2light(ptr[2], ptr[1], ptr[0]);
-                total += ii;
-                ptr += sizeof(int32u);
-            }
-            line += dest->bpl;
-        }
-        total /= ww;
-        total /= hh;
-        gate = (uint_t)total;
-    }
+        gate = image_avg_light(dest);
 
     /* 掐掉暗的像素 */
     line = dest->data;
     for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
+        byte_t* ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
             ii = rgb2light(ptr[2], ptr[1], ptr[0]);
             if (ii <= gate) {
@@ -863,67 +862,8 @@ image_cut_down (
     return (TRUE);
 }
 
-/*
----------------------------------------
-    RGB 转到 HSL
----------------------------------------
-*/
-static void_t
-rgb2hsl (
-  __CR_OT__ sint_t*         dst,
-  __CR_IN__ const byte_t*   src
-    )
-{
-    sint_t  dlt;
-    sint_t  bb = src[0];
-    sint_t  gg = src[1];
-    sint_t  rr = src[2];
-    sint_t  max = bb;
-    sint_t  min = bb;
-
-    if (max < gg) max = gg;
-    if (min > gg) min = gg;
-    if (max < rr) max = rr;
-    if (min > rr) min = rr;
-    dlt = max - min;
-
-    /* 分量-H */
-    if (dlt == 0) {
-        dst[0] = 0;
-    }
-    else
-    if (max == rr) {
-        dst[0] = (60 * (gg - bb)) / dlt;
-        if (gg < bb)
-            dst[0] += 360;
-    }
-    else
-    if (max == gg) {
-        dst[0] = (60 * (bb - rr)) / dlt + 120;
-    }
-    else {
-        dst[0] = (60 * (rr - gg)) / dlt + 240;
-    }
-
-    /* 分量-L */
-    dst[2] = (min + max) / 2;
-    dst[2] += dst[2] / 128;
-
-    /* 分量-S */
-    if (dst[2] == 0 || dlt == 0) {
-        dst[1] = 0;
-    }
-    else
-    if (dst[2] <= 128) {
-        dst[1] = 256 * dlt / (2 * dst[2]);
-    }
-    else {
-        dst[1] = 256 * dlt / (2 * 256 - 2 * dst[2]);
-    }
-}
-
 /* 标准的色相表 */
-static const sint_t _rom_ s_hue[12] =
+static const sint_t s_hue[12] =
 {
     15,     /* [  0 -  15] 红色区 0xFF0000 */
     45,     /* [ 15 -  45] 橙色区 0xFF8000 */
@@ -939,7 +879,7 @@ static const sint_t _rom_ s_hue[12] =
     345,    /* [315 - 345] 紫红区 0xFF0080 */
             /* [345 - 360] 红色区 0xFF0000 */
 };
-static const byte_t _rom_ s_color[13 * 3] =
+static const byte_t s_color[13 * 3] =
 {
     0xFF, 0x00, 0x00,
     0xFF, 0x80, 0x00,
@@ -969,13 +909,11 @@ image_clr_step (
     )
 {
     ansi_t* str;
-    byte_t* ptr;
     byte_t* line;
     sIMAGE* dest;
-    sint_t  min_st;
     uint_t  idx, ww, hh;
-    sint_t  min_lt, max_lt;
     sint_t  hsl[3], hue[12];
+    sint_t  min_st, min_lt, max_lt;
 
     CR_NOUSE(netw);
     dest = (sIMAGE*)image;
@@ -984,17 +922,17 @@ image_clr_step (
     line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
-    min_st = (sint_t)xml_attr_intxU("min_sat", 63, param);
-    min_lt = (sint_t)xml_attr_intxU("min_lit", 15, param);
-    max_lt = (sint_t)xml_attr_intxU("max_lit", 199, param);
+    min_st = xml_attr_intxU("min_sat", 63, param);
+    min_lt = xml_attr_intxU("min_lit", 15, param);
+    max_lt = xml_attr_intxU("max_lit", 199, param);
     str = xml_attr_bufferU("table", param);
     if (str == NULL ||
         str2lstA((uint_t*)hue, 12, str, "[],") == NULL)
         mem_cpy(hue, s_hue, sizeof(hue));
     for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
+        byte_t* ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
-            rgb2hsl(hsl, ptr);
+            bgr2hsl(hsl, ptr);
             if (hsl[1] <= min_st) {
                 if (hsl[2] <= 128) {
                     ptr[0] = 0x00;
@@ -1083,7 +1021,6 @@ image_replace (
   __CR_IN__ sXNODEu*    param
     )
 {
-    byte_t* ptr;
     byte_t* line;
     ansi_t* data;
     sIMAGE* dest;
@@ -1117,7 +1054,7 @@ image_replace (
     ww = dest->position.ww;
     hh = dest->position.hh;
     for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
+        byte_t* ptr = line;
         for (uint_t xx = 0; xx < ww; xx++) {
             for (ssize = 0; ssize < dsize; ssize += 3) {
                 if (ptr[0] == src[ssize + 0] &&
