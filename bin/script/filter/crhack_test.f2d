@@ -10,6 +10,9 @@
     <!-- 二值转换滤镜 -->
     <?crhack_binaryz gate="127" />
 
+    <!-- 图片对比度调整 -->
+    <?crhack_contrast value="4.0" />
+
     <!-- 3x3卷积滤镜 -->
     <?crhack_conv3x3 mat="[-1, -1, -1, -1, 8, -1, -1, -1, -1]" />
 
@@ -24,6 +27,9 @@
 
     <!-- 3x3形态滤镜 -->
     <?crhack_form3x3 mat="[1, 1, 1, 1, 1, 1, 1, 1, 1]" exp="1" />
+
+    <!-- 图片伽玛校正 -->
+    <?crhack_gamma gamma="2.5" comp="0.0" />
 
     <!-- 灰度转换滤镜 -->
     <?crhack_graying />
@@ -47,6 +53,9 @@
     <?crhack_replace only="0"
         src="000000 7F0000 7F7F00 FFFF00 FF0000 3F3F3F C0C0C0 FFFFFF"
         dst="FFFFFF FF0000 FF0000 FF0000 FF0000 FFFFFF FFFFFF FFFFFF" />
+
+    <!-- 图片饱和度调整 -->
+    <?crhack_saturation value="3.0" />
 
     <!-- SOBEL 边缘检测滤镜 -->
     <?crhack_sobel />

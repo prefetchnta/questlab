@@ -1175,6 +1175,88 @@ image_whitebl (
 }
 
 /*
+---------------------------------------
+    图片伽玛校正
+---------------------------------------
+*/
+static bool_t
+image_gamma (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+    fp32_t  fg, fc;
+    byte_t  tab[256];
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    fg = xml_attr_fp32U("gamma", 2.5f, param);
+    fc = xml_attr_fp32U("comp", 0.0f, param);
+    dot_gamma(tab, fg, fc);
+    image_lookup3(dest, tab, tab, tab);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片对比度调整
+---------------------------------------
+*/
+static bool_t
+image_contrast (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+    fp32_t  value;
+    byte_t  tab[256];
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    value = xml_attr_fp32U("value", 4.0f, param);
+    dot_contrast(tab, value);
+    image_lookup3(dest, tab, tab, tab);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片饱和度调整
+---------------------------------------
+*/
+static bool_t
+image_saturation (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+    sIMAGE* gray;
+    fp32_t  value;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    gray = image_graying(dest);
+    if (gray == NULL)
+        return (TRUE);
+    value = xml_attr_fp32U("value", 3.0f, param);
+    pic_saturation(dest, gray, value);
+    image_del(gray);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1202,5 +1284,8 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_form3x3", image_form3x3 },
     { "crhack_solarize", image_solarize },
     { "crhack_whitebl", image_whitebl },
+    { "crhack_gamma", image_gamma },
+    { "crhack_contrast", image_contrast },
+    { "crhack_saturation", image_saturation },
     { NULL, NULL },
 };
