@@ -612,13 +612,17 @@ image_graying (
 {
     byte_t* line;
     sIMAGE* dest;
+    byte_t  tab[256];
+    leng_t  hist[256];
+    uint_t  histo_ave;
     uint_t  ww, hh, ii;
 
     CR_NOUSE(netw);
-    CR_NOUSE(param);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
+    mem_zero(hist, sizeof(hist));
+    histo_ave = xml_attr_intxU("ave", TRUE, param);
     line = dest->data;
     ww = dest->position.ww;
     hh = dest->position.hh;
@@ -629,9 +633,14 @@ image_graying (
             ptr[0] = (byte_t)ii;
             ptr[1] = (byte_t)ii;
             ptr[2] = (byte_t)ii;
+            hist[ii] += 1;
             ptr += sizeof(int32u);
         }
         line += dest->bpl;
+    }
+    if (histo_ave) {
+        dot_histo_ave(tab, hist, ww, hh);
+        image_lookup3(dest, tab, tab, tab);
     }
     return (TRUE);
 }

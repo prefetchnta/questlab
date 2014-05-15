@@ -32,7 +32,7 @@
     <?crhack_gamma gamma="2.5" comp="0.0" />
 
     <!-- 灰度转换滤镜 -->
-    <?crhack_graying />
+    <?crhack_graying ave="1" />
 
     <!-- 色阶过滤滤镜 -->
     <?crhack_imgstep min_sat="63" min_lit="15" max_lit="199" />
