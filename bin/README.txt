@@ -1,4 +1,5 @@
 【更新日志】
+　2014-05-15　开始 QRCode 二维码识别的研究（引入 libdecodeqr 源码）
 　2014-05-05　子项目 QstComm 正式开始（引入 Qt SDK）
 　2014-04-29　QstView2D 开始支持导出图片文件
 　2014-04-25　子项目 xSelectFile 正式开始
