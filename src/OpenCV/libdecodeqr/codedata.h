@@ -14,6 +14,7 @@
 #ifndef __QR_CODE_DATA__
 #define __QR_CODE_DATA__
 
+#include "nowarning.h"
 #include <memory.h>
 #include "galois.h"
 #include "bitstream.h"

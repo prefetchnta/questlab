@@ -14,11 +14,13 @@
 #ifndef __QR_ECI_DECODER__
 #define __QR_ECI_DECODER__
 
+#include "nowarning.h"
 #include <stdio.h>
 
 #ifdef WIN32
 #include <winsock2.h>
 #define snprintf _snprintf
+#pragma comment (lib, "ws2_32.lib")
 #else
 #include <netinet/in.h>
 #endif

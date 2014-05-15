@@ -14,7 +14,8 @@
 #ifndef __QR_DECODER__
 #define __QR_DECODER__
 
-#include <cv.h>
+#include "nowarning.h"
+#include <opencv/cv.h>
 #include "qrerror.h"
 #include "qrtypes.h"
 

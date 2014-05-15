@@ -14,6 +14,7 @@
 #ifndef __GALOIS__
 #define __GALOIS__
 
+#include "nowarning.h"
 #include <memory.h>
 
 #ifndef NULL

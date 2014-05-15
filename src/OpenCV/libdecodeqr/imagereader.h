@@ -14,11 +14,12 @@
 #ifndef __QR_IMAGE_READER__
 #define __QR_IMAGE_READER__
 
+#include "nowarning.h"
 #ifdef _DEBUG
 #include <stdio.h>
 #endif
 
-#include <cv.h>
+#include <opencv/cv.h>
 #include <memory.h>
 #include "qrerror.h"
 #include "container.h"

@@ -18,6 +18,7 @@
 #define NULL 0
 #endif
 
+#include "nowarning.h"
 #include "qrerror.h"
 #include "galois.h"
 

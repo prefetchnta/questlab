@@ -14,6 +14,7 @@
 #ifndef __QR_BITSTREAM__
 #define __QR_BITSTREAM__
 
+#include "nowarning.h"
 #include <memory.h>
 
 #ifndef NULL
