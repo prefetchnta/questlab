@@ -1048,45 +1048,23 @@ image_multiply (
   __CR_IN__ sXNODEu*    param
     )
 {
-    byte_t* ptr;
-    byte_t* line;
     sIMAGE* dest;
-    fp32_t  fval;
-    uint_t  ww, hh;
+    byte_t  t_r[256];
+    byte_t  t_g[256];
+    byte_t  t_b[256];
     fp32_t  fr, fg, fb;
 
     CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
-    line = dest->data;
-    ww = dest->position.ww;
-    hh = dest->position.hh;
     fr = xml_attr_fp32U("red", 2.0f, param);
     fg = xml_attr_fp32U("green", 2.0f, param);
     fb = xml_attr_fp32U("blue", 2.0f, param);
-    for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
-        for (uint_t xx = 0; xx < ww; xx++) {
-            fval = fb * ptr[0];
-            if (fval >= 255.0f)
-                ptr[0] = 0xFF;
-            else
-                ptr[0] = (byte_t)fval;
-            fval = fg * ptr[1];
-            if (fval >= 255.0f)
-                ptr[1] = 0xFF;
-            else
-                ptr[1] = (byte_t)fval;
-            fval = fr * ptr[2];
-            if (fval >= 255.0f)
-                ptr[2] = 0xFF;
-            else
-                ptr[2] = (byte_t)fval;
-            ptr += sizeof(int32u);
-        }
-        line += dest->bpl;
-    }
+    dot_muladd(t_r, fr, 0.0f);
+    dot_muladd(t_g, fg, 0.0f);
+    dot_muladd(t_b, fb, 0.0f);
+    image_lookup3(dest, t_r, t_g, t_b);
     return (TRUE);
 }
 
@@ -1219,33 +1197,17 @@ image_solarize (
   __CR_IN__ sXNODEu*    param
     )
 {
-    byte_t* ptr;
-    byte_t* line;
+    sint_t  gate;
     sIMAGE* dest;
-    uint_t  gate;
-    uint_t  ww, hh;
+    byte_t  tab[256];
 
     CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
-    line = dest->data;
-    ww = dest->position.ww;
-    hh = dest->position.hh;
     gate = xml_attr_intxU("gate", 127, param);
-    for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
-        for (uint_t xx = 0; xx < ww; xx++) {
-            if (ptr[0] <= gate)
-                ptr[0] = 255 - ptr[0];
-            if (ptr[1] <= gate)
-                ptr[1] = 255 - ptr[1];
-            if (ptr[2] <= gate)
-                ptr[2] = 255 - ptr[2];
-            ptr += sizeof(int32u);
-        }
-        line += dest->bpl;
-    }
+    dot_solarize(tab, gate);
+    image_lookup3(dest, tab, tab, tab);
     return (TRUE);
 }
 
@@ -1261,70 +1223,17 @@ image_whitebl (
   __CR_IN__ sXNODEu*    param
     )
 {
-    byte_t* ptr;
-    byte_t* line;
+    sint_t  gate;
     sIMAGE* dest;
-    uint_t  ww, hh, gate;
-    int64u  t_r, t_g, t_b;
-    fp32_t  tt, fr, fg, fb;
 
     CR_NOUSE(netw);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
-    ww = dest->position.ww;
-    hh = dest->position.hh;
-
-    /* 计算颜色通道平均值 */
-    line = dest->data;
-    t_r = t_g = t_b = 0;
-    for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
-        for (uint_t xx = 0; xx < ww; xx++) {
-            t_b += ptr[0];
-            t_g += ptr[1];
-            t_r += ptr[2];
-            ptr += sizeof(int32u);
-        }
-        line += dest->bpl;
-    }
-    t_b /= ww;  t_b /= hh;
-    t_g /= ww;  t_g /= hh;
-    t_r /= ww;  t_r /= hh;
     gate = xml_attr_intxU("gate", 127, param);
     if (!param->found)
-    {
-        /* 没有参数使用平均值 */
-        gate = (uint_t)((t_r + t_g + t_b) / 3);
-    }
-
-    /* 用缩放因子调整图片颜色 */
-    line = dest->data;
-    fr = ((fp32_t)gate) / t_r;
-    fg = ((fp32_t)gate) / t_g;
-    fb = ((fp32_t)gate) / t_b;
-    for (uint_t yy = 0; yy < hh; yy++) {
-        ptr = line;
-        for (uint_t xx = 0; xx < ww; xx++) {
-            tt = fb * ptr[0];
-            if (tt >= 255.0f)
-                ptr[0] = 0xFF;
-            else
-                ptr[0] = (byte_t)tt;
-            tt = fg * ptr[1];
-            if (tt >= 255.0f)
-                ptr[1] = 0xFF;
-            else
-                ptr[1] = (byte_t)tt;
-            tt = fr * ptr[2];
-            if (tt >= 255.0f)
-                ptr[2] = 0xFF;
-            else
-                ptr[2] = (byte_t)tt;
-            ptr += sizeof(int32u);
-        }
-        line += dest->bpl;
-    }
+        gate = -1;
+    pic_white_bl(dest, gate);
     return (TRUE);
 }
 
