@@ -75,6 +75,8 @@ conv3x3_main (
     bound = image_bound(image, 1, 1);
     if (bound == NULL)
         return;
+
+    /* 处理矩阵 */
     convo.dt = mat;
     convo.ww = convo.hh = 3;
     convo.kk = mat[0];
@@ -97,156 +99,60 @@ conv3x3_main (
     形态运算 (3 x 3)
 ---------------------------------------
 */
-static byte_t*
-conv3x3_form (
-  __CR_IN__ const sIMAGE*   src,
-  __CR_IN__ const sint_t    mat[9],
-  __CR_IN__ bool_t          expand
-    )
-{
-    byte_t* ptr;
-    byte_t* dst;
-    byte_t* prev;
-    byte_t* curt;
-    byte_t* next;
-    sint_t  csum;
-    uint_t  xx, yy;
-    uint_t  ww, hh;
-
-    /* 不处理边框 */
-    ww = src->position.ww;
-    hh = src->position.hh;
-    if (ww < 3 || hh < 3)
-        return (NULL);
-    ww -= 2;
-    hh -= 2;
-    dst = (byte_t*)mem_malloc(ww * hh * 4);
-    if (dst == NULL)
-        return (NULL);
-    ptr = dst;
-
-    /* 求矩阵的和 */
-    for (csum = mat[0], xx = 1; xx < 9; xx++)
-        csum += mat[xx];
-
-    /* 开始计算卷积 */
-    prev = src->data + 4;
-    curt = prev + src->bpl;
-    next = curt + src->bpl;
-    for (yy = 0; yy < hh; yy++)
-    {
-        for (xx = 0; xx < ww; xx++)
-        {
-            sint_t  bb, gg, rr;
-
-            /* 第一排 */
-            bb  = prev[(xx-1)*4+0] & mat[0];
-            gg  = prev[(xx-1)*4+1] & mat[0];
-            rr  = prev[(xx-1)*4+2] & mat[0];
-            bb += prev[(xx+0)*4+0] & mat[1];
-            gg += prev[(xx+0)*4+1] & mat[1];
-            rr += prev[(xx+0)*4+2] & mat[1];
-            bb += prev[(xx+1)*4+0] & mat[2];
-            gg += prev[(xx+1)*4+1] & mat[2];
-            rr += prev[(xx+1)*4+2] & mat[2];
-
-            /* 第二排 */
-            bb += curt[(xx-1)*4+0] & mat[3];
-            gg += curt[(xx-1)*4+1] & mat[3];
-            rr += curt[(xx-1)*4+2] & mat[3];
-            bb += curt[(xx+0)*4+0] & mat[4];
-            gg += curt[(xx+0)*4+1] & mat[4];
-            rr += curt[(xx+0)*4+2] & mat[4];
-            bb += curt[(xx+1)*4+0] & mat[5];
-            gg += curt[(xx+1)*4+1] & mat[5];
-            rr += curt[(xx+1)*4+2] & mat[5];
-
-            /* 第三排 */
-            bb += next[(xx-1)*4+0] & mat[6];
-            gg += next[(xx-1)*4+1] & mat[6];
-            rr += next[(xx-1)*4+2] & mat[6];
-            bb += next[(xx+0)*4+0] & mat[7];
-            gg += next[(xx+0)*4+1] & mat[7];
-            rr += next[(xx+0)*4+2] & mat[7];
-            bb += next[(xx+1)*4+0] & mat[8];
-            gg += next[(xx+1)*4+1] & mat[8];
-            rr += next[(xx+1)*4+2] & mat[8];
-
-            /* 中心-B */
-            if (expand) {
-                if (bb == 0)
-                    *ptr++ = 0x00;
-                else
-                    *ptr++ = 0xFF;
-            }
-            else {
-                if (bb == csum)
-                    *ptr++ = 0xFF;
-                else
-                    *ptr++ = 0x00;
-            }
-
-            /* 中心-G */
-            if (expand) {
-                if (gg == 0)
-                    *ptr++ = 0x00;
-                else
-                    *ptr++ = 0xFF;
-            }
-            else {
-                if (gg == csum)
-                    *ptr++ = 0xFF;
-                else
-                    *ptr++ = 0x00;
-            }
-
-            /* 中心-R */
-            if (expand) {
-                if (rr == 0)
-                    *ptr++ = 0x00;
-                else
-                    *ptr++ = 0xFF;
-            }
-            else {
-                if (rr == csum)
-                    *ptr++ = 0xFF;
-                else
-                    *ptr++ = 0x00;
-            }
-
-            /* 中心-A */
-            *ptr++ = curt[xx * 4 + 3];
-        }
-        prev += src->bpl;
-        curt += src->bpl;
-        next += src->bpl;
-    }
-    return (dst);
-}
-
-/*
----------------------------------------
-    回拷图片
----------------------------------------
-*/
 static void_t
-conv3x3_back (
-  __CR_IN__ const sIMAGE*   dst,
-  __CR_IN__ const byte_t*   src
+conv3x3_form (
+  __CR_IO__ sIMAGE*         image,
+  __CR_IN__ const sint_t    mat[9],
+  __CR_IN__ bool_t          expand,
+  __CR_IN__ bool_t          first
     )
 {
-    uint_t  hh;
-    leng_t  bpl;
-    byte_t* ptr;
+    sIMAGE*     binz;
+    sIMAGE*     stemp;
+    sIMAGE*     bound;
+    byte_t      shp[9];
+    sSHAPE_MAT  shape;
 
-    hh = dst->position.hh - 2;
-    bpl = (dst->position.ww - 2) * 4;
-    ptr = dst->data + dst->bpl + 4;
-    for (; hh != 0; hh--) {
-        mem_cpy(ptr, src, bpl);
-        src += bpl;
-        ptr += dst->bpl;
+    /* 先二值化 */
+    binz = image_graying(image);
+    if (binz == NULL)
+        return;
+    if (first)
+        image_binary0(binz, TRUE);
+
+    /* 扩展边缘 */
+    bound = image_bound(binz, 1, 1);
+    if (bound == NULL) {
+        image_del(binz);
+        return;
     }
+
+    /* 处理形态 */
+    for (uint_t idx = 0; idx < 9; idx++) {
+        if (mat[idx] < 0)
+            shp[idx] = 0x80;
+        else
+        if (mat[idx] > 0)
+            shp[idx] = 0xFF;
+        else
+            shp[idx] = 0x00;
+    }
+    shape.dt = shp;
+    shape.ww = shape.hh = 3;
+
+    /* 形态并回图 */
+    stemp = image_shape(bound, &shape, expand);
+    image_del(bound);
+    if (stemp == NULL) {
+        image_del(binz);
+        return;
+    }
+    image_unbound(binz, stemp, 1, 1);
+    image_del(stemp);
+
+    /* 转换到原图 */
+    img_idx8_to_32(image, 0, 0, binz);
+    image_del(binz);
 }
 
 /*****************************************************************************/
@@ -977,9 +883,9 @@ image_form3x3 (
 {
     uint_t  idx;
     ansi_t* str;
-    byte_t* temp;
     sIMAGE* dest;
     sint_t  mat[9];
+    uint_t  first;
     uint_t  expand;
 
     CR_NOUSE(netw);
@@ -992,18 +898,9 @@ image_form3x3 (
         for (idx = 0; idx < 9; idx++)
             mat[idx] = 1;
     }
-    for (idx = 0; idx < 9; idx++) {
-        if (mat[idx])
-            mat[idx] = 0xFF;
-        else
-            mat[idx] = 0x00;
-    }
+    first = xml_attr_intxU("fst", FALSE, param);
     expand = xml_attr_intxU("exp", TRUE, param);
-    temp = conv3x3_form(dest, mat, !!expand);
-    if (temp == NULL)
-        return (TRUE);
-    conv3x3_back(dest, temp);
-    mem_free(temp);
+    conv3x3_form(dest, mat, !!expand, !!first);
     return (TRUE);
 }
 
