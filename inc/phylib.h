@@ -132,12 +132,18 @@ CR_API sIMAGE*  image_rotz (const sIMAGE *img, const sRECT *box,
                             fp32_t ccw, bool_t fast);
 CR_API void_t   image_back (const sIMAGE *dst, const sIMAGE *src,
                             sint_t left, sint_t top);
-/* 清除图片边框 */
-CR_API bool_t   image_bound (const sIMAGE *img, uint_t xsize, uint_t ysize);
-
+/* 扩展/收缩图片边框 */
+CR_API sIMAGE*  image_bound (const sIMAGE *img, uint_t xsize, uint_t ysize);
+CR_API bool_t   image_unbound (const sIMAGE *dst, const sIMAGE *src,
+                               uint_t xsize, uint_t ysize);
 /* 垂直翻转图片 (若需要) */
 CR_API void_t   image_fuck_gdi (sIMAGE *img);
 
+/* 图片自定义运算 */
+typedef sint_t  (*pix_ops_t) (byte_t, byte_t);
+
+CR_API bool_t   image_oper (const sIMAGE *dst, const sIMAGE *src,
+                            pix_ops_t dopix);
 /* 直方图阈值计算 */
 CR_API byte_t   histo_avge (const leng_t tab[256]);
 CR_API byte_t   histo_otsu (const leng_t tab[256]);
