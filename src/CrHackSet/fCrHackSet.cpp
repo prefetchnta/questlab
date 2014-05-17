@@ -898,8 +898,8 @@ image_form3x3 (
         for (idx = 0; idx < 9; idx++)
             mat[idx] = 1;
     }
-    first = xml_attr_intxU("fst", FALSE, param);
     expand = xml_attr_intxU("exp", TRUE, param);
+    first = xml_attr_intxU("fst", FALSE, param);
     conv3x3_form(dest, mat, !!expand, !!first);
     return (TRUE);
 }

@@ -26,7 +26,7 @@
     <?crhack_flip_vv />
 
     <!-- 3x3形态滤镜 -->
-    <?crhack_form3x3 mat="[1, 1, 1, 1, 1, 1, 1, 1, 1]" exp="1" />
+    <?crhack_form3x3 mat="[1, 1, 1, 1, 1, 1, 1, 1, 1]" exp="1" fst="0" />
 
     <!-- 图片伽玛校正 -->
     <?crhack_gamma gamma="2.5" comp="0.0" />
