@@ -545,7 +545,6 @@ image_conv3x3 (
   __CR_IN__ sXNODEu*    param
     )
 {
-    uint_t  idx;
     ansi_t* str;
     sIMAGE* dest;
     sint_t  mat[9];
@@ -557,7 +556,7 @@ image_conv3x3 (
     str = xml_attr_bufferU("mat", param);
     if (str == NULL ||
         str2lstA((uint_t*)mat, 9, str, "[],") == NULL) {
-        for (idx = 0; idx < 9; idx++)
+        for (uint_t idx = 0; idx < 9; idx++)
             mat[idx] = 1;
     }
     conv3x3_main(dest, mat);
@@ -881,7 +880,6 @@ image_form3x3 (
   __CR_IN__ sXNODEu*    param
     )
 {
-    uint_t  idx;
     ansi_t* str;
     sIMAGE* dest;
     sint_t  mat[9];
@@ -895,7 +893,7 @@ image_form3x3 (
     str = xml_attr_bufferU("mat", param);
     if (str == NULL ||
         str2lstA((uint_t*)mat, 9, str, "[],") == NULL) {
-        for (idx = 0; idx < 9; idx++)
+        for (uint_t idx = 0; idx < 9; idx++)
             mat[idx] = 1;
     }
     expand = xml_attr_intxU("exp", TRUE, param);
@@ -925,6 +923,8 @@ image_solarize (
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
     gate = xml_attr_intxU("gate", 127, param);
+    if (!param->found)
+        gate = image_avg_light(dest);
     dot_solarize(tab, gate);
     image_lookup3(dest, tab, tab, tab);
     return (TRUE);
