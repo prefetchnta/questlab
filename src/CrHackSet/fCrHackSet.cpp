@@ -9,6 +9,27 @@
 
 /*
 ---------------------------------------
+    计算梯度长度
+---------------------------------------
+*/
+static sint_t
+grad_length (
+  __CR_IN__ byte_t  p1,
+  __CR_IN__ byte_t  p2
+    )
+{
+    fp32_t  len;
+    sint_t  tx = p1;
+    sint_t  ty = p2;
+
+    tx *= tx;
+    ty *= ty;
+    len = FSQRT((fp32_t)(tx + ty));
+    return (fp32_to_sint(len));
+}
+
+/*
+---------------------------------------
     计算平均亮度
 ---------------------------------------
 */
@@ -40,117 +61,35 @@ image_avg_light (
     卷积运算 (3 x 3)
 ---------------------------------------
 */
-static byte_t*
+static void_t
 conv3x3_main (
-  __CR_IN__ const sIMAGE*   src,
+  __CR_IN__ const sIMAGE*   image,
   __CR_IN__ const sint_t    mat[9]
     )
 {
-    byte_t* ptr;
-    byte_t* dst;
-    byte_t* prev;
-    byte_t* curt;
-    byte_t* next;
-    sint_t  csum;
-    uint_t  xx, yy;
-    uint_t  ww, hh;
+    sIMAGE*     stemp;
+    sIMAGE*     bound;
+    sCONVO_MAT  convo;
 
-    /* 不处理边框 */
-    ww = src->position.ww;
-    hh = src->position.hh;
-    if (ww < 3 || hh < 3)
-        return (NULL);
-    ww -= 2;
-    hh -= 2;
-    dst = (byte_t*)mem_malloc(ww * hh * 4);
-    if (dst == NULL)
-        return (NULL);
-    ptr = dst;
+    /* 扩展边缘 */
+    bound = image_bound(image, 1, 1);
+    if (bound == NULL)
+        return;
+    convo.dt = mat;
+    convo.ww = convo.hh = 3;
+    convo.kk = mat[0];
+    for (uint_t idx = 1; idx < 9; idx++)
+        convo.kk += mat[idx];
+    if (convo.kk <= 0)
+        convo.kk = 1;
 
-    /* 求矩阵的和 */
-    for (csum = mat[0], xx = 1; xx < 9; xx++)
-        csum += mat[xx];
-    if (csum <= 0)
-        csum = 1;
-
-    /* 开始计算卷积 */
-    prev = src->data + 4;
-    curt = prev + src->bpl;
-    next = curt + src->bpl;
-    for (yy = 0; yy < hh; yy++)
-    {
-        for (xx = 0; xx < ww; xx++)
-        {
-            sint_t  bb, gg, rr;
-
-            /* 第一排 */
-            bb  = prev[(xx-1)*4+0] * mat[0];
-            gg  = prev[(xx-1)*4+1] * mat[0];
-            rr  = prev[(xx-1)*4+2] * mat[0];
-            bb += prev[(xx+0)*4+0] * mat[1];
-            gg += prev[(xx+0)*4+1] * mat[1];
-            rr += prev[(xx+0)*4+2] * mat[1];
-            bb += prev[(xx+1)*4+0] * mat[2];
-            gg += prev[(xx+1)*4+1] * mat[2];
-            rr += prev[(xx+1)*4+2] * mat[2];
-
-            /* 第二排 */
-            bb += curt[(xx-1)*4+0] * mat[3];
-            gg += curt[(xx-1)*4+1] * mat[3];
-            rr += curt[(xx-1)*4+2] * mat[3];
-            bb += curt[(xx+0)*4+0] * mat[4];
-            gg += curt[(xx+0)*4+1] * mat[4];
-            rr += curt[(xx+0)*4+2] * mat[4];
-            bb += curt[(xx+1)*4+0] * mat[5];
-            gg += curt[(xx+1)*4+1] * mat[5];
-            rr += curt[(xx+1)*4+2] * mat[5];
-
-            /* 第三排 */
-            bb += next[(xx-1)*4+0] * mat[6];
-            gg += next[(xx-1)*4+1] * mat[6];
-            rr += next[(xx-1)*4+2] * mat[6];
-            bb += next[(xx+0)*4+0] * mat[7];
-            gg += next[(xx+0)*4+1] * mat[7];
-            rr += next[(xx+0)*4+2] * mat[7];
-            bb += next[(xx+1)*4+0] * mat[8];
-            gg += next[(xx+1)*4+1] * mat[8];
-            rr += next[(xx+1)*4+2] * mat[8];
-
-            /* 中心-B */
-            bb /= csum;
-            if (bb < 0)
-                bb = 0;
-            else
-            if (bb > 255)
-                bb = 255;
-            *ptr++ = (byte_t)bb;
-
-            /* 中心-G */
-            gg /= csum;
-            if (gg < 0)
-                gg = 0;
-            else
-            if (gg > 255)
-                gg = 255;
-            *ptr++ = (byte_t)gg;
-
-            /* 中心-R */
-            rr /= csum;
-            if (rr < 0)
-                rr = 0;
-            else
-            if (rr > 255)
-                rr = 255;
-            *ptr++ = (byte_t)rr;
-
-            /* 中心-A */
-            *ptr++ = curt[xx * 4 + 3];
-        }
-        prev += src->bpl;
-        curt += src->bpl;
-        next += src->bpl;
-    }
-    return (dst);
+    /* 卷积并回图 */
+    stemp = image_convo(bound, &convo);
+    image_del(bound);
+    if (stemp == NULL)
+        return;
+    image_unbound(image, stemp, 1, 1);
+    image_del(stemp);
 }
 
 /*
@@ -702,7 +641,6 @@ image_conv3x3 (
 {
     uint_t  idx;
     ansi_t* str;
-    byte_t* temp;
     sIMAGE* dest;
     sint_t  mat[9];
 
@@ -716,11 +654,7 @@ image_conv3x3 (
         for (idx = 0; idx < 9; idx++)
             mat[idx] = 1;
     }
-    temp = conv3x3_main(dest, mat);
-    if (temp == NULL)
-        return (TRUE);
-    conv3x3_back(dest, temp);
-    mem_free(temp);
+    conv3x3_main(dest, mat);
     return (TRUE);
 }
 
@@ -750,10 +684,7 @@ image_edge_sobel (
   __CR_IN__ sXNODEu*    param
     )
 {
-    byte_t* gx;
-    byte_t* gy;
-    leng_t  idx;
-    leng_t  size;
+    sIMAGE* temp;
     sIMAGE* dest;
 
     CR_NOUSE(netw);
@@ -761,68 +692,13 @@ image_edge_sobel (
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
-    gx = conv3x3_main(dest, s_sobel_matx);
-    if (gx == NULL)
+    temp = image_dup(dest);
+    if (temp == NULL)
         return (TRUE);
-    gy = conv3x3_main(dest, s_sobel_maty);
-    if (gy == NULL) {
-        mem_free(gx);
-        return (TRUE);
-    }
-
-    /* 计算梯度图 */
-    size  = dest->position.ww - 2;
-    size *= dest->position.hh - 2;
-    size *= sizeof(int32u);
-    for (idx = 0; idx < size; idx += 4)
-    {
-        sint_t  tx, ty;
-
-        /* 分量-B */
-        tx = gx[idx + 0];
-        ty = gy[idx + 0];
-        tx *= tx;
-        ty *= ty;
-        ty += tx;
-        tx = (sint_t)(sqrtf((float)ty) + 0.5f);
-        if (tx < 0)
-            tx = 0;
-        else
-        if (tx > 255)
-            tx = 255;
-        gx[idx + 0] = (byte_t)tx;
-
-        /* 分量-G */
-        tx = gx[idx + 1];
-        ty = gy[idx + 1];
-        tx *= tx;
-        ty *= ty;
-        ty += tx;
-        tx = (sint_t)(sqrtf((float)ty) + 0.5f);
-        if (tx < 0)
-            tx = 0;
-        else
-        if (tx > 255)
-            tx = 255;
-        gx[idx + 1] = (byte_t)tx;
-
-        /* 分量-R */
-        tx = gx[idx + 2];
-        ty = gy[idx + 2];
-        tx *= tx;
-        ty *= ty;
-        ty += tx;
-        tx = (sint_t)(sqrtf((float)ty) + 0.5f);
-        if (tx < 0)
-            tx = 0;
-        else
-        if (tx > 255)
-            tx = 255;
-        gx[idx + 2] = (byte_t)tx;
-    }
-    conv3x3_back(dest, gx);
-    mem_free(gy);
-    mem_free(gx);
+    conv3x3_main(dest, s_sobel_matx);
+    conv3x3_main(temp, s_sobel_maty);
+    image_oper(dest, temp, grad_length);
+    image_del(temp);
     return (TRUE);
 }
 
