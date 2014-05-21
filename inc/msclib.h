@@ -129,6 +129,37 @@ CR_API xfsm_t   fsm_x_start (xnfsm_t entry, leng_t count,
 CR_API void_t   fsm_x_sstep (xfsm_t xfsm, void_t *param);
 CR_API bool_t   fsm_x_sgoto (xfsm_t xfsm, xnfsm_t sname);
 
+/*****************************************************************************/
+/*                                摄像机控制                                 */
+/*****************************************************************************/
+
+typedef struct
+{
+        fp32_t  *eye;
+        fp32_t  *lookat;
+        fp32_t  distance;
+        fp32_t  theta, phi;
+
+} sCAMERA;
+
+CR_API void_t   camera_init (sCAMERA *cam, fp32_t *eye, fp32_t *lookat);
+CR_API void_t   camera_walkdir2 (const sCAMERA *cam, fp32_t *vdir);
+CR_API void_t   camera_walkdir3 (const sCAMERA *cam, fp32_t *vdir);
+CR_API void_t   camera_eye_a (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_d (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_w2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_s2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_w3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_s3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_a (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_d (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_w2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_s2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_w3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_s3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_update_fps (sCAMERA *cam);
+CR_API void_t   camera_update_tps (sCAMERA *cam);
+
 #endif  /* !__CR_MSCLIB_H__ */
 
 /*****************************************************************************/
