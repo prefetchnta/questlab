@@ -1906,6 +1906,215 @@ d3d9_tran_update_mwvp (
     D3DXMatrixMultiplyTranspose(&tran->wvp, &tran->wvp, &tran->proj);
 }
 
+/*
+=======================================
+    获取拾取射线
+=======================================
+*/
+CR_API void_t
+d3d9_tran_pickup (
+  __CR_IN__ sD3D9_TRAN* tran,
+  __CR_OT__ sRADIAL*    dest,
+  __CR_IN__ sint_t      scn_x,
+  __CR_IN__ sint_t      scn_y
+    )
+{
+    D3DXVECTOR3     vec;
+    D3DXMATRIXA16   mat;
+
+    scn_x -= tran->view_port.X;
+    scn_y -= tran->view_port.Y;
+    vec.x  =  (2.0f * scn_x) / tran->view_port.Width;
+    vec.x  =  (vec.x - 1.0f) / tran->proj._11;
+    vec.y  =  (2.0f * scn_y) / tran->view_port.Height;
+    vec.y  = -(vec.y - 1.0f) / tran->proj._22;
+    vec.z  =   1.0f;
+    D3DXMatrixInverse(&mat, NULL, &tran->view);
+
+    dest->pos.x = mat._41;
+    dest->pos.y = mat._42;
+    dest->pos.z = mat._43;
+    dest->dir.x = vec.x * mat._11 + vec.y * mat._21 + vec.z * mat._31;
+    dest->dir.y = vec.x * mat._12 + vec.y * mat._22 + vec.z * mat._32;
+    dest->dir.z = vec.x * mat._13 + vec.y * mat._23 + vec.z * mat._33;
+}
+
+/*
+=======================================
+    获取视锥对象
+=======================================
+*/
+CR_API void_t
+d3d9_tran_frustum (
+  __CR_IN__ sD3D9_TRAN* tran,
+  __CR_OT__ sFRUSTUM*   dest
+    )
+{
+    D3DXPLANE       pln;
+    D3DXMATRIXA16   mat;
+
+    D3DXMatrixMultiply(&mat, &tran->view, &tran->proj);
+
+    /* near */
+    pln.a = mat._14 + mat._13;
+    pln.b = mat._24 + mat._23;
+    pln.c = mat._34 + mat._33;
+    pln.d = mat._44 + mat._43;
+    D3DXPlaneNormalize((D3DXPLANE*)(&dest->p[0]), &pln);
+
+    /* far */
+    pln.a = mat._14 - mat._13;
+    pln.b = mat._24 - mat._23;
+    pln.c = mat._34 - mat._33;
+    pln.d = mat._44 - mat._43;
+    D3DXPlaneNormalize((D3DXPLANE*)(&dest->p[1]), &pln);
+
+    /* left */
+    pln.a = mat._14 + mat._11;
+    pln.b = mat._24 + mat._21;
+    pln.c = mat._34 + mat._31;
+    pln.d = mat._44 + mat._41;
+    D3DXPlaneNormalize((D3DXPLANE*)(&dest->p[2]), &pln);
+
+    /* right */
+    pln.a = mat._14 - mat._11;
+    pln.b = mat._24 - mat._21;
+    pln.c = mat._34 - mat._31;
+    pln.d = mat._44 - mat._41;
+    D3DXPlaneNormalize((D3DXPLANE*)(&dest->p[3]), &pln);
+
+    /* top */
+    pln.a = mat._14 - mat._12;
+    pln.b = mat._24 - mat._22;
+    pln.c = mat._34 - mat._32;
+    pln.d = mat._44 - mat._42;
+    D3DXPlaneNormalize((D3DXPLANE*)(&dest->p[4]), &pln);
+
+    /* bottom */
+    pln.a = mat._14 + mat._12;
+    pln.b = mat._24 + mat._22;
+    pln.c = mat._34 + mat._32;
+    pln.d = mat._44 + mat._42;
+    D3DXPlaneNormalize((D3DXPLANE*)(&dest->p[5]), &pln);
+}
+
+/*
+=======================================
+    设置 XOZ 公告牌变换
+=======================================
+*/
+CR_API void_t
+d3d9_tran_billboardv (
+  __CR_IO__ sD3D9_TRAN* tran
+    )
+{
+    fp32_t  dx, dz, ang;
+    /* -------------- */
+    D3DXMATRIXA16   rmat;
+
+    /* 平面的初始法线为 (0, 0, -1) */
+    dx = tran->eye.x - tran->lookat.x;
+    dz = tran->eye.z - tran->lookat.z;
+
+    /* 计算 Y 轴旋转角度 */
+    if (dz >= 0.0f) {
+        if (dx >  CR_ABIT32)
+            ang = -CR_PI / 2.0f - FATAN(dz / dx);
+        else
+        if (dx < -CR_ABIT32)
+            ang =  CR_PI / 2.0f - FATAN(dz / dx);
+        else
+            ang = -CR_PI;
+    }
+    else {
+        ang = FATAN(dx / dz);
+    }
+    D3DXMatrixRotationY(&rmat, ang);
+    D3DXMatrixMultiply(&tran->world, &tran->world, &rmat);
+}
+
+/*
+=======================================
+    设置自由的公告牌变换
+=======================================
+*/
+CR_API void_t
+d3d9_tran_billboardh (
+  __CR_IO__ sD3D9_TRAN* tran
+    )
+{
+    fp32_t          ang;
+    D3DXVECTOR3     eye;
+    D3DXVECTOR3     face;
+    D3DXVECTOR3     axis;
+    D3DXVECTOR4     tvec;
+    D3DXMATRIXA16   tmat;
+    D3DXMATRIXA16   rmat;
+
+    /* 平面的初始法线为 (0, 0, -1) */
+    eye.x = tran->eye.x - tran->lookat.x;
+    eye.y = tran->eye.y - tran->lookat.y;
+    eye.z = tran->eye.z - tran->lookat.z;
+    face.x =  0.0f;
+    face.y =  0.0f;
+    face.z = -1.0f;
+
+    /* 计算 Y 轴旋转角度 */
+    if (eye.z >= 0.0f) {
+        if (eye.x >  CR_ABIT32)
+            ang = -CR_PI / 2.0f - FATAN(eye.z / eye.x);
+        else
+        if (eye.x < -CR_ABIT32)
+            ang =  CR_PI / 2.0f - FATAN(eye.z / eye.x);
+        else
+            ang = -CR_PI;
+    }
+    else {
+        ang = FATAN(eye.x / eye.z);
+    }
+    D3DXMatrixRotationY(&rmat, ang);
+
+    /* 使平面的法线与视线平行 */
+    D3DXVec3Transform(&tvec, &face, &rmat);
+    face.x = tvec.x;
+    face.y = tvec.y;
+    face.z = tvec.z;
+    D3DXVec3Normalize(&eye, &eye);
+    D3DXVec3Cross(&axis, &face, &eye);
+    D3DXMatrixRotationAxis(&tmat, &axis, FACOS(D3DXVec3Dot(&eye, &face)));
+    D3DXMatrixMultiply(&rmat, &rmat, &tmat);
+    D3DXMatrixMultiply(&tran->world, &tran->world, &rmat);
+}
+
+/*
+=======================================
+    世界变换矩阵清零
+=======================================
+*/
+CR_API void_t
+d3d9_tran_wrld_clear (
+  __CR_IO__ sD3D9_TRAN* tran
+    )
+{
+    D3DXMatrixIdentity(&tran->world);
+}
+
+/*
+=======================================
+    世界变换矩阵右乘
+=======================================
+*/
+CR_API void_t
+d3d9_tran_wrld_rtmul (
+  __CR_IO__ sD3D9_TRAN*     tran,
+  __CR_IN__ const mat4x4_t* mats,
+  __CR_IN__ uint_t          count
+    )
+{
+    for (; count != 0; count--, mats++)
+        D3DXMatrixMultiply(&tran->world, &tran->world, (D3DXMATRIX*)mats);
+}
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -1965,6 +2174,12 @@ static const sD3D9_CALL s_d3d9call =
     d3d9_tran_update_proj,
     d3d9_tran_update_port,
     d3d9_tran_update_mwvp,
+    d3d9_tran_pickup,
+    d3d9_tran_frustum,
+    d3d9_tran_billboardv,
+    d3d9_tran_billboardh,
+    d3d9_tran_wrld_clear,
+    d3d9_tran_wrld_rtmul,
 };
 
 /*

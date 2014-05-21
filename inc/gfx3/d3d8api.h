@@ -236,6 +236,19 @@ typedef struct
         void_t  (*tran_upd_port) (sD3D8_TRAN *tran);
         void_t  (*tran_upd_mwvp) (sD3D8_TRAN *tran);
 
+        /* 信息 */
+        void_t  (*tran_pickup) (sD3D8_TRAN *tran, sRADIAL *dest,
+                                sint_t scn_x, sint_t scn_y);
+
+        void_t  (*tran_frustum) (sD3D8_TRAN *tran, sFRUSTUM *dest);
+
+        /* 变换 */
+        void_t  (*tran_billboardv) (sD3D8_TRAN *tran);
+        void_t  (*tran_billboardh) (sD3D8_TRAN *tran);
+        void_t  (*tran_wrld_clear) (sD3D8_TRAN *tran);
+        void_t  (*tran_wrld_rtmul) (sD3D8_TRAN *tran, const mat4x4_t *mats,
+                                    uint_t count);
+
 /* ========================================================================= */
 
 } sD3D8_CALL;

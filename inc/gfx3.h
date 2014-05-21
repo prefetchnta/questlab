@@ -45,7 +45,21 @@ typedef struct
 {
         fp32_t  x, y, z, w;
 
-} vec4d_t;
+} vec4d_t, sPLANE, sQUATO;
+
+/*
+********************
+    D3D 行主矩阵
+    OGL 列主矩阵
+********************
+*/
+
+/* 3x3 矩阵 */
+typedef struct
+{
+        fp32_t  m[3 * 3];
+
+} mat3x3_t;
 
 /* 4x4 矩阵 */
 typedef struct
@@ -53,6 +67,41 @@ typedef struct
         fp32_t  m[4 * 4];
 
 } mat4x4_t;
+
+/* 射线 */
+typedef struct
+{
+        vec3d_t     pos;
+        vec3d_t     dir;
+
+} sRADIAL;
+
+/* 四边形 (left-top, cw) */
+typedef struct
+{
+        vec3d_t     v[4];
+} sQUAD;
+
+/* AABB 包围盒 (left-top-up, cw) */
+typedef struct
+{
+        vec3d_t     v[8];
+} sAABB;
+
+/* 包围球 */
+typedef struct
+{
+        vec3d_t     center;
+        fp32_t      radius;
+
+} sSPHERE;
+
+/* 视锥 (near, far, left, right, top, bottom) */
+typedef struct
+{
+        sPLANE  p[6];
+
+} sFRUSTUM;
 
 /* 只使用微软自家的编译器 */
 #if     defined(_CR_CC_MSC_) && (_CR_CC_VER_ >= 1400)
