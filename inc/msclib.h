@@ -73,6 +73,8 @@ CR_API void_t   bytes_fill (void_t *data, leng_t size, leng_t start,
 /* 数码管字符串生成器 */
 CR_API byte_t*  seg7dp_gen (byte_t *dst, const ansi_t *src,
                             ubit_t neg, leng_t size);
+/* 浮点对象转数组 */
+#define VEC2ARR(v)  ((fp32_t*)(v))
 
 /*****************************************************************************/
 /*                                有限状态机                                 */
@@ -142,6 +144,8 @@ typedef struct
 
 } sCAMERA;
 
+/* 旋转角度都从正轴开始 */
+CR_API void_t   camera_refresh (sCAMERA *cam);
 CR_API void_t   camera_init (sCAMERA *cam, fp32_t *eye, fp32_t *lookat);
 CR_API void_t   camera_walkdir2 (const sCAMERA *cam, fp32_t *vdir);
 CR_API void_t   camera_walkdir3 (const sCAMERA *cam, fp32_t *vdir);
@@ -159,6 +163,15 @@ CR_API void_t   camera_lookat_w3 (const sCAMERA *cam, fp32_t step);
 CR_API void_t   camera_lookat_s3 (const sCAMERA *cam, fp32_t step);
 CR_API void_t   camera_update_fps (sCAMERA *cam);
 CR_API void_t   camera_update_tps (sCAMERA *cam);
+
+/*****************************************************************************/
+/*                                 视锥剔除                                  */
+/*****************************************************************************/
+
+CR_API bool_t   frustum_vec3 (const fp32_t *frt, const fp32_t *vec3);
+CR_API bool_t   frustum_ball (const fp32_t *frt, const fp32_t *ball);
+CR_API bool_t   frustum_quad (const fp32_t *frt, const fp32_t *quad);
+CR_API bool_t   frustum_aabb (const fp32_t *frt, const fp32_t *aabb);
 
 #endif  /* !__CR_MSCLIB_H__ */
 

@@ -370,6 +370,63 @@ d3d9_do_flip (
     return (main->dev->Present(NULL, NULL, NULL, NULL));
 }
 
+/*
+=======================================
+    打开 Alpha 测试
+=======================================
+*/
+cr_inline void_t
+d3d9_at_enter (
+  __CR_IN__ sD3D9_MAIN* main,
+  __CR_IN__ uint_t      value
+    )
+{
+    main->dev->SetRenderState(D3DRS_ALPHAREF, value);
+    main->dev->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+    main->dev->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+}
+
+/*
+=======================================
+    关闭 Alpha 测试
+=======================================
+*/
+cr_inline void_t
+d3d9_at_leave (
+  __CR_IN__ sD3D9_MAIN* main
+    )
+{
+    main->dev->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+}
+
+/*
+=======================================
+    打开 Alpha 混合
+=======================================
+*/
+cr_inline void_t
+d3d9_ab_enter (
+  __CR_IN__ sD3D9_MAIN* main
+    )
+{
+    main->dev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    main->dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    main->dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+}
+
+/*
+=======================================
+    关闭 Alpha 混合
+=======================================
+*/
+cr_inline void_t
+d3d9_ab_leave (
+  __CR_IN__ sD3D9_MAIN* main
+    )
+{
+    main->dev->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+}
+
 #endif  /* !_CR_SICK_INLINE_ */
 
 #endif  /* !__CR_D3D9API_INL__ */
