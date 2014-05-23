@@ -36,11 +36,18 @@ coff2omf CrH_CORE.lib omf\CrH_CORE.lib
 move CrH_CORE.lib coff\CrH_CORE.lib
 rem ========================================
 :crh_fmtz
-if not exist CrH_FMTZ.lib goto crh_math
+if not exist CrH_FMTZ.lib goto crh_gfx3
 del coff\CrH_FMTZ.lib
 del omf\CrH_FMTZ.lib
 coff2omf CrH_FMTZ.lib omf\CrH_FMTZ.lib
 move CrH_FMTZ.lib coff\CrH_FMTZ.lib
+rem ========================================
+:crh_gfx3
+if not exist CrH_GFX3.lib goto crh_math
+del coff\CrH_GFX3.lib
+del omf\CrH_GFX3.lib
+coff2omf CrH_GFX3.lib omf\CrH_GFX3.lib
+move CrH_GFX3.lib coff\CrH_GFX3.lib
 rem ========================================
 :crh_math
 if not exist CrH_MATH.lib goto bat_exit
