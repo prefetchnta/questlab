@@ -6,7 +6,7 @@
     [m] plugin/xOpenCV.dll
     [m] GFX3_D3D8.dll
     [m] GFX3_D3D9.dll
-    [m] CrH_CORE.dll
+    [+] CrH_GFX3.dll
 +
 +
 +

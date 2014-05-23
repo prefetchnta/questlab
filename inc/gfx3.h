@@ -103,6 +103,49 @@ typedef struct
 
 } sFRUSTUM;
 
+/*****************************************************************************/
+/*                                摄像机控制                                 */
+/*****************************************************************************/
+
+typedef struct
+{
+        vec4d_t *eye;
+        vec4d_t *lookat;
+        fp32_t  distance;
+        fp32_t  theta, phi;
+
+} sCAMERA;
+
+/* 旋转角度都从正轴开始 */
+CR_API void_t   camera_refresh (sCAMERA *cam);
+CR_API void_t   camera_init (sCAMERA *cam, vec4d_t *eye, vec4d_t *lookat);
+CR_API void_t   camera_walkdir2 (const sCAMERA *cam, vec3d_t *vdir);
+CR_API void_t   camera_walkdir3 (const sCAMERA *cam, vec3d_t *vdir);
+CR_API void_t   camera_eye_a (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_d (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_w2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_s2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_w3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_eye_s3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_a (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_d (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_w2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_s2 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_w3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_lookat_s3 (const sCAMERA *cam, fp32_t step);
+CR_API void_t   camera_update_fps (sCAMERA *cam);
+CR_API void_t   camera_update_tps (sCAMERA *cam);
+
+/*****************************************************************************/
+/*                                 视锥剔除                                  */
+/*****************************************************************************/
+
+CR_API bool_t   frustum_vec3 (const sFRUSTUM *frt, const vec3d_t *vec3);
+CR_API bool_t   frustum_vec4 (const sFRUSTUM *frt, const vec4d_t *vec4);
+CR_API bool_t   frustum_ball (const sFRUSTUM *frt, const sSPHERE *ball);
+CR_API bool_t   frustum_quad (const sFRUSTUM *frt, const sQUAD *quad);
+CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
+
 /* 只使用微软自家的编译器 */
 #if     defined(_CR_CC_MSC_) && (_CR_CC_VER_ >= 1400)
 /*****************************************************************************/
