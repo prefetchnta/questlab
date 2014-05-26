@@ -2,7 +2,7 @@
 #include "QstView2D.h"
 
 /* 外部库引用 */
-#pragma comment (lib, "CrH_BLIT.lib")
+#pragma comment (lib, "CrH_GFX2.lib")
 #pragma comment (lib, "ResLoader.lib")
 
 /* 缺省的窗口大小 */
