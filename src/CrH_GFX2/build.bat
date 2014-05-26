@@ -2,6 +2,8 @@
 rem =====================
 call "%VS100COMNTOOLS%vsvars32.bat"
 rem =====================
+nmake -fgfx2.mak
+rem =====================
 nmake -fgdiwin.mak
 rem =====================
 nmake -fdx8win.mak

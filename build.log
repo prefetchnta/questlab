@@ -7,6 +7,9 @@
     [m] GFX3_D3D8.dll
     [m] GFX3_D3D9.dll
     [+] CrH_GFX3.dll
+    [+] CrH_GFX2.dll
+    [-] CrH_BLIT.dll
+    [m] CrH_MATH.dll
 +
 +
 +

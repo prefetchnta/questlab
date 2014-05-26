@@ -1,24 +1,26 @@
-PROJECT=CrH_BLIT
+PROJECT=CrH_GFX2
 SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
-OBJ_LIST=.$(L)blit.$(O) \
+OBJ_LIST=.$(L)gfx2.$(O) \
          .$(L)blit_c.$(O) \
          .$(L)bltint.$(O) \
          .$(L)draw2d.$(O) \
          .$(L)pixels.$(O) \
          .$(L)btfont.$(O) \
          .$(L)ucfont.$(O) \
+         .$(L)surfmem.$(O) \
          .$(L)$(PROJECT).res
 
-SRC_LIST=.$(L)blit.$(C) \
+SRC_LIST=.$(L)gfx2.$(C) \
          .$(L)blit_c.$(C) \
          .$(L)bltint.$(C) \
          .$(L)draw2d.$(C) \
          .$(L)pixels.$(C) \
          .$(L)btfont.$(C) \
-         .$(L)ucfont.$(C)
+         .$(L)ucfont.$(C) \
+         .$(L)surfmem.$(C)
 
 build_all:
     $(RC) $(RFLAGS)

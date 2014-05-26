@@ -1,7 +1,7 @@
 /*****************************************************************************/
 /*                                                  ###                      */
 /*       #####          ###    ###                  ###  CREATE: 2010-01-27  */
-/*     #######          ###    ###      [BLIT]      ###  ~~~~~~~~~~~~~~~~~~  */
+/*     #######          ###    ###      [GFX2]      ###  ~~~~~~~~~~~~~~~~~~  */
 /*    ########          ###    ###                  ###  MODIFY: XXXX-XX-XX  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
 /*   ###       ### ###  ###    ###    ####    ####  ###   ##  +-----------+  */
@@ -13,60 +13,17 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>>>>>>> CRHACK/BLIT 主程序入口点 <<<<<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>>>>>> CrHack 内存离屏表面接口实现 <<<<<<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_BLIT_C__
-#define __CR_BLIT_C__ 0x1A530F26UL
+#ifndef __CR_SURFMEM_C__
+#define __CR_SURFMEM_C__ 0x9AA03077UL
 
 #include "blit.h"
 #include "memlib.h"
 #include "pixels.h"
 #include "strlib.h"
-
-/* DLL 自定义入口点 */
-#if defined(_CR_OS_MSWIN_)
-#if defined(_CR_BUILD_DLL_)
-
-#include <windows.h>
-
-/*
-=======================================
-    CRHACK/BLIT DLL 入口点
-=======================================
-*/
-#if defined(_CR_CC_BCC_)
-int  WINAPI
-DllEntryPoint (
-  __CR_IN__ HINSTANCE       hinst,
-  __CR_IN__ unsigned long   reason,
-  __CR_UU__ void*           reserved
-    )
-#else
-BOOL WINAPI
-DllMain (
-  __CR_IN__ HANDLE  hinst,
-  __CR_IN__ DWORD   reason,
-  __CR_UU__ LPVOID  reserved
-    )
-#endif
-{
-    switch (reason)
-    {
-        case DLL_PROCESS_ATTACH:
-            break;
-
-        case DLL_PROCESS_DETACH:
-            break;
-    }
-    CR_NOUSE(hinst);
-    CR_NOUSE(reserved);
-    return (TRUE);
-}
-
-#endif  /* _CR_BUILD_DLL_ */
-#endif  /* _CR_OS_MSWIN_ */
 
 /*****************************************************************************/
 /*                                 离屏表面                                  */
@@ -174,7 +131,7 @@ iGFX2_MEM_flip (
 #define _image_clear24  iGFX2_MEM_clear24
 #define _image_clear32  iGFX2_MEM_clear32
 
-#include "../templ/clear2d.inl"
+#include "clear2d.inl"
 
 /*
 ---------------------------------------
@@ -282,7 +239,7 @@ create_mem_bitmap (
 
     gfx2 = struct_new(iGFX2);
     if (gfx2 == NULL) {
-        err_set(__CR_BLIT_C__, CR_NULL,
+        err_set(__CR_SURFMEM_C__, CR_NULL,
                 "create_mem_bitmap()", "struct_new() failure");
         return (NULL);
     }
@@ -301,7 +258,7 @@ create_mem_bitmap (
         case CR_ARGB8888: gfx2->__vptr__ = &s_bmp32_vtbl; break;
 
         default:
-            err_set(__CR_BLIT_C__, crh_fmt,
+            err_set(__CR_SURFMEM_C__, crh_fmt,
                     "create_mem_bitmap()", "invalid param: crh_fmt");
             goto _failure;
     }
@@ -309,7 +266,7 @@ create_mem_bitmap (
     /* 使用行8字节对齐 ----------- VV (多分配一行) */
     image = image_new(0, 0, width, height + 1, crh_fmt, FALSE, 8);
     if (image == NULL) {
-        err_set(__CR_BLIT_C__, CR_NULL,
+        err_set(__CR_SURFMEM_C__, CR_NULL,
                 "create_mem_bitmap()", "image_new() failure");
         goto _failure;
     }
@@ -330,7 +287,7 @@ _failure:
     return (NULL);
 }
 
-#endif  /* !__CR_BLIT_C__ */
+#endif  /* !__CR_SURFMEM_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

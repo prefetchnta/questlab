@@ -1,4 +1,4 @@
 @echo off
 call "%VS100COMNTOOLS%vsvars32.bat"
-nmake -fblit.mak
+nmake -fgfx2.mak
 pause

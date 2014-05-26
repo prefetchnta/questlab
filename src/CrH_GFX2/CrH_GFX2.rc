@@ -15,10 +15,10 @@ BEGIN
     BEGIN
         BLOCK "080404b0"
         BEGIN
-            VALUE "ProductName"     , "CrHack BLIT Library\0"
+            VALUE "ProductName"     , "CrHack GFX2 Library\0"
             VALUE "ProductVersion"  , "1.0.0.1229\0"
             VALUE "FileVersion"     , "1.0.0.1229\0"
-            VALUE "FileDescription" , "CrHack BLIT Library\0"
+            VALUE "FileDescription" , "CrHack GFX2 Library\0"
             VALUE "LegalCopyright"  , "Copyright 2009+ by CrHackOS\0"
             VALUE "Comments"        , "Release Date: 2014-05-17\0"
         END
