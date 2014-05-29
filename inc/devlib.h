@@ -91,8 +91,12 @@ CR_API bool_t   socket_input_size (socket_t netw, uint_t *size);
 CR_API socket_t server_tcp_accept (socket_t netw);
 CR_API socket_t server_tcp_open (const ansi_t *addr, int16u port);
 CR_API socket_t client_tcp_open (const ansi_t *addr, int16u port, int32s time);
+CR_API socket_t client_tcp_open2 (const ansi_t *addr, int16u port, int32s time,
+                                  const ansi_t *laddr, int16u lport);
 CR_API socket_t server_udp_open (const ansi_t *addr, int16u port);
 CR_API socket_t client_udp_open (const ansi_t *addr, int16u port);
+CR_API socket_t client_udp_open2 (const ansi_t *addr, int16u port,
+                                  const ansi_t *laddr, int16u lport);
 CR_API uint_t   socket_tcp_send (socket_t netw, const void_t *data,
                                  uint_t size);
 CR_API uint_t   socket_udp_send (socket_t netw, const ansi_t *addr,
