@@ -19,7 +19,7 @@ namespace Qr{
     //
     //  RS block structure table
     //   ( from JISX0510(2004) 8.5.1 Table.12-18 pp.30-36)
-    // 
+    //
     //  [version][level]={
     //                     Tw:  total words,
     //                     Sb:  number of smaller RS blocks,
@@ -36,13 +36,13 @@ namespace Qr{
     //  Tcl: total codes in each largerer RS block = Tcs + 1
     //  Dcs: data codes in each larger RS block = Dcs + 1
     //  Lb:  Number of larger RS blocks = (Tw - Sb * Tcs) / Tcl
-    //  Tb:  Total RS Blocks = Sb + Lb 
+    //  Tb:  Total RS Blocks = Sb + Lb
     //
     const static int RS_BLOCK_ALIGN[41][4][5]={
         // version 0 (not exist, just a dummy)
         {{0,0,0,0,0},{0,0,0,0,0},
          {0,0,0,0,0},{0,0,0,0,0}},
-        
+
         // version 1
         {{26,1,26,16,4},{26,1,26,19,2},
          {26,1,26,9,8},{26,1,26,13,6}},
@@ -52,7 +52,7 @@ namespace Qr{
          {70,2,35,13,11},{70,2,35,17,9}},
         {{100,2,50,32,9},{100,1,100,80,10},
          {100,4,25,9,8},{100,2,50,24,13}},
-        
+
         {{134,2,67,43,12},{134,1,134,108,13},
          {134,2,33,11,11},{134,2,33,15,9}},
         {{172,4,43,27,8},{172,2,86,68,9},
@@ -63,7 +63,7 @@ namespace Qr{
          {242,4,40,14,13},{242,4,40,18,11}},
         {{292,3,58,36,11},{292,2,146,116,15},
          {292,4,36,12,12},{292,4,36,16,10}},
-        
+
         // version 10
         {{346,4,69,43,13},{346,2,86,68,9},
          {346,6,43,15,14},{346,6,43,19,12}},
@@ -75,7 +75,7 @@ namespace Qr{
          {532,12,33,11,11},{532,8,44,20,12}},
         {{581,5,65,41,12},{581,5,109,87,11},
          {581,11,36,12,12},{581,5,54,24,15}},
-        
+
         {{655,5,65,41,12},{655,5,109,87,11},
          {655,11,36,12,12},{655,5,54,24,15}},
         {{733,7,73,45,14},{733,5,122,98,12},
@@ -86,7 +86,7 @@ namespace Qr{
          {901,2,42,14,14},{901,17,50,22,14}},
         {{991,3,70,44,13},{991,3,141,113,14},
          {991,9,39,13,13},{991,17,47,21,13}},
-        
+
         // version 20
         {{1085,3,67,41,13},{1085,3,135,107,14},
          {1085,15,43,15,14},{1085,15,54,24,15}},
@@ -98,7 +98,7 @@ namespace Qr{
          {1364,16,45,15,15},{1364,11,54,24,15}},
         {{1474,6,73,45,14},{1474,6,147,117,15},
          {1474,30,46,16,15},{1474,11,54,24,15}},
-        
+
         {{1588,8,75,47,14},{1588,8,132,106,13},
          {1588,22,45,15,15},{1588,7,54,24,15}},
         {{1706,19,74,46,14},{1706,10,142,114,14},
@@ -109,7 +109,7 @@ namespace Qr{
          {1921,11,45,15,15},{1921,4,54,24,15}},
         {{2051,21,73,45,14},{2051,7,146,116,15},
          {2051,19,45,15,15},{2051,21,73,45,14}},
-        
+
         // version 30
         {{2185,19,75,47,14},{2185,5,145,115,15},
          {2185,23,45,15,15},{2185,15,54,24,15}},
@@ -121,7 +121,7 @@ namespace Qr{
          {2611,11,45,15,15},{2611,29,54,24,15}},
         {{2761,14,74,46,14},{2761,13,145,115,15},
          {2761,46,16,15,},{2761,44,54,24,15}},
-        
+
         {{2876,12,75,47,14},{2876,12,151,121,15},
          {2876,22,45,15,15},{2876,39,54,24,15}},
         {{3034,6,75,47,14},{3034,6,151,121,15},
@@ -132,7 +132,7 @@ namespace Qr{
          {3362,42,45,15,15},{3362,48,54,24,15}},
         {{3532,40,75,47,14},{3532,20,147,117,15},
          {3532,10,45,15,15},{3532,43,54,24,15}},
-        
+
         // version 40
         {{3706,18,75,47,14},{3706,19,148,118,15},
          {3706,20,45,15,15},{3706,34,54,24,15}}
@@ -140,7 +140,7 @@ namespace Qr{
 
     /////////////////////////////////////////////////////////////////////////
     //
-    // 
+    //
     //
     CodeBlock::CodeBlock(int total_words,int data_words,int capability,
                  Galois::Field *gf)
@@ -149,7 +149,7 @@ namespace Qr{
         this->data_words=data_words;
         this->capability=capability;
         this->_gf=gf;
-        
+
         this->data=new unsigned char[this->total_words];
         this->clear();
     }
@@ -157,18 +157,18 @@ namespace Qr{
     {
         delete this->data;
     }
-    
+
     void CodeBlock::clear()
     {
         memset(this->data,0,this->total_words);
         this->_size=0;
     }
-    
+
     unsigned char *CodeBlock::push(unsigned char data)
     {
         if(this->_size>=this->total_words)
             return(NULL);
-        
+
         this->data[this->_size]=data;
         this->_size++;
         return(&(this->data[this->_size-1]));
@@ -177,7 +177,7 @@ namespace Qr{
     {
         return(this->_size<this->data_words);
     }
-    
+
     int CodeBlock::error_correct()
     {
         Galois::BCH *bch=new Galois::BCH(this->_gf,
@@ -193,7 +193,7 @@ namespace Qr{
             delete bch;
             return(errors);
         }
-        
+
 
         //
         // get each error size
@@ -242,7 +242,7 @@ namespace Qr{
             mat->set(j,i,bch->syndromes[j]);
         }
         Galois::Polynomial *err=mat->solve();
-                
+
         if(err){
             //
             // correct received data
@@ -264,25 +264,25 @@ namespace Qr{
         else{
             errors=-1;
         }
-        
+
         delete mat;
         delete bch;
-        
+
         return(errors);
     }
-    
-    
+
+
     /////////////////////////////////////////////////////////////////////////
     //
-    // 
+    //
     //
     CodeData::CodeData(int version,int level)
     {
         this->_gf=new Galois::Field(8);
-        
+
         this->version=version;
         this->level=level;
-        
+
         this->total_words=RS_BLOCK_ALIGN[version][level][0];
         int larger_block_words=RS_BLOCK_ALIGN[version][level][2]+1;
         int larger_block_datas=RS_BLOCK_ALIGN[version][level][3]+1;
@@ -290,15 +290,15 @@ namespace Qr{
                            RS_BLOCK_ALIGN[version][level][1]*
                            RS_BLOCK_ALIGN[version][level][2]
             )/larger_block_words;
-        
+
         this->data_blocks=RS_BLOCK_ALIGN[version][level][1]+larger_blocks;
-        
+
         this->data_words=RS_BLOCK_ALIGN[version][level][1]*
             RS_BLOCK_ALIGN[version][level][3]+
             larger_blocks*larger_block_datas;
-        
+
         this->data=new CodeBlock *[this->data_blocks];
-        
+
         int i;
         for(i=0;i<RS_BLOCK_ALIGN[version][level][1];i++){
             this->data[i]=new CodeBlock(
@@ -314,35 +314,35 @@ namespace Qr{
                 RS_BLOCK_ALIGN[version][level][4],
                 this->_gf);
         }
-        
+
         this->length=0;
         this->byte_length=0;
         this->_raw_data=NULL;
-        
-        
+
+
         this->_size=0;
         this->_index=0;
-        
+
         this->status=0;
     }
     CodeData::~CodeData()
     {
         if(this->_raw_data)
             delete this->_raw_data;
-        
+
         for(int i=0;i<this->data_blocks;i++){
             delete this->data[i];
         }
         delete this->data;
         delete this->_gf;
     }
-    
+
     void CodeData::clear()
     {
         for(int i=0;i<this->data_blocks;i++){
             this->data[i]->clear();
         }
-        
+
         this->length=0;
         this->byte_length=0;
         if(this->_raw_data){
@@ -377,7 +377,7 @@ namespace Qr{
             return(ret);
         }
     }
-    
+
     unsigned char *CodeData::dump()
     {
         unsigned char *buf=new unsigned char[this->total_words];
@@ -386,7 +386,7 @@ namespace Qr{
                    this->data[i]->total_words);
             j+=this->data[i]->total_words;
         }
-        
+
         return(buf);
     }
     unsigned char *CodeData::dump_block(int index)
@@ -394,7 +394,7 @@ namespace Qr{
         unsigned char *buf=new unsigned char[this->data[index]->total_words];
         memcpy(buf,this->data[index]->data,
                this->data[index]->total_words);
-        
+
         return(buf);
     }
     unsigned char *CodeData::dump_data()
@@ -405,15 +405,15 @@ namespace Qr{
                    this->data[i]->data_words);
             j+=this->data[i]->data_words;
         }
-        
+
         return(buf);
     }
-    
+
     unsigned char *CodeData::raw_data()
     {
         return(this->_raw_data);
     }
-    
+
     int CodeData::decode()
     {
         if(this->_raw_data)
@@ -426,7 +426,7 @@ namespace Qr{
         unsigned char *tmp=this->dump_data();
         BitStream *bitstream=new BitStream(tmp,this->data_words);
         delete tmp;
-        
+
         unsigned char mode=0;
         Qr::ECI::Decoder *decoder=NULL;
         do{
@@ -455,10 +455,10 @@ namespace Qr{
                 this->status|=QR_CODEDATA_NOT_SUPPORT_ECI;
                 decoder=NULL;
             }
-            
+
             if(!decoder)
                 break;
-            
+
             int ret=decoder->decode(this->version,bitstream);
             if(ret){
                 if(this->_raw_data){
@@ -479,13 +479,13 @@ namespace Qr{
                 }
                 this->length+=decoder->length;
                 this->byte_length+=decoder->byte_length;
-                
+
                 delete decoder;
             }
         }while(!bitstream->is_eod());
-        
+
         delete bitstream;
-        
+
         return(ret);
     }
 
@@ -500,7 +500,7 @@ namespace Qr{
             else
                 ret+=c;
         }
-        
+
         return(ret);
     }
 }

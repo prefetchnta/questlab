@@ -40,7 +40,7 @@ namespace Qr{
         int position();
         int seek(int pos);
         void rewind();
-        
+
         unsigned char *read(int read_bits);
         int read(void *dst,int buf_size,int bitsize);
     };

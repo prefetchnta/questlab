@@ -25,10 +25,10 @@ namespace Galois{
     class Nomial{
     public:
         unsigned int val;
-        
+
     private:
         void *_gf;
-        
+
     public:
         static Nomial *instance(void * gf,unsigned int x);
         Nomial *dup();
@@ -63,7 +63,7 @@ namespace Galois{
     private:
         int _pool_size;
         bool _need_delete;
-        
+
     public:
         Field(int m);
         ~Field();

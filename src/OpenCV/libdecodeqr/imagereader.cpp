@@ -16,8 +16,8 @@
 namespace Qr{
 
     //
-    // avoid cvBoundingRect() fxxcin' bug. 
-    // 
+    // avoid cvBoundingRect() fxxcin' bug.
+    //
     typedef struct{
         CvRect feret;
         CvSeq *contour;
@@ -41,7 +41,7 @@ namespace Qr{
     {
         if(this->qr)
             delete this->qr;
-      
+
         if(this->_seq_code_area_contour)
             cvRelease((void **)&this->_seq_code_area_contour);
 
@@ -51,7 +51,7 @@ namespace Qr{
 
         this->release_image();
     }
-    
+
     void ImageReader::_init()
     {
         memset(this->_coderegion_vertexes,0,sizeof(CvPoint)*4);
@@ -244,7 +244,7 @@ namespace Qr{
                            QR_IMAGEREADER_NOT_FOUND_FINDER_PATTERN);
             return(NULL);
         }
-  
+
         //
         // find code area from binarized image using finder patterns
         //
@@ -264,26 +264,26 @@ namespace Qr{
         IplImage *code_matrix=NULL;
         for(int th=POSTERIZED_TH_LOW;th<=POSTERIZED_TH_HI&&(!code_matrix);
             th+=POSTERIZED_TH_STEP){
-            
+
             this->_create_posterized_image(adaptive_th_size,
                                            adaptive_th_delta*3,
                                            th,
                                            POSTERIZED_TH_HI);
             code_matrix=this->_get_code_matrix();
         }
-        
+
         if(!code_matrix){
             this->status|=(QR_IMAGEREADER_ERROR|
                            QR_IMAGEREADER_NOT_DETERMINABLE_CODE_AREA);
             return(NULL);
         }
-        
+
         this->qr=new Qr();
         this->qr->set_version((code_matrix->width-17)/4);
         if(this->qr->version>=7){
             //FIXME this->_verify_code_version();
         }
-        
+
         if(this->_get_format_info(code_matrix,0)<0){
             if((this->_get_format_info(code_matrix,1)<0)&&
                (this->qr->formatinfo->status&QR_FORMATINFO_INVALID_LEVEL)){
@@ -296,7 +296,7 @@ namespace Qr{
                 }
             }
         }
-        
+
         IplImage *function_patterns=this->_get_function_patterns();
 
         this->_unmask_code_matrix(code_matrix,function_patterns);
@@ -304,14 +304,14 @@ namespace Qr{
 
         cvReleaseImage(&function_patterns);
         cvReleaseImage(&code_matrix);
-        
+
         int errors=this->qr->decode_codedata();
 
 #ifdef _DEBUG
         fprintf(stderr,"errors=%d\n",errors);
 #endif
         this->status|=(QR_IMAGEREADER_DECODED|this->qr->status);
-        
+
         return(this->qr);
     }
 
@@ -338,7 +338,7 @@ namespace Qr{
         cvFindContours(this->_img_tmp_1c,
                        this->_stor_tmp,&cont,sizeof(CvContour),
                        CV_RETR_LIST,CV_CHAIN_APPROX_NONE,cvPoint(0,0));
-        
+
         cvResetImageROI(this->_img_tmp_1c);
 
         // for marker candidates list
@@ -356,7 +356,7 @@ namespace Qr{
             double feret_ratio=((feret.width<feret.height)?
                                 (double)feret.width/(double)feret.height:
                                 (double)feret.height/(double)feret.width);
-            
+
             //
             // search square
             //
@@ -376,7 +376,7 @@ namespace Qr{
             }
         }
         cvRelease((void **)&cont_head);
-        
+
         //
         // check each sqare has inner squire
         //
@@ -384,13 +384,13 @@ namespace Qr{
         for(i=0;i<candidates->total;i++){
             ImageReaderCandidate *cand1=
                 (ImageReaderCandidate *)cvGetSeqElem(candidates,i);
-            
+
             int inner_contour=0;
             int j;
             for(j=0;j<candidates->total;j++){
                 if(i==j)
                     continue;
-                
+
                 ImageReaderCandidate *cand2=
                     (ImageReaderCandidate *)cvGetSeqElem(candidates,j);
                 CvRect max_rect=cvMaxRect(&(cand1->feret),&(cand2->feret));
@@ -400,7 +400,7 @@ namespace Qr{
                    cand1->feret.height==max_rect.height)
                     inner_contour++;
             }
-            
+
             //
             // There were 2 squires (white and black) inside a squire,
             // the most outer squire assumed as position marker.
@@ -410,7 +410,7 @@ namespace Qr{
                 cvSeqPush(this->_seq_finder_pattern,&box);
             }
         }
-        
+
         //
         // clear buffers
         //
@@ -423,10 +423,10 @@ namespace Qr{
         cvRelease((void **)&candidates);
 
         cvClearMemStorage(this->_stor_tmp);
-        
+
         return(this->_seq_finder_pattern);
     }
-    
+
     /////////////////////////////////////////////////////////////////////////
     //
     //
@@ -436,9 +436,9 @@ namespace Qr{
         IplImage *src=this->_img_binarized;
         IplImage *mask=this->_img_tmp_1c;
         cvZero(mask);
-        
+
         cvClearMemStorage(this->_stor_tmp);
-        
+
         //
         // create position maker mask
         //
@@ -448,7 +448,7 @@ namespace Qr{
                                           sizeof(CvSeq),
                                           sizeof(CvPoint),
                                           this->_stor_tmp);
-        
+
 
         int c=this->_seq_finder_pattern->total,i;
         for(i=0;i<c;i++){
@@ -460,9 +460,9 @@ namespace Qr{
             //
             box.size.width+=box.size.width/7.0F*4.0F;
             box.size.height+=box.size.height/7.0F*4.0F;
-            
+
             //
-            // get each position maker's vertex 
+            // get each position maker's vertex
             //
             cvBoxPoints(box,pt_32f);
             for(int j=0;j<4;j++){
@@ -477,7 +477,7 @@ namespace Qr{
         //
         box=cvMinAreaRect2(markers_vertex);
         cvRelease((void **)&markers_vertex);
-        
+
         //
         // create code area mask
         //
@@ -489,14 +489,14 @@ namespace Qr{
         i=4;
         cvFillPoly(mask,&points,&i,1,cvScalarAll(255));
         delete points;
-        
+
         //
         //  apply mask to src image and reduce noise using opening
         //
         cvAnd(src,mask,mask);
         cvErode(mask,mask,NULL,1);
         cvDilate(mask,mask,NULL,1);
-        
+
         //
         // get contours of masked image
         //
@@ -505,7 +505,7 @@ namespace Qr{
                                 this->_stor_tmp);
         cvFindContours(mask,cont->storage,&cont,sizeof(CvContour),
                        CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE,cvPoint(0,0));
-        
+
         //
         // calcurate convex hull that assumed as code area
         //
@@ -524,7 +524,7 @@ namespace Qr{
         cvRelease((void **)&cont_head);
 
         CvSeq *hull=cvConvexHull2(pts);
-        
+
         //
         // polygonal approximation to reduce noise
         //
@@ -548,10 +548,10 @@ namespace Qr{
                 sizeof(CvContour),
                 this->_stor,
                 CV_POLY_APPROX_DP,th,0);
-            
+
             cvRelease((void **)&hull);
         }
-        
+
         return(this->_seq_code_area_contour);
     }
 
@@ -578,7 +578,7 @@ namespace Qr{
         }
         cog.x/=(float)c;
         cog.y/=(float)c;
-        
+
         //
         // sort code_area_contour by clock-wise
         //
@@ -604,7 +604,7 @@ namespace Qr{
             this->_coderegion_vertexes[i]=*(CvPoint *)cvGetSeqElem(
                 this->_seq_code_area_contour,i);
             spts[i]=cvPointTo32f(this->_coderegion_vertexes[i]);
-            
+
             //
             // find nearest finder pattern
             //
@@ -614,13 +614,13 @@ namespace Qr{
                 (this->_finderpattern_boxes[j].center.x-spts[i].x)+
                 (this->_finderpattern_boxes[j].center.y-spts[i].y)*
                 (this->_finderpattern_boxes[j].center.y-spts[i].y);
-            
+
             for(j=1;j<3;j++){
                 tmp_d=(this->_finderpattern_boxes[j].center.x-spts[i].x)*
                     (this->_finderpattern_boxes[j].center.x-spts[i].x)+
                     (this->_finderpattern_boxes[j].center.y-spts[i].y)*
                     (this->_finderpattern_boxes[j].center.y-spts[i].y);
-                    
+
                     if(min_d>tmp_d)
                         min_d=tmp_d;
             }
@@ -628,12 +628,12 @@ namespace Qr{
                 max_d=min_d;
                 offset=i;
             }
-            
+
 #ifdef _DEBUG
             fprintf(stderr,"(%.0lf,%.0lf) ",spts[i].x,spts[i].y);
 #endif
         }
-        
+
         offset=(offset+2)%4;
 
 #ifdef _DEBUG
@@ -651,12 +651,12 @@ namespace Qr{
         dpts[(offset+3)%4].y+=side_len;
 
         CvMat *map=cvCreateMat(3,3,CV_64FC1);
-        
+
         cvWarpPerspectiveQMatrix(spts,dpts,map);
-        
+
         //
         // perspective transform
-        // 
+        //
         cvWarpPerspective(src,dst,map);
         cvReleaseMat(&map);
 
@@ -666,10 +666,10 @@ namespace Qr{
         CvRect roi=cvRect((int)dpts[offset].x,(int)dpts[offset].y,
                           (int)side_len+1,(int)side_len+1);
         cvSetImageROI(dst,roi);
-        
+
         return(roi);
     }
-        
+
 
     void ImageReader::_create_posterized_image(int block_size,
                                                double delta,
@@ -707,7 +707,7 @@ namespace Qr{
         else{
             hi_th=low_th;
         }
-        
+
         uchar lut_data[256];
         int i;
         for(i=0;i<low_th;i++)
@@ -719,11 +719,11 @@ namespace Qr{
         CvMat lut=cvMat(1,256,CV_8UC1,lut_data);
         cvLUT(dst,buf,&lut);
         cvCopy(buf,dst);
-        
+
         CvRect roi_mask=roi;
         cvDilate(buf,buf,NULL,1);
         cvErode(buf,buf,NULL,1);
-        
+
         roi_mask.x+=1;
         roi_mask.y+=1;
         roi_mask.width-=2;
@@ -735,8 +735,8 @@ namespace Qr{
 
         cvResetImageROI(buf);
     }
-    
-    
+
+
     IplImage *ImageReader::_get_code_matrix()
     {
         IplImage *src=this->_img_binarized;
@@ -744,15 +744,15 @@ namespace Qr{
         double cell_size=this->_get_cell_size();
         if(cell_size<=0.0)
             return(NULL);
-        
+
         CvRect roi=cvGetImageROI(src);
         int version=(int)(((double)roi.width/cell_size-17.0)/4.0);
         int w=4*version+17;
-        
+
         IplImage *dst=cvCreateImage(cvSize(w,w),IPL_DEPTH_8U,1);
         cvResize(src,dst);
-        
-        
+
+
 #ifdef _DEBUG
         fprintf(stderr,"version=%d (%dx%d); %lfpixel/module\n",
                 version,w,w,cell_size*cell_size);
@@ -770,16 +770,16 @@ namespace Qr{
             if(CV_IMAGE_ELEM(src,uchar,y,x)==255)
                 raw_data|=0x01;
         }
-        
+
 #ifdef _DEBUG
         fprintf(stderr,"format Info=%04x, ",raw_data);
 #endif
 
         int ret=this->qr->decode_formatinfo(raw_data);
-        
+
 #ifdef _DEBUG
         fprintf(stderr,"corrected %d errors ",ret);
-        
+
         char l[2]={0,0};
         switch(this->qr->formatinfo->level){
         case 0:
@@ -801,7 +801,7 @@ namespace Qr{
             m|=0x10;
         if(this->qr->formatinfo->mask_pattern&0x1)
             m|=0x1;
-        
+
         fprintf(stderr," =>level %s, mask %03x\n",l,m);
 #endif
 
@@ -820,7 +820,7 @@ namespace Qr{
         while(this->qr->each_function_pattern_pixel(&x,&y)){
             CV_IMAGE_ELEM(buf,uchar,y,x)=255;
         }
-        
+
         cvNot(buf,buf);
 
         return(buf);
@@ -834,7 +834,7 @@ namespace Qr{
 
         cvAnd(function_patterns,unproc,unproc);
         cvXor(src,mask,src,unproc);
-        
+
         cvReleaseImage(&unproc);
         cvReleaseImage(&mask);
     }
@@ -848,9 +848,9 @@ namespace Qr{
                                       IPL_DEPTH_8U,1);
         cvZero(codes);
         IplImage *funcs=cvCloneImage(codes);
-        
+
         CvRect roi=cvGetImageROI(src);
-        
+
         CvRect r=cvRect(7,0,roi.width-7,6);
         cvSetImageROI(src,r);
         cvSetImageROI(mask,r);
@@ -859,7 +859,7 @@ namespace Qr{
         cvSetImageROI(funcs,r);
         cvCopy(src,codes);
         cvCopy(mask,funcs);
-        
+
         r=cvRect(0,7,6,roi.height-6);
         cvSetImageROI(src,r);
         cvSetImageROI(mask,r);
@@ -868,7 +868,7 @@ namespace Qr{
         cvSetImageROI(funcs,r);
         cvCopy(src,codes);
         cvCopy(mask,funcs);
-        
+
         r=cvRect(7,7,roi.width-7,roi.height-7);
         cvSetImageROI(src,r);
         cvSetImageROI(mask,r);
@@ -878,10 +878,10 @@ namespace Qr{
         cvSetImageROI(funcs,r);
         cvCopy(src,codes);
         cvCopy(mask,funcs);
-        
+
         cvSetImageROI(src,roi);
         cvSetImageROI(mask,roi);
-        
+
         cvResetImageROI(codes);
         cvResetImageROI(funcs);
 
@@ -893,7 +893,7 @@ namespace Qr{
         int dir=-1;
         int x=codes->width-1;
         int y=codes->height-1;
-        
+
         do{
             data<<=1;
             bit_count++;
@@ -904,7 +904,7 @@ namespace Qr{
                     word_count++;
                 data=0;
             }
-            
+
             if(x&0x1){
                 if(CV_IMAGE_ELEM(funcs,uchar,y,x-1))
                     x--;
@@ -947,35 +947,35 @@ namespace Qr{
                 }while(!CV_IMAGE_ELEM(funcs,uchar,y,x));
             }
         }while(x>=0);
-        
+
         if(data){
             if(this->qr->push_codedata(data))
                 word_count++;
         }
-        
+
         cvReleaseImage(&funcs);
         cvReleaseImage(&codes);
-        
+
 #ifdef _DEBUG
         fprintf(stderr,"%d words in %d blocks <= %d bits, %d words were read.\n",
                 this->qr->codedata->total_words,
                 this->qr->codedata->data_blocks,
                 bit_count,word_count);
 #endif
-        
+
         return(bit_count);
     }
 
 
     /////////////////////////////////////////////////////////////////////////
     //
-    // 
+    //
     //
     double ImageReader::_get_cell_size()
     {
         IplImage *src=this->_img_binarized;
         this->_find_finder_pattern();
-            
+
         int c=this->_seq_finder_pattern->total;
         if(c!=3)
             return(-1.0);
@@ -986,15 +986,15 @@ namespace Qr{
                                                  i);
             cell_size+=box.size.width+box.size.height;
         }
-        
+
         cell_size/=42.0;
-        
+
         return(cell_size);
     }
 
     /////////////////////////////////////////////////////////////////////////
     //
-    // 
+    //
     //
     IplImage *ImageReader::_get_mask_pattern()
     {
@@ -1006,14 +1006,14 @@ namespace Qr{
         CvRect roi=cvGetImageROI(mask);
         roi.width+=roi.x;
         roi.height+=roi.y;
-        
+
         for(int y=roi.y;y<roi.height;y++){
             for(int x=roi.x;x<roi.width;x++){
                 CV_IMAGE_ELEM(mask,uchar,y,x)=this->qr->
                     formatinfo->mask_pixel(y,x);
             }
         }
-        
+
         return(mask);
     }
 
@@ -1027,10 +1027,10 @@ namespace Qr{
         CvPoint* a = (CvPoint*)_a;
         CvPoint* b = (CvPoint*)_b;
         CvPoint2D32f *cog=(CvPoint2D32f *)_cog;
-        
+
         float aa=cvFastArctan((float)(a->y)-cog->y,cog->x-(float)(a->x));
         float ba=cvFastArctan((float)(b->y)-cog->y,cog->x-(float)(b->x));
-        
+
         return(aa < ba ? 1 : aa > ba ? -1 : 0);
     }
 
@@ -1049,34 +1049,34 @@ namespace Qr{
         CV_FUNCNAME( "apaptive_white_leveling" );
         CvMat src_stub, dst_stub;
         CvMat *srcMat,*dstMat,*mean,*mask;
-        
+
         __BEGIN__
         if( adaptive_method != CV_ADAPTIVE_THRESH_MEAN_C &&
             adaptive_method != CV_ADAPTIVE_THRESH_GAUSSIAN_C )
             CV_ERROR( CV_StsBadArg,
                       "Only CV_ADAPTIVE_THRESH_MEAN_C and CV_ADAPTIVE_THRESH_GAUSSIAN_C "
                       "adaptive method are acceptable" );
-        
+
         if( threshold_type != CV_THRESH_BINARY &&
             threshold_type != CV_THRESH_BINARY_INV )
             CV_ERROR( CV_StsBadArg, "Only CV_TRESH_BINARY and CV_THRESH_BINARY_INV "
                       "threshold types are acceptable" );
-        
+
         srcMat=cvGetMat(src, &src_stub );
         dstMat=cvGetMat(dst, &dst_stub );
-        
+
         if( !CV_ARE_CNS_EQ( srcMat, dstMat ))
             CV_ERROR( CV_StsUnmatchedFormats, "" );
-        
+
         if( CV_MAT_TYPE(dstMat->type) != CV_8UC1 )
             CV_ERROR( CV_StsUnsupportedFormat, "" );
-        
+
         if( !CV_ARE_SIZES_EQ( srcMat, dstMat ) )
             CV_ERROR( CV_StsUnmatchedSizes, "" );
-        
+
         mean=cvCreateMat(srcMat->rows,srcMat->cols,CV_8UC1);
         mask=cvCreateMat(srcMat->rows,srcMat->cols,CV_8UC1);
-        
+
         cvSmooth( srcMat, mean, adaptive_method == CV_ADAPTIVE_THRESH_MEAN_C ?
                   CV_BLUR : CV_GAUSSIAN, block_size, block_size );
         cvSubS(mean,cvRealScalar(param1),mean);
@@ -1085,15 +1085,15 @@ namespace Qr{
         cvAddS(dstMat,cvRealScalar(middle_value),dstMat,mask);
         cvNot(mask,mask);
         cvSubRS(dstMat,cvRealScalar(middle_value),dstMat,mask);
-        
+
         if(threshold_type!=CV_THRESH_BINARY)
             cvNot(dstMat,dstMat);
-        
+
         cvReleaseMat( &mask );
         cvReleaseMat( &mean );
-        
+
         __END__
-            
+
     }
-    
+
 }

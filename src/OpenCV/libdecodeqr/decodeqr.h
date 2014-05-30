@@ -209,7 +209,7 @@ extern short qr_decoder_decode_image(QrDecoderHandle decoder,
 
 /////////////////////////////////////////////////////////////////////////
 //
-// get abstruction of decoded data 
+// get abstruction of decoded data
 //
 // ARGS:
 //   QrDecoderHandle decoder: handler
@@ -223,7 +223,7 @@ extern int qr_decoder_get_header(QrDecoderHandle decoder,
 
 /////////////////////////////////////////////////////////////////////////
 //
-// get decoded text data 
+// get decoded text data
 //
 // ARGS:
 //   QrDecoderHandle decoder: handler

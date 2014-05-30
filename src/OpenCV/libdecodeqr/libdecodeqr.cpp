@@ -56,7 +56,7 @@ QrDecoderHandle qr_decoder_set_image_size(QrDecoderHandle decoder,
 {
     Qr::ImageReader *imagereader=(Qr::ImageReader *)decoder;
     imagereader->set_image(width,height,depth,channel);
-    
+
     return((QrDecoderHandle)imagereader);
 }
 
@@ -87,7 +87,7 @@ QrDecoderHandle qr_decoder_set_image_buffer(QrDecoderHandle decoder,
 {
     Qr::ImageReader *imagereader=(Qr::ImageReader *)decoder;
      imagereader->set_image(src);
-    
+
     return((QrDecoderHandle)imagereader);
 }
 
@@ -98,7 +98,7 @@ short qr_decoder_decode(QrDecoderHandle decoder,
     Qr::ImageReader *imagereader=(Qr::ImageReader *)decoder;
     imagereader->decode(adaptive_th_size,adaptive_th_delta);
     return(imagereader->status);
-}    
+}
 
 short qr_decoder_decode_image(QrDecoderHandle decoder,
                               IplImage *src,

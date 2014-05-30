@@ -39,53 +39,53 @@ namespace Qr{
     private:
         int _size;
         Galois::Field *_gf;
-        
+
     public:
         CodeBlock(int total_words,int data_words,int capability,
                              Galois::Field *gf);
         ~CodeBlock();
-        
+
         void clear();
         unsigned char *push(unsigned char data);
         bool has_vacant_data();
-        
+
         int error_correct();
     };
-    
+
     class CodeData{
     public:
         int version;
         int level;
-        
+
         int total_words; // total words (data+ecc)
         int data_words;  // number of data words
         int data_blocks; // number of rs_block
         CodeBlock **data;
-        
+
         int length;   // number of decoded charactors
         int byte_length;
 
         short status;
     private:
         Galois::Field *_gf;
-        
+
         int _size;
         int _index;
-        
+
         unsigned char *_raw_data;
-        
+
     public:
         CodeData(int version,int level);
         ~CodeData();
-        
+
         void clear();
         unsigned char *push(unsigned char data);
-        
+
         unsigned char *dump();
         unsigned char *dump_block(int index);
         unsigned char *dump_data();
         unsigned char *raw_data();
-        
+
         int decode();
 
     private:

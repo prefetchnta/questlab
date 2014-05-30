@@ -60,7 +60,7 @@ namespace Qr{
 
         if(this->codedata)
             delete this->codedata;
-        
+
         this->codedata=new CodeData(this->version,this->formatinfo->level);
 
         return(ret);
@@ -103,7 +103,7 @@ namespace Qr{
         this->init_each_formatinfo_pattern_pixel();
         return(this);
     }
-    
+
     Qr *Qr::each_finder_pattern_pixel(int *x,int *y)
     {
         int c=this->_finder_c;
@@ -127,7 +127,7 @@ namespace Qr{
         }
         else
             return(NULL);
-        
+
         this->_finder_c++;
         return(this);
     }
@@ -167,7 +167,7 @@ namespace Qr{
             this->_alignment_j;
         *y=alignment_pattern_addr[version][this->_alignment_y]+
             this->_alignment_i;
-        
+
         this->_alignment_j++;
         if(this->_alignment_j>2){
             this->_alignment_j=-2;

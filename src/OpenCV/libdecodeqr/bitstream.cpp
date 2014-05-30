@@ -50,7 +50,7 @@ namespace Qr{
             this->_pos=0;
         if(this->_pos>this->bit_size)
             this->_pos=this->bit_size;
-        
+
         return(this->_pos);
     }
     void BitStream::rewind()
@@ -137,7 +137,7 @@ namespace Qr{
         case 7:
             mask=0x01;
             break;
-        }            
+        }
         *((unsigned char *)dst)&=mask;
         this->_pos+=read_bits;
 

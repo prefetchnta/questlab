@@ -140,7 +140,7 @@ namespace Qr{
             for(i=0;i<errors;i++)
                 (*src)^=(mask<<bch->error_pos[i]);
         }
-        
+
         delete bch;
         delete gf;
         return(errors);
@@ -149,7 +149,7 @@ namespace Qr{
     unsigned char FormatInfo::mask_pixel(int i,int j){
         return(this->_patterner->pixel(i,j));
     }
-    
+
     FormatInfo *FormatInfo::init_each_pattern_pixel()
     {
         this->_pattern_c=0;
@@ -185,10 +185,10 @@ namespace Qr{
         default:
             return(NULL);
         }
-        
+
         *x=format_info_addr[pos][this->_pattern_c][0];
         *y=format_info_addr[pos][this->_pattern_c][1];
-        
+
         this->_pattern_c++;
         return(this);
     }

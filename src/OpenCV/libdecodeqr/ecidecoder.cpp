@@ -45,7 +45,7 @@ namespace Qr{
             {14,13,16,12},{14,13,16,12},{14,13,16,12},{14,13,16,12},{14,13,16,12},
             {14,13,16,12}
         };
-        
+
         //
         // number to alphabet conversion table
         //
@@ -78,7 +78,7 @@ namespace Qr{
             if(this->_raw_data)
                 delete this->_raw_data;
         }
-        
+
         unsigned char *Decoder::raw_data()
         {
             return(this->_raw_data);
@@ -159,7 +159,7 @@ namespace Qr{
                             read_bits);
             this->_read_buf=ntohs(this->_read_buf);
             this->_read_length+=write_bytes;
-            
+
             int remain_bytes=this->byte_length-this->_written_length;
             if(write_bytes>remain_bytes)
                 write_bytes=remain_bytes;
@@ -236,7 +236,7 @@ namespace Qr{
                     this->_written_length++;
                 }
             }
-            
+
             return(ret);
         }
 
@@ -325,7 +325,7 @@ namespace Qr{
 
                 unsigned char c1=(unsigned char)(c/0x100);
                 unsigned char c2=(unsigned char)(c%0x100);
-                
+
                 *this->_current_pos=c1;
                 *(this->_current_pos+1)=c2;
                 this->_current_pos+=2;

@@ -64,7 +64,7 @@ namespace Qr{
                                  int depth=IPL_DEPTH_8U,
                                  int channel=3);
         ~ImageReader();
-        
+
         IplImage *set_image(IplImage *src);
         uchar *set_image(uchar *buffer,int size);
         IplImage *set_image(int width,int height,
@@ -94,7 +94,7 @@ namespace Qr{
                                        int depth,int channel);
 
         Qr *_decode(int adaptive_th_size,int adaptive_th_delta);
-        
+
         CvSeq *_find_finder_pattern();
         CvSeq *_find_code_area_contour(double th);
         CvRect _transform_image();
