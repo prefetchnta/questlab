@@ -1,4 +1,7 @@
 【更新日志】
+　2014-05-30　实验证明 libdecodeqr 的 QrCode 识别效果是一泡屎
+　2014-05-26　软件 2D 渲染模块更名为 CrH_GFX2.dll
+　2014-05-23　软件 3D 函数库模块 CrH_GFX3.dll 建立
 　2014-05-15　开始 QRCode 二维码识别的研究（引入 libdecodeqr 源码）
 　2014-05-05　子项目 QstComm 正式开始（引入 Qt SDK）
 　2014-04-29　QstView2D 开始支持导出图片文件
