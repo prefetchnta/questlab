@@ -104,6 +104,19 @@ typedef struct
 } sFRUSTUM;
 
 /*****************************************************************************/
+/*                                 几何运算                                  */
+/*****************************************************************************/
+
+/* 包围盒与包围球的获取 */
+CR_API void_t   bound_min_max (vec3d_t *min, vec3d_t *max,
+                               const vec3d_t *pos, leng_t count,
+                               leng_t bpv);
+CR_API void_t   bound_get_aabb (sAABB *aabb, const vec3d_t *pos,
+                                leng_t count, leng_t bpv);
+CR_API void_t   bound_get_ball (sSPHERE *ball, const vec3d_t *pos,
+                                leng_t count, leng_t bpv);
+
+/*****************************************************************************/
 /*                                摄像机控制                                 */
 /*****************************************************************************/
 
