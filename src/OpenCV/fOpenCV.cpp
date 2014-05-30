@@ -225,6 +225,9 @@ hough_lines (
     return (TRUE);
 }
 
+/* 保存上次的二维码结果 */
+static ansi_t*  s_text = NULL;
+
 /*
 ---------------------------------------
     QrCode 查找识别
@@ -280,10 +283,17 @@ qrcode_decode (
     if (text == NULL)
         goto _func_out;
     qr_decoder_get_body(qrcode, (byte_t*)text, size);
-    /********************/
-    /* 发送得到的字符串 */
-    /********************/
-    mem_free(text);
+    if (s_text == NULL) {
+        netw_cmd_send((socket_t)netw, text);
+        s_text = text;
+    }
+    else {
+        if (str_cmpA(s_text, text) != 0) {
+            netw_cmd_send((socket_t)netw, text);
+            mem_free(s_text);
+            s_text = text;
+        }
+    }
 
     CvBox2D*    boxes;
     CvPoint*    vertexes;
