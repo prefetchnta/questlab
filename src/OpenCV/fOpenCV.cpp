@@ -292,7 +292,7 @@ qrcode_decode (
     vertexes = qr_decoder_get_coderegion_vertexes(qrcode);
     point = vertexes[3];
     for (uint_t idx = 0; idx < 4; idx++) {
-        cvLine(&draw, point, vertexes[idx], CV_RGB(0, 255, 0), 3, 8);
+        cvLine(&draw, point, vertexes[idx], cvScalar(0, 255, 0, 255), 3, 8);
         point = vertexes[idx];
     }
     boxes = qr_decoder_get_finderpattern_boxes(qrcode);
@@ -300,7 +300,7 @@ qrcode_decode (
         CvSize  sz = cvSize((int)boxes[idx].size.width / 2,
                             (int)boxes[idx].size.height / 2);
         cvEllipse(&draw, cvPointFrom32f(boxes[idx].center), sz,
-                  boxes[idx].angle, 0, 360, CV_RGB(0, 255, 0), 2, 8);
+                  boxes[idx].angle, 0, 360, cvScalar(0, 255, 0, 255), 2, 8);
     }
 _func_out:
     qr_decoder_close(qrcode);
