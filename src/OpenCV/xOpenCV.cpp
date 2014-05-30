@@ -4,6 +4,7 @@
 using namespace cv;
 
 /* 外部库引用 */
+#pragma comment (lib, "QstLibs.lib")
 #pragma comment (lib, "opencv_core248.lib")
 #pragma comment (lib, "opencv_highgui248.lib")
 #pragma comment (lib, "opencv_imgproc248.lib")

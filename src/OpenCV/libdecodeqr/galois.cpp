@@ -40,7 +40,7 @@ namespace Galois{
     static const unsigned int gf2_4_vect2exp[16]={
         15,0,1,4,2,8,5,10,3,14,9,7,6,13,11,12
     };
-    
+
     /////////////////////////////////////////////////////////////////////
     //
     // galois field GF(2^8); G(x)=X^8+x^4+x^3+x^2+1
@@ -52,7 +52,7 @@ namespace Galois{
     static const int bch_16_8_generator_polynomial[9]={
         1,0,1,1,1,0,0,0,1
     };
-    
+
     //
     // exponent -> vector notation convert table
     //
@@ -74,7 +74,7 @@ namespace Galois{
         18,36,72,144,61,122,244,245,247,243,251,235,203,139,11,22,
         44,88,176,125,250,233,207,131,27,54,108,216,173,71,142,0
     };
-    
+
     //
     // vector -> exponent notation convert table
     //
@@ -103,7 +103,7 @@ namespace Galois{
     static const int bch_18_6_generator_polynomial[13]={
         1,0,1,0,0,1,0,0,1,1,1,1,1
     };
-    
+
 
     /////////////////////////////////////////////////////////////////////
     //
@@ -130,7 +130,7 @@ namespace Galois{
         return(Nomial::instance(this->_gf,this->val));
     }
 
-    
+
     unsigned int Nomial::to_exp()
     {
         return(this->val);
@@ -289,13 +289,13 @@ namespace Galois{
     {
         delete this->nomial;
     }
-    
+
     Polynomial *Polynomial::dup()
     {
         Polynomial *ret=new Polynomial(this->cols,this->rows);
         memcpy(ret->nomial,this->nomial,
                sizeof(Nomial *)*this->cols*this->rows);
-        
+
         return(ret);
     }
     Polynomial *Polynomial::dup(int count)
@@ -310,7 +310,7 @@ namespace Galois{
                               int col_count,int row_count)
     {
         Polynomial *ret=new Polynomial(col_count,row_count);
-        
+
         for(int i=0,c=start_col;i<col_count;i++,c++){
             for(int j=0,r=start_row;j<row_count;j++,r++){
                 ret->set(i,j,this->get(c,r));
@@ -377,7 +377,7 @@ namespace Galois{
             count=buf->rows;
 
         for(j=0;j<count;j++){
-            Nomial *l;
+            Nomial *l=0;
             //
             // pivot
             //
@@ -473,11 +473,11 @@ namespace Galois{
         memcpy(this->nomial+i*this->rows,
                this->nomial+j*this->rows,sz);
         memcpy(this->nomial+j*this->rows,tmp,sz);
-        
+
         delete tmp;
     }
 
-    
+
     /////////////////////////////////////////////////////////////////////
     //
     //
@@ -519,7 +519,7 @@ namespace Galois{
         }
         if(!errors)
             return(0);
-                
+
         //
         // calculate error position variables
         //
@@ -527,16 +527,16 @@ namespace Galois{
         for(errors=this->_capability;errors>0;errors--){
             Galois::Polynomial *mat=new Galois::Polynomial(errors,
                                                            errors+1);
-            
+
             for(int j=0;j<errors;j++){
                 for(i=0;i<=errors;i++){
                     mat->set(j,i,this->syndromes[i+j+syndrome_base]);
                 }
             }
-            
+
             err=mat->solve();
             delete mat;
-            
+
             if(err)
                 break;
         }
@@ -551,7 +551,7 @@ namespace Galois{
             //
             this->error_pos=new int[errors];
             memset(this->error_pos,-1,errors);
-            
+
             int c,i,j;
             for(j=0,c=0;j<this->rows;j++){
                 Galois::Nomial *sigma=err->get(0);
@@ -560,7 +560,7 @@ namespace Galois{
                             *this->_gf->exp2nomial(j*i));
                 }
                 sigma=&(*sigma+*this->_gf->exp2nomial(j*i));
-                
+
                 if(sigma->is_zero()){
                     if(c<errors){
                         this->error_pos[c]=j;
@@ -581,12 +581,12 @@ namespace Galois{
     Galois::Nomial *BCH::_error_syndrome(int d)
     {
         Galois::Nomial *x=this->_gf->zero();
-        
+
         for(int i=0;i<this->rows;i++){
             x=&(*x+*this->get(i)*
                 *this->_gf->exp2nomial(i*d));
         }
-        
+
         return(x->dup());
     }
 
