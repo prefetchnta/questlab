@@ -262,6 +262,8 @@ qrcode_decode (
         state = qr_decoder_decode(qrcode, size, delta);
     }
     else {
+        if (size < 3)
+            size = 3;
         for (size |= 1; size >= 3; size -= 2) {
             state = qr_decoder_decode(qrcode, size, delta);
             if (state & QR_IMAGEREADER_DECODED)

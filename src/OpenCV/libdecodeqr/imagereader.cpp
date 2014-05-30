@@ -225,7 +225,7 @@ namespace Qr{
         if(adaptive_th_size>0)
             cvAdaptiveThreshold(this->_img_tmp_1c,
                                 this->_img_binarized,
-                                128,CV_ADAPTIVE_THRESH_MEAN_C,
+                                128,CV_ADAPTIVE_THRESH_GAUSSIAN_C,
                                 CV_THRESH_BINARY_INV,
                                 adaptive_th_size,
                                 adaptive_th_delta);
@@ -691,7 +691,7 @@ namespace Qr{
 
         if(block_size>0)
             apaptive_white_leveling(buf,dst,128,
-                                    CV_ADAPTIVE_THRESH_MEAN_C,
+                                    CV_ADAPTIVE_THRESH_GAUSSIAN_C,
                                     CV_THRESH_BINARY_INV,
                                     block_size,delta);
         else
