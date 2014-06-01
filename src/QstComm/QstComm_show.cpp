@@ -42,11 +42,12 @@ qst_hex_show (
     )
 {
     ansi_t      show[4];
+    uint_t      tmp = (uint_t)cha;
     sQstComm*   ctx = (sQstComm*)parm;
     CTextOper*  opr = (CTextOper*)ctx->oper;
 
     /* 转换成16进制数显示 */
-    sprintf(show, "%02X ", cha);
+    sprintf(show, "%02X ", tmp & 0xFF);
     opr->text(show);
 }
 
