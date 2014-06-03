@@ -6,6 +6,49 @@ using namespace cv;
 
 /*
 ---------------------------------------
+    自适应二值化
+---------------------------------------
+*/
+static bool_t
+adaptive_binary (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE*     dest;
+    IplImage    draw;
+    /* ----------- */
+    uint_t  type, size;
+    fp64_t  vmax, delta;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    if (!ilab_img2ipl_set(&draw, dest))
+        return (TRUE);
+    vmax = xml_attr_fp64U("max", 255.0, param);
+    delta = xml_attr_fp64U("delta", 10.0, param);
+    type = xml_attr_intxU("type", CV_ADAPTIVE_THRESH_MEAN_C, param);
+    size = xml_attr_intxU("size", 65, param);
+
+    Mat outp, inpt(&draw, false);
+
+    if (size < 3)
+        size = 3;
+    else if (size % 2 == 0)
+        size += 1;
+    if (type != CV_ADAPTIVE_THRESH_MEAN_C)
+        type = ADAPTIVE_THRESH_GAUSSIAN_C;
+    cvtColor(inpt, outp, CV_BGR2GRAY);
+    adaptiveThreshold(outp, outp, vmax, type, THRESH_BINARY, size, delta);
+    cvtColor(outp, inpt, CV_GRAY2BGRA);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     均值模糊处理
 ---------------------------------------
 */
@@ -355,6 +398,7 @@ _func_out:
 */
 CR_API const sXC_PORT   qst_v2d_filter[] =
 {
+    { "opencv_auto_binary", adaptive_binary },
     { "opencv_box_blur", box_blur },
     { "opencv_gauss_blur", gaussian_blur },
     { "opencv_median_blur", median_blur },

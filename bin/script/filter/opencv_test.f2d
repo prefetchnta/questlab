@@ -1,6 +1,9 @@
 <!-- OpenCV 滤镜测试列表 -->
 <filters>
 
+    <!-- 自适应二值化 -->
+    <opencv_auto_binary max="255.0" delta="10.0" type="0" size="65" />
+
     <!-- 均值模糊滤镜 -->
     <?opencv_box_blur ksize_x="9" ksize_y="9" />
 
