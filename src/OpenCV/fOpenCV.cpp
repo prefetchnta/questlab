@@ -30,8 +30,8 @@ gaussian_blur (
         return (TRUE);
     ksize_x = xml_attr_intxU("ksize_x", 9, param);
     ksize_y = xml_attr_intxU("ksize_y", 9, param);
-    sigma_x = xml_attr_fp64U("sigma_x", 0, param);
-    sigma_y = xml_attr_fp64U("sigma_y", 0, param);
+    sigma_x = xml_attr_fp64U("sigma_x", 0.0, param);
+    sigma_y = xml_attr_fp64U("sigma_y", 0.0, param);
 
     Mat inpt(&draw, false);
 
@@ -112,10 +112,10 @@ hough_circles (
     ww = dest->position.ww;
     hh = dest->position.hh;
     if (ww > hh) ww = hh;
-    dp = xml_attr_fp64U("dp", 2, param);
+    dp = xml_attr_fp64U("dp", 2.0, param);
     min_dist = xml_attr_fp64U("min_dist", ww / 4, param);
-    param1 = xml_attr_fp64U("param1", 200, param);
-    param2 = xml_attr_fp64U("param2", 100, param);
+    param1 = xml_attr_fp64U("param1", 200.0, param);
+    param2 = xml_attr_fp64U("param2", 100.0, param);
     min_radius = xml_attr_intxU("min_radius", 0, param);
     max_radius = xml_attr_intxU("max_radius", ww / 2, param);
 
@@ -166,9 +166,9 @@ hough_lines (
     if (!ilab_img2ipl_set(&draw, dest))
         return (TRUE);
     ksize = xml_attr_intxU("ksize", 3, param);
-    param1 = xml_attr_fp64U("param1", 50, param);
-    param2 = xml_attr_fp64U("param2", 200, param);
-    rho = xml_attr_fp64U("rho", 1, param);
+    param1 = xml_attr_fp64U("param1", 50.0, param);
+    param2 = xml_attr_fp64U("param2", 200.0, param);
+    rho = xml_attr_fp64U("rho", 1.0, param);
     the = xml_attr_fp64U("theta", CV_PI / 180, param);
 
     size_t  idx, count;
@@ -181,8 +181,8 @@ hough_lines (
         fp64_t  srn, stn;
         vector<Vec2f>   lines;
 
-        srn = xml_attr_fp64U("srn", 0, param);
-        stn = xml_attr_fp64U("stn", 0, param);
+        srn = xml_attr_fp64U("srn", 0.0, param);
+        stn = xml_attr_fp64U("stn", 0.0, param);
         thres = xml_attr_intxU("thres", 100, param);
         HoughLines(outp, lines, rho, the, thres, srn, stn);
         count = lines.size();
@@ -212,8 +212,8 @@ hough_lines (
         fp64_t  min_len, max_gap;
 
         thres = xml_attr_intxU("thres", 80, param);
-        min_len = xml_attr_fp64U("min_len", 30, param);
-        max_gap = xml_attr_fp64U("max_gap", 10, param);
+        min_len = xml_attr_fp64U("min_len", 30.0, param);
+        max_gap = xml_attr_fp64U("max_gap", 10.0, param);
         HoughLinesP(outp, lines, rho, the, thres, min_len, max_gap);
         count = lines.size();
         for (idx = 0; idx < count; idx++) {
