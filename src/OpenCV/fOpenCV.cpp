@@ -6,6 +6,47 @@ using namespace cv;
 
 /*
 ---------------------------------------
+    均值模糊处理
+---------------------------------------
+*/
+static bool_t
+box_blur (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE*     dest;
+    IplImage    draw;
+    /* ----------- */
+    uint_t  ksize_x, ksize_y;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    if (!ilab_img2ipl_set(&draw, dest))
+        return (TRUE);
+    ksize_x = xml_attr_intxU("ksize_x", 9, param);
+    ksize_y = xml_attr_intxU("ksize_y", 9, param);
+
+    Mat inpt(&draw, false);
+
+    /* 卷积核大小必须为奇数 */
+    if (ksize_x < 3)
+        ksize_x = 3;
+    else if (ksize_x % 2 == 0)
+        ksize_x += 1;
+    if (ksize_y < 3)
+        ksize_y = 3;
+    else if (ksize_y % 2 == 0)
+        ksize_y += 1;
+    blur(inpt, inpt, Size(ksize_x, ksize_y));
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     高斯模糊处理
 ---------------------------------------
 */
@@ -314,6 +355,7 @@ _func_out:
 */
 CR_API const sXC_PORT   qst_v2d_filter[] =
 {
+    { "opencv_box_blur", box_blur },
     { "opencv_gauss_blur", gaussian_blur },
     { "opencv_median_blur", median_blur },
     { "opencv_hough_circles", hough_circles },

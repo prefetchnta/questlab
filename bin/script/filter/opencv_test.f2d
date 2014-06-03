@@ -1,6 +1,9 @@
 <!-- OpenCV 滤镜测试列表 -->
 <filters>
 
+    <!-- 均值模糊滤镜 -->
+    <?opencv_box_blur ksize_x="9" ksize_y="9" />
+
     <!-- 高斯模糊滤镜 -->
     <?opencv_gauss_blur ksize_x="9" ksize_y="9" sigma_x="0.0" sigma_y="0.0" />
 
