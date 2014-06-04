@@ -118,7 +118,7 @@ conv3x3_form (
     if (binz == NULL)
         return;
     if (first)
-        image_binary0(binz, TRUE);
+        image_binary0(binz, FALSE);
 
     /* 扩展边缘 */
     bound = image_bound(binz, 1, 1);
