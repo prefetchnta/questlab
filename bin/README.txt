@@ -1,4 +1,6 @@
 【更新日志】
+　2014-06-05　移除所有 VC8.0 CRT 的依赖（引入 zlib & ResIL 替换 DevIL）
+　2014-06-04　准备开始 zbar 的条码识别评估（引入 libiconv & zbar SDK）
 　2014-05-30　实验证明 libdecodeqr 的 QrCode 识别效果是一泡屎
 　2014-05-26　软件 2D 渲染模块更名为 CrH_GFX2.dll
 　2014-05-23　软件 3D 函数库模块 CrH_GFX3.dll 建立
