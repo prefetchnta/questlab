@@ -226,8 +226,8 @@
         设置次要信息文本，？为信息编号，文本行会根据信息编号排序
 
     部件使用的信息编号值
-        1 - QstView2D       2 - QstMount        3 - QstMedia
-        4 - QstText
+        0 - 一般信息    1 - QstView2D   2 - QstMount
+        3 - QstMedia    4 - QstText
 
 （三）CrHackSet 绘图命令列表
 
