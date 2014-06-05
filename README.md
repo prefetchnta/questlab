@@ -187,9 +187,9 @@
  - XWMA - (Xbox 360 only)
  - AudioQueue - (Apple iOS devices only, supports AAC, ALAC and MP3 decoding in software and hardware)
 
-##zDevIL (VS2010 SP1 + VC80 RT)
+##zDevIL (VS2010 SP1)
 
-<p>基于 <b>DevIL</b> 库的图片文件加载插件，支持的图片格式如下：</p>
+<p>基于 <b>DevIL / ResIL</b> 库的图片文件加载插件，支持的图片格式如下：</p>
  - Microsoft Windows Bitmap - .bmp extension
  - Dr. Halo - .cut extension
  - DooM walls - no specific extension
