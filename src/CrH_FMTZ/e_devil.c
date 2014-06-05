@@ -28,7 +28,7 @@
 
 /* DevIL 导入库 */
 #ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "DevIL.lib")
+    #pragma comment (lib, "ResIL.lib")
 #endif
 
 /* DevIL 是否已经初始化 */

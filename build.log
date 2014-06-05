@@ -4,6 +4,10 @@
     SINCE 2014-06-04
     ~~~~~~~~~~~~~~~~
     [m] plugin/xCrHackSet.dll
+    [m] plugin/zDevIL.dll
+    [-] DevIL.dll
+    [+] ResIL.dll
+    [+] zlib1.dll
 +
 +
 +
