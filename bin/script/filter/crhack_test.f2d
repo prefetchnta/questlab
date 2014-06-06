@@ -76,6 +76,6 @@
     <?crhack_xor_x86 mask="0x00FFFFFF" />
 
     <!-- ZBar 查找识别 -->
-    <?crhack_zbar_decode />
+    <?crhack_zbar_decode codepage="0" />
 
 </filters>
