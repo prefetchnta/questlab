@@ -361,13 +361,15 @@ qrcode_decode (
         goto _func_out;
 
     /* 获取得到的文本字符串 */
-    size = header.byte_size + 1;
-    text = str_allocA(size);
-    if (text == NULL)
-        goto _func_out;
-    qr_decoder_get_body(qrcode, (byte_t*)text, size);
-    netw_cmd_send((socket_t)netw, text);
-    mem_free(text);
+    if (netw != NULL) {
+        size = header.byte_size + 1;
+        text = str_allocA(size);
+        if (text == NULL)
+            goto _func_out;
+        qr_decoder_get_body(qrcode, (byte_t*)text, size);
+        netw_cmd_send((socket_t)netw, text);
+        mem_free(text);
+    }
 
     CvBox2D*    boxes;
     CvPoint*    vertexes;
