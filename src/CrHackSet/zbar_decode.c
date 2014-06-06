@@ -19,7 +19,6 @@ zbar_do_decode (
     uint_t                  hh;
     uint_t                  yy;
     size_t                  sz;
-    ansi_t*                 val;
     ansi_t*                 str;
     ansi_t*                 tmp;
     byte_t*                 dst;
@@ -60,32 +59,35 @@ zbar_do_decode (
     zbar_process_image(bar, img);
 
     /* 输出结果 */
+    if (netw != NULL)
+        cmd_shl_send(netw, "txt:clear 0 0");
     sym = zbar_image_first_symbol(img);
     for (; sym != NULL; sym = zbar_symbol_next(sym)) {
         typ = zbar_symbol_get_type(sym);
         if (typ == ZBAR_PARTIAL)
             continue;
-        sz = zbar_symbol_get_data_length(sym);
-        val = str_allocA(sz + 1);
-        if (val != NULL) {
-            mem_cpy(val, zbar_symbol_get_data(sym), sz);
-            val[sz] = NIL;
-            str = str_fmtA("%s%s:%s", zbar_get_symbol_name(typ),
-                            zbar_get_addon_name(typ), val);
-            if (str != NULL) {
-                tmp = str_esc_makeU(str);
-                mem_free(str);
-                if (tmp != NULL) {
-                    str = str_fmtA("info::main=\"0> %s\"", tmp);
-                    mem_free(tmp);
-                    if (str != NULL) {
-                        if (netw != NULL)
+        if (netw != NULL) {
+            sz = zbar_symbol_get_data_length(sym);
+            tmp = str_allocA(sz + 1);
+            if (tmp != NULL) {
+                mem_cpy(tmp, zbar_symbol_get_data(sym), sz);
+                tmp[sz] = NIL;
+                str = str_fmtA("%s%s:%s", zbar_get_symbol_name(typ),
+                                zbar_get_addon_name(typ), tmp);
+                mem_free(tmp);
+                if (str != NULL) {
+                    tmp = str_esc_makeU(str);
+                    mem_free(str);
+                    if (tmp != NULL) {
+                        str = str_fmtA("info::main=\"0> %s\"", tmp);
+                        mem_free(tmp);
+                        if (str != NULL) {
                             cmd_ini_send(netw, str);
-                        mem_free(str);
+                            mem_free(str);
+                        }
                     }
                 }
             }
-            mem_free(val);
         }
     }
     mem_free(dat);
