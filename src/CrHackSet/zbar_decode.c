@@ -9,7 +9,7 @@
     ZBar 识别部分代码
 =======================================
 */
-CR_API void_t
+CR_API uint_t
 zbar_do_decode (
   __CR_IN__ socket_t        netw,
   __CR_IN__ const sIMAGE*   gray,
@@ -20,6 +20,7 @@ zbar_do_decode (
     uint_t                  hh;
     uint_t                  yy;
     size_t                  sz;
+    uint_t                  cnt;
     ansi_t*                 str;
     ansi_t*                 tmp;
     byte_t*                 dst;
@@ -33,7 +34,8 @@ zbar_do_decode (
     /* 创建对象 */
     bar = zbar_processor_create(1);
     if (bar == NULL)
-        return;
+        return (0);
+    cnt = 0;
     if (zbar_processor_init(bar, NULL, 0))
         goto _func_out1;
 
@@ -67,6 +69,7 @@ zbar_do_decode (
         typ = zbar_symbol_get_type(sym);
         if (typ == ZBAR_PARTIAL)
             continue;
+        cnt += 1;
         if (netw != NULL) {
             sz = zbar_symbol_get_data_length(sym);
             tmp = str_allocA(sz + 1);
@@ -100,5 +103,5 @@ _func_out2:
     zbar_image_destroy(img);
 _func_out1:
     zbar_processor_destroy(bar);
-    return;
+    return (cnt);
 }
