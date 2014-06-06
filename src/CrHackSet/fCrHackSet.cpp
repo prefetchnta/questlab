@@ -3,6 +3,9 @@
 
 #include <math.h>
 
+/* 内部函数声明 */
+CR_API void_t   zbar_do_decode (socket_t netw, const sIMAGE *gray);
+
 /*****************************************************************************/
 /*                                 公用函数                                  */
 /*****************************************************************************/
@@ -1039,6 +1042,33 @@ image_saturation (
 }
 
 /*
+---------------------------------------
+    ZBar 查找识别
+---------------------------------------
+*/
+static bool_t
+zbar_decode (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+    sIMAGE* gray;
+
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    gray = image_graying(dest);
+    if (gray == NULL)
+        return (TRUE);
+    zbar_do_decode((socket_t)netw, gray);
+    image_del(gray);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1069,5 +1099,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_gamma", image_gamma },
     { "crhack_contrast", image_contrast },
     { "crhack_saturation", image_saturation },
+    { "crhack_zbar_decode", zbar_decode },
     { NULL, NULL },
 };

@@ -23,8 +23,10 @@
 #include "../QstLibs/QstLibs.h"
 
 /* 外部库引用 */
+#pragma comment (lib, "QstLibs.lib")
 #pragma comment (lib, "CrH_GFX2.lib")
 #pragma comment (lib, "CrH_MATH.lib")
+#pragma comment (lib, "libzbar-0.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*
