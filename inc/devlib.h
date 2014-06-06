@@ -106,7 +106,7 @@ CR_API uint_t   socket_tcp_peek (socket_t netw, void_t *data, uint_t size);
 CR_API uint_t   socket_udp_recv (socket_t netw, void_t *data, uint_t size);
 CR_API uint_t   socket_udp_peek (socket_t netw, void_t *data, uint_t size);
 CR_API bool_t   socket_udp_size (socket_t netw, uint_t *size);
-CR_API void_t   socket_set_timeout (socket_t netw, int32s ap_time,
+CR_API void_t   socket_set_timeout (socket_t netw, int32s wr_time,
                                     int32s rd_time);
 CR_API int16u   socket_remote_ip (socket_t netw, int32u *ip);
 CR_API int16u   socket_remote_ipA (socket_t netw, ansi_t ip[16]);

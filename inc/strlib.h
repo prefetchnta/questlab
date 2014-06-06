@@ -134,6 +134,20 @@ CR_API ansi_t*  str2vecA (fp32_t *list, leng_t count, const ansi_t *str,
 CR_API wide_t*  str2vecW (fp32_t *list, leng_t count, const wide_t *str,
                           const wide_t head_tail_block[3]);
 
+CR_API uint_t*  str2lst2A (leng_t *count, const ansi_t *str,
+                           const ansi_t head_tail_block[3],
+                           leng_t *skip CR_DEFAULT(NULL));
+CR_API uint_t*  str2lst2W (leng_t *count, const wide_t *str,
+                           const wide_t head_tail_block[3],
+                           leng_t *skip CR_DEFAULT(NULL));
+
+CR_API fp32_t*  str2vec2A (leng_t *count, const ansi_t *str,
+                           const ansi_t head_tail_block[3],
+                           leng_t *skip CR_DEFAULT(NULL));
+CR_API fp32_t*  str2vec2W (leng_t *count, const wide_t *str,
+                           const wide_t head_tail_block[3],
+                           leng_t *skip CR_DEFAULT(NULL));
+
 CR_API real_t   str2realA (const ansi_t *str, leng_t *skip CR_DEFAULT(NULL));
 CR_API real_t   str2realW (const wide_t *str, leng_t *skip CR_DEFAULT(NULL));
 CR_API fp32_t   str2fp32A (const ansi_t *str, leng_t *skip CR_DEFAULT(NULL));
