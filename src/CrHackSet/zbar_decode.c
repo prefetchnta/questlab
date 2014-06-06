@@ -12,7 +12,8 @@
 CR_API void_t
 zbar_do_decode (
   __CR_IN__ socket_t        netw,
-  __CR_IN__ const sIMAGE*   gray
+  __CR_IN__ const sIMAGE*   gray,
+  __CR_IN__ uint_t          cpage
     )
 {
     uint_t                  ww;
@@ -82,8 +83,12 @@ zbar_do_decode (
                         str = str_fmtA("info::main=\"0> %s\"", tmp);
                         mem_free(tmp);
                         if (str != NULL) {
-                            cmd_ini_send(netw, str);
+                            tmp = utf8_to_local(cpage, str);
                             mem_free(str);
+                            if (tmp != NULL) {
+                                cmd_ini_send(netw, tmp);
+                                mem_free(tmp);
+                            }
                         }
                     }
                 }

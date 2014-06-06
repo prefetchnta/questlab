@@ -4,7 +4,8 @@
 #include <math.h>
 
 /* 内部函数声明 */
-CR_API void_t   zbar_do_decode (socket_t netw, const sIMAGE *gray);
+CR_API void_t   zbar_do_decode (socket_t netw, const sIMAGE *gray,
+                                uint_t cpage);
 
 /*****************************************************************************/
 /*                                 公用函数                                  */
@@ -1053,17 +1054,18 @@ zbar_decode (
   __CR_IN__ sXNODEu*    param
     )
 {
+    uint_t  page;
     sIMAGE* dest;
     sIMAGE* gray;
 
-    CR_NOUSE(param);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
     gray = image_graying(dest);
     if (gray == NULL)
         return (TRUE);
-    zbar_do_decode((socket_t)netw, gray);
+    page = xml_attr_intxU("codepage", CR_LOCAL, param);
+    zbar_do_decode((socket_t)netw, gray, page);
     image_del(gray);
     return (TRUE);
 }
