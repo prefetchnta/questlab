@@ -70,29 +70,29 @@ zbar_do_decode (
         if (netw != NULL) {
             sz = zbar_symbol_get_data_length(sym);
             tmp = str_allocA(sz + 1);
-            if (tmp != NULL) {
-                mem_cpy(tmp, zbar_symbol_get_data(sym), sz);
-                tmp[sz] = NIL;
-                str = str_fmtA("%s%s:%s", zbar_get_symbol_name(typ),
-                                zbar_get_addon_name(typ), tmp);
-                mem_free(tmp);
-                if (str != NULL) {
-                    tmp = str_esc_makeU(str);
-                    mem_free(str);
-                    if (tmp != NULL) {
-                        str = str_fmtA("info::main=\"0> %s\"", tmp);
-                        mem_free(tmp);
-                        if (str != NULL) {
-                            tmp = utf8_to_local(cpage, str);
-                            mem_free(str);
-                            if (tmp != NULL) {
-                                cmd_ini_send(netw, tmp);
-                                mem_free(tmp);
-                            }
-                        }
-                    }
-                }
-            }
+            if (tmp == NULL)
+                continue;
+            mem_cpy(tmp, zbar_symbol_get_data(sym), sz);
+            tmp[sz] = NIL;
+            str = str_fmtA("%s%s:%s", zbar_get_symbol_name(typ),
+                            zbar_get_addon_name(typ), tmp);
+            mem_free(tmp);
+            if (str == NULL)
+                continue;
+            tmp = utf8_to_local(cpage, str);
+            mem_free(str);
+            if (tmp == NULL)
+                continue;
+            str = str_esc_makeU(tmp);
+            mem_free(tmp);
+            if (str == NULL)
+                continue;
+            tmp = str_fmtA("info::main=\"0> %s\"", str);
+            mem_free(str);
+            if (tmp == NULL)
+                continue;
+            cmd_ini_send(netw, tmp);
+            mem_free(tmp);
         }
     }
     mem_free(dat);
