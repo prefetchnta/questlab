@@ -4,8 +4,9 @@
 #include <math.h>
 
 /* 内部函数声明 */
-CR_API uint_t   zbar_do_decode (socket_t netw, const sIMAGE *gray,
-                                uint_t cpage);
+CR_C_FUNC uint_t
+zbar_do_decode (socket_t netw, const sIMAGE *gray,
+            uint_t cpage, sPNT2 **pnts, leng_t *count);
 
 /*****************************************************************************/
 /*                                 公用函数                                  */
@@ -1044,6 +1045,31 @@ image_saturation (
 
 /*
 ---------------------------------------
+    绘制同心圆
+---------------------------------------
+*/
+static void_t
+draw_circle_ex (
+  __CR_IN__ const sIMAGE*   dst,
+  __CR_IN__ sint_t          cx,
+  __CR_IN__ sint_t          cy,
+  __CR_IN__ sint_t          radius,
+  __CR_IN__ sint_t          width
+    )
+{
+    cpix_t  color;
+    sint_t  r1 = radius - width / 2;
+    sint_t  r2 = radius + width / 2;
+
+    if (r1 <= 0)
+        r1 = 1;
+    color.val = 0xFF00FF00;
+    for (; r1 <= r2; r1++)
+        draw_circle(dst, cx, cy, r1, color, pixel_set32z);
+}
+
+/*
+---------------------------------------
     ZBar 查找识别
 ---------------------------------------
 */
@@ -1054,8 +1080,8 @@ zbar_decode (
   __CR_IN__ sXNODEu*    param
     )
 {
-    sFILL   fill;
-    cpix_t  clrs;
+    sPNT2*  pnts;
+    leng_t  cnts;
     uint_t  page;
     sIMAGE* dest;
     sIMAGE* gray;
@@ -1067,12 +1093,12 @@ zbar_decode (
     if (gray == NULL)
         return (TRUE);
     page = xml_attr_intxU("codepage", CR_LOCAL, param);
-    if (zbar_do_decode((socket_t)netw, gray, page) != 0) {
-        clrs.val = 0x00FFFFFF;
-        fill.dx = fill.dy = 0;
-        fill.dw = dest->position.ww;
-        fill.dh = dest->position.hh;
-        fill_xor32_c(dest, &fill, clrs, NULL);
+    if (zbar_do_decode((socket_t)netw, gray, page, &pnts, &cnts) != 0) {
+        if (pnts != NULL) {
+            for (leng_t idx = 0; idx < cnts; idx++)
+                draw_circle_ex(dest, pnts[idx].x, pnts[idx].y, 7, 3);
+            mem_free(pnts);
+        }
     }
     image_del(gray);
     return (TRUE);

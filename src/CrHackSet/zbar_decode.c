@@ -9,17 +9,21 @@
     ZBar 识别部分代码
 =======================================
 */
-CR_API uint_t
+extern uint_t
 zbar_do_decode (
   __CR_IN__ socket_t        netw,
   __CR_IN__ const sIMAGE*   gray,
-  __CR_IN__ uint_t          cpage
+  __CR_IN__ uint_t          cpage,
+  __CR_OT__ sPNT2**         pnts,
+  __CR_OT__ leng_t*         count
     )
 {
+    sPNT2                   pt;
     uint_t                  ww;
     uint_t                  hh;
     uint_t                  yy;
     size_t                  sz;
+    sARRAY                  loc;
     uint_t                  cnt;
     ansi_t*                 str;
     ansi_t*                 tmp;
@@ -32,6 +36,9 @@ zbar_do_decode (
     const zbar_symbol_t*    sym;
 
     /* 创建对象 */
+    *pnts = NULL;
+    *count = 0;
+    array_initT(&loc, sPNT2);
     bar = zbar_processor_create(1);
     if (bar == NULL)
         return (0);
@@ -97,7 +104,15 @@ zbar_do_decode (
             cmd_ini_send(netw, tmp);
             mem_free(tmp);
         }
+        hh = zbar_symbol_get_loc_size(sym);
+        for (yy = 0; yy < hh; yy++) {
+            pt.x = zbar_symbol_get_loc_x(sym, yy);
+            pt.y = zbar_symbol_get_loc_y(sym, yy);
+            array_push_growT(&loc, sPNT2, &pt);
+        }
     }
+    *pnts  = array_get_dataT(&loc, sPNT2);
+    *count = array_get_sizeT(&loc, sPNT2);
     mem_free(dat);
 _func_out2:
     zbar_image_destroy(img);
