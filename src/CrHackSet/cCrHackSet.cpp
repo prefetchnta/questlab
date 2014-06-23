@@ -682,7 +682,7 @@ qst_crh_text_int (
     {
         /* 创建一个临时 GDI 表面然后复制输出的结果到目标画布 */
         gfx2 = (iGFX2*)s_gdi_calls->create_bitmap(draw->position.ww,
-                        draw->position.hh, CR_ARGB8888, 0, NULL, 0);
+                        draw->position.hh, CR_ARGB8888);
         if (gfx2 == NULL)
             return (FALSE);
 
@@ -724,7 +724,7 @@ qst_crh_text_int (
     else
     {
         /* 随便生成一个内存绘制表面然后替换其后台缓冲结构为画布 */
-        gfx2 = create_mem_bitmap(1, 1, CR_ARGB8888, 0, NULL, 0);
+        gfx2 = create_mem_bitmap(1, 1, CR_ARGB8888);
         if (gfx2 == NULL)
             return (FALSE);
 
