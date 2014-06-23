@@ -373,8 +373,7 @@ CR_COLOR32 (
 
 /* 生成 MEM 图形离屏表面 */
 CR_API iGFX2*   create_mem_bitmap (uint_t width, uint_t height,
-                                   uint_t crh_fmt, int32u ext_fmt,
-                                   const int32u *param, uint_t count);
+                                   uint_t crh_fmt);
 
 /*****************************************************************************/
 /*                                 文字接口                                  */

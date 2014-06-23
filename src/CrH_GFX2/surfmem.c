@@ -222,20 +222,13 @@ static const iGFX2_vtbl _rom_ s_bmp32_vtbl =
 */
 CR_API iGFX2*
 create_mem_bitmap (
-  __CR_IN__ uint_t          width,
-  __CR_IN__ uint_t          height,
-  __CR_IN__ uint_t          crh_fmt,
-  __CR_IN__ int32u          ext_fmt,
-  __CR_IN__ const int32u*   param,
-  __CR_IN__ uint_t          count
+  __CR_IN__ uint_t  width,
+  __CR_IN__ uint_t  height,
+  __CR_IN__ uint_t  crh_fmt
     )
 {
     iGFX2*  gfx2;
     sIMAGE* image;
-
-    CR_NOUSE(param);
-    CR_NOUSE(count);
-    CR_NOUSE(ext_fmt);
 
     gfx2 = struct_new(iGFX2);
     if (gfx2 == NULL) {
