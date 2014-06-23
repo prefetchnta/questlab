@@ -109,8 +109,7 @@ iGFX2_GDI_reset (
     if ((uint_t)rect.right  != that->__back__.position.ww ||
         (uint_t)rect.bottom != that->__back__.position.hh)
     {
-        next = create_gdi_bitmap(rect.right, rect.bottom,
-                                 CR_UNKNOWN, 0, NULL, 0);
+        next = create_gdi_bitmap(rect.right, rect.bottom, CR_UNKNOWN);
         if (next == NULL) {
             err_set(__CR_GDIWIN_C__, CR_NULL,
                     "iGFX2::reset()", "create_gdi_bitmap() failure");
@@ -315,22 +314,17 @@ static const iGFX2_vtbl s_bitmap_vtbl =
 */
 CR_API iGFX2_GDI*
 create_gdi_canvas (
-  __CR_IN__ void_t*         handle,
-  __CR_IN__ uint_t          scn_cw,
-  __CR_IN__ uint_t          scn_ch,
-  __CR_IN__ uint_t          scn_fmt,
-  __CR_IN__ bool_t          full,
-  __CR_IN__ const int32u*   param,
-  __CR_IN__ uint_t          count
+  __CR_IN__ HWND    hwnd,
+  __CR_IN__ uint_t  scn_cw,
+  __CR_IN__ uint_t  scn_ch,
+  __CR_IN__ bool_t  full
     )
 {
     HDC         hdc;
-    HWND        hwnd;
     RECT        rect;
     iGFX2_GDI*  canvas;
 
     /* 全屏时重设窗口大小 */
-    hwnd = (HWND)handle;
     if (full) {
         scn_cw = GetSystemMetrics(SM_CXSCREEN);
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
@@ -362,15 +356,13 @@ create_gdi_canvas (
     }
 
     /* 生成后台缓冲表面 */
-    canvas = create_gdi_bitmap(scn_cw, scn_ch, CR_UNKNOWN,
-                               0, param, count);
+    canvas = create_gdi_bitmap(scn_cw, scn_ch, CR_UNKNOWN);
     if (canvas == NULL) {
         err_set(__CR_GDIWIN_C__, CR_NULL,
                 "create_gdi_canvas()", "create_gdi_bitmap() failure");
         ReleaseDC(hwnd, hdc);
         return (NULL);
     }
-    CR_NOUSE(scn_fmt);
     canvas->m_main = hdc;
     canvas->m_hwnd = hwnd;
     canvas->__vptr__ = &s_canvas_vtbl;
@@ -384,12 +376,9 @@ create_gdi_canvas (
 */
 CR_API iGFX2_GDI*
 create_gdi_bitmap (
-  __CR_IN__ uint_t          width,
-  __CR_IN__ uint_t          height,
-  __CR_IN__ uint_t          crh_fmt,
-  __CR_IN__ int32u          ext_fmt,
-  __CR_IN__ const int32u*   param,
-  __CR_IN__ uint_t          count
+  __CR_IN__ uint_t  width,
+  __CR_IN__ uint_t  height,
+  __CR_IN__ uint_t  crh_fmt
     )
 {
     HDC         desktop;
@@ -399,12 +388,11 @@ create_gdi_bitmap (
     iGFX2_GDI*  surface;
     BITMAPINFO* bmpinfo;
 
-    CR_NOUSE(param);
-    CR_NOUSE(count);
-    CR_NOUSE(ext_fmt);
-
-    if ((crh_fmt == CR_ARGB4444) ||
-        (crh_fmt != CR_UNKNOWN && crh_fmt <= CR_DXT5)) {
+    if (crh_fmt != CR_UNKNOWN &&
+        crh_fmt != CR_INDEX1 && crh_fmt != CR_INDEX4 &&
+        crh_fmt != CR_INDEX8 && crh_fmt != CR_ARGBX555 &&
+        crh_fmt != CR_ARGB1555 && crh_fmt != CR_ARGB565 &&
+        crh_fmt != CR_ARGB888 && crh_fmt != CR_ARGB8888) {
         err_set(__CR_GDIWIN_C__, crh_fmt,
                 "create_gdi_bitmap()", "invalid param: crh_fmt");
         return (NULL);
@@ -644,8 +632,10 @@ create_canvas (
   __CR_IN__ uint_t          count
     )
 {
-    return ((iGFX2*)create_gdi_canvas(handle, scn_cw, scn_ch,
-                        scn_fmt, full, param, count));
+    CR_NOUSE(param);
+    CR_NOUSE(count);
+    CR_NOUSE(scn_fmt);
+    return ((iGFX2*)create_gdi_canvas((HWND)handle, scn_cw, scn_ch, full));
 }
 #endif  /* _CR_BUILD_DLL_ */
 
