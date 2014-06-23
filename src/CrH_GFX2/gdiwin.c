@@ -635,7 +635,8 @@ create_canvas (
     CR_NOUSE(param);
     CR_NOUSE(count);
     CR_NOUSE(scn_fmt);
-    return ((iGFX2*)create_gdi_canvas((HWND)handle, scn_cw, scn_ch, full));
+    return ((iGFX2*)create_gdi_canvas((HWND)handle,
+                        scn_cw, scn_ch, full));
 }
 #endif  /* _CR_BUILD_DLL_ */
 
