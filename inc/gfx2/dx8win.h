@@ -32,7 +32,7 @@
 /* 创建传入的句柄结构 */
 typedef struct
 {
-        hwnd_t              hwnd;   /* 窗口句柄 */
+        HWND                hwnd;   /* 窗口句柄 */
         const sD3D8_CALL*   call;   /* 调用接口 */
 
 } sDX8_HDLE;
@@ -70,10 +70,9 @@ typedef struct
 
 } iGFX2_DX8S;
 
-/* 生成 DX8 图形绘制接口 (附加参数: 无用) */
-CR_API iGFX2_DX8M*  create_dx8_canvas (void_t *handle, uint_t scn_cw,
-                            uint_t scn_ch, uint_t scn_fmt, bool_t full,
-                                const int32u *param, uint_t count);
+/* 生成 DX8 图形绘制接口 */
+CR_API iGFX2_DX8M*  create_dx8_canvas (const sDX8_HDLE *hdle,
+                            uint_t scn_cw, uint_t scn_ch, bool_t full);
 /* 生成 DX8 图形离屏表面 */
 CR_API iGFX2_DX8S*  create_dx8_bitmap (iGFX2_DX8M *device,
                                        sD3D8_TEXR *texture,

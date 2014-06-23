@@ -80,7 +80,7 @@ iGFX2_DX8M_reset (
 
     /* 重新获取窗口大小 */
     real = (iGFX2_DX8M*)that;
-    if (!GetClientRect((HWND)real->m_hdle.hwnd, &rect)) {
+    if (!GetClientRect(real->m_hdle.hwnd, &rect)) {
         err_set(__CR_DX8WIN_CPP__, GetLastError(),
                 "iGFX2::reset()", "GetClientRect() failure");
         return (FALSE);
@@ -219,31 +219,22 @@ static const iGFX2_vtbl s_canvas_vtbl =
 */
 CR_API iGFX2_DX8M*
 create_dx8_canvas (
-  __CR_IN__ void_t*         handle,
-  __CR_IN__ uint_t          scn_cw,
-  __CR_IN__ uint_t          scn_ch,
-  __CR_IN__ uint_t          scn_fmt,
-  __CR_IN__ bool_t          full,
-  __CR_IN__ const int32u*   param,
-  __CR_IN__ uint_t          count
+  __CR_IN__ const sDX8_HDLE*    hdle,
+  __CR_IN__ uint_t              scn_cw,
+  __CR_IN__ uint_t              scn_ch,
+  __CR_IN__ bool_t              full
     )
 {
     RECT        rect;
     HRESULT     retc;
-    sDX8_HDLE*  hdle;
     sD3D8_TEXR* fill;
     iGFX2_DX8M* rett;
 
-    CR_NOUSE(param);
-    CR_NOUSE(count);
-    CR_NOUSE(scn_fmt);
-
     /* 使用伪全屏 */
-    hdle = (sDX8_HDLE*)handle;
     if (full) {
         scn_cw = GetSystemMetrics(SM_CXSCREEN);
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
-        if (!SetWindowPos((HWND)hdle->hwnd, HWND_TOP, 0, 0,
+        if (!SetWindowPos(hdle->hwnd, HWND_TOP, 0, 0,
                           scn_cw, scn_ch, SWP_SHOWWINDOW)) {
             err_set(__CR_DX8WIN_CPP__, GetLastError(),
                     "create_dx8_canvas()", "SetWindowPos() failure");
@@ -253,7 +244,7 @@ create_dx8_canvas (
     else if (scn_cw == 0 || scn_ch == 0)
     {
         /* 非法宽高, 获取窗口大小 */
-        if (!GetClientRect((HWND)hdle->hwnd, &rect)) {
+        if (!GetClientRect(hdle->hwnd, &rect)) {
             err_set(__CR_DX8WIN_CPP__, GetLastError(),
                     "create_dx8_canvas()", "GetClientRect() failure");
             return (NULL);
@@ -343,8 +334,11 @@ create_canvas (
   __CR_IN__ uint_t          count
     )
 {
-    return ((iGFX2*)create_dx8_canvas(handle, scn_cw, scn_ch,
-                        scn_fmt, full, param, count));
+    CR_NOUSE(param);
+    CR_NOUSE(count);
+    CR_NOUSE(scn_fmt);
+    return ((iGFX2*)create_dx8_canvas((sDX8_HDLE*)handle,
+                        scn_cw, scn_ch, full));
 }
 #endif  /* _CR_BUILD_DLL_ */
 

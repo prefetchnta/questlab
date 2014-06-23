@@ -4,8 +4,9 @@
     SINCE 2014-06-06
     ~~~~~~~~~~~~~~~~
     [m] plugin/xCrHackSet.dll
-    [m] GFX2_GDI.dll
     [m] CrH_GFX2.dll
+    [m] GFX2_GDI.dll
+    [m] GFX2_DX8.dll
 +
 +
 +
