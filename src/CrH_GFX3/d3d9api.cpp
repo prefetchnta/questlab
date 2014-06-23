@@ -36,7 +36,7 @@
 */
 CR_API sD3D9_MAIN*
 d3d9_create_main (
-  __CR_IN__ hwnd_t              hwnd,
+  __CR_IN__ HWND                hwnd,
   __CR_IN__ bool_t              full,
   __CR_IN__ uint_t              width,
   __CR_IN__ uint_t              height,
@@ -140,7 +140,7 @@ d3d9_create_main (
 
     /* 设置其他参数 */
     parm.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    parm.hDeviceWindow = (HWND)hwnd;
+    parm.hDeviceWindow = hwnd;
     parm.Windowed = !full;
     parm.Flags = 0;
     parm.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
@@ -164,7 +164,7 @@ d3d9_create_main (
     else
         vp = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
     retc = rett->obj->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
-                                   (HWND)hwnd, vp, &parm, &rett->dev);
+                                   hwnd, vp, &parm, &rett->dev);
     if (FAILED(retc)) {
         err_set(__CR_D3D9API_CPP__, retc,
                 "d3d9_create_main()", "IDirect3D9::CreateDevice() failure");

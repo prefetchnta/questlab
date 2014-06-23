@@ -94,7 +94,7 @@ typedef struct
 /* =============================== 设备对象 ================================ */
 
         /* 生成 */
-        sD3D8_MAIN* (*create_main) (hwnd_t hwnd, bool_t full, uint_t width,
+        sD3D8_MAIN* (*create_main) (HWND hwnd, bool_t full, uint_t width,
                             uint_t height, D3DFORMAT format, D3DFORMAT depth,
                                 bool_t vsync, D3DMULTISAMPLE_TYPE fsaa);
         /* 释放 */
