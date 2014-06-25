@@ -1066,6 +1066,8 @@ draw_circle_ex (
     color.val = 0xFF00FF00;
     for (; r1 <= r2; r1++)
         draw_circle(dst, cx, cy, r1, color, pixel_set32z);
+    draw_lineh(dst, cx - 2, cx + 2, cy, color, pixel_set32z);
+    draw_linev(dst, cx, cy - 2, cy + 2, color, pixel_set32z);
 }
 
 /*
