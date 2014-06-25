@@ -45,6 +45,7 @@
 
 CR_API void_t   sio_init (void_t);
 CR_API void_t   sio_free (void_t);
+CR_API bool_t   sio_set_name (uint_t port, const ansi_t *name);
 CR_API bool_t   sio_setup (uint_t port, int32u baud, uint_t bits,
                            uint_t parity, uint_t stop);
 CR_API int32s   sio_get_baud (uint_t port);
@@ -110,8 +111,8 @@ CR_API void_t   socket_set_timeout (socket_t netw, int32s wr_time,
                                     int32s rd_time);
 CR_API int16u   socket_remote_ip (socket_t netw, int32u *ip);
 CR_API int16u   socket_remote_ipA (socket_t netw, ansi_t ip[16]);
-CR_API bool_t   socket_tcp_set_alive (socket_t netw, uint_t alive,
-                                      uint_t resend);
+CR_API bool_t   socket_tcp_set_alive (socket_t netw, uint_t idle,
+                                      uint_t interval, uint_t count);
 
 /*****************************************************************************/
 /*                                块设备接口                                 */
