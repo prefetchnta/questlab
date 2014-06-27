@@ -48,14 +48,6 @@ CR_API void_t   sio_free (void_t);
 CR_API bool_t   sio_set_name (uint_t port, const ansi_t *name);
 CR_API bool_t   sio_setup (uint_t port, int32u baud, uint_t bits,
                            uint_t parity, uint_t stop);
-CR_API int32s   sio_get_baud (uint_t port);
-CR_API bool_t   sio_set_baud (uint_t port, int32u baud);
-CR_API sint_t   sio_get_bits (uint_t port);
-CR_API bool_t   sio_set_bits (uint_t port, uint_t bits);
-CR_API sint_t   sio_get_parity (uint_t port);
-CR_API bool_t   sio_set_parity (uint_t port, uint_t parity);
-CR_API sint_t   sio_get_stop (uint_t port);
-CR_API bool_t   sio_set_stop (uint_t port, uint_t stop);
 CR_API bool_t   sio_set_rd_timeout (uint_t port, uint_t interval,
                                     uint_t multiplier, uint_t constant);
 CR_API bool_t   sio_set_wr_timeout (uint_t port, uint_t multiplier,
@@ -67,6 +59,7 @@ CR_API uint_t   sio_read  (uint_t port, void_t *data, uint_t size);
 CR_API uint_t   sio_write (uint_t port, const void_t *data, uint_t size);
 CR_API bool_t   sio_set_buffer  (uint_t port, uint_t rx_size, uint_t tx_size);
 CR_API bool_t   sio_clear_error (uint_t port);
+CR_API bool_t   sio_rw_rest (uint_t port, leng_t *rx_len, leng_t *tx_len);
 
 /*****************************************************************************/
 /*                                 网络通讯                                  */
