@@ -106,6 +106,9 @@ CR_API int16u   socket_remote_ip (socket_t netw, int32u *ip);
 CR_API int16u   socket_remote_ipA (socket_t netw, ansi_t ip[16]);
 CR_API bool_t   socket_tcp_set_alive (socket_t netw, uint_t idle,
                                       uint_t interval, uint_t count);
+CR_API bool_t   socket_mcast_enter (socket_t netw, const ansi_t *maddr,
+                                const ansi_t *laddr, byte_t ttl, byte_t loop);
+CR_API bool_t   socket_mcast_leave (socket_t netw);
 
 /*****************************************************************************/
 /*                                块设备接口                                 */
