@@ -249,6 +249,34 @@ qst_crh_pixel (
 
 /*
 ---------------------------------------
+    绘制 Wu 像素
+---------------------------------------
+*/
+static bool_t
+qst_crh_dotwu (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    fp32_t  posx;
+    fp32_t  posy;
+    sIMAGE* draw;
+
+    /* 参数解析 <X> <Y> */
+    if (argc < 3)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+    posx = str2fp32A(argv[1]);
+    posy = str2fp32A(argv[2]);
+    dot_wu_set32(draw, posx, posy, s_color);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     绘制线段
 ---------------------------------------
 */
@@ -1294,6 +1322,7 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:moveto", qst_crh_moveto },
     { "crh:lineto", qst_crh_lineto },
     { "crh:pixel", qst_crh_pixel },
+    { "crh:dotwu", qst_crh_dotwu },
     { "crh:line", qst_crh_line },
     { "crh:rect_xy", qst_crh_rect_xy },
     { "crh:rect_wh", qst_crh_rect_wh },

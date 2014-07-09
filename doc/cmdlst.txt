@@ -253,6 +253,9 @@
     crh:pixel <X> <Y>
         在指定点处绘制一个像素
 
+    crh:dotwu <X> <Y>
+        在指定点处绘制一个 Wu 像素
+
     crh:line <X1> <Y1> <X2> <Y2>
         绘制一条指定的直线
 
