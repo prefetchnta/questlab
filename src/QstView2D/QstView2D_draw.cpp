@@ -540,6 +540,9 @@ qst_make_image (
     if (rgb == NULL)
         return;
 
+    /* 处理 Y 轴颠倒的情况 */
+    image_fuck_gdi(rgb);
+
     /* 用关键色设置透明通道 */
     if (parm->cfgs.use_keycolor) {
         if (parm->cfgs.def_keycolor != 0)
