@@ -212,6 +212,42 @@ qst_quit_all_3rd (void_t)
     EnumWindows((WNDENUMPROC)qst_window_enum, 0);
 }
 
+/*
+---------------------------------------
+    判断是否是文本文件
+---------------------------------------
+*/
+static bool_t
+qst_is_text_file (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    FILE*   fp;
+    byte_t  cha;
+    leng_t  idx, len;
+    fsize_t fsz = file_sizeA(name);
+
+    /* 只支持编辑 4MB 以下的文本文件 */
+    if (fsz > CR_M2B(4))
+        return (FALSE);
+    fp = fopen(name, "rb");
+    if (fp == NULL)
+        return (FALSE);
+    len = (leng_t)fsz;
+    for (idx = 0; idx < len; idx++) {
+        cha = 0xFF;
+        fread(&cha, 1, 1, fp);
+        if ((cha == 0xFF) || (cha < 0x20 &&
+                cha != 0x09 && cha != 0x0A &&
+                cha != 0x0C && cha != 0x0D))
+            break;
+    }
+    fclose(fp);
+    if (idx != len)
+        return (FALSE);
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               公用命令单元                                */
 /*****************************************************************************/
@@ -379,16 +415,23 @@ qst_mnu_ldr_file (
     ctx = (sQstMenu*)parm;
     frm = (TfrmMain*)(ctx->form);
 
-    /* 根据设置调用外部程序 */
-    if (frm->is_use_scite())
-    {
-        AnsiString  line;
+    bool_t  is_text = FALSE;
+    bool_t  checked = FALSE;
 
-        line = QST_PATH_EXT3RD;
-        line += "wscite\\SciTE.exe \"";
-        line += AnsiString(argv[1]);
-        line += "\"";
-        misc_call_exe(line.c_str(), FALSE, FALSE);
+    /* 根据设置调用外部程序 */
+    if (frm->is_use_scite()) {
+        checked = TRUE;
+        is_text = qst_is_text_file(argv[1]);
+        if (is_text)
+        {
+            AnsiString  line;
+
+            line = QST_PATH_EXT3RD;
+            line += "wscite\\SciTE.exe \"";
+            line += AnsiString(argv[1]);
+            line += "\"";
+            misc_call_exe(line.c_str(), FALSE, FALSE);
+        }
     }
 
     /* 无论成功失败都返回成功 */
