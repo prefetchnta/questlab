@@ -9,7 +9,7 @@
 
 ##【一些截图】
 
-[SCREENSHOTS](https://github.com/prefetchnta/questlab/blob/master/pic/IMAGES.md "SCREENSHOTS")
+　　[SCREENSHOTS](https://github.com/prefetchnta/questlab/blob/master/pic/IMAGES.md "SCREENSHOTS")
 
 ##【如何编译】
 
