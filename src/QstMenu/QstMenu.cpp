@@ -434,6 +434,9 @@ qst_mnu_ldr_file (
         }
     }
 
+    CR_NOUSE(is_text);
+    CR_NOUSE(checked);
+
     /* 无论成功失败都返回成功 */
     return (TRUE);
 }
