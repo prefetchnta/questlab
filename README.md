@@ -301,3 +301,41 @@
  - Portable Network Graphics (PNG)
  - Truevision Targa (TGA)
  - Phil Katz's ZIP Archive (PKZIP)
+
+##【其他组件】
+
+- **CrH_CORE (VS2010 SP1)**
+<p>（闭源）<b>CrHack SDK</b> 跨平台核心基础库。</p>
+
+- **CrH_MATH (VS2010 SP1)**
+<p>（闭源）<b>CrHack SDK</b> 跨平台运算函数库。</p>
+
+- **CrH_GFX2 (VS2010 SP1)**
+<p>属于 <b>CrHack SDK</b> 本体的跨平台软件 <b>2D</b> 渲染函数库。</p>
+
+- **GFX2_GDI (VS2010 SP1)**
+<p>使用 <b>Windows GDI</b> 作为图形接口的 <b>2D</b> 图形绘制插件。</p>
+
+- **GFX2_DX8 (VS2010 SP1)**
+<p>使用 <b>Direct3D 8</b> 作为图形接口的 <b>2D</b> 图形绘制插件。</p>
+
+- **GFX2_DX9 (VS2010 SP1)**
+<p>使用 <b>Direct3D 9</b> 作为图形接口的 <b>2D</b> 图形绘制插件。</p>
+
+- **CrH_GFX3 (VS2010 SP1)**
+<p>属于 <b>CrHack SDK</b> 本体的跨平台软件 <b>3D</b> 基础函数库。</p>
+
+- **GFX3_D3D8 (VS2010 SP1)**
+<p>使用 <b>Direct3D 8</b> 作为图形接口的 <b>3D</b> 图形绘制插件。</p>
+
+- **GFX3_D3D9 (VS2010 SP1)**
+<p>使用 <b>Direct3D 9</b> 作为图形接口的 <b>3D</b> 图形绘制插件。</p>
+
+- **ocr3rd (VS2008 SP1)**
+<p>第三方 <b>OCR</b> 识别引擎封装库。目前集成的库有 <b>Tesseract-OCR</b>。</p>
+
+- **ResLoader (VS2010 SP1)**
+<p>使用 <b>QuestLAB</b> 内部网络系统的外部资源文件加载执行插件。</p>
+
+- **ResRouter (VS2010 SP1)**
+<p>外部资源文件全局搜索路由插件。所有 <b>QstMount</b> 加载的封包文件都将被搜索。</p>
