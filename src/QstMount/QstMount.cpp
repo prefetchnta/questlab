@@ -1141,8 +1141,10 @@ qst_mnt_res_root (
         return (FALSE);
     str = argv[1];
     ctx->head = str_lenA(str);
-    if (!is_slashA(str[ctx->head - 1]))
-        ctx->head += 1;
+    if (ctx->head != 0) {
+        if (!is_slashA(str[ctx->head - 1]))
+            ctx->head += 1;
+    }
     return (TRUE);
 }
 
