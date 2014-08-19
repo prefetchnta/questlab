@@ -331,11 +331,11 @@
 - **GFX3_D3D9 (VS2010 SP1)**
 <p>使用 <b>Direct3D 9</b> 作为图形接口的 <b>3D</b> 图形绘制插件。</p>
 
-- **ocr3rd (VS2008 SP1)**
-<p>第三方 <b>OCR</b> 识别引擎封装库。目前集成的库有 <b>Tesseract-OCR</b>。</p>
+- **TessOCR (VS2008 SP1)**
+<p><b>Google Tesseract-OCR</b> 开源 <b>OCR</b> 识别引擎封装库。</p>
 
 - **ResLoader (VS2010 SP1)**
 <p>使用 <b>QuestLAB</b> 内部网络系统的外部资源文件加载执行插件。</p>
 
 - **ResRouter (VS2010 SP1)**
-<p>外部资源文件全局搜索路由插件。所有 <b>QstMount</b> 加载的封包文件都将被搜索。</p>
+<p>外部资源文件全局搜索路由插件。所有加载的封包文件都将被搜索。</p>
