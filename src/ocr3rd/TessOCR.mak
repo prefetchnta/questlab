@@ -1,11 +1,11 @@
-PROJECT=ocr3rd
+PROJECT=TessOCR
 SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2008_x86.mak"
 
-OBJ_LIST=.$(L)ocr3rd.$(O)
+OBJ_LIST=.$(L)TessOCR.$(O)
 
-SRC_LIST=.$(L)ocr3rd.$(P)
+SRC_LIST=.$(L)TessOCR.$(P)
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" $(SRC_LIST)

@@ -1,5 +1,5 @@
 
-#include "ocr3rd.h"
+#include "TessOCR.h"
 #pragma warning (push)
 #pragma warning (disable: 4244)
 #include "tess/baseapi.h"

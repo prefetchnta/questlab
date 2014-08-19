@@ -20,14 +20,10 @@
  ================================================
  */
 
-#ifndef __QL_OCR3RD_H__
-#define __QL_OCR3RD_H__
+#ifndef __QL_TESSOCR_H__
+#define __QL_TESSOCR_H__
 
 #include "../QstLibs/QstLibs.h"
-
-/*****************************************************************************/
-/*                              TESSERACT-OCR                                */
-/*****************************************************************************/
 
 /* TESS-OCR 对象类型 */
 typedef void_t*     tess_ocr_t;
@@ -48,4 +44,4 @@ CR_API void_t       tess_ocr_set_rect (tess_ocr_t tess_ocr,
 CR_API ansi_t*      tess_ocr_get_utf8 (tess_ocr_t tess_ocr);
 CR_API void_t       tess_ocr_str_free (ansi_t *string);
 
-#endif  /* !__QL_OCR3RD_H__ */
+#endif  /* !__QL_TESSOCR_H__ */
