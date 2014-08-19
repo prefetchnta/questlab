@@ -1,18 +1,18 @@
 @echo
 rem ========================================
 :qstlibs
-if not exist QstLibs.lib goto ocr3rd
+if not exist QstLibs.lib goto tessocr
 del coff\QstLibs.lib
 del omf\QstLibs.lib
 coff2omf QstLibs.lib omf\QstLibs.lib
 move QstLibs.lib coff\QstLibs.lib
 rem ========================================
-:ocr3rd
-if not exist ocr3rd.lib goto resloader
-del coff\ocr3rd.lib
-del omf\ocr3rd.lib
-coff2omf ocr3rd.lib omf\ocr3rd.lib
-move ocr3rd.lib coff\ocr3rd.lib
+:tessocr
+if not exist TessOCR.lib goto resloader
+del coff\TessOCR.lib
+del omf\TessOCR.lib
+coff2omf TessOCR.lib omf\TessOCR.lib
+move TessOCR.lib coff\TessOCR.lib
 rem ========================================
 :resloader
 if not exist ResLoader.lib goto crh_core
