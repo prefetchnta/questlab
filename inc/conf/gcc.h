@@ -246,8 +246,13 @@
 
     /* 编译器紧凑结构修饰 */
     #define CR_TYPEDEF  typedef
-    #define CR_PACKED   __attribute__((packed))
-    #define _CR_NO_PRAGMA_PACK_
+    #if defined(_CR_CC_MINGW_)
+        #define CR_PACKED
+        #undef  _CR_NO_PRAGMA_PACK_
+    #else
+        #define CR_PACKED   __attribute__((packed))
+        #define _CR_NO_PRAGMA_PACK_
+    #endif
     /*------------------------------------------------*/
 
     /* 编译器分支优化指示 */
