@@ -1,4 +1,7 @@
 
+##【通讯协议调试】
+![screenshot6](https://github.com/prefetchnta/questlab/blob/master/pic/QLAB_006.png)
+
 ##【图像处理实验】
 ![screenshot5](https://github.com/prefetchnta/questlab/blob/master/pic/QLAB_005.jpg)
 
