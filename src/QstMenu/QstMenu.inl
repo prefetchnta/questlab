@@ -170,7 +170,7 @@ void __fastcall TfrmMain::subG2dSaveNowClick(TObject *Sender)
 
     /* 保存当前图片帧 */
     parm.frm = this;
-    parm.all = 0;
+    parm.typ = 0;
     misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void __fastcall TfrmMain::subG2dSaveAllClick(TObject *Sender)
 
     /* 保存所有图片帧 */
     parm.frm = this;
-    parm.all = 1;
+    parm.typ = 1;
     misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
@@ -190,7 +190,7 @@ void __fastcall TfrmMain::subG2dSaveShowClick(TObject *Sender)
 
     /* 保存显示图片帧 */
     parm.frm = this;
-    parm.all = 2;
+    parm.typ = 2;
     misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
