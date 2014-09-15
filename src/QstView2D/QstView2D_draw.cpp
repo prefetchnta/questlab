@@ -857,18 +857,38 @@ qst_save_show (
   __CR_IN__ ansi_t*             argv[]
     )
 {
+    leng_t  size;
     bool_t  rett;
+    ansi_t* path;
+    ansi_t* fext;
     ansi_t* full;
 
     if (parm->image == NULL || parm->alpha == NULL)
         return (FALSE);
-    full = str_allocA(str_lenA(name) + 5);
-    if (full == NULL)
+    size = str_lenA(name) + 1;
+    path = str_allocA(size);
+    if (path == NULL)
         return (FALSE);
-    sprintf(full, "rgb_%s", name);
+    mem_cpy(path, name, size);
+    filext_removeA(path);
+    fext = str_allocA(size);
+    if (fext == NULL) {
+        mem_free(path);
+        return (FALSE);
+    }
+    filext_extractA(fext, name);
+    full = str_allocA(size + 4);
+    if (full == NULL) {
+        mem_free(fext);
+        mem_free(path);
+        return (FALSE);
+    }
+    sprintf(full, "%s_rgb%s", path, fext);
     rett  = qst_save_img(parm->image, parm, full, argc, argv);
-    sprintf(full, "alp_%s", name);
+    sprintf(full, "%s_alp%s", path, fext);
     rett &= qst_save_img(parm->alpha, parm, full, argc, argv);
     mem_free(full);
+    mem_free(fext);
+    mem_free(path);
     return (rett);
 }
