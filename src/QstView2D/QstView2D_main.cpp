@@ -20,6 +20,9 @@ CR_API bool_t   qst_save_now (const sQstView2D *parm,
 CR_API bool_t   qst_save_all (const sQstView2D *parm,
                               const ansi_t *name, uint_t argc,
                               ansi_t *argv[]);
+CR_API bool_t   qst_save_show (const sQstView2D *parm,
+                               const ansi_t *name, uint_t argc,
+                               ansi_t *argv[]);
 /*
 ---------------------------------------
     FMTZ 插件释放回调
@@ -956,6 +959,31 @@ qst_v2d_g2d_saveall (
 
 /*
 ---------------------------------------
+    保存当前显示图片
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_savenow (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    bool_t      ret;
+    sQstView2D* ctx;
+
+    /* 参数解析 <文件名> [...] */
+    if (argc < 2)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    ret = qst_save_show(ctx, argv[1], argc - 2, &argv[2]);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
     设置资源根目录路径
 ---------------------------------------
 */
@@ -1057,6 +1085,7 @@ static const sQST_CMD   s_cmdz[] =
     { "g2d:refresh", qst_v2d_g2d_refresh },
     { "g2d:save",    qst_v2d_g2d_save    },
     { "g2d:saveall", qst_v2d_g2d_saveall },
+    { "g2d:savenow", qst_v2d_g2d_savenow },
 
     /***** 二维插件命令 *****/
     { "g2d:ext:free", qst_v2d_ext_free },

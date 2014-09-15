@@ -843,3 +843,32 @@ _failure1:
     QST_SET_CURSOR(parm->hwnd, parm->cur_free);
     return (FALSE);
 }
+
+/*
+=======================================
+    保存显示图片
+=======================================
+*/
+CR_API bool_t
+qst_save_show (
+  __CR_IN__ const sQstView2D*   parm,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[]
+    )
+{
+    bool_t  rett;
+    ansi_t* full;
+
+    if (parm->image == NULL || parm->alpha == NULL)
+        return (FALSE);
+    full = str_allocA(str_lenA(name) + 5);
+    if (full == NULL)
+        return (FALSE);
+    sprintf(full, "rgb_%s", name);
+    rett  = qst_save_img(parm->image, parm, full, argc, argv);
+    sprintf(full, "alp_%s", name);
+    rett &= qst_save_img(parm->alpha, parm, full, argc, argv);
+    mem_free(full);
+    return (rett);
+}
