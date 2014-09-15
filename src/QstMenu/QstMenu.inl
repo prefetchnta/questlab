@@ -9,6 +9,7 @@ void __fastcall subG2dColorClick(TObject *Sender);
 void __fastcall subG2dAlphaClick(TObject *Sender);
 void __fastcall subG2dSaveNowClick(TObject *Sender);
 void __fastcall subG2dSaveAllClick(TObject *Sender);
+void __fastcall subG2dSaveShowClick(TObject *Sender);
 void __fastcall subWinShowClick(TObject *Sender);
 void __fastcall subWinLoadClick(TObject *Sender);
 void __fastcall subWinSaveClick(TObject *Sender);
@@ -115,7 +116,7 @@ void __fastcall TfrmMain::subG2dAlphaClick(TObject *Sender)
 typedef struct
 {
         sQST_CTX    ctx;
-        bool_t      all;
+        uint_t      typ;
         TfrmMain*   frm;
 
 } sG2dSaveCtx;
@@ -146,10 +147,13 @@ g2d_img_save (
 
     /* 不加引号可输入附加参数
        但是文件名里就不支持空格了 */
-    if (!temp.all)
+    if (temp.typ == 0)
         send = str_fmtA("g2d:save %s", file);
     else
+    if (temp.typ == 1)
         send = str_fmtA("g2d:saveall %s", file);
+    else
+        send = str_fmtA("g2d:savenow %s", file);
     mem_free(file);
     if (send != NULL) {
         qst_send_cmdz(send);
@@ -166,7 +170,7 @@ void __fastcall TfrmMain::subG2dSaveNowClick(TObject *Sender)
 
     /* 保存当前图片帧 */
     parm.frm = this;
-    parm.all = FALSE;
+    parm.all = 0;
     misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
@@ -176,7 +180,17 @@ void __fastcall TfrmMain::subG2dSaveAllClick(TObject *Sender)
 
     /* 保存所有图片帧 */
     parm.frm = this;
-    parm.all = TRUE;
+    parm.all = 1;
+    misc_async_call(g2d_img_save, &parm.ctx);
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subG2dSaveShowClick(TObject *Sender)
+{
+    sG2dSaveCtx parm;
+
+    /* 保存显示图片帧 */
+    parm.frm = this;
+    parm.all = 2;
     misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
@@ -661,6 +675,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subG2dAlpha);
     QST_MENU_EVENT(subG2dSaveNow);
     QST_MENU_EVENT(subG2dSaveAll);
+    QST_MENU_EVENT(subG2dSaveShow);
     QST_MENU_EVENT(subWinShow);
     QST_MENU_EVENT(subWinLoad);
     QST_MENU_EVENT(subWinSave);

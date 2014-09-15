@@ -10,6 +10,7 @@
         <MenuItem name="xxxSepOper2" text="-" />
         <MenuItem name="subG2dSaveNow" text="保存当前图片帧(&N)..." scut="Ctrl+N" />
         <MenuItem name="subG2dSaveAll" text="保存所有图片帧(&M)..." scut="Ctrl+M" />
+        <MenuItem name="subG2dSaveShow" text="保存显示图片帧(&H)..." scut="Ctrl+H" />
         <MenuItem name="xxxSepOper3" text="-" />
         <MenuItem name="subWinShow" text="显示所有窗口(&R)" scut="Ctrl+R" />
         <MenuItem name="subWinLoad" text="加载窗口位置(&L)" scut="Ctrl+L" />
