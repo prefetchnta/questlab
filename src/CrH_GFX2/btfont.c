@@ -171,7 +171,6 @@ _invalid_hzk:
             memo++;
             dx = sx;
             dy += hzk_th + yspace;
-            continue;
         }
         else if (*memo == (byte_t)('\r'))
         {
@@ -181,7 +180,6 @@ _invalid_hzk:
                  memo++;
             dx = sx;
             dy += hzk_th + yspace;
-            continue;
         }
         else
         {
@@ -335,7 +333,6 @@ _invalid_hzk:
             memo++;
             dx = sx;
             dy += hzk_th + yspace;
-            continue;
         }
         else if (*memo == (byte_t)('\r'))
         {
@@ -345,7 +342,6 @@ _invalid_hzk:
                  memo++;
             dx = sx;
             dy += hzk_th + yspace;
-            continue;
         }
         else
         {
@@ -437,7 +433,6 @@ iFONT_BIT_calc_rect (
             memo++;
             dx = 0;
             dy += hzk_th + yspace;
-            continue;
         }
         else
         if (*memo == (byte_t)('\r'))
@@ -448,7 +443,6 @@ iFONT_BIT_calc_rect (
                  memo++;
             dx = 0;
             dy += hzk_th + yspace;
-            continue;
         }
         else
         {

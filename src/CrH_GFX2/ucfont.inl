@@ -159,7 +159,6 @@ _invalid_hzk:
             memo++;
             dx = sx;
             dy += CR_UC_HZK_TH + yspace;
-            continue;
         }
         else if (*memo == (byte_t)('\r'))
         {
@@ -169,7 +168,6 @@ _invalid_hzk:
                  memo++;
             dx = sx;
             dy += CR_UC_HZK_TH + yspace;
-            continue;
         }
         else
         {
@@ -349,7 +347,6 @@ _invalid_hzk:
             memo++;
             dx = sx;
             dy += CR_UC_HZK_TH + yspace;
-            continue;
         }
         else if (*memo == (byte_t)('\r'))
         {
@@ -359,7 +356,6 @@ _invalid_hzk:
                  memo++;
             dx = sx;
             dy += CR_UC_HZK_TH + yspace;
-            continue;
         }
         else
         {
@@ -453,7 +449,6 @@ FONT_UC_CALC_RECT (
             memo++;
             dx = 0;
             dy += CR_UC_HZK_TH + yspace;
-            continue;
         }
         else
         if (*memo == (byte_t)('\r'))
@@ -464,7 +459,6 @@ FONT_UC_CALC_RECT (
                  memo++;
             dx = 0;
             dy += CR_UC_HZK_TH + yspace;
-            continue;
         }
         else
         {
