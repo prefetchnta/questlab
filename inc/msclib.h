@@ -81,10 +81,10 @@ CR_API byte_t*  seg7dp_gen (byte_t *dst, const ansi_t *src,
 /* 整数型状态单元结构 */
 typedef struct  _sFSM_UNIT_N
 {
-        ufast_t     name;       /* 状态的名称 */
-        ufast_t     prev;       /* 上一个状态 */
-        ufast_t     next;       /* 下一个状态 */
-        void_t*     context;    /* 状态上下文 */
+        ufast_t     name;   /* 状态的名称 */
+        ufast_t     prev;   /* 上一个状态 */
+        ufast_t     next;   /* 下一个状态 */
+        void_t*     parm;   /* 状态上下文 */
 
         /* 状态表现与状态处理回调 */
         void_t  (*fsm_render) (struct _sFSM_UNIT_N *that, void_t *param);
@@ -112,10 +112,10 @@ typedef const ansi_t*   xnfsm_t;
 /* 名称型状态单元结构 */
 typedef struct  _sFSM_UNIT_X
 {
-        xnfsm_t     name;       /* 状态的名称 */
-        xnfsm_t     prev;       /* 上一个状态 */
-        xnfsm_t     next;       /* 下一个状态 */
-        void_t*     context;    /* 状态上下文 */
+        xnfsm_t     name;   /* 状态的名称 */
+        xnfsm_t     prev;   /* 上一个状态 */
+        xnfsm_t     next;   /* 下一个状态 */
+        void_t*     parm;   /* 状态上下文 */
 
         /* 状态表现与状态处理回调 */
         void_t  (*fsm_render) (struct _sFSM_UNIT_X *that, void_t *param);
