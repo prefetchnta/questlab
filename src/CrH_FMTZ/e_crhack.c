@@ -22,6 +22,7 @@
 
 #include "fmtint.h"
 #include "pixels.h"
+#include "strlib.h"
 
 /*****************************************************************************/
 /*                                 加载引擎                                  */
@@ -91,7 +92,7 @@ engine_get (void_t)
 
 /*
 ---------------------------------------
-    RAW 图片保存 (无行对齐)
+    RAW 图片保存
 ---------------------------------------
 */
 static bool_t
@@ -99,15 +100,23 @@ save_img_raw (
   __CR_IN__ const sIMAGE*   img,
   __CR_IN__ const ansi_t*   name,
   __CR_IN__ uint_t          fmt,
-  __CR_IN__ leng_t          bpc
+  __CR_IN__ leng_t          bpc,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
     )
 {
     uchar*  line;
-    leng_t  back;
-    leng_t  nbpl;
     file_t  file;
-    uint_t  height;
+    uint_t  flag;
+    sIMAGE* cvttemp;
     sIMAGE* convert;
+    leng_t  back, nbpl;
+    uint_t  xx, ww, hh;
+    /* ------------- */
+    byte_t*         dpt;
+    byte_t*         dln;
+    const byte_t*   spt;
+    const byte_t*   sln;
 
     /* 创建文件 */
     file = file_openA(name, CR_FO_WO);
@@ -116,35 +125,91 @@ save_img_raw (
                 "save_img_raw()", "file_openA() failure");
         return (FALSE);
     }
+    ww = img->position.ww;
+    hh = img->position.hh;
+
+    /* 解析参数, 除了最低位外为行对齐字节数 */
+    flag = (argc < 1) ? 0 : str2intxA(argv[0], NULL);
+    if (flag & 1)
+    {
+        /* 保存宽高 */
+        if (!file_putd(ww, file)) {
+            err_set(__CR_E_HACK_C__, FALSE,
+                    "save_img_raw()", "file_putd() failure");
+            goto _failure;
+        }
+        if (!file_putd(hh, file)) {
+            err_set(__CR_E_HACK_C__, FALSE,
+                    "save_img_raw()", "file_putd() failure");
+            goto _failure;
+        }
+        flag -= 1;
+    }
 
     /* 转换格式 */
-    if (img->fmt == fmt) {
-        convert = (sIMAGE*)img;
-    }
-    else {
-        convert = image_new(0, 0, img->position.ww,
-                            img->position.hh, fmt, FALSE, 4);
+    if (fmt == CR_INDEX8)
+    {
+        /* 灰度图片 */
+        cvttemp = img_auto_to_32(NULL, 0, 0, img);
+        if (cvttemp == NULL) {
+            err_set(__CR_E_HACK_C__, CR_NULL,
+                    "save_img_raw()", "img_auto_to_32() failure");
+            goto _failure;
+        }
+        convert = image_new(0, 0, ww, hh, CR_INDEX8, cvttemp->gdi, 4);
         if (convert == NULL) {
             err_set(__CR_E_HACK_C__, CR_NULL,
                     "save_img_raw()", "image_new() failure");
+            image_del(cvttemp);
             goto _failure;
         }
-        if (img_auto_to_xx(convert, img) == NULL) {
-            err_set(__CR_E_HACK_C__, CR_NULL,
-                    "save_img_raw()", "img_auto_to_xx() failure");
-            image_del(convert);
-            goto _failure;
+
+        /* 灰度转换 */
+        for (sln = cvttemp->data, dln = convert->data; hh != 0; hh--) {
+            for (spt = sln, dpt = dln, xx = ww; xx != 0; xx--, spt += 4)
+                *dpt++ = (byte_t)rgb2light(spt[2], spt[1], spt[0]);
+            sln += cvttemp->bpl;
+            dln += convert->bpl;
+        }
+        image_del(cvttemp);
+    }
+    else
+    {
+        /* 高彩图片 */
+        if (img->fmt == fmt) {
+            convert = (sIMAGE*)img;
+        }
+        else {
+            convert = image_new(0, 0, ww, hh, fmt, FALSE, 4);
+            if (convert == NULL) {
+                err_set(__CR_E_HACK_C__, CR_NULL,
+                        "save_img_raw()", "image_new() failure");
+                goto _failure;
+            }
+            if (img_auto_to_xx(convert, img) == NULL) {
+                err_set(__CR_E_HACK_C__, CR_NULL,
+                        "save_img_raw()", "img_auto_to_xx() failure");
+                image_del(convert);
+                goto _failure;
+            }
         }
     }
 
     /* 写入文件 */
     line = convert->data;
-    height = convert->position.hh;
+    hh   = convert->position.hh;
     nbpl = convert->position.ww;
     nbpl *= bpc;
+    if (flag != 0) {
+        bpc = nbpl % flag;
+        if (bpc != 0)
+            flag = (uint_t)(flag - bpc);
+        else
+            flag = 0;
+    }
     if (convert->gdi)
         line += convert->size - convert->bpl;
-    for (; height != 0; height--) {
+    for (; hh != 0; hh--) {
         back = file_write(line, nbpl, file);
         if (back != nbpl) {
             err_set(__CR_E_HACK_C__, back,
@@ -157,6 +222,15 @@ save_img_raw (
             line -= convert->bpl;
         else
             line += convert->bpl;
+        for (xx = 0; xx < flag; xx++) {
+            if (!file_putb(0x00, file)) {
+                err_set(__CR_E_HACK_C__, FALSE,
+                        "save_img_raw()", "file_putb() failure");
+                if (convert != (sIMAGE*)img)
+                    image_del(convert);
+                goto _failure;
+            }
+        }
     }
     if (convert != (sIMAGE*)img)
         image_del(convert);
@@ -182,8 +256,7 @@ save_img_565 (
   __CR_IN__ ansi_t*         argv[]
     )
 {
-    CR_NOUSE(argc); CR_NOUSE(argv);
-    return (save_img_raw(img, name, CR_ARGB565, 2));
+    return (save_img_raw(img, name, CR_ARGB565, 2, argc, argv));
 }
 
 /*
@@ -199,8 +272,7 @@ save_img_888 (
   __CR_IN__ ansi_t*         argv[]
     )
 {
-    CR_NOUSE(argc); CR_NOUSE(argv);
-    return (save_img_raw(img, name, CR_ARGB888, 3));
+    return (save_img_raw(img, name, CR_ARGB888, 3, argc, argv));
 }
 
 /*
@@ -216,8 +288,7 @@ save_img_X555 (
   __CR_IN__ ansi_t*         argv[]
     )
 {
-    CR_NOUSE(argc); CR_NOUSE(argv);
-    return (save_img_raw(img, name, CR_ARGBX555, 2));
+    return (save_img_raw(img, name, CR_ARGBX555, 2, argc, argv));
 }
 
 /*
@@ -233,8 +304,7 @@ save_img_1555 (
   __CR_IN__ ansi_t*         argv[]
     )
 {
-    CR_NOUSE(argc); CR_NOUSE(argv);
-    return (save_img_raw(img, name, CR_ARGB1555, 2));
+    return (save_img_raw(img, name, CR_ARGB1555, 2, argc, argv));
 }
 
 /*
@@ -250,8 +320,7 @@ save_img_4444 (
   __CR_IN__ ansi_t*         argv[]
     )
 {
-    CR_NOUSE(argc); CR_NOUSE(argv);
-    return (save_img_raw(img, name, CR_ARGB4444, 2));
+    return (save_img_raw(img, name, CR_ARGB4444, 2, argc, argv));
 }
 
 /*
@@ -267,8 +336,23 @@ save_img_8888 (
   __CR_IN__ ansi_t*         argv[]
     )
 {
-    CR_NOUSE(argc); CR_NOUSE(argv);
-    return (save_img_raw(img, name, CR_ARGB8888, 4));
+    return (save_img_raw(img, name, CR_ARGB8888, 4, argc, argv));
+}
+
+/*
+=======================================
+    灰度文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_grey (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (save_img_raw(img, name, CR_INDEX8, 1, argc, argv));
 }
 
 #endif  /* !__CR_E_HACK_C__ */
