@@ -100,6 +100,7 @@ typedef struct
 typedef struct
 {
         sPLANE  p[6];
+        fp32_t  bias;   // 负数向外扩
 
 } sFRUSTUM;
 

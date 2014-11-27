@@ -40,7 +40,7 @@ frustum_vec3 (
         len = frt->p[idx].x * vec3->x +
               frt->p[idx].y * vec3->y +
               frt->p[idx].z * vec3->z + frt->p[idx].w;
-        if (len < 0.0f)
+        if (len < frt->bias)
             return (FALSE);
     }
     return (TRUE);
@@ -78,7 +78,7 @@ frustum_ball (
         len = frt->p[idx].x * ball->center.x +
               frt->p[idx].y * ball->center.y +
               frt->p[idx].z * ball->center.z + frt->p[idx].w;
-        if (len + ball->radius < 0.0f)
+        if (len + ball->radius < frt->bias)
             return (FALSE);
     }
     return (TRUE);
@@ -102,22 +102,22 @@ frustum_quad (
         len = frt->p[idx].x * quad->v[0].x +
               frt->p[idx].y * quad->v[0].y +
               frt->p[idx].z * quad->v[0].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * quad->v[1].x +
               frt->p[idx].y * quad->v[1].y +
               frt->p[idx].z * quad->v[1].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * quad->v[2].x +
               frt->p[idx].y * quad->v[2].y +
               frt->p[idx].z * quad->v[2].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * quad->v[3].x +
               frt->p[idx].y * quad->v[3].y +
               frt->p[idx].z * quad->v[3].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         return (FALSE);
     }
@@ -142,42 +142,42 @@ frustum_aabb (
         len = frt->p[idx].x * aabb->v[0].x +
               frt->p[idx].y * aabb->v[0].y +
               frt->p[idx].z * aabb->v[0].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * aabb->v[1].x +
               frt->p[idx].y * aabb->v[1].y +
               frt->p[idx].z * aabb->v[1].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * aabb->v[2].x +
               frt->p[idx].y * aabb->v[2].y +
               frt->p[idx].z * aabb->v[2].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * aabb->v[3].x +
               frt->p[idx].y * aabb->v[3].y +
               frt->p[idx].z * aabb->v[3].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * aabb->v[4].x +
               frt->p[idx].y * aabb->v[4].y +
               frt->p[idx].z * aabb->v[4].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * aabb->v[5].x +
               frt->p[idx].y * aabb->v[5].y +
               frt->p[idx].z * aabb->v[5].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * aabb->v[6].x +
               frt->p[idx].y * aabb->v[6].y +
               frt->p[idx].z * aabb->v[6].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         len = frt->p[idx].x * aabb->v[7].x +
               frt->p[idx].y * aabb->v[7].y +
               frt->p[idx].z * aabb->v[7].z + frt->p[idx].w;
-        if (len >= 0.0f)
+        if (len >= frt->bias)
             continue;
         return (FALSE);
     }
