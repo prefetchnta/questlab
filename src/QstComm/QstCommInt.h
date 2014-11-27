@@ -71,6 +71,7 @@ public:
     }
     void clear ()
     {
+        emit setHtml("x");
         emit allClear();
     }
     void text (const QString& text)
