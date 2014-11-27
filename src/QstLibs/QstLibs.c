@@ -418,6 +418,10 @@ netw_cli_open (
         }
     }
 
+    /* 是否连接到集线器上 */
+    if (mem_cmp(name, "Qst", 3) != 0)
+        port += 1;
+
     /* 创建连接 */
     netw = client_tcp_open(addr, port, -1);
     TRY_FREE(text);
