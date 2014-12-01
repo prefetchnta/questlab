@@ -37,297 +37,372 @@ gen_skybox2 (
   __CR_IN__ fp32_t      zsize
     )
 {
+    if (xyz == NULL)
+        return (36);
+
     /* left */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* right */
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* front */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* back */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* top */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* bottom */
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  1.0f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.0f;
-    uvw->y =  0.0f;
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+    }
     return (36);
 }
 
@@ -346,333 +421,408 @@ gen_skybox3 (
   __CR_IN__ fp32_t      zsize
     )
 {
+    if (xyz == NULL)
+        return (36);
+
     /* left */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -1.000f;
-    uvw->y =  0.999f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -1.000f;
+        uvw->y =  0.999f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -1.000f;
-    uvw->y =  0.999f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -1.000f;
+        uvw->y =  0.999f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -1.000f;
-    uvw->y = -0.999f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -1.000f;
+        uvw->y = -0.999f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -1.000f;
-    uvw->y =  0.999f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -1.000f;
+        uvw->y =  0.999f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -1.000f;
-    uvw->y = -0.999f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -1.000f;
+        uvw->y = -0.999f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -1.000f;
-    uvw->y = -0.999f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -1.000f;
+        uvw->y = -0.999f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* right */
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.000f;
-    uvw->y =  0.999f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  1.000f;
+        uvw->y =  0.999f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.000f;
-    uvw->y = -0.999f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  1.000f;
+        uvw->y = -0.999f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.000f;
-    uvw->y =  0.999f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  1.000f;
+        uvw->y =  0.999f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.000f;
-    uvw->y =  0.999f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  1.000f;
+        uvw->y =  0.999f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  1.000f;
-    uvw->y = -0.999f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  1.000f;
+        uvw->y = -0.999f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  1.000f;
-    uvw->y = -0.999f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  1.000f;
+        uvw->y = -0.999f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* front */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y =  0.999f;
-    uvw->z =  1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y =  0.999f;
+        uvw->z =  1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y =  0.999f;
-    uvw->z =  1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  0.999f;
+        uvw->z =  1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y = -0.999f;
-    uvw->z =  1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -0.999f;
+        uvw->z =  1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y =  0.999f;
-    uvw->z =  1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  0.999f;
+        uvw->z =  1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y = -0.999f;
-    uvw->z =  1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y = -0.999f;
+        uvw->z =  1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y = -0.999f;
-    uvw->z =  1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -0.999f;
+        uvw->z =  1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* back */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y =  0.999f;
-    uvw->z = -1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y =  0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y = -0.999f;
-    uvw->z = -1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y =  0.999f;
-    uvw->z = -1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y =  0.999f;
-    uvw->z = -1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y = -0.999f;
-    uvw->z = -1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y = -0.999f;
-    uvw->z = -1.000f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y = -0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* top */
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y =  1.000f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y =  1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y =  1.000f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y =  1.000f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y =  1.000f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y =  1.000f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y =  1.000f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y =  1.000f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y =  ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y =  1.000f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  1.000f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     /* bottom */
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y = -1.000f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y = -1.000f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y = -1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y = -1.000f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -1.000f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z =  zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y = -1.000f;
-    uvw->z =  0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y = -1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x =  xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x =  0.999f;
-    uvw->y = -1.000f;
-    uvw->z = -0.999f;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y = -1.000f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
 
     xyz->x = -xsize / 2.0f;
     xyz->y = -ysize / 2.0f;
     xyz->z = -zsize / 2.0f;
-    uvw->x = -0.999f;
-    uvw->y = -1.000f;
-    uvw->z = -0.999f;
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -1.000f;
+        uvw->z = -0.999f;
+    }
     return (36);
 }
 
