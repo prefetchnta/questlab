@@ -6,6 +6,7 @@ BIN_NAME=$(PROJECT).dll
 OBJ_LIST=.$(L)gfx3.$(O) \
          .$(L)bound.$(O) \
          .$(L)skybox.$(O) \
+         .$(L)skydome.$(O) \
          .$(L)camera.$(O) \
          .$(L)frustum.$(O) \
          .$(L)$(PROJECT).res
@@ -13,6 +14,7 @@ OBJ_LIST=.$(L)gfx3.$(O) \
 SRC_LIST=.$(L)gfx3.$(C) \
          .$(L)bound.$(C) \
          .$(L)skybox.$(C) \
+         .$(L)skydome.$(C) \
          .$(L)camera.$(C) \
          .$(L)frustum.$(C)
 
