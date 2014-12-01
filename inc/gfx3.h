@@ -160,6 +160,8 @@ CR_API bool_t   frustum_ball (const sFRUSTUM *frt, const sSPHERE *ball);
 CR_API bool_t   frustum_quad (const sFRUSTUM *frt, const sQUAD *quad);
 CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 
+#endif  /* !__CR_GFX3_H__ */
+
 /* 只使用微软自家的编译器 */
 #if     defined(_CR_CC_MSC_) && (_CR_CC_VER_ >= 1400)
 /*****************************************************************************/
@@ -189,8 +191,6 @@ CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 #endif  /* GFX3 API predefines */
 
 #endif  /* _CR_CC_MSC_ && _CR_CC_VER_ */
-
-#endif  /* !__CR_GFX3_H__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
