@@ -118,6 +118,30 @@ CR_API void_t   bound_get_ball (sSPHERE *ball, const vec3d_t *pos,
                                 leng_t count, leng_t bpv);
 
 /*****************************************************************************/
+/*                                 几何生成                                  */
+/*****************************************************************************/
+
+/* 天空盒 */
+CR_API leng_t   gen_skybox2 (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
+                             fp32_t xsize, fp32_t ysize, fp32_t zsize);
+CR_API leng_t   gen_skybox3 (vec3d_t *xyz, vec3d_t *uvw, leng_t bpv,
+                             fp32_t xsize, fp32_t ysize, fp32_t zsize);
+/* 天空顶 */
+CR_API leng_t   gen_skydome (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
+                             void_t *ibuf, leng_t *inum, fp32_t radius,
+                             fp32_t scale, fp32_t offset, sint_t dtheta,
+                             sint_t dphi);
+/* 天空平面 */
+CR_API leng_t   gen_skyplane (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
+                              void_t *ibuf, leng_t *inum, fp32_t a_radius,
+                              fp32_t p_radius, fp32_t offset, fp32_t tex_scale,
+                              sint_t ndiv);
+/* 垂直点缀 */
+CR_API leng_t   gen_adorn_v (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
+                             void_t *ibuf, leng_t *inum, const vec3d_t *pos,
+                             const vec2d_t *tex, fp32_t radius, fp32_t height);
+
+/*****************************************************************************/
 /*                                摄像机控制                                 */
 /*****************************************************************************/
 
