@@ -80,16 +80,19 @@ d3d9_mesh_dp (
   __CR_IN__ D3DPRIMITIVETYPE    type,
   __CR_IN__ uint_t              start,
   __CR_IN__ uint_t              count,
-  __CR_IN__ sD3D9_VSH*          vsh CR_DEFAULT(NULL)
+  __CR_IN__ sD3D9_VSH*          vsh CR_DEFAULT(NULL),
+  __CR_IN__ bool_t              bare CR_DEFAULT(FALSE)
     )
 {
-    if (vsh == NULL) {
-        main->dev->SetVertexShader(NULL);
-        main->dev->SetFVF(vmesh->fvf);
-    }
-    else {
-        main->dev->SetVertexDeclaration(vsh->decl);
-        main->dev->SetVertexShader(vsh->obj);
+    if (!bare) {
+        if (vsh == NULL) {
+            main->dev->SetVertexShader(NULL);
+            main->dev->SetFVF(vmesh->fvf);
+        }
+        else {
+            main->dev->SetVertexDeclaration(vsh->decl);
+            main->dev->SetVertexShader(vsh->obj);
+        }
     }
     main->dev->DrawPrimitive(type, start, count);
 }
@@ -104,16 +107,19 @@ d3d9_mesh_dip (
   __CR_IN__ sD3D9_MAIN* main,
   __CR_IN__ sD3D9_MESH* vmesh,
   __CR_IN__ sD3D9_MESH* imesh CR_DEFAULT(NULL),
-  __CR_IN__ sD3D9_VSH*  vsh CR_DEFAULT(NULL)
+  __CR_IN__ sD3D9_VSH*  vsh CR_DEFAULT(NULL),
+  __CR_IN__ bool_t      bare CR_DEFAULT(FALSE)
     )
 {
-    if (vsh == NULL) {
-        main->dev->SetVertexShader(NULL);
-        main->dev->SetFVF(vmesh->fvf);
-    }
-    else {
-        main->dev->SetVertexDeclaration(vsh->decl);
-        main->dev->SetVertexShader(vsh->obj);
+    if (!bare) {
+        if (vsh == NULL) {
+            main->dev->SetVertexShader(NULL);
+            main->dev->SetFVF(vmesh->fvf);
+        }
+        else {
+            main->dev->SetVertexDeclaration(vsh->decl);
+            main->dev->SetVertexShader(vsh->obj);
+        }
     }
     if (imesh != NULL) {
         main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
@@ -121,6 +127,26 @@ d3d9_mesh_dip (
     } else {
         main->dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
                                         vmesh->vnum, 0, vmesh->ntri);
+    }
+}
+
+/*
+=======================================
+    应用 VS 对象
+=======================================
+*/
+cr_inline void_t
+d3d9_vs_apply (
+  __CR_IN__ sD3D9_MAIN* main,
+  __CR_IN__ sD3D9_VSH*  vsh CR_DEFAULT(NULL)
+    )
+{
+    if (vsh != NULL) {
+        main->dev->SetVertexDeclaration(vsh->decl);
+        main->dev->SetVertexShader(vsh->obj);
+    }
+    else {
+        main->dev->SetVertexShader(NULL);
     }
 }
 
