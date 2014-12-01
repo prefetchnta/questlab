@@ -240,8 +240,8 @@ typedef struct
         void_t  (*tran_pickup) (sD3D8_TRAN *tran, sRADIAL *dest,
                                 sint_t scn_x, sint_t scn_y);
 
-        void_t  (*tran_frustum) (sD3D8_TRAN *tran, sFRUSTUM *dest);
-
+        void_t  (*tran_frustum) (sD3D8_TRAN *tran, sFRUSTUM *dest,
+                                 fp32_t bias);
         /* 变换 */
         void_t  (*tran_billboardv) (sD3D8_TRAN *tran);
         void_t  (*tran_billboardh) (sD3D8_TRAN *tran);

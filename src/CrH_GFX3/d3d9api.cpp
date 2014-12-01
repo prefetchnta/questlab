@@ -1947,12 +1947,14 @@ d3d9_tran_pickup (
 CR_API void_t
 d3d9_tran_frustum (
   __CR_IN__ sD3D9_TRAN* tran,
-  __CR_OT__ sFRUSTUM*   dest
+  __CR_OT__ sFRUSTUM*   dest,
+  __CR_IN__ fp32_t      bias
     )
 {
     D3DXPLANE       pln;
     D3DXMATRIXA16   mat;
 
+    dest->bias = bias;
     D3DXMatrixMultiply(&mat, &tran->view, &tran->proj);
 
     /* near */
