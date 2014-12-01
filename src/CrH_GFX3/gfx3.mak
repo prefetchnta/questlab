@@ -7,6 +7,7 @@ OBJ_LIST=.$(L)gfx3.$(O) \
          .$(L)bound.$(O) \
          .$(L)skybox.$(O) \
          .$(L)skydome.$(O) \
+         .$(L)skyplane.$(O) \
          .$(L)camera.$(O) \
          .$(L)frustum.$(O) \
          .$(L)$(PROJECT).res
@@ -15,6 +16,7 @@ SRC_LIST=.$(L)gfx3.$(C) \
          .$(L)bound.$(C) \
          .$(L)skybox.$(C) \
          .$(L)skydome.$(C) \
+         .$(L)skyplane.$(C) \
          .$(L)camera.$(C) \
          .$(L)frustum.$(C)
 

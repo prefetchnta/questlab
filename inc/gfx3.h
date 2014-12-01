@@ -131,7 +131,7 @@ CR_API leng_t   gen_skydome (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
                              void_t *ibuf, leng_t *inum, fp32_t radius,
                              fp32_t scale, fp32_t offset, sint_t dtheta,
                              sint_t dphi);
-/* 天空平面 */
+/* 天空面 */
 CR_API leng_t   gen_skyplane (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
                               void_t *ibuf, leng_t *inum, fp32_t a_radius,
                               fp32_t p_radius, fp32_t offset, fp32_t tex_scale,
