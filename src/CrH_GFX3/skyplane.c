@@ -86,7 +86,7 @@ gen_skyplane (
     /* 生成索引 */
     if (ibuf == NULL)
         return (nv);
-    if (nv >= 65536) {
+    if (nv > 65536) {
         ti32 = (int32u*)ibuf;
         for (ii = 0; ii < ndiv; ii++)
         for (jj = 0; jj < ndiv; jj++) {

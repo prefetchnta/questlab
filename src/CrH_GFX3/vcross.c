@@ -110,7 +110,7 @@ gen_v_cross (
     /* 生成索引 */
     if (ibuf == NULL)
         return (nv);
-    if (nv >= 65536) {
+    if (nv > 65536) {
         ti32 = (int32u*)ibuf;
         for (ii = 0; ii < count * ndiv; ii++) {
             ti32[0] = (int32u)(ii * 4);
