@@ -49,8 +49,8 @@ gen_v_cross (
     sint_t  jj;
     int16u* ti16;
     int32u* ti32;
-    fp32_t  step, angle;
     leng_t  nv, ni, ii;
+    fp32_t  step, angle;
 
     nv = ndiv * 4 * count;
     ni = ndiv * 6 * count;

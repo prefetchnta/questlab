@@ -136,10 +136,11 @@ CR_API leng_t   gen_skyplane (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
                               void_t *ibuf, leng_t *inum, fp32_t a_radius,
                               fp32_t p_radius, fp32_t offset, fp32_t tex_scale,
                               sint_t ndiv);
-/* 垂直点缀 */
-CR_API leng_t   gen_adorn_v (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
+/* 点缀片 */
+CR_API leng_t   gen_v_cross (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
                              void_t *ibuf, leng_t *inum, const vec3d_t *pos,
-                             const vec2d_t *tex, fp32_t radius, fp32_t height);
+                             const vec2d_t *tex, fp32_t radius, fp32_t height,
+                             sint_t ndiv, leng_t count);
 
 /*****************************************************************************/
 /*                                摄像机控制                                 */
