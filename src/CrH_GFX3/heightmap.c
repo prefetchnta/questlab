@@ -213,7 +213,8 @@ height_map_nrm (
   __CR_IN__ ht_map_t    htmap,
   __CR_OT__ vec3d_t*    normal,
   __CR_IN__ uint_t      x,
-  __CR_IN__ uint_t      z
+  __CR_IN__ uint_t      z,
+  __CR_IN__ bool_t      is_nrm
     )
 {
     fp32_t  length;
@@ -227,28 +228,30 @@ height_map_nrm (
     }
     else
     if (x >= real->ww - 1) {
-        delta2 = 0;
         x = real->ww - 1;
+        delta2 = 0;
     }
     if (z == 0) {
         delta3 = 0;
     }
     else
     if (z >= real->hh - 1) {
-        delta4 = 0;
         z = real->hh - 1;
+        delta4 = 0;
     }
     normal->x = real->height[z * real->ww + x + delta1] -
                 real->height[z * real->ww + x + delta2];
     normal->y = 2.0f * real->grid;
     normal->z = real->height[(z + delta4) * real->ww + x] -
                 real->height[(z + delta3) * real->ww + x];
-    length = FSQRT(normal->x * normal->x +
-                   normal->y * normal->y +
-                   normal->z * normal->z);
-    normal->x /= length;
-    normal->y /= length;
-    normal->z /= length;
+    if (is_nrm) {
+        length = FSQRT(normal->x * normal->x +
+                       normal->y * normal->y +
+                       normal->z * normal->z);
+        normal->x /= length;
+        normal->y /= length;
+        normal->z /= length;
+    }
 }
 
 /*
