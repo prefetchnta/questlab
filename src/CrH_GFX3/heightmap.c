@@ -300,6 +300,37 @@ height_map_aabb (
     bound_get_aabb(aabb, box, 2, sizeof(vec3d_t));
 }
 
+/*
+=======================================
+    放置包围盒
+=======================================
+*/
+CR_API void_t
+height_map_build (
+  __CR_IN__ ht_map_t    htmap,
+  __CR_IO__ sAABB*      aabb,
+  __CR_IN__ fp32_t      x,
+  __CR_IN__ fp32_t      z
+    )
+{
+    uint_t  idx;
+    fp32_t  min, tmp;
+
+    /* 物体中心为坐标原点 */
+    for (idx = 0; idx < 8; idx++) {
+        aabb->v[idx].x += x;
+        aabb->v[idx].z += z;
+    }
+    min = height_map_get(htmap, aabb->v[0].x, aabb->v[0].z);
+    for (idx = 1; idx < 4; idx++) {
+        tmp = height_map_get(htmap, aabb->v[idx].x, aabb->v[idx].z);
+        if (min > tmp)
+            min = tmp;
+    }
+    for (idx = 0; idx < 8; idx++)
+        aabb->v[idx].y += min;
+}
+
 #endif  /* !__CR_HEIGHTMAP_C__ */
 
 /*****************************************************************************/
