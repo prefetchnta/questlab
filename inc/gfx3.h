@@ -105,6 +105,25 @@ typedef struct
 } sFRUSTUM;
 
 /*****************************************************************************/
+/*                                  高度图                                   */
+/*****************************************************************************/
+
+typedef void_t* ht_map_t;
+
+#define HTMAP_TYPE_BYTE     0   // 字节型
+#define HTMAP_TYPE_WORD     1   // 单字型
+#define HTMAP_TYPE_SINT     2   // 整数型
+#define HTMAP_TYPE_REAL     3   // 实数型
+CR_API ht_map_t height_map_new (const void_t *data, uint_t type,
+                                uint_t width, uint_t height, fp32_t scale);
+CR_API void_t   height_map_del (ht_map_t htmap);
+CR_API fp32_t   height_map_get (ht_map_t htmap, fp32_t x, fp32_t z);
+CR_API void_t   height_map_nrm (ht_map_t htmap, vec3d_t *normal,
+                                fp32_t x, fp32_t z);
+CR_API void_t   height_map_aabb (ht_map_t htmap, sAABB *aabb, uint_t x,
+                                 uint_t z, uint_t w, uint_t h);
+
+/*****************************************************************************/
 /*                                 几何运算                                  */
 /*****************************************************************************/
 
