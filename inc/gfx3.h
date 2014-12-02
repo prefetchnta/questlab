@@ -141,6 +141,9 @@ CR_API leng_t   gen_v_cross (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
                              void_t *ibuf, leng_t *inum, const vec3d_t *pos,
                              const vec2d_t *tex, fp32_t radius, fp32_t height,
                              sint_t ndiv, leng_t count);
+/* 连接索引 */
+CR_API uint_t   gen_interlock (int16u **pibuf, leng_t *inum, uint_t *level,
+                               uint_t tile_size);
 
 /*****************************************************************************/
 /*                                摄像机控制                                 */
