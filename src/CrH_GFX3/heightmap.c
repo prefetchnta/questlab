@@ -91,7 +91,9 @@ height_map_new (
         return (NULL);
     }
     rett->ww = width;
+    rett->x2 = width - 1;
     rett->hh = height;
+    rett->z2 = height - 1;
     rett->grid = grid;
     rett->inv_grid = 1.0f / grid;
 
@@ -180,13 +182,13 @@ height_map_get (
     if (uu < 0)
         uu = 0;
     else
-    if (uu >= (sint_t)(real->ww - 1))
-        uu = real->ww - 2;
+    if (uu >= (sint_t)real->x2)
+        uu = real->x2 - 1;
     if (vv < 0)
         vv = 0;
     else
-    if (vv >= (sint_t)(real->hh - 1))
-        vv = real->hh - 2;
+    if (vv >= (sint_t)real->z2)
+        vv = real->z2 - 1;
     height = &real->height[vv * real->ww + uu];
 
     h1 = height[0];
@@ -227,16 +229,16 @@ height_map_nrm (
         delta1 = 0;
     }
     else
-    if (x >= real->ww - 1) {
-        x = real->ww - 1;
+    if (x >= real->x2) {
+        x = real->x2;
         delta2 = 0;
     }
     if (z == 0) {
         delta3 = 0;
     }
     else
-    if (z >= real->hh - 1) {
-        z = real->hh - 1;
+    if (z >= real->z2) {
+        z = real->z2;
         delta4 = 0;
     }
     normal->x = real->height[z * real->ww + x + delta1] -
@@ -276,10 +278,10 @@ height_map_aabb (
     sHEIGHTMAP* real;
 
     real = (sHEIGHTMAP*)htmap;
-    if (x >= real->ww - 1)
-        x = real->ww - 2;
-    if (z >= real->hh - 1)
-        z = real->hh - 2;
+    if (x >= real->x2)
+        x = real->x2 - 1;
+    if (z >= real->z2)
+        z = real->z2 - 1;
     if (w > real->ww - x)
         w = real->ww - x;
     if (h > real->hh - z)

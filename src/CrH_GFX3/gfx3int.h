@@ -26,6 +26,7 @@
 typedef struct
 {
         uint_t  ww, hh;
+        uint_t  x2, z2;
         fp32_t* height;
         fp32_t  grid, inv_grid;
 
