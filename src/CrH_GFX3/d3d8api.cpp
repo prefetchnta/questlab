@@ -486,7 +486,7 @@ d3d8_create_mesh_vib (
 
     /* 生成 D3D8 IB 对象 */
     rett->inum = inum;
-    if (vnum <= 65535) {
+    if (vnum <= 65536) {
         ifmt = D3DFMT_INDEX16;
         rett->nbpi = sizeof(int16u);
         rett->isize = inum * 2;
