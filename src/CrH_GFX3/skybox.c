@@ -39,11 +39,14 @@ gen_skybox2 (
 {
     if (xyz == NULL)
         return (36);
+    xsize /= 2.0f;
+    ysize /= 2.0f;
+    zsize /= 2.0f;
 
     /* left */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -51,9 +54,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -61,9 +64,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -71,9 +74,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -81,9 +84,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -91,9 +94,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -102,9 +105,9 @@ gen_skybox2 (
     }
 
     /* right */
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -112,39 +115,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = 1.0f;
-        uvw->y = 1.0f;
-        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = 0.0f;
-        uvw->y = 0.0f;
-        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = 0.0f;
-        uvw->y = 0.0f;
-        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -152,9 +125,39 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -163,9 +166,9 @@ gen_skybox2 (
     }
 
     /* front */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -173,9 +176,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -183,9 +186,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -193,9 +196,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -203,9 +206,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -213,9 +216,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -224,9 +227,9 @@ gen_skybox2 (
     }
 
     /* back */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -234,39 +237,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = 1.0f;
-        uvw->y = 1.0f;
-        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = 0.0f;
-        uvw->y = 0.0f;
-        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = 0.0f;
-        uvw->y = 0.0f;
-        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -274,9 +247,39 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = 0.0f;
+        uvw->y = 0.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = 1.0f;
+        uvw->y = 1.0f;
+        uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -285,9 +288,9 @@ gen_skybox2 (
     }
 
     /* top */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -295,9 +298,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -305,9 +308,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -315,9 +318,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -325,9 +328,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -335,9 +338,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -346,9 +349,9 @@ gen_skybox2 (
     }
 
     /* bottom */
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -356,9 +359,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -366,9 +369,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -376,9 +379,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 1.0f;
@@ -386,9 +389,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = 0.0f;
@@ -396,9 +399,9 @@ gen_skybox2 (
         uvw = (vec2d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     if (uvw != NULL) {
         uvw->x = 0.0f;
         uvw->y = 0.0f;
@@ -423,11 +426,14 @@ gen_skybox3 (
 {
     if (xyz == NULL)
         return (36);
+    xsize /= 2.0f;
+    ysize /= 2.0f;
+    zsize /= 2.0f;
 
     /* left */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -1.000f;
@@ -436,9 +442,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -1.000f;
@@ -447,9 +453,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -1.000f;
@@ -458,9 +464,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -1.000f;
@@ -469,9 +475,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -1.000f;
@@ -480,9 +486,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -1.000f;
@@ -492,9 +498,9 @@ gen_skybox3 (
     }
 
     /* right */
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  1.000f;
@@ -503,9 +509,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  1.000f;
@@ -514,9 +520,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  1.000f;
@@ -525,9 +531,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  1.000f;
@@ -536,9 +542,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  1.000f;
@@ -547,9 +553,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  1.000f;
@@ -559,9 +565,9 @@ gen_skybox3 (
     }
 
     /* front */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -570,9 +576,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -581,9 +587,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -592,9 +598,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -603,9 +609,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -614,9 +620,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -626,9 +632,9 @@ gen_skybox3 (
     }
 
     /* back */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -637,42 +643,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = -0.999f;
-        uvw->y = -0.999f;
-        uvw->z = -1.000f;
-        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x =  0.999f;
-        uvw->y =  0.999f;
-        uvw->z = -1.000f;
-        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x =  0.999f;
-        uvw->y =  0.999f;
-        uvw->z = -1.000f;
-        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -681,9 +654,42 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y = -0.999f;
+        uvw->z = -1.000f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -693,9 +699,9 @@ gen_skybox3 (
     }
 
     /* top */
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -704,42 +710,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x = -0.999f;
-        uvw->y =  1.000f;
-        uvw->z = -0.999f;
-        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x =  0.999f;
-        uvw->y =  1.000f;
-        uvw->z =  0.999f;
-        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
-    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
-    if (uvw != NULL) {
-        uvw->x =  0.999f;
-        uvw->y =  1.000f;
-        uvw->z =  0.999f;
-        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
-    }
-
-    xyz->x = -xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -748,9 +721,42 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y =  ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z =  zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x =  0.999f;
+        uvw->y =  1.000f;
+        uvw->z =  0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x = -xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
+    xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+    if (uvw != NULL) {
+        uvw->x = -0.999f;
+        uvw->y =  1.000f;
+        uvw->z = -0.999f;
+        uvw = (vec3d_t*)((byte_t*)uvw + bpv);
+    }
+
+    xyz->x =  xsize;
+    xyz->y =  ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -760,9 +766,9 @@ gen_skybox3 (
     }
 
     /* bottom */
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -771,9 +777,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -782,9 +788,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x = -0.999f;
@@ -793,9 +799,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z =  zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z =  zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -804,9 +810,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x =  xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x =  xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     xyz = (vec3d_t*)((byte_t*)xyz + bpv);
     if (uvw != NULL) {
         uvw->x =  0.999f;
@@ -815,9 +821,9 @@ gen_skybox3 (
         uvw = (vec3d_t*)((byte_t*)uvw + bpv);
     }
 
-    xyz->x = -xsize / 2.0f;
-    xyz->y = -ysize / 2.0f;
-    xyz->z = -zsize / 2.0f;
+    xyz->x = -xsize;
+    xyz->y = -ysize;
+    xyz->z = -zsize;
     if (uvw != NULL) {
         uvw->x = -0.999f;
         uvw->y = -1.000f;
