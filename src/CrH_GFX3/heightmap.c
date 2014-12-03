@@ -83,8 +83,8 @@ height_map_new (
         mem_free(rett);
         return (NULL);
     }
-    rett->height = mem_talloc(size, fp32_t);
-    if (rett->height == NULL) {
+    rett->map = mem_talloc(size, fp32_t);
+    if (rett->map == NULL) {
         err_set(__CR_HEIGHTMAP_C__, CR_NULL,
                 "height_map_new()", "mem_talloc() failure");
         mem_free(rett);
@@ -99,7 +99,7 @@ height_map_new (
 
     /* 生成高度图 */
     if (data == NULL) {
-        mem_zero(rett->height, size * sizeof(fp32_t));
+        mem_zero(rett->map, size * sizeof(fp32_t));
     }
     else {
         switch (type)
@@ -108,8 +108,8 @@ height_map_new (
                 for (idx = 0; idx < size; idx++) {
                     tmp = *(byte_t*)data;
                     data = (byte_t*)data + sizeof(byte_t);
-                    rett->height[idx] = (fp32_t)tmp;
-                    rett->height[idx] *= scale;
+                    rett->map[idx] = (fp32_t)tmp;
+                    rett->map[idx] *= scale;
                 }
                 break;
 
@@ -117,8 +117,8 @@ height_map_new (
                 for (idx = 0; idx < size; idx++) {
                     tmp = *(int16u*)data;
                     data = (byte_t*)data + sizeof(int16u);
-                    rett->height[idx] = (fp32_t)tmp;
-                    rett->height[idx] *= scale;
+                    rett->map[idx] = (fp32_t)tmp;
+                    rett->map[idx] *= scale;
                 }
                 break;
 
@@ -126,14 +126,14 @@ height_map_new (
                 for (idx = 0; idx < size; idx++) {
                     tmp = *(sint_t*)data;
                     data = (byte_t*)data + sizeof(sint_t);
-                    rett->height[idx] = (fp32_t)tmp;
-                    rett->height[idx] *= scale;
+                    rett->map[idx] = (fp32_t)tmp;
+                    rett->map[idx] *= scale;
                 }
                 break;
 
             default:
             case HTMAP_TYPE_REAL:
-                mem_cpy(rett->height, data, size * sizeof(fp32_t));
+                mem_cpy(rett->map, data, size * sizeof(fp32_t));
                 break;
         }
     }
@@ -153,7 +153,7 @@ height_map_del (
     sHEIGHTMAP* real;
 
     real = (sHEIGHTMAP*)htmap;
-    mem_free(real->height);
+    mem_free(real->map);
     mem_free(htmap);
 }
 
@@ -171,8 +171,8 @@ height_map_get (
 {
     sint_t  uu, vv;
     fp32_t  t1, t2, t3;
-    fp32_t  h1, h2, h3, *height;
-    /* ---------------------- */
+    fp32_t  h1, h2, h3, *map;
+    /* ------------------- */
     sHEIGHTMAP* real = (sHEIGHTMAP*)htmap;
 
     x *= real->inv_grid;
@@ -197,19 +197,19 @@ height_map_get (
         vv = real->z2 - 1;
         z = (fp32_t)real->z2;
     }
-    height = &real->height[vv * real->ww + uu];
+    map = &real->map[vv * real->ww + uu];
 
-    h1 = height[0];
-    h2 = height[1] - h1;
-    h3 = height[real->ww + 1] - h2 - h1;
+    h1 = map[0];
+    h2 = map[1] - h1;
+    h3 = map[real->ww + 1] - h2 - h1;
 
     t1 = x - uu;
     t2 = z - vv;
     t3 = t1 - t2;
     if (t3 > 0.0f)
         return (t1 * h2 + t2 * h3 + h1);
-    h2 = height[real->ww + 0] - h1;
-    h3 = height[real->ww + 1] - h2 - h1;
+    h2 = map[real->ww + 0] - h1;
+    h3 = map[real->ww + 1] - h2 - h1;
     return (t1 * h3 + t2 * h2 + h1);
 }
 
@@ -249,11 +249,11 @@ height_map_nrm (
         z = real->z2;
         delta4 = 0;
     }
-    normal->x = real->height[z * real->ww + x + delta1] -
-                real->height[z * real->ww + x + delta2];
+    normal->x = real->map[z * real->ww + x + delta1] -
+                real->map[z * real->ww + x + delta2];
     normal->y = 2.0f * real->grid;
-    normal->z = real->height[(z + delta4) * real->ww + x] -
-                real->height[(z + delta3) * real->ww + x];
+    normal->z = real->map[(z + delta4) * real->ww + x] -
+                real->map[(z + delta3) * real->ww + x];
     if (is_nrm) {
         length = FSQRT(normal->x * normal->x +
                        normal->y * normal->y +
@@ -302,7 +302,7 @@ height_map_aabb (
         h = real->hh - z;
 
     box[0].x = x * real->grid;
-    box[0].y = real->height[z * real->ww + x];
+    box[0].y = real->map[z * real->ww + x];
     box[0].z = z * real->grid;
     box[1].x = (x + w - 1) * real->grid;
     box[1].y = box[0].y;
@@ -310,7 +310,7 @@ height_map_aabb (
 
     for (tz = z; tz < z + h; tz++)
     for (tx = x; tx < x + w; tx++) {
-        tmp = real->height[tz * real->ww + tx];
+        tmp = real->map[tz * real->ww + tx];
         if (tmp < box[0].y)
             box[0].y = tmp;
         if (tmp > box[1].y)

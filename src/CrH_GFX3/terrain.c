@@ -20,7 +20,6 @@
 #ifndef __CR_TERRAIN_C__
 #define __CR_TERRAIN_C__ 0x9B064B12UL
 
-#include "memlib.h"
 #include "gfx3int.h"
 
 /*
@@ -31,6 +30,7 @@
 CR_API leng_t
 gen_terrain_tile (
   __CR_OT__ vec3d_t*    xyz,
+  __CR_OT__ vec3d_t*    nrm,
   __CR_OT__ vec2d_t*    uvw,
   __CR_IN__ leng_t      bpv,
   __CR_IN__ ht_map_t    htmap,
@@ -80,9 +80,13 @@ gen_terrain_tile (
     for (tz = z; tz < z + h; tz++)
     for (tx = x; tx < x + w; tx++) {
         xyz->x = tx * real->grid;
-        xyz->y = real->height[tz * real->ww + tx];
+        xyz->y = real->map[tz * real->ww + tx];
         xyz->z = tz * real->grid;
         xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+        if (nrm != NULL) {
+            height_map_nrm(htmap, nrm, tx, tz, TRUE);
+            nrm = (vec3d_t*)((byte_t*)nrm + bpv);
+        }
         if (uvw != NULL) {
             uvw->x = (fp32_t)(tx - x) * uu;
             uvw->y = (fp32_t)(tz - z) * vv;

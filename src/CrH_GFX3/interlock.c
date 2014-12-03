@@ -55,13 +55,16 @@ gen_interlock (
             point /= 2;
             lv++;
         }
-        if (*level > lv || *level == 0)
-            *level = lv;
-        else
-            lv = *level;
+        if (level != NULL) {
+            if (*level > lv || *level == 0)
+                *level = lv;
+            else
+                lv = *level;
+        }
     }
     else {
-        *level = lv;
+        if (level != NULL)
+            *level = lv;
     }
 
     /* 计算索引缓冲的个数 */
