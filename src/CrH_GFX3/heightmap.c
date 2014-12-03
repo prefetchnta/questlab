@@ -290,8 +290,14 @@ height_map_aabb (
         x = real->x2 - 1;
     if (z >= real->z2)
         z = real->z2 - 1;
+    if (w < 2)
+        w = 2;
+    else
     if (w > real->ww - x)
         w = real->ww - x;
+    if (h < 2)
+        h = 2;
+    else
     if (h > real->hh - z)
         h = real->hh - z;
 
