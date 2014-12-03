@@ -68,8 +68,6 @@ gen_interlock (
     nibuf = (lv - 1) * 9 + 1;
     if (pibuf == NULL || inum == NULL)
         return (nibuf);
-    mem_zero(pibuf, nibuf * sizeof(int16u*));
-    mem_zero(inum, nibuf * sizeof(leng_t));
     point = 0;
 
     /* full detail */
