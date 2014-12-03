@@ -179,16 +179,24 @@ height_map_get (
     z *= real->inv_grid;
     uu = (sint_t)x;
     vv = (sint_t)z;
-    if (uu < 0)
+    if (uu < 0) {
         uu = 0;
+        x = 0.0f;
+    }
     else
-    if (uu >= (sint_t)real->x2)
+    if (uu >= (sint_t)real->x2) {
         uu = real->x2 - 1;
-    if (vv < 0)
+        x = (fp32_t)real->x2;
+    }
+    if (vv < 0) {
         vv = 0;
+        z = 0.0f;
+    }
     else
-    if (vv >= (sint_t)real->z2)
+    if (vv >= (sint_t)real->z2) {
         vv = real->z2 - 1;
+        z = (fp32_t)real->z2;
+    }
     height = &real->height[vv * real->ww + uu];
 
     h1 = height[0];
