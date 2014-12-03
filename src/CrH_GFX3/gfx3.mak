@@ -9,6 +9,7 @@ OBJ_LIST=.$(L)gfx3.$(O) \
          .$(L)skydome.$(O) \
          .$(L)skyplane.$(O) \
          .$(L)vcross.$(O) \
+         .$(L)terrain.$(O) \
          .$(L)interlock.$(O) \
          .$(L)heightmap.$(O) \
          .$(L)camera.$(O) \
@@ -21,6 +22,7 @@ SRC_LIST=.$(L)gfx3.$(C) \
          .$(L)skydome.$(C) \
          .$(L)skyplane.$(C) \
          .$(L)vcross.$(C) \
+         .$(L)terrain.$(C) \
          .$(L)interlock.$(C) \
          .$(L)heightmap.$(C) \
          .$(L)camera.$(C) \
