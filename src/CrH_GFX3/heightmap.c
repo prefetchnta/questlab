@@ -280,7 +280,7 @@ height_map_aabb (
     )
 {
     fp32_t  tmp;
-    uint_t  ii, jj;
+    uint_t  tx, tz;
     vec3d_t box[2];
     /* --------- */
     sHEIGHTMAP* real;
@@ -302,9 +302,9 @@ height_map_aabb (
     box[1].y = box[0].y;
     box[1].z = (z + h - 1) * real->grid;
 
-    for (ii = z; ii < z + h; ii++)
-    for (jj = x; jj < x + w; jj++) {
-        tmp = real->height[ii * real->ww + jj];
+    for (tz = z; tz < z + h; tz++)
+    for (tx = x; tx < x + w; tx++) {
+        tmp = real->height[tz * real->ww + tx];
         if (tmp < box[0].y)
             box[0].y = tmp;
         if (tmp > box[1].y)

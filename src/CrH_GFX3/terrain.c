@@ -42,6 +42,7 @@ gen_terrain_tile (
     )
 {
     leng_t  count;
+    fp32_t  uu, vv;
     uint_t  tx, tz;
     /* --------- */
     sHEIGHTMAP* real;
@@ -74,15 +75,17 @@ gen_terrain_tile (
     count *= h;
     if (xyz == NULL)
         return (count);
+    uu = tex_scale / (fp32_t)(w - 1);
+    vv = tex_scale / (fp32_t)(h - 1);
     for (tz = z; tz < z + h; tz++)
     for (tx = x; tx < x + w; tx++) {
         xyz->x = tx * real->grid;
-        xyz->y = real->height[tz * real->width + tx];
+        xyz->y = real->height[tz * real->ww + tx];
         xyz->z = tz * real->grid;
         xyz = (vec3d_t*)((byte_t*)xyz + bpv);
         if (uvw != NULL) {
-            uvw->x = (fp32_t)((tx - x) / (w - 1)) * tex_scale;
-            uvw->y = (fp32_t)((tz - z) / (h - 1)) * tex_scale;
+            uvw->x = (fp32_t)(tx - x) * uu;
+            uvw->y = (fp32_t)(tz - z) * vv;
             uvw = (vec2d_t*)((byte_t*)uvw + bpv);
         }
     }
