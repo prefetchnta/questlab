@@ -299,7 +299,7 @@ iPIC_AVI_get (
     if (index != real->m_cur)
         real->m_cur = (int32u)ilab_video_seek(real->m_avi, index);
 
-    /* 获取摄像头一帧图像 */
+    /* 获取视频一帧图像 */
     ipls = ilab_video_get(real->m_avi);
     if (ipls == NULL)
         return (NULL);
