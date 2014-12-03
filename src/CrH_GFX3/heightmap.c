@@ -308,30 +308,38 @@ height_map_aabb (
     放置包围盒
 =======================================
 */
-CR_API void_t
-height_map_build (
-  __CR_IN__ ht_map_t    htmap,
-  __CR_IO__ sAABB*      aabb,
-  __CR_IN__ fp32_t      x,
-  __CR_IN__ fp32_t      z
+CR_API fp32_t
+height_map_place (
+  __CR_IN__ ht_map_t        htmap,
+  __CR_IN__ const sAABB*    aabb,
+  __CR_IN__ fp32_t          x,
+  __CR_IN__ fp32_t          z,
+  __CR_IN__ bool_t          large
     )
 {
     uint_t  idx;
     fp32_t  min, tmp;
 
-    /* 物体中心为坐标原点 */
-    for (idx = 0; idx < 8; idx++) {
-        aabb->v[idx].x += x;
-        aabb->v[idx].z += z;
+    if (large)
+    {
+        /* 四个边框的最小高度 */
+        min = height_map_get(htmap, aabb->v[0].x + x,
+                                    aabb->v[0].z + z);
+        for (idx = 1; idx < 4; idx++) {
+            tmp = height_map_get(htmap, aabb->v[idx].x + x,
+                                        aabb->v[idx].z + z);
+            if (min > tmp)
+                min = tmp;
+        }
     }
-    min = height_map_get(htmap, aabb->v[0].x, aabb->v[0].z);
-    for (idx = 1; idx < 4; idx++) {
-        tmp = height_map_get(htmap, aabb->v[idx].x, aabb->v[idx].z);
-        if (min > tmp)
-            min = tmp;
+    else
+    {
+        /* 以物体中心点取高度 */
+        min = height_map_get(htmap, x, z);
     }
-    for (idx = 0; idx < 8; idx++)
-        aabb->v[idx].y += min;
+
+    /* 计算底面的偏移值 */
+    return (min - aabb->v[4].y);
 }
 
 #endif  /* !__CR_HEIGHTMAP_C__ */

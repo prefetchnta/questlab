@@ -122,8 +122,8 @@ CR_API void_t   height_map_nrm (ht_map_t htmap, vec3d_t *normal,
                                 uint_t x, uint_t z, bool_t is_nrm);
 CR_API void_t   height_map_aabb (ht_map_t htmap, sAABB *aabb, uint_t x,
                                  uint_t z, uint_t w, uint_t h);
-CR_API void_t   height_map_build (ht_map_t htmap, sAABB *aabb, fp32_t x,
-                                  fp32_t z);
+CR_API fp32_t   height_map_place (ht_map_t htmap, const sAABB *aabb,
+                                  fp32_t x, fp32_t z, bool_t large);
 
 /*****************************************************************************/
 /*                                 几何运算                                  */
