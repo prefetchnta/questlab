@@ -220,7 +220,7 @@ CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 /*****************************************************************************/
 /*                              Direct3D8 API                                */
 /*****************************************************************************/
-#if     defined(_CR_USE_D3D8_) && (_CR_CC_VER_ < 1700)
+#if     defined(_CR_USE_D3D8_)
 
 #include "gfx3/d3d8api.h"
 #include "gfx3/d3d8api.inl"
@@ -228,7 +228,7 @@ CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 /*****************************************************************************/
 /*                              Direct3D9 API                                */
 /*****************************************************************************/
-#elif   defined(_CR_USE_D3D9_) && (_CR_CC_VER_ < 1700)
+#elif   defined(_CR_USE_D3D9_)
 
 #include "gfx3/d3d9api.h"
 #include "gfx3/d3d9api.inl"
