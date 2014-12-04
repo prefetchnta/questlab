@@ -253,8 +253,8 @@ typedef struct
 
 } sWAVEFRONT;
 
-CR_API bool_t   wavefront_obj_load (sWAVEFRONT *obj, const ansi_t *str);
-CR_API void_t   wavefront_obj_free (sWAVEFRONT *obj);
+CR_API bool_t   wfront_obj_load (sWAVEFRONT *obj, const ansi_t *str);
+CR_API void_t   wfront_obj_free (const sWAVEFRONT *obj);
 
 #endif  /* !__CR_GFX3_H__ */
 

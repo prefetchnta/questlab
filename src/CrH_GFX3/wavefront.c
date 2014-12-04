@@ -22,6 +22,7 @@
 
 #include "gfx3.h"
 #include "datlib.h"
+#include "strlib.h"
 
 #ifndef _CR_NO_STDC_
     #include <math.h>
@@ -33,7 +34,7 @@
 =======================================
 */
 CR_API bool_t
-wavefront_obj_load (
+wfront_obj_load (
   __CR_OT__ sWAVEFRONT*     obj,
   __CR_IN__ const ansi_t*   str
     )
@@ -47,11 +48,22 @@ wavefront_obj_load (
 =======================================
 */
 CR_API void_t
-wavefront_obj_free (
-  __CR_IN__ sWAVEFRONT* obj
+wfront_obj_free (
+  __CR_IN__ const sWAVEFRONT*   obj
     )
 {
+    leng_t  idx;
 
+    TRY_FREE(obj->mtl);
+    mem_free(obj->p_v);
+    TRY_FREE(obj->p_vt);
+    TRY_FREE(obj->p_vn);
+    mem_free(obj->p_f);
+    for (idx = 0; idx < obj->n_g; idx++) {
+        mem_free(obj->p_g[idx].name);
+        TRY_FREE(obj->p_g[idx].mtl);
+    }
+    mem_free(obj->p_g);
 }
 
 #endif  /* !__CR_WAVEFRONT_C__ */
