@@ -233,14 +233,6 @@ CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 #include "gfx3/d3d9api.h"
 #include "gfx3/d3d9api.inl"
 
-/*****************************************************************************/
-/*                              Direct3D11 API                               */
-/*****************************************************************************/
-#elif   defined(_CR_USE_D3D11_)
-
-#include "gfx3/d3d11api.h"
-#include "gfx3/d3d11api.inl"
-
 #endif  /* GFX3 API predefines */
 
 #endif  /* _CR_CC_MSC_ && _CR_CC_VER_ */
