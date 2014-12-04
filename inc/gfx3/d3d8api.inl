@@ -330,8 +330,8 @@ d3d8_at_enter (
   __CR_IN__ uint_t      value
     )
 {
-    main->dev->SetRenderState(D3DRS_ALPHAREF, value);
     main->dev->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+    main->dev->SetRenderState(D3DRS_ALPHAREF, value);
     main->dev->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 }
 
@@ -359,6 +359,7 @@ d3d8_ab_enter (
     )
 {
     main->dev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    main->dev->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     main->dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
     main->dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 }
