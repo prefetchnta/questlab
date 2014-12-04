@@ -136,7 +136,7 @@ wfront_obj_load (
         /* 顶点信息 */
         if (line[0] == CR_AC('v'))
         {
-            if (line[1] == CR_AC('t') && is_spaceA(line[2]))
+            if (line[1] == CR_AC('t') && line[2] == CR_AC(' '))
             {
                 /* 贴图坐标 */
                 if (!wfront_parse_v3d(&vtmp, line + 3, TRUE)) {
@@ -147,7 +147,7 @@ wfront_obj_load (
                 aa = &a_vt;
             }
             else
-            if (line[1] == CR_AC('n') && is_spaceA(line[2]))
+            if (line[1] == CR_AC('n') && line[2] == CR_AC(' '))
             {
                 /* 法线向量 */
                 if (!wfront_parse_v3d(&vtmp, line + 3, FALSE)) {
@@ -167,7 +167,7 @@ wfront_obj_load (
                 vtmp.z /= tt;
                 aa = &a_vn;
             }
-            else if (is_spaceA(line[1]))
+            else if (line[1] == CR_AC(' '))
             {
                 /* 空间坐标 */
                 if (!wfront_parse_v3d(&vtmp, line + 2, FALSE)) {
@@ -203,7 +203,7 @@ wfront_obj_load (
         if (line[0] == CR_AC('g'))
         {
             /* 非法的行 */
-            if (!is_spaceA(line[1])) {
+            if (line[1] != CR_AC(' ')) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <g>");
                 goto _failure;
