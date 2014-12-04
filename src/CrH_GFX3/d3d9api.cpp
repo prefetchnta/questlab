@@ -1800,6 +1800,12 @@ d3d9_create_tran (
     rett->upvec.y = 1.0f;
     rett->upvec.z = 0.0f;
     rett->upvec.w = 1.0f;
+    rett->vvec.x = rett->eye.x - rett->lookat.x;
+    rett->vvec.y = rett->eye.y - rett->lookat.y;
+    rett->vvec.z = rett->eye.z - rett->lookat.z;
+    rett->vvec.w = 1.0f;
+    D3DXVec3Normalize((D3DXVECTOR3*)(&rett->vvec),
+                      (D3DXVECTOR3*)(&rett->vvec));
     D3DXMatrixLookAtLH(&rett->view, (D3DXVECTOR3*)(&rett->eye),
                                     (D3DXVECTOR3*)(&rett->lookat),
                                     (D3DXVECTOR3*)(&rett->upvec));
@@ -1853,6 +1859,11 @@ d3d9_tran_update_view (
   __CR_IO__ sD3D9_TRAN* tran
     )
 {
+    tran->vvec.x = tran->eye.x - tran->lookat.x;
+    tran->vvec.y = tran->eye.y - tran->lookat.y;
+    tran->vvec.z = tran->eye.z - tran->lookat.z;
+    D3DXVec3Normalize((D3DXVECTOR3*)(&tran->vvec),
+                      (D3DXVECTOR3*)(&tran->vvec));
     D3DXMatrixLookAtLH(&tran->view, (D3DXVECTOR3*)(&tran->eye),
                                     (D3DXVECTOR3*)(&tran->lookat),
                                     (D3DXVECTOR3*)(&tran->upvec));

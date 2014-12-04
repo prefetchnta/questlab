@@ -85,7 +85,7 @@ typedef struct
 {
         D3DXMATRIXA16   world, view, proj;
         D3DXMATRIXA16   tworld, tview, tproj, wvp;
-        vec4d_t         eye, lookat, upvec;
+        vec4d_t         eye, lookat, upvec, vvec;
         fp32_t          fovy, aspect, znear, zfar;
         D3DVIEWPORT9    view_port;
 
