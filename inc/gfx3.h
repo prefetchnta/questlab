@@ -213,6 +213,49 @@ CR_API bool_t   frustum_ball (const sFRUSTUM *frt, const sSPHERE *ball);
 CR_API bool_t   frustum_quad (const sFRUSTUM *frt, const sQUAD *quad);
 CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 
+/*****************************************************************************/
+/*                                WAVEFRONT                                  */
+/*****************************************************************************/
+
+/* OBJ 模型结构 */
+typedef struct
+{
+        int32u  beg, end;       /* 三角形的起始和结束 */
+        ansi_t  *name, *mtl;    /* 模型名称与材质名称 */
+
+} sWAVEFRONT_G;
+
+/* OBJ 模型文件 */
+typedef struct
+{
+        /* 材质文件名 */
+        ansi_t*         mtl;
+
+        /* 空间坐标 */
+        leng_t          n_v;
+        vec3d_t*        p_v;
+
+        /* 贴图坐标 */
+        leng_t          n_vt;
+        vec3d_t*        p_vt;
+
+        /* 法线向量 */
+        leng_t          n_vn;
+        vec3d_t*        p_vn;
+
+        /* 顶点索引, 三个一组, 从1开始 */
+        leng_t          n_f;
+        int32u*         p_f;
+
+        /* 模型列表 */
+        leng_t          n_g;
+        sWAVEFRONT_G*   p_g;
+
+} sWAVEFRONT;
+
+CR_API bool_t   wavefront_obj_load (sWAVEFRONT *obj, const ansi_t *str);
+CR_API void_t   wavefront_obj_free (sWAVEFRONT *obj);
+
 #endif  /* !__CR_GFX3_H__ */
 
 /* 只使用微软自家的编译器 */
