@@ -139,7 +139,7 @@ wfront_obj_load (
             if (line[1] == CR_AC('t') && is_spaceA(line[2]))
             {
                 /* 贴图坐标 */
-                if (!wfront_parse_v3d(&vtmp, &line[3], TRUE)) {
+                if (!wfront_parse_v3d(&vtmp, line + 3, TRUE)) {
                     err_set(__CR_WAVEFRONT_C__, idx,
                             "wfront_obj_load()", "invalid <vt>");
                     goto _failure;
@@ -150,7 +150,7 @@ wfront_obj_load (
             if (line[1] == CR_AC('n') && is_spaceA(line[2]))
             {
                 /* 法线向量 */
-                if (!wfront_parse_v3d(&vtmp, &line[3], FALSE)) {
+                if (!wfront_parse_v3d(&vtmp, line + 3, FALSE)) {
                     err_set(__CR_WAVEFRONT_C__, idx,
                             "wfront_obj_load()", "invalid <vn>");
                     goto _failure;
@@ -170,7 +170,7 @@ wfront_obj_load (
             else if (is_spaceA(line[1]))
             {
                 /* 空间坐标 */
-                if (!wfront_parse_v3d(&vtmp, &line[2], FALSE)) {
+                if (!wfront_parse_v3d(&vtmp, line + 2, FALSE)) {
                     err_set(__CR_WAVEFRONT_C__, idx,
                             "wfront_obj_load()", "invalid <v>");
                     goto _failure;
@@ -236,6 +236,34 @@ wfront_obj_load (
             }
             str_trimRA(gtmp.name);
             gtmp.beg = gtmp.end;
+            continue;
+        }
+
+        /* 模型材质 */
+        if (mem_cmp(line, "usemtl ", 7) == 0) {
+            line = skip_spaceA(line + 7);
+            if (str_lenA(line) == 0) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "invalid <usemtl>");
+                goto _failure;
+            }
+            if (gtmp.name == NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "invalid <usemtl>");
+                goto _failure;
+            }
+            if (gtmp.mtl != NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "repeat <usemtl>");
+                goto _failure;
+            }
+            gtmp.mtl = str_dupA(line);
+            if (gtmp.mtl == NULL) {
+                err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                        "wfront_obj_load()", "str_dupA() failure");
+                goto _failure;
+            }
+            str_trimRA(gtmp.mtl);
             continue;
         }
 
@@ -313,6 +341,15 @@ wfront_obj_load (
     obj->p_f = array_get_dataT(&a_f, sWAVEFRONT_F);
     obj->n_g = array_get_sizeT(&a_g, sWAVEFRONT_G);
     obj->p_g = array_get_dataT(&a_g, sWAVEFRONT_G);
+
+    /* 必须要有的数据 */
+    if (obj->n_v == 0 || obj->p_v == NULL ||
+        obj->n_f == 0 || obj->p_f == NULL ||
+        obj->n_g == 0 || obj->p_g == NULL) {
+        err_set(__CR_WAVEFRONT_C__, CR_ERROR,
+                "wfront_obj_load()", "invalid OBJ format");
+        goto _failure;
+    }
     return (TRUE);
 
 _failure:
