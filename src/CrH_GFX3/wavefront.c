@@ -218,6 +218,7 @@ wfront_obj_load (
                     goto _failure;
                 }
                 gtmp.name = NULL;
+                gtmp.mtl = NULL;
             }
 
             /* 填充模型参数 */
@@ -236,17 +237,12 @@ wfront_obj_load (
             }
             str_trimRA(gtmp.name);
             gtmp.beg = gtmp.end;
+            SAFE_FREE(gtmp.mtl);
             continue;
         }
 
         /* 模型材质 */
         if (mem_cmp(line, "usemtl ", 7) == 0) {
-            line = skip_spaceA(line + 7);
-            if (str_lenA(line) == 0) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_obj_load()", "invalid <usemtl>");
-                goto _failure;
-            }
             if (gtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <usemtl>");
@@ -255,6 +251,12 @@ wfront_obj_load (
             if (gtmp.mtl != NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "repeat <usemtl>");
+                goto _failure;
+            }
+            line = skip_spaceA(line + 7);
+            if (str_lenA(line) == 0) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "invalid <usemtl>");
                 goto _failure;
             }
             gtmp.mtl = str_dupA(line);
@@ -269,15 +271,15 @@ wfront_obj_load (
 
         /* 材质文件 */
         if (mem_cmp(line, "mtllib ", 7) == 0) {
+            if (obj->mtl != NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "repeat <mtllib>");
+                goto _failure;
+            }
             line = skip_spaceA(line + 7);
             if (str_lenA(line) == 0) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <mtllib>");
-                goto _failure;
-            }
-            if (obj->mtl != NULL) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_obj_load()", "repeat <mtllib>");
                 goto _failure;
             }
             obj->mtl = str_dupA(line);
@@ -300,8 +302,10 @@ wfront_obj_load (
             goto _failure;
         }
         gtmp.name = NULL;
+        gtmp.mtl = NULL;
     }
     SAFE_FREE(gtmp.name);
+    SAFE_FREE(gtmp.mtl);
 
     /* 固定缓冲大小 */
     if (!array_no_growT(&a_v, vec3d_t)) {
