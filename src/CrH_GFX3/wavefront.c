@@ -22,11 +22,63 @@
 
 #include "gfx3.h"
 #include "datlib.h"
+#include "parser.h"
 #include "strlib.h"
 
 #ifndef _CR_NO_STDC_
     #include <math.h>
 #endif
+
+/*
+---------------------------------------
+    释放模型单元
+---------------------------------------
+*/
+static void_t
+wfront_g_free (
+  __CR_IN__ void_t* obj
+    )
+{
+    sWAVEFRONT_G*   unit;
+
+    unit = (sWAVEFRONT_G*)obj;
+    mem_free(unit->name);
+    TRY_FREE(unit->mtl);
+}
+
+/*
+---------------------------------------
+    解析三维向量
+---------------------------------------
+*/
+static bool_t
+wfront_parse_v3d (
+  __CR_OT__ vec3d_t*        v3d,
+  __CR_IN__ const ansi_t*   str,
+  __CR_IN__ bool_t          no_z
+    )
+{
+    leng_t  skip;
+
+    str = skip_spaceA(str);
+    v3d->x = str2fp32A(str, &skip);
+    if (skip == 0)
+        return (FALSE);
+    str = skip_spaceA(str + skip);
+    v3d->y = str2fp32A(str, &skip);
+    if (skip == 0)
+        return (FALSE);
+    str = skip_spaceA(str + skip);
+    v3d->z = str2fp32A(str, &skip);
+    if (skip == 0) {
+        if (no_z) {
+            v3d->z = 0.0f;
+            return (TRUE);
+        }
+        return (FALSE);
+    }
+    return (TRUE);
+}
 
 /*
 =======================================
@@ -36,10 +88,243 @@
 CR_API bool_t
 wfront_obj_load (
   __CR_OT__ sWAVEFRONT*     obj,
-  __CR_IN__ const ansi_t*   str
+  __CR_IN__ const ansi_t*   str,
+  __CR_IN__ bool_t          swap_yz,
+  __CR_IN__ bool_t          neg_z
     )
 {
+    fp32_t  tt;
+    leng_t  idx;
+    sINIu*  ini;
+    sARRAY  a_v, a_vt, *aa;
+    sARRAY  a_vn, a_f, a_g;
+    /* ----------------- */
+    vec3d_t         vtmp;
+    sWAVEFRONT_F    ftmp;
+    sWAVEFRONT_G    gtmp;
+    const ansi_t*   line;
 
+    /* 清空对象 */
+    struct_zero(obj, sWAVEFRONT);
+    struct_zero(&gtmp, sWAVEFRONT_G);
+
+    /* 逐行分割 */
+    ini = ini_parseU(str);
+    if (ini == NULL) {
+        err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                "wfront_obj_load()", "ini_parseU() failure");
+        return (FALSE);
+    }
+
+    /* 初始化列表 */
+    array_initT(&a_v, vec3d_t);
+    array_initT(&a_vt, vec3d_t);
+    array_initT(&a_vn, vec3d_t);
+    array_initT(&a_f, sWAVEFRONT_F);
+    array_initT(&a_g, sWAVEFRONT_G);
+    a_g.free = wfront_g_free;
+
+    /* 逐行解析 */
+    for (idx = 0; idx < line->count; idx++)
+    {
+        /* 跳过没用的行 */
+        line = skip_spaceA(ini->lines[idx]);
+        if (line[0] == CR_AC(NIL) || line[0] == CR_AC('#') ||
+            line[0] == CR_AC('s') || line[0] == CR_AC('o'))
+            continue;
+
+        /* 顶点信息 */
+        if (line[0] == CR_AC('v'))
+        {
+            if (line[1] == CR_AC('t') && is_spaceA(line[2]))
+            {
+                /* 贴图坐标 */
+                if (!wfront_parse_v3d(&vtmp, &line[3], TRUE)) {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_obj_load()", "invalid <vt>");
+                    goto _failure;
+                }
+                aa = &a_vt;
+            }
+            else
+            if (line[1] == CR_AC('n') && is_spaceA(line[2]))
+            {
+                /* 法线向量 */
+                if (!wfront_parse_v3d(&vtmp, &line[3], FALSE)) {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_obj_load()", "invalid <vn>");
+                    goto _failure;
+                }
+                if (neg_z)
+                    vtmp.z = -vtmp.z;
+                if (swap_yz) {
+                    CR_SWAP(vtmp.y, vtmp.z, tt);
+                }
+                tt = FSQRT(vtmp.x * vtmp.x + vtmp.y * vtmp.y +
+                                    vtmp.z * vtmp.z);
+                vtmp.x /= tt;
+                vtmp.y /= tt;
+                vtmp.z /= tt;
+                aa = &a_vn;
+            }
+            else if (is_spaceA(line[1]))
+            {
+                /* 空间坐标 */
+                if (!wfront_parse_v3d(&vtmp, &line[2], FALSE)) {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_obj_load()", "invalid <v>");
+                    goto _failure;
+                }
+                if (neg_z)
+                    vtmp.z = -vtmp.z;
+                if (swap_yz) {
+                    CR_SWAP(vtmp.y, vtmp.z, tt);
+                }
+                aa = &a_v;
+            }
+            else
+            {
+                /* 非法的行 */
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "invalid <v>");
+                goto _failure;
+            }
+
+            /* 压入列表 */
+            if (!array_push_growT(aa, vec3d_t, &vtmp) == NULL) {
+                err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                        "wfront_obj_load()", "array_push_growT() failure");
+                goto _failure;
+            }
+            continue;
+        }
+
+        /* 模型开始 */
+        if (line[0] == CR_AC('g'))
+        {
+            /* 非法的行 */
+            if (!is_spaceA(line[1])) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "invalid <g>");
+                goto _failure;
+            }
+
+            /* 压入上个模型 */
+            gtmp.end = array_get_sizeT(&a_f, sWAVEFRONT_G);
+            if (gtmp.beg < gtmp.end && gtmp.name != NULL) {
+                if (!array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL) {
+                    err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                            "wfront_obj_load()", "array_push_growT() failure");
+                    goto _failure;
+                }
+                gtmp.name = NULL;
+            }
+
+            /* 填充模型参数 */
+            line = skip_spaceA(line + 2);
+            if (str_lenA(line) == 0) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "invalid <g>");
+                goto _failure;
+            }
+            TRY_FREE(gtmp.name);
+            gtmp.name = str_dupA(line);
+            if (gtmp.name == NULL) {
+                err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                        "wfront_obj_load()", "str_dupA() failure");
+                goto _failure;
+            }
+            str_trimRA(gtmp.name);
+            gtmp.beg = gtmp.end;
+            continue;
+        }
+
+        /* 材质文件 */
+        if (mem_cmp(line, "mtllib ", 7) == 0) {
+            line = skip_spaceA(line + 7);
+            if (str_lenA(line) == 0) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "invalid <mtllib>");
+                goto _failure;
+            }
+            if (obj->mtl != NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_obj_load()", "repeat <mtllib>");
+                goto _failure;
+            }
+            obj->mtl = str_dupA(line);
+            if (obj->mtl == NULL) {
+                err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                        "wfront_obj_load()", "str_dupA() failure");
+                goto _failure;
+            }
+            str_trimRA(obj->mtl);
+            continue;
+        }
+    }
+
+    /* 压入最后一个模型 */
+    gtmp.end = array_get_sizeT(&a_f, sWAVEFRONT_G);
+    if (gtmp.beg < gtmp.end && gtmp.name != NULL) {
+        if (!array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL) {
+            err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                    "wfront_obj_load()", "array_push_growT() failure");
+            goto _failure;
+        }
+        gtmp.name = NULL;
+    }
+    SAFE_FREE(gtmp.name);
+
+    /* 固定缓冲大小 */
+    if (!array_no_growT(&a_v, vec3d_t)) {
+        err_set(__CR_WAVEFRONT_C__, FALSE,
+                "wfront_obj_load()", "array_no_growT() failure");
+        goto _failure;
+    }
+    if (!array_no_growT(&a_vt, vec3d_t)) {
+        err_set(__CR_WAVEFRONT_C__, FALSE,
+                "wfront_obj_load()", "array_no_growT() failure");
+        goto _failure;
+    }
+    if (!array_no_growT(&a_vn, vec3d_t)) {
+        err_set(__CR_WAVEFRONT_C__, FALSE,
+                "wfront_obj_load()", "array_no_growT() failure");
+        goto _failure;
+    }
+    if (!array_no_growT(&a_f, sWAVEFRONT_F)) {
+        err_set(__CR_WAVEFRONT_C__, FALSE,
+                "wfront_obj_load()", "array_no_growT() failure");
+        goto _failure;
+    }
+    if (!array_no_growT(&a_g, sWAVEFRONT_G)) {
+        err_set(__CR_WAVEFRONT_C__, FALSE,
+                "wfront_obj_load()", "array_no_growT() failure");
+        goto _failure;
+    }
+
+    /* 返回读取的数据 */
+    obj->n_v = array_get_sizeT(&a_v, vec3d_t);
+    obj->p_v = array_get_dataT(&a_v, vec3d_t);
+    obj->n_vt = array_get_sizeT(&a_vt, vec3d_t);
+    obj->p_vt = array_get_dataT(&a_vt, vec3d_t);
+    obj->n_vn = array_get_sizeT(&a_vn, vec3d_t);
+    obj->p_vn = array_get_dataT(&a_vn, vec3d_t);
+    obj->n_f = array_get_sizeT(&a_f, sWAVEFRONT_F);
+    obj->p_f = array_get_dataT(&a_f, sWAVEFRONT_F);
+    obj->n_g = array_get_sizeT(&a_g, sWAVEFRONT_G);
+    obj->p_g = array_get_dataT(&a_g, sWAVEFRONT_G);
+    return (TRUE);
+
+_failure:
+    array_freeT(&a_g, sWAVEFRONT_G);
+    array_freeT(&a_f, sWAVEFRONT_F);
+    array_freeT(&a_vn, vec3d_t);
+    array_freeT(&a_vt, vec3d_t);
+    array_freeT(&a_v, vec3d_t);
+    TRY_FREE(gtmp.name);
+    TRY_FREE(gtmp.mtl);
+    TRY_FREE(obj->mtl);
+    return (FALSE);
 }
 
 /*

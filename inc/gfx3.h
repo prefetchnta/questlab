@@ -220,15 +220,22 @@ CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 /* OBJ 模型结构 */
 typedef struct
 {
-        int32u  beg, end;       /* 三角形的起始和结束 */
+        leng_t  beg, end;       /* 三角形的起始和结束 */
         ansi_t  *name, *mtl;    /* 模型名称与材质名称 */
 
 } sWAVEFRONT_G;
 
+/* OBJ 顶点结构 */
+typedef struct
+{
+        int32u  idx[3];     /* 从1开始, 0表示不存在 */
+
+} sWAVEFRONT_F;
+
 /* OBJ 模型文件 */
 typedef struct
 {
-        /* 材质文件名 */
+        /* 材质文件 */
         ansi_t*         mtl;
 
         /* 空间坐标 */
@@ -243,9 +250,9 @@ typedef struct
         leng_t          n_vn;
         vec3d_t*        p_vn;
 
-        /* 顶点索引, 三个一组, 从1开始 */
+        /* 顶点索引 */
         leng_t          n_f;
-        int32u*         p_f;
+        sWAVEFRONT_F*   p_f;
 
         /* 模型列表 */
         leng_t          n_g;
@@ -253,7 +260,8 @@ typedef struct
 
 } sWAVEFRONT;
 
-CR_API bool_t   wfront_obj_load (sWAVEFRONT *obj, const ansi_t *str);
+CR_API bool_t   wfront_obj_load (sWAVEFRONT *obj, const ansi_t *str,
+                                 bool_t swap_yz, bool_t neg_z);
 CR_API void_t   wfront_obj_free (const sWAVEFRONT *obj);
 
 #endif  /* !__CR_GFX3_H__ */
