@@ -758,6 +758,58 @@ wfront_mtl_load (
             }
             continue;
         }
+
+        /* 整数标量参数 */
+        if (mem_cmp(line, "illum", 5) == 0)
+        {
+            /* 非法的行 */
+            if (!is_spaceA(line[5])) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <illum>");
+                goto _failure;
+            }
+
+            /* 必须有前后顺序且不重复  */
+            if (mtmp.name == NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <illum>");
+                goto _failure;
+            }
+
+            /* 取值范围为0-10 */
+            mtmp.illum = str2intA(skip_spaceA(line + 6), &skip);
+            if (skip == 0 || mtmp.illum > 10) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <illum>");
+                goto _failure;
+            }
+            continue;
+        }
+        if (mem_cmp(line, "sharpness", 9) == 0)
+        {
+            /* 非法的行 */
+            if (!is_spaceA(line[9])) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <sharpness>");
+                goto _failure;
+            }
+
+            /* 必须有前后顺序且不重复  */
+            if (mtmp.name == NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <sharpness>");
+                goto _failure;
+            }
+
+            /* 取值范围为0-1000 */
+            mtmp.sharpness = str2intA(skip_spaceA(line + 10), &skip);
+            if (skip == 0 || mtmp.sharpness > 1000) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <sharpness>");
+                goto _failure;
+            }
+            continue;
+        }
     }
 
     /* 压入最后一个材质 */

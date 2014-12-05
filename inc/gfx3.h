@@ -221,9 +221,9 @@ CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 typedef struct
 {
         ansi_t  *name;
+        fp32_t  d, ns, ni;
         vec3d_t ka, kd, ks, tf;
         uint_t  illum, halo, sharpness;
-        fp32_t  d, ns, ni;
         ansi_t  *map_ka, *map_kd, *map_ks;
         ansi_t  *map_d, *map_ns, *decal, *disp, *bump;
 
