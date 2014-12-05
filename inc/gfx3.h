@@ -225,7 +225,7 @@ typedef struct
         vec3d_t ka, kd, ks, tf;
         uint_t  illum, halo, sharpness;
         ansi_t  *map_ka, *map_kd, *map_ks;
-        ansi_t  *map_d, *map_ns, *disp, *bump;
+        ansi_t  *map_d, *map_ns, *bump;
 
 } sWAVEFRONT_M;
 

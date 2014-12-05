@@ -65,7 +65,6 @@ wfront_m_free (
     TRY_FREE(unit->map_ks);
     TRY_FREE(unit->map_d);
     TRY_FREE(unit->map_ns);
-    TRY_FREE(unit->disp);
     TRY_FREE(unit->bump);
 }
 
@@ -847,7 +846,6 @@ _failure:
     TRY_FREE(mtmp.map_ks);
     TRY_FREE(mtmp.map_d);
     TRY_FREE(mtmp.map_ns);
-    TRY_FREE(mtmp.disp);
     TRY_FREE(mtmp.bump);
     return (FALSE);
 }
@@ -882,7 +880,6 @@ wfront_obj_free (
             TRY_FREE(obj->p_m[idx].map_ks);
             TRY_FREE(obj->p_m[idx].map_d);
             TRY_FREE(obj->p_m[idx].map_ns);
-            TRY_FREE(obj->p_m[idx].disp);
             TRY_FREE(obj->p_m[idx].bump);
         }
         mem_free(obj->p_m);
