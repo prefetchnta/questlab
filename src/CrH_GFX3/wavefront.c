@@ -944,12 +944,12 @@ wfront_mtl_load (
     for (idx = 0; idx < obj->n_g; idx++)
     {
         /* 逐个对比名字 */
-        if (obj->p_g[idx].name == NULL) {
+        if (obj->p_g[idx].mtl == NULL) {
             obj->p_g[idx].attr = NULL;
             continue;
         }
         for (skip = 0; skip < obj->n_m; skip++) {
-            if (str_cmpA(obj->p_g[idx].name, obj->p_m[skip].name) == 0) {
+            if (str_cmpA(obj->p_g[idx].mtl, obj->p_m[skip].name) == 0) {
                 obj->p_g[idx].attr = &obj->p_m[skip];
                 break;
             }
