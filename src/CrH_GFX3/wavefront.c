@@ -292,6 +292,21 @@ wfront_obj_load (
 
             /* 压入列表 */
             for (ii = 0; ii < cnt; ii++) {
+                if (ff[ii].idx[0] > array_get_sizeT(&a_v, vec3d_t)) {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_obj_load()", "invalid <f>");
+                    goto _failure;
+                }
+                if (ff[ii].idx[1] > array_get_sizeT(&a_vt, vec3d_t)) {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_obj_load()", "invalid <f>");
+                    goto _failure;
+                }
+                if (ff[ii].idx[2] > array_get_sizeT(&a_vn, vec3d_t)) {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_obj_load()", "invalid <f>");
+                    goto _failure;
+                }
                 if (!array_push_growT(&a_f, sWAVEFRONT_F, &ff[ii]) == NULL) {
                     err_set(__CR_WAVEFRONT_C__, CR_NULL,
                             "wfront_obj_load()", "array_push_growT() failure");
@@ -421,8 +436,10 @@ wfront_obj_load (
         gtmp.name = NULL;
         gtmp.mtl = NULL;
     }
-    SAFE_FREE(gtmp.name);
-    SAFE_FREE(gtmp.mtl);
+    else {
+        SAFE_FREE(gtmp.name);
+        SAFE_FREE(gtmp.mtl);
+    }
 
     /* 固定缓冲大小 */
     if (!array_no_growT(&a_v, vec3d_t)) {
