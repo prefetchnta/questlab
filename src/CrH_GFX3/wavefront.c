@@ -210,9 +210,9 @@ wfront_obj_load (
   __CR_IN__ bool_t          neg_z
     )
 {
-    fp32_t  tt;
-    leng_t  idx;
     sINIu*  ini;
+    fp32_t  ttt;
+    leng_t  idx;
     uint_t  cnt, ii;
     sARRAY  a_v, a_vt, *aa;
     sARRAY  a_vn, a_f, a_g;
@@ -290,13 +290,13 @@ wfront_obj_load (
                 if (neg_z)
                     vtmp.z = -vtmp.z;
                 if (swap_yz) {
-                    CR_SWAP(vtmp.y, vtmp.z, tt);
+                    CR_SWAP(vtmp.y, vtmp.z, ttt);
                 }
-                tt = FSQRT(vtmp.x * vtmp.x + vtmp.y * vtmp.y +
-                                    vtmp.z * vtmp.z);
-                vtmp.x /= tt;
-                vtmp.y /= tt;
-                vtmp.z /= tt;
+                ttt = FSQRT(vtmp.x * vtmp.x + vtmp.y * vtmp.y +
+                                     vtmp.z * vtmp.z);
+                vtmp.x /= ttt;
+                vtmp.y /= ttt;
+                vtmp.z /= ttt;
                 aa = &a_vn;
             }
             else if (is_spaceA(line[1]))
@@ -310,7 +310,7 @@ wfront_obj_load (
                 if (neg_z)
                     vtmp.z = -vtmp.z;
                 if (swap_yz) {
-                    CR_SWAP(vtmp.y, vtmp.z, tt);
+                    CR_SWAP(vtmp.y, vtmp.z, ttt);
                 }
                 aa = &a_v;
             }
@@ -557,14 +557,21 @@ wfront_mtl_load (
   __CR_IN__ const ansi_t*   str
     )
 {
-    leng_t          idx;
     sINIu*          ini;
     sARRAY          a_m;
+    leng_t          idx;
     leng_t          skip;
     ansi_t**        stmp;
     vec3d_t*        vtmp;
     sWAVEFRONT_M    mtmp;
     const ansi_t*   line;
+
+    /* 必须已经加载过模型 */
+    if (obj->p_g == NULL) {
+        err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                "wfront_mtl_load()", "invalid param: obj");
+        return (FALSE);
+    }
 
     /* 清空对象 */
     if (obj->p_m != NULL || obj->mtl == NULL)
@@ -931,6 +938,22 @@ wfront_mtl_load (
         err_set(__CR_WAVEFRONT_C__, CR_ERROR,
                 "wfront_mtl_load()", "invalid MTL format");
         goto _failure;
+    }
+
+    /* 设定模型的材质 */
+    for (idx = 0; idx < obj->n_g; idx++)
+    {
+        /* 逐个对比名字 */
+        if (obj->p_g[idx].name == NULL) {
+            obj->p_g[idx].attr = NULL;
+            continue;
+        }
+        for (skip = 0; skip < obj->n_m; skip++) {
+            if (str_cmpA(obj->p_g[idx].name, obj->p_m[skip].name) == 0) {
+                obj->p_g[idx].attr = &obj->p_m[skip];
+                break;
+            }
+        }
     }
     return (TRUE);
 
