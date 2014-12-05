@@ -165,6 +165,41 @@ wfront_parse_face (
 }
 
 /*
+---------------------------------------
+    解析名称字符串
+---------------------------------------
+*/
+static ansi_t*
+wfront_parse_name (
+  __CR_IN__ const ansi_t*   str
+    )
+{
+    ansi_t* ptr;
+    ansi_t* val;
+
+    val = str_dupA(str);
+    if (val == NULL) {
+        err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                "wfront_parse_name()", "str_dupA() failure");
+        return (NULL);
+    }
+    ptr = val;
+    while (*ptr != CR_AC(NIL)) {
+        if (*ptr == CR_AC('#')) {
+            *ptr = CR_AC(NIL);
+            break;
+        }
+        ptr++;
+    }
+    str_trimRA(val);
+    if (str_lenA(val) == 0) {
+        mem_free(val);
+        return (NULL);
+    }
+    return (val);
+}
+
+/*
 =======================================
     解析 OBJ 字符串
 =======================================
@@ -363,20 +398,13 @@ wfront_obj_load (
             }
 
             /* 填充模型参数 */
-            line = skip_spaceA(line + 2);
-            if (*line == CR_AC('#') || str_lenA(line) == 0) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_obj_load()", "invalid <g>");
-                goto _failure;
-            }
             TRY_FREE(gtmp.name);
-            gtmp.name = str_dupA(line);
+            gtmp.name = wfront_parse_name(skip_spaceA(line + 2));
             if (gtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, CR_NULL,
-                        "wfront_obj_load()", "str_dupA() failure");
+                        "wfront_obj_load()", "wfront_parse_name() failure");
                 goto _failure;
             }
-            str_trimRA(gtmp.name);
             gtmp.beg = gtmp.end;
             SAFE_FREE(gtmp.mtl);
             continue;
@@ -399,19 +427,12 @@ wfront_obj_load (
                         "wfront_obj_load()", "repeat <usemtl>");
                 goto _failure;
             }
-            line = skip_spaceA(line + 7);
-            if (*line == CR_AC('#') || str_lenA(line) == 0) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_obj_load()", "invalid <usemtl>");
-                goto _failure;
-            }
-            gtmp.mtl = str_dupA(line);
+            gtmp.mtl = wfront_parse_name(skip_spaceA(line + 7));
             if (gtmp.mtl == NULL) {
                 err_set(__CR_WAVEFRONT_C__, CR_NULL,
-                        "wfront_obj_load()", "str_dupA() failure");
+                        "wfront_obj_load()", "wfront_parse_name() failure");
                 goto _failure;
             }
-            str_trimRA(gtmp.mtl);
             continue;
         }
 
@@ -427,19 +448,12 @@ wfront_obj_load (
                         "wfront_obj_load()", "repeat <mtllib>");
                 goto _failure;
             }
-            line = skip_spaceA(line + 7);
-            if (*line == CR_AC('#') || str_lenA(line) == 0) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_obj_load()", "invalid <mtllib>");
-                goto _failure;
-            }
-            obj->mtl = str_dupA(line);
+            obj->mtl = wfront_parse_name(skip_spaceA(line + 7));
             if (obj->mtl == NULL) {
                 err_set(__CR_WAVEFRONT_C__, CR_NULL,
-                        "wfront_obj_load()", "str_dupA() failure");
+                        "wfront_obj_load()", "wfront_parse_name() failure");
                 goto _failure;
             }
-            str_trimRA(obj->mtl);
             continue;
         }
 
@@ -576,12 +590,6 @@ wfront_mtl_load (
                         "wfront_mtl_load()", "invalid <newmtl>");
                 goto _failure;
             }
-            line = skip_spaceA(line + 7);
-            if (*line == CR_AC('#') || str_lenA(line) == 0) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_mtl_load()", "invalid <newmtl>");
-                goto _failure;
-            }
 
             /* 压入上个材质 */
             if (mtmp.name != NULL) {
@@ -594,13 +602,12 @@ wfront_mtl_load (
             }
 
             /* 保存材质名称 */
-            mtmp.name = str_dupA(line);
+            mtmp.name = wfront_parse_name(skip_spaceA(line + 7));
             if (mtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, CR_NULL,
-                        "wfront_mtl_load()", "str_dupA() failure");
+                        "wfront_mtl_load()", "wfront_parse_name() failure");
                 goto _failure;
             }
-            str_trimRA(mtmp.name);
             continue;
         }
 
