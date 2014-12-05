@@ -325,7 +325,7 @@ wfront_obj_load (
             }
 
             /* 压入列表 */
-            if (!array_push_growT(aa, vec3d_t, &vtmp) == NULL) {
+            if (array_push_growT(aa, vec3d_t, &vtmp) == NULL) {
                 err_set(__CR_WAVEFRONT_C__, CR_NULL,
                         "wfront_obj_load()", "array_push_growT() failure");
                 goto _failure;
@@ -366,7 +366,7 @@ wfront_obj_load (
                             "wfront_obj_load()", "invalid <f>");
                     goto _failure;
                 }
-                if (!array_push_growT(&a_f, sWAVEFRONT_F, &ff[ii]) == NULL) {
+                if (array_push_growT(&a_f, sWAVEFRONT_F, &ff[ii]) == NULL) {
                     err_set(__CR_WAVEFRONT_C__, CR_NULL,
                             "wfront_obj_load()", "array_push_growT() failure");
                     goto _failure;
@@ -388,7 +388,7 @@ wfront_obj_load (
             /* 压入上个模型 */
             gtmp.end = array_get_sizeT(&a_f, sWAVEFRONT_F);
             if (gtmp.beg < gtmp.end && gtmp.name != NULL) {
-                if (!array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL) {
+                if (array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL) {
                     err_set(__CR_WAVEFRONT_C__, CR_NULL,
                             "wfront_obj_load()", "array_push_growT() failure");
                     goto _failure;
@@ -411,12 +411,16 @@ wfront_obj_load (
         }
 
         /* 模型材质 */
-        if (mem_cmp(line, "usemtl", 6) == 0) {
+        if (mem_cmp(line, "usemtl", 6) == 0)
+        {
+            /* 非法的行 */
             if (!is_spaceA(line[6])) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <usemtl>");
                 goto _failure;
             }
+
+            /* 必须有前后顺序且不重复  */
             if (gtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <usemtl>");
@@ -437,12 +441,16 @@ wfront_obj_load (
         }
 
         /* 材质文件 */
-        if (mem_cmp(line, "mtllib", 6) == 0) {
+        if (mem_cmp(line, "mtllib", 6) == 0)
+        {
+            /* 非法的行 */
             if (!is_spaceA(line[6])) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <mtllib>");
                 goto _failure;
             }
+
+            /* 必须有前后顺序且不重复  */
             if (obj->mtl != NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "repeat <mtllib>");
@@ -466,7 +474,7 @@ wfront_obj_load (
     /* 压入最后一个模型 */
     gtmp.end = array_get_sizeT(&a_f, sWAVEFRONT_F);
     if (gtmp.beg < gtmp.end && gtmp.name != NULL) {
-        if (!array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL) {
+        if (array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL) {
             err_set(__CR_WAVEFRONT_C__, CR_NULL,
                     "wfront_obj_load()", "array_push_growT() failure");
             goto _failure;
@@ -554,6 +562,7 @@ wfront_mtl_load (
     leng_t          idx;
     sINIu*          ini;
     sARRAY          a_m;
+    leng_t          skip;
     vec3d_t*        vtmp;
     sWAVEFRONT_M    mtmp;
     const ansi_t*   line;
@@ -584,7 +593,9 @@ wfront_mtl_load (
             continue;
 
         /* 材质开始 */
-        if (mem_cmp(line, "newmtl", 6) == 0) {
+        if (mem_cmp(line, "newmtl", 6) == 0)
+        {
+            /* 非法的行 */
             if (!is_spaceA(line[6])) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_mtl_load()", "invalid <newmtl>");
@@ -593,7 +604,7 @@ wfront_mtl_load (
 
             /* 压入上个材质 */
             if (mtmp.name != NULL) {
-                if (!array_push_growT(&a_m, sWAVEFRONT_M, &mtmp) == NULL) {
+                if (array_push_growT(&a_m, sWAVEFRONT_M, &mtmp) == NULL) {
                     err_set(__CR_WAVEFRONT_C__, CR_NULL,
                             "wfront_mtl_load()", "array_push_growT() failure");
                     goto _failure;
@@ -620,6 +631,8 @@ wfront_mtl_load (
                         "wfront_mtl_load()", "invalid <K>");
                 goto _failure;
             }
+
+            /* 必须有前后顺序且不重复  */
             if (mtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_mtl_load()", "invalid <K>");
@@ -648,12 +661,108 @@ wfront_mtl_load (
                         "wfront_mtl_load()", "invalid <K>");
                 goto _failure;
             }
+            continue;
+        }
+        if (line[0] == CR_AC('T') && line[1] == CR_AC('f'))
+        {
+            /* 非法的行 */
+            if (!is_spaceA(line[2])) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <Tf>");
+                goto _failure;
+            }
+
+            /* 必须有前后顺序且不重复  */
+            if (mtmp.name == NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <Tf>");
+                goto _failure;
+            }
+            if (!wfront_parse_v3d(&mtmp.tf, line + 3, FALSE)) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <Tf>");
+                goto _failure;
+            }
+            continue;
+        }
+
+        /* 浮点标量参数 */
+        if (line[0] == CR_AC('N'))
+        {
+            /* 非法的行 */
+            if (!is_spaceA(line[2])) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <N>");
+                goto _failure;
+            }
+
+            /* 必须有前后顺序且不重复  */
+            if (mtmp.name == NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <N>");
+                goto _failure;
+            }
+
+            /* 解析浮点数 */
+            if (line[1] == CR_AC('s')) {
+                line = skip_spaceA(line + 3);
+                mtmp.ns = str2fp32A(line, &skip);
+            }
+            else
+            if (line[1] == CR_AC('i')) {
+                line = skip_spaceA(line + 3);
+                mtmp.ni = str2fp32A(line, &skip);
+            }
+            else {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <N>");
+                goto _failure;
+            }
+            if (skip == 0) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <N>");
+                goto _failure;
+            }
+            continue;
+        }
+        if (line[0] == CR_AC('d'))
+        {
+            /* 非法的行 */
+            if (!is_spaceA(line[1])) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <d>");
+                goto _failure;
+            }
+
+            /* 必须有前后顺序且不重复  */
+            if (mtmp.name == NULL) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <d>");
+                goto _failure;
+            }
+
+            /* 是否有 -halo 字符串 */
+            line = skip_spaceA(line + 2);
+            if (mem_cmp(line, "-halo", 5) == 0 && is_spaceA(line[5])) {
+                line += 6;
+                mtmp.halo = 1;
+            }
+            else {
+                mtmp.halo = 0;
+            }
+            mtmp.d = str2fp32A(skip_spaceA(line), &skip);
+            if (skip == 0) {
+                err_set(__CR_WAVEFRONT_C__, idx,
+                        "wfront_mtl_load()", "invalid <d>");
+                goto _failure;
+            }
+            continue;
         }
     }
 
     /* 压入最后一个材质 */
     if (mtmp.name != NULL) {
-        if (!array_push_growT(&a_m, sWAVEFRONT_M, &mtmp) == NULL) {
+        if (array_push_growT(&a_m, sWAVEFRONT_M, &mtmp) == NULL) {
             err_set(__CR_WAVEFRONT_C__, CR_NULL,
                     "wfront_mtl_load()", "array_push_growT() failure");
             goto _failure;
