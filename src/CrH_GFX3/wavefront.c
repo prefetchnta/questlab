@@ -65,7 +65,6 @@ wfront_m_free (
     TRY_FREE(unit->map_ks);
     TRY_FREE(unit->map_d);
     TRY_FREE(unit->map_ns);
-    TRY_FREE(unit->decal);
     TRY_FREE(unit->disp);
     TRY_FREE(unit->bump);
 }
@@ -622,18 +621,18 @@ wfront_mtl_load (
             continue;
         }
 
+        /* 必须有前后顺序且不重复  */
+        if (mtmp.name == NULL) {
+            err_set(__CR_WAVEFRONT_C__, idx,
+                    "wfront_mtl_load()", "invalid line");
+            goto _failure;
+        }
+
         /* 颜色矢量 */
         if (line[0] == CR_AC('K'))
         {
             /* 非法的行 */
             if (!is_spaceA(line[2])) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_mtl_load()", "invalid <K>");
-                goto _failure;
-            }
-
-            /* 必须有前后顺序且不重复  */
-            if (mtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_mtl_load()", "invalid <K>");
                 goto _failure;
@@ -672,12 +671,7 @@ wfront_mtl_load (
                 goto _failure;
             }
 
-            /* 必须有前后顺序且不重复  */
-            if (mtmp.name == NULL) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_mtl_load()", "invalid <Tf>");
-                goto _failure;
-            }
+            /* 解析颜色矢量 */
             if (!wfront_parse_v3d(&mtmp.tf, line + 3, FALSE)) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_mtl_load()", "invalid <Tf>");
@@ -691,13 +685,6 @@ wfront_mtl_load (
         {
             /* 非法的行 */
             if (!is_spaceA(line[2])) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_mtl_load()", "invalid <N>");
-                goto _failure;
-            }
-
-            /* 必须有前后顺序且不重复  */
-            if (mtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_mtl_load()", "invalid <N>");
                 goto _failure;
@@ -734,13 +721,6 @@ wfront_mtl_load (
                 goto _failure;
             }
 
-            /* 必须有前后顺序且不重复  */
-            if (mtmp.name == NULL) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_mtl_load()", "invalid <d>");
-                goto _failure;
-            }
-
             /* 是否有 -halo 字符串 */
             line = skip_spaceA(line + 2);
             if (mem_cmp(line, "-halo", 5) == 0 && is_spaceA(line[5])) {
@@ -769,13 +749,6 @@ wfront_mtl_load (
                 goto _failure;
             }
 
-            /* 必须有前后顺序且不重复  */
-            if (mtmp.name == NULL) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_mtl_load()", "invalid <illum>");
-                goto _failure;
-            }
-
             /* 取值范围为0-10 */
             mtmp.illum = str2intA(skip_spaceA(line + 6), &skip);
             if (skip == 0 || mtmp.illum > 10) {
@@ -794,13 +767,6 @@ wfront_mtl_load (
                 goto _failure;
             }
 
-            /* 必须有前后顺序且不重复  */
-            if (mtmp.name == NULL) {
-                err_set(__CR_WAVEFRONT_C__, idx,
-                        "wfront_mtl_load()", "invalid <sharpness>");
-                goto _failure;
-            }
-
             /* 取值范围为0-1000 */
             mtmp.sharpness = str2intA(skip_spaceA(line + 10), &skip);
             if (skip == 0 || mtmp.sharpness > 1000) {
@@ -809,6 +775,38 @@ wfront_mtl_load (
                 goto _failure;
             }
             continue;
+        }
+
+        /* 纹理参数 */
+        if (mem_cmp(line, "map_", 4) == 0)
+        {
+            line += 4;
+            if (line[0] == CR_AC('K'))
+            {
+                /* 非法的行 */
+                if (!is_spaceA(line[2])) {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_mtl_load()", "invalid <map_K>");
+                    goto _failure;
+                }
+
+                /* 解析颜色矢量 */
+                if (line[1] == CR_AC('a')) {
+                }
+                else
+                if (line[1] == CR_AC('d')) {
+                }
+                else
+                if (line[1] == CR_AC('s')) {
+                }
+                else {
+                    err_set(__CR_WAVEFRONT_C__, idx,
+                            "wfront_mtl_load()", "invalid <map_K>");
+                    goto _failure;
+                }
+                continue;
+            }
+
         }
     }
 
@@ -849,7 +847,6 @@ _failure:
     TRY_FREE(mtmp.map_ks);
     TRY_FREE(mtmp.map_d);
     TRY_FREE(mtmp.map_ns);
-    TRY_FREE(mtmp.decal);
     TRY_FREE(mtmp.disp);
     TRY_FREE(mtmp.bump);
     return (FALSE);
@@ -885,7 +882,6 @@ wfront_obj_free (
             TRY_FREE(obj->p_m[idx].map_ks);
             TRY_FREE(obj->p_m[idx].map_d);
             TRY_FREE(obj->p_m[idx].map_ns);
-            TRY_FREE(obj->p_m[idx].decal);
             TRY_FREE(obj->p_m[idx].disp);
             TRY_FREE(obj->p_m[idx].bump);
         }
