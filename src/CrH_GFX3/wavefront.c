@@ -897,8 +897,8 @@ wfront_mtl_load (
             }
 
             /* 跳过参数直接取文件名 */
-            *stmp = wfront_parse_name(skip_spaceA(line + 5));
-            if (*stmp == NULL) {
+            mtmp.bump = wfront_parse_name(skip_spaceA(line + 5));
+            if (mtmp.bump == NULL) {
                 err_set(__CR_WAVEFRONT_C__, CR_NULL,
                         "wfront_mtl_load()", "wfront_parse_name() failure");
                 goto _failure;
