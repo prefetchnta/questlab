@@ -73,13 +73,8 @@ wfront_parse_v3d (
         return (FALSE);
     str = skip_spaceA(str + skip);
     v3d->z = str2fp32A(str, &skip);
-    if (skip == 0) {
-        if (no_z) {
-            v3d->z = 0.0f;
-            return (TRUE);
-        }
-        return (FALSE);
-    }
+    if (skip == 0)
+        return (no_z);
     return (TRUE);
 }
 
@@ -136,7 +131,7 @@ wfront_parse_face (
     }
     if (cnt != 3 && cnt != 4)
         return (0);
-    mem_cpy(vxs, ftmp, 4 * sizeof(sWAVEFRONT_F));
+    mem_cpy(vxs, ftmp, sizeof(ftmp));
     if (cnt == 4) {
         mem_cpy(&vxs[4], &ftmp[0], sizeof(sWAVEFRONT_F));
         mem_cpy(&vxs[5], &ftmp[2], sizeof(sWAVEFRONT_F));
@@ -330,7 +325,7 @@ wfront_obj_load (
 
             /* 填充模型参数 */
             line = skip_spaceA(line + 2);
-            if (str_lenA(line) == 0) {
+            if (*line == CR_AC('#') || str_lenA(line) == 0) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <g>");
                 goto _failure;
@@ -366,7 +361,7 @@ wfront_obj_load (
                 goto _failure;
             }
             line = skip_spaceA(line + 7);
-            if (str_lenA(line) == 0) {
+            if (*line == CR_AC('#') || str_lenA(line) == 0) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <usemtl>");
                 goto _failure;
@@ -394,7 +389,7 @@ wfront_obj_load (
                 goto _failure;
             }
             line = skip_spaceA(line + 7);
-            if (str_lenA(line) == 0) {
+            if (*line == CR_AC('#') || str_lenA(line) == 0) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <mtllib>");
                 goto _failure;
@@ -408,6 +403,11 @@ wfront_obj_load (
             str_trimRA(obj->mtl);
             continue;
         }
+
+        /* 非法的行 */
+        err_set(__CR_WAVEFRONT_C__, idx,
+                "wfront_obj_load()", "invalid OBJ format");
+        goto _failure;
     }
 
     /* 压入最后一个模型 */
