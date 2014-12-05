@@ -524,6 +524,20 @@ wfront_obj_free (
         TRY_FREE(obj->p_g[idx].mtl);
     }
     mem_free(obj->p_g);
+    if (obj->p_m != NULL) {
+        for (idx = 0; idx < obj->n_m; idx++) {
+            mem_free(obj->p_m[idx].name);
+            TRY_FREE(obj->p_m[idx].map_ka);
+            TRY_FREE(obj->p_m[idx].map_kd);
+            TRY_FREE(obj->p_m[idx].map_ks);
+            TRY_FREE(obj->p_m[idx].map_d);
+            TRY_FREE(obj->p_m[idx].map_ns);
+            TRY_FREE(obj->p_m[idx].decal);
+            TRY_FREE(obj->p_m[idx].disp);
+            TRY_FREE(obj->p_m[idx].bump);
+        }
+        mem_free(obj->p_m);
+    }
 }
 
 #endif  /* !__CR_WAVEFRONT_C__ */
