@@ -532,6 +532,7 @@ wfront_obj_load (
                 "wfront_obj_load()", "invalid OBJ format");
         goto _failure;
     }
+    ini_closeU(ini);
     return (TRUE);
 
 _failure:
@@ -543,6 +544,7 @@ _failure:
     TRY_FREE(gtmp.name);
     TRY_FREE(gtmp.mtl);
     TRY_FREE(obj->mtl);
+    ini_closeU(ini);
     return (FALSE);
 }
 
@@ -955,6 +957,7 @@ wfront_mtl_load (
             }
         }
     }
+    ini_closeU(ini);
     return (TRUE);
 
 _failure:
@@ -966,6 +969,7 @@ _failure:
     TRY_FREE(mtmp.map_d);
     TRY_FREE(mtmp.map_ns);
     TRY_FREE(mtmp.bump);
+    ini_closeU(ini);
     return (FALSE);
 }
 
