@@ -237,8 +237,8 @@ typedef struct
 typedef struct
 {
         /* OBJ 内容 */
-        leng_t  beg, end;       /* 三角形的起始和结束 */
         ansi_t  *name, *mtl;    /* 模型名称与材质名称 */
+        leng_t  beg, end, num;  /* 模型顶点相关的参数 */
 
         /* MTL 内容 */
         sWAVEFRONT_M*   attr;   /* 指向材质结构 */

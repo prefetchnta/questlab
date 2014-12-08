@@ -198,6 +198,33 @@ wfront_parse_name (
 }
 
 /*
+---------------------------------------
+    统计顶点个数
+---------------------------------------
+*/
+static void_t
+wfront_count_vertex (
+  __CR_IO__ sWAVEFRONT_G*   obj
+    )
+{
+    leng_t  idx, ii, jj;
+
+    /* 剔除重复的顶点 */
+    for (idx = 0; idx < obj->n_g; idx++) {
+        obj->p_g[idx].num = 1;
+        for (ii = obj->p_g[idx].beg + 1; ii < obj->p_g[idx].end; ii++) {
+            for (jj = obj->p_g[idx].beg; jj < ii; jj++) {
+                if (mem_cmp(&obj->p_f[ii], &obj->p_f[jj],
+                        sizeof(sWAVEFRONT_F)) == 0)
+                    break;
+            }
+            if (jj >= ii)
+                obj->p_g[idx].num += 1;
+        }
+    }
+}
+
+/*
 =======================================
     解析 OBJ 字符串
 =======================================
@@ -532,6 +559,7 @@ wfront_obj_load (
                 "wfront_obj_load()", "invalid OBJ format");
         goto _failure;
     }
+    wfront_count_vertex(obj);
     ini_closeU(ini);
     return (TRUE);
 
