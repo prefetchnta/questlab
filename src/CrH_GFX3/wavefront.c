@@ -1044,7 +1044,7 @@ wfront_obj_free (
 
 /*
 =======================================
-    生成网格数据
+    生成网格数据 (Tex2D)
 =======================================
 */
 CR_API leng_t
@@ -1122,6 +1122,102 @@ wfront_gen_mesh2 (
                             sizeof(vec2d_t));
                 }
                 uvw = (vec2d_t*)((byte_t*)uvw + bpv3);
+            }
+        }
+
+        /* 输出索引值 */
+        if (ti16) {
+            *(int16u*)ibuf = (int16u)(obj->p_f[ii].idx[3] - 1);
+            ibuf = (byte_t*)ibuf + sizeof(int16u);
+        }
+        else {
+            *(int32u*)ibuf = (int32u)(obj->p_f[ii].idx[3] - 1);
+            ibuf = (byte_t*)ibuf + sizeof(int32u);
+        }
+    }
+    return (obj->p_g[idx].num);
+}
+
+/*
+=======================================
+    生成网格数据 (Tex3D)
+=======================================
+*/
+CR_API leng_t
+wfront_gen_mesh3 (
+  __CR_OT__ vec3d_t*            xyz,
+  __CR_OT__ vec3d_t*            nrm,
+  __CR_OT__ vec3d_t*            uvw,
+  __CR_IN__ leng_t              bpv1,
+  __CR_IN__ leng_t              bpv2,
+  __CR_IN__ leng_t              bpv3,
+  __CR_OT__ void_t*             ibuf,
+  __CR_OT__ leng_t*             inum,
+  __CR_IN__ const sWAVEFRONT*   obj,
+  __CR_IN__ leng_t              idx
+    )
+{
+    leng_t  ii;
+    int32u  max;
+    bool_t  ti16;
+
+    /* 参数过滤 */
+    if (idx >= obj->n_g) {
+        err_set(__CR_WAVEFRONT_C__, idx,
+                "wfront_gen_mesh3()", "invalid param: idx");
+        return (0);
+    }
+
+    /* 返回参数 */
+    if (inum != NULL)
+        *inum = obj->p_g[idx].end - obj->p_g[idx].beg;
+    if (xyz == NULL)
+        return (obj->p_g[idx].num);
+    ti16 = (obj->p_g[idx].num > 65536) ? FALSE : TRUE;
+
+    /* 合成顶点与索引数据 */
+    if (bpv1 == 0)
+        bpv1 = sizeof(vec3d_t) * 2 + sizeof(vec3d_t);
+    else
+    if (bpv1 < sizeof(vec3d_t))
+        bpv1 = sizeof(vec3d_t);
+    if (bpv2 == 0)
+        bpv2 = bpv1;
+    else
+    if (bpv2 < sizeof(vec3d_t))
+        bpv2 = sizeof(vec3d_t);
+    if (bpv3 == 0)
+        bpv3 = bpv1;
+    else
+    if (bpv3 < sizeof(vec3d_t))
+        bpv3 = sizeof(vec3d_t);
+    max = 0;
+    for (ii = obj->p_g[idx].beg; ii < obj->p_g[idx].end; ii++) {
+        if (max < obj->p_f[ii].idx[3])
+        {
+            /* 未输出过的顶点 */
+            max = obj->p_f[ii].idx[3];
+            mem_cpy(xyz, &obj->p_v[obj->p_f[ii].idx[0] - 1], sizeof(vec3d_t));
+            xyz = (vec3d_t*)((byte_t*)xyz + bpv1);
+            if (nrm != NULL) {
+                if (obj->p_f[ii].idx[2] == 0) {
+                    mem_zero(nrm, sizeof(vec3d_t));
+                }
+                else {
+                    mem_cpy(nrm, &obj->p_vn[obj->p_f[ii].idx[2] - 1],
+                            sizeof(vec3d_t));
+                }
+                nrm = (vec3d_t*)((byte_t*)nrm + bpv2);
+            }
+            if (uvw != NULL) {
+                if (obj->p_f[ii].idx[1] == 0) {
+                    mem_zero(uvw, sizeof(vec3d_t));
+                }
+                else {
+                    mem_cpy(uvw, &obj->p_vt[obj->p_f[ii].idx[1] - 1],
+                            sizeof(vec3d_t));
+                }
+                uvw = (vec3d_t*)((byte_t*)uvw + bpv3);
             }
         }
 
