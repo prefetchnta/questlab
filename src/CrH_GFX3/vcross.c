@@ -35,7 +35,8 @@ CR_API leng_t
 gen_v_cross (
   __CR_OT__ vec3d_t*        xyz,
   __CR_OT__ vec2d_t*        uvw,
-  __CR_IN__ leng_t          bpv,
+  __CR_IN__ leng_t          bpv1,
+  __CR_IN__ leng_t          bpv2,
   __CR_OT__ void_t*         ibuf,
   __CR_OT__ leng_t*         inum,
   __CR_IN__ const vec3d_t*  pos,
@@ -58,6 +59,16 @@ gen_v_cross (
         *inum = ni;
     if (xyz == NULL)
         return (nv);
+    if (bpv1 == 0)
+        bpv1 = sizeof(vec3d_t) + sizeof(vec2d_t);
+    else
+    if (bpv1 < sizeof(vec3d_t))
+        bpv1 = sizeof(vec3d_t);
+    if (bpv2 == 0)
+        bpv2 = bpv1;
+    else
+    if (bpv2 < sizeof(vec2d_t))
+        bpv2 = sizeof(vec2d_t);
     step = CR_PI / (fp32_t)ndiv;
 
     /* 生成顶点 */
@@ -67,41 +78,41 @@ gen_v_cross (
             xyz->x = pos->x - radius * FCOS(angle);
             xyz->y = pos->y + height;
             xyz->z = pos->z - radius * FSIN(angle);
-            xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+            xyz = (vec3d_t*)((byte_t*)xyz + bpv1);
             if (uvw != NULL) {
                 uvw->x = tex->x;
                 uvw->y = 0.0f;
-                uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+                uvw = (vec2d_t*)((byte_t*)uvw + bpv2);
             }
 
             xyz->x = pos->x + radius * FCOS(angle);
             xyz->y = pos->y + height;
             xyz->z = pos->z + radius * FSIN(angle);
-            xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+            xyz = (vec3d_t*)((byte_t*)xyz + bpv1);
             if (uvw != NULL) {
                 uvw->x = tex->y;
                 uvw->y = 0.0f;
-                uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+                uvw = (vec2d_t*)((byte_t*)uvw + bpv2);
             }
 
             xyz->x = pos->x - radius * FCOS(angle);
             xyz->y = pos->y;
             xyz->z = pos->z - radius * FSIN(angle);
-            xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+            xyz = (vec3d_t*)((byte_t*)xyz + bpv1);
             if (uvw != NULL) {
                 uvw->x = tex->x;
                 uvw->y = 1.0f;
-                uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+                uvw = (vec2d_t*)((byte_t*)uvw + bpv2);
             }
 
             xyz->x = pos->x + radius * FCOS(angle);
             xyz->y = pos->y;
             xyz->z = pos->z + radius * FSIN(angle);
-            xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+            xyz = (vec3d_t*)((byte_t*)xyz + bpv1);
             if (uvw != NULL) {
                 uvw->x = tex->y;
                 uvw->y = 1.0f;
-                uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+                uvw = (vec2d_t*)((byte_t*)uvw + bpv2);
             }
             angle += step;
         }

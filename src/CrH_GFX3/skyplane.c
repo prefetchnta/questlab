@@ -35,7 +35,8 @@ CR_API leng_t
 gen_skyplane (
   __CR_OT__ vec3d_t*    xyz,
   __CR_OT__ vec2d_t*    uvw,
-  __CR_IN__ leng_t      bpv,
+  __CR_IN__ leng_t      bpv1,
+  __CR_IN__ leng_t      bpv2,
   __CR_OT__ void_t*     ibuf,
   __CR_OT__ leng_t*     inum,
   __CR_IN__ fp32_t      a_radius,
@@ -59,6 +60,16 @@ gen_skyplane (
         *inum = ni;
     if (xyz == NULL)
         return (nv);
+    if (bpv1 == 0)
+        bpv1 = sizeof(vec3d_t) + sizeof(vec2d_t);
+    else
+    if (bpv1 < sizeof(vec3d_t))
+        bpv1 = sizeof(vec3d_t);
+    if (bpv2 == 0)
+        bpv2 = bpv1;
+    else
+    if (bpv2 < sizeof(vec2d_t))
+        bpv2 = sizeof(vec2d_t);
     plane_size = 2.0f * FSQRT(a_radius * a_radius - p_radius * p_radius);
     delta = plane_size / (fp32_t)ndiv;
     tex_delta = tex_scale / (fp32_t)ndiv;
@@ -75,11 +86,11 @@ gen_skyplane (
         xyz->x =  x_dist;
         xyz->y = -height + offset;
         xyz->z =  z_dist;
-        xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+        xyz = (vec3d_t*)((byte_t*)xyz + bpv1);
         if (uvw != NULL) {
             uvw->x = (fp32_t)jj * tex_delta;
             uvw->y = (fp32_t)ii * tex_delta;
-            uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+            uvw = (vec2d_t*)((byte_t*)uvw + bpv2);
         }
     }
 

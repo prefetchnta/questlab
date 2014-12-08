@@ -155,22 +155,24 @@ CR_API leng_t   gen_skydome (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv1,
                              fp32_t radius, fp32_t scale, fp32_t offset,
                              sint_t dtheta, sint_t dphi);
 /* 天空面 */
-CR_API leng_t   gen_skyplane (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
-                              void_t *ibuf, leng_t *inum, fp32_t a_radius,
-                              fp32_t p_radius, fp32_t offset, fp32_t tex_scale,
-                              sint_t ndiv);
+CR_API leng_t   gen_skyplane (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv1,
+                              leng_t bpv2, void_t *ibuf, leng_t *inum,
+                              fp32_t a_radius, fp32_t p_radius, fp32_t offset,
+                              fp32_t tex_scale, sint_t ndiv);
 /* 点缀片 */
-CR_API leng_t   gen_v_cross (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
-                             void_t *ibuf, leng_t *inum, const vec3d_t *pos,
-                             const vec2d_t *tex, fp32_t radius, fp32_t height,
-                             sint_t ndiv, leng_t count);
+CR_API leng_t   gen_v_cross (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv1,
+                             leng_t bpv2, void_t *ibuf, leng_t *inum,
+                             const vec3d_t *pos, const vec2d_t *tex,
+                             fp32_t radius, fp32_t height, sint_t ndiv,
+                             leng_t count);
 /* 连接索引 */
 CR_API uint_t   gen_interlock (int16u **pibuf, leng_t *inum, uint_t *level,
                                uint_t tile_size);
 /* 地形分片 */
 CR_API leng_t   gen_terrain_tile (vec3d_t *xyz, vec3d_t *nrm, vec2d_t *uvw,
-                                leng_t bpv, ht_map_t htmap, uint_t x, uint_t z,
-                                    uint_t w, uint_t h, fp32_t tex_scale);
+                                  leng_t bpv1, leng_t bpv2, leng_t bpv3,
+                                  ht_map_t htmap, uint_t x, uint_t z,
+                                  uint_t w, uint_t h, fp32_t tex_scale);
 
 /*****************************************************************************/
 /*                                摄像机控制                                 */
