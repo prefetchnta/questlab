@@ -248,7 +248,7 @@ typedef struct
 /* OBJ 顶点结构 */
 typedef struct
 {
-        int32u  idx[3];     /* 从1开始, 0表示不存在 */
+        int32u  idx[4];     /* 从1开始, 0表示不存在 */
 
 } sWAVEFRONT_F;
 
@@ -288,6 +288,9 @@ CR_API bool_t   wfront_obj_load (sWAVEFRONT *obj, const ansi_t *str,
                                  bool_t swap_yz, bool_t neg_z);
 CR_API bool_t   wfront_mtl_load (sWAVEFRONT *obj, const ansi_t *str);
 CR_API void_t   wfront_obj_free (const sWAVEFRONT *obj);
+CR_API leng_t   wfront_gen_mesh2 (vec3d_t *xyz, vec3d_t *nrm, vec2d_t *uvw,
+                        leng_t bpv1, leng_t bpv2, leng_t bpv3, void_t *ibuf,
+                            leng_t *inum, const sWAVEFRONT *obj, leng_t idx);
 
 #endif  /* !__CR_GFX3_H__ */
 
