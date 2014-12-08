@@ -150,10 +150,10 @@ CR_API leng_t   gen_skybox3 (vec3d_t *xyz, vec3d_t *uvw, leng_t bpv1,
                              leng_t bpv2, fp32_t xsize, fp32_t ysize,
                              fp32_t zsize);
 /* 天空顶 */
-CR_API leng_t   gen_skydome (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
-                             void_t *ibuf, leng_t *inum, fp32_t radius,
-                             fp32_t scale, fp32_t offset, sint_t dtheta,
-                             sint_t dphi);
+CR_API leng_t   gen_skydome (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv1,
+                             leng_t bpv2, void_t *ibuf, leng_t *inum,
+                             fp32_t radius, fp32_t scale, fp32_t offset,
+                             sint_t dtheta, sint_t dphi);
 /* 天空面 */
 CR_API leng_t   gen_skyplane (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
                               void_t *ibuf, leng_t *inum, fp32_t a_radius,

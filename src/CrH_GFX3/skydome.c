@@ -35,7 +35,8 @@ CR_API leng_t
 gen_skydome (
   __CR_OT__ vec3d_t*    xyz,
   __CR_OT__ vec2d_t*    uvw,
-  __CR_IN__ leng_t      bpv,
+  __CR_IN__ leng_t      bpv1,
+  __CR_IN__ leng_t      bpv2,
   __CR_OT__ void_t*     ibuf,
   __CR_OT__ leng_t*     inum,
   __CR_IN__ fp32_t      radius,
@@ -56,6 +57,16 @@ gen_skydome (
         *inum = ni;
     if (xyz == NULL)
         return (nv);
+    if (bpv1 == 0)
+        bpv1 = sizeof(vec3d_t) + sizeof(vec2d_t);
+    else
+    if (bpv1 < sizeof(vec3d_t))
+        bpv1 = sizeof(vec3d_t);
+    if (bpv2 == 0)
+        bpv2 = bpv1;
+    else
+    if (bpv2 < sizeof(vec2d_t))
+        bpv2 = sizeof(vec2d_t);
 
     /* 生成顶点 */
     for (phi = 0; phi < 90; phi += dphi)
@@ -65,13 +76,13 @@ gen_skydome (
         xyz->x = vx;
         xyz->y = radius * FSIN(phi * CR_DTOR) * scale + offset;
         xyz->z = vz;
-        xyz = (vec3d_t*)((byte_t*)xyz + bpv);
+        xyz = (vec3d_t*)((byte_t*)xyz + bpv1);
         if (uvw != NULL) {
             vx /= radius;
             vz /= radius;
             uvw->x = (vx + 1.0f) * 0.5f;
             uvw->y = (vz + 1.0f) * 0.5f;
-            uvw = (vec2d_t*)((byte_t*)uvw + bpv);
+            uvw = (vec2d_t*)((byte_t*)uvw + bpv2);
         }
     }
     xyz->x = 0.0f;
