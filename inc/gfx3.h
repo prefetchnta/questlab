@@ -143,10 +143,12 @@ CR_API void_t   bound_get_ball (sSPHERE *ball, const vec3d_t *pos,
 /*****************************************************************************/
 
 /* 天空盒 */
-CR_API leng_t   gen_skybox2 (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
-                             fp32_t xsize, fp32_t ysize, fp32_t zsize);
-CR_API leng_t   gen_skybox3 (vec3d_t *xyz, vec3d_t *uvw, leng_t bpv,
-                             fp32_t xsize, fp32_t ysize, fp32_t zsize);
+CR_API leng_t   gen_skybox2 (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv1,
+                             leng_t bpv2, fp32_t xsize, fp32_t ysize,
+                             fp32_t zsize);
+CR_API leng_t   gen_skybox3 (vec3d_t *xyz, vec3d_t *uvw, leng_t bpv1,
+                             leng_t bpv2, fp32_t xsize, fp32_t ysize,
+                             fp32_t zsize);
 /* 天空顶 */
 CR_API leng_t   gen_skydome (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv,
                              void_t *ibuf, leng_t *inum, fp32_t radius,
