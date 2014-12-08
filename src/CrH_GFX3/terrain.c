@@ -71,6 +71,12 @@ gen_terrain_tile (
                 "gen_terrain_tile()", "invalid param: h");
         return (0);
     }
+    count  = w;
+    count *= h;
+    if (xyz == NULL)
+        return (count);
+
+    /* 生成顶点 */
     if (bpv1 == 0)
         bpv1 = sizeof(vec3d_t) * 2 + sizeof(vec2d_t);
     else
@@ -86,12 +92,6 @@ gen_terrain_tile (
     else
     if (bpv3 < sizeof(vec2d_t))
         bpv3 = sizeof(vec2d_t);
-
-    /* 生成顶点 */
-    count  = w;
-    count *= h;
-    if (xyz == NULL)
-        return (count);
     uu = tex_scale / (fp32_t)(w - 1);
     vv = tex_scale / (fp32_t)(h - 1);
     for (tz = z; tz < z + h; tz++)

@@ -165,14 +165,14 @@ CR_API leng_t   gen_v_cross (vec3d_t *xyz, vec2d_t *uvw, leng_t bpv1,
                              const vec3d_t *pos, const vec2d_t *tex,
                              fp32_t radius, fp32_t height, sint_t ndiv,
                              leng_t count);
-/* 连接索引 */
-CR_API uint_t   gen_interlock (int16u **pibuf, leng_t *inum, uint_t *level,
-                               uint_t tile_size);
 /* 地形分片 */
 CR_API leng_t   gen_terrain_tile (vec3d_t *xyz, vec3d_t *nrm, vec2d_t *uvw,
                                   leng_t bpv1, leng_t bpv2, leng_t bpv3,
                                   ht_map_t htmap, uint_t x, uint_t z,
                                   uint_t w, uint_t h, fp32_t tex_scale);
+/* 连接索引 */
+CR_API uint_t   gen_interlock (int16u **pibuf, leng_t *inum, uint_t *level,
+                               uint_t tile_size);
 
 /*****************************************************************************/
 /*                                摄像机控制                                 */

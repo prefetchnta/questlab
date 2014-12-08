@@ -59,6 +59,8 @@ gen_v_cross (
         *inum = ni;
     if (xyz == NULL)
         return (nv);
+
+    /* 生成顶点 */
     if (bpv1 == 0)
         bpv1 = sizeof(vec3d_t) + sizeof(vec2d_t);
     else
@@ -70,8 +72,6 @@ gen_v_cross (
     if (bpv2 < sizeof(vec2d_t))
         bpv2 = sizeof(vec2d_t);
     step = CR_PI / (fp32_t)ndiv;
-
-    /* 生成顶点 */
     for (ii = 0; ii < count; ii++) {
         angle = 0.0f;
         for (jj = 0; jj < ndiv; jj++) {

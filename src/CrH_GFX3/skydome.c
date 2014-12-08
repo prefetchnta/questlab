@@ -57,6 +57,8 @@ gen_skydome (
         *inum = ni;
     if (xyz == NULL)
         return (nv);
+
+    /* 生成顶点 */
     if (bpv1 == 0)
         bpv1 = sizeof(vec3d_t) + sizeof(vec2d_t);
     else
@@ -67,8 +69,6 @@ gen_skydome (
     else
     if (bpv2 < sizeof(vec2d_t))
         bpv2 = sizeof(vec2d_t);
-
-    /* 生成顶点 */
     for (phi = 0; phi < 90; phi += dphi)
     for (theta = 0; theta <= 360; theta += dtheta) {
         vx = radius * FCOS(phi * CR_DTOR) * FCOS(theta * CR_DTOR);

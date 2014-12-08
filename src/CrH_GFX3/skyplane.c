@@ -60,6 +60,8 @@ gen_skyplane (
         *inum = ni;
     if (xyz == NULL)
         return (nv);
+
+    /* 生成顶点 */
     if (bpv1 == 0)
         bpv1 = sizeof(vec3d_t) + sizeof(vec2d_t);
     else
@@ -73,8 +75,6 @@ gen_skyplane (
     plane_size = 2.0f * FSQRT(a_radius * a_radius - p_radius * p_radius);
     delta = plane_size / (fp32_t)ndiv;
     tex_delta = tex_scale / (fp32_t)ndiv;
-
-    /* 生成顶点 */
     for (ii = 0; ii <= ndiv; ii++)
     for (jj = 0; jj <= ndiv; jj++) {
         x_dist = (-0.5f * plane_size) + ((fp32_t)jj * delta);
