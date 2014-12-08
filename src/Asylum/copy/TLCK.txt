@@ -1,0 +1,24 @@
+class TLCK
+{
+public:
+    /* ====== */
+    void init ()
+    {
+    }
+
+    /* ====== */
+    void free ()
+    {
+    }
+
+public:
+    /* ========= */
+    void acquire ()
+    {
+    }
+
+    /* ========= */
+    void release ()
+    {
+    }
+};

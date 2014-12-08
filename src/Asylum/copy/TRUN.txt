@@ -1,0 +1,9 @@
+template<class T>
+class TRUN
+{
+public:
+    /* ======================= */
+    void doit (void* ctx, T* obj)
+    {
+    }
+};
