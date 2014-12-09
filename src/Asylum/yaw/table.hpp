@@ -75,6 +75,12 @@ public:
         return (m_list);
     }
 
+    /* ============= */
+    bool* flag () const
+    {
+        return (m_flag);
+    }
+
     /* ============== */
     size_t size () const
     {
@@ -85,6 +91,19 @@ public:
     size_t total () const
     {
         return (m_cnts);
+    }
+
+    /* ====================================== */
+    void setup (const table_c<T, K, TCMP>* copy)
+    {
+        if (m_list != NULL) {
+            mem_free(m_flag);
+            mem_free(m_list);
+        }
+        m_list = copy->data();
+        m_flag = copy->flag();
+        m_size = copy->size();
+        m_cnts = copy->total();
     }
 
     /* ============================== */
