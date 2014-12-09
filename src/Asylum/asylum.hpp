@@ -145,4 +145,7 @@
 #include "msknet/mtp_queue.hpp"
 #include "msknet/wrk_queue.hpp"
 
+/* Asylum3D */
+#include "draw3d/texpool.hpp"
+
 #endif  /* __ASYLUM_HPP__ */
