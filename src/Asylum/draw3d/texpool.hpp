@@ -105,8 +105,8 @@ public:
     }
 
 public:
-    /* ====================== */
-    TTEX* get (size_t idx) const
+    /* ======================= */
+    TTEX* get2 (size_t idx) const
     {
         return (m_lst.get_safe(idx));
     }
