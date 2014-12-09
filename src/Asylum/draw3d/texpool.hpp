@@ -11,7 +11,7 @@
 namespace asy {
 
 /***************/
-/* Texture Key */
+/* TexPool Key */
 /***************/
 struct texpool_key
 {
@@ -20,7 +20,7 @@ struct texpool_key
 };
 
 /****************/
-/* Texture Unit */
+/* TexPool Unit */
 /****************/
 struct texpool_unit
 {
@@ -35,7 +35,7 @@ struct texpool_unit
 };
 
 /***************/
-/* Texture Cmp */
+/* TexPool Cmp */
 /***************/
 class texpool_cmp
 {
@@ -59,7 +59,7 @@ public:
 };
 
 /******************/
-/* Texture Rehash */
+/* TexPool Rehash */
 /******************/
 class texpool_rehash
 {
