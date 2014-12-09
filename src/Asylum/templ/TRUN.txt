@@ -3,7 +3,7 @@ class TRUN
 {
 public:
     /* ======================= */
-    void doit (void* ctx, T* obj)
+    bool doit (void* ctx, T* obj)
     {
     }
 };

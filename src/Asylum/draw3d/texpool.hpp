@@ -58,6 +58,23 @@ public:
     }
 };
 
+/******************/
+/* Texture Rehash */
+/******************/
+class texpool_rehash
+{
+public:
+    /* ================================== */
+    bool doit (void* ctx, texpool_unit* obj)
+    {
+        table_c<texpool_unit, texpool_key, texpool_cmp>*    tbl2;
+
+        tbl2 = (table_c<texpool_unit, texpool_key, texpool_cmp>*)ctx;
+        tbl2->insert(&obj->key, obj, false);
+        return (true);
+    }
+};
+
 /****************/
 /* Texture Pool */
 /****************/
@@ -148,7 +165,7 @@ public:
                 m_lst.pop();
                 return (NULL);
             }
-            tbl2.traverse<texpool_rehash>(&m_tbl);
+            m_tbl.traverse<texpool_rehash>(&tbl2);
             m_tbl.setup(&tbl2);
             m_cnt = cnt;
             m_tbl.insert(&key, &tmp, false);
