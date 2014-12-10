@@ -1424,13 +1424,13 @@ d3d8_create_tran (
     rett->fovy = fovy * CR_DTOR;
     rett->aspect = (fp32_t)width / height;
     rett->znear = 1.0f;
-    rett->zfar = 100000.0f;
+    rett->zfar = 1000.0f;
     D3DXMatrixPerspectiveFovLH(&rett->proj, rett->fovy, rett->aspect,
                                 rett->znear, rett->zfar);
     D3DXMatrixTranspose(&rett->tproj, &rett->proj);
     rett->eye.x =  0.0f;
     rett->eye.y =  0.0f;
-    rett->eye.z = -100.0f;
+    rett->eye.z = -10.0f;
     rett->eye.w =  1.0f;
     rett->lookat.x = 0.0f;
     rett->lookat.y = 0.0f;
