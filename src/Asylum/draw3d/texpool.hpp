@@ -78,7 +78,7 @@ public:
 /****************/
 /* Texture Pool */
 /****************/
-template<class TTEX>
+template<class TTEX, class TA3D>
 class texpool : public asylum
 {
 private:
@@ -136,8 +136,8 @@ public:
         return (NULL);
     }
 
-    /* ======================================== */
-    TTEX* get (const char* name, const char* type)
+    /* ==================================================== */
+    TTEX* get (const char* name, const char* type, TA3D *main)
     {
         texpool_key     key;
         texpool_unit*   unt;
@@ -149,7 +149,7 @@ public:
 
         TTEX    tex, *ret;
 
-        if (!tex.init(name, type))
+        if (!tex.init(name, type, main))
             return (NULL);
         ret = m_lst.append(&tex);
         if (ret == NULL) {
