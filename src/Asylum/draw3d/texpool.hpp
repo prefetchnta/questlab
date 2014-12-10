@@ -111,6 +111,44 @@ public:
         return (m_lst.size());
     }
 
+    /* ================================= */
+    TTEX* set (const char* name, TTEX* tex)
+    {
+        TTEX*   ret;
+
+        ret = m_lst.append(tex);
+        if (ret == NULL)
+            return (NULL);
+
+        size_t          cnt;
+        texpool_key     key;
+        texpool_unit    tmp;
+
+        key.name = str_dupA(name);
+        if (key.name == NULL) {
+            m_lst.pop(tex);
+            return (NULL);
+        }
+        mem_cpy(&tmp.key, &key, sizeof(key));
+        tmp.idx = m_lst.size() - 1;
+        if (m_tbl.insert(&key, &tmp, false) == NULL)
+        {
+            table_c<texpool_unit, texpool_key, texpool_cmp> tbl2;
+
+            cnt = hash_count(m_cnt + 1);
+            if (cnt == m_cnt || !tbl2.init(cnt)) {
+                mem_free(key.name);
+                m_lst.pop(tex);
+                return (NULL);
+            }
+            m_tbl.traverse<texpool_rehash>(&tbl2);
+            m_tbl.setup(&tbl2);
+            m_cnt = cnt;
+            m_tbl.insert(&key, &tmp, false);
+        }
+        return (ret);
+    }
+
     /* ======================= */
     TTEX* get2 (size_t idx) const
     {
