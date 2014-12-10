@@ -194,14 +194,14 @@ public:
         m_call->tran_wrld_clear(m_tran);
     }
 
-    /* ============================================ */
-    template<class T>void set_mat (const T* mat) const
+    /* ============================== */
+    void set_mat (const void* mat) const
     {
         mem_cpy(&m_tran->world, mat, sizeof(mat4x4_t));
     }
 
-    /* =============================================================== */
-    template<class T>void mul_mat (const T* mats, uint_t count = 1) const
+    /* ================================================= */
+    void mul_mat (const void* mats, uint_t count = 1) const
     {
         m_call->tran_wrld_rtmul(m_tran, (const mat4x4_t*)mats, count);
     }

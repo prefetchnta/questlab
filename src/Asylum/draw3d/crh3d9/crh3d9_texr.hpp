@@ -22,7 +22,7 @@ public:
 
 public:
     /* ========================================================== */
-    bool init (const char* name, const char* type, sD3D9_MAIN *main)
+    bool init (const char* name, const char* type, sD3D9_MAIN* main)
     {
         cl32_t  keycolor;
 

@@ -137,7 +137,7 @@ public:
     }
 
     /* ==================================================== */
-    TTEX* get (const char* name, const char* type, TA3D *main)
+    TTEX* get (const char* name, const char* type, TA3D* main)
     {
         texpool_key     key;
         texpool_unit*   unt;
