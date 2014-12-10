@@ -51,6 +51,32 @@ public:
         m_call->release_tran(m_tran);
         m_call->release_main(m_main);
     }
+
+public:
+    /* ================================================================================================================================== */
+    bool reset (bool_t full = FALSE, uint_t width = 0, uint_t height = 0, D3DFORMAT format = D3DFMT_UNKNOWN, D3DFORMAT depth = D3DFMT_D24X8,
+                bool_t vsync = TRUE, D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE) const
+    {
+        if (!full) {
+            if (!GetClientRect(hwnd, &rect))
+                return (false);
+            width  = rect.right;
+            height = rect.bottom;
+        }
+        if (!m_call->main_reset(m_main, full, width, height, format, depth, vsync, fsaa))
+            return (false);
+        m_tran->view_port.Width  = width;
+        m_tran->view_port.Height = height;
+        m_call->tran_upd_port(m_tran);
+        d3d9_tran_set_port(m_main, m_tran);
+        return (true);
+    }
+
+    /* ================================== */
+    void bind_camera (sCAMERA *camera) const
+    {
+        camera_init(camera, &m_tran->eye, &m_tran->lookat);
+    }
 };
 
 }   /* namespace */
