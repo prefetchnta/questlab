@@ -72,10 +72,73 @@ public:
         return (true);
     }
 
-    /* ================================== */
-    void bind_camera (sCAMERA *camera) const
+    /* ====================================================================================================================================== */
+    void draw_enter (int32u flags = D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, cl32_t color = 0xFF000000, fp32_t valz = 1.0f, int32u stencil = 0) const
+    {
+        d3d9_do_enter(m_main, flags, color, valz, stencil);
+    }
+
+    /* ================== */
+    void draw_leave () const
+    {
+        d3d9_do_leave(m_main);
+        d3d9_do_flip(m_main);
+    }
+
+public:
+    /* ================================= */
+    void set_camera (sCAMERA* camera) const
     {
         camera_init(camera, &m_tran->eye, &m_tran->lookat);
+    }
+
+    /* ========================================================= */
+    void get_frustum (sFRUSTUM* frustum, fp32_t bias = -1.0f) const
+    {
+        m_call->tran_frustum(m_tran, frustum, bias);
+    }
+
+    /* ============================================================= */
+    void get_pickup (sRADIAL* pickup, sint_t scn_x, sint_t scn_y) const
+    {
+        m_call->tran_pickup(m_tran, pickup, scn_x, scn_y);
+    }
+
+public:
+    /* ====================== */
+    void set_billboardv () const
+    {
+        m_call->tran_billboardv(m_tran);
+    }
+
+    /* ====================== */
+    void set_billboardh () const
+    {
+        m_call->tran_billboardh(m_tran);
+    }
+
+    /* =============== */
+    void set_mat () const
+    {
+        m_call->tran_wrld_clear(m_tran);
+    }
+
+    /* ============================================ */
+    template<class T>void set_mat (const T* mat) const
+    {
+        mem_cpy(&m_tran->world, mat, sizeof(mat4x4_t));
+    }
+
+    /* =============================================================== */
+    template<class T>void mul_mat (const T* mats, uint_t count = 1) const
+    {
+        m_call->tran_wrld_rtmul(m_tran, (const mat4x4_t*)mats, count);
+    }
+
+    /* ============================== */
+    template<class T>T* get_mat () const
+    {
+        return ((T*)(&m_tran->world));
     }
 };
 
