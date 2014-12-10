@@ -150,6 +150,7 @@
 #if defined(ASY_USE_DX9)
     #include "gfx3/d3d9api.h"
     #include "draw3d/crh3d9_main.hpp"
+    #include "draw3d/crh3d9_texr.hpp"
 #endif
 
 #endif  /* __ASYLUM_HPP__ */
