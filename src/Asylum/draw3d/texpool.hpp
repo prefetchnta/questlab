@@ -105,8 +105,20 @@ public:
     }
 
 public:
+    /* ============== */
+    size_t size () const
+    {
+        return (m_lst.size());
+    }
+
     /* ======================= */
     TTEX* get2 (size_t idx) const
+    {
+        return (m_lst.get(idx));
+    }
+
+    /* =========================== */
+    TTEX* get_safe (size_t idx) const
     {
         return (m_lst.get_safe(idx));
     }

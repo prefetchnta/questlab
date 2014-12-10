@@ -96,10 +96,8 @@ public:
     /* ====================================== */
     void setup (const table_c<T, K, TCMP>* copy)
     {
-        if (m_list != NULL) {
-            mem_free(m_flag);
-            mem_free(m_list);
-        }
+        mem_free(m_flag);
+        mem_free(m_list);
         m_list = copy->data();
         m_flag = copy->flag();
         m_size = copy->size();
