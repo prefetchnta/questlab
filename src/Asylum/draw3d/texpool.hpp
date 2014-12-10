@@ -78,7 +78,7 @@ public:
 /****************/
 /* Texture Pool */
 /****************/
-template<class TTEX, class TA3D>
+template<class TTEX>
 class texpool : public asylum
 {
 private:
@@ -111,44 +111,6 @@ public:
         return (m_lst.size());
     }
 
-    /* ================================= */
-    TTEX* set (const char* name, TTEX* tex)
-    {
-        TTEX*   ret;
-
-        ret = m_lst.append(tex);
-        if (ret == NULL)
-            return (NULL);
-
-        size_t          cnt;
-        texpool_key     key;
-        texpool_unit    tmp;
-
-        key.name = str_dupA(name);
-        if (key.name == NULL) {
-            m_lst.pop(tex);
-            return (NULL);
-        }
-        mem_cpy(&tmp.key, &key, sizeof(key));
-        tmp.idx = m_lst.size() - 1;
-        if (m_tbl.insert(&key, &tmp, false) == NULL)
-        {
-            table_c<texpool_unit, texpool_key, texpool_cmp> tbl2;
-
-            cnt = hash_count(m_cnt + 1);
-            if (cnt == m_cnt || !tbl2.init(cnt)) {
-                mem_free(key.name);
-                m_lst.pop(tex);
-                return (NULL);
-            }
-            m_tbl.traverse<texpool_rehash>(&tbl2);
-            m_tbl.setup(&tbl2);
-            m_cnt = cnt;
-            m_tbl.insert(&key, &tmp, false);
-        }
-        return (ret);
-    }
-
     /* ======================= */
     TTEX* get2 (size_t idx) const
     {
@@ -174,52 +136,39 @@ public:
         return (NULL);
     }
 
-    /* ==================================================== */
-    TTEX* get (const char* name, const char* type, TA3D* main)
+    /* ================================= */
+    TTEX* set (const char* name, TTEX* tex)
     {
-        texpool_key     key;
-        texpool_unit*   unt;
+        TTEX*   ret;
 
-        key.name = name;
-        unt = m_tbl.get(&key);
-        if (unt != NULL)
-            return (m_lst.get(unt->idx));
-
-        TTEX    tex, *ret;
-
-        if (!tex.init(name, type, main))
+        ret = m_lst.append(tex);
+        if (ret == NULL)
             return (NULL);
-        ret = m_lst.append(&tex);
-        if (ret == NULL) {
-            tex.free();
-            return (NULL);
-        }
 
         size_t          cnt;
         texpool_unit    tmp;
 
-        key.name = str_dupA(name);
-        if (key.name == NULL) {
-            m_lst.pop();
+        tmp.key.name = str_dupA(name);
+        if (tmp.key.name == NULL) {
+            m_lst.pop(tex);
             return (NULL);
         }
-        mem_cpy(&tmp.key, &key, sizeof(key));
         tmp.idx = m_lst.size() - 1;
-        if (m_tbl.insert(&key, &tmp, false) == NULL)
-        {
-            table_c<texpool_unit, texpool_key, texpool_cmp> tbl2;
+        if (m_tbl.insert(&tmp.key, &tmp, false) != NULL)
+            return (ret);
 
-            cnt = hash_count(m_cnt + 1);
-            if (cnt == m_cnt || !tbl2.init(cnt)) {
-                mem_free(key.name);
-                m_lst.pop();
-                return (NULL);
-            }
-            m_tbl.traverse<texpool_rehash>(&tbl2);
-            m_tbl.setup(&tbl2);
-            m_cnt = cnt;
-            m_tbl.insert(&key, &tmp, false);
+        table_c<texpool_unit, texpool_key, texpool_cmp> tbl2;
+
+        cnt = hash_count(m_cnt + 1);
+        if (cnt == m_cnt || !tbl2.init(cnt)) {
+            mem_free(tmp.key.name);
+            m_lst.pop(tex);
+            return (NULL);
         }
+        m_tbl.traverse<texpool_rehash>(&tbl2);
+        m_tbl.setup(&tbl2);
+        m_cnt = cnt;
+        m_tbl.insert(&tmp.key, &tmp, false);
         return (ret);
     }
 };
