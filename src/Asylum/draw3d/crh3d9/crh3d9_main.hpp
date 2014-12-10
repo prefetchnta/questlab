@@ -4,8 +4,8 @@
 ***************************************
 */
 
-#ifndef __CRH3D9_HPP__
-#define __CRH3D9_HPP__
+#ifndef __CRH3D9_MAIN_HPP__
+#define __CRH3D9_MAIN_HPP__
 
 /* Asylum Namespace */
 namespace asy {
@@ -215,4 +215,4 @@ public:
 
 }   /* namespace */
 
-#endif  /* __CRH3D9_HPP__ */
+#endif  /* __CRH3D9_MAIN_HPP__ */
