@@ -37,7 +37,7 @@ struct texpool_unit
 /***************/
 /* TexPool Cmp */
 /***************/
-class texpool_cmp
+class texpool_cmp : public asylum
 {
 public:
     /* ======================== */
@@ -61,7 +61,7 @@ public:
 /******************/
 /* TexPool Rehash */
 /******************/
-class texpool_rehash
+class texpool_rehash : public asylum
 {
 public:
     /* ================================== */
