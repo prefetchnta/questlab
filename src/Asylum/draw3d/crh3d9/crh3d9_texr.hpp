@@ -84,6 +84,18 @@ public:
         return (true);
     }
 
+    /* =========================================== */
+    bool init (sD3D9_MAIN* main, const sIMAGE *image)
+    {
+        m_call = d3d9call_get();
+        m_texr = m_call->create_tex2_crh(main, image, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT);
+        if (m_texr == NULL)
+            return (false);
+        m_main = main;
+        m_pool = D3DPOOL_MANAGED;
+        return (true);
+    }
+
     /* ====== */
     void free ()
     {
@@ -101,6 +113,13 @@ public:
     void apply (int32u sampler) const
     {
         m_main->dev->SetTexture(sampler, m_texr->obj.base);
+    }
+
+    /* ======================================================== */
+    void mipmap (D3DTEXTUREFILTERTYPE type = D3DTEXF_LINEAR) const
+    {
+        m_texr->obj.base->SetAutoGenFilterType(type);
+        m_texr->obj.base->GenerateMipSubLevels();
     }
 };
 
