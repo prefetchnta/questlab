@@ -316,7 +316,7 @@ height_map_aabb (
         if (tmp > box[1].y)
             box[1].y = tmp;
     }
-    bound_get_aabb(aabb, box, 2, sizeof(vec3d_t));
+    bound_gen_aabb(aabb, &box[0], &box[1]);
 }
 
 /*

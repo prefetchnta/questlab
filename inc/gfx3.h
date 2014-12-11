@@ -133,6 +133,8 @@ CR_API fp32_t   height_map_place (ht_map_t htmap, const sAABB *aabb,
 CR_API void_t   bound_min_max (vec3d_t *min, vec3d_t *max,
                                const vec3d_t *pos, leng_t count,
                                leng_t bpv);
+CR_API void_t   bound_gen_aabb (sAABB *aabb, const vec3d_t *min,
+                                const vec3d_t *max);
 CR_API void_t   bound_get_aabb (sAABB *aabb, const vec3d_t *pos,
                                 leng_t count, leng_t bpv);
 CR_API void_t   bound_get_ball (sSPHERE *ball, const vec3d_t *pos,
