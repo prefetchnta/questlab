@@ -102,6 +102,7 @@ public:
     {
         m_call->tran_upd_view(m_tran);
 #if defined(ASY_USE_FIXED_3D)
+        CR_NOUSE(reg);
         d3d9_tran_set_world(m_main, FIXED_REG, m_tran);
         d3d9_tran_set_view(m_main, FIXED_REG, m_tran);
 #else
@@ -114,46 +115,51 @@ public:
     /* ============================================= */
     void apply_matw (uint_t reg, bool vsh = true) const
     {
-#if !defined(ASY_USE_FIXED_3D)
-        if (vsh) d3d9_tran_set_world(m_main, reg, m_tran);
-        else d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tworld), 4);
+#if defined(ASY_USE_FIXED_3D)
+        CR_NOUSE(reg);  CR_NOUSE(vsh);
+        d3d9_tran_set_world(m_main, FIXED_REG, m_tran);
+#else
+        if (vsh) d3d9_vs_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tworld), 4);
+        else     d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tworld), 4);
 #endif
     }
 
     /* ============================================= */
     void apply_matv (uint_t reg, bool vsh = true) const
     {
-#if !defined(ASY_USE_FIXED_3D)
-        if (vsh) d3d9_tran_set_view(m_main, reg, m_tran);
-        else d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tview), 4);
+#if defined(ASY_USE_FIXED_3D)
+        CR_NOUSE(reg);  CR_NOUSE(vsh);
+        d3d9_tran_set_view(m_main, FIXED_REG, m_tran);
+#else
+        if (vsh) d3d9_vs_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tview), 4);
+        else     d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tview), 4);
 #endif
     }
 
     /* ============================================= */
     void apply_matp (uint_t reg, bool vsh = true) const
     {
-#if !defined(ASY_USE_FIXED_3D)
-        if (vsh) d3d9_tran_set_proj(m_main, reg, m_tran);
-        else d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tproj), 4);
+#if defined(ASY_USE_FIXED_3D)
+        CR_NOUSE(reg);  CR_NOUSE(vsh);
+        d3d9_tran_set_proj(m_main, FIXED_REG, m_tran);
+#else
+        if (vsh) d3d9_vs_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tproj), 4);
+        else     d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->tproj), 4);
 #endif
     }
 
     /* ============================================= */
     void apply_veye (uint_t reg, bool vsh = true) const
     {
-        if (vsh)
-            d3d9_vs_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->eye), 1);
-        else
-            d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->eye), 1);
+        if (vsh) d3d9_vs_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->eye), 1);
+        else     d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->eye), 1);
     }
 
     /* ============================================= */
     void apply_vvec (uint_t reg, bool vsh = true) const
     {
-        if (vsh)
-            d3d9_vs_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->vvec), 1);
-        else
-            d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->vvec), 1);
+        if (vsh) d3d9_vs_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->vvec), 1);
+        else     d3d9_ps_set_vec4f(m_main, reg, (fp32_t*)(&m_tran->vvec), 1);
     }
 
 public:
