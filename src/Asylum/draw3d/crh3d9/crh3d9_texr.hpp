@@ -16,6 +16,7 @@ namespace asy {
 class crh3d9_texr : public asylum
 {
 public:
+    int32u              m_flag;
     D3DPOOL             m_pool;
     sD3D9_MAIN*         m_main;
     sD3D9_TEXR*         m_texr;
@@ -38,8 +39,9 @@ public:
             return (false);
         if (m_texr == NULL)
             return (false);
-        m_main = main;
+        m_flag = 0;
         m_pool = D3DPOOL_MANAGED;
+        m_main = main;
         return (true);
     }
 
@@ -59,8 +61,9 @@ public:
             return (false);
         if (m_texr == NULL)
             return (false);
-        m_main = main;
+        m_flag = 0;
         m_pool = D3DPOOL_MANAGED;
+        m_main = main;
         return (true);
     }
 
@@ -79,8 +82,9 @@ public:
         }
         if (m_texr == NULL)
             return (false);
-        m_main = main;
+        m_flag = usage;
         m_pool = pool;
+        m_main = main;
         return (true);
     }
 
@@ -91,8 +95,9 @@ public:
         m_texr = m_call->create_tex2_crh(main, image, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT);
         if (m_texr == NULL)
             return (false);
-        m_main = main;
+        m_flag = 0;
         m_pool = D3DPOOL_MANAGED;
+        m_main = main;
         return (true);
     }
 
@@ -103,10 +108,26 @@ public:
     }
 
 public:
-    /* ================== */
-    bool must_reset () const
+    /* ======= */
+    bool reset ()
     {
-        return ((m_pool == D3DPOOL_MANAGED) ? false : true);
+        sD3D9_TEXR* texr;
+
+        if (m_pool == D3DPOOL_MANAGED)
+            return (true);
+        if (m_texr->face == 1)
+            texr = m_call->create_tex2(m_main, m_texr->info.Width, m_texr->info.Height, m_texr->info.Format, m_pool, m_flag, m_texr->info.MipLevels);
+        else
+        if (m_texr->face == 6)
+            texr = m_call->create_tex3(m_main, m_texr->info.Width, m_texr->info.Format, m_pool, m_flag, m_texr->info.MipLevels);
+        else
+        if (m_texr->face == 3)
+            texr = m_call->create_texv(m_main, m_texr->info.Width, m_texr->info.Height, m_texr->info.Depth, m_texr->info.Format, m_pool, m_flag, m_texr->info.MipLevels);
+        else
+            return (false);
+        m_call->release_texr(m_texr);
+        m_texr = texr;
+        return (true);
     }
 
     /* =========================== */
