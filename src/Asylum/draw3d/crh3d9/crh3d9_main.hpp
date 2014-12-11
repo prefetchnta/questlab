@@ -15,7 +15,7 @@ namespace asy {
 /***************/
 class crh3d9_main : public asylum
 {
-public:
+private:
     sD3D9_MAIN*         m_main;
     sD3D9_TRAN*         m_tran;
     const sD3D9_CALL*   m_call;
@@ -216,6 +216,18 @@ public:
     template<class T>T* get_mat () const
     {
         return ((T*)(&m_tran->world));
+    }
+
+    /* ======================= */
+    sD3D9_MAIN* get_main () const
+    {
+        return (m_main);
+    }
+
+    /* ======================= */
+    sD3D9_TRAN* get_tran () const
+    {
+        return (m_tran);
     }
 };
 

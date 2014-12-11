@@ -15,7 +15,7 @@ namespace asy {
 /******************/
 class crh3d9_texr : public asylum
 {
-public:
+private:
     int32u              m_flag;
     D3DPOOL             m_pool;
     sD3D9_MAIN*         m_main;
@@ -141,6 +141,12 @@ public:
     {
         m_texr->obj.base->SetAutoGenFilterType(type);
         m_texr->obj.base->GenerateMipSubLevels();
+    }
+
+    /* ======================= */
+    sD3D9_TEXR* get_texr () const
+    {
+        return (m_texr);
     }
 };
 
