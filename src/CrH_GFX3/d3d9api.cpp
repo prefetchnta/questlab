@@ -1278,9 +1278,9 @@ d3d9_release_texr (
 */
 CR_API sD3D9_VSH*
 d3d9_create_vs_data (
-  __CR_IN__ sD3D9_MAIN*         main,
-  __CR_IN__ LPD3DVERTEXELEMENT9 decl,
-  __CR_IN__ const void_t*       data
+  __CR_IN__ sD3D9_MAIN*                 main,
+  __CR_IN__ const D3DVERTEXELEMENT9*    decl,
+  __CR_IN__ const void_t*               data
     )
 {
     HRESULT     retc;
@@ -1334,12 +1334,12 @@ _failure1:
 */
 CR_API sD3D9_VSH*
 d3d9_create_vs_fileA (
-  __CR_IN__ sD3D9_MAIN*         main,
-  __CR_IN__ LPD3DVERTEXELEMENT9 decl,
-  __CR_IN__ const ansi_t*       name,
-  __CR_IN__ int32u              flags,
-  __CR_IN__ const ansi_t*       entry,
-  __CR_IN__ const ansi_t*       profile
+  __CR_IN__ sD3D9_MAIN*                 main,
+  __CR_IN__ const D3DVERTEXELEMENT9*    decl,
+  __CR_IN__ const ansi_t*               name,
+  __CR_IN__ int32u                      flags,
+  __CR_IN__ const ansi_t*               entry,
+  __CR_IN__ const ansi_t*               profile
     )
 {
     HRESULT         retc;
@@ -1397,12 +1397,12 @@ d3d9_create_vs_fileA (
 */
 CR_API sD3D9_VSH*
 d3d9_create_vs_fileW (
-  __CR_IN__ sD3D9_MAIN*         main,
-  __CR_IN__ LPD3DVERTEXELEMENT9 decl,
-  __CR_IN__ const wide_t*       name,
-  __CR_IN__ int32u              flags,
-  __CR_IN__ const ansi_t*       entry,
-  __CR_IN__ const ansi_t*       profile
+  __CR_IN__ sD3D9_MAIN*                 main,
+  __CR_IN__ const D3DVERTEXELEMENT9*    decl,
+  __CR_IN__ const wide_t*               name,
+  __CR_IN__ int32u                      flags,
+  __CR_IN__ const ansi_t*               entry,
+  __CR_IN__ const ansi_t*               profile
     )
 {
     HRESULT         retc;
@@ -1460,12 +1460,12 @@ d3d9_create_vs_fileW (
 */
 CR_API sD3D9_VSH*
 d3d9_create_vs_text (
-  __CR_IN__ sD3D9_MAIN*         main,
-  __CR_IN__ LPD3DVERTEXELEMENT9 decl,
-  __CR_IN__ const ansi_t*       text,
-  __CR_IN__ int32u              flags,
-  __CR_IN__ const ansi_t*       entry,
-  __CR_IN__ const ansi_t*       profile
+  __CR_IN__ sD3D9_MAIN*                 main,
+  __CR_IN__ const D3DVERTEXELEMENT9*    decl,
+  __CR_IN__ const ansi_t*               text,
+  __CR_IN__ int32u                      flags,
+  __CR_IN__ const ansi_t*               entry,
+  __CR_IN__ const ansi_t*               profile
     )
 {
     HRESULT         retc;

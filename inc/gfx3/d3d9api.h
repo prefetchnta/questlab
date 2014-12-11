@@ -209,20 +209,20 @@ typedef struct
 
         /* 生成 */
         sD3D9_VSH*  (*create_vs_data) (sD3D9_MAIN *main,
-                            LPD3DVERTEXELEMENT9 decl, const void_t *data);
+                        const D3DVERTEXELEMENT9 *decl, const void_t *data);
 
         sD3D9_VSH*  (*create_vs_fileA) (sD3D9_MAIN *main,
-                            LPD3DVERTEXELEMENT9 decl, const ansi_t *name,
+                        const D3DVERTEXELEMENT9 *decl, const ansi_t *name,
                                     int32u flags, const ansi_t *entry,
                                         const ansi_t *profile);
 
         sD3D9_VSH*  (*create_vs_fileW) (sD3D9_MAIN *main,
-                            LPD3DVERTEXELEMENT9 decl, const wide_t *name,
+                        const D3DVERTEXELEMENT9 *decl, const wide_t *name,
                                     int32u flags, const ansi_t *entry,
                                         const ansi_t *profile);
 
         sD3D9_VSH*  (*create_vs_text) (sD3D9_MAIN *main,
-                            LPD3DVERTEXELEMENT9 decl, const ansi_t *text,
+                        const D3DVERTEXELEMENT9 *decl, const ansi_t *text,
                                     int32u flags, const ansi_t *entry,
                                         const ansi_t *profile);
         /* 释放 */
