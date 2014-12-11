@@ -29,10 +29,11 @@ private:
     crh3d9_texr*    m_map_ns;
 #endif
     crh3d9_texr*    m_map_kd;
+    sD3D9_MAIN*     m_main;
 
 public:
-    /* ============================================================== */
-    bool init (const sWAVEFRONT_M* mtl, const map_acs<crh3d9_texr>* tex)
+    /* ================================================================================ */
+    bool init (sD3D9_MAIN* main, const sWAVEFRONT_M* mtl, const map_acs<crh3d9_texr>* tex)
     {
         if (mtl->map_kd != NULL) {
             m_map_kd = tex->get(mtl->map_kd);
@@ -110,8 +111,23 @@ public:
         m_tf.z = mtl->tf.z;
         m_tf.w = 1.0f;
 #endif
+        m_main = main;
         return (true);
     }
+
+#if defined(ASY_USE_FIXED_3D)
+    /* ================ */
+    void apply_ff () const
+    {
+        if (m_map_kd != NULL)
+            m_map_kd->apply(0);
+        else
+            m_main->dev->SetTexture(0, NULL);
+        m_main->dev->SetMaterial(&m_mtl);
+    }
+#else
+
+#endif
 };
 
 }   /* namespace */
