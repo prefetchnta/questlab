@@ -22,7 +22,7 @@ private:
 
 public:
     /* ================================================================================================================================================= */
-    bool init (sD3D9_MAIN *main, const D3DVERTEXELEMENT9 *decl, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    bool init (sD3D9_MAIN* main, const D3DVERTEXELEMENT9 *decl, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
         m_call = d3d9call_get();
         m_exec = m_call->create_vs_fileA(main, decl, name, flags, entry, profile);
@@ -33,7 +33,7 @@ public:
     }
 
     /* ===================================================================================================================================================== */
-    bool init_txt (sD3D9_MAIN *main, const D3DVERTEXELEMENT9 *decl, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    bool init_txt (sD3D9_MAIN* main, const D3DVERTEXELEMENT9 *decl, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
         m_call = d3d9call_get();
         m_exec = m_call->create_vs_text(main, decl, name, flags, entry, profile);
@@ -94,7 +94,7 @@ private:
 
 public:
     /* ================================================================================================================== */
-    bool init (sD3D9_MAIN *main, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    bool init (sD3D9_MAIN* main, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
         m_call = d3d9call_get();
         m_exec = m_call->create_ps_fileA(main, name, flags, entry, profile);
@@ -105,7 +105,7 @@ public:
     }
 
     /* ====================================================================================================================== */
-    bool init_txt (sD3D9_MAIN *main, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    bool init_txt (sD3D9_MAIN* main, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
         m_call = d3d9call_get();
         m_exec = m_call->create_ps_text(main, decl, name, flags, entry, profile);

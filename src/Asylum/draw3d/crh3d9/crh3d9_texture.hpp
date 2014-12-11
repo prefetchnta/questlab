@@ -89,7 +89,7 @@ public:
     }
 
     /* =========================================== */
-    bool init (sD3D9_MAIN* main, const sIMAGE *image)
+    bool init (sD3D9_MAIN* main, const sIMAGE* image)
     {
         m_call = d3d9call_get();
         m_texr = m_call->create_tex2_crh(main, image, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT);

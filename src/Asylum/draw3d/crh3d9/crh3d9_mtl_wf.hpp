@@ -32,11 +32,11 @@ private:
     sD3D9_MAIN*     m_main;
 
 public:
-    /* ================================================================================ */
-    bool init (sD3D9_MAIN* main, const sWAVEFRONT_M* mtl, const map_acs<crh3d9_texr>* tex)
+    /* ==================================================================================== */
+    bool init (sD3D9_MAIN* main, const sWAVEFRONT_M* mtl, const map_acs<crh3d9_texr>* texpool)
     {
         if (mtl->map_kd != NULL) {
-            m_map_kd = tex->get(mtl->map_kd);
+            m_map_kd = texpool->get(mtl->map_kd);
             if (m_map_kd == NULL)
                 return (false);
         }
@@ -63,7 +63,7 @@ public:
         m_mtl.Power = mtl->ns;
 #else
         if (mtl->bump != NULL) {
-            m_bump = tex->get(mtl->bump);
+            m_bump = texpool->get(mtl->bump);
             if (m_bump == NULL)
                 return (false);
         }
@@ -71,7 +71,7 @@ public:
             m_bump = NULL;
         }
         if (mtl->map_ka != NULL) {
-            m_map_ka = tex->get(mtl->map_ka);
+            m_map_ka = texpool->get(mtl->map_ka);
             if (m_map_ka == NULL)
                 return (false);
         }
@@ -79,7 +79,7 @@ public:
             m_map_ka = NULL;
         }
         if (mtl->map_ks != NULL) {
-            m_map_ks = tex->get(mtl->map_ks);
+            m_map_ks = texpool->get(mtl->map_ks);
             if (m_map_ks == NULL)
                 return (false);
         }
@@ -87,7 +87,7 @@ public:
             m_map_ks = NULL;
         }
         if (mtl->map_ns != NULL) {
-            m_map_ns = tex->get(mtl->map_ns);
+            m_map_ns = texpool->get(mtl->map_ns);
             if (m_map_ns == NULL)
                 return (false);
         }
