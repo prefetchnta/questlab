@@ -146,7 +146,7 @@
 #include "msknet/wrk_queue.hpp"
 
 /* Asylum3D */
-#include "draw3d/texpool.hpp"
+#include "draw3d/map_acs.hpp"
 #if defined(ASY_USE_DX9)
     #include "gfx3/d3d9api.h"
     #include "draw3d/crh3d9_main.hpp"
