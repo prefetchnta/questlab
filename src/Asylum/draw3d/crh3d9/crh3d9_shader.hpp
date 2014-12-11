@@ -21,8 +21,8 @@ private:
     const sD3D9_CALL*   m_call;
 
 public:
-    /* ============================================================================================================================================ */
-    bool init (sD3D9_MAIN *main, LPD3DVERTEXELEMENT9 decl, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    /* ================================================================================================================================================= */
+    bool init (sD3D9_MAIN *main, const D3DVERTEXELEMENT9 *decl, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
         m_call = d3d9call_get();
         m_exec = m_call->create_vs_fileA(main, decl, name, flags, entry, profile);
@@ -32,8 +32,8 @@ public:
         return (true);
     }
 
-    /* ================================================================================================================================================ */
-    bool init_txt (sD3D9_MAIN *main, LPD3DVERTEXELEMENT9 decl, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    /* ===================================================================================================================================================== */
+    bool init_txt (sD3D9_MAIN *main, const D3DVERTEXELEMENT9 *decl, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
         m_call = d3d9call_get();
         m_exec = m_call->create_vs_text(main, decl, name, flags, entry, profile);
@@ -43,8 +43,8 @@ public:
         return (true);
     }
 
-    /* ====================================================================== */
-    bool init_bin (sD3D9_MAIN* main, LPD3DVERTEXELEMENT9 decl, const void* data)
+    /* =========================================================================== */
+    bool init_bin (sD3D9_MAIN* main, const D3DVERTEXELEMENT9 *decl, const void* data)
     {
         m_call = d3d9call_get();
         m_exec = m_call->create_vs_data(main, decl, data);
@@ -61,6 +61,13 @@ public:
     }
 
 public:
+    /* ============================================ */
+    void same_vertex (const crh3d9_vshader* vsh) const
+    {
+        if (m_exec->copy)
+            m_exec->decl = vsh->get_exec()->decl;
+    }
+
     /* ============= */
     void apply () const
     {
