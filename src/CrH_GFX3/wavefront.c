@@ -582,6 +582,21 @@ _failure:
 }
 
 /*
+---------------------------------------
+    设置默认材质
+---------------------------------------
+*/
+static void_t
+wfront_mtl_default (
+  __CR_OT__ sWAVEFRONT_M*   mtl
+    )
+{
+    struct_zero(mtl, sWAVEFRONT_M);
+    mtl->d = mtl->tf.x = mtl->tf.y = mtl->tf.z = 1.0f;
+    mtl->sharpness = 60;
+}
+
+/*
 =======================================
     解析 MTL 字符串
 =======================================
@@ -611,7 +626,7 @@ wfront_mtl_load (
     /* 清空对象 */
     if (obj->p_m != NULL || obj->mtl == NULL)
         return (TRUE);
-    struct_zero(&mtmp, sWAVEFRONT_M);
+    wfront_mtl_default(&mtmp);
 
     /* 逐行分割 */
     ini = ini_parseU(str);
@@ -650,7 +665,7 @@ wfront_mtl_load (
                             "wfront_mtl_load()", "array_push_growT() failure");
                     goto _failure;
                 }
-                struct_zero(&mtmp, sWAVEFRONT_M);
+                wfront_mtl_default(&mtmp);
             }
 
             /* 保存材质名称 */
