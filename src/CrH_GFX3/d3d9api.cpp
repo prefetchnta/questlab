@@ -1295,12 +1295,19 @@ d3d9_create_vs_data (
     }
 
     /* 生成顶点声明对象 */
-    retc = main->dev->CreateVertexDeclaration(decl, &rett->decl);
-    if (FAILED(retc)) {
-        err_set(__CR_D3D9API_CPP__, retc,
-                "d3d9_create_vs_data()",
-                "IDirect3DDevice9::CreateVertexDeclaration() failure");
-        goto _failure1;
+    if (decl == NULL) {
+        rett->decl = NULL;
+        rett->copy = TRUE;
+    }
+    else {
+        retc = main->dev->CreateVertexDeclaration(decl, &rett->decl);
+        if (FAILED(retc)) {
+            err_set(__CR_D3D9API_CPP__, retc,
+                    "d3d9_create_vs_data()",
+                    "IDirect3DDevice9::CreateVertexDeclaration() failure");
+            goto _failure1;
+        }
+        rett->copy = FALSE;
     }
 
     /* 生成 D3D9 VS 对象 */
@@ -1519,7 +1526,8 @@ d3d9_release_vs (
     )
 {
     CR_NOUSE(main);
-    vsh->decl->Release();
+    if (!vsh->copy)
+        vsh->decl->Release();
     vsh->obj->Release();
     mem_free(vsh);
 }

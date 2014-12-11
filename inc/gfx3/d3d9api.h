@@ -70,6 +70,7 @@ typedef struct
 {
         LPDIRECT3DVERTEXSHADER9         obj;
         LPDIRECT3DVERTEXDECLARATION9    decl;
+        bool_t                          copy;
 
 } sD3D9_VSH;
 
