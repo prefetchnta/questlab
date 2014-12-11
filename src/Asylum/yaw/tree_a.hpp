@@ -70,8 +70,8 @@ public:
         return (m_root);
     }
 
-    /* =============== */
-    size_t total () const
+    /* ============== */
+    size_t size () const
     {
         return (m_cnts);
     }

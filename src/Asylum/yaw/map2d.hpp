@@ -76,8 +76,8 @@ public:
         return (this->line(y));
     }
 
-    /* ============== */
-    size_t size () const
+    /* ================== */
+    size_t capacity () const
     {
         return (m_size);
     }
@@ -156,8 +156,8 @@ public:
         return (this->line(y));
     }
 
-    /* ============== */
-    size_t size () const
+    /* ================== */
+    size_t capacity () const
     {
         return (NX * NY);
     }

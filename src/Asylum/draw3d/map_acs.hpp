@@ -37,13 +37,19 @@ struct map_acs_unit
 /**************/
 /* MapACS Cmp */
 /**************/
+#ifndef map_acs_comp
+    #define map_acs_comp    strcmp
+#endif
+#ifndef map_acs_hash
+    #define map_acs_hash    hash_crc32i_total
+#endif
 class map_acs_cmp : public asylum
 {
 public:
     /* ======================== */
     size_t hash (map_acs_key* key)
     {
-        key->hash = hash_crc32i_total(key->name, strlen(key->name));
+        key->hash = map_acs_hash(key->name, strlen(key->name));
         return ((size_t)key->hash);
     }
 
@@ -52,7 +58,7 @@ public:
     {
         if (key->hash != obj->key.hash)
             return (false);
-        if (strcmp(key->name, obj->key.name) != 0)
+        if (map_acs_comp(key->name, obj->key.name) != 0)
             return (false);
         return (true);
     }
@@ -112,16 +118,22 @@ public:
         m_lst.clear();
     }
 
+    /* ========== */
+    T* data () const
+    {
+        return (m_lst.data());
+    }
+
     /* ============== */
     size_t size () const
     {
-        return (m_cnt);
+        return (m_lst.size());
     }
 
-    /* =============== */
-    size_t total () const
+    /* ================== */
+    size_t capacity () const
     {
-        return (m_lst.size());
+        return (m_cnt);
     }
 
     /* =================================== */
@@ -149,8 +161,8 @@ public:
         return (NULL);
     }
 
-    /* =========================== */
-    T* set (const char* name, T* obj)
+    /* ============================== */
+    T* insert (const char* name, T* obj)
     {
         T*  ret;
 

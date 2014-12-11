@@ -61,13 +61,13 @@ public:
     /* ============== */
     size_t size () const
     {
-        return (m_size);
+        return (m_cnts);
     }
 
-    /* =============== */
-    size_t total () const
+    /* ================ */
+    size_t bucket () const
     {
-        return (m_cnts);
+        return (m_size);
     }
 
     /* ============================ */
@@ -237,13 +237,13 @@ public:
     /* ============== */
     size_t size () const
     {
-        return (N);
+        return (m_cnts);
     }
 
-    /* =============== */
-    size_t total () const
+    /* ================ */
+    size_t bucket () const
     {
-        return (m_cnts);
+        return (N);
     }
 
     /* ============================ */
