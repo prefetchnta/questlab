@@ -163,6 +163,10 @@ public:
         if (idx >= list->size()) {
             unit = list->append(&next);
         }
+        else
+        if (idx == 0) {
+            unit = list->sthead(&next);
+        }
         else {
             unit = list->get(idx);
             unit = list->insert(unit, &next);
@@ -178,6 +182,12 @@ public:
         mem_cpy(&nnew->user, obj, sizeof(T));
         nnew->next.init();
         return (nnew);
+    }
+
+    /* =================================================== */
+    atree_unit<T>* sthead (atree_unit<T>* node, const T* obj)
+    {
+        return (this->insert(node, obj, 0));
     }
 
     /* =================================================== */
