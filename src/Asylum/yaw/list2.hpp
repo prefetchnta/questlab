@@ -159,15 +159,20 @@ public:
         return (true);
     }
 
-    /* ======================================================================= */
-    list2_unit<T>* insert (list2_unit<T>* node, const T* obj, bool front = false)
+    /* ========================================================================================= */
+    list2_unit<T>* insert (list2_unit<T>* node, const T* obj, bool front = false, bool dir = false)
     {
         list2_unit<T>*  nnew;
 
-        nnew = struct_new(list2_unit<T>);
-        if (nnew == NULL)
-            return (NULL);
-        mem_cpy(&nnew->user, obj, sizeof(T));
+        if (dir) {
+            nnew = (list2_unit<T>*)obj;
+        }
+        else {
+            nnew = struct_new(list2_unit<T>);
+            if (nnew == NULL)
+                return (NULL);
+            mem_cpy(&nnew->user, obj, sizeof(T));
+        }
         if (node == m_head && front) {
             nnew->prev = NULL;
             nnew->next = m_head;
@@ -204,15 +209,20 @@ public:
         return (nnew);
     }
 
-    /* ============================== */
-    list2_unit<T>* sthead (const T* obj)
+    /* ================================================ */
+    list2_unit<T>* sthead (const T* obj, bool dir = false)
     {
         list2_unit<T>*  nnew;
 
-        nnew = struct_new(list2_unit<T>);
-        if (nnew == NULL)
-            return (NULL);
-        mem_cpy(&nnew->user, obj, sizeof(T));
+        if (dir) {
+            nnew = (list2_unit<T>*)obj;
+        }
+        else {
+            nnew = struct_new(list2_unit<T>);
+            if (nnew == NULL)
+                return (NULL);
+            mem_cpy(&nnew->user, obj, sizeof(T));
+        }
         nnew->prev = NULL;
         nnew->next = m_head;
         if (m_head != NULL)
@@ -224,15 +234,20 @@ public:
         return (nnew);
     }
 
-    /* ============================== */
-    list2_unit<T>* append (const T* obj)
+    /* ================================================ */
+    list2_unit<T>* append (const T* obj, bool dir = false)
     {
         list2_unit<T>*  nnew;
 
-        nnew = struct_new(list2_unit<T>);
-        if (nnew == NULL)
-            return (NULL);
-        mem_cpy(&nnew->user, obj, sizeof(T));
+        if (dir) {
+            nnew = (list2_unit<T>*)obj;
+        }
+        else {
+            nnew = struct_new(list2_unit<T>);
+            if (nnew == NULL)
+                return (NULL);
+            mem_cpy(&nnew->user, obj, sizeof(T));
+        }
         nnew->next = NULL;
         nnew->prev = m_tail;
         if (m_tail != NULL)
