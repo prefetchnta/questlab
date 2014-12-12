@@ -105,6 +105,7 @@
 #include "cpu/events.hpp"
 #include "cpu/exlock.hpp"
 #include "cpu/mtlock.hpp"
+#include "cpu/nolock.hpp"
 #include "cpu/rwlock.hpp"
 #include "cpu/splock.hpp"
 #include "cpu/doonce.hpp"
