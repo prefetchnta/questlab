@@ -150,7 +150,7 @@ public:
     {
         T   tmp;
 
-        if (m_cnts <= 1 || idx == 0)
+        if (idx == 0 || idx >= m_cnts)
             return (NULL);
         mem_cpy(&tmp, &m_list[idx - 1], sizeof(T));
         mem_cpy(&m_list[idx - 1], &m_list[idx], sizeof(T));
