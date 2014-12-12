@@ -135,8 +135,6 @@
 #include "yaw/map_a.hpp"
 #include "yaw/map_l.hpp"
 #include "yaw/oring.hpp"
-#include "yaw/queue.hpp"
-#include "yaw/stack.hpp"
 #include "yaw/table.hpp"
 #include "yaw/tree_a.hpp"
 #include "yaw/tree_l.hpp"
