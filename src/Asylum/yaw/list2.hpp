@@ -32,6 +32,31 @@ private:
     list2_unit<T>*  m_head;
     list2_unit<T>*  m_tail;
 
+private:
+    /* ==================================== */
+    void _del (list2_unit<T>* node, bool rels)
+    {
+        list2_unit<T>*  prev;
+        list2_unit<T>*  next;
+
+        if (m_cnts == 0)
+            return;
+        prev = node->prev;
+        next = node->next;
+        if (prev != NULL)
+            prev->next = next;
+        else
+            m_head = next;
+        if (next != NULL)
+            next->prev = prev;
+        else
+            m_tail = prev;
+        m_cnts -= 1;
+        if (rels)
+            node->user.free();
+        mem_free(node);
+    }
+
 public:
     /* ====== */
     void init ()
@@ -120,28 +145,10 @@ public:
         return (prev);
     }
 
-    /* ========================================== */
-    void del (list2_unit<T>* node, bool rels = true)
+    /* ======================== */
+    void del (list2_unit<T>* node)
     {
-        list2_unit<T>*  prev;
-        list2_unit<T>*  next;
-
-        if (m_cnts == 0)
-            return;
-        prev = node->prev;
-        next = node->next;
-        if (prev != NULL)
-            prev->next = next;
-        else
-            m_head = next;
-        if (next != NULL)
-            next->prev = prev;
-        else
-            m_tail = prev;
-        m_cnts -= 1;
-        if (rels)
-            node->user.free();
-        mem_free(node);
+        this->_del(node, true);
     }
 
     /* ================== */
@@ -151,10 +158,10 @@ public:
             return (false);
         if (obj != NULL) {
             mem_cpy(obj, &m_tail->user, sizeof(T));
-            this->del(m_tail, false);
+            this->_del(m_tail, false);
         }
         else {
-            this->del(m_tail, true);
+            this->_del(m_tail, true);
         }
         return (true);
     }
