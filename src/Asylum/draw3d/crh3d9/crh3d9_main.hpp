@@ -21,20 +21,21 @@ private:
     const sD3D9_CALL*   m_call;
 
 public:
-    /* ================================================================================================================================= */
-    bool init (HWND hwnd, fp32_t fovy = 60.0f, bool_t full = FALSE, uint_t width = 0, uint_t height = 0, D3DFORMAT format = D3DFMT_UNKNOWN,
-               D3DFORMAT depth = D3DFMT_D24X8, bool_t vsync = TRUE, D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE)
+    /* ========================================================================================================== */
+    bool init (const sDX9_HDLE *hdle, fp32_t fovy = 60.0f, bool_t full = FALSE, uint_t width = 0, uint_t height = 0,
+               D3DFORMAT format = D3DFMT_UNKNOWN, D3DFORMAT depth = D3DFMT_D24X8, bool_t vsync = TRUE,
+               D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE)
     {
         RECT    rect;
 
-        m_call = d3d9call_get();
+        m_call = hdle->call;
         if (!full) {
             if (!GetClientRect(hwnd, &rect))
                 return (false);
             width  = rect.right;
             height = rect.bottom;
         }
-        m_main = m_call->create_main(hwnd, full, width, height, format, depth, vsync, fsaa);
+        m_main = m_call->create_main(hdle->hwnd, full, width, height, format, depth, vsync, fsaa);
         if (m_main == NULL)
             return (false);
         m_tran = m_call->create_tran(fovy, width, height);
@@ -57,17 +58,17 @@ public:
     }
 
 public:
-    /* ================================================================================================================================== */
-    bool reset (bool_t full = FALSE, uint_t width = 0, uint_t height = 0, D3DFORMAT format = D3DFMT_UNKNOWN, D3DFORMAT depth = D3DFMT_D24X8,
-                bool_t vsync = TRUE, D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE) const
+    /* ======================================================================================================================= */
+    bool reset (bool_t full = FALSE, uint_t width = 0, uint_t height = 0, D3DFORMAT format = D3DFMT_UNKNOWN, bool_t vsync = TRUE,
+                D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE) const
     {
         if (!full) {
-            if (!GetClientRect(hwnd, &rect))
+            if (!GetClientRect(m_main->parm.hDeviceWindow, &rect))
                 return (false);
             width  = rect.right;
             height = rect.bottom;
         }
-        if (!m_call->main_reset(m_main, full, width, height, format, depth, vsync, fsaa))
+        if (!m_call->main_reset(m_main, full, width, height, format, m_main->parm.AutoDepthStencilFormat, vsync, fsaa))
             return (false);
         m_tran->view_port.Width  = width;
         m_tran->view_port.Height = height;
@@ -228,6 +229,12 @@ public:
     sD3D9_TRAN* get_tran () const
     {
         return (m_tran);
+    }
+
+    /* ============================= */
+    const sD3D9_CALL* get_call () const
+    {
+        return (m_call);
     }
 };
 
