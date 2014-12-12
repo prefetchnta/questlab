@@ -60,8 +60,8 @@ cr_inline void async_call (mt_main_t func, const T* user, uint_t stacksize = 0)
     }
 }
 
-/* ========================================================== */
-cr_inline void async_call (mt_main_t func, uint_t stacksize = 0)
+/* =========================================================== */
+cr_inline void async_call2 (mt_main_t func, uint_t stacksize = 0)
 {
     thrd_t  thrd;
 

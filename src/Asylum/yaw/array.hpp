@@ -90,9 +90,11 @@ public:
     /* ================================== */
     T* get (size_t idx, T* obj = NULL) const
     {
+        T*  ret = &m_list[idx];
+
         if (obj != NULL)
-            mem_cpy(obj, &m_list[idx], sizeof(T));
-        return (&m_list[idx]);
+            mem_cpy(obj, ret, sizeof(T));
+        return (ret);
     }
 
     /* ======================================= */
@@ -148,27 +150,29 @@ public:
     /* ==================== */
     T* swap (size_t idx) const
     {
-        T   tmp;
+        T   tmp, *ret;
 
         if (idx == 0 || idx >= m_cnts)
             return (NULL);
-        mem_cpy(&tmp, &m_list[idx - 1], sizeof(T));
-        mem_cpy(&m_list[idx - 1], &m_list[idx], sizeof(T));
-        mem_cpy(&m_list[idx], &tmp, sizeof(T));
-        return (&m_list[idx]);
+        ret = &m_list[idx];
+        mem_cpy(&tmp, ret - 1, sizeof(T));
+        mem_cpy(ret - 1, ret, sizeof(T));
+        mem_cpy(ret, &tmp, sizeof(T));
+        return (ret);
     }
 
     /* =============== */
     void del (size_t idx)
     {
-        if (idx < m_cnts) {
-            m_list[idx].free();
-            m_cnts -= 1;
-            if (m_cnts > idx) {
-                mem_cpy(&m_list[idx], &m_list[idx + 1],
-                        (m_cnts - idx) * sizeof(T));
-            }
-        }
+        T*  ptr;
+
+        if (idx >= m_cnts)
+            return;
+        ptr = &m_list[idx];
+        ptr->free();
+        m_cnts -= 1;
+        if (m_cnts > idx)
+            mem_cpy(ptr, ptr + 1, (m_cnts - idx) * sizeof(T));
     }
 
     /* ================== */
@@ -187,6 +191,8 @@ public:
     /* ================================================ */
     T* insert (size_t idx, const T* obj, bool grow = true)
     {
+        T*  ret;
+
         if (grow) {
             if (m_cnts >= m_size &&
                 !this->reserve(m_size * 2 + 1))
@@ -197,14 +203,15 @@ public:
                 return (NULL);
         }
         if (idx >= m_cnts) {
-            mem_cpy(&m_list[m_cnts], obj, sizeof(T));
-            return (&m_list[m_cnts++]);
+            ret = &m_list[m_cnts];
         }
-        mem_mov(&m_list[idx + 1], &m_list[idx],
-                (m_cnts - idx) * sizeof(T));
+        else {
+            ret = &m_list[idx];
+            mem_mov(ret + 1, ret, (m_cnts - idx) * sizeof(T));
+        }
         m_cnts += 1;
-        mem_cpy(&m_list[idx], obj, sizeof(T));
-        return (&m_list[idx]);
+        mem_cpy(ret, obj, sizeof(T));
+        return (ret);
     }
 
     /* ==================================== */
@@ -216,6 +223,8 @@ public:
     /* ==================================== */
     T* append (const T* obj, bool grow = true)
     {
+        T*  ret;
+
         if (grow) {
             if (m_cnts >= m_size &&
                 !this->reserve(m_size * 2 + 1))
@@ -225,8 +234,9 @@ public:
             if (m_cnts >= m_size)
                 return (NULL);
         }
-        mem_cpy(&m_list[m_cnts], obj, sizeof(T));
-        return (&m_list[m_cnts++]);
+        ret = &m_list[m_cnts++];
+        mem_cpy(ret, obj, sizeof(T));
+        return (ret);
     }
 
     /* ============================================= */
