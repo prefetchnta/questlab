@@ -13,11 +13,11 @@ namespace asy {
 /***************/
 /* CPU Monitor */
 /***************/
-template<class T, class TEVT = events>
+template<class T>
 struct monitor
 {
     T               user;
-    TEVT            evts;
+    events          evts;
     volatile int    quit;
 
     /* ======= */
@@ -30,13 +30,13 @@ struct monitor
 /***************/
 /* Thread Pool */
 /***************/
-template<class T, size_t N, class TEVT = events>
+template<class T, size_t N>
 class mtpool : public asylum
 {
 private:
-    size_t              m_num;
-    monitor<T, TEVT>    m_mon;
-    asy_thrd_t          m_cpu[N];
+    size_t      m_num;
+    monitor<T>  m_mon;
+    asy_thrd_t  m_cpu[N];
 
 public:
     /* ============================================================================== */
@@ -69,7 +69,7 @@ public:
     /* ======== */
     void wakeup ()
     {
-        m_mon.evts.fire();
+        m_mon.evts.fire(false);
     }
 };
 

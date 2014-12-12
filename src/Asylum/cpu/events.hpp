@@ -66,8 +66,8 @@ public:
 #endif
     }
 
-    /* ============================ */
-    void fire (bool broadcast = false)
+    /* ==================== */
+    void fire (bool broadcast)
     {
 #if defined(_CR_OS_MSWIN_)
         if (broadcast)
