@@ -216,7 +216,17 @@ public:
     /* ==================================== */
     T* append (const T* obj, bool grow = true)
     {
-        return (this->insert(m_cnts, obj, grow));
+        if (grow) {
+            if (m_cnts >= m_size &&
+                !this->reserve(m_size * 2 + 1))
+                return (NULL);
+        }
+        else {
+            if (m_cnts >= m_size)
+                return (NULL);
+        }
+        mem_cpy(&m_list[m_cnts], obj, sizeof(T));
+        return (&m_list[m_cnts++]);
     }
 
     /* ============================================= */

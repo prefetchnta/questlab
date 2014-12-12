@@ -167,6 +167,7 @@ public:
         nnew = struct_new(list2_unit<T>);
         if (nnew == NULL)
             return (NULL);
+        mem_cpy(&nnew->user, obj, sizeof(T));
         if (node == m_head && front) {
             nnew->prev = NULL;
             nnew->next = m_head;
@@ -200,20 +201,47 @@ public:
             }
         }
         m_cnts += 1;
-        mem_cpy(&nnew->user, obj, sizeof(T));
         return (nnew);
     }
 
     /* ============================== */
     list2_unit<T>* sthead (const T* obj)
     {
-        return (this->insert(m_head, obj, true));
+        list2_unit<T>*  nnew;
+
+        nnew = struct_new(list2_unit<T>);
+        if (nnew == NULL)
+            return (NULL);
+        mem_cpy(&nnew->user, obj, sizeof(T));
+        nnew->prev = NULL;
+        nnew->next = m_head;
+        if (m_head != NULL)
+            m_head->prev = nnew;
+        else
+            m_tail = nnew;
+        m_head = nnew;
+        m_cnts += 1;
+        return (nnew);
     }
 
     /* ============================== */
     list2_unit<T>* append (const T* obj)
     {
-        return (this->insert(m_tail, obj, false));
+        list2_unit<T>*  nnew;
+
+        nnew = struct_new(list2_unit<T>);
+        if (nnew == NULL)
+            return (NULL);
+        mem_cpy(&nnew->user, obj, sizeof(T));
+        nnew->next = NULL;
+        nnew->prev = m_tail;
+        if (m_tail != NULL)
+            m_tail->next = nnew;
+        else
+            m_head = nnew;
+        m_tail = nnew;
+        m_cnts += 1;
+        return (nnew);
     }
 
     /* ============================================= */
