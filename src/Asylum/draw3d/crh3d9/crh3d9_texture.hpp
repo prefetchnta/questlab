@@ -23,81 +23,81 @@ private:
     const sD3D9_CALL*   m_call;
 
 public:
-    /* ============================================================================== */
-    bool init (sD3D9_MAIN* main, const char* name, uint_t face = 1, cl32_t keycolor = 0)
+    /* ===================================================================================== */
+    bool init (const crh3d9_main* main, const char* name, uint_t face = 1, cl32_t keycolor = 0)
     {
-        m_call = d3d9call_get();
+        m_main = main->get_main();
+        m_call = main->get_call();
         if (face == 1)
-            m_texr = m_call->create_tex2_fileA(main, name, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
+            m_texr = m_call->create_tex2_fileA(m_main, name, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
         else
         if (face == 6)
-            m_texr = m_call->create_tex3_fileA(main, name, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
+            m_texr = m_call->create_tex3_fileA(m_main, name, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
         else
         if (face == 3)
-            m_texr = m_call->create_texv_fileA(main, name, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
+            m_texr = m_call->create_texv_fileA(m_main, name, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
         else
             return (false);
         if (m_texr == NULL)
             return (false);
         m_flag = 0;
         m_pool = D3DPOOL_MANAGED;
-        m_main = main;
         return (true);
     }
 
-    /* =========================================================================================== */
-    bool init (sD3D9_MAIN* main, const void* data, size_t size, uint_t face = 1, cl32_t keycolor = 0)
+    /* ================================================================================================== */
+    bool init (const crh3d9_main* main, const void* data, size_t size, uint_t face = 1, cl32_t keycolor = 0)
     {
-        m_call = d3d9call_get();
+        m_main = main->get_main();
+        m_call = main->get_call();
         if (face == 1)
-            m_texr = m_call->create_tex2_mem(main, data, size, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
+            m_texr = m_call->create_tex2_mem(m_main, data, size, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
         else
         if (face == 6)
-            m_texr = m_call->create_tex3_mem(main, data, size, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
+            m_texr = m_call->create_tex3_mem(m_main, data, size, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
         else
         if (face == 3)
-            m_texr = m_call->create_texv_mem(main, data, size, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
+            m_texr = m_call->create_texv_mem(m_main, data, size, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT, keycolor);
         else
             return (false);
         if (m_texr == NULL)
             return (false);
         m_flag = 0;
         m_pool = D3DPOOL_MANAGED;
-        m_main = main;
         return (true);
     }
 
-    /* ===================================================================================================================================== */
-    bool init (sD3D9_MAIN* main, D3DFORMAT format, D3DPOOL pool, int32u usage, uint_t level, uint_t width, uint_t height = 0, uint_t depth = 0)
+    /* ============================================================================================================================================ */
+    bool init (const crh3d9_main* main, D3DFORMAT format, D3DPOOL pool, int32u usage, uint_t level, uint_t width, uint_t height = 0, uint_t depth = 0)
     {
-        m_call = d3d9call_get();
+        m_main = main->get_main();
+        m_call = main->get_call();
         if (depth == 0) {
             if (height == 0)
-                m_texr = m_call->create_tex3(main, width, format, pool, usage, level);
+                m_texr = m_call->create_tex3(m_main, width, format, pool, usage, level);
             else
-                m_texr = m_call->create_tex2(main, width, height, format, pool, usage, level);
+                m_texr = m_call->create_tex2(m_main, width, height, format, pool, usage, level);
         }
         else {
-            m_texr = m_call->create_texv(main, width, height, depth, format, pool, usage, level);
+            m_texr = m_call->create_texv(m_main, width, height, depth, format, pool, usage, level);
         }
         if (m_texr == NULL)
             return (false);
-        m_flag = usage;
         m_pool = pool;
-        m_main = main;
+        m_flag = usage;
         return (true);
     }
 
-    /* =========================================== */
-    bool init (sD3D9_MAIN* main, const sIMAGE* image)
+    /* ================================================== */
+    bool init (const crh3d9_main* main, const sIMAGE* image)
     {
-        m_call = d3d9call_get();
-        m_texr = m_call->create_tex2_crh(main, image, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT);
+        m_main = main->get_main();
+        m_call = main->get_call();
+        m_texr = m_call->create_tex2_crh(m_main, image, D3DPOOL_MANAGED, 0, 0, D3DX_DEFAULT);
         if (m_texr == NULL)
             return (false);
         m_flag = 0;
         m_pool = D3DPOOL_MANAGED;
-        m_main = main;
         return (true);
     }
 

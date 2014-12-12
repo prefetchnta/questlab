@@ -21,37 +21,31 @@ private:
     const sD3D9_CALL*   m_call;
 
 public:
-    /* ================================================================================================================================================= */
-    bool init (sD3D9_MAIN* main, const D3DVERTEXELEMENT9 *decl, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    /* ======================================================================================================================================================== */
+    bool init (const crh3d9_main* main, const D3DVERTEXELEMENT9* decl, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
-        m_call = d3d9call_get();
-        m_exec = m_call->create_vs_fileA(main, decl, name, flags, entry, profile);
-        if (m_exec == NULL)
-            return (false);
-        m_main = main;
-        return (true);
+        m_main = main->get_main();
+        m_call = main->get_call();
+        m_exec = m_call->create_vs_fileA(m_main, decl, name, flags, entry, profile);
+        return ((m_exec == NULL) ? false : true);
     }
 
-    /* ===================================================================================================================================================== */
-    bool init_txt (sD3D9_MAIN* main, const D3DVERTEXELEMENT9 *decl, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    /* ============================================================================================================================================================ */
+    bool init_txt (const crh3d9_main* main, const D3DVERTEXELEMENT9* decl, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
-        m_call = d3d9call_get();
-        m_exec = m_call->create_vs_text(main, decl, name, flags, entry, profile);
-        if (m_exec == NULL)
-            return (false);
-        m_main = main;
-        return (true);
+        m_main = main->get_main();
+        m_call = main->get_call();
+        m_exec = m_call->create_vs_text(m_main, decl, name, flags, entry, profile);
+        return ((m_exec == NULL) ? false : true);
     }
 
-    /* =========================================================================== */
-    bool init_bin (sD3D9_MAIN* main, const D3DVERTEXELEMENT9 *decl, const void* data)
+    /* ================================================================================== */
+    bool init_bin (const crh3d9_main* main, const D3DVERTEXELEMENT9* decl, const void* data)
     {
-        m_call = d3d9call_get();
-        m_exec = m_call->create_vs_data(main, decl, data);
-        if (m_exec == NULL)
-            return (false);
-        m_main = main;
-        return (true);
+        m_main = main->get_main();
+        m_call = main->get_call();
+        m_exec = m_call->create_vs_data(m_main, decl, data);
+        return ((m_exec == NULL) ? false : true);
     }
 
     /* ====== */
@@ -93,37 +87,31 @@ private:
     const sD3D9_CALL*   m_call;
 
 public:
-    /* ================================================================================================================== */
-    bool init (sD3D9_MAIN* main, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    /* ========================================================================================================================= */
+    bool init (const crh3d9_main* main, const char* name, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
-        m_call = d3d9call_get();
-        m_exec = m_call->create_ps_fileA(main, name, flags, entry, profile);
-        if (m_exec == NULL)
-            return (false);
-        m_main = main;
-        return (true);
+        m_main = main->get_main();
+        m_call = main->get_call();
+        m_exec = m_call->create_ps_fileA(m_main, name, flags, entry, profile);
+        return ((m_exec == NULL) ? false : true);
     }
 
-    /* ====================================================================================================================== */
-    bool init_txt (sD3D9_MAIN* main, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
+    /* ============================================================================================================================= */
+    bool init_txt (const crh3d9_main* main, const char* text, int32u flags = 0, const char* entry = "main", const char* profile = NULL)
     {
-        m_call = d3d9call_get();
-        m_exec = m_call->create_ps_text(main, decl, name, flags, entry, profile);
-        if (m_exec == NULL)
-            return (false);
-        m_main = main;
-        return (true);
+        m_main = main->get_main();
+        m_call = main->get_call();
+        m_exec = m_call->create_ps_text(m_main, decl, name, flags, entry, profile);
+        return ((m_exec == NULL) ? false : true);
     }
 
-    /* ============================================ */
-    bool init_bin (sD3D9_MAIN* main, const void* data)
+    /* =================================================== */
+    bool init_bin (const crh3d9_main* main, const void* data)
     {
-        m_call = d3d9call_get();
-        m_exec = m_call->create_ps_data(main, data);
-        if (m_exec == NULL)
-            return (false);
-        m_main = main;
-        return (true);
+        m_main = main->get_main();
+        m_call = main->get_call();
+        m_exec = m_call->create_ps_data(m_main, data);
+        return ((m_exec == NULL) ? false : true);
     }
 
     /* ====== */
