@@ -13,12 +13,11 @@ namespace asy {
 /*************/
 /* Byte Ring */
 /*************/
-template<class T, class TLCK = nolock>
+template<class T>
 class bring_c : public asylum
 {
 private:
     T*      m_list;
-    TLCK    m_lock;
     bool    m_full;
     size_t  m_head;
     size_t  m_tail;
@@ -35,7 +34,6 @@ public:
         m_tail = 0;
         m_full = false;
         m_size = count;
-        m_lock.init();
         return (true);
     }
 
@@ -43,35 +41,25 @@ public:
     void free ()
     {
         mem_free(m_list);
-        m_lock.free();
     }
 
 public:
     /* ======= */
     void clear ()
     {
-        m_lock.acquire();
         m_head = 0;
         m_tail = 0;
         m_full = false;
-        m_lock.release();
     }
 
-    /* ============================== */
-    size_t size (bool lock = true) const
+    /* ============== */
+    size_t size () const
     {
-        size_t  ret;
-
-        if (lock) m_lock.acquire();
         if (m_tail == m_head)
-            ret = m_full ? m_size : 0;
-        else
+            return (m_full ? m_size : 0);
         if (m_tail  < m_head)
-            ret = m_size - m_head + m_tail;
-        else
-            ret = m_tail - m_head;
-        if (lock) m_lock.release();
-        return (ret);
+            return (m_size - m_head + m_tail);
+        return (m_tail - m_head);
     }
 
     /* ================== */
@@ -87,8 +75,7 @@ public:
 
         if (size == 0)
             return (0);
-        m_lock.acquire();
-        total = this->size(false);
+        total = this->size();
         if (size > total)
             size = total;
         for (total = size; size != 0; size--) {
@@ -97,7 +84,6 @@ public:
                 m_head = 0;
         }
         m_full = false;
-        m_lock.release();
         return (total);
     }
 
@@ -108,8 +94,7 @@ public:
 
         if (size == 0)
             return (0);
-        m_lock.acquire();
-        total = this->size(false);
+        total = this->size();
         if (size > total)
             size = total;
         head = m_head;
@@ -118,7 +103,6 @@ public:
             if (head >= m_size)
                 head = 0;
         }
-        m_lock.release();
         return (total);
     }
 
@@ -129,7 +113,6 @@ public:
 
         if (size == 0)
             return (0);
-        m_lock.acquire();
         for (total = size; size != 0; size--) {
             mem_cpy(&m_list[m_tail++], data++, sizeof(T));
             if (m_tail >= m_size)
@@ -139,7 +122,6 @@ public:
         }
         if (m_full)
             m_head = m_tail;
-        m_lock.release();
         return (total);
     }
 };
@@ -147,12 +129,11 @@ public:
 /**************/
 /* Byte RingN */
 /**************/
-template<class T, size_t N, TLCK = nolock>
+template<class T, size_t N>
 class bring_n : public asylum
 {
 private:
     bool    m_full;
-    TLCK    m_lock;
     size_t  m_head;
     size_t  m_tail;
     T       m_list[N];
@@ -164,35 +145,23 @@ public:
         m_head = 0;
         m_tail = 0;
         m_full = false;
-        m_lock.init();
     }
 
 public:
     /* ======= */
     void clear ()
     {
-        m_lock.acquire();
-        m_head = 0;
-        m_tail = 0;
-        m_full = false;
-        m_lock.release();
+        this->init();
     }
 
-    /* ============================== */
-    size_t size (bool lock = true) const
+    /* ============== */
+    size_t size () const
     {
-        size_t  ret;
-
-        if (lock) m_lock.acquire();
         if (m_tail == m_head)
-            ret = m_full ? N : 0;
-        else
+            return (m_full ? N : 0);
         if (m_tail  < m_head)
-            ret = N - m_head + m_tail;
-        else
-            ret = m_tail - m_head;
-        if (lock) m_lock.release();
-        return (ret);
+            return (N - m_head + m_tail);
+        return (m_tail - m_head);
     }
 
     /* ================== */
@@ -208,8 +177,7 @@ public:
 
         if (size == 0)
             return (0);
-        m_lock.acquire();
-        total = this->size(false);
+        total = this->size();
         if (size > total)
             size = total;
         for (total = size; size != 0; size--) {
@@ -218,7 +186,6 @@ public:
                 m_head = 0;
         }
         m_full = false;
-        m_lock.release();
         return (total);
     }
 
@@ -229,8 +196,7 @@ public:
 
         if (size == 0)
             return (0);
-        m_lock.acquire();
-        total = this->size(false);
+        total = this->size();
         if (size > total)
             size = total;
         head = m_head;
@@ -239,7 +205,6 @@ public:
             if (head >= N)
                 head = 0;
         }
-        m_lock.release();
         return (total);
     }
 
@@ -250,7 +215,6 @@ public:
 
         if (size == 0)
             return (0);
-        m_lock.acquire();
         for (total = size; size != 0; size--) {
             mem_cpy(&m_list[m_tail++], data++, sizeof(T));
             if (m_tail >= N)
@@ -260,7 +224,6 @@ public:
         }
         if (m_full)
             m_head = m_tail;
-        m_lock.release();
         return (total);
     }
 };

@@ -13,12 +13,11 @@ namespace asy {
 /*********/
 /* Array */
 /*********/
-template<class T, class TLCK = nolock>
+template<class T>
 class array : public asylum
 {
 private:
     T*      m_list;
-    TLCK    m_lock;
     size_t  m_cnts;
     size_t  m_size;
 
@@ -39,7 +38,6 @@ public:
         m_cnts = 0;
         m_size = 0;
         m_list = NULL;
-        m_lock.init();
     }
 
     /* ================== */
@@ -47,8 +45,7 @@ public:
     {
         m_size = 0;
         m_list = NULL;
-        m_lock.init();
-        if (!this->reserve(count, false))
+        if (!this->reserve(count))
             return (false);
         mem_set(m_list, 0, count * sizeof(T));
         m_cnts = count;
@@ -62,77 +59,59 @@ public:
             this->_clean();
             mem_free(m_list);
         }
-        m_lock.free();
     }
 
 public:
     /* ======= */
     void clear ()
     {
-        m_lock.acquire();
         this->_clean();
         m_cnts = 0;
-        m_lock.release();
     }
 
     /* ========== */
     T* data () const
     {
-        T*  ret;
-
-        m_lock.acquire();
-        ret = m_list;
-        m_lock.release();
-        return (ret);
+        return (m_list);
     }
 
     /* ============== */
     size_t size () const
     {
-        size_t  ret;
-
-        m_lock.acquire();
-        ret = m_cnts;
-        m_lock.release();
-        return (ret);
+        return (m_cnts);
     }
 
     /* ================== */
     size_t capacity () const
     {
-        size_t  ret;
-
-        m_lock.acquire();
-        ret = m_size;
-        m_lock.release();
-        return (ret);
+        return (m_size);
     }
 
     /* ================================== */
     T* get (size_t idx, T* obj = NULL) const
     {
-        T*  ret;
-
-        m_lock.acquire();
-        ret = &m_list[idx];
         if (obj != NULL)
-            mem_cpy(obj, ret, sizeof(T));
-        m_lock.release();
-        return (ret);
+            mem_cpy(obj, &m_list[idx], sizeof(T));
+        return (&m_list[idx]);
     }
 
-    /* ====================================== */
-    bool reserve (size_t size, bool lock = true)
+    /* ======================================= */
+    T* get_safe (size_t idx, T* obj = NULL) const
+    {
+        if (idx >= m_cnts)
+            return (NULL);
+        return (this->get(idx, obj));
+    }
+
+    /* ==================== */
+    bool reserve (size_t size)
     {
         T*  temp;
 
-        if (lock) m_lock.acquire();
         if (size > m_size) {
             temp = mem_talloc(size, T);
-            if (temp == NULL) {
-                if (lock) m_lock.release();
+            if (temp == NULL)
                 return (false);
-            }
             if (m_list != NULL) {
                 mem_cpy(temp, m_list, m_cnts * sizeof(T));
                 mem_free(m_list);
@@ -140,7 +119,6 @@ public:
             m_size = size;
             m_list = temp;
         }
-        if (lock) m_lock.release();
         return (true);
     }
 
@@ -149,53 +127,40 @@ public:
     {
         T*  temp;
 
-        m_lock.acquire();
         if (m_cnts != m_size) {
             if (m_cnts == 0) {
                 mem_free(m_list);
                 m_list = NULL;
                 m_size = 0;
-                m_lock.release();
                 return (true);
             }
             temp = mem_talloc(m_cnts, T);
-            if (temp == NULL) {
-                m_lock.release();
+            if (temp == NULL)
                 return (false);
-            }
             mem_cpy(temp, m_list, m_cnts * sizeof(T));
             mem_free(m_list);
             m_size = m_cnts;
             m_list = temp;
         }
-        m_lock.release();
         return (true);
     }
 
     /* ==================== */
     T* swap (size_t idx) const
     {
-        T   tmp, *ret;
+        T   tmp;
 
-        if (idx == 0)
+        if (m_cnts <= 1 || idx == 0)
             return (NULL);
-        m_lock.acquire();
-        if (idx >= m_cnts) {
-            m_lock.release();
-            return (NULL);
-        }
-        ret = &m_list[idx];
-        mem_cpy(&tmp, ret - 1, sizeof(T));
-        mem_cpy(ret - 1, ret, sizeof(T));
-        mem_cpy(ret, &tmp, sizeof(T));
-        m_lock.release();
-        return (ret);
+        mem_cpy(&tmp, &m_list[idx - 1], sizeof(T));
+        mem_cpy(&m_list[idx - 1], &m_list[idx], sizeof(T));
+        mem_cpy(&m_list[idx], &tmp, sizeof(T));
+        return (&m_list[idx]);
     }
 
     /* =============== */
     void del (size_t idx)
     {
-        m_lock.acquire();
         if (idx < m_cnts) {
             m_list[idx].free();
             m_cnts -= 1;
@@ -204,56 +169,42 @@ public:
                         (m_cnts - idx) * sizeof(T));
             }
         }
-        m_lock.release();
     }
 
     /* ================== */
     bool pop (T* obj = NULL)
     {
-        m_lock.acquire();
-        if (m_cnts == 0) {
-            m_lock.release();
+        if (m_cnts == 0)
             return (false);
-        }
         m_cnts -= 1;
         if (obj != NULL)
             mem_cpy(obj, &m_list[m_cnts], sizeof(T));
         else
             m_list[m_cnts].free();
-        m_lock.release();
         return (true);
     }
 
     /* ================================================ */
     T* insert (size_t idx, const T* obj, bool grow = true)
     {
-        T*  ret;
-
-        m_lock.acquire();
         if (grow) {
             if (m_cnts >= m_size &&
-                !this->reserve(m_size * 2 + 1, false)) {
-                m_lock.release();
+                !this->reserve(m_size * 2 + 1))
                 return (NULL);
-            }
         }
         else {
-            if (m_cnts >= m_size) {
-                m_lock.release();
+            if (m_cnts >= m_size)
                 return (NULL);
-            }
         }
         if (idx >= m_cnts) {
-            ret = &m_list[m_cnts];
+            mem_cpy(&m_list[m_cnts], obj, sizeof(T));
+            return (&m_list[m_cnts++]);
         }
-        else {
-            ret = &m_list[idx];
-            mem_mov(ret + 1, ret, (m_cnts - idx) * sizeof(T));
-        }
+        mem_mov(&m_list[idx + 1], &m_list[idx],
+                (m_cnts - idx) * sizeof(T));
         m_cnts += 1;
-        mem_cpy(ret, obj, sizeof(T));
-        m_lock.release();
-        return (ret);
+        mem_cpy(&m_list[idx], obj, sizeof(T));
+        return (&m_list[idx]);
     }
 
     /* ==================================== */
@@ -265,32 +216,22 @@ public:
     /* ==================================== */
     T* append (const T* obj, bool grow = true)
     {
-        T*  ret;
-
-        m_lock.acquire();
         if (grow) {
             if (m_cnts >= m_size &&
-                !this->reserve(m_size * 2 + 1, false)) {
-                m_lock.release();
+                !this->reserve(m_size * 2 + 1))
                 return (NULL);
-            }
         }
         else {
-            if (m_cnts >= m_size) {
-                m_lock.release();
+            if (m_cnts >= m_size)
                 return (NULL);
-            }
         }
-        ret = &m_list[m_cnts++];
-        mem_cpy(ret, obj, sizeof(T));
-        m_lock.release();
-        return (ret);
+        mem_cpy(&m_list[m_cnts], obj, sizeof(T));
+        return (&m_list[m_cnts++]);
     }
 
     /* ============================================= */
     template<class TRUN>void trav_h2t (void* ctx) const
     {
-        m_lock.acquire();
         if (m_cnts != 0)
         {
             T*      unt;
@@ -299,17 +240,15 @@ public:
             unt = m_list;
             for (size_t idx = m_cnts; idx != 0; idx--) {
                 if (!run.doit(ctx, unt))
-                    break;
+                    return;
                 unt += 1;
             }
         }
-        m_lock.release();
     }
 
     /* ============================================= */
     template<class TRUN>void trav_t2h (void* ctx) const
     {
-        m_lock.acquire();
         if (m_cnts != 0)
         {
             T*      unt;
@@ -318,11 +257,10 @@ public:
             unt = m_list + m_cnts - 1;
             for (size_t idx = m_cnts; idx != 0; idx--) {
                 if (!run.doit(ctx, unt))
-                    break;
+                    return;
                 unt -= 1;
             }
         }
-        m_lock.release();
     }
 };
 
