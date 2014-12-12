@@ -109,11 +109,11 @@
 #include "cpu/rwlock.hpp"
 #include "cpu/splock.hpp"
 #include "cpu/doonce.hpp"
+#include "cpu/mtpool.hpp"
 
 /* CrHack C++ Wrapper */
 #include "crhack/ascall.hpp"
 #include "crhack/iports.hpp"
-#include "crhack/mtpool.hpp"
 #if defined(ASY_USE_GDI)
     #include "gfx2/gdiwin.h"
     #include "crhack/gfx2_gdi.hpp"
@@ -142,7 +142,6 @@
 #include "yaw/tree_l.hpp"
 
 /* Misaka Network */
-#include "msknet/cpu_queue.hpp"
 
 /* Asylum3D */
 #include "draw3d/map_acs.hpp"

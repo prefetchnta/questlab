@@ -1,11 +1,11 @@
 /*
 ***************************************
-*   Misaka Network @ 2014-04-05
+*   CPU STUFF @ 2014-04-05
 ***************************************
 */
 
-#ifndef __CPU_QUEUE_HPP__
-#define __CPU_QUEUE_HPP__
+#ifndef __MTPOOL_HPP__
+#define __MTPOOL_HPP__
 
 /* Asylum Namespace */
 namespace asy {
@@ -27,11 +27,11 @@ struct monitor
     }
 };
 
-/************************/
-/* Thread Pool (System) */
-/************************/
+/***************/
+/* Thread Pool */
+/***************/
 template<class T, size_t N, class TEVT = events>
-class cpu_queue : public asylum
+class mtpool : public asylum
 {
 private:
     size_t              m_num;
@@ -75,4 +75,4 @@ public:
 
 }   /* namespace */
 
-#endif  /* __CPU_QUEUE_HPP__ */
+#endif  /* __MTPOOL_HPP__ */
