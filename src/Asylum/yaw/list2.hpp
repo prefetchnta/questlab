@@ -24,7 +24,7 @@ struct list2_unit
 /*********/
 /* List2 */
 /*********/
-template<class T>
+template<class T, bool DIR = false>
 class list2 : public asylum
 {
 private:
@@ -159,12 +159,12 @@ public:
         return (true);
     }
 
-    /* ========================================================================================= */
-    list2_unit<T>* insert (list2_unit<T>* node, const T* obj, bool front = false, bool dir = false)
+    /* ======================================================================= */
+    list2_unit<T>* insert (list2_unit<T>* node, const T* obj, bool front = false)
     {
         list2_unit<T>*  nnew;
 
-        if (dir) {
+        if (DIR) {
             nnew = (list2_unit<T>*)obj;
         }
         else {
@@ -209,12 +209,12 @@ public:
         return (nnew);
     }
 
-    /* ================================================ */
-    list2_unit<T>* sthead (const T* obj, bool dir = false)
+    /* ============================== */
+    list2_unit<T>* sthead (const T* obj)
     {
         list2_unit<T>*  nnew;
 
-        if (dir) {
+        if (DIR) {
             nnew = (list2_unit<T>*)obj;
         }
         else {
@@ -234,12 +234,12 @@ public:
         return (nnew);
     }
 
-    /* ================================================ */
-    list2_unit<T>* append (const T* obj, bool dir = false)
+    /* ============================== */
+    list2_unit<T>* append (const T* obj)
     {
         list2_unit<T>*  nnew;
 
-        if (dir) {
+        if (DIR) {
             nnew = (list2_unit<T>*)obj;
         }
         else {
