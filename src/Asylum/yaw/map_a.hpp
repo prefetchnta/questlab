@@ -125,24 +125,22 @@ public:
         }
     }
 
-    /* =============================================== */
-    T* insert (K* key, const T* obj, bool replace = true)
+    /* ========================== */
+    T* insert (K* key, const T* obj)
     {
         T*          unt;
         TCMP        cmp;
         array<T>*   lst;
 
         lst = &m_list[cmp.hash(key) % m_size];
-        if (replace) {
-            unt = lst->data();
-            for (size_t idx = lst->size(); idx != 0; idx--) {
-                if (cmp.match(key, unt)) {
-                    unt->free();
-                    mem_cpy(unt, obj, sizeof(T));
-                    return (unt);
-                }
-                unt += 1;
+        unt = lst->data();
+        for (size_t idx = lst->size(); idx != 0; idx--) {
+            if (cmp.match(key, unt)) {
+                unt->free();
+                mem_cpy(unt, obj, sizeof(T));
+                return (unt);
             }
+            unt += 1;
         }
         unt = lst->append(obj);
         if (unt != NULL)
@@ -303,24 +301,22 @@ public:
         }
     }
 
-    /* =============================================== */
-    T* insert (K* key, const T* obj, bool replace = true)
+    /* ========================== */
+    T* insert (K* key, const T* obj)
     {
         T*          unt;
         TCMP        cmp;
         array<T>*   lst;
 
         lst = &m_list[cmp.hash(key) % N];
-        if (replace) {
-            unt = lst->data();
-            for (size_t idx = lst->size(); idx != 0; idx--) {
-                if (cmp.match(key, unt)) {
-                    unt->free();
-                    mem_cpy(unt, obj, sizeof(T));
-                    return (unt);
-                }
-                unt += 1;
+        unt = lst->data();
+        for (size_t idx = lst->size(); idx != 0; idx--) {
+            if (cmp.match(key, unt)) {
+                unt->free();
+                mem_cpy(unt, obj, sizeof(T));
+                return (unt);
             }
+            unt += 1;
         }
         unt = lst->append(obj);
         if (unt != NULL)

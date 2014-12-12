@@ -156,8 +156,8 @@ public:
         }
     }
 
-    /* =============================================== */
-    T* insert (K* key, const T* obj, bool replace = true)
+    /* ========================== */
+    T* insert (K* key, const T* obj)
     {
         T*      unt;
         TCMP    cmp;
@@ -172,7 +172,7 @@ public:
                 m_cnts += 1;
                 return (unt);
             }
-            if (replace && cmp.match(key, unt)) {
+            if (cmp.match(key, unt)) {
                 unt->free();
                 mem_cpy(unt, obj, sizeof(T));
                 return (unt);
@@ -318,8 +318,8 @@ public:
         }
     }
 
-    /* =============================================== */
-    T* insert (K* key, const T* obj, bool replace = true)
+    /* ========================== */
+    T* insert (K* key, const T* obj)
     {
         T*      unt;
         TCMP    cmp;
@@ -334,7 +334,7 @@ public:
                 m_cnts += 1;
                 return (unt);
             }
-            if (replace && cmp.match(key, unt)) {
+            if (cmp.match(key, unt)) {
                 unt->free();
                 mem_cpy(unt, obj, sizeof(T));
                 return (unt);

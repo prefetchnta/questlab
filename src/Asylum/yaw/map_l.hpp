@@ -123,24 +123,22 @@ public:
         }
     }
 
-    /* =============================================== */
-    T* insert (K* key, const T* obj, bool replace = true)
+    /* ========================== */
+    T* insert (K* key, const T* obj)
     {
         TCMP            cmp;
         list2<T>*       lst;
         list2_unit<T>*  unt;
 
         lst = &m_list[cmp.hash(key) % m_size];
-        if (replace) {
-            unt = lst->head();
-            for (size_t idx = lst->size(); idx != 0; idx--) {
-                if (cmp.match(key, &unt->user)) {
-                    unt->user.free();
-                    mem_cpy(&unt->user, obj, sizeof(T));
-                    return (&unt->user);
-                }
-                unt = unt->next;
+        unt = lst->head();
+        for (size_t idx = lst->size(); idx != 0; idx--) {
+            if (cmp.match(key, &unt->user)) {
+                unt->user.free();
+                mem_cpy(&unt->user, obj, sizeof(T));
+                return (&unt->user);
             }
+            unt = unt->next;
         }
         unt = lst->append(obj);
         if (unt != NULL)
@@ -299,24 +297,22 @@ public:
         }
     }
 
-    /* =============================================== */
-    T* insert (K* key, const T* obj, bool replace = true)
+    /* ========================== */
+    T* insert (K* key, const T* obj)
     {
         TCMP            cmp;
         list2<T>*       lst;
         list2_unit<T>*  unt;
 
         lst = &m_list[cmp.hash(key) % N];
-        if (replace) {
-            unt = lst->head();
-            for (size_t idx = lst->size(); idx != 0; idx--) {
-                if (cmp.match(key, &unt->user)) {
-                    unt->user.free();
-                    mem_cpy(&unt->user, obj, sizeof(T));
-                    return (&unt->user);
-                }
-                unt = unt->next;
+        unt = lst->head();
+        for (size_t idx = lst->size(); idx != 0; idx--) {
+            if (cmp.match(key, &unt->user)) {
+                unt->user.free();
+                mem_cpy(&unt->user, obj, sizeof(T));
+                return (&unt->user);
             }
+            unt = unt->next;
         }
         unt = lst->append(obj);
         if (unt != NULL)
