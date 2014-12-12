@@ -143,8 +143,6 @@
 
 /* Misaka Network */
 #include "msknet/cpu_queue.hpp"
-#include "msknet/mtp_queue.hpp"
-#include "msknet/wrk_queue.hpp"
 
 /* Asylum3D */
 #include "draw3d/map_acs.hpp"
