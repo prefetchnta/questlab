@@ -22,7 +22,7 @@ private:
 
 public:
     /* ========================================================================================================== */
-    bool init (const sDX9_HDLE *hdle, fp32_t fovy = 60.0f, bool_t full = FALSE, uint_t width = 0, uint_t height = 0,
+    bool init (const sDX9_HDLE* hdle, fp32_t fovy = 60.0f, bool_t full = FALSE, uint_t width = 0, uint_t height = 0,
                D3DFORMAT format = D3DFMT_UNKNOWN, D3DFORMAT depth = D3DFMT_D24X8, bool_t vsync = TRUE,
                D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE)
     {
