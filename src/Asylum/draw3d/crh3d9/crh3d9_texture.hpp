@@ -23,8 +23,8 @@ private:
     const sD3D9_CALL*   m_call;
 
 public:
-    /* ===================================================================================== */
-    bool init (const crh3d9_main* main, const char* name, uint_t face = 1, cl32_t keycolor = 0)
+    /* ================================================================================= */
+    bool init (const crh3d9_main* main, const char* name, uint_t face, cl32_t keycolor = 0)
     {
         m_main = main->get_main();
         m_call = main->get_call();
@@ -45,8 +45,8 @@ public:
         return (true);
     }
 
-    /* ================================================================================================== */
-    bool init (const crh3d9_main* main, const void* data, size_t size, uint_t face = 1, cl32_t keycolor = 0)
+    /* ============================================================================================== */
+    bool init (const crh3d9_main* main, const void* data, size_t size, uint_t face, cl32_t keycolor = 0)
     {
         m_main = main->get_main();
         m_call = main->get_call();
