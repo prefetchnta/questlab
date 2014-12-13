@@ -166,8 +166,8 @@ public:
         return (true);
     }
 
-    /* ======================================================================= */
-    list2_unit<T>* insert (list2_unit<T>* node, const T* obj, bool front = false)
+    /* =================================================== */
+    list2_unit<T>* insert (list2_unit<T>* node, const T* obj)
     {
         list2_unit<T>*  nnew;
 
@@ -180,7 +180,7 @@ public:
                 return (NULL);
             mem_cpy(&nnew->user, obj, sizeof(T));
         }
-        if (node == m_head && front) {
+        if (node == m_head) {
             nnew->prev = NULL;
             nnew->next = m_head;
             if (m_head != NULL)
@@ -189,28 +189,11 @@ public:
                 m_tail = nnew;
             m_head = nnew;
         }
-        else if ((node == m_tail && !front) || (m_cnts == 0)) {
-            nnew->next = NULL;
-            nnew->prev = m_tail;
-            if (m_tail != NULL)
-                m_tail->next = nnew;
-            else
-                m_head = nnew;
-            m_tail = nnew;
-        }
         else {
-            if (front) {
-                nnew->next = node;
-                nnew->prev = node->prev;
-                node->prev->next = nnew;
-                node->prev = nnew;
-            }
-            else {
-                nnew->prev = node;
-                nnew->next = node->next;
-                node->next->prev = nnew;
-                node->next = nnew;
-            }
+            nnew->next = node;
+            nnew->prev = node->prev;
+            node->prev->next = nnew;
+            node->prev = nnew;
         }
         m_cnts += 1;
         return (nnew);
