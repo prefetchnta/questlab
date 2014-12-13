@@ -57,6 +57,23 @@ private:
         mem_free(node);
     }
 
+    /* =================================== */
+    list2_unit<T>* _node (const T* obj) const
+    {
+        list2_unit<T>*  nnew;
+
+        if (DIR) {
+            nnew = static_cast<list2_unit<T>*>(obj);
+        }
+        else {
+            nnew = struct_new(list2_unit<T>);
+            if (nnew == NULL)
+                return (NULL);
+            mem_cpy(&nnew->user, obj, sizeof(T));
+        }
+        return (nnew);
+    }
+
 public:
     /* ====== */
     void init ()
@@ -171,15 +188,7 @@ public:
     {
         list2_unit<T>*  nnew;
 
-        if (DIR) {
-            nnew = (list2_unit<T>*)obj;
-        }
-        else {
-            nnew = struct_new(list2_unit<T>);
-            if (nnew == NULL)
-                return (NULL);
-            mem_cpy(&nnew->user, obj, sizeof(T));
-        }
+        nnew = this->_node(obj);
         if (node == m_head) {
             nnew->prev = NULL;
             nnew->next = m_head;
@@ -204,15 +213,7 @@ public:
     {
         list2_unit<T>*  nnew;
 
-        if (DIR) {
-            nnew = (list2_unit<T>*)obj;
-        }
-        else {
-            nnew = struct_new(list2_unit<T>);
-            if (nnew == NULL)
-                return (NULL);
-            mem_cpy(&nnew->user, obj, sizeof(T));
-        }
+        nnew = this->_node(obj);
         nnew->prev = NULL;
         nnew->next = m_head;
         if (m_head != NULL)
@@ -229,15 +230,7 @@ public:
     {
         list2_unit<T>*  nnew;
 
-        if (DIR) {
-            nnew = (list2_unit<T>*)obj;
-        }
-        else {
-            nnew = struct_new(list2_unit<T>);
-            if (nnew == NULL)
-                return (NULL);
-            mem_cpy(&nnew->user, obj, sizeof(T));
-        }
+        nnew = this->_node(obj);
         nnew->next = NULL;
         nnew->prev = m_tail;
         if (m_tail != NULL)
