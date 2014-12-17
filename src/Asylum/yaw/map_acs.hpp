@@ -15,7 +15,11 @@ namespace asy {
 /**************/
 struct map_acs_key
 {
-    int32u      hash;
+#ifndef MAP_ACS_HASH_LEN
+    int32u  hash;
+#else
+    byte_t  hash[MAP_ACS_HASH_LEN];
+#endif
     const char* name;
 };
 
@@ -30,7 +34,9 @@ struct map_acs_unit
     /* ====== */
     void free ()
     {
+#ifndef MAP_ACS_NO_NAME
         mem_free(this->key.name);
+#endif
     }
 };
 
@@ -38,10 +44,17 @@ struct map_acs_unit
 /* MapACS Cmp */
 /**************/
 #ifndef map_acs_comp
-    #define map_acs_comp    strcmp
+    #define map_acs_comp(s1, s2)    strcmp(s1, s2)
 #endif
 #ifndef map_acs_hash
-    #define map_acs_hash    hash_crc32i_total
+    #define map_acs_hash(hsh, str, len) \
+                (hsh) = hash_crc32i_total(str, len)
+#endif
+#ifndef map_acs_hash2index
+    #define map_acs_hash2index(hsh)     (hsh)
+#endif
+#ifndef map_acs_hash_cmp
+    #define map_acs_hash_cmp(h1, h2)    ((h1) != (h2))
 #endif
 class map_acs_cmp : public asylum
 {
@@ -49,14 +62,14 @@ public:
     /* ======================== */
     size_t hash (map_acs_key* key)
     {
-        key->hash = map_acs_hash(key->name, strlen(key->name));
-        return ((size_t)key->hash);
+        map_acs_hash(key->hash, key->name, strlen(key->name));
+        return ((size_t)map_acs_hash2index(key->hash));
     }
 
     /* ========================================== */
     bool match (map_acs_key* key, map_acs_unit* obj)
     {
-        if (key->hash != obj->key.hash)
+        if (map_acs_hash_cmp(key->hash, obj->key.hash))
             return (false);
         if (map_acs_comp(key->name, obj->key.name) != 0)
             return (false);
@@ -173,11 +186,15 @@ public:
         size_t          cnt;
         map_acs_unit    tmp;
 
+#ifndef MAP_ACS_NO_NAME
         tmp.key.name = str_dupA(name);
         if (tmp.key.name == NULL) {
             m_lst.pop(obj);
             return (NULL);
         }
+#else
+        tmp.key.name = name;
+#endif
         tmp.idx = m_lst.size() - 1;
         if (m_tbl.insert(&tmp.key, &tmp) != NULL)
             return (ret);
@@ -186,7 +203,9 @@ public:
 
         cnt = hash_count(m_cnt + 1);
         if (cnt == m_cnt || !tbl2.init(cnt)) {
+#ifndef MAP_ACS_NO_NAME
             mem_free(tmp.key.name);
+#endif
             m_lst.pop(obj);
             return (NULL);
         }
