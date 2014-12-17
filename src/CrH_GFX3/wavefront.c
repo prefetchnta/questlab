@@ -22,6 +22,7 @@
 
 #include "gfx3.h"
 #include "datlib.h"
+#include "msclib.h"
 #include "parser.h"
 #include "strlib.h"
 
@@ -597,6 +598,28 @@ wfront_mtl_default (
 }
 
 /*
+---------------------------------------
+    网格排序比较
+---------------------------------------
+*/
+static sint_t
+wfront_mtl_comp (
+  __CR_IN__ const void_t*   obj1,
+  __CR_IN__ const void_t*   obj2
+    )
+{
+    leng_t  attr1, attr2;
+
+    attr1 = (leng_t)(((sWAVEFRONT_G*)obj1)->attr);
+    attr2 = (leng_t)(((sWAVEFRONT_G*)obj2)->attr);
+    if (attr1 > attr2)
+        return (-1);
+    if (attr1 < attr2)
+        return (1);
+    return (0);
+}
+
+/*
 =======================================
     解析 MTL 字符串
 =======================================
@@ -1005,6 +1028,9 @@ wfront_mtl_load (
             }
         }
     }
+
+    /* 根据材质排序网格 */
+    quick_sort(obj->p_g, obj->n_g, sizeof(sWAVEFRONT_G), wfront_mtl_comp);
     ini_closeU(ini);
     return (TRUE);
 
