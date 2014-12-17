@@ -261,8 +261,8 @@ typedef struct
 #define list_stheadT(that, type, data) \
          list_sthead(that, sizeof(type), data)
 
-#define list_insertT(that, type, node, data, front) \
-         list_insert(that, sizeof(type), node, data, front)
+#define list_insertT(that, type, node, data) \
+         list_insert(that, sizeof(type), node, data)
 
 #define list_get_dataT(node, type) \
  ((type*)list_get_data(node))
@@ -296,7 +296,7 @@ CR_API void_t       list_delete (sLIST *that, sLST_UNIT *node);
 CR_API sLST_UNIT*   list_append (sLIST *that, leng_t unit, const void_t *data);
 CR_API sLST_UNIT*   list_sthead (sLIST *that, leng_t unit, const void_t *data);
 CR_API sLST_UNIT*   list_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
-                                    const void_t *data, bool_t front);
+                                        const void_t *data);
 #if !defined(_CR_SICK_INLINE_)
 /*
 =======================================

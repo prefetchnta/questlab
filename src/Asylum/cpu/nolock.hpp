@@ -16,15 +16,21 @@ namespace asy {
 class nolock : public asylum
 {
 public:
-    /* ========= */
-    void init () {}
+    /* ====== */
+    void init ()
+    {
+    }
 
 public:
-    /* ============ */
-    void acquire () {}
+    /* ========= */
+    void acquire ()
+    {
+    }
 
-    /* ============ */
-    void release () {}
+    /* ========= */
+    void release ()
+    {
+    }
 };
 
 }   /* namespace */
