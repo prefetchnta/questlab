@@ -608,10 +608,10 @@ wfront_mtl_comp (
   __CR_IN__ const void_t*   obj2
     )
 {
-    leng_t  attr1, attr2;
+    size_t  attr1, attr2;
 
-    attr1 = (leng_t)(((sWAVEFRONT_G*)obj1)->attr);
-    attr2 = (leng_t)(((sWAVEFRONT_G*)obj2)->attr);
+    attr1 = (size_t)(((sWAVEFRONT_G*)obj1)->attr);
+    attr2 = (size_t)(((sWAVEFRONT_G*)obj2)->attr);
     if (attr1 > attr2)
         return (-1);
     if (attr1 < attr2)
