@@ -219,25 +219,25 @@ class crh3d9_mtl_wf_fixed : public material_i
 {
 private:
     leng_t          m_anow;
-    sWAVEFRONT*     m_objs;
+    sWAVEFRONT      m_objs;
     crh3d9_mesh_wf* m_mesh;
     crh3d9_attr_wf* m_attr;
 
 public:
-    /* ============================================================================ */
-    crh3d9_mtl_wf_fixed (sWAVEFRONT* objs, crh3d9_mesh_wf* mesh, crh3d9_attr_wf* attr)
+    /* ================================================================================== */
+    crh3d9_mtl_wf_fixed (const sWAVEFRONT* objs, crh3d9_mesh_wf* mesh, crh3d9_attr_wf* attr)
     {
         m_anow = 0;
-        m_objs = objs;
         m_mesh = mesh;
         m_attr = attr;
+        mem_cpy(&m_objs, objs, sizeof(sWAVEFRONT));
     }
 
     /* ========================= */
     virtual ~crh3d9_mtl_wf_fixed ()
     {
-        wfront_obj_free(m_objs);
-        for (leng_t idx = 0; idx < m_objs->n_g; idx++)
+        wfront_obj_free(&m_objs);
+        for (leng_t idx = 0; idx < m_objs.n_g; idx++)
             m_mesh[idx].free();
         mem_free(m_mesh);
         mem_free(m_attr);
@@ -249,8 +249,8 @@ public:
     {
         leng_t  aidx;
 
-        for (leng_t idx = 0; idx < m_objs->n_g; idx++) {
-            aidx = m_objs->p_g[idx].attr;
+        for (leng_t idx = 0; idx < m_objs.n_g; idx++) {
+            aidx = m_objs.p_g[idx].attr;
             if (aidx == 0)
                 return;
             if (trans == m_attr[aidx - 1].trans()) {
@@ -265,5 +265,12 @@ public:
 };
 
 }   /* namespace */
+
+/***************/
+/* Factory API */
+/***************/
+CR_API material_i* create_crh3d9_mtl_wf_fixed (const ansi_t* obj, bool_t swap_yz, bool_t neg_z,
+                            const ansi_t* mtl, const asy::map_acs<asy::crh3d9_texr>* texpool,
+                                                const asy::crh3d9_main* main);
 
 #endif  /* __CRH3D9_MTL_WF_HPP__ */
