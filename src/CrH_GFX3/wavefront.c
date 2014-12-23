@@ -610,8 +610,9 @@ wfront_mtl_comp (
 {
     size_t  attr1, attr2;
 
-    attr1 = (size_t)(((sWAVEFRONT_G*)obj1)->attr);
-    attr2 = (size_t)(((sWAVEFRONT_G*)obj2)->attr);
+    /* 降序排列 */
+    attr1 = ((sWAVEFRONT_G*)obj1)->attr;
+    attr2 = ((sWAVEFRONT_G*)obj2)->attr;
     if (attr1 > attr2)
         return (-1);
     if (attr1 < attr2)
@@ -1018,12 +1019,12 @@ wfront_mtl_load (
     {
         /* 逐个对比名字 */
         if (obj->p_g[idx].mtl == NULL) {
-            obj->p_g[idx].attr = NULL;
+            obj->p_g[idx].attr = 0;
             continue;
         }
         for (skip = 0; skip < obj->n_m; skip++) {
             if (str_cmpA(obj->p_g[idx].mtl, obj->p_m[skip].name) == 0) {
-                obj->p_g[idx].attr = &obj->p_m[skip];
+                obj->p_g[idx].attr = skip + 1;
                 break;
             }
         }

@@ -243,7 +243,7 @@ typedef struct
         leng_t  beg, end, num;  /* 模型顶点相关的参数 */
 
         /* MTL 内容 */
-        sWAVEFRONT_M*   attr;   /* 指向材质结构 */
+        leng_t  attr;   /* 材质索引号 */
 
 } sWAVEFRONT_G;
 
