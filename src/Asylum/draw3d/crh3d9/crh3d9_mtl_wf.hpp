@@ -217,8 +217,7 @@ public:
 /***************/
 /* Factory API */
 /***************/
-CR_API material_i* create_crh3d9_mtl_wf_fixed (const ansi_t* obj, bool_t swap_yz, bool_t neg_z,
-                            const ansi_t* mtl, const asy::map_acs<asy::crh3d9_texr>* texpool,
-                                                const asy::crh3d9_main* main);
+CR_API asy::material_i* create_crh3d9_mtl_wf_fixed (const ansi_t* obj, bool_t swap_yz, bool_t neg_z,
+    const ansi_t* mtl, const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main);
 
 #endif  /* __CRH3D9_MTL_WF_HPP__ */

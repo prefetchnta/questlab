@@ -52,7 +52,7 @@ public:
                 return;
             if (trans == m_attr[aidx - 1].trans()) {
                 if (m_anow != aidx) {
-                    m_anow = aidx;
+                    m_anow  = aidx;
                     m_attr[aidx - 1].apply_ff();
                 }
                 m_mesh[idx].apply_ss();
@@ -63,15 +63,14 @@ public:
 
 }   /* namespace */
 
-/* ========================================================================================= */
-CR_API material_i* create_crh3d9_mtl_wf_fixed (const ansi_t* obj, bool_t swap_yz, bool_t neg_z,
-                            const ansi_t* mtl, const asy::map_acs<asy::crh3d9_texr>* texpool,
-                                                const asy::crh3d9_main* main)
+/* ============================================================================================== */
+CR_API asy::material_i* create_crh3d9_mtl_wf_fixed (const ansi_t* obj, bool_t swap_yz, bool_t neg_z,
+    const ansi_t* mtl, const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main)
 {
-    sWAVEFRONT              objs;
-    asy::material_i*        mtrl;
-    asy::crh3d9_mesh_wf*    mesh;
-    asy::crh3d9_attr_wf*    attr;
+    sWAVEFRONT                  objs;
+    asy::crh3d9_mesh_wf*        mesh;
+    asy::crh3d9_attr_wf*        attr;
+    asy::crh3d9_mtl_wf_fixed*   mtrl;
 
     if (!wfront_obj_load(&objs, obj, swap_yz, neg_z))
         return (NULL);
