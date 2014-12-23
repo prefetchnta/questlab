@@ -149,6 +149,11 @@
     #include "draw3d/crh3d9_shader.hpp"
     #include "draw3d/crh3d9_texture.hpp"
     #include "draw3d/crh3d9_mtl_wf.hpp"
+    #ifndef ASY_USE_STATIC
+        #pragma comment (lib, "CrH_GFX3.lib")
+    #else
+        #pragma comment (lib, "GFX3s.lib")
+    #endif
 #endif
 
 #endif  /* __ASYLUM_HPP__ */
