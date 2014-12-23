@@ -196,7 +196,7 @@ public:
     }
 
     /* ============= */
-    bool order () const
+    bool trans () const
     {
         return ((m_mtl.Diffuse.a < 1.0f) ? true : false);
     }
@@ -244,8 +244,8 @@ public:
     }
 
 public:
-    /* ================ */
-    virtual void commit ()
+    /* ========================== */
+    virtual void commit (bool trans)
     {
         leng_t  aidx;
 
@@ -253,11 +253,13 @@ public:
             aidx = m_objs->p_g[idx].attr;
             if (aidx == 0)
                 return;
-            if (m_anow != aidx) {
-                m_anow = aidx;
-                m_attr[aidx - 1].apply_ff();
+            if (trans == m_attr[aidx - 1].trans()) {
+                if (m_anow != aidx) {
+                    m_anow = aidx;
+                    m_attr[aidx - 1].apply_ff();
+                }
+                m_mesh[idx].apply_ss();
             }
-            m_mesh[idx].apply_ss();
         }
     }
 };

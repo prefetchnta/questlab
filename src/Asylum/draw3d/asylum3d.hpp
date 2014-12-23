@@ -84,8 +84,8 @@ public:
     virtual ~material_i () {}
 
 public:
-    /* ===================== */
-    virtual void commit () = 0;
+    /* =============================== */
+    virtual void commit (bool trans) = 0;
 };
 
 }   /* namespace */
