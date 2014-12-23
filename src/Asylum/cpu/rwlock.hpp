@@ -61,6 +61,18 @@ public:
     {
         atom_set_zero32(&m_wlock);
     }
+
+    /* ========= */
+    void acquire ()
+    {
+        this->w_acquire();
+    }
+
+    /* ========= */
+    void release ()
+    {
+        this->w_release();
+    }
 };
 
 }   /* namespace */
