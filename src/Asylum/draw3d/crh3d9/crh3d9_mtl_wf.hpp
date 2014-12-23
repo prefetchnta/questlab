@@ -83,6 +83,12 @@ public:
         return (true);
     }
 
+    /* ====== */
+    void free ()
+    {
+        m_call->release_mesh(m_mesh);
+    }
+
     /* ================ */
     void apply_ss () const
     {
@@ -203,6 +209,56 @@ public:
         else
             m_main->dev->SetTexture(0, NULL);
         m_main->dev->SetMaterial(&m_mtl);
+    }
+};
+
+/******************************/
+/* Wavefront Material (Fixed) */
+/******************************/
+class crh3d9_mtl_wf_fixed : public material_i
+{
+private:
+    leng_t          m_anow;
+    sWAVEFRONT*     m_objs;
+    crh3d9_mesh_wf* m_mesh;
+    crh3d9_attr_wf* m_attr;
+
+public:
+    /* ============================================================================ */
+    crh3d9_mtl_wf_fixed (sWAVEFRONT* objs, crh3d9_mesh_wf* mesh, crh3d9_attr_wf* attr)
+    {
+        m_anow = 0;
+        m_objs = objs;
+        m_mesh = mesh;
+        m_attr = attr;
+    }
+
+    /* ========================= */
+    virtual ~crh3d9_mtl_wf_fixed ()
+    {
+        wfront_obj_free(m_objs);
+        for (leng_t idx = 0; idx < m_objs->n_g; idx++)
+            m_mesh[idx].free();
+        mem_free(m_mesh);
+        mem_free(m_attr);
+    }
+
+public:
+    /* ================ */
+    virtual void commit ()
+    {
+        leng_t  aidx;
+
+        for (leng_t idx = 0; idx < m_objs->n_g; idx++) {
+            aidx = m_objs->p_g[idx].attr;
+            if (aidx == 0)
+                return;
+            if (m_anow != aidx) {
+                m_anow = aidx;
+                m_attr[aidx - 1].apply_ff();
+            }
+            m_mesh[idx].apply_ss();
+        }
     }
 };
 
