@@ -57,6 +57,37 @@ struct vertex_nt3
     vec3d_t tex;
 };
 
+/***************/
+/* Effect Port */
+/***************/
+class effect_i : public asylum
+{
+public:
+    /* ================= */
+    virtual ~effect_i () {}
+
+public:
+    /* ==================== */
+    virtual void enter () = 0;
+
+    /* ==================== */
+    virtual void leave () = 0;
+};
+
+/*****************/
+/* Material Port */
+/*****************/
+class material_i : public asylum
+{
+public:
+    /* =================== */
+    virtual ~material_i () {}
+
+public:
+    /* ===================== */
+    virtual void commit () = 0;
+};
+
 }   /* namespace */
 
 #endif  /* __ASYLUM3D_HPP__ */
