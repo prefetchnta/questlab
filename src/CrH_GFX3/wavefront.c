@@ -608,7 +608,7 @@ wfront_mtl_comp (
   __CR_IN__ const void_t*   obj2
     )
 {
-    size_t  attr1, attr2;
+    leng_t  attr1, attr2;
 
     /* 降序排列 */
     attr1 = ((sWAVEFRONT_G*)obj1)->attr;
