@@ -60,11 +60,11 @@ struct vertex_nt3
 /***************/
 /* Effect Port */
 /***************/
-class effect_i : public asylum
+class IEffect : public asylum
 {
 public:
-    /* ================= */
-    virtual ~effect_i () {}
+    /* ================ */
+    virtual ~IEffect () {}
 
 public:
     /* ==================== */
@@ -74,18 +74,37 @@ public:
     virtual void leave () = 0;
 };
 
-/*****************/
-/* Material Port */
-/*****************/
-class material_i : public asylum
+/******************/
+/* Attribute Port */
+/******************/
+class IAttrib : public asylum
 {
 public:
-    /* =================== */
-    virtual ~material_i () {}
+    /* ================ */
+    virtual ~IAttrib () {}
 
 public:
-    /* =============================== */
-    virtual void commit (bool trans) = 0;
+    /* ===================== */
+    virtual void commit () = 0;
+
+    /* ===================== */
+    virtual int32u type () = 0;
+};
+
+/*************/
+/* Mesh Port */
+/*************/
+class IMesh : public asylum
+{
+public:
+    /* ============== */
+    virtual ~IMesh () {}
+
+    /* ===================== */
+    virtual void commit () = 0;
+
+    /* ============================================== */
+    virtual void bound (sAABB* aabb, sSPHERE* ball) = 0;
 };
 
 }   /* namespace */
