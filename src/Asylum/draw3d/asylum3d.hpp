@@ -88,8 +88,13 @@ public:
     virtual void commit () = 0;
 
     /* ===================== */
-    virtual int32u type () = 0;
+    virtual int64u type () = 0;
 };
+
+// Attribute Type
+#define ATTR_TYPE_TRANS     0x00000001ULL
+#define ATTR_TYPE_SPECULAR  0x00000002ULL
+#define ATTR_TYPE_NORMAL    0x00000003ULL
 
 /*************/
 /* Mesh Port */

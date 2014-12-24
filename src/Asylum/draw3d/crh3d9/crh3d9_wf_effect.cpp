@@ -75,5 +75,5 @@ CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9** l
     asy::crh3d9_eff_wf_fixed*   ffct;
 
     ffct = new asy::crh3d9_eff_wf_fixed (ambient, light, on_off, count, specular, main->get_main()->dev);
-    return ((IEffect*)ffct);
+    return ((asy::IEffect*)ffct);
 }
