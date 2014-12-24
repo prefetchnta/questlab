@@ -200,8 +200,8 @@ public:
     }
 
 public:
-    /* ==================================================================== */
-    bool init2_ss (const crh3d9_main* main, const sWAVEFRONT* obj, leng_t idx)
+    /* =========================================== */
+    bool init2_ss (const sWAVEFRONT* obj, leng_t idx)
     {
         leng_t  nv, ni, bpv;
 
@@ -286,3 +286,18 @@ public:
 };
 
 }   /* namespace */
+
+/* ======================================================================================================= */
+CR_API asy::IMesh* create_crh3d9_mesh_wf_ss (const sWAVEFRONT* obj, leng_t idx, const asy::crh3d9_main* main)
+{
+    asy::crh3d9_mesh_wf_ss* mesh;
+
+    mesh = new asy::crh3d9_mesh_wf_ss (main);
+    if (mesh != NULL) {
+        if (!mesh->init2_ss(obj, idx)) {
+            delete mesh;
+            mesh = NULL;
+        }
+    }
+    return ((asy::IMesh*)mesh);
+}
