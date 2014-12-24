@@ -19,12 +19,12 @@ private:
     BOOL*               m_onoff;
     DWORD               m_count;
     D3DCOLOR            m_color;
-    D3DLIGHT9**         m_light;
+    D3DLIGHT9*          m_light;
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ====================================================================================================================== */
-    crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9** light, BOOL* on_off, DWORD count, BOOL specular, LPDIRECT3DDEVICE9 devcs)
+    /* ===================================================================================================================== */
+    crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9* light, BOOL* on_off, DWORD count, BOOL specular, LPDIRECT3DDEVICE9 devcs)
     {
         m_specr = specular;
         m_onoff = on_off;
@@ -50,7 +50,7 @@ public:
         m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
         m_devcs->SetRenderState(D3DRS_SPECULARENABLE, m_specr);
         for (DWORD idx = 0; idx < m_count; idx++) {
-            m_devcs->SetLight(idx, m_light[idx]);
+            m_devcs->SetLight(idx, &m_light[idx]);
             m_devcs->LightEnable(idx, m_onoff[idx]);
         }
     }
@@ -68,8 +68,8 @@ public:
 
 }   /* namespace */
 
-/* =============================================================================== */
-CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9** light,
+/* ============================================================================== */
+CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9* light,
             BOOL* on_off, DWORD count, BOOL specular, const asy::crh3d9_main* main)
 {
     asy::crh3d9_eff_wf_fixed*   ffct;
