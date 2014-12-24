@@ -9,10 +9,10 @@
 /* Asylum Namespace */
 namespace asy {
 
-/***********************/
-/* Wavefront Attribute */
-/***********************/
-class crh3d9_attr_wf : public IAttrib
+/*******************************/
+/* Wavefront Attribute (Fixed) */
+/*******************************/
+class crh3d9_attr_wf_fixed : public IAttrib
 {
 private:
 #if !defined(ASY_USE_FIXED_3D)
@@ -26,14 +26,14 @@ private:
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ================================== */
-    crh3d9_attr_wf (const crh3d9_main* main)
+    /* ======================================== */
+    crh3d9_attr_wf_fixed (const crh3d9_main* main)
     {
         m_devcs = main->get_main()->dev;
     }
 
-    /* ==================== */
-    virtual ~crh3d9_attr_wf ()
+    /* ========================== */
+    virtual ~crh3d9_attr_wf_fixed ()
     {
     }
 
@@ -142,13 +142,13 @@ public:
 
 }   /* namespace */
 
-/* =============================================================== */
-CR_API asy::IAttrib* create_crh3d9_attr_wf (const sWAVEFRONT_M* mtrl,
+/* ===================================================================== */
+CR_API asy::IAttrib* create_crh3d9_attr_wf_fixed (const sWAVEFRONT_M* mtrl,
     const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main)
 {
-    asy::crh3d9_attr_wf*    attr;
+    asy::crh3d9_attr_wf_fixed*  attr;
 
-    attr = new asy::crh3d9_attr_wf (main);
+    attr = new asy::crh3d9_attr_wf_fixed (main);
     if (attr != NULL) {
         if (!attr->init(mtrl, texpool)) {
             delete attr;
