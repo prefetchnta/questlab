@@ -22,6 +22,7 @@ CR_API asy::IAttrib* create_crh3d9_attr_wf_fixed (const sWAVEFRONT_M* mtrl,
 /****************/
 /* Mesh Factory */
 /****************/
-CR_API asy::IMesh* create_crh3d9_mesh_wf_ss (const sWAVEFRONT* obj, leng_t idx, const asy::crh3d9_main* main);
+CR_API asy::IMesh* create_crh3d9_mesh_wf_ss (const sWAVEFRONT* obj, leng_t idx,
+                                             const asy::crh3d9_main* main);
 
 #endif  /* __CRH3D9_GRAPH_HPP__ */
