@@ -1,5 +1,8 @@
 @echo off
 call build.bat
+cd Asylum
+call asylum.bat
+cd..
 cd CrH_FMTZ
 call build.bat
 cd..
