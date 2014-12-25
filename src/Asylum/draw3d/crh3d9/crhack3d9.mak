@@ -4,12 +4,10 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)asylum.$(O) \
-         .$(L)crh3d9_wf_effect.$(O) \
-         .$(L)crh3d9_wf_stuffz.$(O)
+         .$(L)crh3d9_wf_stuff.$(O)
 
 SRC_LIST=.$(L)asylum.$(P) \
-         .$(L)draw3d$(L)crh3d9$(L)crh3d9_wf_effect.$(P) \
-         .$(L)draw3d$(L)crh3d9$(L)crh3d9_wf_stuffz.$(P)
+         .$(L)draw3d$(L)crh3d9$(L)crh3d9_wf_stuff.$(P)
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /D "ASY_USE_DX9" $(SRC_LIST)
