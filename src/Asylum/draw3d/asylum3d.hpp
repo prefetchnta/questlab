@@ -67,8 +67,8 @@ public:
     virtual ~IEffect () {}
 
 public:
-    /* =============================== */
-    virtual void enter (int64u type) = 0;
+    /* ==================== */
+    virtual void enter () = 0;
 
     /* ==================== */
     virtual void leave () = 0;
