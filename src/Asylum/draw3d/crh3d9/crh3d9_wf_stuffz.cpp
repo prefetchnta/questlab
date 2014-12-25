@@ -122,8 +122,6 @@ namespace asy {
 class crh3d9_mesh_wf_ss : public IMesh
 {
 private:
-    sAABB               m_aabb;
-    sSPHERE             m_ball;
     sD3D9_MESH*         m_mesh;
     sD3D9_MAIN*         m_main;
     const sD3D9_CALL*   m_call;
@@ -216,15 +214,6 @@ public:
         m_devs->SetStreamSource(0, m_mesh->vbuf, 0, m_mesh->nbpv);
         m_devs->SetIndices(m_mesh->ibuf);
         m_devs->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_mesh->vnum, 0, m_mesh->ntri);
-    }
-
-    /* ========================================= */
-    virtual void bound (sAABB* aabb, sSPHERE* ball)
-    {
-        if (aabb != NULL)
-            mem_cpy(aabb, &m_aabb, sizeof(sAABB));
-        if (ball != NULL)
-            mem_cpy(ball, &m_ball, sizeof(sSPHERE));
     }
 };
 
