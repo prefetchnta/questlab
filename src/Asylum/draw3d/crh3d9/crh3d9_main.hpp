@@ -30,7 +30,7 @@ public:
 
         m_call = hdle->call;
         if (!full) {
-            if (!GetClientRect(hwnd, &rect))
+            if (!GetClientRect(hdle->hwnd, &rect))
                 return (false);
             width  = rect.right;
             height = rect.bottom;
@@ -62,6 +62,8 @@ public:
     bool reset (bool_t full = FALSE, uint_t width = 0, uint_t height = 0, D3DFORMAT format = D3DFMT_UNKNOWN, bool_t vsync = TRUE,
                 D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE) const
     {
+        RECT    rect;
+
         if (!full) {
             if (!GetClientRect(m_main->parm.hDeviceWindow, &rect))
                 return (false);

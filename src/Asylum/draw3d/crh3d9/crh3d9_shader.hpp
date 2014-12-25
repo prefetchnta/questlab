@@ -35,7 +35,7 @@ public:
     {
         m_main = main->get_main();
         m_call = main->get_call();
-        m_exec = m_call->create_vs_text(m_main, decl, name, flags, entry, profile);
+        m_exec = m_call->create_vs_text(m_main, decl, text, flags, entry, profile);
         return ((m_exec == NULL) ? false : true);
     }
 
@@ -101,7 +101,7 @@ public:
     {
         m_main = main->get_main();
         m_call = main->get_call();
-        m_exec = m_call->create_ps_text(m_main, decl, name, flags, entry, profile);
+        m_exec = m_call->create_ps_text(m_main, text, flags, entry, profile);
         return ((m_exec == NULL) ? false : true);
     }
 
