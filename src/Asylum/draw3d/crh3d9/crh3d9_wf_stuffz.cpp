@@ -101,7 +101,7 @@ CR_API asy::IAttrib* create_crh3d9_attr_wf_fixed (const sWAVEFRONT_M* mtl,
 
     attr = new asy::crh3d9_attr_wf_fixed (main);
     if (attr != NULL) {
-        if (!attr->init(mtl, texpool)) {
+        if (!attr->init_ff(mtl, texpool)) {
             delete attr;
             attr = NULL;
         }
