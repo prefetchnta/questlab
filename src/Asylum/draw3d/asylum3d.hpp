@@ -101,11 +101,12 @@ public:
 };
 
 // Attribute Type
-#define ATTR_TYPE_TRANS     0x00000001ULL
-#define ATTR_TYPE_TEXTURE   0x00000002ULL
-#define ATTR_TYPE_NORMAL    0x00000004ULL
-#define ATTR_TYPE_SPECULAR  0x00000008ULL
-#define ATTR_TYPE_NRML_MAP  0x00000010ULL
+#define ATTR_TYPE_TRANS     0x00000001ULL   // Alpha Blend
+#define ATTR_TYPE_TEXTURE   0x00000002ULL   // Have Texture
+#define ATTR_TYPE_NORMAL    0x00000004ULL   // Diffuse Light
+#define ATTR_TYPE_SPECULAR  0x00000008ULL   // Specular Light
+#define ATTR_TYPE_NRML_MAP  0x00000010ULL   // Normal Map
+#define ATTR_TYPE_LGHT_MAP  0x00000020ULL   // Light Map
 
 /*************/
 /* Mesh Port */
