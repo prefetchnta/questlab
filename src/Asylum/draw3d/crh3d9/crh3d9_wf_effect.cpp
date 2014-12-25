@@ -22,8 +22,8 @@ private:
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ===================================================================================================================== */
-    crh3d9_eff_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, BOOL specular, LPDIRECT3DDEVICE9 devcs)
+    /* ====================================================================================================== */
+    crh3d9_eff_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, LPDIRECT3DDEVICE9 devcs)
     {
         m_onoff = onoff;
         m_count = count;
@@ -54,12 +54,12 @@ public:
             m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
             if (type & ATTR_TYPE_SPECULAR)
                 m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+            for (DWORD idx = 0; idx < m_count; idx++) {
+                m_devcs->SetLight(idx, &m_light[idx]);
+                m_devcs->LightEnable(idx, m_onoff[idx]);
+            }
         }
         m_devcs->SetFVF(fvf);
-        for (DWORD idx = 0; idx < m_count; idx++) {
-            m_devcs->SetLight(idx, &m_light[idx]);
-            m_devcs->LightEnable(idx, m_onoff[idx]);
-        }
     }
 
     /* =============== */
