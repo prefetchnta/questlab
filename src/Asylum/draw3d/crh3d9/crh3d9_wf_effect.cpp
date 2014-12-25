@@ -43,7 +43,8 @@ public:
     {
         uint_t  fvf = D3DFVF_XYZ;
 
-        m_devcs->SetRenderState(D3DRS_AMBIENT, m_color[0]);
+        if (m_color != NULL)
+            m_devcs->SetRenderState(D3DRS_AMBIENT, m_color[0]);
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
         m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
         m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
@@ -51,12 +52,14 @@ public:
             fvf |= D3DFVF_TEX1;
         if (type & ATTR_TYPE_NORMAL) {
             fvf |= D3DFVF_NORMAL;
-            m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
-            if (type & ATTR_TYPE_SPECULAR)
-                m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
-            for (DWORD idx = 0; idx < m_count; idx++) {
-                m_devcs->SetLight(idx, &m_light[idx]);
-                m_devcs->LightEnable(idx, m_onoff[idx]);
+            if (m_light != NULL && m_onoff != NULL) {
+                m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
+                if (type & ATTR_TYPE_SPECULAR)
+                    m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+                for (DWORD idx = 0; idx < m_count; idx++) {
+                    m_devcs->SetLight(idx, &m_light[idx]);
+                    m_devcs->LightEnable(idx, m_onoff[idx]);
+                }
             }
         }
         m_devcs->SetFVF(fvf);

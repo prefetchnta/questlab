@@ -93,15 +93,15 @@ public:
 
 }   /* namespace */
 
-/* ===================================================================== */
-CR_API asy::IAttrib* create_crh3d9_attr_wf_fixed (const sWAVEFRONT_M* mtrl,
+/* ==================================================================== */
+CR_API asy::IAttrib* create_crh3d9_attr_wf_fixed (const sWAVEFRONT_M* mtl,
     const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main)
 {
     asy::crh3d9_attr_wf_fixed*  attr;
 
     attr = new asy::crh3d9_attr_wf_fixed (main);
     if (attr != NULL) {
-        if (!attr->init(mtrl, texpool)) {
+        if (!attr->init(mtl, texpool)) {
             delete attr;
             attr = NULL;
         }
