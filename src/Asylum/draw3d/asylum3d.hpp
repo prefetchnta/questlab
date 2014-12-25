@@ -112,25 +112,12 @@ public:
 /*************/
 class IMesh : public asylum
 {
-protected:
-    sAABB   m_aabb;
-    sSPHERE m_ball;
-
 public:
     /* ============== */
     virtual ~IMesh () {}
 
     /* ===================== */
     virtual void commit () = 0;
-
-    /* ======================================= */
-    void bound (sAABB* aabb, sSPHERE* ball) const
-    {
-        if (aabb != NULL)
-            mem_cpy(aabb, &m_aabb, sizeof(sAABB));
-        if (ball != NULL)
-            mem_cpy(ball, &m_ball, sizeof(sSPHERE));
-    }
 };
 
 }   /* namespace */

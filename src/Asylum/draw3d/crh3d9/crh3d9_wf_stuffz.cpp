@@ -197,14 +197,10 @@ public:
         wfront_gen_mesh2(xyz, nrm, uvw, bpv, 0, 0, ib, NULL, obj, idx);
         m_mesh = m_call->create_mesh_vib(m_main, nv, bpv, ni, D3DPOOL_MANAGED, D3DUSAGE_WRITEONLY,
                                          D3DPOOL_MANAGED, D3DUSAGE_WRITEONLY, fvf, vb, ib);
-        mem_free(ib);
-        if (m_mesh == NULL) {
-            mem_free(vb);
-            return (false);
-        }
-        bound_get_aabb(&m_aabb, (vec3d_t*)vb, nv, bpv);
-        bound_get_ball(&m_ball, (vec3d_t*)vb, nv, bpv);
         mem_free(vb);
+        mem_free(ib);
+        if (m_mesh == NULL)
+            return (false);
         return (true);
     }
 
