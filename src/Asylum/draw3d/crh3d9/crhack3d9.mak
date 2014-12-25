@@ -12,7 +12,7 @@ SRC_LIST=.$(L)asylum.$(P) \
          .$(L)draw3d$(L)crh3d9$(L)crh3d9_wf_stuffz.$(P)
 
 build_all:
-    $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" $(SRC_LIST)
+    $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /D "ASY_USE_DX9" $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)
