@@ -69,6 +69,14 @@ public:
         m_mtl.Emissive.b = 0.0f;
         m_mtl.Emissive.a = 0.0f;
         m_mtl.Power = mtl->ns;
+        m_type = ATTR_TYPE_NORMAL;
+        if (m_mtl.Diffuse.a < 1.0f)
+            m_type |= ATTR_TYPE_TRANS;
+        if (m_map_kd != NULL)
+            m_type |= ATTR_TYPE_TEXTURE;
+        if (m_mtl.Specular.r <= 0.0f && m_mtl.Specular.g <= 0.0f &&
+            m_mtl.Specular.b <= 0.0f && m_mtl.Specular.a <= 0.0f)
+            m_type |= ATTR_TYPE_SPECULAR;
         return (true);
     }
 
@@ -80,21 +88,6 @@ public:
         else
             m_device->SetTexture(0, NULL);
         m_device->SetMaterial(&m_mtl);
-    }
-
-    /* ================ */
-    virtual int64u type ()
-    {
-        int64u  flag = 0ULL;
-
-        if (m_mtl.Diffuse.a < 1.0f)
-            flag |= ATTR_TYPE_TRANS;
-        if (m_mtl.Specular.r <= 0.0f && m_mtl.Specular.g <= 0.0f &&
-            m_mtl.Specular.b <= 0.0f && m_mtl.Specular.a <= 0.0f)
-            flag |= ATTR_TYPE_SPECULAR;
-        if (m_bump != NULL)
-            flag |= ATTR_TYPE_NORMAL;
-        return (flag);
     }
 };
 
