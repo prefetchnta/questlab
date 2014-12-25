@@ -15,7 +15,6 @@ namespace asy {
 class crh3d9_eff_wf_fixed : public IEffect
 {
 private:
-    BOOL                m_specr;
     BOOL*               m_onoff;
     DWORD               m_count;
     D3DCOLOR            m_color;
@@ -26,7 +25,6 @@ public:
     /* ===================================================================================================================== */
     crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9* light, BOOL* on_off, DWORD count, BOOL specular, LPDIRECT3DDEVICE9 devcs)
     {
-        m_specr = specular;
         m_onoff = on_off;
         m_count = count;
         m_color = ambient;
@@ -40,8 +38,8 @@ public:
     }
 
 public:
-    /* =============== */
-    virtual void enter ()
+    /* ========================== */
+    virtual void enter (int64u type)
     {
         m_devcs->SetRenderState(D3DRS_AMBIENT, m_color);
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
@@ -70,10 +68,10 @@ public:
 
 /* ============================================================================== */
 CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9* light,
-            BOOL* on_off, DWORD count, BOOL specular, const asy::crh3d9_main* main)
+                        BOOL* on_off, DWORD count, const asy::crh3d9_main* main)
 {
     asy::crh3d9_eff_wf_fixed*   ffct;
 
-    ffct = new asy::crh3d9_eff_wf_fixed (ambient, light, on_off, count, specular, main->get_main()->dev);
+    ffct = new asy::crh3d9_eff_wf_fixed (ambient, light, on_off, count, main->get_main()->dev);
     return ((asy::IEffect*)ffct);
 }
