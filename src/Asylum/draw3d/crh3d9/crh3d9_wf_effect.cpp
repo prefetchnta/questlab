@@ -12,7 +12,7 @@ namespace asy {
 /****************************/
 /* Wavefront Effect (Fixed) */
 /****************************/
-class crh3d9_eff_wf_fixed : public IEffect
+class crh3d9_ffct_wf_fixed : public IEffect
 {
 private:
     BOOL*               m_onoff;
@@ -22,8 +22,8 @@ private:
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ====================================================================================================== */
-    crh3d9_eff_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, LPDIRECT3DDEVICE9 devcs)
+    /* ======================================================================================================= */
+    crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, LPDIRECT3DDEVICE9 devcs)
     {
         m_onoff = onoff;
         m_count = count;
@@ -32,8 +32,8 @@ public:
         m_devcs = devcs;
     }
 
-    /* ========================= */
-    virtual ~crh3d9_eff_wf_fixed ()
+    /* ========================== */
+    virtual ~crh3d9_ffct_wf_fixed ()
     {
     }
 
@@ -78,12 +78,12 @@ public:
 
 }   /* namespace */
 
-/* =============================================================================== */
-CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
+/* ================================================================================ */
+CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
                         BOOL* onoff, DWORD count, const asy::crh3d9_main* main)
 {
-    asy::crh3d9_eff_wf_fixed*   ffct;
+    asy::crh3d9_ffct_wf_fixed*  ffct;
 
-    ffct = new asy::crh3d9_eff_wf_fixed (ambient, light, onoff, count, main->get_main()->dev);
+    ffct = new asy::crh3d9_ffct_wf_fixed (ambient, light, onoff, count, main->get_main()->dev);
     return ((asy::IEffect*)ffct);
 }

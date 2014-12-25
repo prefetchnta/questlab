@@ -10,7 +10,7 @@
 /******************/
 /* Effect Factory */
 /******************/
-CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
+CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
                         BOOL* onoff, DWORD count, const asy::crh3d9_main* main);
 
 /*********************/
