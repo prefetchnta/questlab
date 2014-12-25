@@ -74,6 +74,19 @@ public:
         m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
         m_devcs->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
     }
+
+    /* ================ */
+    virtual void update ()
+    {
+        if (m_color != NULL)
+            m_devcs->SetRenderState(D3DRS_AMBIENT, m_color[0]);
+        if (m_light != NULL && m_onoff != NULL) {
+            for (DWORD idx = 0; idx < m_count; idx++) {
+                m_devcs->SetLight(idx, &m_light[idx]);
+                m_devcs->LightEnable(idx, m_onoff[idx]);
+            }
+        }
+    }
 };
 
 }   /* namespace */
