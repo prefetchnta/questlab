@@ -213,9 +213,6 @@ public:
     /* ================ */
     virtual void commit ()
     {
-#if defined(ASY_USE_FIXED_3D)
-        m_devs->SetFVF(m_mesh->fvf);
-#endif
         m_devs->SetStreamSource(0, m_mesh->vbuf, 0, m_mesh->nbpv);
         m_devs->SetIndices(m_mesh->ibuf);
         m_devs->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_mesh->vnum, 0, m_mesh->ntri);

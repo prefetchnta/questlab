@@ -17,15 +17,15 @@ class crh3d9_eff_wf_fixed : public IEffect
 private:
     BOOL*               m_onoff;
     DWORD               m_count;
-    D3DCOLOR            m_color;
+    D3DCOLOR*           m_color;
     D3DLIGHT9*          m_light;
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
     /* ===================================================================================================================== */
-    crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9* light, BOOL* on_off, DWORD count, BOOL specular, LPDIRECT3DDEVICE9 devcs)
+    crh3d9_eff_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, BOOL specular, LPDIRECT3DDEVICE9 devcs)
     {
-        m_onoff = on_off;
+        m_onoff = onoff;
         m_count = count;
         m_color = ambient;
         m_light = light;
@@ -41,12 +41,21 @@ public:
     /* ========================== */
     virtual void enter (int64u type)
     {
-        m_devcs->SetRenderState(D3DRS_AMBIENT, m_color);
+        uint_t  fvf = D3DFVF_XYZ;
+
+        m_devcs->SetRenderState(D3DRS_AMBIENT, m_color[0]);
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
         m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
         m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
-        m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
-        m_devcs->SetRenderState(D3DRS_SPECULARENABLE, m_specr);
+        if (type & ATTR_TYPE_TEXTURE)
+            fvf |= D3DFVF_TEX1;
+        if (type & ATTR_TYPE_NORMAL) {
+            fvf |= D3DFVF_NORMAL;
+            m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
+            if (type & ATTR_TYPE_SPECULAR)
+                m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+        }
+        m_devcs->SetFVF(fvf);
         for (DWORD idx = 0; idx < m_count; idx++) {
             m_devcs->SetLight(idx, &m_light[idx]);
             m_devcs->LightEnable(idx, m_onoff[idx]);
@@ -66,12 +75,12 @@ public:
 
 }   /* namespace */
 
-/* ============================================================================== */
-CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR ambient, D3DLIGHT9* light,
-                        BOOL* on_off, DWORD count, const asy::crh3d9_main* main)
+/* =============================================================================== */
+CR_API asy::IEffect* create_crh3d9_eff_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
+                        BOOL* onoff, DWORD count, const asy::crh3d9_main* main)
 {
     asy::crh3d9_eff_wf_fixed*   ffct;
 
-    ffct = new asy::crh3d9_eff_wf_fixed (ambient, light, on_off, count, main->get_main()->dev);
+    ffct = new asy::crh3d9_eff_wf_fixed (ambient, light, onoff, count, main->get_main()->dev);
     return ((asy::IEffect*)ffct);
 }
