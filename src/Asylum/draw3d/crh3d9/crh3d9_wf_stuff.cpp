@@ -52,14 +52,20 @@ public:
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
         m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
         m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
-        if (m_flags & ATTR_TYPE_TEXTURE)
-            fvf |= D3DFVF_TEX1;
+        if (m_flags & ATTR_TYPE_TRANS) {
+            m_devcs->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+            m_devcs->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+            m_devcs->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+            m_devcs->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+        }
         if (m_flags & ATTR_TYPE_NORMAL) {
             fvf |= D3DFVF_NORMAL;
             m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
             if (m_flags & ATTR_TYPE_SPECULAR)
                 m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
         }
+        if (m_flags & ATTR_TYPE_TEXTURE)
+            fvf |= D3DFVF_TEX1;
         m_devcs->SetFVF(fvf);
     }
 
@@ -69,8 +75,13 @@ public:
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
         m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
         m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
-        m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
-        m_devcs->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
+        if (m_flags & ATTR_TYPE_TRANS)
+            m_devcs->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+        if (m_flags & ATTR_TYPE_NORMAL) {
+            m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
+            if (m_flags & ATTR_TYPE_SPECULAR)
+                m_devcs->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
+        }
     }
 
     /* ================ */
