@@ -198,13 +198,13 @@ bound_get_ball (
     max_z -= ptr->z;
     min_z = max_x * max_x + max_y * max_y + max_z * max_z;
 
-    if (zz > xx && zz > yy) {
+    if (min_z > min_x && min_z > min_y) {
         ball->radius = min_z;
         idx_max_x = idx_max_z;
         idx_min_x = idx_min_z;
     }
     else
-    if (yy > xx && yy > zz) {
+    if (min_y > min_x && min_y > min_z) {
         ball->radius = min_y;
         idx_max_x = idx_max_y;
         idx_min_x = idx_min_y;
