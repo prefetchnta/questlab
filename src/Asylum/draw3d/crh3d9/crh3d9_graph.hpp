@@ -32,7 +32,7 @@ typedef asy::IAttrib* (*create_crh3d9_attr_wf_t) (const sWAVEFRONT_M* mtl,
     const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main);
 typedef asy::IMesh* (*create_crh3d9_mesh_wf_t) (const sWAVEFRONT* obj, leng_t idx,
                                                 const asy::crh3d9_main* main);
-CR_API bool create_crh3d9_obase_wf (asy::object_base* obase, const ansi_t* obj_str,
+CR_API bool create_crh3d9_base_wf (asy::object_base* base, const ansi_t* obj_str,
     bool_t swap_yz, bool_t neg_z, const ansi_t* mtl_str, create_crh3d9_attr_wf_t fattr,
         create_crh3d9_mesh_wf_t fmesh, const asy::map_acs<asy::crh3d9_texr>* texpool,
                                 const asy::crh3d9_main* main);
