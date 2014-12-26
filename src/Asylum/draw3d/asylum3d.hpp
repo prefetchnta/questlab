@@ -137,9 +137,8 @@ struct commit_batch
 
         if (this->attr != NULL)
             delete this->attr;
-        idx = 0;
-        for (;;) {
-            tmp = this->mesh[idx++];
+        for (idx = 0; ; idx++) {
+            tmp = this->mesh[idx];
             if (tmp == NULL)
                 break;
             delete tmp;

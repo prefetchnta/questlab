@@ -334,3 +334,68 @@ CR_API asy::IMesh* create_crh3d9_mesh_wf_ss (const sWAVEFRONT* obj, leng_t idx,
     }
     return ((asy::IMesh*)mesh);
 }
+
+/*****************************************************************************/
+/*                               Object Base                                 */
+/*****************************************************************************/
+
+/* ============================================================================= */
+CR_API bool create_crh3d9_obase_wf (asy::object_base* obase, const ansi_t* obj_str,
+    bool_t swap_yz, bool_t neg_z, const ansi_t* mtl_str, create_crh3d9_attr_wf_t fattr,
+        create_crh3d9_mesh_wf_t fmesh, const asy::map_acs<asy::crh3d9_texr>* texpool,
+                                const asy::crh3d9_main* main)
+{
+    sWAVEFRONT          wf;
+    asy::commit_batch   cb;
+
+    if (!wfront_obj_load(&wf, obj_str, swap_yz, neg_z))
+        return (false);
+    if (!wfront_mtl_load(&wf, mtl_str))
+        goto _failure1;
+    obase->list.init();
+    for (leng_t idx = 0; idx < wf.n_m; idx++) {
+        leng_t  ii, cnt = 0, cmp = idx + 1;
+        for (ii = 0; ii < wf.n_g; ii++) {
+            if (wf.p_g[ii].attr < cmp)
+                break;
+            if (wf.p_g[ii].attr == cmp)
+                cnt += 1;
+        }
+        if (cnt == 0)
+            continue;
+        cb.attr = fattr(&wf.p_m[idx], texpool, main);
+        if (cb.attr == NULL)
+            goto _failure2;
+        cb.mesh = mem_tmalloc(cnt + 1, asy::IMesh*);
+        if (cb.mesh == NULL) {
+            delete cb.attr;
+            goto _failure2;
+        }
+        for (cnt = 0, ii = 0; ii < wf.n_g; ii++) {
+            if (wf.p_g[ii].attr < cmp)
+                break;
+            if (wf.p_g[ii].attr == cmp) {
+                cb.mesh[cnt] = fmesh(&wf, ii, main);
+                if (cb.mesh[cnt] == NULL)
+                    goto _failure3;
+                cnt += 1;
+            }
+        }
+        cb.mesh[cnt] = NULL;
+        if (obase->list.append(&cb) == NULL)
+            goto _failure3;
+    }
+    if (obase->list.size() == 0)
+        goto _failure2;
+    bound_get_aabb(&obase->aabb, wf.p_v, wf.n_v, sizeof(vec3d_t));
+    bound_get_ball(&obase->ball, wf.p_v, wf.n_v, sizeof(vec3d_t));
+    return (true);
+
+_failure3:
+    cb.free();
+_failure2:
+    obase->free();
+_failure1:
+    wfront_obj_free(&wf);
+    return (false);
+}
