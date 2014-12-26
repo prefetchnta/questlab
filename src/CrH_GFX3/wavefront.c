@@ -255,10 +255,6 @@ wfront_obj_load (
     const ansi_t*   line;
     sWAVEFRONT_F    ff[6];
 
-    /* 清空对象 */
-    struct_zero(obj, sWAVEFRONT);
-    struct_zero(&gtmp, sWAVEFRONT_G);
-
     /* 逐行分割 */
     ini = ini_parseU(str);
     if (ini == NULL) {
@@ -274,6 +270,10 @@ wfront_obj_load (
     array_initT(&a_f, sWAVEFRONT_F);
     array_initT(&a_g, sWAVEFRONT_G);
     a_g.free = wfront_g_free;
+
+    /* 清空对象 */
+    struct_zero(obj, sWAVEFRONT);
+    struct_zero(&gtmp, sWAVEFRONT_G);
 
     /* 逐行解析 */
     for (idx = 0; idx < ini->count; idx++)
@@ -647,10 +647,9 @@ wfront_mtl_load (
         return (FALSE);
     }
 
-    /* 清空对象 */
-    if (obj->p_m != NULL || obj->mtl == NULL)
+    /* 已经创建过了 */
+    if (obj->p_m != NULL)
         return (TRUE);
-    wfront_mtl_default(&mtmp);
 
     /* 逐行分割 */
     ini = ini_parseU(str);
@@ -663,6 +662,9 @@ wfront_mtl_load (
     /* 初始化列表 */
     array_initT(&a_m, sWAVEFRONT_M);
     a_m.free = wfront_m_free;
+
+    /* 清空对象 */
+    wfront_mtl_default(&mtmp);
 
     /* 逐行解析 */
     for (idx = 0; idx < ini->count; idx++)
