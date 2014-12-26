@@ -121,6 +121,84 @@ public:
     virtual void commit () = 0;
 };
 
+/****************/
+/* Commit Batch */
+/****************/
+struct commit_batch
+{
+    IMesh**     mesh;
+    IAttrib*    attr;
+
+    /* ====== */
+    void free ()
+    {
+        IMesh*  tmp;
+        size_t  idx;
+
+        if (this->attr != NULL)
+            delete this->attr;
+        idx = 0;
+        for (;;) {
+            tmp = this->mesh[idx++];
+            if (tmp == NULL)
+                break;
+            delete tmp;
+        }
+        mem_free(this->mesh);
+    }
+};
+
+/***************/
+/* Object Base */
+/***************/
+struct object_base
+{
+    sAABB               aabb;
+    sSPHERE             ball;
+    array<commit_batch> list;
+
+    /* ====== */
+    void free ()
+    {
+        this->list.free();
+    }
+};
+
+/*******************/
+/* Object Instance */
+/*******************/
+struct object_inst
+{
+    union {
+        mat4x4_t    mat;
+        struct {
+            vec4d_t rotation;
+            vec3d_t move, scale;
+        } sep;
+    } trans;
+
+    sAABB   aabb;
+    sSPHERE ball;
+
+    /* ========= */
+    void free () {}
+};
+
+/****************/
+/* Object Group */
+/****************/
+struct object_group
+{
+    object_base*        base;
+    array<object_inst>  inst;
+
+    /* ====== */
+    void free ()
+    {
+        this->inst.free();
+    }
+};
+
 }   /* namespace */
 
 #endif  /* __ASYLUM3D_HPP__ */
