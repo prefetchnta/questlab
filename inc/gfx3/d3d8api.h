@@ -251,6 +251,19 @@ typedef struct
 
 /* ========================================================================= */
 
+        void_t  (*util_make_tran1) (mat4x4_t *mat, const vec3d_t *scale,
+                                    fp32_t pitch, fp32_t yaw, fp32_t roll,
+                                    const vec3d_t *move);
+
+        void_t  (*util_make_tran2) (mat4x4_t *mat, const vec3d_t *scale,
+                                    const vec3d_t *axis, fp32_t angle,
+                                    const vec3d_t *move);
+
+        void_t  (*util_tran_vec3d) (vec3d_t *output, const vec3d_t *input,
+                                    const mat4x4_t *mat);
+
+/* ========================================================================= */
+
 } sD3D8_CALL;
 
 /* 获取 D3D8 调用接口表 */

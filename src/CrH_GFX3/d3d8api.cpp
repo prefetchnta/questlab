@@ -1768,6 +1768,71 @@ d3d8_tran_wrld_rtmul (
         D3DXMatrixMultiply(&tran->world, &tran->world, (D3DXMATRIX*)mats);
 }
 
+/*
+=======================================
+    合成变换矩阵1
+=======================================
+*/
+CR_API void_t
+d3d8_util_make_tran1 (
+  __CR_OT__ mat4x4_t*       mat,
+  __CR_IN__ const vec3d_t*  scale,
+  __CR_IN__ fp32_t          pitch,
+  __CR_IN__ fp32_t          yaw,
+  __CR_IN__ fp32_t          roll,
+  __CR_IN__ const vec3d_t*  move
+    )
+{
+    D3DXQUATERNION  rotate;
+
+    pitch *= CR_DTOR;
+    yaw   *= CR_DTOR;
+    roll  *= CR_DTOR;
+    D3DXQuaternionRotationYawPitchRoll(&rotate, yaw, pitch, roll);
+    D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL, NULL, (D3DXVECTOR3*)scale,
+                             NULL, &rotate, (D3DXVECTOR3*)move);
+}
+
+/*
+=======================================
+    合成变换矩阵2
+=======================================
+*/
+CR_API void_t
+d3d8_util_make_tran2 (
+  __CR_OT__ mat4x4_t*       mat,
+  __CR_IN__ const vec3d_t*  scale,
+  __CR_IN__ const vec3d_t*  axis,
+  __CR_IN__ fp32_t          angle,
+  __CR_IN__ const vec3d_t*  move
+    )
+{
+    D3DXQUATERNION  rotate;
+
+    angle *= CR_DTOR;
+    D3DXQuaternionRotationAxis(&rotate, (D3DXVECTOR3*)axis, angle);
+    D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL, NULL, (D3DXVECTOR3*)scale,
+                             NULL, &rotate, (D3DXVECTOR3*)move);
+}
+
+/*
+=======================================
+    变换 3D 向量
+=======================================
+*/
+CR_API void_t
+d3d8_util_tran_vec3d (
+  __CR_OT__ vec3d_t*        output,
+  __CR_IN__ const vec3d_t*  input,
+  __CR_IN__ const mat4x4_t* mat
+    )
+{
+    D3DXVECTOR4     tmp;
+
+    D3DXVec3Transform(&tmp, (D3DXVECTOR3*)input, (D3DXMATRIX*)mat);
+    output->x = tmp.x;  output->y = tmp.y;  output->z = tmp.z;
+}
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -1827,6 +1892,11 @@ static const sD3D8_CALL s_d3d8call =
     d3d8_tran_billboardh,
     d3d8_tran_wrld_clear,
     d3d8_tran_wrld_rtmul,
+
+    /* 助手函数 */
+    d3d8_util_make_tran1,
+    d3d8_util_make_tran2,
+    d3d8_util_tran_vec3d,
 };
 
 /*
