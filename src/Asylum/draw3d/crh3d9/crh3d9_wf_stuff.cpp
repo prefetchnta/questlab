@@ -340,62 +340,55 @@ CR_API asy::IMesh* create_crh3d9_mesh_wf_ss (const sWAVEFRONT* obj, leng_t idx,
 /*****************************************************************************/
 
 /* =========================================================================== */
-CR_API bool create_crh3d9_base_wf (asy::object_base* base, const ansi_t* obj_str,
-    bool_t swap_yz, bool_t neg_z, const ansi_t* mtl_str, create_crh3d9_attr_wf_t fattr,
-        create_crh3d9_mesh_wf_t fmesh, const asy::map_acs<asy::crh3d9_texr>* texpool,
-                                const asy::crh3d9_main* main)
+CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj,
+                            create_crh3d9_attr_wf_t fattr, create_crh3d9_mesh_wf_t fmesh,
+                                    const asy::map_acs<asy::crh3d9_texr>* texpool,
+                                            const asy::crh3d9_main* main)
 {
-    sWAVEFRONT          wf;
     asy::commit_batch   cb;
 
-    if (!wfront_obj_load(&wf, obj_str, swap_yz, neg_z))
-        return (false);
-    if (!wfront_mtl_load(&wf, mtl_str))
-        goto _failure1;
     base->list.init();
-    for (leng_t idx = 0; idx < wf.n_m; idx++) {
+    for (leng_t idx = 0; idx < obj->n_m; idx++) {
         leng_t  ii, cnt = 0, cmp = idx + 1;
-        for (ii = 0; ii < wf.n_g; ii++) {
-            if (wf.p_g[ii].attr < cmp)
+        for (ii = 0; ii < obj->n_g; ii++) {
+            if (obj->p_g[ii].attr < cmp)
                 break;
-            if (wf.p_g[ii].attr == cmp)
+            if (obj->p_g[ii].attr == cmp)
                 cnt += 1;
         }
         if (cnt == 0)
             continue;
-        cb.attr = fattr(&wf.p_m[idx], texpool, main);
+        cb.attr = fattr(&obj->p_m[idx], texpool, main);
         if (cb.attr == NULL)
-            goto _failure2;
+            goto _failure1;
         cb.mesh = mem_talloc(cnt + 1, asy::IMesh*);
         if (cb.mesh == NULL) {
             delete cb.attr;
-            goto _failure2;
+            goto _failure1;
         }
-        for (cnt = 0, ii = 0; ii < wf.n_g; ii++) {
-            if (wf.p_g[ii].attr < cmp)
+        for (cnt = 0, ii = 0; ii < obj->n_g; ii++) {
+            if (obj->p_g[ii].attr < cmp)
                 break;
-            if (wf.p_g[ii].attr == cmp) {
-                cb.mesh[cnt] = fmesh(&wf, ii, main);
+            if (obj->p_g[ii].attr == cmp) {
+                cb.mesh[cnt] = fmesh(obj, ii, main);
                 if (cb.mesh[cnt] == NULL)
-                    goto _failure3;
+                    goto _failure2;
                 cnt += 1;
             }
         }
         cb.mesh[cnt] = NULL;
         if (base->list.append(&cb) == NULL)
-            goto _failure3;
+            goto _failure2;
     }
     if (base->list.size() == 0)
-        goto _failure2;
-    bound_get_aabb(&base->aabb, wf.p_v, wf.n_v, sizeof(vec3d_t));
-    bound_get_ball(&base->ball, wf.p_v, wf.n_v, sizeof(vec3d_t));
+        goto _failure1;
+    bound_get_aabb(&base->aabb, obj->p_v, obj->n_v, sizeof(vec3d_t));
+    bound_get_ball(&base->ball, obj->p_v, obj->n_v, sizeof(vec3d_t));
     return (true);
 
-_failure3:
-    cb.free();
 _failure2:
-    base->free();
+    cb.free();
 _failure1:
-    wfront_obj_free(&wf);
+    base->free();
     return (false);
 }
