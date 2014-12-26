@@ -451,7 +451,7 @@ wfront_obj_load (
                 goto _failure;
             }
 
-            /* 必须有前后顺序且不重复  */
+            /* 必须有前后顺序且不重复 */
             if (gtmp.name == NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "invalid <usemtl>");
@@ -481,7 +481,7 @@ wfront_obj_load (
                 goto _failure;
             }
 
-            /* 必须不重复  */
+            /* 必须不重复 */
             if (obj->mtl != NULL) {
                 err_set(__CR_WAVEFRONT_C__, idx,
                         "wfront_obj_load()", "repeat <mtllib>");
@@ -702,7 +702,7 @@ wfront_mtl_load (
             continue;
         }
 
-        /* 必须有前后顺序且不重复  */
+        /* 必须有前后顺序且不重复 */
         if (mtmp.name == NULL) {
             err_set(__CR_WAVEFRONT_C__, idx,
                     "wfront_mtl_load()", "invalid line");
