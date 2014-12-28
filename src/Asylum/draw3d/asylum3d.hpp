@@ -171,13 +171,16 @@ struct object_inst
     union {
         mat4x4_t    mat;
         struct {
-            vec4d_t rotation;
-            vec3d_t move, scale;
+            vec3d_t rote;
+            vec3d_t move;
+            vec3d_t scale;
         } sep;
     } trans;
 
-    sAABB   aabb;
-    sSPHERE ball;
+    union {
+        sAABB   aabb;
+        sSPHERE ball;
+    } bound;
 
     /* ========= */
     void free () {}
