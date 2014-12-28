@@ -1783,14 +1783,15 @@ d3d8_util_make_tran1 (
   __CR_IN__ const vec3d_t*  move
     )
 {
-    D3DXQUATERNION  rotate;
+    D3DXQUATERNION  rote;
 
     pitch *= CR_DTOR;
     yaw   *= CR_DTOR;
     roll  *= CR_DTOR;
-    D3DXQuaternionRotationYawPitchRoll(&rotate, yaw, pitch, roll);
-    D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL, NULL, (D3DXVECTOR3*)scale,
-                             NULL, &rotate, (D3DXVECTOR3*)move);
+    D3DXQuaternionRotationYawPitchRoll(&rote, yaw, pitch, roll);
+    D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL, NULL,
+                             (D3DXVECTOR3*)scale, NULL, &rote,
+                             (D3DXVECTOR3*)move);
 }
 
 /*
@@ -1807,12 +1808,20 @@ d3d8_util_make_tran2 (
   __CR_IN__ const vec3d_t*  move
     )
 {
-    D3DXQUATERNION  rotate;
+    D3DXQUATERNION  rote;
 
     angle *= CR_DTOR;
-    D3DXQuaternionRotationAxis(&rotate, (D3DXVECTOR3*)axis, angle);
-    D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL, NULL, (D3DXVECTOR3*)scale,
-                             NULL, &rotate, (D3DXVECTOR3*)move);
+    if (axis != NULL) {
+        D3DXQuaternionRotationAxis(&rote, (D3DXVECTOR3*)axis, angle);
+        D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL, NULL,
+                                 (D3DXVECTOR3*)scale, NULL, &rote,
+                                 (D3DXVECTOR3*)move);
+    }
+    else {
+        D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL, NULL,
+                                 (D3DXVECTOR3*)scale, NULL, NULL,
+                                 (D3DXVECTOR3*)move);
+    }
 }
 
 /*
