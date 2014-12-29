@@ -37,7 +37,7 @@ public:
         m_light = light;
         m_color = ambient;
         m_devcs = main->get_main()->dev;
-        m_uselt = (m_light != NULL && m_onoff != NULL) ? true : false;
+        m_uselt = (m_light != NULL && m_onoff != NULL && m_count != 0) ? true : false;
     }
 
     /* ========================== */
@@ -386,6 +386,8 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
             goto _failure2;
     }
     if (base->list.size() == 0)
+        goto _failure1;
+    if (!base->list.no_grow())
         goto _failure1;
     bound_get_aabb(&base->aabb, obj->p_v, obj->n_v, sizeof(vec3d_t));
     bound_get_ball(&base->ball, obj->p_v, obj->n_v, sizeof(vec3d_t));
