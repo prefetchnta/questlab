@@ -233,7 +233,6 @@ class crh3d9_mesh_wf_ss : public IMesh
 {
 private:
     sD3D9_MESH*         m_mesh;
-    sD3D9_MAIN*         m_main;
     const sD3D9_CALL*   m_call;
     LPDIRECT3DDEVICE9   m_devs;
 
@@ -242,9 +241,8 @@ public:
     crh3d9_mesh_wf_ss (const crh3d9_main* main)
     {
         m_mesh = NULL;
-        m_main = main->get_main();
         m_call = main->get_call();
-        m_devs = m_main->dev;
+        m_devs = main->get_main()->dev;
     }
 
     /* ======================= */
@@ -255,8 +253,8 @@ public:
     }
 
 public:
-    /* =========================================== */
-    bool init2_ss (const sWAVEFRONT* obj, leng_t idx)
+    /* ==================================================================== */
+    bool init2_ss (const sWAVEFRONT* obj, leng_t idx, const crh3d9_main* main)
     {
         leng_t  nv, ni, bpv;
 
@@ -264,14 +262,14 @@ public:
         if (nv == 0)
             return (false);
         bpv = sizeof(vec3d_t);
-
-        void_t* vb;
-        void_t* ib;
-
         if (obj->p_f[0].idx[2] != 0)
             bpv += sizeof(vec3d_t);
         if (obj->p_f[0].idx[1] != 0)
             bpv += sizeof(vec2d_t);
+
+        void_t* vb;
+        void_t* ib;
+
         vb = mem_calloc(nv, bpv);
         if (vb == NULL)
             return (false);
@@ -305,8 +303,9 @@ public:
         else
             uvw = NULL;
         wfront_gen_mesh2(xyz, nrm, uvw, bpv, 0, 0, ib, NULL, obj, idx);
-        m_mesh = m_call->create_mesh_vib(m_main, nv, bpv, ni, D3DPOOL_MANAGED, D3DUSAGE_WRITEONLY,
-                                         D3DPOOL_MANAGED, D3DUSAGE_WRITEONLY, fvf, vb, ib);
+        m_mesh = m_call->create_mesh_vib(main->get_main(), nv, bpv, ni,
+                            D3DPOOL_MANAGED, D3DUSAGE_WRITEONLY, D3DPOOL_MANAGED,
+                                    D3DUSAGE_WRITEONLY, fvf, vb, ib);
         mem_free(vb);
         mem_free(ib);
         if (m_mesh == NULL)
@@ -333,7 +332,7 @@ CR_API asy::IMesh* create_crh3d9_mesh_wf_ss (const sWAVEFRONT* obj, leng_t idx,
 
     mesh = new asy::crh3d9_mesh_wf_ss (main);
     if (mesh != NULL) {
-        if (!mesh->init2_ss(obj, idx)) {
+        if (!mesh->init2_ss(obj, idx, main)) {
             delete mesh;
             mesh = NULL;
         }
