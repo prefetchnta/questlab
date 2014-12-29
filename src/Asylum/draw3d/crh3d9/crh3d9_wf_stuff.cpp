@@ -359,6 +359,8 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
     asy::commit_batch   cb;
 
     base->list.init();
+    base->real = NULL;
+    base->kill = NULL;
     for (leng_t idx = 0; idx < obj->n_m; idx++) {
         leng_t  ii, cnt = 0, cmp = idx + 1;
         for (ii = 0; ii < obj->n_g; ii++) {
