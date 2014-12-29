@@ -28,14 +28,14 @@ private:
 
 public:
     /* ===================================================================================================================== */
-    crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, int64u flags, LPDIRECT3DDEVICE9 devcs)
+    crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, int64u flags, const crh3d9_main* main)
     {
         m_onoff = onoff;
         m_count = count;
         m_flags = flags;
         m_color = ambient;
         m_light = light;
-        m_devcs = devcs;
+        m_devcs = main->get_main()->dev;
     }
 
     /* ========================== */
@@ -60,9 +60,11 @@ public:
         }
         if (m_flags & ATTR_TYPE_NORMAL) {
             fvf |= D3DFVF_NORMAL;
-            m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
-            if (m_flags & ATTR_TYPE_SPECULAR)
-                m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+            if (m_light != NULL && m_onoff != NULL) {
+                m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
+                if (m_flags & ATTR_TYPE_SPECULAR)
+                    m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+            }
         }
         if (m_flags & ATTR_TYPE_TEXTURE)
             fvf |= D3DFVF_TEX1;
@@ -78,9 +80,11 @@ public:
         if (m_flags & ATTR_TYPE_TRANS)
             m_devcs->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
         if (m_flags & ATTR_TYPE_NORMAL) {
-            m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
-            if (m_flags & ATTR_TYPE_SPECULAR)
-                m_devcs->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
+            if (m_light != NULL && m_onoff != NULL) {
+                m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
+                if (m_flags & ATTR_TYPE_SPECULAR)
+                    m_devcs->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
+            }
         }
     }
 
@@ -106,7 +110,7 @@ CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* 
 {
     asy::crh3d9_ffct_wf_fixed*  ffct;
 
-    ffct = new asy::crh3d9_ffct_wf_fixed (ambient, light, onoff, count, flags, main->get_main()->dev);
+    ffct = new asy::crh3d9_ffct_wf_fixed (ambient, light, onoff, count, flags, main);
     return ((asy::IEffect*)ffct);
 }
 
