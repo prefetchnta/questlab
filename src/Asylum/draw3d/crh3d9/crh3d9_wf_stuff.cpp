@@ -19,6 +19,7 @@ namespace asy {
 class crh3d9_ffct_wf_fixed : public IEffect
 {
 private:
+    bool                m_uselt;
     BOOL*               m_onoff;
     DWORD               m_count;
     int64u              m_flags;
@@ -33,9 +34,10 @@ public:
         m_onoff = onoff;
         m_count = count;
         m_flags = flags;
-        m_color = ambient;
         m_light = light;
+        m_color = ambient;
         m_devcs = main->get_main()->dev;
+        m_uselt = (m_light != NULL && m_onoff != NULL) ? true : false;
     }
 
     /* ========================== */
@@ -60,7 +62,7 @@ public:
         }
         if (m_flags & ATTR_TYPE_NORMAL) {
             fvf |= D3DFVF_NORMAL;
-            if (m_light != NULL && m_onoff != NULL) {
+            if (m_uselt) {
                 m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
                 if (m_flags & ATTR_TYPE_SPECULAR)
                     m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
@@ -80,7 +82,7 @@ public:
         if (m_flags & ATTR_TYPE_TRANS)
             m_devcs->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
         if (m_flags & ATTR_TYPE_NORMAL) {
-            if (m_light != NULL && m_onoff != NULL) {
+            if (m_uselt) {
                 m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
                 if (m_flags & ATTR_TYPE_SPECULAR)
                     m_devcs->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
@@ -93,7 +95,7 @@ public:
     {
         if (m_color != NULL)
             m_devcs->SetRenderState(D3DRS_AMBIENT, m_color[0]);
-        if (m_light != NULL && m_onoff != NULL) {
+        if (m_uselt) {
             for (DWORD idx = 0; idx < m_count; idx++) {
                 m_devcs->SetLight(idx, &m_light[idx]);
                 m_devcs->LightEnable(idx, m_onoff[idx]);
