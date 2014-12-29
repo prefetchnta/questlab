@@ -152,14 +152,17 @@ struct commit_batch
 /***************/
 struct object_base
 {
+    void*               real;
     sAABB               aabb;
     sSPHERE             ball;
     array<commit_batch> list;
+    void (*kill) (void* real);
 
     /* ====== */
     void free ()
     {
         this->list.free();
+        this->kill(this->real);
     }
 };
 
