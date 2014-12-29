@@ -348,6 +348,7 @@ CR_API asy::IMesh* create_crh3d9_mesh_wf_ss (const sWAVEFRONT* obj, leng_t idx,
 static void wavefront_kill (void* real)
 {
     wfront_obj_free((sWAVEFRONT*)real);
+    mem_free(real);
 }
 
 /* =========================================================================== */
@@ -397,7 +398,9 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
         goto _failure1;
     if (!base->list.no_grow())
         goto _failure1;
-    base->real = (void*)obj;
+    base->real = struct_dup(obj, sWAVEFRONT);
+    if (base->real == NULL)
+        goto _failure1;
     base->kill = wavefront_kill;
     bound_get_aabb(&base->aabb, obj->p_v, obj->n_v, sizeof(vec3d_t));
     bound_get_ball(&base->ball, obj->p_v, obj->n_v, sizeof(vec3d_t));
