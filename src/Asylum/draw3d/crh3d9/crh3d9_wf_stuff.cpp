@@ -97,6 +97,7 @@ public:
     /* ======================================== */
     crh3d9_attr_wf_fixed (const crh3d9_main* main)
     {
+        m_type = 0;
         m_device = main->get_main()->dev;
     }
 
@@ -139,9 +140,8 @@ public:
         m_mtl.Emissive.b = 0.0f;
         m_mtl.Emissive.a = 0.0f;
         m_mtl.Power = mtl->ns;
-        m_type = ATTR_TYPE_NORMAL;
         if (m_mtl.Diffuse.a < 1.0f)
-            m_type |= ATTR_TYPE_TRANS;
+            m_type |= ATTR_TYPE_ALPHAOP;
         if (m_map_kd != NULL)
             m_type |= ATTR_TYPE_TEXTURE;
         if (m_mtl.Specular.r <= 0.0f && m_mtl.Specular.g <= 0.0f &&
