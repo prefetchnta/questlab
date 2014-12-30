@@ -6,10 +6,10 @@
 
 #include "../../asylum.hpp"
 
-/*********************/
-/* QBMAP Main Object */
-/*********************/
-struct qbmap_main
+/*************************/
+/* CrHack3D9 Main Object */
+/*************************/
+struct crhack3d9_main
 {
     asy::crh3d9_main                main;
     asy::map_acs<asy::crh3d9_texr>  texs;
@@ -20,8 +20,8 @@ struct qbmap_main
     sFRUSTUM    frt;
 };
 
-/* =============================== */
-CR_API qbmap_t qbmap_init (HWND hwnd)
+/* ==================================== */
+CR_API crh3d9_t crhack3d9_init (HWND hwnd)
 {
     sDX9_HDLE   hdle;
 
@@ -44,9 +44,9 @@ CR_API qbmap_t qbmap_init (HWND hwnd)
 #endif
     hdle.hwnd = hwnd;
 
-    qbmap_main* rett;
+    crhack3d9_main* rett;
 
-    rett = struct_new(qbmap_main);
+    rett = struct_new(crhack3d9_main);
     if (rett == NULL)
         return (NULL);
     if (!rett->main.init(&hdle, 90.0f, FALSE, 0, 0, D3DFMT_UNKNOWN,
@@ -62,7 +62,7 @@ CR_API qbmap_t qbmap_init (HWND hwnd)
     rett->inst.init();
     rett->main.set_camera(&rett->cam);
     rett->main.get_frustum(&rett->frt, -1.0f);
-    return ((qbmap_t)rett);
+    return ((crh3d9_t)rett);
 
 _failure3:
     rett->texs.free();
@@ -73,24 +73,24 @@ _failure1:
     return (NULL);
 }
 
-/* ================================ */
-CR_API void qbmap_kill (qbmap_t qbmap)
+/* ====================================== */
+CR_API void crhack3d9_kill (crh3d9_t render)
 {
-    qbmap_main* real;
+    crhack3d9_main* real;
 
-    real = (qbmap_main*)qbmap;
+    real = (crhack3d9_main*)render;
     real->inst.free();
     real->base.free();
     real->texs.free();
     real->main.free();
-    mem_free(qbmap);
+    mem_free(render);
 }
 
-/* ================================= */
-CR_API bool qbmap_reset (qbmap_t qbmap)
+/* ======================================= */
+CR_API bool crhack3d9_reset (crh3d9_t render)
 {
-    qbmap_main* real;
+    crhack3d9_main* real;
 
-    real = (qbmap_main*)qbmap;
+    real = (crhack3d9_main*)render;
     return (real->main.reset());
 }

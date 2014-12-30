@@ -44,12 +44,12 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
                             create_crh3d9_attr_wf_t fattr, create_crh3d9_mesh_wf_t fmesh,
                                     const asy::map_acs<asy::crh3d9_texr>* texpool,
                                             const asy::crh3d9_main* main);
-/********************/
-/* QueryBuilder API */
-/********************/
-typedef void*   qbmap_t;
-CR_API qbmap_t qbmap_init (HWND hwnd);
-CR_API void qbmap_kill (qbmap_t qbmap);
-CR_API bool qbmap_reset (qbmap_t qbmap);
+/************************/
+/* CrHack3D9 Render API */
+/************************/
+typedef void*   crh3d9_t;
+CR_API crh3d9_t crhack3d9_init (HWND hwnd);
+CR_API void crhack3d9_kill (crh3d9_t render);
+CR_API bool crhack3d9_reset (crh3d9_t render);
 
 #endif  /* __CRH3D9_GRAPH_HPP__ */
