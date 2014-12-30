@@ -23,14 +23,10 @@ private:
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ====================================================== */
-    crh3d9_ffct_wf_fixed (int64u flags, const crh3d9_main* main)
+    /* ==================================================== */
+    crh3d9_ffct_wf_fixed (uint_t fvf, const crh3d9_main* main)
     {
-        m_vxfvf = D3DFVF_XYZ;
-        if (flags & ATTR_TYPE_NORMAL)
-            m_vxfvf |= D3DFVF_NORMAL;
-        if (flags & ATTR_TYPE_TEXTURE)
-            m_vxfvf |= D3DFVF_TEX1;
+        m_vxfvf = fvf;
         m_devcs = main->get_main()->dev;
     }
 
@@ -60,12 +56,12 @@ public:
 
 }   /* namespace */
 
-/* ======================================================================================= */
-CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (int64u flags, const asy::crh3d9_main* main)
+/* ===================================================================================== */
+CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (uint_t fvf, const asy::crh3d9_main* main)
 {
     asy::crh3d9_ffct_wf_fixed*  ffct;
 
-    ffct = new asy::crh3d9_ffct_wf_fixed (flags, main);
+    ffct = new asy::crh3d9_ffct_wf_fixed (fvf, main);
     return ((asy::IEffect*)ffct);
 }
 
@@ -315,8 +311,10 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
     base->list.init();
     base->real = NULL;
     base->kill = NULL;
-    for (leng_t idx = 0; idx < obj->n_m; idx++) {
+    for (leng_t idx = 0; idx < obj->n_m; idx++)
+    {
         leng_t  ii, cnt = 0, cmp = idx + 1;
+
         for (ii = 0; ii < obj->n_g; ii++) {
             if (obj->p_g[ii].attr < cmp)
                 break;
