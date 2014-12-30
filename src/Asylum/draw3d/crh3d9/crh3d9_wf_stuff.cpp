@@ -22,6 +22,7 @@ private:
     bool                m_uselt;
     BOOL*               m_onoff;
     DWORD               m_count;
+    uint_t              m_vxfvf;
     int64u              m_flags;
     D3DCOLOR*           m_color;
     D3DLIGHT9*          m_light;
@@ -38,6 +39,11 @@ public:
         m_color = ambient;
         m_devcs = main->get_main()->dev;
         m_uselt = (m_light != NULL && m_onoff != NULL && m_count != 0) ? true : false;
+        m_vxfvf = D3DFVF_XYZ;
+        if (m_flags & ATTR_TYPE_NORMAL)
+            m_vxfvf |= D3DFVF_NORMAL;
+        if (m_flags & ATTR_TYPE_TEXTURE)
+            m_vxfvf |= D3DFVF_TEX1;
     }
 
     /* ========================== */
@@ -49,8 +55,6 @@ public:
     /* =============== */
     virtual void enter ()
     {
-        uint_t  fvf = D3DFVF_XYZ;
-
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
         m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
         m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
@@ -61,16 +65,13 @@ public:
             m_devcs->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
         }
         if (m_flags & ATTR_TYPE_NORMAL) {
-            fvf |= D3DFVF_NORMAL;
             if (m_uselt) {
                 m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
                 if (m_flags & ATTR_TYPE_SPECULAR)
                     m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
             }
         }
-        if (m_flags & ATTR_TYPE_TEXTURE)
-            fvf |= D3DFVF_TEX1;
-        m_devcs->SetFVF(fvf);
+        m_devcs->SetFVF(m_vxfvf);
     }
 
     /* =============== */

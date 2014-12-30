@@ -162,8 +162,8 @@ struct object_base
     void free ()
     {
         this->list.free();
-        if (this->kill != NULL &&
-            this->real != NULL)
+        if (this->real != NULL &&
+            this->kill != NULL)
             this->kill(this->real);
     }
 };
