@@ -10,53 +10,6 @@
 /* Asylum Namespace */
 namespace asy {
 
-/***********/
-/* VertexN */
-/***********/
-struct vertex_n
-{
-    vec3d_t pos;
-    vec3d_t nrm;
-};
-
-/************/
-/* VertexT2 */
-/************/
-struct vertex_t2
-{
-    vec3d_t pos;
-    vec2d_t tex;
-};
-
-/************/
-/* VertexT3 */
-/************/
-struct vertex_t3
-{
-    vec3d_t pos;
-    vec3d_t tex;
-};
-
-/*************/
-/* VertexNT2 */
-/*************/
-struct vertex_nt2
-{
-    vec3d_t pos;
-    vec3d_t nrm;
-    vec2d_t tex;
-};
-
-/*************/
-/* VertexNT3 */
-/*************/
-struct vertex_nt3
-{
-    vec3d_t pos;
-    vec3d_t nrm;
-    vec3d_t tex;
-};
-
 /***************/
 /* Effect Port */
 /***************/
@@ -72,9 +25,6 @@ public:
 
     /* ==================== */
     virtual void leave () = 0;
-
-    /* ===================== */
-    virtual void update () = 0;
 };
 
 /******************/
@@ -137,13 +87,15 @@ struct commit_batch
 
         if (this->attr != NULL)
             delete this->attr;
-        for (idx = 0; ; idx++) {
-            tmp = this->mesh[idx];
-            if (tmp == NULL)
-                break;
-            delete tmp;
+        if (this->mesh != NULL) {
+            for (idx = 0; ; idx++) {
+                tmp = this->mesh[idx];
+                if (tmp == NULL)
+                    break;
+                delete tmp;
+            }
+            mem_free(this->mesh);
         }
-        mem_free(this->mesh);
     }
 };
 
