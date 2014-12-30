@@ -18,8 +18,8 @@ typedef asy::IMesh* (*create_crh3d9_mesh_wf_t) (const sWAVEFRONT* obj, leng_t id
 /******************/
 /* Effect Factory */
 /******************/
-CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (uint_t fvf, const asy::crh3d9_main* main);
-
+CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (uint_t fvf, int64u flags,
+                                                  const asy::crh3d9_main* main);
 /*********************/
 /* Attribute Factory */
 /*********************/
