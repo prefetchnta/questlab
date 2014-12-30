@@ -50,5 +50,6 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
 typedef void*   qbmap_t;
 CR_API qbmap_t qbmap_init (HWND hwnd);
 CR_API void qbmap_kill (qbmap_t qbmap);
+CR_API bool qbmap_reset (qbmap_t qbmap);
 
 #endif  /* __CRH3D9_GRAPH_HPP__ */

@@ -85,3 +85,12 @@ CR_API void qbmap_kill (qbmap_t qbmap)
     real->main.free();
     mem_free(qbmap);
 }
+
+/* ================================= */
+CR_API bool qbmap_reset (qbmap_t qbmap)
+{
+    qbmap_main* real;
+
+    real = (qbmap_main*)qbmap;
+    return (real->main.reset());
+}
