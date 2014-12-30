@@ -144,6 +144,31 @@ struct object_inst
     void free () {}
 };
 
+/***************/
+/* Commit Pipe */
+/***************/
+struct commit_pipe
+{
+    array<cnode_ptr>    stuff_list;     // <commit_batch*>
+    array<cnode_ptr>    effect_stack;   // <IEffect*>
+
+    void free ()
+    {
+        size_t      size;
+        IEffect*    ffct;
+        cnode_ptr*  data;
+
+        this->stuff_list.free();
+        size = this->effect_stack.size();
+        data = this->effect_stack.data();
+        for (size_t idx = 0; idx < size; idx++) {
+            ffct = (IEffect*)(data[idx].ptr);
+            delete ffct;
+        }
+        this->effect_stack.free();
+    }
+};
+
 }   /* namespace */
 
 #endif  /* __ASYLUM3D_HPP__ */
