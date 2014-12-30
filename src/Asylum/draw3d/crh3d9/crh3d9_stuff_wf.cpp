@@ -24,12 +24,12 @@ private:
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ================================================================== */
-    crh3d9_ffct_wf_fixed (uint_t fvf, int64u flags, const crh3d9_main* main)
+    /* ================================================================ */
+    crh3d9_ffct_wf_fixed (uint_t fvf, bool_t tex, const crh3d9_main* main)
     {
+        m_blend = tex;
         m_vxfvf = fvf;
         m_devcs = main->get_main()->dev;
-        m_blend = (flags & ATTR_TYPE_TEXTURE) ? TRUE : FALSE;
     }
 
     /* ========================== */
@@ -41,38 +41,44 @@ public:
     /* =============== */
     virtual void enter ()
     {
-        m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
-        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
-        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
-        if (m_blend) {
-            m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-            m_devcs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+        if (m_vxfvf != 0) {
+            m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
+            m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
+            m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
+            m_devcs->SetFVF(m_vxfvf);
         }
         else {
-            m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG2);
+            if (m_blend) {
+                m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+                m_devcs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+            }
+            else {
+                m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG2);
+            }
+            m_devcs->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
         }
-        m_devcs->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-        m_devcs->SetFVF(m_vxfvf);
     }
 
     /* =============== */
     virtual void leave ()
     {
-        m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
-        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
-        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
+        if (m_vxfvf != 0) {
+            m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
+            m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
+            m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
+        }
     }
 };
 
 }   /* namespace */
 
-/* ===================================================================== */
-CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (uint_t fvf, int64u flags,
+/* =================================================================== */
+CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (uint_t fvf, bool_t tex,
                                                   const asy::crh3d9_main* main)
 {
     asy::crh3d9_ffct_wf_fixed*  ffct;
 
-    ffct = new asy::crh3d9_ffct_wf_fixed (fvf, flags, main);
+    ffct = new asy::crh3d9_ffct_wf_fixed (fvf, tex, main);
     return ((asy::IEffect*)ffct);
 }
 
