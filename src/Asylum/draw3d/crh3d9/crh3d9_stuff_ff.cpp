@@ -123,3 +123,22 @@ public:
 };
 
 }   /* namespace */
+
+/* =================================================================================== */
+CR_API asy::IEffect* create_crh3d9_ffct_light_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
+                                BOOL* onoff, DWORD count, const asy::crh3d9_main* main)
+{
+    asy::crh3d9_ffct_light_fixed*   ffct;
+
+    ffct = new asy::crh3d9_ffct_light_fixed (ambient, light, onoff, count, main);
+    return ((asy::IEffect*)ffct);
+}
+
+/* ========================================================================================= */
+CR_API asy::IEffect* create_crh3d9_ffct_alpha_fixed (DWORD value, const asy::crh3d9_main* main)
+{
+    asy::crh3d9_ffct_alpha_fixed*   ffct;
+
+    ffct = new asy::crh3d9_ffct_alpha_fixed (value, main);
+    return ((asy::IEffect*)ffct);
+}
