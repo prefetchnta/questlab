@@ -124,6 +124,8 @@ struct object_base
 /*******************/
 struct object_inst
 {
+    object_base*    base;
+
     union {
         mat4x4_t    mat;
         struct {
@@ -140,21 +142,6 @@ struct object_inst
 
     /* ========= */
     void free () {}
-};
-
-/****************/
-/* Object Group */
-/****************/
-struct object_group
-{
-    object_base*        base;
-    array<object_inst>  inst;
-
-    /* ====== */
-    void free ()
-    {
-        this->inst.free();
-    }
 };
 
 }   /* namespace */
