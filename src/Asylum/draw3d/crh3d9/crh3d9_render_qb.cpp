@@ -15,6 +15,9 @@ struct qbmap_main
     asy::map_acs<asy::crh3d9_texr>  texs;
     asy::map_acs<asy::object_base>  base;
     asy::array<asy::object_inst>    inst;
+
+    sCAMERA     cam;
+    sFRUSTUM    frt;
 };
 
 /* =============================== */
@@ -57,6 +60,8 @@ CR_API qbmap_t qbmap_init (HWND hwnd)
     if (!rett->base.init())
         goto _failure3;
     rett->inst.init();
+    rett->main.set_camera(&rett->cam);
+    rett->main.get_frustum(&rett->frt, -1.0f);
     return ((qbmap_t)rett);
 
 _failure3:
