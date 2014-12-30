@@ -19,31 +19,19 @@ namespace asy {
 class crh3d9_ffct_wf_fixed : public IEffect
 {
 private:
-    bool                m_uselt;
-    BOOL*               m_onoff;
-    DWORD               m_count;
     uint_t              m_vxfvf;
-    int64u              m_flags;
-    D3DCOLOR*           m_color;
-    D3DLIGHT9*          m_light;
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ===================================================================================================================== */
-    crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light, BOOL* onoff, DWORD count, int64u flags, const crh3d9_main* main)
+    /* ====================================================== */
+    crh3d9_ffct_wf_fixed (int64u flags, const crh3d9_main* main)
     {
-        m_onoff = onoff;
-        m_count = count;
-        m_flags = flags;
-        m_light = light;
-        m_color = ambient;
-        m_devcs = main->get_main()->dev;
-        m_uselt = (m_light != NULL && m_onoff != NULL && m_count != 0) ? true : false;
         m_vxfvf = D3DFVF_XYZ;
         if (m_flags & ATTR_TYPE_NORMAL)
             m_vxfvf |= D3DFVF_NORMAL;
         if (m_flags & ATTR_TYPE_TEXTURE)
             m_vxfvf |= D3DFVF_TEX1;
+        m_devcs = main->get_main()->dev;
     }
 
     /* ========================== */
@@ -58,19 +46,6 @@ public:
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
         m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
         m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
-        if (m_flags & ATTR_TYPE_TRANS) {
-            m_devcs->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-            m_devcs->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-            m_devcs->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-            m_devcs->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-        }
-        if (m_flags & ATTR_TYPE_NORMAL) {
-            if (m_uselt) {
-                m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
-                if (m_flags & ATTR_TYPE_SPECULAR)
-                    m_devcs->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
-            }
-        }
         m_devcs->SetFVF(m_vxfvf);
     }
 
@@ -80,40 +55,17 @@ public:
         m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
         m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
         m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
-        if (m_flags & ATTR_TYPE_TRANS)
-            m_devcs->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-        if (m_flags & ATTR_TYPE_NORMAL) {
-            if (m_uselt) {
-                m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
-                if (m_flags & ATTR_TYPE_SPECULAR)
-                    m_devcs->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
-            }
-        }
-    }
-
-    /* ================ */
-    virtual void update ()
-    {
-        if (m_color != NULL)
-            m_devcs->SetRenderState(D3DRS_AMBIENT, m_color[0]);
-        if (m_uselt) {
-            for (DWORD idx = 0; idx < m_count; idx++) {
-                m_devcs->SetLight(idx, &m_light[idx]);
-                m_devcs->LightEnable(idx, m_onoff[idx]);
-            }
-        }
     }
 };
 
 }   /* namespace */
 
-/* ================================================================================ */
-CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
-                BOOL* onoff, DWORD count, int64u flags, const asy::crh3d9_main* main)
+/* ======================================================================================= */
+CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (int64u flags, const asy::crh3d9_main* main)
 {
     asy::crh3d9_ffct_wf_fixed*  ffct;
 
-    ffct = new asy::crh3d9_ffct_wf_fixed (ambient, light, onoff, count, flags, main);
+    ffct = new asy::crh3d9_ffct_wf_fixed (flags, main);
     return ((asy::IEffect*)ffct);
 }
 
