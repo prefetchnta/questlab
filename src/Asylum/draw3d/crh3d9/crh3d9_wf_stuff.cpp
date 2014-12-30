@@ -27,9 +27,9 @@ public:
     crh3d9_ffct_wf_fixed (int64u flags, const crh3d9_main* main)
     {
         m_vxfvf = D3DFVF_XYZ;
-        if (m_flags & ATTR_TYPE_NORMAL)
+        if (flags & ATTR_TYPE_NORMAL)
             m_vxfvf |= D3DFVF_NORMAL;
-        if (m_flags & ATTR_TYPE_TEXTURE)
+        if (flags & ATTR_TYPE_TEXTURE)
             m_vxfvf |= D3DFVF_TEX1;
         m_devcs = main->get_main()->dev;
     }
