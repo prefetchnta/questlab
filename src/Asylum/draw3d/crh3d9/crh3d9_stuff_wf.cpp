@@ -13,27 +13,25 @@
 /* Asylum Namespace */
 namespace asy {
 
-/****************************/
-/* Wavefront Effect (Fixed) */
-/****************************/
-class crh3d9_ffct_wf_fixed : public IEffect
+/***********************************/
+/* Wavefront Effect Vertex (Fixed) */
+/***********************************/
+class crh3d9_ffct_wf_v_fixed : public IEffect
 {
 private:
-    bool_t              m_blend;
     uint_t              m_vxfvf;
     LPDIRECT3DDEVICE9   m_devcs;
 
 public:
-    /* ================================================================ */
-    crh3d9_ffct_wf_fixed (uint_t fvf, bool_t tex, const crh3d9_main* main)
+    /* ====================================================== */
+    crh3d9_ffct_wf_v_fixed (uint_t fvf, const crh3d9_main* main)
     {
-        m_blend = tex;
         m_vxfvf = fvf;
         m_devcs = main->get_main()->dev;
     }
 
-    /* ========================== */
-    virtual ~crh3d9_ffct_wf_fixed ()
+    /* ============================ */
+    virtual ~crh3d9_ffct_wf_v_fixed ()
     {
     }
 
@@ -41,32 +39,87 @@ public:
     /* =============== */
     virtual void enter ()
     {
-        if (m_vxfvf != 0) {
-            m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
-            m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
-            m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
-            m_devcs->SetFVF(m_vxfvf);
-        }
-        else {
-            if (m_blend) {
-                m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-                m_devcs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-            }
-            else {
-                m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG2);
-            }
-            m_devcs->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-        }
+        m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
+        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
+        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
+        m_devcs->SetFVF(m_vxfvf);
     }
 
     /* =============== */
     virtual void leave ()
     {
-        if (m_vxfvf != 0) {
-            m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
-            m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
-            m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
-        }
+        m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
+        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
+        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
+    }
+};
+
+/**********************************/
+/* Wavefront Effect Color (Fixed) */
+/**********************************/
+class crh3d9_ffct_wf_c_fixed : public IEffect
+{
+private:
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ========================================== */
+    crh3d9_ffct_wf_c_fixed (const crh3d9_main* main)
+    {
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* ============================ */
+    virtual ~crh3d9_ffct_wf_c_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+        m_devcs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+    }
+};
+
+/************************************/
+/* Wavefront Effect Texture (Fixed) */
+/************************************/
+class crh3d9_ffct_wf_t_fixed : public IEffect
+{
+private:
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ========================================== */
+    crh3d9_ffct_wf_t_fixed (const crh3d9_main* main)
+    {
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* ============================ */
+    virtual ~crh3d9_ffct_wf_t_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+        m_devcs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+        m_devcs->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
     }
 };
 
@@ -76,10 +129,15 @@ public:
 CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (uint_t fvf, bool_t tex,
                                                   const asy::crh3d9_main* main)
 {
-    asy::crh3d9_ffct_wf_fixed*  ffct;
+    asy::IEffect*   ffct;
 
-    ffct = new asy::crh3d9_ffct_wf_fixed (fvf, tex, main);
-    return ((asy::IEffect*)ffct);
+    if (fvf != 0)
+        ffct = new asy::crh3d9_ffct_wf_v_fixed (fvf, main);
+    else if (tex)
+        ffct = new asy::crh3d9_ffct_wf_t_fixed (main);
+    else
+        ffct = new asy::crh3d9_ffct_wf_c_fixed (main);
+    return (ffct);
 }
 
 /*****************************************************************************/
