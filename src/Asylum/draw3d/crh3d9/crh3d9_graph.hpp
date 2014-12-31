@@ -26,6 +26,12 @@ CR_API asy::IEffect* create_crh3d9_ffct_light_fixed (D3DCOLOR* ambient, D3DLIGHT
 
 CR_API asy::IEffect* create_crh3d9_ffct_alpha_fixed (DWORD value, const asy::crh3d9_main* main);
 
+#define EFFECT_STT_RS   0
+#define EFFECT_STT_SS   1
+#define EFFECT_STT_TSS  2
+CR_API asy::IEffect* create_crh3d9_ffct_state_fixed (const int32u* list, uint_t ninp, uint_t nout,
+                                                     uint_t type, const asy::crh3d9_main* main);
+
 /*********************/
 /* Attribute Factory */
 /*********************/

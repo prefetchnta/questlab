@@ -150,11 +150,11 @@ struct object_inst
 struct commit_pipe
 {
     IEffect*            effect;
-    array<cnode_ptr>    stuff_list;     // <commit_batch*>
+    array<cnode_ptr>    stuffz;     // <commit_batch*>
 
     void free ()
     {
-        this->stuff_list.free();
+        this->stuffz.free();
         delete this->effect;
     }
 };

@@ -169,6 +169,132 @@ public:
     }
 };
 
+/*********************/
+/* Render State List */
+/*********************/
+class crh3d9_ffct_rs_fixed : public IEffect
+{
+private:
+    uint_t              m_enter;
+    uint_t              m_leave;
+    const int32u*       m_value;
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ====================================================================================== */
+    crh3d9_ffct_rs_fixed (const int32u* list, uint_t ninp, uint_t nout, const crh3d9_main* main)
+    {
+        m_value = list;
+        m_enter = ninp * 2;
+        m_leave = nout * 2;
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* ========================== */
+    virtual ~crh3d9_ffct_rs_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        for (uint_t idx = 0; idx < m_enter; idx += 2)
+            m_devcs->SetRenderState((D3DRENDERSTATETYPE)m_value[idx], m_value[idx + 1]);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+        for (uint_t idx = m_enter; idx < m_leave; idx += 2)
+            m_devcs->SetRenderState((D3DRENDERSTATETYPE)m_value[idx], m_value[idx + 1]);
+    }
+};
+
+/**********************/
+/* Sampler State List */
+/**********************/
+class crh3d9_ffct_ss_fixed : public IEffect
+{
+private:
+    uint_t              m_enter;
+    uint_t              m_leave;
+    const int32u*       m_value;
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ====================================================================================== */
+    crh3d9_ffct_ss_fixed (const int32u* list, uint_t ninp, uint_t nout, const crh3d9_main* main)
+    {
+        m_value = list;
+        m_enter = ninp * 3;
+        m_leave = nout * 3;
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* ========================== */
+    virtual ~crh3d9_ffct_ss_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        for (uint_t idx = 0; idx < m_enter; idx += 3)
+            m_devcs->SetSamplerState(m_value[idx], (D3DSAMPLERSTATETYPE)m_value[idx + 1], m_value[idx + 2]);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+        for (uint_t idx = m_enter; idx < m_leave; idx += 3)
+            m_devcs->SetSamplerState(m_value[idx], (D3DSAMPLERSTATETYPE)m_value[idx + 1], m_value[idx + 2]);
+    }
+};
+
+/****************************/
+/* Texture Stage State List */
+/****************************/
+class crh3d9_ffct_tss_fixed : public IEffect
+{
+private:
+    uint_t              m_enter;
+    uint_t              m_leave;
+    const int32u*       m_value;
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ======================================================================================= */
+    crh3d9_ffct_tss_fixed (const int32u* list, uint_t ninp, uint_t nout, const crh3d9_main* main)
+    {
+        m_value = list;
+        m_enter = ninp * 3;
+        m_leave = nout * 3;
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* =========================== */
+    virtual ~crh3d9_ffct_tss_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        for (uint_t idx = 0; idx < m_enter; idx += 3)
+            m_devcs->SetTextureStageState(m_value[idx], (D3DTEXTURESTAGESTATETYPE)m_value[idx + 1], m_value[idx + 2]);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+        for (uint_t idx = m_enter; idx < m_leave; idx += 3)
+            m_devcs->SetTextureStageState(m_value[idx], (D3DTEXTURESTAGESTATETYPE)m_value[idx + 1], m_value[idx + 2]);
+    }
+};
+
 }   /* namespace */
 
 /* =================================================================================== */
@@ -193,5 +319,31 @@ CR_API asy::IEffect* create_crh3d9_ffct_alpha_fixed (DWORD value, const asy::crh
         ffct = new asy::crh3d9_ffct_atest_fixed (value, main);
     else
         ffct = new asy::crh3d9_ffct_alpha_fixed (main);
+    return (ffct);
+}
+
+/* ============================================================================================ */
+CR_API asy::IEffect* create_crh3d9_ffct_state_fixed (const int32u* list, uint_t ninp, uint_t nout,
+                                                     uint_t type, const asy::crh3d9_main* main)
+{
+    asy::IEffect*   ffct;
+
+    switch (type)
+    {
+        default:
+            return (NULL);
+
+        case EFFECT_STT_RS:
+            ffct = new asy::crh3d9_ffct_rs_fixed (list, ninp, nout, main);
+            break;
+
+        case EFFECT_STT_SS:
+            ffct = new asy::crh3d9_ffct_ss_fixed (list, ninp, nout, main);
+            break;
+
+        case EFFECT_STT_TSS:
+            ffct = new asy::crh3d9_ffct_tss_fixed (list, ninp, nout, main);
+            break;
+    }
     return (ffct);
 }
