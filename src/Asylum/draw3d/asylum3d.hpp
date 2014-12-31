@@ -145,17 +145,32 @@ struct object_inst
 };
 
 /***************/
-/* Commit Pipe */
+/* Commit Unit */
 /***************/
-struct commit_pipe
+struct commit_unit
 {
     IEffect*            effect;
     array<cnode_ptr>    stuffz;     // <commit_batch*>
 
+    /* ====== */
     void free ()
     {
         this->stuffz.free();
         delete this->effect;
+    }
+};
+
+/***************/
+/* Commit Pipe */
+/***************/
+struct commit_pipe
+{
+    array<commit_unit>  list;
+
+    /* ====== */
+    void free ()
+    {
+        this->list.free();
     }
 };
 
