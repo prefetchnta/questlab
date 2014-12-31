@@ -92,5 +92,17 @@ CR_API bool crhack3d9_reset (crh3d9_t render)
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
-    return (real->main.reset());
+    if (!real->main.reset())
+        return (false);
+
+    size_t              num;
+    asy::crh3d9_texr*   tex;
+
+    num = real->texs.size();
+    tex = real->texs.data();
+    for (size_t idx = 0; idx < num; idx++) {
+        if (!tex[idx].reset())
+            return (false);
+    }
+    return (true);
 }
