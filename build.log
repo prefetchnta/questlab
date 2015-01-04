@@ -1,54 +1,8 @@
 +
 +
 +
-    SINCE 2014-12-28
+    SINCE 2015-01-04
     ~~~~~~~~~~~~~~~~
-    [m] CrH_CORE.dll
-    [m] QstDataImp.dll
-+
-+
-+
-    SINCE 2014-12-19
-    ~~~~~~~~~~~~~~~~
-    [m] CrH_GFX3.dll
-    [m] CrH_CORE.dll
-    [m] GFX3_D3D8.dll
-    [m] GFX3_D3D9.dll
-+
-+
-+
-    SINCE 2014-11-18
-    ~~~~~~~~~~~~~~~~
-    [m] CrH_GFX3.dll
-    [m] QstComm.exe
-    [m] QstLibs.dll
-    [m] GFX3_D3D8.dll
-    [m] GFX3_D3D9.dll
-    [m] CrH_CORE.dll
-+
-+
-+
-    SINCE 2014-10-29
-    ~~~~~~~~~~~~~~~~
-    [m] CrH_CORE.dll
-    [m] CrH_FMTZ.dll
-+
-+
-+
-    SINCE 2014-09-15
-    ~~~~~~~~~~~~~~~~
-    [m] CrH_GFX2.dll
-    [m] CrH_CORE.dll
-    [m] fmodex.dll
-    [m] plugin/zFMOD.dll
-+
-+
-+
-    SINCE 2014-08-19
-    ~~~~~~~~~~~~~~~~
-    [m] CrH_CORE.dll
-    [m] QstView2D.exe
-    [m] QstMenu.exe
 +
 +
 +
