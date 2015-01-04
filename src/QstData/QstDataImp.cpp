@@ -293,7 +293,7 @@ fp64_t_show (
 
 /*
 ---------------------------------------
-    DOSDATE
+    DOS DATE
 ---------------------------------------
 */
 static ansi_t*
@@ -318,7 +318,7 @@ dosdate_show (
 
 /*
 ---------------------------------------
-    DOSTIME
+    DOS TIME
 ---------------------------------------
 */
 static ansi_t*
@@ -556,8 +556,8 @@ CR_API const sQDAT_UNIT viewer[] =
     { "HALF", fp16_t_show },
     { "FLOAT", fp32_t_show },
     { "DOUBLE", fp64_t_show },
-    { "DOSDATE", dosdate_show },
-    { "DOSTIME", dostime_show },
+    { "DOS DATE", dosdate_show },
+    { "DOS TIME", dostime_show },
     { "DOS DTTM", dosdttm_show },
     { "FILETIME", filetime_show },
     { "time32_t", time32_show },
