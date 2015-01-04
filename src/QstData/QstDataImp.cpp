@@ -50,6 +50,12 @@ DllMain (
 
 #endif  /* _CR_BUILD_DLL_ */
 
+/* 星期字符串 */
+static const ansi_t*    s_week[] =
+{
+    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
+};
+
 /*****************************************************************************/
 /*                                 观察实现                                  */
 /*****************************************************************************/
@@ -306,8 +312,8 @@ dosdate_show (
     if (is_be) val = xchg_int16u(val);
     if (!date_from_dos(&dtm, val))
         return (NULL);
-    return (str_fmtA(": %04u-%02u-%02u",
-        dtm.year, dtm.month, dtm.day));
+    return (str_fmtA(": %04u-%02u-%02u %s",
+        dtm.year, dtm.month, dtm.day, s_week[dtm.week]));
 }
 
 /*
@@ -356,8 +362,9 @@ filetime_show (
     if (is_be) val = xchg_int64u(val);
     if (!datetime_from_w32(&dtm, val))
         return (NULL);
-    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
-        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+    return (str_fmtA(": %04u-%02u-%02u %s %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, s_week[dtm.week],
+                dtm.hour, dtm.minute, dtm.second));
 }
 
 /*
@@ -381,8 +388,9 @@ time32_show (
     if (is_be) val = xchg_int32u(val);
     if (!datetime_from_unx(&dtm, val))
         return (NULL);
-    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
-        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+    return (str_fmtA(": %04u-%02u-%02u %s %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, s_week[dtm.week],
+                dtm.hour, dtm.minute, dtm.second));
 }
 
 /*
@@ -406,8 +414,9 @@ time64_show (
     if (is_be) val = xchg_int64u(val);
     if (!datetime_from_unx(&dtm, val))
         return (NULL);
-    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
-        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+    return (str_fmtA(": %04u-%02u-%02u %s %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, s_week[dtm.week],
+                dtm.hour, dtm.minute, dtm.second));
 }
 
 /*
@@ -431,8 +440,9 @@ longdt_show (
     if (is_be) val = xchg_int64u(val);
     if (!datetime_from_mac(&dtm, val))
         return (NULL);
-    return (str_fmtA(": %04u-%02u-%02u %02u:%02u:%02u",
-        dtm.year, dtm.month, dtm.day, dtm.hour, dtm.minute, dtm.second));
+    return (str_fmtA(": %04u-%02u-%02u %s %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, s_week[dtm.week],
+                dtm.hour, dtm.minute, dtm.second));
 }
 
 /*
