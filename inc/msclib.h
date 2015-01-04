@@ -45,6 +45,8 @@ CR_API void_t   quick_sort (void_t *base, leng_t num, leng_t width,
 /* BCD 二进制互换 */
 CR_API byte_t   bcd2bin (byte_t bcd);
 CR_API byte_t   bin2bcd (byte_t bin);
+CR_API bool_t   bcd2bin_okay (byte_t bcd);
+CR_API bool_t   bin2bcd_okay (byte_t bin);
 
 /* 填充1到最高位 */
 CR_API byte_t   fill2top08 (byte_t val);

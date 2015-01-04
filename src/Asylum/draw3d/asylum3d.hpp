@@ -144,13 +144,25 @@ struct object_inst
     void free () {}
 };
 
+/****************/
+/* Commit Stuff */
+/****************/
+struct commit_stuff
+{
+    object_inst*    inst;
+    commit_batch*   stuff;
+
+    /* ========= */
+    void free () {}
+};
+
 /***************/
 /* Commit Unit */
 /***************/
 struct commit_unit
 {
     IEffect*            effect;
-    array<cnode_ptr>    stuffz;     // <commit_batch*>
+    array<commit_stuff> stuffz;
 
     /* ====== */
     void free ()

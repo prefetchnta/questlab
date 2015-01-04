@@ -57,8 +57,10 @@ CR_API bool_t   datetime_set (const sDATETIME *datetime);
 /* 日期时间计算 */
 CR_API ufast_t  date_set_week (sDATETIME *date);
 CR_API ufast_t  date_get_week (const sDATETIME *date);
-CR_API void_t   date_inc (sDATETIME *date, uint_t days);
-CR_API void_t   date_dec (sDATETIME *date, uint_t days);
+CR_API void_t   date_inc (sDATETIME *date, int32u days);
+CR_API void_t   date_dec (sDATETIME *date, int32u days);
+CR_API void_t   time_inc (sDATETIME *time, int32u seconds);
+CR_API void_t   time_dec (sDATETIME *time, int32u seconds);
 CR_API maxs_t   date_sub (const sDATETIME *date1,
                           const sDATETIME *date2);
 CR_API bool_t   datetime_chk (const sDATETIME *datetime);
@@ -82,6 +84,8 @@ CR_API bool_t   date_to_dos (int16u *value, const sDATETIME *date);
 CR_API bool_t   time_to_dos (int16u *value, const sDATETIME *time);
 CR_API bool_t   date_from_dos (sDATETIME *date, int16u value);
 CR_API bool_t   time_from_dos (sDATETIME *time, int16u value);
+CR_API bool_t   datetime_to_dos (int16u value[2], const sDATETIME *datetime);
+CR_API bool_t   datetime_from_dos (sDATETIME *datetime, const int16u value[2]);
 
 /* WIN32 (FILETIME) */
 CR_API bool_t   datetime_to_w32 (int64u *value, const sDATETIME *datetime);
@@ -94,6 +98,26 @@ CR_API bool_t   datetime_from_unx (sDATETIME *datetime, int64u value);
 /* MACOS (longdt) */
 CR_API bool_t   datetime_to_mac (int64u *value, const sDATETIME *datetime);
 CR_API bool_t   datetime_from_mac (sDATETIME *datetime, int64u value);
+
+/* WIN32 (OLETIME) */
+CR_API bool_t   datetime_to_ole (fp64_t *value, const sDATETIME *datetime);
+CR_API bool_t   datetime_from_ole (sDATETIME *datetime, fp64_t value);
+
+/* DATETIME (BCD) */
+typedef struct
+{
+        byte_t  yr_hi;      /* 纪 */
+        byte_t  yr_lo;      /* 年 */
+        byte_t  month;      /* 月 */
+        byte_t  day;        /* 日 */
+        byte_t  hour;       /* 时 */
+        byte_t  minute;     /* 分 */
+        byte_t  second;     /* 秒 */
+
+} sBCD_DT;
+
+CR_API bool_t   datetime_to_bcd (sBCD_DT *value, const sDATETIME *datetime);
+CR_API bool_t   datetime_from_bcd (sDATETIME *datetime, const sBCD_DT *value);
 
 #endif  /* !__CR_RTCLIB_H__ */
 
