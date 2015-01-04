@@ -56,6 +56,29 @@ static const ansi_t*    s_week[] =
     "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
 };
 
+/*
+---------------------------------------
+    判断浮点数是否正常
+---------------------------------------
+*/
+template<class T>
+static bool_t
+is_fp_okay (
+  __CR_IN__ T   val
+    )
+{
+    ansi_t  str[128], *ptr;
+
+    sprintf(str, "%G", val);
+    for (ptr = str; ptr != 0x00; ptr++) {
+        if ((*ptr < '0' || *ptr > '9') &&
+            (*ptr != '+' && *ptr != '-') &&
+            (*ptr != '.' && *ptr != 'E'))
+            return (FALSE);
+    }
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                                 观察实现                                  */
 /*****************************************************************************/
@@ -494,6 +517,8 @@ oletime_show (
         return (NULL);
     val = *(fp64_t*)data;
     if (is_be) val = cvt_i2d(xchg_int64u(cvt_d2i(val)));
+    if (!is_fp_okay<fp64_t>(val))
+        return (NULL);
     if (!datetime_from_ole(&dtm, val))
         return (NULL);
     return (str_fmtA(": %04u-%02u-%02u %s %02u:%02u:%02u",
