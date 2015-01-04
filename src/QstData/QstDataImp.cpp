@@ -343,6 +343,36 @@ dostime_show (
 
 /*
 ---------------------------------------
+    DOS DATETIME
+---------------------------------------
+*/
+static ansi_t*
+dosdttm_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    int16u  val[2];
+    /* --------- */
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    mem_cpy(val, data, sizeof(val));
+    if (is_be) {
+        val[0] = xchg_int16u(val[0]);
+        val[1] = xchg_int16u(val[1]);
+    }
+    if (!datetime_from_dos(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %04u-%02u-%02u %s %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, s_week[dtm.week],
+                dtm.hour, dtm.minute, dtm.second));
+}
+
+/*
+---------------------------------------
     FILETIME
 ---------------------------------------
 */
@@ -502,6 +532,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "DOUBLE", fp64_t_show },
     { "DOSDATE", dosdate_show },
     { "DOSTIME", dostime_show },
+    { "DOS DTTM", dosdttm_show },
     { "FILETIME", filetime_show },
     { "time32_t", time32_show },
     { "time64_t", time64_show },
