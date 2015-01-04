@@ -477,6 +477,32 @@ longdt_show (
 
 /*
 ---------------------------------------
+    OLETIME
+---------------------------------------
+*/
+static ansi_t*
+oletime_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    fp64_t      val;
+    sDATETIME   dtm;
+
+    if (size < sizeof(val))
+        return (NULL);
+    val = *(fp64_t*)data;
+    if (is_be) val = cvt_i2d(xchg_int64u(cvt_d2i(val)));
+    if (!datetime_from_ole(&dtm, val))
+        return (NULL);
+    return (str_fmtA(": %04u-%02u-%02u %s %02u:%02u:%02u",
+        dtm.year, dtm.month, dtm.day, s_week[dtm.week],
+                dtm.hour, dtm.minute, dtm.second));
+}
+
+/*
+---------------------------------------
     STRING
 ---------------------------------------
 */
@@ -537,6 +563,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "time32_t", time32_show },
     { "time64_t", time64_show },
     { "longdt", longdt_show },
+    { "OLETIME", oletime_show },
     { "STRING", string_show },
     { NULL, NULL }
 };
