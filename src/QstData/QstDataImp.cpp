@@ -67,10 +67,10 @@ is_fp_okay (
   __CR_IN__ T   val
     )
 {
-    ansi_t  str[128], *ptr;
+    ansi_t  str[64], *ptr;
 
     sprintf(str, "%G", val);
-    for (ptr = str; ptr != 0x00; ptr++) {
+    for (ptr = str; *ptr != 0x00; ptr++) {
         if ((*ptr < '0' || *ptr > '9') &&
             (*ptr != '+' && *ptr != '-') &&
             (*ptr != '.' && *ptr != 'E'))
