@@ -127,15 +127,14 @@ struct object_base
 /*******************/
 struct object_inst
 {
+    int32u          type;
+    mat4x4_t        tran;
     object_base*    base;
 
     union {
         sAABB   aabb;
         sSPHERE ball;
     } bound;
-
-    int32u      type;
-    mat4x4_t    tran;
 
     /* ========= */
     void free () {}
