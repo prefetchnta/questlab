@@ -246,6 +246,7 @@ private:
             this->trav_bfs_int<TRUN>(ctx, child);
             unt = unt->next;
         }
+        run.back(ctx, &node->user);
     }
 
     /* ====================================================================== */
@@ -265,6 +266,7 @@ private:
             this->trav_dfs_int<TRUN>(ctx, child);
             unt = unt->next;
         }
+        run.back(ctx, &node->user);
     }
 };
 

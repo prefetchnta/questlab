@@ -6,4 +6,9 @@ public:
     bool doit (void* ctx, T* obj)
     {
     }
+
+    /* ======================= */
+    void back (void* ctx, T* obj)
+    {
+    }
 };
