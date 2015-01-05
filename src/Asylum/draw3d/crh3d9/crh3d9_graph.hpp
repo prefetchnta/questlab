@@ -57,5 +57,8 @@ typedef void*   crh3d9_t;
 CR_API crh3d9_t crhack3d9_init (HWND hwnd);
 CR_API void crhack3d9_kill (crh3d9_t render);
 CR_API bool crhack3d9_reset (crh3d9_t render);
+CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
+                    const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
+                                bool_t neg_z, const char* type);
 
 #endif  /* __CRH3D9_GRAPH_HPP__ */

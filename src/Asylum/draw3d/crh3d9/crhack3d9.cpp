@@ -106,3 +106,43 @@ CR_API bool crhack3d9_reset (crh3d9_t render)
     }
     return (true);
 }
+
+/* ============================================================= */
+CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
+                    const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
+                                bool_t neg_z, const char* type)
+{
+    sWAVEFRONT          mesh;
+    crhack3d9_main*     real;
+    asy::crh3d9_texr    texr;
+    asy::object_base    base;
+
+    if (!wfront_obj_load(&mesh, obj, swap_yz, neg_z))
+        return (false);
+    if (!wfront_mtl_load(&mesh, mtl))
+        goto _failure;
+    real = (crhack3d9_main*)render;
+    if (type == NULL || strcmp(type, "fixed") == 0) {
+        for (leng_t idx = 0; idx < mesh.n_m; idx++) {
+            if (mesh.p_m[idx].map_kd == NULL)
+                continue;
+            if (!texr.init(&real->main, mesh.p_m[idx].map_kd, 1))
+                goto _failure;
+        }
+        if (!create_crh3d9_base_wf(&base, &mesh, create_crh3d9_attr_wf_fixed,
+                        create_crh3d9_mesh_wf_ss, &real->texs, &real->main))
+            goto _failure;
+    }
+    else {
+        goto _failure;
+    }
+    if (real->base.insert(name, &base) == NULL) {
+        base.free();
+        goto _failure;
+    }
+    return (true);
+
+_failure:
+    wfront_obj_free(&mesh);
+    return (false);
+}
