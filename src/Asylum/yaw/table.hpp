@@ -100,8 +100,8 @@ public:
         mem_free(m_list);
         m_list = copy->data();
         m_flag = copy->flag();
-        m_size = copy->size();
-        m_cnts = copy->total();
+        m_size = copy->capacity();
+        m_cnts = copy->size();
     }
 
     /* ============================== */
