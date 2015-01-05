@@ -14,7 +14,7 @@ struct crhack3d9_main
     asy::crh3d9_main                main;
     asy::map_acs<asy::crh3d9_texr>  texs;
     asy::map_acs<asy::object_base>  base;
-    asy::array<asy::object_inst>    inst;
+    asy::map_acs<asy::object_inst>  inst;
 
     sCAMERA     cam;
     sFRUSTUM    frt;
@@ -59,11 +59,14 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd)
         goto _failure2;
     if (!rett->base.init())
         goto _failure3;
-    rett->inst.init();
+    if (!rett->inst.init())
+        goto _failure4;
     rett->main.set_camera(&rett->cam);
     rett->main.get_frustum(&rett->frt, -1.0f);
     return ((crh3d9_t)rett);
 
+_failure4:
+    rett->base.free();
 _failure3:
     rett->texs.free();
 _failure2:
@@ -108,8 +111,9 @@ CR_API bool crhack3d9_reset (crh3d9_t render)
 }
 
 /* ============================================================ */
-CR_API bool crhack3d9_instance (crh3d9_t render, const char* base,
-            const vec3d_t* rote; const vec3d_t* move, const vec3d_t* scale)
+CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
+                                const char* base, const vec3d_t* rote,
+                                const vec3d_t* move, const vec3d_t* scale)
 {
 }
 
