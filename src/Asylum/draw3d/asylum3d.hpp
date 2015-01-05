@@ -101,6 +101,7 @@ struct commit_batch
 /***************/
 /* Object Base */
 /***************/
+struct object_inst;
 struct object_base
 {
     void*               real;
@@ -108,9 +109,8 @@ struct object_base
     sSPHERE             ball;
     array<commit_batch> list;
     void (*kill) (void* real);
-    void (*tran) (object_base* that,
-                  const vec3d_t* rote,
-                  const vec3d_t* move,
+    void (*tran) (object_inst* dest, object_base* base,
+                  const vec3d_t* rote, const vec3d_t* move,
                   const vec3d_t* scale);
     /* ====== */
     void free ()

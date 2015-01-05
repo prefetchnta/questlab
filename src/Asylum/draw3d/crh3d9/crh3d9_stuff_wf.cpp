@@ -375,9 +375,10 @@ static void wavefront_kill (void* real)
     mem_free(real);
 }
 
-/* ============================================================= */
-static void wavefront_tran (object_base* that, const vec3d_t* rote,
-                            const vec3d_t* move, const vec3d_t* scale)
+/* =========================================================== */
+static void wavefront_tran (object_inst* dest, object_base* base,
+                            const vec3d_t* rote, const vec3d_t* move,
+                            const vec3d_t* scale)
 {
 }
 
