@@ -130,20 +130,12 @@ struct object_inst
     object_base*    base;
 
     union {
-        mat4x4_t    mat;
-        struct {
-            vec3d_t rote;
-            vec3d_t move;
-            vec3d_t scale;
-        } sep;
-    } trans;
-
-    union {
         sAABB   aabb;
         sSPHERE ball;
     } bound;
 
-    int type;
+    int32u      type;
+    mat4x4_t    tran;
 
     /* ========= */
     void free () {}
