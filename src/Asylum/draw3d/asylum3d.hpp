@@ -111,7 +111,7 @@ struct object_base
     void (*kill) (void* real);
     void (*tran) (object_inst* dest, object_base* base,
                   const vec3d_t* rote, const vec3d_t* move,
-                  const vec3d_t* scale);
+                  const vec3d_t* scale, void* param);
     /* ====== */
     void free ()
     {
