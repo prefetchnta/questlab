@@ -143,9 +143,15 @@ struct object_inst
         sSPHERE ball;
     } bound;
 
+    int type;
+
     /* ========= */
     void free () {}
 };
+
+// Instance Type
+#define INST_TYPE_STATIC    0
+#define INST_TYPE_DYNAMIC   1
 
 /***************/
 /* Commit Unit */
