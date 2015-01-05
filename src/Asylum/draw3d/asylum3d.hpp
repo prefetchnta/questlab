@@ -144,32 +144,16 @@ struct object_inst
     void free () {}
 };
 
-/****************/
-/* Commit Stuff */
-/****************/
-struct commit_stuff
-{
-    object_inst*    inst;
-    commit_batch*   stuff;
-
-    /* ========= */
-    void free () {}
-};
-
 /***************/
 /* Commit Unit */
 /***************/
 struct commit_unit
 {
-    IEffect*            effect;
-    array<commit_stuff> stuffz;
+    object_inst*    inst;
+    commit_batch*   unit;
 
-    /* ====== */
-    void free ()
-    {
-        this->stuffz.free();
-        delete this->effect;
-    }
+    /* ========= */
+    void free () {}
 };
 
 /***************/
@@ -177,12 +161,14 @@ struct commit_unit
 /***************/
 struct commit_pipe
 {
-    array<commit_unit>  list;
+    IEffect*            effect;
+    array<commit_unit>  stuffz;
 
     /* ====== */
     void free ()
     {
-        this->list.free();
+        this->stuffz.free();
+        delete this->effect;
     }
 };
 
