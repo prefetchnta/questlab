@@ -108,7 +108,10 @@ struct object_base
     sSPHERE             ball;
     array<commit_batch> list;
     void (*kill) (void* real);
-
+    void (*tran) (object_base* that,
+                  const vec3d_t* rote,
+                  const vec3d_t* move,
+                  const vec3d_t* scale);
     /* ====== */
     void free ()
     {

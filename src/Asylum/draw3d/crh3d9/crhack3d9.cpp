@@ -107,6 +107,12 @@ CR_API bool crhack3d9_reset (crh3d9_t render)
     return (true);
 }
 
+/* ============================================================ */
+CR_API bool crhack3d9_instance (crh3d9_t render, const char* base,
+            const vec3d_t* rote; const vec3d_t* move, const vec3d_t* scale)
+{
+}
+
 /* ============================================================= */
 CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
                     const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,

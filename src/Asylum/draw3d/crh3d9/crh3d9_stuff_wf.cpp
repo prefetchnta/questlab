@@ -375,6 +375,12 @@ static void wavefront_kill (void* real)
     mem_free(real);
 }
 
+/* ============================================================= */
+static void wavefront_tran (object_base* that, const vec3d_t* rote,
+                            const vec3d_t* move, const vec3d_t* scale)
+{
+}
+
 /* =========================================================================== */
 CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj,
                             create_crh3d9_attr_wf_t fattr, create_crh3d9_mesh_wf_t fmesh,
@@ -428,6 +434,7 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
     if (base->real == NULL)
         goto _failure1;
     base->kill = wavefront_kill;
+    base->tran = wavefront_tran;
     bound_get_aabb(&base->aabb, obj->p_v, obj->n_v, sizeof(vec3d_t));
     bound_get_ball(&base->ball, obj->p_v, obj->n_v, sizeof(vec3d_t));
     return (true);
