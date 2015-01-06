@@ -145,8 +145,8 @@ public:
     {
         IMesh*          mesh;
         size_t          size;
-        crh3d9_main*    main;
         commit_unit*    list;
+        crh3d9_main*    main;
 
         obj->effect->enter();
         size = obj->stuffz.size();
@@ -187,6 +187,42 @@ CR_API void crhack3d9_commit (crh3d9_t render)
 
     real = (crhack3d9_main*)render;
     real->pipe.trav_dfs<asy::crhack3d9_render_fixed>((void*)render);
+}
+
+/* Asylum Namespace */
+namespace asy {
+
+/**************************/
+/* CrHack3D9 Render Clear */
+/**************************/
+class crhack3d9_render_clear : public asylum
+{
+public:
+    /* ================================= */
+    bool doit (void* ctx, commit_pipe* obj)
+    {
+        CR_NOUSE(ctx);
+        obj->stuffz.clear();
+        return (true);
+    }
+
+    /* ================================= */
+    void back (void* ctx, commit_pipe* obj)
+    {
+        CR_NOUSE(ctx);
+        CR_NOUSE(obj);
+    }
+};
+
+}   /* namespace */
+
+/* ========================================= */
+CR_API void crhack3d9_rebuild (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    real->pipe.trav_bfs<asy::crhack3d9_render_clear>(NULL);
 }
 
 /* ========================================================== */
