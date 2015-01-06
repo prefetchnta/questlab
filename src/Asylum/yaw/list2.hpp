@@ -172,7 +172,7 @@ public:
         list2_unit<T>*  nnew;
 
         if (DIR) {
-            nnew = static_cast<list2_unit<T>*>(obj);
+            nnew = (list2_unit<T>*)obj;
         }
         else {
             nnew = struct_new(list2_unit<T>);
@@ -205,7 +205,7 @@ public:
         list2_unit<T>*  nnew;
 
         if (DIR) {
-            nnew = static_cast<list2_unit<T>*>(obj);
+            nnew = (list2_unit<T>*)obj;
         }
         else {
             nnew = struct_new(list2_unit<T>);
@@ -230,7 +230,7 @@ public:
         list2_unit<T>*  nnew;
 
         if (DIR) {
-            nnew = static_cast<list2_unit<T>*>(obj);
+            nnew = (list2_unit<T>*)obj;
         }
         else {
             nnew = struct_new(list2_unit<T>);

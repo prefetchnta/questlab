@@ -7,6 +7,17 @@
 #include "../../asylum.hpp"
 
 /*************************/
+/* CrHack3D9 Effect Node */
+/*************************/
+struct crhack3d9_node
+{
+    asy::atree_unit<asy::commit_pipe>*  ptr;
+
+    /* ========= */
+    void free () {}
+};
+
+/*************************/
 /* CrHack3D9 Main Object */
 /*************************/
 struct crhack3d9_main
@@ -15,7 +26,7 @@ struct crhack3d9_main
     asy::map_acs<asy::crh3d9_texr>  texs;
     asy::map_acs<asy::object_base>  base;
     asy::map_acs<asy::object_inst>  inst;
-    asy::map_acs<asy::cnode_ptr>    node;
+    asy::map_acs<crhack3d9_node>    node;
     asy::tree_l<asy::commit_pipe>   pipe;
 
     sCAMERA     cam;
@@ -115,6 +126,39 @@ CR_API bool crhack3d9_reset (crh3d9_t render)
     tex = real->texs.data();
     for (size_t idx = 0; idx < num; idx++) {
         if (!tex[idx].reset())
+            return (false);
+    }
+    return (true);
+}
+
+/* ========================================================== */
+CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
+                              asy::IEffect* effect)
+{
+    crhack3d9_node      node;
+    crhack3d9_node*     nnew;
+    crhack3d9_node*     find;
+    crhack3d9_main*     real;
+    asy::commit_pipe    pipe;
+
+    node.ptr = NULL;
+    real = (crhack3d9_main*)render;
+    nnew = real->node.insert(name, &node);
+    if (nnew == NULL)
+        return (false);
+    pipe.effect = effect;
+    pipe.stuffz.init();
+    if (real->pipe.size() == 0) {
+        if (!real->pipe.init(&pipe))
+            return (false);
+        nnew->ptr = real->pipe.root();
+    }
+    else {
+        find = real->node.get(name);
+        if (find == NULL)
+            return (false);
+        nnew->ptr = real->pipe.append(find->ptr, &pipe);
+        if (nnew->ptr == NULL)
             return (false);
     }
     return (true);
