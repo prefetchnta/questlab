@@ -24,7 +24,7 @@ struct list2_unit
 /*********/
 /* List2 */
 /*********/
-template<class T, bool DIR = false>
+template<class T>
 class list2 : public asylum
 {
 private:
@@ -171,15 +171,16 @@ public:
     {
         list2_unit<T>*  nnew;
 
-        if (DIR) {
-            nnew = (list2_unit<T>*)obj;
-        }
-        else {
-            nnew = struct_new(list2_unit<T>);
-            if (nnew == NULL)
-                return (NULL);
-            mem_cpy(&nnew->user, obj, sizeof(T));
-        }
+        nnew = struct_new(list2_unit<T>);
+        if (nnew == NULL)
+            return (NULL);
+        mem_cpy(&nnew->user, obj, sizeof(T));
+        return (this->insert2(node, nnew));
+    }
+
+    /* =========================================================== */
+    list2_unit<T>* insert2 (list2_unit<T>* node, list2_unit<T>* nnew)
+    {
         if (node == m_head) {
             nnew->prev = NULL;
             nnew->next = m_head;
@@ -204,15 +205,16 @@ public:
     {
         list2_unit<T>*  nnew;
 
-        if (DIR) {
-            nnew = (list2_unit<T>*)obj;
-        }
-        else {
-            nnew = struct_new(list2_unit<T>);
-            if (nnew == NULL)
-                return (NULL);
-            mem_cpy(&nnew->user, obj, sizeof(T));
-        }
+        nnew = struct_new(list2_unit<T>);
+        if (nnew == NULL)
+            return (NULL);
+        mem_cpy(&nnew->user, obj, sizeof(T));
+        return (this->sthead2(nnew));
+    }
+
+    /* ====================================== */
+    list2_unit<T>* sthead2 (list2_unit<T>* nnew)
+    {
         nnew->prev = NULL;
         nnew->next = m_head;
         if (m_head != NULL)
@@ -229,15 +231,16 @@ public:
     {
         list2_unit<T>*  nnew;
 
-        if (DIR) {
-            nnew = (list2_unit<T>*)obj;
-        }
-        else {
-            nnew = struct_new(list2_unit<T>);
-            if (nnew == NULL)
-                return (NULL);
-            mem_cpy(&nnew->user, obj, sizeof(T));
-        }
+        nnew = struct_new(list2_unit<T>);
+        if (nnew == NULL)
+            return (NULL);
+        mem_cpy(&nnew->user, obj, sizeof(T));
+        return (this->append2(nnew));
+    }
+
+    /* ====================================== */
+    list2_unit<T>* append2 (list2_unit<T>* nnew)
+    {
         nnew->next = NULL;
         nnew->prev = m_tail;
         if (m_tail != NULL)
