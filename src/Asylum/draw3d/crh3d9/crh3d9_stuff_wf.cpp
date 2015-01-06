@@ -375,8 +375,8 @@ static void wavefront_kill (void* real)
     mem_free(real);
 }
 
-/* ===================================================== */
-static void wavefront_tran (object_inst* dest, void* param,
+/* ========================================================== */
+static void wavefront_tran (asy::object_inst* dest, void* param,
                             const vec3d_t* rote, const vec3d_t* move,
                             const vec3d_t* scale)
 {
@@ -404,7 +404,7 @@ static void wavefront_tran (object_inst* dest, void* param,
             vec3d_t min, max, tmp;
 
             // rebuild AABB box
-            mesh = (sWAVEFRONT*)base->real;
+            mesh = (sWAVEFRONT*)dest->base->real;
             call->util_tran_vec3d(&tmp, mesh->p_v, &dest->tran);
             mem_cpy(&min, &tmp, sizeof(vec3d_t));
             mem_cpy(&max, &tmp, sizeof(vec3d_t));
@@ -423,9 +423,9 @@ static void wavefront_tran (object_inst* dest, void* param,
     else {  // dynamic object don't support scaling
         mem_cpy(&dest->bound.ball, &dest->base->ball, sizeof(sSPHERE));
         if (move != NULL) {
-            dest->bound.ball.x += move->x;
-            dest->bound.ball.y += move->y;
-            dest->bound.ball.z += move->z;
+            dest->bound.ball.center.x += move->x;
+            dest->bound.ball.center.y += move->y;
+            dest->bound.ball.center.z += move->z;
         }
     }
 }

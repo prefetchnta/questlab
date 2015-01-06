@@ -115,6 +115,24 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
                                 const char* base, const vec3d_t* rote,
                                 const vec3d_t* move, const vec3d_t* scale)
 {
+    crhack3d9_main*     real;
+    asy::object_inst    inst;
+
+    real = (crhack3d9_main*)render;
+    inst.base = real->base.get(base);
+    if (inst.base == NULL)
+        return (false);
+    if (name[0] == '$') {
+        scale = NULL;
+        inst.type = INST_TYPE_DYNAMIC;
+    }
+    else {
+        inst.type = INST_TYPE_STATIC;
+    }
+    inst.base->tran(&inst, (void_t*)(real->main.get_call()), rote, move, scale);
+    if (real->inst.insert(name, &inst) == NULL)
+        return (false);
+    return (true);
 }
 
 /* ============================================================= */
