@@ -237,11 +237,7 @@ public:
     template<class TRUN>void trav_dfs (void* ctx) const
     {
         if (m_cnts != 0)
-        {
-            TRUN    run;
-
             this->trav_dfs_int<TRUN>(ctx, m_root);
-        }
     }
 
 private:
