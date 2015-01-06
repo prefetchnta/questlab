@@ -131,6 +131,38 @@ CR_API bool crhack3d9_reset (crh3d9_t render)
     return (true);
 }
 
+/* Asylum Namespace */
+namespace asy {
+
+/********************/
+/* CrHack3D9 Render */
+/********************/
+class crhack3d9_render : public asylum
+{
+public:
+    /* ================================= */
+    bool doit (void* ctx, commit_pipe* obj)
+    {
+        return (true);
+    }
+
+    /* ================================= */
+    void back (void* ctx, commit_pipe* obj)
+    {
+    }
+};
+
+}   /* namespace */
+
+/* ======================================== */
+CR_API void crhack3d9_commit (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    real->pipe.trav_dfs<asy::crhack3d9_render>((void*)render);
+}
+
 /* ========================================================== */
 CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
                               asy::IEffect* effect)
