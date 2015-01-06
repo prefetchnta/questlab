@@ -141,7 +141,6 @@ CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
     crhack3d9_main*     real;
     asy::commit_pipe    pipe;
 
-    node.ptr = NULL;
     real = (crhack3d9_main*)render;
     nnew = real->node.insert(name, &node);
     if (nnew == NULL)
