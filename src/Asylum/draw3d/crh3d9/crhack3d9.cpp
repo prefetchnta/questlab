@@ -134,21 +134,47 @@ CR_API bool crhack3d9_reset (crh3d9_t render)
 /* Asylum Namespace */
 namespace asy {
 
-/********************/
-/* CrHack3D9 Render */
-/********************/
-class crhack3d9_render : public asylum
+/****************************/
+/* CrHack3D9 Render (Fixed) */
+/****************************/
+class crhack3d9_render_fixed : public asylum
 {
 public:
     /* ================================= */
     bool doit (void* ctx, commit_pipe* obj)
     {
+        IMesh*          mesh;
+        size_t          size;
+        crh3d9_main*    main;
+        commit_unit*    list;
+
+        obj->effect->enter();
+        size = obj->stuffz.size();
+        list = obj->stuffz.data();
+        main = &(((::crhack3d9_main*)ctx)->main);
+        for (size_t idx = 0; idx < size; idx++) {
+            main->set_mat(&list->inst->tran);
+            main->apply_matw_ff();
+            if (list->unit->attr != NULL)
+                list->unit->attr->commit();
+            if (list->unit->mesh != NULL) {
+                for (size_t ii = 0; ; ii++) {
+                    mesh = list->unit->mesh[ii];
+                    if (mesh == NULL)
+                        break;
+                    mesh->commit();
+                }
+            }
+            list += 1;
+        }
         return (true);
     }
 
     /* ================================= */
     void back (void* ctx, commit_pipe* obj)
     {
+        CR_NOUSE(ctx);
+        obj->effect->leave();
     }
 };
 
@@ -160,7 +186,7 @@ CR_API void crhack3d9_commit (crh3d9_t render)
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
-    real->pipe.trav_dfs<asy::crhack3d9_render>((void*)render);
+    real->pipe.trav_dfs<asy::crhack3d9_render_fixed>((void*)render);
 }
 
 /* ========================================================== */
