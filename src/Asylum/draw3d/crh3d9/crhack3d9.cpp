@@ -15,6 +15,8 @@ struct crhack3d9_main
     asy::map_acs<asy::crh3d9_texr>  texs;
     asy::map_acs<asy::object_base>  base;
     asy::map_acs<asy::object_inst>  inst;
+    asy::map_acs<asy::cnode_ptr>    node;
+    asy::tree_l<asy::commit_pipe>   pipe;
 
     sCAMERA     cam;
     sFRUSTUM    frt;
@@ -61,10 +63,15 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd)
         goto _failure3;
     if (!rett->inst.init())
         goto _failure4;
+    if (!rett->node.init())
+        goto _failure5;
     rett->main.set_camera(&rett->cam);
     rett->main.get_frustum(&rett->frt, -1.0f);
+    mem_set(&rett->pipe, 0, sizeof(rett->pipe));
     return ((crh3d9_t)rett);
 
+_failure5:
+    rett->inst.free();
 _failure4:
     rett->base.free();
 _failure3:
@@ -82,6 +89,9 @@ CR_API void crhack3d9_kill (crh3d9_t render)
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
+    if (real->pipe.size() != 0)
+        real->pipe.free();
+    real->node.free();
     real->inst.free();
     real->base.free();
     real->texs.free();
@@ -129,7 +139,7 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
     else {
         inst.type = INST_TYPE_STATIC;
     }
-    inst.base->tran(&inst, (void_t*)(real->main.get_call()), rote, move, scale);
+    inst.base->tran(&inst, (void*)(real->main.get_call()), rote, move, scale);
     if (real->inst.insert(name, &inst) == NULL)
         return (false);
     return (true);
