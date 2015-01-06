@@ -375,11 +375,59 @@ static void wavefront_kill (void* real)
     mem_free(real);
 }
 
-/* =========================================================== */
-static void wavefront_tran (object_inst* dest, object_base* base,
+/* ===================================================== */
+static void wavefront_tran (object_inst* dest, void* param,
                             const vec3d_t* rote, const vec3d_t* move,
-                            const vec3d_t* scale, void* param)
+                            const vec3d_t* scale)
 {
+    sWAVEFRONT*         mesh;
+    const sD3D9_CALL*   call;
+
+    call = (const sD3D9_CALL*)param;
+    if (rote == NULL)
+        call->util_make_tran2(&dest->tran, scale, NULL, 0.0f, move);
+    else
+        call->util_make_tran1(&dest->tran, scale, rote->x, rote->y, rote->z, move);
+    if (dest->type == INST_TYPE_STATIC) {
+        if (rote == NULL && scale == NULL) {
+            mem_cpy(&dest->bound.aabb, &dest->base->aabb, sizeof(sAABB));
+            if (move != NULL) {
+                for (int idx = 0; idx < 8; idx++) {
+                    dest->bound.aabb.v[idx].x += move->x;
+                    dest->bound.aabb.v[idx].y += move->y;
+                    dest->bound.aabb.v[idx].z += move->z;
+                }
+            }
+        }
+        else
+        {
+            vec3d_t min, max, tmp;
+
+            // rebuild AABB box
+            mesh = (sWAVEFRONT*)base->real;
+            call->util_tran_vec3d(&tmp, mesh->p_v, &dest->tran);
+            mem_cpy(&min, &tmp, sizeof(vec3d_t));
+            mem_cpy(&max, &tmp, sizeof(vec3d_t));
+            for (leng_t idx = 1; idx < mesh->n_v; idx++) {
+                call->util_tran_vec3d(&tmp, &mesh->p_v[idx], &dest->tran);
+                if (tmp.x < min.x) min.x = tmp.x;
+                if (tmp.y < min.y) min.y = tmp.y;
+                if (tmp.z < min.z) min.z = tmp.z;
+                if (tmp.x > max.x) max.x = tmp.x;
+                if (tmp.y > max.y) max.y = tmp.y;
+                if (tmp.z > max.z) max.z = tmp.z;
+            }
+            bound_gen_aabb(&dest->bound.aabb, &min, &max);
+        }
+    }
+    else {  // dynamic object don't support scaling
+        mem_cpy(&dest->bound.ball, &dest->base->ball, sizeof(sSPHERE));
+        if (move != NULL) {
+            dest->bound.ball.x += move->x;
+            dest->bound.ball.y += move->y;
+            dest->bound.ball.z += move->z;
+        }
+    }
 }
 
 /* =========================================================================== */
