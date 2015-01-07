@@ -6,6 +6,8 @@
 
 #include "../../asylum.hpp"
 
+void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe);
+
 /*************************/
 /* CrHack3D9 Effect Node */
 /*************************/
@@ -28,6 +30,8 @@ struct crhack3d9_main
     asy::map_acs<asy::object_inst>  inst;
     asy::map_acs<crhack3d9_node>    node;
     asy::tree_l<asy::commit_pipe>   pipe;
+
+    void (*commit) (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe);
 
     sCAMERA     cam;
     sFRUSTUM    frt;
@@ -79,6 +83,7 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd)
     rett->main.set_camera(&rett->cam);
     rett->main.get_frustum(&rett->frt, -1.0f);
     mem_set(&rett->pipe, 0, sizeof(rett->pipe));
+    rett->commit = crhack3d9_commit_fixed;
     return ((crh3d9_t)rett);
 
 _failure5:
@@ -137,7 +142,7 @@ CR_API void crhack3d9_commit (crh3d9_t render)
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
-    real->pipe.trav_dfs<asy::crhack3d9_render_fixed>((void*)render);
+    real->commit(&real->main, &real->pipe);
 }
 
 /* Asylum Namespace */

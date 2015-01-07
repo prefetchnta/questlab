@@ -400,8 +400,8 @@ public:
 
 }   /* namespace */
 
-/* ============================================================================ */
-void crhack3d9_commit_fixed (void* ctx, const asy::tree_l<asy::commit_pipe>* pipe)
+/* ========================================================================================= */
+void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe)
 {
-    pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(ctx);
+    pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(main->get_main()->dev);
 }
