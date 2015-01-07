@@ -69,6 +69,7 @@ CR_API asy::object_inst* crhack3d9_inst_list (crh3d9_t render);
 CR_API asy::object_inst* crhack3d9_inst_get (crh3d9_t render, const char* name);
 CR_API bool crhack3d9_inst_visable (crh3d9_t render, asy::object_inst* inst);
 CR_API asy::commit_pipe* crhack3d9_pipe_get (crh3d9_t render, const char* name);
+CR_API bool crhack3d9_pipe_add_obj (asy::commit_pipe* pipe, asy::object_inst* inst, size_t idx);
 CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
                               const char* uppe, asy::IEffect* effect);
 CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,

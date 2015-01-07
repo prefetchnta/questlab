@@ -251,10 +251,11 @@ CR_API bool crhack3d9_inst_visable (crh3d9_t render, asy::object_inst* inst)
     if (inst->type == INST_TYPE_STATIC) {
         if (!frustum_aabb(&real->frt, &inst->bound.aabb))
             return (false);
-        return (true);
     }
-    if (!frustum_ball(&real->frt, &inst->bound.ball))
-        return (false);
+    else {
+        if (!frustum_ball(&real->frt, &inst->bound.ball))
+            return (false);
+    }
     return (true);
 }
 
@@ -269,6 +270,20 @@ CR_API asy::commit_pipe* crhack3d9_pipe_get (crh3d9_t render, const char* name)
     if (node == NULL || node->ptr == NULL)
         return (NULL);
     return (&node->ptr->user);
+}
+
+/* ========================================================================================= */
+CR_API bool crhack3d9_pipe_add_obj (asy::commit_pipe* pipe, asy::object_inst* inst, size_t idx)
+{
+    asy::commit_unit    unit;
+
+    unit.unit = inst->base->list.get_safe(idx);
+    if (unit.unit == NULL)
+        return (false);
+    unit.inst = inst;
+    if (pipe->stuffz.append(&unit) == NULL)
+        return (false);
+    return (true);
 }
 
 /* ========================================================== */
