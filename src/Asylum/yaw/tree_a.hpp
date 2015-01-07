@@ -26,22 +26,23 @@ struct ntree_unit
 /********************/
 /* Tree (Use Array) */
 /********************/
-template<class T, size_t N = 0>
+template<class T>
 class tree_a : public asylum
 {
 private:
     size_t          m_cnts;
+    size_t          m_chld;
     ntree_unit<T>*  m_root;
 
 public:
-    /* ================== */
-    bool init (const T* obj)
+    /* =================================== */
+    bool init (const T* obj, size_t chld = 0)
     {
         m_root = struct_new(ntree_unit<T>);
         if (m_root == NULL)
             return (false);
-        if (N >= 2) {
-            if (!m_root->next.init(N)) {
+        if (chld >= 2) {
+            if (!m_root->next.init(chld)) {
                 mem_free(m_root);
                 return (false);
             }
@@ -50,6 +51,7 @@ public:
             m_root->next.init();
         }
         m_cnts = 1;
+        m_chld = chld;
         m_root->node = 0;
         m_root->uppe = NULL;
         m_root->deep = 0;
@@ -175,8 +177,8 @@ public:
         nnew = struct_new(ntree_unit<T>);
         if (nnew == NULL)
             return (NULL);
-        if (N >= 2) {
-            if (!nnew->next.init(N)) {
+        if (m_chld >= 2) {
+            if (!nnew->next.init(m_chld)) {
                 mem_free(nnew);
                 return (NULL);
             }
@@ -189,7 +191,7 @@ public:
             next.ptr = (void*)nnew;
             unit = list->append(&next);
             if (unit == NULL) {
-                if (N >= 2)
+                if (m_chld >= 2)
                     nnew->next.free();
                 mem_free(nnew);
                 return (NULL);
@@ -199,7 +201,7 @@ public:
         else {
             unit = list->get(idx);
             if (unit->ptr != NULL) {
-                if (N >= 2)
+                if (m_chld >= 2)
                     nnew->next.free();
                 mem_free(nnew);
                 return (NULL);
