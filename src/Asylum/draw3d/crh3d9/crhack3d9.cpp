@@ -6,6 +6,8 @@
 
 #include "../../asylum.hpp"
 
+#define FRT_BIAS    -1.0f
+
 void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe);
 
 /*************************/
@@ -81,7 +83,7 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd)
     if (!rett->node.init())
         goto _failure5;
     rett->main.set_camera(&rett->cam);
-    rett->main.get_frustum(&rett->frt, -1.0f);
+    rett->main.get_frustum(&rett->frt, FRT_BIAS);
     mem_set(&rett->pipe, 0, sizeof(rett->pipe));
     rett->commit = crhack3d9_commit_fixed;
     return ((crh3d9_t)rett);

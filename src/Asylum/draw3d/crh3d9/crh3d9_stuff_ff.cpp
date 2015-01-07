@@ -331,7 +331,7 @@ public:
     {
         m_devcs->Clear(0, NULL, m_flags, m_color, 1.0f, 0);
         m_devcs->BeginScene();
-        m_main3d->apply_mwvp_ff();
+        m_devcs->SetTransform(D3DTS_VIEW, &m_main3d->get_tran()->view);
     }
 
     /* =============== */
