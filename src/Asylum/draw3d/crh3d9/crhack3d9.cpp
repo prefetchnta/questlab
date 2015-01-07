@@ -272,8 +272,8 @@ CR_API asy::commit_pipe* crhack3d9_pipe_get (crh3d9_t render, const char* name)
     return (&node->ptr->user);
 }
 
-/* ========================================================================================= */
-CR_API bool crhack3d9_pipe_add_obj (asy::commit_pipe* pipe, asy::object_inst* inst, size_t idx)
+/* ===================================================================================== */
+CR_API bool crhack3d9_pipe_add (asy::commit_pipe* pipe, asy::object_inst* inst, size_t idx)
 {
     asy::commit_unit    unit;
 
