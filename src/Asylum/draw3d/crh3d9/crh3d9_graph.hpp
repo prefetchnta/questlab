@@ -67,6 +67,7 @@ CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode);
 CR_API size_t crhack3d9_inst_count (crh3d9_t render);
 CR_API asy::object_inst* crhack3d9_inst_list (crh3d9_t render);
 CR_API asy::object_inst* crhack3d9_inst_get (crh3d9_t render, const char* name);
+CR_API bool crhack3d9_inst_visable (crh3d9_t render, asy::object_inst* inst);
 CR_API asy::commit_pipe* crhack3d9_pipe_get (crh3d9_t render, const char* name);
 CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
                               const char* uppe, asy::IEffect* effect);

@@ -242,6 +242,22 @@ CR_API asy::object_inst* crhack3d9_inst_get (crh3d9_t render, const char* name)
     return (real->inst.get(name));
 }
 
+/* ====================================================================== */
+CR_API bool crhack3d9_inst_visable (crh3d9_t render, asy::object_inst* inst)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    if (inst->type == INST_TYPE_STATIC) {
+        if (!frustum_aabb(&real->frt, &inst->bound.aabb))
+            return (false);
+        return (true);
+    }
+    if (!frustum_ball(&real->frt, &inst->bound.ball))
+        return (false);
+    return (true);
+}
+
 /* ========================================================================= */
 CR_API asy::commit_pipe* crhack3d9_pipe_get (crh3d9_t render, const char* name)
 {
