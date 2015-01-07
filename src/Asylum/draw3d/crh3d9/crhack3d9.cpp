@@ -212,8 +212,8 @@ CR_API size_t crhack3d9_obj_count (crh3d9_t render)
     return (real->inst.size());
 }
 
-/* ================================================== */
-CR_API object_inst* crhack3d9_obj_list (crh3d9_t render)
+/* ======================================================= */
+CR_API asy::object_inst* crhack3d9_obj_list (crh3d9_t render)
 {
     crhack3d9_main* real;
 
@@ -221,8 +221,8 @@ CR_API object_inst* crhack3d9_obj_list (crh3d9_t render)
     return (real->inst.data());
 }
 
-/* =================================================================== */
-CR_API object_inst* crhack3d9_obj_get (crh3d9_t render, const char* name)
+/* ======================================================================== */
+CR_API asy::object_inst* crhack3d9_obj_get (crh3d9_t render, const char* name)
 {
     crhack3d9_main* real;
 
