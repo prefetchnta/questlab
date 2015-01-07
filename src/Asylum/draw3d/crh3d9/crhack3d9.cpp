@@ -277,10 +277,8 @@ CR_API bool crhack3d9_pipe_add_obj (asy::commit_pipe* pipe, asy::object_inst* in
 {
     asy::commit_unit    unit;
 
-    unit.unit = inst->base->list.get_safe(idx);
-    if (unit.unit == NULL)
-        return (false);
     unit.inst = inst;
+    unit.unit = inst->base->list.get(idx);
     if (pipe->stuffz.append(&unit) == NULL)
         return (false);
     return (true);
