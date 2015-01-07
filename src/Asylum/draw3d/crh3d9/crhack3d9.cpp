@@ -196,7 +196,7 @@ CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode)
 
 /* ========================================================== */
 CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
-                              asy::IEffect* effect)
+                              const char* uppe, asy::IEffect* effect)
 {
     crhack3d9_node      node;
     crhack3d9_node*     nnew;
@@ -204,21 +204,27 @@ CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
     crhack3d9_main*     real;
     asy::commit_pipe    pipe;
 
+    node.ptr = NULL;
     real = (crhack3d9_main*)render;
-    nnew = real->node.insert(name, &node);
-    if (nnew == NULL)
-        return (false);
-    pipe.effect = effect;
-    pipe.stuffz.init();
     if (real->pipe.size() == 0) {
+        nnew = real->node.insert(name, &node);
+        if (nnew == NULL)
+            return (false);
+        pipe.effect = effect;
+        pipe.stuffz.init();
         if (!real->pipe.init(&pipe))
             return (false);
         nnew->ptr = real->pipe.root();
     }
     else {
-        find = real->node.get(name);
-        if (find == NULL)
+        find = real->node.get(uppe);
+        if (find == NULL || find->ptr == NULL)
             return (false);
+        nnew = real->node.insert(name, &node);
+        if (nnew == NULL)
+            return (false);
+        pipe.effect = effect;
+        pipe.stuffz.init();
         nnew->ptr = real->pipe.append(find->ptr, &pipe);
         if (nnew->ptr == NULL)
             return (false);
