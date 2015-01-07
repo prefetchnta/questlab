@@ -181,6 +181,15 @@ CR_API void crhack3d9_clean (crh3d9_t render)
     real->pipe.trav_bfs<asy::crhack3d9_render_clear>(NULL);
 }
 
+/* ====================================== */
+CR_API void crhack3d9_show (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    real->main.draw_show();
+}
+
 /* ======================================================== */
 CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode)
 {

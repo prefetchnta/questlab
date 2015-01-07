@@ -59,6 +59,7 @@ CR_API void crhack3d9_kill (crh3d9_t render);
 CR_API bool crhack3d9_reset (crh3d9_t render);
 CR_API void crhack3d9_commit (crh3d9_t render);
 CR_API void crhack3d9_clean (crh3d9_t render);
+CR_API void crhack3d9_show (crh3d9_t render);
 CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode);
 CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
                               const char* uppe, asy::IEffect* effect);
