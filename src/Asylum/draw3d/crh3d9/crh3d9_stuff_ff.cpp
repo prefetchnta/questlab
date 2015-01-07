@@ -347,3 +347,61 @@ CR_API asy::IEffect* create_crh3d9_ffct_state_fixed (const int32u* list, uint_t 
     }
     return (ffct);
 }
+
+/*****************************************************************************/
+/*                                  Commit                                   */
+/*****************************************************************************/
+
+/* Asylum Namespace */
+namespace asy {
+
+/*************************/
+/* Object Commit (Fixed) */
+/*************************/
+class crh3d9_cmmt_fixed : public asylum
+{
+public:
+    /* ================================= */
+    bool doit (void* ctx, commit_pipe* obj)
+    {
+        IMesh*              mesh;
+        size_t              size;
+        commit_unit*        list;
+        LPDIRECT3DDEVICE9   devs;
+
+        obj->effect->enter();
+        size = obj->stuffz.size();
+        list = obj->stuffz.data();
+        devs = (LPDIRECT3DDEVICE9)ctx;
+        for (size_t idx = 0; idx < size; idx++) {
+            devs->SetTransform(D3DTS_WORLD, (D3DMATRIX*)(&list->inst->tran));
+            if (list->unit->attr != NULL)
+                list->unit->attr->commit();
+            if (list->unit->mesh != NULL) {
+                for (size_t ii = 0; ; ii++) {
+                    mesh = list->unit->mesh[ii];
+                    if (mesh == NULL)
+                        break;
+                    mesh->commit();
+                }
+            }
+            list += 1;
+        }
+        return (true);
+    }
+
+    /* ================================= */
+    void back (void* ctx, commit_pipe* obj)
+    {
+        CR_NOUSE(ctx);
+        obj->effect->leave();
+    }
+};
+
+}   /* namespace */
+
+/* ============================================================================ */
+void crhack3d9_commit_fixed (void* ctx, const asy::tree_l<asy::commit_pipe>* pipe)
+{
+    pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(ctx);
+}
