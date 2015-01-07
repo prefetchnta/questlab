@@ -183,6 +183,16 @@ CR_API void crhack3d9_clean (crh3d9_t render)
     real->pipe.trav_bfs<asy::crhack3d9_render_clear>(NULL);
 }
 
+/* ======================================== */
+CR_API void crhack3d9_update (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    real->get_call()->tran_upd_view(real->get_tran());
+    real->main.get_frustum(&real->frt, FRT_BIAS);
+}
+
 /* ====================================== */
 CR_API void crhack3d9_show (crh3d9_t render)
 {
