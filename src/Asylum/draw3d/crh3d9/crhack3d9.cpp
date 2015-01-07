@@ -181,6 +181,19 @@ CR_API void crhack3d9_clean (crh3d9_t render)
     real->pipe.trav_bfs<asy::crhack3d9_render_clear>(NULL);
 }
 
+/* ======================================================== */
+CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    if (mode == NULL || strcmp(mode, "fixed") == 0) {
+        real->commit = crhack3d9_commit_fixed;
+        return (true);
+    }
+    return (false);
+}
+
 /* ========================================================== */
 CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
                               asy::IEffect* effect)
