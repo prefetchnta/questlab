@@ -57,7 +57,7 @@ typedef struct
         bool_t      trans;  /* 是否显示透明通道 */
         sIMAGE*     image;  /* 32位色的图片数据 */
         sIMAGE*     alpha;  /* 32位色的透明数据 */
-        sIMAGE*     paint;  /* 32位色的绘图画布 */
+        sIMAGE*     paint;  /* 32位色的绘图画布 (在下面增加不会影响绘图插件) */
         iPICTURE*   slide;  /* 多帧图片接口对象 */
         sFMT_PRT*   pictz;  /* 多帧图片 FMTZ 对象 */
 
