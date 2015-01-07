@@ -189,7 +189,7 @@ CR_API void crhack3d9_update (crh3d9_t render)
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
-    real->get_call()->tran_upd_view(real->get_tran());
+    real->main.get_call()->tran_upd_view(real->main.get_tran());
     real->main.get_frustum(&real->frt, FRT_BIAS);
 }
 
@@ -261,10 +261,14 @@ CR_API bool crhack3d9_inst_visable (crh3d9_t render, asy::object_inst* inst)
 /* ========================================================================= */
 CR_API asy::commit_pipe* crhack3d9_pipe_get (crh3d9_t render, const char* name)
 {
+    crhack3d9_node* node;
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
-    return (real->pipe.get(name));
+    node = real->node.get(name);
+    if (node == NULL || node->ptr == NULL)
+        return (NULL);
+    return (&node->ptr->user);
 }
 
 /* ========================================================== */
