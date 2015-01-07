@@ -203,6 +203,33 @@ CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode)
     return (false);
 }
 
+/* ============================================= */
+CR_API size_t crhack3d9_obj_count (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    return (real->inst.size());
+}
+
+/* ================================================== */
+CR_API object_inst* crhack3d9_obj_list (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    return (real->inst.data());
+}
+
+/* =================================================================== */
+CR_API object_inst* crhack3d9_obj_get (crh3d9_t render, const char* name)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    return (real->inst.get(name));
+}
+
 /* ========================================================== */
 CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
                               const char* uppe, asy::IEffect* effect)
