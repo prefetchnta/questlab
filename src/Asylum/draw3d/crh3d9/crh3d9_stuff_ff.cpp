@@ -295,6 +295,52 @@ public:
     }
 };
 
+/*********************/
+/* Scene Root Effect */
+/*********************/
+class crh3d9_ffct_root_fixed : public IEffect
+{
+private:
+    int32u              m_flags;
+    cl32_t              m_color;
+    LPDIRECT3DDEVICE9   m_devcs;
+    const crh3d9_main*  m_main3d;
+
+public:
+    /* ====================================================================== */
+    crh3d9_ffct_root_fixed (cl32_t color, bool stencil, const crh3d9_main* main)
+    {
+        if (color == 0)
+            m_flags = D3DCLEAR_ZBUFFER;
+        else
+            m_flags = D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER;
+        if (stencil) m_flags |= D3DCLEAR_STENCIL;
+        m_color = color | 0xFF000000;
+        m_devcs = main->get_main()->dev;
+        m_main3d = main;
+    }
+
+    /* ============================ */
+    virtual ~crh3d9_ffct_root_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        m_devcs->Clear(0, NULL, m_flags, m_color, 1.0f, 0);
+        m_devcs->BeginScene();
+        m_main3d->apply_mwvp_ff();
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+        m_devcs->EndScene();
+    }
+};
+
 }   /* namespace */
 
 /* =================================================================================== */
