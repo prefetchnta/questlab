@@ -394,6 +394,15 @@ CR_API asy::IEffect* create_crh3d9_ffct_state_fixed (const int32u* list, uint_t 
     return (ffct);
 }
 
+/* ======================================================================================================= */
+CR_API asy::IEffect* create_crh3d9_ffct_root_fixed (cl32_t color, bool stencil, const asy::crh3d9_main* main)
+{
+    asy::IEffect*   ffct;
+
+    ffct = new asy::crh3d9_ffct_root_fixed (color, stencil, main);
+    return (ffct);
+}
+
 /*****************************************************************************/
 /*                                  Commit                                   */
 /*****************************************************************************/
