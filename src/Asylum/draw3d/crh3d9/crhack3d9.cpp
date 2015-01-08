@@ -293,9 +293,9 @@ CR_API bool crhack3d9_pipe_add (asy::commit_pipe* pipe, asy::object_inst* inst, 
     return (true);
 }
 
-/* ========================================================== */
-CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
-                              const char* uppe, asy::IEffect* effect)
+/* ======================================================================= */
+CR_API asy::commit_pipe* crhack3d9_effect (crh3d9_t render, const char* name,
+                                        const char* uppe, asy::IEffect* effect)
 {
     crhack3d9_node      node;
     crhack3d9_node*     nnew;
@@ -308,29 +308,29 @@ CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
     if (real->pipe.size() == 0) {
         nnew = real->node.insert(name, &node);
         if (nnew == NULL)
-            return (false);
+            return (NULL);
         pipe.effect = effect;
         pipe.stuffz.init();
         if (!real->pipe.init(&pipe))
-            return (false);
+            return (NULL);
         nnew->ptr = real->pipe.root();
     }
     else {
         find = real->node.get(uppe);
         if (find == NULL || find->ptr == NULL)
-            return (false);
+            return (NULL);
         nnew = real->node.insert(name, &node);
         if (nnew == NULL)
-            return (false);
+            return (NULL);
         pipe.effect = effect;
         pipe.stuffz.init();
         nnew->ptr = real->pipe.append(find->ptr, &pipe);
         if (nnew->ptr == NULL)
-            return (false);
+            return (NULL);
     }
     if (effect != NULL)
         effect->add_ref();
-    return (true);
+    return (&nnew->ptr->user);
 }
 
 /* ============================================================ */
