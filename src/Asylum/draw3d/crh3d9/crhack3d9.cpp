@@ -351,7 +351,8 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
     else {
         inst.type = INST_TYPE_STATIC;
     }
-    inst.base->tran(&inst, (void*)(real->main.get_call()), rote, move, scale);
+    if (inst.base->tran != NULL)
+        inst.base->tran(&inst, (void*)(real->main.get_call()), rote, move, scale);
     if (real->inst.insert(name, &inst) == NULL)
         return (false);
     return (true);
