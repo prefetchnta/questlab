@@ -215,13 +215,22 @@ CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode)
     return (false);
 }
 
-/* ======================================================= */
-CR_API asy::crh3d9_main* crhack3d9_get_main (crh3d9_t render)
+/* ===================================================== */
+CR_API asy::crh3d9_main* crhack3d9_device (crh3d9_t render)
 {
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
     return (&real->main);
+}
+
+/* ============================================ */
+CR_API sCAMERA* crhack3d9_camera (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    return (&real->cam);
 }
 
 /* ============================================== */
