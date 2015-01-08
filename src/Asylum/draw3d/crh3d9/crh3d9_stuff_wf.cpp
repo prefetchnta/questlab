@@ -154,7 +154,7 @@ class crh3d9_attr_wf_fixed : public IAttrib
 {
 protected:
     D3DMATERIAL9        m_mtl;
-    crh3d9_texr*        m_map_kd;
+    sD3D9_TEXR*         m_map_kd;
     LPDIRECT3DDEVICE9   m_device;
 
 public:
@@ -174,10 +174,13 @@ public:
     /* ===================================================================== */
     bool init_ff (const sWAVEFRONT_M* mtl, const map_acs<crh3d9_texr>* texpool)
     {
+        crh3d9_texr*    texr;
+
         if (mtl->map_kd != NULL) {
-            m_map_kd = texpool->get(mtl->map_kd);
-            if (m_map_kd == NULL)
+            texr = texpool->get(mtl->map_kd);
+            if (texr == NULL)
                 return (false);
+            m_map_kd = texr->get_texr();
         }
         else {
             m_map_kd = NULL;
@@ -218,7 +221,7 @@ public:
     virtual void commit ()
     {
         if (m_map_kd != NULL)
-            m_map_kd->apply(0);
+            m_device->SetTexture(0, m_map_kd->obj.base);
         else
             m_device->SetTexture(0, NULL);
         m_device->SetMaterial(&m_mtl);
