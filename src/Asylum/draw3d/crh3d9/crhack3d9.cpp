@@ -387,10 +387,15 @@ CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
     real = (crhack3d9_main*)render;
     if (type == NULL || strcmp(type, "fixed") == 0) {
         for (leng_t idx = 0; idx < mesh.n_m; idx++) {
-            if (mesh.p_m[idx].map_kd == NULL)
+            const char* str = mesh.p_m[idx].map_kd;
+            if (str == NULL)
                 continue;
-            if (!texr.init(&real->main, mesh.p_m[idx].map_kd, 1))
+            if (!texr.init(&real->main, str, 1))
                 goto _failure;
+            if (real->texs.insert(str, &texr) == NULL) {
+                texr.free();
+                goto _failure;
+            }
         }
         if (!create_crh3d9_base_wf(&base, &mesh, create_crh3d9_attr_wf_fixed,
                         create_crh3d9_mesh_wf_ss, &real->texs, &real->main))
