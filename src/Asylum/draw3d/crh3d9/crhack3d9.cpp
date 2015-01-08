@@ -328,6 +328,7 @@ CR_API bool crhack3d9_effect (crh3d9_t render, const char* name,
         if (nnew->ptr == NULL)
             return (false);
     }
+    effect->add_ref();
     return (true);
 }
 

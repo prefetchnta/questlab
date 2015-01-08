@@ -15,9 +15,35 @@ namespace asy {
 /***************/
 class IEffect : public asylum
 {
+private:
+    int32s  m_ref_cnt;
+
 public:
-    /* ================ */
-    virtual ~IEffect () {}
+    /* ==== */
+    IEffect ()
+    {
+        m_ref_cnt = 0;
+    }
+
+    /* ============= */
+    virtual ~IEffect ()
+    {
+    }
+
+public:
+    /* ====== */
+    void free ()
+    {
+        m_ref_cnt -= 1;
+        if (m_ref_cnt <= 0)
+            delete this;
+    }
+
+    /* ========= */
+    void add_ref ()
+    {
+        m_ref_cnt += 1;
+    }
 
 public:
     /* ==================== */
@@ -168,7 +194,7 @@ struct commit_pipe
     void free ()
     {
         this->stuffz.free();
-        delete this->effect;
+        this->effect.free();
     }
 };
 
