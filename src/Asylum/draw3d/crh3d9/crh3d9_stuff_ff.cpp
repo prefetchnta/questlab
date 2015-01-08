@@ -445,8 +445,8 @@ CR_API asy::IEffect* create_crh3d9_ffct_root_fixed (cl32_t color, bool stencil, 
     return (ffct);
 }
 
-/* ====================================================================== */
-CR_API asy::IEffect* create_crh3d9_ffct_array (IEffect** list, size_t count)
+/* =========================================================================== */
+CR_API asy::IEffect* create_crh3d9_ffct_array (asy::IEffect** list, size_t count)
 {
     asy::IEffect*   ffct;
 
