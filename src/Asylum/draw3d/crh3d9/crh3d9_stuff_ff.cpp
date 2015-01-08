@@ -424,7 +424,8 @@ public:
         commit_unit*        list;
         LPDIRECT3DDEVICE9   devs;
 
-        obj->effect->enter();
+        if (obj->effect != NULL)
+            obj->effect->enter();
         size = obj->stuffz.size();
         list = obj->stuffz.data();
         devs = (LPDIRECT3DDEVICE9)ctx;
@@ -448,8 +449,9 @@ public:
     /* ================================= */
     void back (void* ctx, commit_pipe* obj)
     {
+        if (obj->effect != NULL)
+            obj->effect->leave();
         CR_NOUSE(ctx);
-        obj->effect->leave();
     }
 };
 

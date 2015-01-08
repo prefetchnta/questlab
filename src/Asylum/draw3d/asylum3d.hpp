@@ -141,10 +141,10 @@ struct object_base
     /* ====== */
     void free ()
     {
-        this->list.free();
         if (this->real != NULL &&
             this->kill != NULL)
             this->kill(this->real);
+        this->list.free();
     }
 };
 
@@ -193,8 +193,9 @@ struct commit_pipe
     /* ====== */
     void free ()
     {
+        if (this->effect != NULL)
+            this->effect->free();
         this->stuffz.free();
-        this->effect->free();
     }
 };
 
