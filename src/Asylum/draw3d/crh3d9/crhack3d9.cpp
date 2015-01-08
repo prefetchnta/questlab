@@ -305,12 +305,12 @@ CR_API asy::commit_pipe* crhack3d9_effect (crh3d9_t render, const char* name,
 
     node.ptr = NULL;
     real = (crhack3d9_main*)render;
+    nnew = real->node.insert(name, &node);
+    if (nnew == NULL)
+        return (NULL);
+    pipe.effect = effect;
+    pipe.stuffz.init();
     if (real->pipe.size() == 0) {
-        nnew = real->node.insert(name, &node);
-        if (nnew == NULL)
-            return (NULL);
-        pipe.effect = effect;
-        pipe.stuffz.init();
         if (!real->pipe.init(&pipe))
             return (NULL);
         nnew->ptr = real->pipe.root();
@@ -319,11 +319,6 @@ CR_API asy::commit_pipe* crhack3d9_effect (crh3d9_t render, const char* name,
         find = real->node.get(uppe);
         if (find == NULL || find->ptr == NULL)
             return (NULL);
-        nnew = real->node.insert(name, &node);
-        if (nnew == NULL)
-            return (NULL);
-        pipe.effect = effect;
-        pipe.stuffz.init();
         nnew->ptr = real->pipe.append(find->ptr, &pipe);
         if (nnew->ptr == NULL)
             return (NULL);
