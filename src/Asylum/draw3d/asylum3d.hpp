@@ -194,7 +194,7 @@ struct commit_pipe
     void free ()
     {
         this->stuffz.free();
-        this->effect.free();
+        this->effect->free();
     }
 };
 
