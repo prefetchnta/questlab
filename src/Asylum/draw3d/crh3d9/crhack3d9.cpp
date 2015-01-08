@@ -33,6 +33,8 @@ struct crhack3d9_main
     asy::map_acs<crhack3d9_node>    node;
     asy::tree_l<asy::commit_pipe>   pipe;
 
+    asy::IEffect*   start;
+
     void (*commit) (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe);
 
     sCAMERA     cam;
@@ -85,6 +87,7 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd)
     rett->main.set_camera(&rett->cam);
     rett->main.get_frustum(&rett->frt, FRT_BIAS);
     mem_set(&rett->pipe, 0, sizeof(rett->pipe));
+    rett->start = NULL;
     rett->commit = crhack3d9_commit_fixed;
     return ((crh3d9_t)rett);
 
@@ -107,6 +110,8 @@ CR_API void crhack3d9_kill (crh3d9_t render)
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
+    if (real->start != NULL)
+        real->start->leave();
     if (real->pipe.size() != 0)
         real->pipe.free();
     real->node.free();
@@ -202,12 +207,14 @@ CR_API void crhack3d9_show (crh3d9_t render)
     real->main.draw_show();
 }
 
-/* ======================================================== */
-CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode)
+/* ============================================================================= */
+CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode, asy::IEffect* start)
 {
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
+    real->start = start;
+    if (start != NULL) start->enter();
     if (mode == NULL || strcmp(mode, "fixed") == 0) {
         real->commit = crhack3d9_commit_fixed;
         return (true);

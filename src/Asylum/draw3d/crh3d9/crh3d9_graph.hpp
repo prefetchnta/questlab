@@ -64,7 +64,7 @@ CR_API void crhack3d9_commit (crh3d9_t render);
 CR_API void crhack3d9_clean (crh3d9_t render);
 CR_API void crhack3d9_update (crh3d9_t render);
 CR_API void crhack3d9_show (crh3d9_t render);
-CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode);
+CR_API bool crhack3d9_mode (crh3d9_t render, const char* mode, asy::IEffect* start);
 CR_API asy::crh3d9_main* crhack3d9_device (crh3d9_t render);
 CR_API sCAMERA* crhack3d9_camera (crh3d9_t render);
 CR_API size_t crhack3d9_inst_count (crh3d9_t render);
