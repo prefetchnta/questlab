@@ -113,7 +113,7 @@ public:
         if (!m_tbl.init(m_cnt))
             return (false);
         m_lst.init();
-        return (true);
+        return (m_lst.reserve(m_cnt));
     }
 
     /* ====== */
