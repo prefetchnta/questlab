@@ -8,7 +8,7 @@
 
 #define FRT_BIAS    -1.0f
 
-static const mat4x4_t s_no_trans =
+static const fp32_t s_no_trans[16] =
 {
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f, 0.0f,
@@ -386,11 +386,11 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
                 inst.bound.ball.center.z += move->z;
             }
         }
-        mem_cpy(&inst.tran, &s_no_trans, sizeof(mat4x4_t));
+        mem_cpy(inst.tran.m, s_no_trans, sizeof(mat4x4_t));
         if (move != NULL) {
-            inst.tran[12] = move->x;
-            inst.tran[13] = move->y;
-            inst.tran[14] = move->z;
+            inst.tran.m[12] = move->x;
+            inst.tran.m[13] = move->y;
+            inst.tran.m[14] = move->z;
         }
     }
     if (real->inst.insert(name, &inst) == NULL)
