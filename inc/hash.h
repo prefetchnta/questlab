@@ -124,7 +124,7 @@ CR_API int64u   hash_crc64e_update (int64u hash, const void_t *data,
 CR_API int64u   hash_crc64e_finish (int64u hash);
 CR_API int64u   hash_crc64e_total (const void_t *data, leng_t size);
 
-/* 通用 CRC 哈希算法 */
+/* CRC-ALL */
 CR_API byte_t   hash_crc8x  (byte_t seed, byte_t poly, bool_t lsb,
                              const void_t *data, leng_t size);
 CR_API int16u   hash_crc16x (int16u seed, int16u poly, bool_t lsb,
