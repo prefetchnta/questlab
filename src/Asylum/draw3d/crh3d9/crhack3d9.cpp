@@ -47,8 +47,8 @@ struct crhack3d9_main
     sFRUSTUM    frt;
 };
 
-/* ================================================= */
-CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy)
+/* ============================================================== */
+CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy, fp32_t zfar)
 {
     sDX9_HDLE   hdle;
 
@@ -76,9 +76,9 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy)
     rett = struct_new(crhack3d9_main);
     if (rett == NULL)
         return (NULL);
-    if (!rett->main.init(&hdle, fovy, FALSE, 0, 0, D3DFMT_UNKNOWN,
+    if (!rett->main.init(&hdle, fovy, zfar, FALSE, 0, 0, D3DFMT_UNKNOWN,
                         D3DFMT_D24X8, TRUE, D3DMULTISAMPLE_NONE)) {
-        if (!rett->main.init(&hdle, fovy, FALSE, 0, 0, D3DFMT_UNKNOWN,
+        if (!rett->main.init(&hdle, fovy, zfar, FALSE, 0, 0, D3DFMT_UNKNOWN,
                             D3DFMT_D16, TRUE, D3DMULTISAMPLE_NONE))
             goto _failure1;
     }

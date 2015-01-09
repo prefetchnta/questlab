@@ -21,10 +21,10 @@ private:
     const sD3D9_CALL*   m_call;
 
 public:
-    /* ========================================================================================================== */
-    bool init (const sDX9_HDLE* hdle, fp32_t fovy = 60.0f, bool_t full = FALSE, uint_t width = 0, uint_t height = 0,
-               D3DFORMAT format = D3DFMT_UNKNOWN, D3DFORMAT depth = D3DFMT_D24X8, bool_t vsync = TRUE,
-               D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE)
+    /* ========================================================================================== */
+    bool init (const sDX9_HDLE* hdle, fp32_t fovy = 60.0f, fp32_t zfar = -1.0f, bool_t full = FALSE,
+               uint_t width = 0, uint_t height = 0, D3DFORMAT format = D3DFMT_UNKNOWN, D3DFORMAT depth = D3DFMT_D24X8,
+               bool_t vsync = TRUE, D3DMULTISAMPLE_TYPE fsaa = D3DMULTISAMPLE_NONE)
     {
         RECT    rect;
 
@@ -42,6 +42,10 @@ public:
         if (m_tran == NULL) {
             m_call->release_main(m_main);
             return (false);
+        }
+        if (zfar > 0.0f) {
+            m_tran->zfar = zfar;
+            m_call->tran_upd_proj(m_tran);
         }
         d3d9_tran_set_proj(m_main, FIXED_REG, m_tran);
         d3d9_tran_set_port(m_main, m_tran);
