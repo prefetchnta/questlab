@@ -472,7 +472,7 @@ public:
 /* ========================================================================================= */
 void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe)
 {
-    crh3d9_cmmt_ctx parm;
+    asy::crh3d9_cmmt_ctx    parm;
 
     parm.inst = NULL;
     parm.devs = main->get_main()->dev;
