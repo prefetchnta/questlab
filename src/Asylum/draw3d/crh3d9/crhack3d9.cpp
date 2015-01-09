@@ -8,6 +8,14 @@
 
 #define FRT_BIAS    -1.0f
 
+static const mat4x4_t s_no_trans =
+{
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f,
+};
+
 void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe);
 
 /*************************/
@@ -356,8 +364,30 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
     else {
         inst.type = INST_TYPE_STATIC;
     }
-    if (inst.base->tran != NULL)
+    if (inst.base->tran != NULL) {
         inst.base->tran(&inst, (void*)(real->main.get_call()), rote, move, scale);
+    }
+    else {
+        if (inst.type == INST_TYPE_STATIC) {
+            mem_cpy(&inst.bound.aabb, &inst.base->aabb, sizeof(sAABB));
+            if (move != NULL) {
+                for (int idx = 0; idx < 8; idx++) {
+                    inst.bound.aabb.v[idx].x += move->x;
+                    inst.bound.aabb.v[idx].y += move->y;
+                    inst.bound.aabb.v[idx].z += move->z;
+                }
+            }
+        }
+        else {
+            mem_cpy(&inst.bound.ball, &inst.base->ball, sizeof(sSPHERE));
+            if (move != NULL) {
+                inst.bound.ball.center.x += move->x;
+                inst.bound.ball.center.y += move->y;
+                inst.bound.ball.center.z += move->z;
+            }
+        }
+        mem_cpy(&inst.tran, &s_no_trans, sizeof(mat4x4_t));
+    }
     if (real->inst.insert(name, &inst) == NULL)
         return (false);
     return (true);
