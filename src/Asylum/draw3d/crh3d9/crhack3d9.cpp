@@ -387,6 +387,11 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
             }
         }
         mem_cpy(&inst.tran, &s_no_trans, sizeof(mat4x4_t));
+        if (move != NULL) {
+            inst.tran[12] = move->x;
+            inst.tran[13] = move->y;
+            inst.tran[14] = move->z;
+        }
     }
     if (real->inst.insert(name, &inst) == NULL)
         return (false);
