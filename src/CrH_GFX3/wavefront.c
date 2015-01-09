@@ -1015,8 +1015,11 @@ wfront_mtl_load (
     for (idx = 0; idx < obj->n_g; idx++)
     {
         /* 逐个对比名字 */
-        if (obj->p_g[idx].mtl == NULL) {
-            obj->p_g[idx].attr = 0;
+        if (obj->p_g[idx].mtl == NULL)
+        {
+            /* 使用前一个材质 */
+            if (idx != 0)
+                obj->p_g[idx].attr = obj->p_g[idx - 1].attr;
             continue;
         }
         for (skip = 0; skip < obj->n_m; skip++) {
