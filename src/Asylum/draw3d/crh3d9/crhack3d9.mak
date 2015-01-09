@@ -4,11 +4,13 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)asylum.$(O) \
+         .$(L)asylum3d.$(O) \
          .$(L)crhack3d9.$(O) \
          .$(L)crh3d9_stuff_ff.$(O) \
-         .$(L)crh3d9_stuff_wf.$(O)
+         .$(L)crh3d9_stuff_wf.$(O) \
 
 SRC_LIST=.$(L)asylum.$(P) \
+         .$(L)draw3d$(L)asylum3d.$(P) \
          .$(L)draw3d$(L)crh3d9$(L)crhack3d9.$(P) \
          .$(L)draw3d$(L)crh3d9$(L)crh3d9_stuff_ff.$(P) \
          .$(L)draw3d$(L)crh3d9$(L)crh3d9_stuff_wf.$(P)

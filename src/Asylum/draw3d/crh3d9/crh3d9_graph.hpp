@@ -33,7 +33,6 @@ CR_API asy::IEffect* create_crh3d9_ffct_state_fixed (const int32u* list, uint_t 
                                                      uint_t type, const asy::crh3d9_main* main);
 
 CR_API asy::IEffect* create_crh3d9_ffct_root_fixed (cl32_t color, bool stencil, const asy::crh3d9_main* main);
-CR_API asy::IEffect* create_crh3d9_ffct_array (asy::IEffect** list, size_t count);
 
 /*********************/
 /* Attribute Factory */
