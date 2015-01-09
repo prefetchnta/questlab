@@ -410,6 +410,15 @@ CR_API asy::IEffect* create_crh3d9_ffct_root_fixed (cl32_t color, bool stencil, 
 /* Asylum Namespace */
 namespace asy {
 
+/******************/
+/* Commit Context */
+/******************/
+struct crh3d9_cmmt_ctx
+{
+    object_inst*        inst;
+    LPDIRECT3DDEVICE9   devs;
+};
+
 /*************************/
 /* Object Commit (Fixed) */
 /*************************/
@@ -422,15 +431,18 @@ public:
         IMesh*              mesh;
         size_t              size;
         commit_unit*        list;
-        LPDIRECT3DDEVICE9   devs;
+        crh3d9_cmmt_ctx*    parm;
 
         if (obj->effect != NULL)
             obj->effect->enter();
         size = obj->stuffz.size();
         list = obj->stuffz.data();
-        devs = (LPDIRECT3DDEVICE9)ctx;
+        parm = (crh3d9_cmmt_ctx*)ctx;
         for (size_t idx = 0; idx < size; idx++) {
-            devs->SetTransform(D3DTS_WORLD, (D3DMATRIX*)(&list->inst->tran));
+            if (parm->inst != list->inst) {
+                parm->inst  = list->inst;
+                parm->devs->SetTransform(D3DTS_WORLD, (D3DMATRIX*)(&list->inst->tran));
+            }
             if (list->unit->attr != NULL)
                 list->unit->attr->commit();
             if (list->unit->mesh != NULL) {
@@ -460,5 +472,9 @@ public:
 /* ========================================================================================= */
 void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::commit_pipe>* pipe)
 {
-    pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(main->get_main()->dev);
+    crh3d9_cmmt_ctx parm;
+
+    parm.inst = NULL;
+    parm.devs = main->get_main()->dev;
+    pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(&parm);
 }
