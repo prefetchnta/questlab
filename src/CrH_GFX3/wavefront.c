@@ -981,11 +981,6 @@ wfront_mtl_load (
             }
             continue;
         }
-
-        /* 非法的行 */
-        err_set(__CR_WAVEFRONT_C__, idx,
-                "wfront_mtl_load()", "invalid MTL format");
-        goto _failure;
     }
 
     /* 压入最后一个材质 */
