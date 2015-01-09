@@ -72,6 +72,12 @@ CR_API int64u   numb_lcm64 (int64u a, int64u b);
 CR_API void_t   bytes_swap (void_t *data, leng_t size, leng_t block);
 CR_API void_t   bytes_fill (void_t *data, leng_t size, leng_t start,
                             byte_t (*fill)(leng_t, leng_t));
+/* 位串相关操作 */
+CR_API byte_t   bits_swap08 (byte_t val, ufast_t bits);
+CR_API int16u   bits_swap16 (int16u val, ufast_t bits);
+CR_API int32u   bits_swap32 (int32u val, ufast_t bits);
+CR_API int64u   bits_swap64 (int64u val, ufast_t bits);
+
 /* 数码管字符串生成器 */
 CR_API byte_t*  seg7dp_gen (byte_t *dst, const ansi_t *src,
                             ubit_t neg, leng_t size);

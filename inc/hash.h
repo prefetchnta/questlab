@@ -54,7 +54,7 @@ CR_API int64u   hash_sum64_update (int64u hash, const void_t *data,
 CR_API int64u   hash_sum64_finish (int64u hash);
 CR_API int64u   hash_sum64_total (const void_t *data, leng_t size);
 
-/* CRC-7 */
+/* CRC-7/MMC */
 CR_API byte_t   hash_crc7_init (void_t);
 CR_API byte_t   hash_crc7_update (byte_t hash, const void_t *data,
                                   leng_t size);
@@ -125,8 +125,10 @@ CR_API int64u   hash_crc64e_finish (int64u hash);
 CR_API int64u   hash_crc64e_total (const void_t *data, leng_t size);
 
 /* CRC-ALL */
-CR_API byte_t   hash_crc8x  (byte_t seed, byte_t poly, bool_t lsb,
-                             const void_t *data, leng_t size);
+CR_API byte_t   hash_crc_x (byte_t seed, byte_t poly, bool_t lsb,
+                        ufast_t bits, const void_t *data, leng_t size);
+CR_API byte_t   hash_crc8x (byte_t seed, byte_t poly, bool_t lsb,
+                            const void_t *data, leng_t size);
 CR_API int16u   hash_crc16x (int16u seed, int16u poly, bool_t lsb,
                              const void_t *data, leng_t size);
 CR_API int32u   hash_crc32x (int32u seed, int32u poly, bool_t lsb,
