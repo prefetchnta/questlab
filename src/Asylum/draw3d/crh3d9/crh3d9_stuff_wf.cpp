@@ -194,14 +194,26 @@ public:
         else
         if (m_mtl.Diffuse.a > 1.0f)
             m_mtl.Diffuse.a = 1.0f;
-        m_mtl.Ambient.r = mtl->ka.x;
-        m_mtl.Ambient.g = mtl->ka.y;
-        m_mtl.Ambient.b = mtl->ka.z;
-        m_mtl.Ambient.a = 0.0f;
+        if (mtl->flags & WAVEFRONT_KA) {
+            m_mtl.Ambient.r = mtl->ka.x;
+            m_mtl.Ambient.g = mtl->ka.y;
+            m_mtl.Ambient.b = mtl->ka.z;
+            if (!(mtl->flags & WAVEFRONT_KD)) {
+                m_mtl.Diffuse.r = m_mtl.Ambient.r;
+                m_mtl.Diffuse.g = m_mtl.Ambient.g;
+                m_mtl.Diffuse.b = m_mtl.Ambient.b;
+            }
+        }
+        else {
+            m_mtl.Ambient.r = m_mtl.Diffuse.r;
+            m_mtl.Ambient.g = m_mtl.Diffuse.g;
+            m_mtl.Ambient.b = m_mtl.Diffuse.b;
+        }
+        m_mtl.Ambient.a = 1.0f;
         m_mtl.Specular.r = mtl->ks.x;
         m_mtl.Specular.g = mtl->ks.y;
         m_mtl.Specular.b = mtl->ks.z;
-        m_mtl.Specular.a = 0.0f;
+        m_mtl.Specular.a = 1.0f;
         m_mtl.Emissive.r = 0.0f;
         m_mtl.Emissive.g = 0.0f;
         m_mtl.Emissive.b = 0.0f;
@@ -211,8 +223,7 @@ public:
             m_type |= ATTR_TYPE_ALPHAOP;
         if (m_map_kd != NULL)
             m_type |= ATTR_TYPE_TEXTURE;
-        if (m_mtl.Specular.r <= 0.0f && m_mtl.Specular.g <= 0.0f &&
-            m_mtl.Specular.b <= 0.0f && m_mtl.Specular.a <= 0.0f)
+        if (mtl->flags & WAVEFRONT_KS)
             m_type |= ATTR_TYPE_SPECULAR;
         return (true);
     }
