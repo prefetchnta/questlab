@@ -1879,6 +1879,32 @@ d3d8_util_matx_transpose (
 
 /*
 =======================================
+    射线求交
+=======================================
+*/
+CR_API bool_t
+d3d8_util_intersect (
+  __CR_OT__ sINTERSECT*     ret,
+  __CR_IN__ const vec3d_t*  p0,
+  __CR_IN__ const vec3d_t*  p1,
+  __CR_IN__ const vec3d_t*  p2,
+  __CR_IN__ const sRADIAL*  ray
+    )
+{
+    FLOAT   uu, vv;
+
+    if (!D3DXIntersectTri((D3DXVECTOR3*)p0, (D3DXVECTOR3*)p1,
+                    (D3DXVECTOR3*)p2, (const D3DXVECTOR3*)(&ray->pos),
+                        (const D3DXVECTOR3*)(&ray->dir), &uu, &vv,
+                                (FLOAT*)(&ret->dist)))
+        return (FALSE);
+    D3DXVec3BaryCentric((D3DXVECTOR3*)(&ret->pos), (D3DXVECTOR3*)p0,
+                        (D3DXVECTOR3*)p1, (D3DXVECTOR3*)p2, uu, vv);
+    return (TRUE);
+}
+
+/*
+=======================================
     生成精灵绘制对象
 =======================================
 */
@@ -1965,6 +1991,7 @@ static const sD3D8_CALL s_d3d8call =
     d3d8_util_tran_vec3d,
     d3d8_util_matx_inverse,
     d3d8_util_matx_transpose,
+    d3d8_util_intersect,
     d3d8_util_create_sprite,
 };
 

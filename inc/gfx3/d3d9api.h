@@ -286,7 +286,9 @@ typedef struct
         /* 运算 */
         bool_t  (*util_matx_inverse) (mat4x4_t *dst, const mat4x4_t *src);
         void_t  (*util_matx_transpose) (mat4x4_t *dst, const mat4x4_t *src);
-
+        bool_t  (*util_intersect) (sINTERSECT *ret, const vec3d_t *p0,
+                                   const vec3d_t *p1, const vec3d_t *p2,
+                                   const sRADIAL *ray);
         /* 精灵 */
         LPD3DXSPRITE    (*util_create_sprite) (sD3D9_MAIN *main);
 

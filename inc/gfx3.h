@@ -76,6 +76,14 @@ typedef struct
 
 } sRADIAL;
 
+/* 交点 */
+typedef struct
+{
+        vec3d_t     pos;
+        fp32_t      dist;
+
+} sINTERSECT;
+
 /* 四边形 (left-top, cw) */
 typedef struct
 {
