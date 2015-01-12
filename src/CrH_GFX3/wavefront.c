@@ -724,14 +724,17 @@ wfront_mtl_load (
             /* 解析颜色矢量 */
             if (line[1] == CR_AC('a')) {
                 vtmp = &mtmp.ka;
+                mtmp.flags |= WAVEFRONT_KA;
             }
             else
             if (line[1] == CR_AC('d')) {
                 vtmp = &mtmp.kd;
+                mtmp.flags |= WAVEFRONT_KD;
             }
             else
             if (line[1] == CR_AC('s')) {
                 vtmp = &mtmp.ks;
+                mtmp.flags |= WAVEFRONT_KS;
             }
             else {
                 err_set(__CR_WAVEFRONT_C__, idx,

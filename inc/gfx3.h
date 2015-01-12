@@ -226,6 +226,7 @@ CR_API bool_t   frustum_aabb (const sFRUSTUM *frt, const sAABB *aabb);
 /* OBJ 材质结构 */
 typedef struct
 {
+        uint_t  flags;
         ansi_t  *name;
         fp32_t  d, ns, ni;
         vec3d_t ka, kd, ks, tf;
@@ -234,6 +235,11 @@ typedef struct
         ansi_t  *map_d, *map_ns, *bump;
 
 } sWAVEFRONT_M;
+
+/* 颜色标志 */
+#define WAVEFRONT_KA    1   /* 存在 Ka */
+#define WAVEFRONT_KD    2   /* 存在 Kd */
+#define WAVEFRONT_KS    4   /* 存在 Ks */
 
 /* OBJ 模型结构 */
 typedef struct
