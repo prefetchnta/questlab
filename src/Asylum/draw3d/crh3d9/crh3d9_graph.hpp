@@ -7,6 +7,14 @@
 #ifndef __CRH3D9_GRAPH_HPP__
 #define __CRH3D9_GRAPH_HPP__
 
+/****************/
+/* Factory Type */
+/****************/
+typedef asy::IAttrib* (*create_crh3d9_attr_wf_t) (const sWAVEFRONT_M* mtl,
+    const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main);
+
+typedef asy::IMesh* (*create_crh3d9_mesh_wf_t) (const sWAVEFRONT* obj, leng_t idx,
+                                                const asy::crh3d9_main* main);
 /******************/
 /* Effect Factory */
 /******************/
