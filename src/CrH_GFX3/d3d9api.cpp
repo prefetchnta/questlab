@@ -2215,6 +2215,104 @@ d3d9_util_tran_vec3d (
     output->x = tmp.x;  output->y = tmp.y;  output->z = tmp.z;
 }
 
+/*
+=======================================
+    矩阵求逆
+=======================================
+*/
+CR_API bool_t
+d3d9_util_matx_inverse (
+  __CR_OT__ mat4x4_t*       dst,
+  __CR_IN__ const mat4x4_t* src
+    )
+{
+    if (D3DXMatrixInverse((D3DXMATRIX*)dst, NULL, (D3DXMATRIX*)src) == NULL)
+        return (FALSE);
+    return (TRUE);
+}
+
+/*
+=======================================
+    矩阵转置
+=======================================
+*/
+CR_API void_t
+d3d9_util_matx_transpose (
+  __CR_OT__ mat4x4_t*       dst,
+  __CR_IN__ const mat4x4_t* src
+    )
+{
+    D3DXMatrixTranspose((D3DXMATRIX*)dst, (D3DXMATRIX*)src);
+}
+
+/*
+=======================================
+    生成精灵绘制对象
+=======================================
+*/
+CR_API LPD3DXSPRITE
+d3d9_util_create_sprite (
+  __CR_IN__ sD3D9_MAIN* main
+    )
+{
+    HRESULT         retc;
+    LPD3DXSPRITE    rett;
+
+    retc = D3DXCreateSprite(main->dev, &rett);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D8API_CPP__, retc,
+                "d3d9_util_create_sprite()", "D3DXCreateSprite() failure");
+        return (NULL);
+    }
+    return (rett);
+}
+
+/*
+=======================================
+    生成文字绘制对象A
+=======================================
+*/
+CR_API LPD3DXFONT
+d3d9_util_create_fontA (
+  __CR_IN__ sD3D9_MAIN*             main,
+  __CR_IN__ const D3DXFONT_DESCA*   desc
+    )
+{
+    HRESULT     retc;
+    LPD3DXFONT  rett;
+
+    retc = D3DXCreateFontIndirectA(main->dev, desc, &rett);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D8API_CPP__, retc,
+            "d3d9_util_create_fontA()", "D3DXCreateFontIndirectA() failure");
+        return (NULL);
+    }
+    return (rett);
+}
+
+/*
+=======================================
+    生成文字绘制对象W
+=======================================
+*/
+CR_API LPD3DXFONT
+d3d9_util_create_fontW (
+  __CR_IN__ sD3D9_MAIN*             main,
+  __CR_IN__ const D3DXFONT_DESCW*   desc
+    )
+{
+    HRESULT     retc;
+    LPD3DXFONT  rett;
+
+    retc = D3DXCreateFontIndirectW(main->dev, desc, &rett);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D8API_CPP__, retc,
+            "d3d9_util_create_fontW()", "D3DXCreateFontIndirectW() failure");
+        return (NULL);
+    }
+    return (rett);
+}
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -2285,6 +2383,11 @@ static const sD3D9_CALL s_d3d9call =
     d3d9_util_make_tran1,
     d3d9_util_make_tran2,
     d3d9_util_tran_vec3d,
+    d3d9_util_matx_inverse,
+    d3d9_util_matx_transpose,
+    d3d9_util_create_sprite,
+    d3d9_util_create_fontA,
+    d3d9_util_create_fontW,
 };
 
 /*

@@ -246,6 +246,7 @@ typedef struct
 
 /* ========================================================================= */
 
+        /* 变换 */
         void_t  (*util_make_tran1) (mat4x4_t *mat, const vec3d_t *scale,
                                     fp32_t pitch, fp32_t yaw, fp32_t roll,
                                     const vec3d_t *move);
@@ -256,6 +257,12 @@ typedef struct
 
         void_t  (*util_tran_vec3d) (vec3d_t *output, const vec3d_t *input,
                                     const mat4x4_t *mat);
+        /* 运算 */
+        bool_t  (*util_matx_inverse) (mat4x4_t *dst, const mat4x4_t *src);
+        void_t  (*util_matx_transpose) (mat4x4_t *dst, const mat4x4_t *src);
+
+        /* 精灵 */
+        LPD3DXSPRITE    (*util_create_sprite) (sD3D8_MAIN *main);
 
 /* ========================================================================= */
 
