@@ -2260,7 +2260,7 @@ d3d9_util_create_sprite (
 
     retc = D3DXCreateSprite(main->dev, &rett);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
+        err_set(__CR_D3D9API_CPP__, retc,
                 "d3d9_util_create_sprite()", "D3DXCreateSprite() failure");
         return (NULL);
     }
@@ -2283,7 +2283,7 @@ d3d9_util_create_fontA (
 
     retc = D3DXCreateFontIndirectA(main->dev, desc, &rett);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
+        err_set(__CR_D3D9API_CPP__, retc,
             "d3d9_util_create_fontA()", "D3DXCreateFontIndirectA() failure");
         return (NULL);
     }
@@ -2306,7 +2306,7 @@ d3d9_util_create_fontW (
 
     retc = D3DXCreateFontIndirectW(main->dev, desc, &rett);
     if (FAILED(retc)) {
-        err_set(__CR_D3D8API_CPP__, retc,
+        err_set(__CR_D3D9API_CPP__, retc,
             "d3d9_util_create_fontW()", "D3DXCreateFontIndirectW() failure");
         return (NULL);
     }
