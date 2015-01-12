@@ -206,7 +206,7 @@ wfront_parse_name (
 */
 static void_t
 wfront_count_vertex (
-  __CR_IO__ sWAVEFRONT* obj
+  __CR_IO__ const sWAVEFRONT*   obj
     )
 {
     leng_t  idx, ii, jj;
@@ -1085,6 +1085,92 @@ wfront_obj_free (
         }
         mem_free(obj->p_m);
     }
+}
+
+/*
+=======================================
+    合并材质相同的网格
+=======================================
+*/
+CR_API bool_t
+wfront_obj_combine (
+  __CR_IO__ sWAVEFRONT* obj
+    )
+{
+    sARRAY  a_g;
+    leng_t  beg, end, cnt;
+    leng_t  ii, jj, kk, nn;
+    /* ----------------- */
+    sWAVEFRONT_F*   p_f;
+    sWAVEFRONT_G    gtmp;
+
+    /* 必须已经加载过模型和材质 */
+    if (obj->p_g == NULL || obj->p_m == NULL) {
+        err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                "wfront_obj_combine()", "invalid param: obj");
+        return (FALSE);
+    }
+
+    /* 重新生成成员 */
+    p_f = mem_talloc(obj->n_f, sWAVEFRONT_F);
+    if (p_f == NULL) {
+        err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                "wfront_obj_combine()", "mem_talloc() failure");
+        return (FALSE);
+    }
+    beg = end = 0;
+    array_initT(&a_g, sWAVEFRONT_G);
+
+    /* 合并相同材质的几何体 */
+    for (ii = 0; ii < obj->n_g; ii += nn) {
+        struct_cpy(&gtmp, &obj->p_g[ii], sWAVEFRONT_G);
+        gtmp.beg = beg;
+        for (nn = 0, kk = ii; kk < obj->n_g; kk++, nn++) {
+            if (obj->p_g[kk].attr != gtmp.attr)
+                break;
+            cnt = obj->p_g[kk].end - obj->p_g[kk].beg;
+            for (jj = obj->p_g[kk].beg; cnt != 0; cnt--, end++, jj++) {
+                struct_cpy(&p_f[end], &obj->p_f[jj], sWAVEFRONT_F);
+                p_f[end].idx[3] = 1;
+            }
+        }
+        gtmp.end = end;
+        if (array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL) {
+            err_set(__CR_WAVEFRONT_C__, CR_NULL,
+                    "wfront_obj_combine()", "array_push_growT() failure");
+            goto _failure;
+        }
+        beg = end;
+    }
+
+    /* 固定缓冲大小 */
+    if (!array_no_growT(&a_g, sWAVEFRONT_G)) {
+        err_set(__CR_WAVEFRONT_C__, FALSE,
+                "wfront_obj_combine()", "array_no_growT() failure");
+        goto _failure;
+    }
+
+    /* 释放掉多余的几何体 */
+    for (ii = 0; ii < obj->n_g; ii += nn) {
+        for (nn = 1, kk = ii + 1; kk < obj->n_g; kk++, nn++) {
+            if (obj->p_g[kk].attr != gtmp.attr)
+                break;
+            wfront_g_free(&obj->p_g[kk]);
+        }
+    }
+
+    /* 替换掉原来的成员 */
+    mem_free(obj->p_f);
+    mem_free(obj->p_g);
+    obj->n_g = array_get_sizeT(&a_g, sWAVEFRONT_G);
+    obj->p_g = array_get_dataT(&a_g, sWAVEFRONT_G);
+    wfront_count_vertex(obj);
+    return (TRUE);
+
+_failure:
+    array_freeT(&a_g, sWAVEFRONT_G);
+    mem_free(p_f);
+    return (FALSE);
 }
 
 /*
