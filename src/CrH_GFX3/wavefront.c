@@ -1163,6 +1163,7 @@ wfront_obj_combine (
     /* 替换掉原来的成员 */
     mem_free(obj->p_f);
     mem_free(obj->p_g);
+    obj->p_f = p_f;
     obj->n_g = array_get_sizeT(&a_g, sWAVEFRONT_G);
     obj->p_g = array_get_dataT(&a_g, sWAVEFRONT_G);
     wfront_count_vertex(obj);
