@@ -47,6 +47,7 @@ public:
     {
         m_devcs->SetRenderState(D3DRS_LIGHTING, TRUE);
         m_devcs->SetRenderState(D3DRS_AMBIENT, m_color[0]);
+        m_devcs->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
         for (DWORD idx = 0; idx < m_count; idx++) {
             m_devcs->SetLight(idx, &m_light[idx]);
             m_devcs->LightEnable(idx, m_onoff[idx]);
@@ -56,6 +57,7 @@ public:
     /* =============== */
     virtual void leave ()
     {
+        m_devcs->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
         m_devcs->SetRenderState(D3DRS_LIGHTING, FALSE);
     }
 };
