@@ -412,6 +412,8 @@ CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
         return (false);
     if (!wfront_mtl_load(&mesh, mtl))
         goto _failure;
+    if (!wfront_obj_combine(&mesh))
+        goto _failure;
     real = (crhack3d9_main*)render;
     if (type == NULL || strcmp(type, "fixed") == 0) {
         for (leng_t idx = 0; idx < mesh.n_m; idx++) {

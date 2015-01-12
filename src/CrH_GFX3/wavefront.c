@@ -1152,6 +1152,7 @@ wfront_obj_combine (
 
     /* 释放掉多余的几何体 */
     for (ii = 0; ii < obj->n_g; ii += nn) {
+        gtmp.attr = obj->p_g[ii].attr;
         for (nn = 1, kk = ii + 1; kk < obj->n_g; kk++, nn++) {
             if (obj->p_g[kk].attr != gtmp.attr)
                 break;
