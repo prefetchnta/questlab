@@ -2292,15 +2292,17 @@ d3d9_util_intersect_tri (
   __CR_IN__ const sRADIAL*  ray
     )
 {
-    FLOAT   uu, vv;
+    FLOAT   uu, vv, dd;
 
     if (!D3DXIntersectTri((D3DXVECTOR3*)p0, (D3DXVECTOR3*)p1,
                     (D3DXVECTOR3*)p2, (const D3DXVECTOR3*)(&ray->pos),
-                        (const D3DXVECTOR3*)(&ray->dir), &uu, &vv,
-                                (FLOAT*)(&ret->dist)))
+                    (const D3DXVECTOR3*)(&ray->dir), &uu, &vv, &dd))
         return (FALSE);
-    D3DXVec3BaryCentric((D3DXVECTOR3*)(&ret->pos), (D3DXVECTOR3*)p0,
-                        (D3DXVECTOR3*)p1, (D3DXVECTOR3*)p2, uu, vv);
+    if (ret != NULL) {
+        D3DXVec3BaryCentric((D3DXVECTOR3*)(&ret->pos), (D3DXVECTOR3*)p0,
+                            (D3DXVECTOR3*)p1, (D3DXVECTOR3*)p2, uu, vv);
+        ret->dist = dd;
+    }
     return (TRUE);
 }
 
