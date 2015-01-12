@@ -610,13 +610,13 @@ wfront_mtl_comp (
 {
     leng_t  attr1, attr2;
 
-    /* 降序排列 */
+    /* 升序排列 */
     attr1 = ((sWAVEFRONT_G*)obj1)->attr;
     attr2 = ((sWAVEFRONT_G*)obj2)->attr;
     if (attr1 > attr2)
-        return (-1);
-    if (attr1 < attr2)
         return (1);
+    if (attr1 < attr2)
+        return (-1);
     return (0);
 }
 

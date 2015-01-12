@@ -131,6 +131,7 @@ struct object_inst;
 struct object_base
 {
     void*               real;
+    uint_t              type;
     sAABB               aabb;
     sSPHERE             ball;
     array<commit_batch> list;

@@ -296,6 +296,8 @@ CR_API leng_t   wfront_gen_mesh2 (vec3d_t *xyz, vec3d_t *nrm, vec2d_t *uvw,
 CR_API leng_t   wfront_gen_mesh3 (vec3d_t *xyz, vec3d_t *nrm, vec3d_t *uvw,
                         leng_t bpv1, leng_t bpv2, leng_t bpv3, void_t *ibuf,
                             leng_t *inum, const sWAVEFRONT *obj, leng_t idx);
+/* 模型的类型 */
+#define MODEL_TYPE_WF   0   /* WAVEFRONT OBJ */
 
 #endif  /* !__CR_GFX3_H__ */
 
