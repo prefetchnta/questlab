@@ -22,11 +22,6 @@
 
 #include <d3d8.h>
 #include <d3dx8.h>
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "d3d8.lib")
-    #pragma comment (lib, "d3dx8.lib")
-    #pragma comment (lib, "dxguid8.lib")
-#endif
 #define _CR_HAVE_D3D8_
 
 /* D3D8 设备对象 */

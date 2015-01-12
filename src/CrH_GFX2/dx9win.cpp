@@ -23,6 +23,11 @@
 #include "memlib.h"
 #include "strlib.h"
 #include "gfx2/dx9win.h"
+#ifndef _CR_NO_PRAGMA_LIB_
+    #pragma comment (lib, "d3d9.lib")
+    #pragma comment (lib, "d3dx9.lib")
+    #pragma comment (lib, "dxguid.lib")
+#endif
 
 /*****************************************************************************/
 /*                                 绘制接口                                  */

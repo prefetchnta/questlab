@@ -23,6 +23,11 @@
 #define _CR_USE_D3D8_
 #include "gfx3.h"
 #include "memlib.h"
+#ifndef _CR_NO_PRAGMA_LIB_
+    #pragma comment (lib, "d3d8.lib")
+    #pragma comment (lib, "d3dx8.lib")
+    #pragma comment (lib, "dxguid8.lib")
+#endif
 
 /*****************************************************************************/
 /*                                 接口实现                                  */

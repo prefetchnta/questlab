@@ -22,11 +22,6 @@
 
 #include <d3d9.h>
 #include <d3dx9.h>
-#ifndef _CR_NO_PRAGMA_LIB_
-    #pragma comment (lib, "d3d9.lib")
-    #pragma comment (lib, "d3dx9.lib")
-    #pragma comment (lib, "dxguid.lib")
-#endif
 #define _CR_HAVE_D3D9_
 
 /* D3D9 设备对象 */
