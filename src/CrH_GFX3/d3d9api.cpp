@@ -2247,7 +2247,40 @@ d3d9_util_matx_transpose (
 
 /*
 =======================================
-    射线求交
+    射线求交 (包围盒)
+=======================================
+*/
+CR_API bool_t
+d3d9_util_intersect_aabb (
+  __CR_IN__ const sAABB*    aabb,
+  __CR_IN__ const sRADIAL*  ray
+    )
+{
+    return (D3DXBoxBoundProbe((const D3DXVECTOR3*)(&aabb->v[AABB_MIN_IDX]),
+                              (const D3DXVECTOR3*)(&aabb->v[AABB_MAX_IDX]),
+                              (const D3DXVECTOR3*)(&ray->pos),
+                              (const D3DXVECTOR3*)(&ray->dir)));
+}
+
+/*
+=======================================
+    射线求交 (包围球)
+=======================================
+*/
+CR_API bool_t
+d3d9_util_intersect_ball (
+  __CR_IN__ const sSPHERE*  ball,
+  __CR_IN__ const sRADIAL*  ray
+    )
+{
+    return (D3DXSphereBoundProbe((const D3DXVECTOR3*)(&ball->center),
+                   ball->radius, (const D3DXVECTOR3*)(&ray->pos),
+                                 (const D3DXVECTOR3*)(&ray->dir)));
+}
+
+/*
+=======================================
+    射线求交 (三角形)
 =======================================
 */
 CR_API bool_t
@@ -2411,6 +2444,8 @@ static const sD3D9_CALL s_d3d9call =
     d3d9_util_tran_vec3d,
     d3d9_util_matx_inverse,
     d3d9_util_matx_transpose,
+    d3d9_util_intersect_aabb,
+    d3d9_util_intersect_ball,
     d3d9_util_intersect_tri,
     d3d9_util_create_sprite,
     d3d9_util_create_fontA,

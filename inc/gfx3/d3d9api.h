@@ -283,9 +283,17 @@ typedef struct
 
         void_t  (*util_tran_vec3d) (vec3d_t *output, const vec3d_t *input,
                                     const mat4x4_t *mat);
-        /* 运算 */
+        /* 矩阵 */
         bool_t  (*util_matx_inverse) (mat4x4_t *dst, const mat4x4_t *src);
         void_t  (*util_matx_transpose) (mat4x4_t *dst, const mat4x4_t *src);
+
+        /* 求交 */
+        bool_t  (*util_intersect_aabb) (const sAABB *aabb,
+                                        const sRADIAL *ray);
+
+        bool_t  (*util_intersect_ball) (const sSPHERE *ball,
+                                        const sRADIAL *ray);
+
         bool_t  (*util_intersect_tri) (sINTERSECT *ret, const vec3d_t *p0,
                                        const vec3d_t *p1, const vec3d_t *p2,
                                        const sRADIAL *ray);
