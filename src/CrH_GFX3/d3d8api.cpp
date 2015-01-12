@@ -1883,7 +1883,7 @@ d3d8_util_matx_transpose (
 =======================================
 */
 CR_API bool_t
-d3d8_util_intersect (
+d3d8_util_intersect_tri (
   __CR_OT__ sINTERSECT*     ret,
   __CR_IN__ const vec3d_t*  p0,
   __CR_IN__ const vec3d_t*  p1,
@@ -1991,7 +1991,7 @@ static const sD3D8_CALL s_d3d8call =
     d3d8_util_tran_vec3d,
     d3d8_util_matx_inverse,
     d3d8_util_matx_transpose,
-    d3d8_util_intersect,
+    d3d8_util_intersect_tri,
     d3d8_util_create_sprite,
 };
 
