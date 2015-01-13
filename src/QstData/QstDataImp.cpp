@@ -580,9 +580,11 @@ string_show (
 }
 
 /* BeaEngine 模式值 */
+#define BEA_DEF_OPT (NoTabulation | SuffixedNumeral | \
+                            ShowSegmentRegs)
 static UInt32   s_BeaArchi;
-static UInt64   s_BeaOptions = (NoTabulation | MasmSyntax |
-                    PrefixedNumeral | ShowSegmentRegs);
+static UInt64   s_BeaOptions = (BEA_DEF_OPT | MasmSyntax);
+
 /*
 ---------------------------------------
     UNASM BeaEngine
@@ -605,7 +607,7 @@ unasm_bea_show (
     retc = Disasm(&unasm);
     if (retc <= 0)
         return (NULL);
-    return (str_fmtA(": %s", unasm.CompleteInstr));
+    return (str_fmtA(": (%u) %s", retc, unasm.CompleteInstr));
 }
 
 /*
@@ -667,16 +669,16 @@ data_type (
   __CR_IN__ const ansi_t*   type
     )
 {
-    if (chr_cmpA(type, "BeaEngine ", 10) == 0) {
+    if (chr_cmpA(type, "Bea ", 4) == 0) {
         s_type = TYPE_BEA_UNASM;
         s_unasm_doit = unasm_bea_show;
-        if (str_cmpA(type + 10, "X86") == 0)
+        if (str_cmpA(type + 4, "X86") == 0)
             s_BeaArchi = 0;
         else
-        if (str_cmpA(type + 10, "X64") == 0)
+        if (str_cmpA(type + 4, "X64") == 0)
             s_BeaArchi = 64;
         else
-        if (str_cmpA(type + 10, "8086") == 0)
+        if (str_cmpA(type + 4, "8086") == 0)
             s_BeaArchi = 16;
     }
 }
@@ -697,17 +699,17 @@ data_mode (
             break;
 
         case TYPE_BEA_UNASM:
-            s_BeaOptions = (NoTabulation | PrefixedNumeral | ShowSegmentRegs);
-            if (str_cmpA(mode, "Masm Syntax") == 0)
+            s_BeaOptions = BEA_DEF_OPT;
+            if (str_cmpA(mode, "Masm") == 0)
                 s_BeaOptions |= MasmSyntax;
             else
-            if (str_cmpA(mode, "GoAsm Syntax") == 0)
+            if (str_cmpA(mode, "GoAsm") == 0)
                 s_BeaOptions |= GoAsmSyntax;
             else
-            if (str_cmpA(mode, "Nasm Syntax") == 0)
+            if (str_cmpA(mode, "Nasm") == 0)
                 s_BeaOptions |= NasmSyntax;
             else
-            if (str_cmpA(mode, "AT&T Syntax") == 0)
+            if (str_cmpA(mode, "AT&T") == 0)
                 s_BeaOptions |= ATSyntax;
             break;
     }
