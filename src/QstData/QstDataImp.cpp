@@ -23,6 +23,9 @@
 #include "QstData.h"
 #include "BeaEngine.h"
 
+/* 外部库引用 */
+#pragma comment (lib, "BeaEngine.lib")
+
 /* 类型的取值 */
 #define TYPE_BEA_UNASM      0
 
