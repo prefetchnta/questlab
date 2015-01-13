@@ -21,6 +21,13 @@
  */
 
 #include "QstData.h"
+#include "BeaEngine.h"
+
+/* 类型的取值 */
+#define TYPE_BEA_UNASM      0
+
+/* 观察与模式 */
+static int32u   s_type = TYPE_BEA_UNASM;
 
 #if defined(_CR_BUILD_DLL_)
 /*
@@ -38,6 +45,7 @@ DllMain (
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
+            s_type = TYPE_BEA_UNASM;
             break;
 
         case DLL_PROCESS_DETACH:
@@ -563,6 +571,11 @@ string_show (
     return (ret);
 }
 
+/* BeaEngine 模式值 */
+static UInt32   s_BeaArchi = 0;
+static UInt64   s_BeaOptions = (NoTabulation | MasmSyntax | PrefixedNumeral |
+                                ShowSegmentRegs);
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -592,3 +605,61 @@ CR_API const sQDAT_UNIT viewer[] =
     { "STRING", string_show },
     { NULL, NULL }
 };
+
+/*
+=======================================
+    设置数据类型
+=======================================
+*/
+CR_API void_t
+data_type (
+  __CR_IN__ const ansi_t*   type
+    )
+{
+    if (str_cmpA(type, "BeaEngine X86") == 0) {
+        s_BeaArchi = 0;
+        s_type = TYPE_BEA_UNASM;
+    }
+    else
+    if (str_cmpA(type, "BeaEngine X64") == 0) {
+        s_BeaArchi = 64;
+        s_type = TYPE_BEA_UNASM;
+    }
+    else
+    if (str_cmpA(type, "BeaEngine 8086") == 0) {
+        s_BeaArchi = 16;
+        s_type = TYPE_BEA_UNASM;
+    }
+}
+
+/*
+=======================================
+    设置数据模式
+=======================================
+*/
+CR_API void_t
+data_mode (
+  __CR_IN__ const ansi_t*   mode
+    )
+{
+    switch (s_type)
+    {
+        default:
+            break;
+
+        case TYPE_BEA_UNASM:
+            s_BeaOptions = (NoTabulation | PrefixedNumeral | ShowSegmentRegs);
+            if (str_cmpA(mode, "Masm Syntax") == 0)
+                s_BeaOptions |= MasmSyntax;
+            else
+            if (str_cmpA(mode, "GoAsm Syntax") == 0)
+                s_BeaOptions |= GoAsmSyntax;
+            else
+            if (str_cmpA(mode, "Nasm Syntax") == 0)
+                s_BeaOptions |= NasmSyntax;
+            else
+            if (str_cmpA(mode, "AT&T Syntax") == 0)
+                s_BeaOptions |= ATSyntax;
+            break;
+    }
+}
