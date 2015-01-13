@@ -1098,9 +1098,9 @@ wfront_obj_combine (
     )
 {
     sARRAY  a_g;
-    leng_t  beg, end, cnt;
-    leng_t  ii, jj, kk, nn;
-    /* ----------------- */
+    leng_t  ii, jj, kk;
+    leng_t  nn, end, cnt;
+    /* --------------- */
     sWAVEFRONT_F*   p_f;
     sWAVEFRONT_G    gtmp;
 
@@ -1118,13 +1118,13 @@ wfront_obj_combine (
                 "wfront_obj_combine()", "mem_talloc() failure");
         return (FALSE);
     }
-    beg = end = 0;
+    end = 0;
     array_initT(&a_g, sWAVEFRONT_G);
 
     /* 合并相同材质的几何体 */
     for (ii = 0; ii < obj->n_g; ii += nn) {
         struct_cpy(&gtmp, &obj->p_g[ii], sWAVEFRONT_G);
-        gtmp.beg = beg;
+        gtmp.beg = end;
         for (nn = 0, kk = ii; kk < obj->n_g; kk++, nn++) {
             if (obj->p_g[kk].attr != gtmp.attr)
                 break;
@@ -1140,7 +1140,6 @@ wfront_obj_combine (
                     "wfront_obj_combine()", "array_push_growT() failure");
             goto _failure;
         }
-        beg = end;
     }
 
     /* 固定缓冲大小 */
