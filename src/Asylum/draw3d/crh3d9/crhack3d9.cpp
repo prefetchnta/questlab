@@ -401,7 +401,7 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
 /* ============================================================= */
 CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
                     const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
-                        fp32_t scale, bool_t neg_z, const char* type)
+                        bool_t neg_z, fp32_t scale, const char* type)
 {
     sWAVEFRONT          mesh;
     crhack3d9_main*     real;

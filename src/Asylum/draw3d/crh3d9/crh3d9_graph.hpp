@@ -79,6 +79,6 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
                                 const vec3d_t* move, const vec3d_t* scale);
 CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
                     const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
-                        fp32_t scale, bool_t neg_z, const char* type);
+                        bool_t neg_z, fp32_t scale, const char* type);
 
 #endif  /* __CRH3D9_GRAPH_HPP__ */
