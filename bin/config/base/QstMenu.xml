@@ -80,10 +80,10 @@
                 <MenuItem name="subBeaX64" text="CPU - X64" radio="1" group="1" />
                 <MenuItem name="subBea8086" text="CPU - 8086" radio="1" group="1" />
                 <MenuItem name="xxxSepBea" text="-" />
-                <MenuItem name="subBeaMasm" text="Masm Syntax" radio="1" group="2" />
-                <MenuItem name="subBeaMasm" text="GoAsm Syntax" radio="1" group="2" />
-                <MenuItem name="subBeaMasm" text="Nasm Syntax" radio="1" group="2" />
-                <MenuItem name="subBeaMasm" text="AT&T Syntax" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="Style - Masm" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="Style - GoAsm" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="Style - Nasm" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="Style - AT&&T" radio="1" group="2" />
             </MenuItem>
         </MenuItem>
     </MenuItem>
