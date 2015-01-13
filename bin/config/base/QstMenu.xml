@@ -73,6 +73,20 @@
         <MenuItem name="subCP1258" text="Vietnamese [1258]" radio="1" group="1" />
         <MenuItem name="subCP1252" text="Western European [1252]" radio="1" group="1" />
     </MenuItem>
+    <MenuItem name="subDetect" text="探测(&D)">
+        <MenuItem name="subDisasm" text="反汇编">
+            <MenuItem name="subBeaEngine" text="BeaEngine">
+                <MenuItem name="subBeaX86" text="CPU - X86" radio="1" group="1" />
+                <MenuItem name="subBeaX64" text="CPU - X64" radio="1" group="1" />
+                <MenuItem name="subBea8086" text="CPU - 8086" radio="1" group="1" />
+                <MenuItem name="xxxSepBea" text="-" />
+                <MenuItem name="subBeaMasm" text="Masm Syntax" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="GoAsm Syntax" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="Nasm Syntax" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="AT&T Syntax" radio="1" group="2" />
+            </MenuItem>
+        </MenuItem>
+    </MenuItem>
     <MenuItem name="subParam" text="参数(&P)" />
     <MenuItem name="subAbout" text="关于(&A)" />
 </QstMenu>
