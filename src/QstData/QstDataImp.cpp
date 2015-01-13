@@ -21,6 +21,8 @@
  */
 
 #include "QstData.h"
+
+#define BEA_USE_STDCALL
 #include "BeaEngine.h"
 
 /* 外部库引用 */
@@ -30,7 +32,10 @@
 #define TYPE_BEA_UNASM      0
 
 /* 观察与模式 */
-static int32u   s_type = TYPE_BEA_UNASM;
+static int32u   s_type;
+
+/* 解析执行体 */
+ansi_t* (*s_unasm_doit) (const void_t *data, leng_t size);
 
 #if defined(_CR_BUILD_DLL_)
 /*
@@ -48,7 +53,7 @@ DllMain (
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
-            s_type = TYPE_BEA_UNASM;
+            s_unasm_doit = NULL;
             break;
 
         case DLL_PROCESS_DETACH:
@@ -575,9 +580,51 @@ string_show (
 }
 
 /* BeaEngine 模式值 */
-static UInt32   s_BeaArchi = 0;
-static UInt64   s_BeaOptions = (NoTabulation | MasmSyntax | PrefixedNumeral |
-                                ShowSegmentRegs);
+static UInt32   s_BeaArchi;
+static UInt64   s_BeaOptions = (NoTabulation | MasmSyntax |
+                    PrefixedNumeral | ShowSegmentRegs);
+/*
+---------------------------------------
+    UNASM BeaEngine
+---------------------------------------
+*/
+static ansi_t*
+unasm_bea_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int     retc;
+    DISASM  unasm;
+
+    struct_zero(&unasm, DISASM);
+    unasm.EIP = (UIntPtr)data;
+    unasm.SecurityBlock = (UIntPtr)size;
+    unasm.Archi = s_BeaArchi;
+    unasm.Options = s_BeaOptions;
+    retc = Disasm(&unasm);
+    if (retc <= 0)
+        return (NULL);
+    return (str_fmtA(": %s", unasm.CompleteInstr));
+}
+
+/*
+---------------------------------------
+    UNASM
+---------------------------------------
+*/
+static ansi_t*
+unasm_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    CR_NOUSE(is_be);
+    if (s_unasm_doit == NULL)
+        return (NULL);
+    return (s_unasm_doit(data, size));
+}
 
 /*****************************************************************************/
 /*                                 接口导出                                  */
@@ -606,6 +653,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "longdt", longdt_show },
     { "OLETIME", oletime_show },
     { "STRING", string_show },
+    { "UNASM", unasm_show },
     { NULL, NULL }
 };
 
@@ -619,19 +667,17 @@ data_type (
   __CR_IN__ const ansi_t*   type
     )
 {
-    if (str_cmpA(type, "BeaEngine X86") == 0) {
-        s_BeaArchi = 0;
+    if (chr_cmpA(type, "BeaEngine ", 10) == 0) {
         s_type = TYPE_BEA_UNASM;
-    }
-    else
-    if (str_cmpA(type, "BeaEngine X64") == 0) {
-        s_BeaArchi = 64;
-        s_type = TYPE_BEA_UNASM;
-    }
-    else
-    if (str_cmpA(type, "BeaEngine 8086") == 0) {
-        s_BeaArchi = 16;
-        s_type = TYPE_BEA_UNASM;
+        s_unasm_doit = unasm_bea_show;
+        if (str_cmpA(type + 10, "X86") == 0)
+            s_BeaArchi = 0;
+        else
+        if (str_cmpA(type + 10, "X64") == 0)
+            s_BeaArchi = 64;
+        else
+        if (str_cmpA(type + 10, "8086") == 0)
+            s_BeaArchi = 16;
     }
 }
 
