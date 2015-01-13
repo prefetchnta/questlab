@@ -17,6 +17,9 @@ static sQstData     s_wrk_ctx;
 #define _LEAVE_DAT_SINGLE_  \
     mtlock_release(&s_wrk_ctx.lock);
 
+/* 设置的函数类型 */
+typedef void_t  (*qdat_setup_t) (const ansi_t*);
+
 /*****************************************************************************/
 /*                                 内部函数                                  */
 /*****************************************************************************/
@@ -198,6 +201,52 @@ qst_dat_win_load (
 
 /*
 ---------------------------------------
+    设置16进制串类型
+---------------------------------------
+*/
+static bool_t
+qst_dat_hex_type (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <类型> */
+    if (argc < 2)
+        return (FALSE);
+
+    sQstData*   ctx;
+
+    ctx = (sQstData*)parm;
+    ctx->data_type(argv[1]);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    设置16进制串模式
+---------------------------------------
+*/
+static bool_t
+qst_dat_hex_mode (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <模式> */
+    if (argc < 2)
+        return (FALSE);
+
+    sQstData*   ctx;
+
+    ctx = (sQstData*)parm;
+    ctx->data_mode(argv[1]);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     输入16进制串数据
 ---------------------------------------
 */
@@ -339,6 +388,8 @@ static const sQST_CMD   s_cmdz[] =
     { "ldr:smem", qst_dat_ldr_smem },
 
     /***** 公用数据命令 *****/
+    { "hex:type", qst_dat_hex_type },
+    { "hex:mode", qst_dat_hex_mode },
     { "hex:in_le", qst_dat_hex_inp },
     { "hex:in_be", qst_dat_hex_inp },
 
@@ -434,6 +485,12 @@ WinMain (
         return (QST_ERROR);
     s_wrk_ctx.viewer = sbin_exportT(sbin, "viewer", sQDAT_UNIT*);
     if (s_wrk_ctx.viewer == NULL)
+        return (QST_ERROR);
+    s_wrk_ctx.data_type = sbin_exportT(sbin, "data_type", qdat_setup_t);
+    if (s_wrk_ctx.data_type == NULL)
+        return (QST_ERROR);
+    s_wrk_ctx.data_mode = sbin_exportT(sbin, "data_mode", qdat_setup_t);
+    if (s_wrk_ctx.data_mode == NULL)
         return (QST_ERROR);
 
     thrd_t  thrd;

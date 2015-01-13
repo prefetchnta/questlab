@@ -60,6 +60,10 @@ typedef struct
         /* 支持的数值类型列表 */
         const sQDAT_UNIT*   viewer;
 
+        /* 设置数值类型和模式 */
+        void_t  (*data_type) (const ansi_t *type);
+        void_t  (*data_mode) (const ansi_t *mode);
+
 } sQstData;
 
 #endif  /* !__QL_QSTDATA_H__ */
