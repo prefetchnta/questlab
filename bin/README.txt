@@ -1,4 +1,5 @@
 【更新日志】
+　2015-01-13　QstData 支持 Intel CPU 反汇编功能（引入 BeaEngine SDK）
 　2014-06-05　移除所有 VC8.0 CRT 的依赖（引入 zlib & ResIL 替换 DevIL）
 　2014-06-04　准备开始 zbar 的条码识别评估（引入 libiconv & zbar SDK）
 　2014-05-30　实验证明 libdecodeqr 的 QrCode 识别效果是一泡屎
