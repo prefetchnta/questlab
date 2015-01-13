@@ -401,7 +401,7 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
 /* ============================================================= */
 CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
                     const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
-                                bool_t neg_z, const char* type)
+                        fp32_t scale, bool_t neg_z, const char* type)
 {
     sWAVEFRONT          mesh;
     crhack3d9_main*     real;
@@ -410,6 +410,13 @@ CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
 
     if (!wfront_obj_load(&mesh, obj, swap_yz, neg_z))
         return (false);
+    if (scale > 0.0f) {
+        for (leng_t idx = 0; idx < mesh.n_v; idx++) {
+            mesh.p_v[idx].x *= scale;
+            mesh.p_v[idx].y *= scale;
+            mesh.p_v[idx].z *= scale;
+        }
+    }
     if (!wfront_mtl_load(&mesh, mtl))
         goto _failure;
     if (!wfront_obj_combine(&mesh))
