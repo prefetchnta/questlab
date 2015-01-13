@@ -672,13 +672,13 @@ data_type (
     if (chr_cmpA(type, "Bea ", 4) == 0) {
         s_type = TYPE_BEA_UNASM;
         s_unasm_doit = unasm_bea_show;
-        if (str_cmpA(type + 4, "X86") == 0)
+        if (strcmp(type + 4, "X86") == 0)
             s_BeaArchi = 0;
         else
-        if (str_cmpA(type + 4, "X64") == 0)
+        if (strcmp(type + 4, "X64") == 0)
             s_BeaArchi = 64;
         else
-        if (str_cmpA(type + 4, "8086") == 0)
+        if (strcmp(type + 4, "8086") == 0)
             s_BeaArchi = 16;
     }
 }
@@ -700,16 +700,16 @@ data_mode (
 
         case TYPE_BEA_UNASM:
             s_BeaOptions = BEA_DEF_OPT;
-            if (str_cmpA(mode, "Masm") == 0)
+            if (strcmp(mode, "Masm") == 0)
                 s_BeaOptions |= MasmSyntax;
             else
-            if (str_cmpA(mode, "GoAsm") == 0)
+            if (strcmp(mode, "GoAsm") == 0)
                 s_BeaOptions |= GoAsmSyntax;
             else
-            if (str_cmpA(mode, "Nasm") == 0)
+            if (strcmp(mode, "Nasm") == 0)
                 s_BeaOptions |= NasmSyntax;
             else
-            if (str_cmpA(mode, "AT&T") == 0)
+            if (strcmp(mode, "AT&T") == 0)
                 s_BeaOptions |= ATSyntax;
             break;
     }
