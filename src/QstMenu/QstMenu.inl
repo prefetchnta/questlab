@@ -65,6 +65,14 @@ void __fastcall subCP1254Click(TObject *Sender);
 void __fastcall subCP1258Click(TObject *Sender);
 void __fastcall subCP1252Click(TObject *Sender);
 //---------------------------------------------------------------------------
+void __fastcall subBeaX86Click(TObject *Sender);
+void __fastcall subBeaX64Click(TObject *Sender);
+void __fastcall subBea8086Click(TObject *Sender);
+void __fastcall subBeaMasmClick(TObject *Sender);
+void __fastcall subBeaGoAsmClick(TObject *Sender);
+void __fastcall subBeaNasmClick(TObject *Sender);
+void __fastcall subBeaATTClick(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subAboutClick(TObject *Sender);
@@ -546,6 +554,55 @@ void __fastcall TfrmMain::subCP1252Click(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBeaX86Click(TObject *Sender)
+{
+    /* BeaEngine X86 */
+    qst_send_cmdz("hex:type \"Bea X86\"");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBeaX64Click(TObject *Sender)
+{
+    /* BeaEngine X64 */
+    qst_send_cmdz("hex:type \"Bea X64\"");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBea8086Click(TObject *Sender)
+{
+    /* BeaEngine 8086 */
+    qst_send_cmdz("hex:type \"Bea 8086\"");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBeaMasmClick(TObject *Sender)
+{
+    /* BeaEngine Masm */
+    qst_send_cmdz("hex:mode Masm");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBeaGoAsmClick(TObject *Sender)
+{
+    /* BeaEngine GoAsm */
+    qst_send_cmdz("hex:mode GoAsm");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBeaNasmClick(TObject *Sender)
+{
+    /* BeaEngine Nasm */
+    qst_send_cmdz("hex:mode Nasm");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBeaATTClick(TObject *Sender)
+{
+    /* BeaEngine AT&T */
+    qst_send_cmdz("hex:mode AT&T");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subParamClick(TObject *Sender)
 {
     /* 参数菜单项 */
@@ -722,6 +779,13 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subCP1254);
     QST_MENU_EVENT(subCP1258);
     QST_MENU_EVENT(subCP1252);
+    QST_MENU_EVENT(subBeaX86);
+    QST_MENU_EVENT(subBeaX64);
+    QST_MENU_EVENT(subBea8086);
+    QST_MENU_EVENT(subBeaMasm);
+    QST_MENU_EVENT(subBeaGoAsm);
+    QST_MENU_EVENT(subBeaNasm);
+    QST_MENU_EVENT(subBeaATT);
     QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subAbout);
 

@@ -81,9 +81,9 @@
                 <MenuItem name="subBea8086" text="CPU - 8086" radio="1" group="1" />
                 <MenuItem name="xxxSepBea" text="-" />
                 <MenuItem name="subBeaMasm" text="Style - Masm" radio="1" group="2" />
-                <MenuItem name="subBeaMasm" text="Style - GoAsm" radio="1" group="2" />
-                <MenuItem name="subBeaMasm" text="Style - Nasm" radio="1" group="2" />
-                <MenuItem name="subBeaMasm" text="Style - AT&&T" radio="1" group="2" />
+                <MenuItem name="subBeaGoAsm" text="Style - GoAsm" radio="1" group="2" />
+                <MenuItem name="subBeaNasm" text="Style - Nasm" radio="1" group="2" />
+                <MenuItem name="subBeaATT" text="Style - AT&&T" radio="1" group="2" />
             </MenuItem>
         </MenuItem>
     </MenuItem>
