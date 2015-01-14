@@ -19,32 +19,32 @@
         <MenuItem name="subExit" text="退出整个系统(&X)" />
     </MenuItem>
     <MenuItem name="subPartShow" text="打开(&S)">
-        <MenuItem name="subOpenQstCmdz" text="QstCmdz" />
-        <MenuItem name="subOpenQstComm" text="QstComm" />
-        <MenuItem name="subOpenQstData" text="QstData" />
-        <MenuItem name="subOpenQstHash" text="QstHash" />
-        <MenuItem name="subOpenQstIndex" text="QstIndex" />
-        <MenuItem name="subOpenQstInfoz" text="QstInfoz" />
-        <MenuItem name="subOpenQstMedia" text="QstMedia" />
-        <MenuItem name="subOpenQstMount" text="QstMount" />
-        <MenuItem name="subOpenQstServ" text="QstServ" />
-        <MenuItem name="subOpenQstText" text="QstText" />
-        <MenuItem name="subOpenQstTree" text="QstTree" />
-        <MenuItem name="subOpenQstView2D" text="QstView2D" />
+        <MenuItem name="subOpenQstCmdz" text="QstCmdz (&1)" />
+        <MenuItem name="subOpenQstComm" text="QstComm (&2)" />
+        <MenuItem name="subOpenQstData" text="QstData (&3)" />
+        <MenuItem name="subOpenQstHash" text="QstHash (&4)" />
+        <MenuItem name="subOpenQstIndex" text="QstIndex (&5)" />
+        <MenuItem name="subOpenQstInfoz" text="QstInfoz (&6)" />
+        <MenuItem name="subOpenQstMedia" text="QstMedia (&7)" />
+        <MenuItem name="subOpenQstMount" text="QstMount (&8)" />
+        <MenuItem name="subOpenQstServ" text="QstServ (&9)" />
+        <MenuItem name="subOpenQstText" text="QstText (&0)" />
+        <MenuItem name="subOpenQstTree" text="QstTree (&Q)" />
+        <MenuItem name="subOpenQstView2D" text="QstView2D (&W)" />
     </MenuItem>
     <MenuItem name="subPartKill" text="关闭(&K)">
-        <MenuItem name="subKillQstCmdz" text="QstCmdz" />
-        <MenuItem name="subKillQstComm" text="QstComm" />
-        <MenuItem name="subKillQstData" text="QstData" />
-        <MenuItem name="subKillQstHash" text="QstHash" />
-        <MenuItem name="subKillQstIndex" text="QstIndex" />
-        <MenuItem name="subKillQstInfoz" text="QstInfoz" />
-        <MenuItem name="subKillQstMedia" text="QstMedia" />
-        <MenuItem name="subKillQstMount" text="QstMount" />
-        <MenuItem name="subKillQstServ" text="QstServ" />
-        <MenuItem name="subKillQstText" text="QstText" />
-        <MenuItem name="subKillQstTree" text="QstTree" />
-        <MenuItem name="subKillQstView2D" text="QstView2D" />
+        <MenuItem name="subKillQstCmdz" text="QstCmdz (&1)" />
+        <MenuItem name="subKillQstComm" text="QstComm (&2)" />
+        <MenuItem name="subKillQstData" text="QstData (&3)" />
+        <MenuItem name="subKillQstHash" text="QstHash (&4)" />
+        <MenuItem name="subKillQstIndex" text="QstIndex (&5)" />
+        <MenuItem name="subKillQstInfoz" text="QstInfoz (&6)" />
+        <MenuItem name="subKillQstMedia" text="QstMedia (&7)" />
+        <MenuItem name="subKillQstMount" text="QstMount (&8)" />
+        <MenuItem name="subKillQstServ" text="QstServ (&9)" />
+        <MenuItem name="subKillQstText" text="QstText (&0)" />
+        <MenuItem name="subKillQstTree" text="QstTree (&Q)" />
+        <MenuItem name="subKillQstView2D" text="QstView2D (&W)" />
     </MenuItem>
     <MenuItem name="subTools" text="工具(&T)">
         <MenuItem name="subToolsSciTE" text="SciTE (&1)" />
@@ -74,16 +74,16 @@
         <MenuItem name="subCP1252" text="Western European [1252]" radio="1" group="1" />
     </MenuItem>
     <MenuItem name="subDetect" text="探测(&D)">
-        <MenuItem name="subDisasm" text="反汇编">
-            <MenuItem name="subBeaEngine" text="BeaEngine">
-                <MenuItem name="subBeaX86" text="CPU - X86" radio="1" group="1" />
-                <MenuItem name="subBeaX64" text="CPU - X64" radio="1" group="1" />
-                <MenuItem name="subBea8086" text="CPU - 8086" radio="1" group="1" />
+        <MenuItem name="subDisasm" text="反汇编(&U)">
+            <MenuItem name="subBeaEngine" text="BeaEngine (&B)">
+                <MenuItem name="subBeaX86" text="CPU - X86 (&1)" radio="1" group="1" />
+                <MenuItem name="subBeaX64" text="CPU - X64 (&2)" radio="1" group="1" />
+                <MenuItem name="subBea8086" text="CPU - 8086 (&3)" radio="1" group="1" />
                 <MenuItem name="xxxSepBea" text="-" />
-                <MenuItem name="subBeaMasm" text="Style - Masm" radio="1" group="2" checked="1" />
-                <MenuItem name="subBeaGoAsm" text="Style - GoAsm" radio="1" group="2" />
-                <MenuItem name="subBeaNasm" text="Style - Nasm" radio="1" group="2" />
-                <MenuItem name="subBeaATT" text="Style - AT&&T" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="Style - Masm (&4)" radio="1" group="2" checked="1" />
+                <MenuItem name="subBeaGoAsm" text="Style - GoAsm (&5)" radio="1" group="2" />
+                <MenuItem name="subBeaNasm" text="Style - Nasm (&6)" radio="1" group="2" />
+                <MenuItem name="subBeaATT" text="Style - AT&&T (&7)" radio="1" group="2" />
             </MenuItem>
         </MenuItem>
     </MenuItem>
