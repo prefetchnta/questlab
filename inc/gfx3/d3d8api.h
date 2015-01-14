@@ -44,6 +44,20 @@ typedef struct
 
 } sD3D8_MESH;
 
+/* D3D8X 网格对象 */
+typedef struct
+{
+        DWORD           nattr;
+        void_t*         xcall;
+        LPD3DXMESH      xmesh;
+        LPD3DXBUFFER    adjcy;
+        LPD3DXBUFFER    xattr;
+        D3DXVECTOR3     center;
+        FLOAT           radius;
+        D3DXVECTOR3     min, max;
+
+} sD3D8_XMSH;
+
 /* D3D8 纹理对象 */
 typedef struct
 {
@@ -126,6 +140,17 @@ typedef struct
         bool_t  (*mesh_ib_set) (sD3D8_MESH *mesh, uint_t start,
                                 const void_t *data, uint_t count,
                                 int32u flags);
+        /* X 网格 */
+        sD3D8_XMSH* (*create_xmsh_fileA) (sD3D8_MAIN *main, int32u flags,
+                                          const ansi_t *name);
+
+        sD3D8_XMSH* (*create_xmsh_fileW) (sD3D8_MAIN *main, int32u flags,
+                                          const wide_t *name);
+
+        sD3D8_XMSH* (*create_xmsh_mem) (sD3D8_MAIN *main, int32u flags,
+                                        const void_t *data, leng_t size);
+
+        void_t  (*release_xmsh) (sD3D8_XMSH *xmsh);
 
 /* =============================== 纹理对象 ================================ */
 

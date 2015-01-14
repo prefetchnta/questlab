@@ -23,6 +23,7 @@
 #define _CR_USE_D3D8_
 #include "gfx3.h"
 #include "memlib.h"
+#include "strlib.h"
 #ifndef _CR_NO_PRAGMA_LIB_
     #pragma comment (lib, "d3d8.lib")
     #pragma comment (lib, "d3dx8.lib")
@@ -616,6 +617,151 @@ d3d8_mesh_ib_set (
     mem_cpy(copy, data, count);
     mesh->ibuf->Unlock();
     return (TRUE);
+}
+
+/*
+---------------------------------------
+    计算 X 网格的包围体
+---------------------------------------
+*/
+static void_t
+d3d8_xmsh_get_bound (
+  __CR_IO__ sD3D8_XMSH* xmsh
+    )
+{
+    BYTE*   dat;
+    DWORD   fvf;
+    DWORD   num;
+
+    xmsh->xcall = NULL;
+    fvf = xmsh->xmesh->GetFVF();
+    num = xmsh->xmesh->GetNumVertices();
+    xmsh->xmesh->LockVertexBuffer(D3DLOCK_READONLY, &dat);
+    D3DXComputeBoundingBox(dat, num, fvf, &xmsh->min, &xmsh->max);
+    D3DXComputeBoundingSphere(dat, num, fvf, &xmsh->center, &xmsh->radius);
+    xmsh->xmesh->UnlockVertexBuffer();
+}
+
+/*
+=======================================
+    生成 X 网格对象 (文件A)
+=======================================
+*/
+CR_API sD3D8_XMSH*
+d3d8_create_xmsh_fileA (
+  __CR_IN__ sD3D8_MAIN*     main,
+  __CR_IN__ int32u          flags,
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    HRESULT     retc;
+    sD3D8_XMSH* rett;
+
+    /* 分配对象结构 */
+    rett = struct_new(sD3D8_XMSH);
+    if (rett == NULL) {
+        err_set(__CR_D3D8API_CPP__, CR_NULL,
+                "d3d8_create_xmsh_fileA()", "struct_new() failure");
+        return (NULL);
+    }
+
+    /* 加载 X 网格文件 */
+    retc = D3DXLoadMeshFromX((LPSTR)name, flags, main->dev, &rett->adjcy,
+                                &rett->xattr, &rett->nattr, &rett->xmesh);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D8API_CPP__, retc,
+                "d3d8_create_xmsh_fileA()", "D3DXLoadMeshFromX() failure");
+        mem_free(rett);
+        return (NULL);
+    }
+    d3d8_xmsh_get_bound(rett);
+    return (rett);
+}
+
+/*
+=======================================
+    生成 X 网格对象 (文件W)
+=======================================
+*/
+CR_API sD3D8_XMSH*
+d3d8_create_xmsh_fileW (
+  __CR_IN__ sD3D8_MAIN*     main,
+  __CR_IN__ int32u          flags,
+  __CR_IN__ const wide_t*   name
+    )
+{
+    ansi_t*     cnvt;
+    sD3D8_XMSH* rett;
+
+    cnvt = utf16_to_local(CR_LOCAL, name);
+    if (cnvt == NULL) {
+        err_set(__CR_D3D8API_CPP__, CR_NULL,
+                "d3d8_create_xmsh_fileW()", "utf16_to_local() failure");
+        return (NULL);
+    }
+    rett = d3d8_create_xmsh_fileA(main, flags, cnvt);
+    mem_free(cnvt);
+    if (rett == NULL) {
+        err_set(__CR_D3D8API_CPP__, CR_NULL,
+            "d3d8_create_xmsh_fileW()", "d3d8_create_xmsh_fileA() failure");
+        return (NULL);
+    }
+    d3d8_xmsh_get_bound(rett);
+    return (rett);
+}
+
+/*
+=======================================
+    生成 X 网格对象 (内存)
+=======================================
+*/
+CR_API sD3D8_XMSH*
+d3d8_create_xmsh_mem (
+  __CR_IN__ sD3D8_MAIN*     main,
+  __CR_IN__ int32u          flags,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    HRESULT     retc;
+    sD3D8_XMSH* rett;
+
+    /* 分配对象结构 */
+    rett = struct_new(sD3D8_XMSH);
+    if (rett == NULL) {
+        err_set(__CR_D3D8API_CPP__, CR_NULL,
+                "d3d8_create_xmsh_mem()", "struct_new() failure");
+        return (NULL);
+    }
+
+    /* 加载 X 网格文件 */
+    retc = D3DXLoadMeshFromXInMemory((PBYTE)data, (uint_t)size, flags,
+                                    main->dev, &rett->adjcy, &rett->xattr,
+                                        &rett->nattr, &rett->xmesh);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D8API_CPP__, retc,
+            "d3d8_create_xmsh_mem()", "D3DXLoadMeshFromXInMemory() failure");
+        mem_free(rett);
+        return (NULL);
+    }
+    d3d8_xmsh_get_bound(rett);
+    return (rett);
+}
+
+/*
+=======================================
+    释放 X 网格对象
+=======================================
+*/
+CR_API void_t
+d3d8_release_xmsh (
+  __CR_IN__ sD3D8_XMSH* xmsh
+    )
+{
+    xmsh->xattr->Release();
+    xmsh->adjcy->Release();
+    xmsh->xmesh->Release();
+    mem_free(xmsh);
 }
 
 /*
@@ -1978,6 +2124,10 @@ static const sD3D8_CALL s_d3d8call =
     d3d8_release_mesh,
     d3d8_mesh_vb_set,
     d3d8_mesh_ib_set,
+    d3d8_create_xmsh_fileA,
+    d3d8_create_xmsh_fileW,
+    d3d8_create_xmsh_mem,
+    d3d8_release_xmsh,
 
     /* 纹理对象 */
     d3d8_create_tex2,

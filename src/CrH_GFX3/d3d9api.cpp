@@ -654,6 +654,158 @@ d3d9_mesh_ib_set (
 }
 
 /*
+---------------------------------------
+    计算 X 网格的包围体
+---------------------------------------
+*/
+static void_t
+d3d9_xmsh_get_bound (
+  __CR_IO__ sD3D9_XMSH* xmsh
+    )
+{
+    VOID*   dat;
+    DWORD   bpv;
+    DWORD   num;
+
+    xmsh->xcall = NULL;
+    bpv = xmsh->xmesh->GetNumBytesPerVertex();
+    num = xmsh->xmesh->GetNumVertices();
+    xmsh->xmesh->LockVertexBuffer(D3DLOCK_READONLY, &dat);
+    D3DXComputeBoundingBox((D3DXVECTOR3*)dat, num, bpv,
+                            &xmsh->min, &xmsh->max);
+    D3DXComputeBoundingSphere((D3DXVECTOR3*)dat, num, bpv,
+                            &xmsh->center, &xmsh->radius);
+    xmsh->xmesh->UnlockVertexBuffer();
+}
+
+/*
+=======================================
+    生成 X 网格对象 (文件A)
+=======================================
+*/
+CR_API sD3D9_XMSH*
+d3d9_create_xmsh_fileA (
+  __CR_IN__ sD3D9_MAIN*     main,
+  __CR_IN__ int32u          flags,
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    HRESULT     retc;
+    sD3D9_XMSH* rett;
+
+    /* 分配对象结构 */
+    rett = struct_new(sD3D9_XMSH);
+    if (rett == NULL) {
+        err_set(__CR_D3D9API_CPP__, CR_NULL,
+                "d3d9_create_xmsh_fileA()", "struct_new() failure");
+        return (NULL);
+    }
+
+    /* 加载 X 网格文件 */
+    retc = D3DXLoadMeshFromXA(name, flags, main->dev, &rett->adjcy,
+                &rett->xattr, &rett->xffct, &rett->nattr, &rett->xmesh);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D9API_CPP__, retc,
+                "d3d9_create_xmsh_fileA()", "D3DXLoadMeshFromXA() failure");
+        mem_free(rett);
+        return (NULL);
+    }
+    d3d9_xmsh_get_bound(rett);
+    return (rett);
+}
+
+/*
+=======================================
+    生成 X 网格对象 (文件W)
+=======================================
+*/
+CR_API sD3D9_XMSH*
+d3d9_create_xmsh_fileW (
+  __CR_IN__ sD3D9_MAIN*     main,
+  __CR_IN__ int32u          flags,
+  __CR_IN__ const wide_t*   name
+    )
+{
+    HRESULT     retc;
+    sD3D9_XMSH* rett;
+
+    /* 分配对象结构 */
+    rett = struct_new(sD3D9_XMSH);
+    if (rett == NULL) {
+        err_set(__CR_D3D9API_CPP__, CR_NULL,
+                "d3d9_create_xmsh_fileW()", "struct_new() failure");
+        return (NULL);
+    }
+
+    /* 加载 X 网格文件 */
+    retc = D3DXLoadMeshFromXW(name, flags, main->dev, &rett->adjcy,
+                &rett->xattr, &rett->xffct, &rett->nattr, &rett->xmesh);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D9API_CPP__, retc,
+                "d3d9_create_xmsh_fileW()", "D3DXLoadMeshFromXW() failure");
+        mem_free(rett);
+        return (NULL);
+    }
+    d3d9_xmsh_get_bound(rett);
+    return (rett);
+}
+
+/*
+=======================================
+    生成 X 网格对象 (内存)
+=======================================
+*/
+CR_API sD3D9_XMSH*
+d3d9_create_xmsh_mem (
+  __CR_IN__ sD3D9_MAIN*     main,
+  __CR_IN__ int32u          flags,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    HRESULT     retc;
+    sD3D9_XMSH* rett;
+
+    /* 分配对象结构 */
+    rett = struct_new(sD3D9_XMSH);
+    if (rett == NULL) {
+        err_set(__CR_D3D9API_CPP__, CR_NULL,
+                "d3d9_create_xmsh_mem()", "struct_new() failure");
+        return (NULL);
+    }
+
+    /* 加载 X 网格文件 */
+    retc = D3DXLoadMeshFromXInMemory(data, (uint_t)size, flags, main->dev,
+                                    &rett->adjcy, &rett->xattr, &rett->xffct,
+                                        &rett->nattr, &rett->xmesh);
+    if (FAILED(retc)) {
+        err_set(__CR_D3D9API_CPP__, retc,
+            "d3d9_create_xmsh_mem()", "D3DXLoadMeshFromXInMemory() failure");
+        mem_free(rett);
+        return (NULL);
+    }
+    d3d9_xmsh_get_bound(rett);
+    return (rett);
+}
+
+/*
+=======================================
+    释放 X 网格对象
+=======================================
+*/
+CR_API void_t
+d3d9_release_xmsh (
+  __CR_IN__ sD3D9_XMSH* xmsh
+    )
+{
+    xmsh->xffct->Release();
+    xmsh->xattr->Release();
+    xmsh->adjcy->Release();
+    xmsh->xmesh->Release();
+    mem_free(xmsh);
+}
+
+/*
 =======================================
     生成 2D 纹理对象
 =======================================
@@ -2394,6 +2546,10 @@ static const sD3D9_CALL s_d3d9call =
     d3d9_release_mesh,
     d3d9_mesh_vb_set,
     d3d9_mesh_ib_set,
+    d3d9_create_xmsh_fileA,
+    d3d9_create_xmsh_fileW,
+    d3d9_create_xmsh_mem,
+    d3d9_release_xmsh,
 
     /* 纹理对象 */
     d3d9_create_tex2,

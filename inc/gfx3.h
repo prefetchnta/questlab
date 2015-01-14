@@ -84,20 +84,20 @@ typedef struct
 
 } sINTERSECT;
 
-/* 四边形 (left-top) */
+/* 四边形 */
 typedef struct
 {
         vec3d_t     v[4];
 } sQUAD;
 
-/* AABB 包围盒 (left-top-up) */
+/* AABB 包围盒 (D3D Style) */
 typedef struct
 {
         vec3d_t     v[8];
 } sAABB;
 
-#define AABB_MIN_IDX    4
-#define AABB_MAX_IDX    2
+#define AABB_MAX_IDX    0
+#define AABB_MIN_IDX    7
 
 /* 包围球 */
 typedef struct

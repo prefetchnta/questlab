@@ -72,37 +72,37 @@ bound_gen_aabb (
   __CR_IN__ const vec3d_t*  max
     )
 {
-    aabb->v[0].x = min->x;
+    aabb->v[0].x = max->x;
     aabb->v[0].y = max->y;
-    aabb->v[0].z = min->z;
+    aabb->v[0].z = max->z;
 
     aabb->v[1].x = max->x;
     aabb->v[1].y = max->y;
     aabb->v[1].z = min->z;
 
     aabb->v[2].x = max->x;
-    aabb->v[2].y = max->y;
+    aabb->v[2].y = min->y;
     aabb->v[2].z = max->z;
 
-    aabb->v[3].x = min->x;
-    aabb->v[3].y = max->y;
-    aabb->v[3].z = max->z;
+    aabb->v[3].x = max->x;
+    aabb->v[3].y = min->y;
+    aabb->v[3].z = min->z;
 
     aabb->v[4].x = min->x;
-    aabb->v[4].y = min->y;
-    aabb->v[4].z = min->z;
+    aabb->v[4].y = max->y;
+    aabb->v[4].z = max->z;
 
-    aabb->v[5].x = max->x;
-    aabb->v[5].y = min->y;
+    aabb->v[5].x = min->x;
+    aabb->v[5].y = max->y;
     aabb->v[5].z = min->z;
 
-    aabb->v[6].x = max->x;
+    aabb->v[6].x = min->x;
     aabb->v[6].y = min->y;
     aabb->v[6].z = max->z;
 
     aabb->v[7].x = min->x;
     aabb->v[7].y = min->y;
-    aabb->v[7].z = max->z;
+    aabb->v[7].z = min->z;
 }
 
 /*
