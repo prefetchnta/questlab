@@ -32,6 +32,7 @@ CR_API sENGINE*     engine_fimage (void_t);
 /*                               图片文件格式                                */
 /*****************************************************************************/
 
+/***** 文件加载 API 组 *****/
 CR_API sFMTZ*   load_fi_bmp  (iDATIN *datin, const sLOADER *param);
 CR_API sFMTZ*   load_fi_cut  (iDATIN *datin, const sLOADER *param);
 CR_API sFMTZ*   load_fi_dds  (iDATIN *datin, const sLOADER *param);
@@ -67,6 +68,30 @@ CR_API sFMTZ*   load_fi_webp (iDATIN *datin, const sLOADER *param);
 CR_API sFMTZ*   load_fi_xbm  (iDATIN *datin, const sLOADER *param);
 CR_API sFMTZ*   load_fi_xpm  (iDATIN *datin, const sLOADER *param);
 CR_API sFMTZ*   load_fi_auto (iDATIN *datin, const sLOADER *param);
+
+/***** 文件保存 API 组 *****/
+CR_API bool_t   save_img_bmp  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_exr  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_j2k  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_jp2  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_jpg  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_jxr  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_png  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_pnm  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_tif  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_tga  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_webp (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
 
 #endif  /* !__CR_FIMAGE_H__ */
 

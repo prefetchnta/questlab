@@ -79,7 +79,7 @@ typedef struct
         sRECT   clip_win;   /* 图片剪裁用方框 */
         sRECT   position;   /* 图片的位置信息 */
         cl32_t  keycolor;   /* 图片的透明颜色 */
-        int32u  pal[256];   /* 调色板, 32位色 */
+        cl32_t  pal[256];   /* 调色板, 32位色 */
 
 } sIMAGE;
 

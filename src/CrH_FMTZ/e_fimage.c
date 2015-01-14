@@ -46,6 +46,10 @@
     #define PPM_DEFAULT     0
 #endif
 
+/*****************************************************************************/
+/*                                 加载引擎                                  */
+/*****************************************************************************/
+
 /*
 ---------------------------------------
     FreeImage 类型信息
@@ -1469,6 +1473,388 @@ engine_get (void_t)
     return (engine_fimage());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+/*****************************************************************************/
+/*                                 文件保存                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    FreeImage 文件保存
+---------------------------------------
+*/
+static bool_t
+fimage_save (
+  __CR_IN__ FREE_IMAGE_FORMAT   format,
+  __CR_IN__ const sIMAGE*       image,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[]
+    )
+{
+    leng_t      bpl;
+    byte_t*     ptr;
+    RGBQUAD*    pal;
+    FIBITMAP*   src;
+    FIBITMAP*   tmp;
+    /* ---------- */
+    uint_t  xx, yy, ww, hh;
+    uint_t  bpp, type, flags;
+    uint_t  rmsk, gmsk, bmsk;
+
+    /* 解析参数 */
+    if (argc < 1) {
+        bpp = flags = 0;
+    }
+    else
+    if (argc < 2) {
+        bpp = str2intxA(argv[0], NULL);
+        flags = 0;
+    }
+    else {
+        bpp = str2intxA(argv[0], NULL);
+        flags = str2intxA(argv[1], NULL);
+    }
+
+    /* 生成 FI 的位图 */
+    yy = rmsk = gmsk = bmsk = 0;
+    switch (image->fmt)
+    {
+        default:
+            err_set(__CR_E_FIMAGE_C__, image->fmt,
+                    "fimage_save()", "invalid param: image->fmt");
+            return (FALSE);
+
+        case CR_INDEX1: type = 1; yy = 2; break;
+        case CR_INDEX4: type = 4; yy = 16; break;
+        case CR_INDEX8: type = 8; yy = 256; break;
+
+        case CR_ARGBX555:
+        case CR_ARGB1555:
+            type = 16;
+            rmsk = 0x7C00;
+            gmsk = 0x03E0;
+            bmsk = 0x001F;
+            break;
+
+        case CR_ARGB565:
+            type = 16;
+            rmsk = 0xF800;
+            gmsk = 0x07E0;
+            bmsk = 0x001F;
+            break;
+
+        case CR_ARGB888:
+        case CR_ARGB8888:
+            type = image->fmt;
+            break;
+    }
+    ww = image->position.ww;
+    hh = image->position.hh;
+    src = FreeImage_Allocate(ww, hh, type, rmsk, gmsk, bmsk);
+    if (src == NULL) {
+        err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                "fimage_save()", "FreeImage_Allocate() failure");
+        return (FALSE);
+    }
+
+    /* 填充调色板 */
+    if (type <= 8) {
+        pal = FreeImage_GetPalette(src);
+        if (pal == NULL) {
+            err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                    "fimage_save()", "FreeImage_GetPalette() failure");
+            goto _failure;
+        }
+        ptr = (byte_t*)image->pal;
+        for (xx = 0; xx < yy; xx++, ptr += 4) {
+            pal[xx].rgbRed   = ptr[2];
+            pal[xx].rgbGreen = ptr[1];
+            pal[xx].rgbBlue  = ptr[0];
+        }
+    }
+
+    /* 填充图片数据 */
+    ptr = image->data;
+    bpl = FreeImage_GetLine(src);
+    if (image->gdi) {
+        for (yy = 0; yy < hh; yy++) {
+            mem_cpy(FreeImage_GetScanLine(src, yy), ptr, bpl);
+            ptr += image->bpl;
+        }
+    }
+    else {
+        for (; hh != 0; hh--) {
+            mem_cpy(FreeImage_GetScanLine(src, hh - 1), ptr, bpl);
+            ptr += image->bpl;
+        }
+    }
+
+    /* 转换到指定的格式 */
+    if ((bpp != 0) && ((bpp & 0xFE) != type))
+    {
+        switch (bpp)
+        {
+            default:
+                err_set(__CR_E_FIMAGE_C__, bpp,
+                        "fimage_save()", "invalid param: bpp");
+                goto _failure;
+
+            case 8:
+                if (type != 24) {
+                    tmp = FreeImage_ConvertTo24Bits(src);
+                    if (tmp == NULL) {
+                        err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                                "fimage_save()",
+                                "FreeImage_ConvertTo24Bits() failure");
+                        goto _failure;
+                    }
+                    FreeImage_Unload(src);
+                    src = tmp;
+                }
+                tmp = FreeImage_ColorQuantize(src, FIQ_WUQUANT);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ColorQuantize() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 9:
+                if (type != 24) {
+                    tmp = FreeImage_ConvertTo24Bits(src);
+                    if (tmp == NULL) {
+                        err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                                "fimage_save()",
+                                "FreeImage_ConvertTo24Bits() failure");
+                        goto _failure;
+                    }
+                    FreeImage_Unload(src);
+                    src = tmp;
+                }
+                tmp = FreeImage_ColorQuantize(src, FIQ_NNQUANT);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ColorQuantize() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 24:
+                tmp = FreeImage_ConvertTo24Bits(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertTo24Bits() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 32:
+                tmp = FreeImage_ConvertTo32Bits(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertTo32Bits() failure");
+                    goto _failure;
+                }
+                break;
+        }
+        FreeImage_Unload(src);
+        src = tmp;
+    }
+
+    /* 保存成指定的格式 */
+    if (!FreeImage_Save(format, src, name, flags)) {
+        err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                "fimage_save()", "FreeImage_Save() failure");
+        goto _failure;
+    }
+    FreeImage_Unload(src);
+    return (TRUE);
+
+_failure:
+    FreeImage_Unload(src);
+    return (FALSE);
+}
+
+/*
+=======================================
+    BMP 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_bmp (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_BMP, img, name, argc, argv));
+}
+
+/*
+=======================================
+    EXR 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_exr (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_EXR, img, name, argc, argv));
+}
+
+/*
+=======================================
+    J2K 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_j2k (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_J2K, img, name, argc, argv));
+}
+
+/*
+=======================================
+    JP2 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_jp2 (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_JP2, img, name, argc, argv));
+}
+
+/*
+=======================================
+    JPG 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_jpg (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_JPEG, img, name, argc, argv));
+}
+
+/*
+=======================================
+    JXR 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_jxr (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_JXR, img, name, argc, argv));
+}
+
+/*
+=======================================
+    PNG 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_png (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_PNG, img, name, argc, argv));
+}
+
+/*
+=======================================
+    PNM 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_pnm (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_PBM, img, name, argc, argv));
+}
+
+/*
+=======================================
+    TIFF 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_tif (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_TIFF, img, name, argc, argv));
+}
+
+/*
+=======================================
+    TGA 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_tga (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_TARGA, img, name, argc, argv));
+}
+
+/*
+=======================================
+    WEBP 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_webp (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_WEBP, img, name, argc, argv));
+}
 
 #endif  /* !__CR_E_FIMAGE_C__ */
 
