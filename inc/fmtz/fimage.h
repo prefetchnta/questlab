@@ -82,9 +82,13 @@ CR_API bool_t   save_img_jpg  (const sIMAGE *img, const ansi_t *name,
                                uint_t argc, ansi_t *argv[]);
 CR_API bool_t   save_img_jxr  (const sIMAGE *img, const ansi_t *name,
                                uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_pbm  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   save_img_pgm  (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
 CR_API bool_t   save_img_png  (const sIMAGE *img, const ansi_t *name,
                                uint_t argc, ansi_t *argv[]);
-CR_API bool_t   save_img_pnm  (const sIMAGE *img, const ansi_t *name,
+CR_API bool_t   save_img_ppm  (const sIMAGE *img, const ansi_t *name,
                                uint_t argc, ansi_t *argv[]);
 CR_API bool_t   save_img_tif  (const sIMAGE *img, const ansi_t *name,
                                uint_t argc, ansi_t *argv[]);

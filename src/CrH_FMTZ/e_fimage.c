@@ -1668,7 +1668,7 @@ fimage_save (
 
     /* 保存成指定的格式 */
     if (!FreeImage_Save(format, src, name, flags)) {
-        err_set(__CR_E_FIMAGE_C__, CR_NULL,
+        err_set(__CR_E_FIMAGE_C__, FALSE,
                 "fimage_save()", "FreeImage_Save() failure");
         goto _failure;
     }
@@ -1778,6 +1778,38 @@ save_img_jxr (
 
 /*
 =======================================
+    PBM 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_pbm (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_PBM, img, name, argc, argv));
+}
+
+/*
+=======================================
+    PGM 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_pgm (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_PGM, img, name, argc, argv));
+}
+
+/*
+=======================================
     PNG 文件保存
 =======================================
 */
@@ -1794,18 +1826,18 @@ save_img_png (
 
 /*
 =======================================
-    PNM 文件保存
+    PPM 文件保存
 =======================================
 */
 CR_API bool_t
-save_img_pnm (
+save_img_ppm (
   __CR_IN__ const sIMAGE*   img,
   __CR_IN__ const ansi_t*   name,
   __CR_IN__ uint_t          argc,
   __CR_IN__ ansi_t*         argv[]
     )
 {
-    return (fimage_save(FIF_PBM, img, name, argc, argv));
+    return (fimage_save(FIF_PPM, img, name, argc, argv));
 }
 
 /*
