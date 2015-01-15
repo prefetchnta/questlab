@@ -663,6 +663,7 @@ data_type (
   __CR_IN__ const ansi_t*   type
     )
 {
+    /* BeaEngine */
     if (chr_cmpA(type, "Bea:", 4) == 0) {
         type += 4;
         s_unasm_doit = unasm_bea_show;
@@ -688,6 +689,7 @@ data_mode (
   __CR_IN__ const ansi_t*   mode
     )
 {
+    /* BeaEngine */
     if (chr_cmpA(mode, "Bea:", 4) == 0) {
         mode += 4;
         s_BeaOptions = BEA_DEF_OPT;
