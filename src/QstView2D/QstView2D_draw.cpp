@@ -950,12 +950,10 @@ qst_save_show3 (
     path = str_dupA(name);
     if (path == NULL)
         return (FALSE);
-    fext = str_allocA(str_sizeA(name));
-    if (fext == NULL) {
-        mem_free(path);
-        return (FALSE);
-    }
     retc = FALSE;
+    fext = str_allocA(str_sizeA(name));
+    if (fext == NULL)
+        goto _func_out1;
     filext_removeA(path);
     filext_extractA(fext, name);
     ww = parm->image->position.ww;
@@ -973,22 +971,22 @@ qst_save_show3 (
             rect_set_wh(&box, xx, yy, cw, ch);
             save = image_grab(parm->image, &box);
             if (save == NULL)
-                goto _func_out;
+                goto _func_out2;
             full = str_fmtA("%s(%u,%u)%s", path, xx, yy, fext);
             if (full == NULL) {
                 image_del(save);
-                goto _func_out;
+                goto _func_out2;
             }
             retc = qst_save_img(save, parm, full, argc, argv);
             image_del(save);
             mem_free(full);
             if (!retc)
-                goto _func_out;
+                goto _func_out2;
         }
     }
-    retc = TRUE;
-_func_out:
+_func_out2:
     mem_free(fext);
+_func_out1:
     mem_free(path);
     return (retc);
 }

@@ -935,7 +935,9 @@ qst_v2d_g2d_save (
         return (FALSE);
     _ENTER_V2D_SINGLE_
     ctx = (sQstView2D*)parm;
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
     ret = qst_save_now(ctx, argv[1], argc - 2, &argv[2]);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
     return (ret);
 }
@@ -960,7 +962,9 @@ qst_v2d_g2d_saveall (
         return (FALSE);
     _ENTER_V2D_SINGLE_
     ctx = (sQstView2D*)parm;
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
     ret = qst_save_all(ctx, argv[1], argc - 2, &argv[2]);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
     return (ret);
 }
@@ -985,7 +989,9 @@ qst_v2d_g2d_savenow (
         return (FALSE);
     _ENTER_V2D_SINGLE_
     ctx = (sQstView2D*)parm;
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
     ret = qst_save_show(ctx, argv[1], argc - 2, &argv[2]);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
     return (ret);
 }
