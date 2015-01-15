@@ -128,7 +128,7 @@ save_img_raw (
     ww = img->position.ww;
     hh = img->position.hh;
 
-    /* 解析参数, 除了最低位外为行对齐字节数 */
+    /* 解析参数 [除了最低位外为行对齐字节数] */
     flag = (argc < 1) ? 0 : str2intxA(argv[0], NULL);
     if (flag & 1)
     {

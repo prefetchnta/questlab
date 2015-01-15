@@ -1502,14 +1502,6 @@ fimage_save (
     uint_t  bpp, type, flags;
     uint_t  rmsk, gmsk, bmsk;
 
-    /* 解析参数 */
-    bpp = flags = 0;
-    if (argc > 0) {
-        flags = str2intxA(argv[0], NULL);
-        if (argc > 1)
-            bpp = str2intxA(argv[1], NULL);
-    }
-
     /* 生成 FI 的位图 */
     yy = rmsk = gmsk = bmsk = 0;
     switch (image->fmt)
@@ -1578,6 +1570,14 @@ fimage_save (
     else {
         for (; hh != 0; hh--, ptr += image->bpl)
             mem_cpy(FreeImage_GetScanLine(src, hh - 1), ptr, bpl);
+    }
+
+    /* 解析参数 [FI 保存标志] [目标格式0/8/9/24/32] */
+    bpp = flags = 0;
+    if (argc > 0) {
+        flags = str2intxA(argv[0], NULL);
+        if (argc > 1)
+            bpp = str2intxA(argv[1], NULL);
     }
 
     /* 转换到指定的格式 */
