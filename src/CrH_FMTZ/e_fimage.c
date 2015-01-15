@@ -1503,17 +1503,11 @@ fimage_save (
     uint_t  rmsk, gmsk, bmsk;
 
     /* 解析参数 */
-    if (argc < 1) {
-        bpp = flags = 0;
-    }
-    else
-    if (argc < 2) {
-        bpp = str2intxA(argv[0], NULL);
-        flags = 0;
-    }
-    else {
-        bpp = str2intxA(argv[0], NULL);
-        flags = str2intxA(argv[1], NULL);
+    bpp = flags = 0;
+    if (argc > 0) {
+        flags = str2intxA(argv[0], NULL);
+        if (argc > 1)
+            bpp = str2intxA(argv[1], NULL);
     }
 
     /* 生成 FI 的位图 */
@@ -1578,16 +1572,12 @@ fimage_save (
     ptr = image->data;
     bpl = FreeImage_GetLine(src);
     if (image->gdi) {
-        for (yy = 0; yy < hh; yy++) {
+        for (yy = 0; yy < hh; yy++, ptr += image->bpl)
             mem_cpy(FreeImage_GetScanLine(src, yy), ptr, bpl);
-            ptr += image->bpl;
-        }
     }
     else {
-        for (; hh != 0; hh--) {
+        for (; hh != 0; hh--, ptr += image->bpl)
             mem_cpy(FreeImage_GetScanLine(src, hh - 1), ptr, bpl);
-            ptr += image->bpl;
-        }
     }
 
     /* 转换到指定的格式 */
