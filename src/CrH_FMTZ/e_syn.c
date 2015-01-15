@@ -21,6 +21,7 @@
 #define __CR_E_SYN_C__ 0x40D7F244UL
 
 #include "fmtint.h"
+#include "pixels.h"
 #include "fmtz/syn.h"
 
 /* 引擎常数表 */
@@ -29,6 +30,10 @@
 #define _CR_FMTZ_WIDE_
 #include "e_syn.inl"
 #undef  _CR_FMTZ_WIDE_
+
+/*****************************************************************************/
+/*                                 加载引擎                                  */
+/*****************************************************************************/
 
 /*
 ---------------------------------------
@@ -85,6 +90,109 @@ engine_get (void_t)
     return (engine_syn());
 }
 #endif  /* _CR_BUILD_DLL_ */
+
+/*****************************************************************************/
+/*                                 文件保存                                  */
+/*****************************************************************************/
+
+/*
+=======================================
+    ARGB 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_argb (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    uint_t  hh;
+    leng_t  back;
+    leng_t  nbpl;
+    int32u  vals;
+    file_t  file;
+    byte_t* line;
+    sIMAGE* cnvt;
+
+    /* 创建文件 */
+    CR_NOUSE(argc); CR_NOUSE(argv);
+    file = file_openA(name, CR_FO_WO);
+    if (file == NULL) {
+        err_set(__CR_E_SYN_C__, CR_NULL,
+                "save_img_argb()", "file_openA() failure");
+        return (FALSE);
+    }
+
+    /* 保存文件头 */
+    if (!file_putd(mk_tag4("BGRA"), file)) {
+        err_set(__CR_E_SYN_C__, FALSE,
+                "save_img_argb()", "file_putd() failure");
+        goto _failure;
+    }
+    if (!file_putd(0x08080808UL, file)) {
+        err_set(__CR_E_SYN_C__, FALSE,
+                "save_img_argb()", "file_putd() failure");
+        goto _failure;
+    }
+    vals = img->position.ww;
+    if (!file_putd_le(vals, file)) {
+        err_set(__CR_E_SYN_C__, FALSE,
+                "save_img_argb()", "file_putd_le() failure");
+        goto _failure;
+    }
+    vals = img->position.hh;
+    if (!file_putd_le(vals, file)) {
+        err_set(__CR_E_SYN_C__, FALSE,
+                "save_img_argb()", "file_putd_le() failure");
+        goto _failure;
+    }
+
+    /* 转换格式 */
+    if (img->fmt == CR_ARGB8888) {
+        cnvt = (sIMAGE*)img;
+    }
+    else {
+        cnvt = img_auto_to_32(NULL, 0, 0, img);
+        if (cnvt == NULL) {
+            err_set(__CR_E_SYN_C__, CR_NULL,
+                    "save_img_argb()", "img_auto_to_32() failure");
+            goto _failure;
+        }
+    }
+
+    /* 写入文件 */
+    line = cnvt->data;
+    hh   = cnvt->position.hh;
+    nbpl = cnvt->position.ww;
+    nbpl *= sizeof(int32u);
+    if (cnvt->gdi)
+        line += cnvt->size - cnvt->bpl;
+    for (; hh != 0; hh--) {
+        back = file_write(line, nbpl, file);
+        if (back != nbpl) {
+            err_set(__CR_E_SYN_C__, back,
+                    "save_img_argb()", "file_write() failure");
+            if (cnvt != (sIMAGE*)img)
+                image_del(cnvt);
+            goto _failure;
+        }
+        if (cnvt->gdi)
+            line -= cnvt->bpl;
+        else
+            line += cnvt->bpl;
+    }
+    if (cnvt != (sIMAGE*)img)
+        image_del(cnvt);
+    file_close(file);
+    return (TRUE);
+
+_failure:
+    file_close(file);
+    file_deleteA(name);
+    return (FALSE);
+}
 
 #endif  /* !__CR_E_SYN_C__ */
 

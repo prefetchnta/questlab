@@ -57,7 +57,12 @@ CR_API sFMT_PRT*    load_syn_gca (iDATIN *datin, const sLOADER *param);
 /*                               图片文件格式                                */
 /*****************************************************************************/
 
+/***** 文件加载 API 组 *****/
 CR_API sFMT_PIC*    load_syn_argb (iDATIN *datin, const sLOADER *param);
+
+/***** 文件保存 API 组 *****/
+CR_API bool_t   save_img_argb (const sIMAGE *img, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
 
 #endif  /* !__CR_SYN_H__ */
 
