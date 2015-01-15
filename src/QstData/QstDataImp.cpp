@@ -28,12 +28,6 @@
 /* 外部库引用 */
 #pragma comment (lib, "BeaEngine.lib")
 
-/* 类型的取值 */
-#define TYPE_BEA_UNASM      0
-
-/* 观察与模式 */
-static int32u   s_type;
-
 /* 解析执行体 */
 ansi_t* (*s_unasm_doit) (const void_t *data, leng_t size);
 
@@ -669,17 +663,18 @@ data_type (
   __CR_IN__ const ansi_t*   type
     )
 {
-    if (chr_cmpA(type, "Bea ", 4) == 0) {
-        s_type = TYPE_BEA_UNASM;
+    if (chr_cmpA(type, "Bea:", 4) == 0) {
+        type += 4;
         s_unasm_doit = unasm_bea_show;
-        if (strcmp(type + 4, "X86") == 0)
+        if (strcmp(type, "X86") == 0)
             s_BeaArchi = 0;
         else
-        if (strcmp(type + 4, "X64") == 0)
+        if (strcmp(type, "X64") == 0)
             s_BeaArchi = 64;
         else
-        if (strcmp(type + 4, "8086") == 0)
+        if (strcmp(type, "8086") == 0)
             s_BeaArchi = 16;
+        return;
     }
 }
 
@@ -693,24 +688,20 @@ data_mode (
   __CR_IN__ const ansi_t*   mode
     )
 {
-    switch (s_type)
-    {
-        default:
-            break;
-
-        case TYPE_BEA_UNASM:
-            s_BeaOptions = BEA_DEF_OPT;
-            if (strcmp(mode, "Masm") == 0)
-                s_BeaOptions |= MasmSyntax;
-            else
-            if (strcmp(mode, "GoAsm") == 0)
-                s_BeaOptions |= GoAsmSyntax;
-            else
-            if (strcmp(mode, "Nasm") == 0)
-                s_BeaOptions |= NasmSyntax;
-            else
-            if (strcmp(mode, "AT&T") == 0)
-                s_BeaOptions |= ATSyntax;
-            break;
+    if (chr_cmpA(mode, "Bea:", 4) == 0) {
+        mode += 4;
+        s_BeaOptions = BEA_DEF_OPT;
+        if (strcmp(mode, "Masm") == 0)
+            s_BeaOptions |= MasmSyntax;
+        else
+        if (strcmp(mode, "GoAsm") == 0)
+            s_BeaOptions |= GoAsmSyntax;
+        else
+        if (strcmp(mode, "Nasm") == 0)
+            s_BeaOptions |= NasmSyntax;
+        else
+        if (strcmp(mode, "AT&T") == 0)
+            s_BeaOptions |= ATSyntax;
+        return;
     }
 }
