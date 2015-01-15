@@ -1015,13 +1015,19 @@ qst_v2d_g2d_grab (
     /* 参数解析 <X> <Y> <Width> <Height> <文件名> [...] */
     if (argc < 6)
         return (FALSE);
-    _ENTER_V2D_SINGLE_
     ctx = (sQstView2D*)parm;
+    if (ctx->image == NULL)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
     box.x1 = str2intxA(argv[1]);
     box.y1 = str2intxA(argv[2]);
     box.ww = str2intxA(argv[3]);
+    if (box.ww == 0)
+        box.ww = ctx->image->position.ww - box.x1;
     box.hh = str2intxA(argv[4]);
+    if (box.hh == 0)
+        box.hh = ctx->image->position.hh - box.y1;
     rect_set_wh(&box, box.x1, box.y1, box.ww, box.hh);
     ret = qst_save_show2(ctx, argv[5], argc - 6, &argv[6], &box, -1.0f, FALSE);
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
@@ -1049,13 +1055,19 @@ qst_v2d_g2d_rotz (
     /* 参数解析 <X> <Y> <Width> <Height> <CCW> <Lerp> <文件名> [...] */
     if (argc < 8)
         return (FALSE);
-    _ENTER_V2D_SINGLE_
     ctx = (sQstView2D*)parm;
+    if (ctx->image == NULL)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
     box.x1 = str2intxA(argv[1]);
     box.y1 = str2intxA(argv[2]);
     box.ww = str2intxA(argv[3]);
+    if (box.ww == 0)
+        box.ww = ctx->image->position.ww - box.x1;
     box.hh = str2intxA(argv[4]);
+    if (box.hh == 0)
+        box.hh = ctx->image->position.hh - box.y1;
     rect_set_wh(&box, box.x1, box.y1, box.ww, box.hh);
     ccw = str2fp32A(argv[5]);
     if (ccw < 0.0f) {
@@ -1106,8 +1118,11 @@ qst_v2d_g2d_tile (
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
     tww = str2intxA(argv[1]);
     thh = str2intxA(argv[2]);
+    if (thh == 0) thh = tww;
     adx = str2intxA(argv[3]);
+    if (adx == 0) adx = tww;
     ady = str2intxA(argv[4]);
+    if (ady == 0) ady = thh;
     ret = qst_save_show3(ctx, argv[5], argc - 6, &argv[6], tww, thh, adx, ady);
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
