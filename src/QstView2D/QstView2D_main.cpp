@@ -1052,7 +1052,7 @@ qst_v2d_g2d_rotz (
     fp32_t      ccw;
     sQstView2D* ctx;
 
-    /* 参数解析 <X> <Y> <Width> <Height> <CCW> <Lerp> <文件名> [...] */
+    /* 参数解析 <X> <Y> <Width> <Height> <CCW> <LERP> <文件名> [...] */
     if (argc < 8)
         return (FALSE);
     ctx = (sQstView2D*)parm;
