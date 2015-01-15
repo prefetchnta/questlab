@@ -972,7 +972,7 @@ qst_save_show3 (
             save = image_grab(parm->image, &box);
             if (save == NULL)
                 goto _func_out2;
-            full = str_fmtA("%s(%u,%u)%s", path, xx, yy, fext);
+            full = str_fmtA("%s(%04u,%04u)%s", path, xx, yy, fext);
             if (full == NULL) {
                 image_del(save);
                 goto _func_out2;

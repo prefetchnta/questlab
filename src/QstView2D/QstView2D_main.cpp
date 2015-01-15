@@ -998,6 +998,124 @@ qst_v2d_g2d_savenow (
 
 /*
 ---------------------------------------
+    保存当前显示图片 (局部)
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_grab (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sRECT       box;
+    bool_t      ret;
+    sQstView2D* ctx;
+
+    /* 参数解析 <X> <Y> <Width> <Height> <文件名> [...] */
+    if (argc < 6)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
+    box.x1 = str2intxA(argv[1]);
+    box.y1 = str2intxA(argv[2]);
+    box.ww = str2intxA(argv[3]);
+    box.hh = str2intxA(argv[4]);
+    rect_set_wh(&box, box.x1, box.y1, box.ww, box.hh);
+    ret = qst_save_show2(ctx, argv[5], argc - 6, &argv[6], &box, -1.0f, FALSE);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
+    保存当前显示图片 (旋转)
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_rotz (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sRECT       box;
+    bool_t      ret;
+    fp32_t      ccw;
+    sQstView2D* ctx;
+
+    /* 参数解析 <X> <Y> <Width> <Height> <CCW> <Lerp> <文件名> [...] */
+    if (argc < 8)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
+    box.x1 = str2intxA(argv[1]);
+    box.y1 = str2intxA(argv[2]);
+    box.ww = str2intxA(argv[3]);
+    box.hh = str2intxA(argv[4]);
+    rect_set_wh(&box, box.x1, box.y1, box.ww, box.hh);
+    ccw = str2fp32A(argv[5]);
+    if (ccw < 0.0f) {
+        ccw = -ccw;
+        ret = TRUE;
+    }
+    else {
+        ret = FALSE;
+    }
+    while (ccw >= 360.0f)
+        ccw -= 360.0f;
+    if (ret) {
+        ccw = 360.0f - ccw;
+        if (ccw >= 360.0f)
+            ccw -= 360.0f;
+    }
+    ret = (str2intxA(argv[6])) ? FALSE : TRUE;
+    ret = qst_save_show2(ctx, argv[7], argc - 8, &argv[8], &box, ccw, ret);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
+    保存当前显示图片 (切片)
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_tile (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    uint_t      tww;
+    uint_t      thh;
+    uint_t      adx;
+    uint_t      ady;
+    bool_t      ret;
+    sQstView2D* ctx;
+
+    /* 参数解析 <TileW> <TileH> <StepX> <StepY> <文件名> [...] */
+    if (argc < 6)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    ctx = (sQstView2D*)parm;
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
+    tww = str2intxA(argv[1]);
+    thh = str2intxA(argv[2]);
+    adx = str2intxA(argv[3]);
+    ady = str2intxA(argv[4]);
+    ret = qst_save_show3(ctx, argv[5], argc - 6, &argv[6], tww, thh, adx, ady);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
     设置资源根目录路径
 ---------------------------------------
 */
@@ -1100,6 +1218,9 @@ static const sQST_CMD   s_cmdz[] =
     { "g2d:save",    qst_v2d_g2d_save    },
     { "g2d:saveall", qst_v2d_g2d_saveall },
     { "g2d:savenow", qst_v2d_g2d_savenow },
+    { "g2d:grab",    qst_v2d_g2d_grab    },
+    { "g2d:rotz",    qst_v2d_g2d_rotz    },
+    { "g2d:tile",    qst_v2d_g2d_tile    },
 
     /***** 二维插件命令 *****/
     { "g2d:ext:free", qst_v2d_ext_free },
