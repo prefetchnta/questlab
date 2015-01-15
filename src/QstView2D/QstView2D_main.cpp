@@ -1084,7 +1084,7 @@ qst_v2d_g2d_rotz (
         if (ccw >= 360.0f)
             ccw -= 360.0f;
     }
-    ret = (str2intxA(argv[6])) ? FALSE : TRUE;
+    ret = str2intxA(argv[6]) ? FALSE : TRUE;
     ret = qst_save_show2(ctx, argv[7], argc - 8, &argv[8], &box, ccw, ret);
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
