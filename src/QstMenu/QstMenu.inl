@@ -557,49 +557,49 @@ void __fastcall TfrmMain::subCP1252Click(TObject *Sender)
 void __fastcall TfrmMain::subBeaX86Click(TObject *Sender)
 {
     /* BeaEngine X86 */
-    qst_send_cmdz("hex:type \"Bea X86\"");
+    qst_send_cmdz("hex:type Bea:X86");
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subBeaX64Click(TObject *Sender)
 {
     /* BeaEngine X64 */
-    qst_send_cmdz("hex:type \"Bea X64\"");
+    qst_send_cmdz("hex:type Bea:X64");
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subBea8086Click(TObject *Sender)
 {
     /* BeaEngine 8086 */
-    qst_send_cmdz("hex:type \"Bea 8086\"");
+    qst_send_cmdz("hex:type Bea:8086");
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subBeaMasmClick(TObject *Sender)
 {
     /* BeaEngine Masm */
-    qst_send_cmdz("hex:mode Masm");
+    qst_send_cmdz("hex:mode Bea:Masm");
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subBeaGoAsmClick(TObject *Sender)
 {
     /* BeaEngine GoAsm */
-    qst_send_cmdz("hex:mode GoAsm");
+    qst_send_cmdz("hex:mode Bea:GoAsm");
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subBeaNasmClick(TObject *Sender)
 {
     /* BeaEngine Nasm */
-    qst_send_cmdz("hex:mode Nasm");
+    qst_send_cmdz("hex:mode Bea:Nasm");
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subBeaATTClick(TObject *Sender)
 {
     /* BeaEngine AT&T */
-    qst_send_cmdz("hex:mode AT&T");
+    qst_send_cmdz("hex:mode Bea:AT&T");
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
