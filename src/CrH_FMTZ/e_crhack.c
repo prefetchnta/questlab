@@ -108,8 +108,8 @@ save_img_raw (
     uchar*  line;
     file_t  file;
     uint_t  flag;
-    sIMAGE* cvttemp;
-    sIMAGE* convert;
+    sIMAGE* temp;
+    sIMAGE* cnvt;
     leng_t  back, nbpl;
     uint_t  xx, ww, hh;
     /* ------------- */
@@ -150,55 +150,55 @@ save_img_raw (
     if (fmt == CR_INDEX8)
     {
         /* 灰度图片 */
-        cvttemp = img_auto_to_32(NULL, 0, 0, img);
-        if (cvttemp == NULL) {
+        temp = img_auto_to_32(NULL, 0, 0, img);
+        if (temp == NULL) {
             err_set(__CR_E_HACK_C__, CR_NULL,
                     "save_img_raw()", "img_auto_to_32() failure");
             goto _failure;
         }
-        convert = image_new(0, 0, ww, hh, CR_INDEX8, cvttemp->gdi, 4);
-        if (convert == NULL) {
+        cnvt = image_new(0, 0, ww, hh, CR_INDEX8, temp->gdi, 4);
+        if (cnvt == NULL) {
             err_set(__CR_E_HACK_C__, CR_NULL,
                     "save_img_raw()", "image_new() failure");
-            image_del(cvttemp);
+            image_del(temp);
             goto _failure;
         }
 
         /* 灰度转换 */
-        for (sln = cvttemp->data, dln = convert->data; hh != 0; hh--) {
+        for (sln = temp->data, dln = cnvt->data; hh != 0; hh--) {
             for (spt = sln, dpt = dln, xx = ww; xx != 0; xx--, spt += 4)
                 *dpt++ = (byte_t)rgb2light(spt[2], spt[1], spt[0]);
-            sln += cvttemp->bpl;
-            dln += convert->bpl;
+            sln += temp->bpl;
+            dln += cnvt->bpl;
         }
-        image_del(cvttemp);
+        image_del(temp);
     }
     else
     {
         /* 高彩图片 */
         if (img->fmt == fmt) {
-            convert = (sIMAGE*)img;
+            cnvt = (sIMAGE*)img;
         }
         else {
-            convert = image_new(0, 0, ww, hh, fmt, FALSE, 4);
-            if (convert == NULL) {
+            cnvt = image_new(0, 0, ww, hh, fmt, FALSE, 4);
+            if (cnvt == NULL) {
                 err_set(__CR_E_HACK_C__, CR_NULL,
                         "save_img_raw()", "image_new() failure");
                 goto _failure;
             }
-            if (img_auto_to_xx(convert, img) == NULL) {
+            if (img_auto_to_xx(cnvt, img) == NULL) {
                 err_set(__CR_E_HACK_C__, CR_NULL,
                         "save_img_raw()", "img_auto_to_xx() failure");
-                image_del(convert);
+                image_del(cnvt);
                 goto _failure;
             }
         }
     }
 
     /* 写入文件 */
-    line = convert->data;
-    hh   = convert->position.hh;
-    nbpl = convert->position.ww;
+    line = cnvt->data;
+    hh   = cnvt->position.hh;
+    nbpl = cnvt->position.ww;
     nbpl *= bpc;
     if (flag != 0) {
         bpc = nbpl % flag;
@@ -207,33 +207,33 @@ save_img_raw (
         else
             flag = 0;
     }
-    if (convert->gdi)
-        line += convert->size - convert->bpl;
+    if (cnvt->gdi)
+        line += cnvt->size - cnvt->bpl;
     for (; hh != 0; hh--) {
         back = file_write(line, nbpl, file);
         if (back != nbpl) {
             err_set(__CR_E_HACK_C__, back,
                     "save_img_raw()", "file_write() failure");
-            if (convert != (sIMAGE*)img)
-                image_del(convert);
+            if (cnvt != (sIMAGE*)img)
+                image_del(cnvt);
             goto _failure;
         }
-        if (convert->gdi)
-            line -= convert->bpl;
+        if (cnvt->gdi)
+            line -= cnvt->bpl;
         else
-            line += convert->bpl;
+            line += cnvt->bpl;
         for (xx = 0; xx < flag; xx++) {
             if (!file_putb(0x00, file)) {
                 err_set(__CR_E_HACK_C__, FALSE,
                         "save_img_raw()", "file_putb() failure");
-                if (convert != (sIMAGE*)img)
-                    image_del(convert);
+                if (cnvt != (sIMAGE*)img)
+                    image_del(cnvt);
                 goto _failure;
             }
         }
     }
-    if (convert != (sIMAGE*)img)
-        image_del(convert);
+    if (cnvt != (sIMAGE*)img)
+        image_del(cnvt);
     file_close(file);
     return (TRUE);
 
