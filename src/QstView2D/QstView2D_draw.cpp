@@ -1,10 +1,6 @@
 
 #include "QstView2D.h"
 
-/* 鼠标状态设置宏 */
-#define QST_SET_CURSOR(hwnd, cursor) \
-    SetClassLongPtr(hwnd, GCLP_HCURSOR, (LONG_PTR)(cursor))
-
 /* 内部函数的声明 */
 CR_API void_t   qst_clear (sQstView2D *parm);
 
@@ -796,7 +792,6 @@ qst_save_all (
     fle = str_dupA(name);
     if (fle == NULL)
         return (FALSE);
-    QST_SET_CURSOR(parm->hwnd, parm->cur_busy);
     ext = str_allocA(str_sizeA(name));
     if (ext == NULL)
         goto _failure1;
@@ -831,7 +826,6 @@ qst_save_all (
     }
     mem_free(ext);
     mem_free(fle);
-    QST_SET_CURSOR(parm->hwnd, parm->cur_free);
     return (TRUE);
 
 _failure3:
@@ -840,7 +834,6 @@ _failure2:
     mem_free(ext);
 _failure1:
     mem_free(fle);
-    QST_SET_CURSOR(parm->hwnd, parm->cur_free);
     return (FALSE);
 }
 
@@ -891,4 +884,111 @@ qst_save_show (
     mem_free(fext);
     mem_free(path);
     return (rett);
+}
+
+/*
+=======================================
+    保存显示图片 (局部+旋转)
+=======================================
+*/
+CR_API bool_t
+qst_save_show2 (
+  __CR_IN__ const sQstView2D*   parm,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[],
+  __CR_IN__ const sRECT*        box,
+  __CR_IN__ fp32_t              ccw,
+  __CR_IN__ bool_t              fast
+    )
+{
+    bool_t  retc;
+    sIMAGE* save;
+
+    if (parm->image == NULL)
+        return (FALSE);
+    if (ccw < 0.0f)
+        save = image_grab(parm->image, box);
+    else
+        save = image_rotz(parm->image, box, ccw * CR_DTOR, fast);
+    if (save == NULL)
+        return (FALSE);
+    retc = qst_save_img(save, parm, name, argc, argv);
+    image_del(save);
+    return (retc);
+}
+
+/*
+=======================================
+    保存显示图片 (切图)
+=======================================
+*/
+CR_API bool_t
+qst_save_show3 (
+  __CR_IN__ const sQstView2D*   parm,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[],
+  __CR_IN__ uint_t              tilew,
+  __CR_IN__ uint_t              tileh,
+  __CR_IN__ uint_t              stepx,
+  __CR_IN__ uint_t              stepy
+    )
+{
+    sRECT   box;
+    bool_t  retc;
+    sIMAGE* save;
+    ansi_t* path;
+    ansi_t* fext;
+    ansi_t* full;
+    uint_t  xx, yy;
+    uint_t  ww, hh;
+    uint_t  cw, ch;
+
+    if (parm->image == NULL)
+        return (FALSE);
+    path = str_dupA(name);
+    if (path == NULL)
+        return (FALSE);
+    fext = str_allocA(str_sizeA(name));
+    if (fext == NULL) {
+        mem_free(path);
+        return (FALSE);
+    }
+    retc = FALSE;
+    filext_removeA(path);
+    filext_extractA(fext, name);
+    ww = parm->image->position.ww;
+    hh = parm->image->position.hh;
+    for (yy = 0; yy < hh; yy += stepy) {
+        if (tileh > hh - yy)
+            ch = hh - yy;
+        else
+            ch = tileh;
+        for (xx = 0; xx < ww; xx += stepx) {
+            if (tilew > ww - xx)
+                cw = ww - xx;
+            else
+                cw = tilew;
+            rect_set_wh(&box, xx, yy, cw, ch);
+            save = image_grab(parm->image, &box);
+            if (save == NULL)
+                goto _func_out;
+            full = str_fmtA("%s(%u,%u)%s", path, xx, yy, fext);
+            if (full == NULL) {
+                image_del(save);
+                goto _func_out;
+            }
+            retc = qst_save_img(save, parm, full, argc, argv);
+            image_del(save);
+            mem_free(full);
+            if (!retc)
+                goto _func_out;
+        }
+    }
+    retc = TRUE;
+_func_out:
+    mem_free(fext);
+    mem_free(path);
+    return (retc);
 }

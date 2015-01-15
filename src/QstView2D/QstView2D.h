@@ -87,4 +87,8 @@ typedef struct
 
 } sQstView2D;
 
+/* 鼠标状态设置宏 */
+#define QST_SET_CURSOR(hwnd, cursor) \
+    SetClassLongPtr(hwnd, GCLP_HCURSOR, (LONG_PTR)(cursor))
+
 #endif  /* !__QL_QSTVIEW2D_H__ */

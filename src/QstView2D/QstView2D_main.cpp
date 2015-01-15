@@ -23,6 +23,14 @@ CR_API bool_t   qst_save_all (const sQstView2D *parm,
 CR_API bool_t   qst_save_show (const sQstView2D *parm,
                                const ansi_t *name, uint_t argc,
                                ansi_t *argv[]);
+CR_API bool_t   qst_save_show2 (const sQstView2D *parm,
+                                const ansi_t *name, uint_t argc,
+                                ansi_t *argv[], const sRECT *box,
+                                fp32_t ccw, bool_t fast);
+CR_API bool_t   qst_save_show3 (const sQstView2D *parm,
+                                const ansi_t *name, uint_t argc,
+                                ansi_t *argv[], uint_t tilew, uint_t tileh,
+                                uint_t stepx, uint_t stepy);
 /*
 ---------------------------------------
     FMTZ 插件释放回调
