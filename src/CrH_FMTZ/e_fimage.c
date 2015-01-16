@@ -1572,7 +1572,7 @@ fimage_save (
             mem_cpy(FreeImage_GetScanLine(src, hh - 1), ptr, bpl);
     }
 
-    /* 解析参数 [FI 保存标志] [目标格式0/8/9/24/32] */
+    /* 解析参数 [FI 保存标志] [目标格式] */
     bpp = flags = 0;
     if (argc > 0) {
         flags = str2intxA(argv[0], NULL);
@@ -1581,16 +1581,35 @@ fimage_save (
     }
 
     /* 转换到指定的格式 */
-    if ((bpp != 0) && ((bpp & 0xFE) != type))
+    if (bpp != 0)
     {
-        switch (bpp)
+        switch (bpp & 0xFF)
         {
             default:
                 err_set(__CR_E_FIMAGE_C__, bpp,
                         "fimage_save()", "invalid param: bpp");
                 goto _failure;
 
-            case 8:
+            case 1:
+                tmp = FreeImage_Dither(src, (FREE_IMAGE_DITHER)(bpp >> 8));
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()", "FreeImage_Dither() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 4:
+                tmp = FreeImage_ConvertTo4Bits(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertTo4Bits() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 7:
                 if (type != 24) {
                     tmp = FreeImage_ConvertTo24Bits(src);
                     if (tmp == NULL) {
@@ -1607,6 +1626,16 @@ fimage_save (
                     err_set(__CR_E_FIMAGE_C__, CR_NULL,
                             "fimage_save()",
                             "FreeImage_ColorQuantize() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 8:
+                tmp = FreeImage_ConvertTo8Bits(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertTo8Bits() failure");
                     goto _failure;
                 }
                 break;
@@ -1632,6 +1661,36 @@ fimage_save (
                 }
                 break;
 
+            case 15:
+                tmp = FreeImage_ConvertTo16Bits555(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertTo16Bits555() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 16:
+                tmp = FreeImage_ConvertTo16Bits565(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertTo16Bits565() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 17:
+                tmp = FreeImage_ConvertToUINT16(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertToUINT16() failure");
+                    goto _failure;
+                }
+                break;
+
             case 24:
                 tmp = FreeImage_ConvertTo24Bits(src);
                 if (tmp == NULL) {
@@ -1651,6 +1710,36 @@ fimage_save (
                     goto _failure;
                 }
                 break;
+
+            case 33:
+                tmp = FreeImage_ConvertToFloat(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertToFloat() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 64:
+                tmp = FreeImage_ConvertToRGB16(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertToRGB16() failure");
+                    goto _failure;
+                }
+                break;
+
+            case 96:
+                tmp = FreeImage_ConvertToRGBF(src);
+                if (tmp == NULL) {
+                    err_set(__CR_E_FIMAGE_C__, CR_NULL,
+                            "fimage_save()",
+                            "FreeImage_ConvertToRGBF() failure");
+                    goto _failure;
+                }
+                break;
         }
         FreeImage_Unload(src);
         src = tmp;
@@ -1660,6 +1749,7 @@ fimage_save (
     if (!FreeImage_Save(format, src, name, flags)) {
         err_set(__CR_E_FIMAGE_C__, FALSE,
                 "fimage_save()", "FreeImage_Save() failure");
+        file_deleteA(name);
         goto _failure;
     }
     FreeImage_Unload(src);
@@ -1704,6 +1794,54 @@ save_img_exr (
 
 /*
 =======================================
+    GIF 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_gif (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_GIF, img, name, argc, argv));
+}
+
+/*
+=======================================
+    HDR 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_hdr (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_HDR, img, name, argc, argv));
+}
+
+/*
+=======================================
+    ICO 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_ico (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_ICO, img, name, argc, argv));
+}
+
+/*
+=======================================
     J2K 文件保存
 =======================================
 */
@@ -1716,6 +1854,22 @@ save_img_j2k (
     )
 {
     return (fimage_save(FIF_J2K, img, name, argc, argv));
+}
+
+/*
+=======================================
+    JNG 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_jng (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_JNG, img, name, argc, argv));
 }
 
 /*
@@ -1780,6 +1934,22 @@ save_img_pbm (
     )
 {
     return (fimage_save(FIF_PBM, img, name, argc, argv));
+}
+
+/*
+=======================================
+    PFM 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_pfm (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_PFM, img, name, argc, argv));
 }
 
 /*
@@ -1864,6 +2034,22 @@ save_img_tga (
 
 /*
 =======================================
+    WBMP 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_wbmp (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_WBMP, img, name, argc, argv));
+}
+
+/*
+=======================================
     WEBP 文件保存
 =======================================
 */
@@ -1876,6 +2062,22 @@ save_img_webp (
     )
 {
     return (fimage_save(FIF_WEBP, img, name, argc, argv));
+}
+
+/*
+=======================================
+    XPM 文件保存
+=======================================
+*/
+CR_API bool_t
+save_img_xpm (
+  __CR_IN__ const sIMAGE*   img,
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          argc,
+  __CR_IN__ ansi_t*         argv[]
+    )
+{
+    return (fimage_save(FIF_XPM, img, name, argc, argv));
 }
 
 #endif  /* !__CR_E_FIMAGE_C__ */
