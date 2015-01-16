@@ -115,6 +115,11 @@ typedef struct
 
 } sFRUSTUM;
 
+/* 模型的类型 */
+#define MODEL_TYPE_WF       0   /* WAVEFRONT OBJ */
+#define MODEL_TYPE_MESHML   1   /* KlayGE MeshML */
+#define MODEL_TYPE_MS_X     2   /* MS X Mesh */
+
 /*****************************************************************************/
 /*                                  高度图                                   */
 /*****************************************************************************/
@@ -314,10 +319,39 @@ CR_API leng_t   wfront_gen_mesh2 (vec3d_t *xyz, vec3d_t *nrm, vec2d_t *uvw,
 CR_API leng_t   wfront_gen_mesh3 (vec3d_t *xyz, vec3d_t *nrm, vec3d_t *uvw,
                         leng_t bpv1, leng_t bpv2, leng_t bpv3, void_t *ibuf,
                             leng_t *inum, const sWAVEFRONT *obj, leng_t idx);
-/* 模型的类型 */
-#define MODEL_TYPE_WF       0   /* WAVEFRONT OBJ */
-#define MODEL_TYPE_MESHML   1   /* KlayGE MeshML */
-#define MODEL_TYPE_MS_X     2   /* MS X Mesh */
+
+/*****************************************************************************/
+/*                              KlayGE MeshML                                */
+/*****************************************************************************/
+
+/* MeshML 材质结构 */
+typedef struct
+{
+        vec3d_t ka, kd, ks, ke;
+        ansi_t* map_kd, *map_d, *bump;
+        fp32_t  opacity, specular_level, shininess;
+
+} sMESHML_MTRL;
+
+/* MeshML 骨骼结构 */
+typedef struct
+{
+        ansi_t  *name;
+        sint_t  parent;
+        vec4d_t real, dual;
+
+} sMESHML_BONE;
+
+/* MeshML 模型结构 */
+typedef struct
+{
+        ansi_t  *name;
+        int32u  *ibuf;
+        leng_t  start;
+        leng_t  mtl_id;
+        leng_t  vnum, inum;
+
+} sMESHML_MESH;
 
 #endif  /* !__CR_GFX3_H__ */
 

@@ -2351,6 +2351,25 @@ d3d9_util_make_tran2 (
 
 /*
 =======================================
+    合成变换矩阵3
+=======================================
+*/
+CR_API void_t
+d3d9_util_make_tran3 (
+  __CR_OT__ mat4x4_t*       mat,
+  __CR_IN__ const vec3d_t*  scale,
+  __CR_IN__ const vec4d_t*  quat,
+  __CR_IN__ const vec3d_t*  move
+    )
+{
+    D3DXMatrixTransformation((D3DXMATRIX*)mat, NULL,
+                             NULL, (D3DXVECTOR3*)scale,
+                             NULL, (D3DXQUATERNION*)quat,
+                             (D3DXVECTOR3*)move);
+}
+
+/*
+=======================================
     变换 3D 向量
 =======================================
 */
@@ -2599,6 +2618,7 @@ static const sD3D9_CALL s_d3d9call =
     /* 助手函数 */
     d3d9_util_make_tran1,
     d3d9_util_make_tran2,
+    d3d9_util_make_tran3,
     d3d9_util_tran_vec3d,
     d3d9_util_matx_inverse,
     d3d9_util_matx_transpose,

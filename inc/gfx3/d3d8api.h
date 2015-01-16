@@ -280,6 +280,9 @@ typedef struct
                                     const vec3d_t *axis, fp32_t angle,
                                     const vec3d_t *move);
 
+        void_t  (*util_make_tran3) (mat4x4_t *mat, const vec3d_t *scale,
+                                    const vec4d_t *quat, const vec3d_t *move);
+
         void_t  (*util_tran_vec3d) (vec3d_t *output, const vec3d_t *input,
                                     const mat4x4_t *mat);
         /* 矩阵 */
