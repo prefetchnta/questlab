@@ -1,6 +1,16 @@
 +
 +
 +
+    SINCE 2015-01-16
+    ~~~~~~~~~~~~~~~~
+    [m] CrH_GFX3.dll
+    [m] GFX3_D3D8.dll
+    [m] GFX3_D3D9.dll
+    [m] GFX2_DX8.dll
+    [m] GFX2_DX9.dll
++
++
++
     SINCE 2015-01-15
     ~~~~~~~~~~~~~~~~
     [m] CrH_GFX3.dll
