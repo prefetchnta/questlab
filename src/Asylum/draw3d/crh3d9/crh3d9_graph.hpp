@@ -18,17 +18,17 @@ typedef asy::IMesh* (*create_crh3d9_mesh_wf_t) (const sWAVEFRONT* obj, leng_t id
 /******************/
 /* Effect Factory */
 /******************/
-CR_API asy::IEffect* create_crh3d9_ffct_wf_fixed (uint_t fvf, bool_t tex,
-                                                  const asy::crh3d9_main* main);
+CR_API asy::IEffect* create_crh3d9_ffct_mesh_fixed (uint_t fvf, bool_t tex,
+                                                    const asy::crh3d9_main* main);
 
 CR_API asy::IEffect* create_crh3d9_ffct_light_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
                                 BOOL* onoff, DWORD count, const asy::crh3d9_main* main);
 
 CR_API asy::IEffect* create_crh3d9_ffct_alpha_fixed (DWORD value, const asy::crh3d9_main* main);
 
-#define EFFECT_STT_RS   0
-#define EFFECT_STT_SS   1
-#define EFFECT_STT_TSS  2
+#define EFFECT_STT_RS   0   // SetRenderState()
+#define EFFECT_STT_SS   1   // SetSamplerState()
+#define EFFECT_STT_TSS  2   // SetTextureStageState()
 CR_API asy::IEffect* create_crh3d9_ffct_state_fixed (const int32u* list, uint_t ninp, uint_t nout,
                                                      uint_t type, const asy::crh3d9_main* main);
 

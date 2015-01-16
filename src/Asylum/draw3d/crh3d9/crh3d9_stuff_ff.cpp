@@ -13,6 +13,116 @@
 /* Asylum Namespace */
 namespace asy {
 
+/************************/
+/* Material Mesh Effect */
+/************************/
+class crh3d9_ffct_mesh_m_fixed : public IEffect
+{
+private:
+    uint_t              m_vxfvf;
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ======================================================== */
+    crh3d9_ffct_mesh_m_fixed (uint_t fvf, const crh3d9_main* main)
+    {
+        m_vxfvf = fvf;
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* ============================== */
+    virtual ~crh3d9_ffct_mesh_m_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
+        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
+        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
+        m_devcs->SetFVF(m_vxfvf);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+        m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
+        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
+        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
+    }
+};
+
+/*********************/
+/* Color Mesh Effect */
+/*********************/
+class crh3d9_ffct_mesh_c_fixed : public IEffect
+{
+private:
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ============================================ */
+    crh3d9_ffct_mesh_c_fixed (const crh3d9_main* main)
+    {
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* ============================== */
+    virtual ~crh3d9_ffct_mesh_c_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+        m_devcs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+    }
+};
+
+/***********************/
+/* Texture Mesh Effect */
+/***********************/
+class crh3d9_ffct_mesh_t_fixed : public IEffect
+{
+private:
+    LPDIRECT3DDEVICE9   m_devcs;
+
+public:
+    /* ============================================ */
+    crh3d9_ffct_mesh_t_fixed (const crh3d9_main* main)
+    {
+        m_devcs = main->get_main()->dev;
+    }
+
+    /* ============================== */
+    virtual ~crh3d9_ffct_mesh_t_fixed ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        m_devcs->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+        m_devcs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+        m_devcs->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+    }
+};
+
 /****************/
 /* Light Effect */
 /****************/
@@ -344,6 +454,21 @@ public:
 };
 
 }   /* namespace */
+
+/* ===================================================================== */
+CR_API asy::IEffect* create_crh3d9_ffct_mesh_fixed (uint_t fvf, bool_t tex,
+                                                    const asy::crh3d9_main* main)
+{
+    asy::IEffect*   ffct;
+
+    if (fvf != 0)
+        ffct = new asy::crh3d9_ffct_mesh_m_fixed (fvf, main);
+    else if (tex)
+        ffct = new asy::crh3d9_ffct_mesh_t_fixed (main);
+    else
+        ffct = new asy::crh3d9_ffct_mesh_c_fixed (main);
+    return (ffct);
+}
 
 /* =================================================================================== */
 CR_API asy::IEffect* create_crh3d9_ffct_light_fixed (D3DCOLOR* ambient, D3DLIGHT9* light,
