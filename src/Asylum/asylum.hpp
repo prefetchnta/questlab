@@ -148,7 +148,7 @@
     #include "draw3d/crh3d9/crh3d9_main.hpp"
     #include "draw3d/crh3d9/crh3d9_shader.hpp"
     #include "draw3d/crh3d9/crh3d9_texture.hpp"
-    #include "draw3d/crh3d9/crh3d9_graph.hpp"
+    #include "draw3d/crh3d9/crhack3d9.hpp"
     #ifndef _CR_NO_PRAGMA_LIB_
         #ifndef ASY_USE_STATIC
             #pragma comment (lib, "CrH_GFX3.lib")

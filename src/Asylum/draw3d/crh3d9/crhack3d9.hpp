@@ -4,8 +4,8 @@
 ***************************************
 */
 
-#ifndef __CRH3D9_GRAPH_HPP__
-#define __CRH3D9_GRAPH_HPP__
+#ifndef __CRHACK3D9_HPP__
+#define __CRHACK3D9_HPP__
 
 /****************/
 /* Factory Type */
@@ -81,4 +81,4 @@ CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
                     const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
                         bool_t neg_z, fp32_t scale, const char* type);
 
-#endif  /* __CRH3D9_GRAPH_HPP__ */
+#endif  /* __CRHACK3D9_HPP__ */
