@@ -333,20 +333,25 @@ height_map_place (
   __CR_IN__ bool_t          large
     )
 {
-    uint_t  idx;
     fp32_t  min, tmp;
 
     if (large)
     {
         /* 四个边框的最小高度 */
-        min = height_map_get(htmap, aabb->v[0].x + x,
-                                    aabb->v[0].z + z);
-        for (idx = 1; idx < 4; idx++) {
-            tmp = height_map_get(htmap, aabb->v[idx].x + x,
-                                        aabb->v[idx].z + z);
-            if (min > tmp)
-                min = tmp;
-        }
+        min = height_map_get(htmap, aabb->v[AABB_MAX_IDX].x + x,
+                                    aabb->v[AABB_MAX_IDX].z + z);
+        tmp = height_map_get(htmap, aabb->v[AABB_MIN_IDX].x + x,
+                                    aabb->v[AABB_MIN_IDX].z + z);
+        if (min > tmp)
+            min = tmp;
+        tmp = height_map_get(htmap, aabb->v[AABB_MAX_IDX].x + x,
+                                    aabb->v[AABB_MIN_IDX].z + z);
+        if (min > tmp)
+            min = tmp;
+        tmp = height_map_get(htmap, aabb->v[AABB_MIN_IDX].x + x,
+                                    aabb->v[AABB_MAX_IDX].z + z);
+        if (min > tmp)
+            min = tmp;
     }
     else
     {
@@ -355,7 +360,7 @@ height_map_place (
     }
 
     /* 计算底面的偏移值 */
-    return (min - aabb->v[4].y);
+    return (min - aabb->v[AABB_MIN_IDX].y);
 }
 
 #endif  /* !__CR_HEIGHTMAP_C__ */
