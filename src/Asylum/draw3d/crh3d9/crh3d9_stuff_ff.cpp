@@ -39,18 +39,22 @@ public:
     /* =============== */
     virtual void enter ()
     {
-        m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
-        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
-        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
+        if (!(m_vxfvf & D3DFVF_DIFFUSE)) {
+            m_devcs->SetRenderState(D3DRS_COLORVERTEX, FALSE);
+            m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
+            m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
+        }
         m_devcs->SetFVF(m_vxfvf);
     }
 
     /* =============== */
     virtual void leave ()
     {
-        m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
-        m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
-        m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
+        if (!(m_vxfvf & D3DFVF_DIFFUSE)) {
+            m_devcs->SetRenderState(D3DRS_COLORVERTEX, TRUE);
+            m_devcs->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
+            m_devcs->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_COLOR2);
+        }
     }
 };
 
