@@ -1084,7 +1084,7 @@ qst_v2d_g2d_rotz (
         if (ccw >= 360.0f)
             ccw -= 360.0f;
     }
-    ret = str2intxA(argv[6]) ? FALSE : TRUE;
+    ret = str2intxA(argv[6]) ? TRUE : FALSE;
     ret = qst_save_show2(ctx, argv[7], argc - 8, &argv[8], &box, ccw, ret);
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
@@ -1230,12 +1230,12 @@ static const sQST_CMD   s_cmdz[] =
     { "g2d:clear",   qst_v2d_g2d_clear   },
     { "g2d:canvas",  qst_v2d_g2d_canvas  },
     { "g2d:refresh", qst_v2d_g2d_refresh },
-    { "g2d:save",    qst_v2d_g2d_save    },
-    { "g2d:saveall", qst_v2d_g2d_saveall },
-    { "g2d:savenow", qst_v2d_g2d_savenow },
     { "g2d:grab",    qst_v2d_g2d_grab    },
     { "g2d:rotz",    qst_v2d_g2d_rotz    },
     { "g2d:tile",    qst_v2d_g2d_tile    },
+    { "g2d:save",    qst_v2d_g2d_save    },
+    { "g2d:saveall", qst_v2d_g2d_saveall },
+    { "g2d:savenow", qst_v2d_g2d_savenow },
 
     /***** 二维插件命令 *****/
     { "g2d:ext:free", qst_v2d_ext_free },

@@ -129,7 +129,7 @@ CR_API void_t   color_step_pal (int32u *pal, uint_t count);
 /* 抓图和回图 */
 CR_API sIMAGE*  image_grab (const sIMAGE *img, const sRECT *box);
 CR_API sIMAGE*  image_rotz (const sIMAGE *img, const sRECT *box,
-                            fp32_t ccw, bool_t fast);
+                            fp32_t ccw, bool_t lerp);
 CR_API void_t   image_back (const sIMAGE *dst, const sIMAGE *src,
                             sint_t left, sint_t top);
 /* 扩展/收缩图片边框 */
