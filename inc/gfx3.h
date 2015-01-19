@@ -116,9 +116,9 @@ typedef struct
 } sFRUSTUM;
 
 /* 模型的类型 */
-#define MODEL_TYPE_WF       0   /* WAVEFRONT OBJ */
+#define MODEL_TYPE_WF_OBJ   0   /* WAVEFRONT OBJ */
 #define MODEL_TYPE_MESHML   1   /* KlayGE MeshML */
-#define MODEL_TYPE_MS_X     2   /* MS X Mesh */
+#define MODEL_TYPE_X_MESH   2   /* DirectX Mesh */
 
 /*****************************************************************************/
 /*                                  高度图                                   */

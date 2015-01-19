@@ -888,7 +888,7 @@ qst_save_show (
 
 /*
 =======================================
-    保存显示图片 (局部+旋转)
+    保存显示图片 (局部+旋转+缩放)
 =======================================
 */
 CR_API bool_t
@@ -899,7 +899,8 @@ qst_save_show2 (
   __CR_IN__ ansi_t*             argv[],
   __CR_IN__ const sRECT*        box,
   __CR_IN__ fp32_t              ccw,
-  __CR_IN__ bool_t              fast
+  __CR_IN__ fp32_t              scale,
+  __CR_IN__ bool_t              lerp
     )
 {
     bool_t  retc;
@@ -910,7 +911,7 @@ qst_save_show2 (
     if (ccw < 0.0f)
         save = image_grab(parm->image, box);
     else
-        save = image_rotz(parm->image, box, ccw * CR_DTOR, fast);
+        save = image_rotz(parm->image, box, ccw * CR_DTOR, scale, lerp);
     if (save == NULL)
         return (FALSE);
     retc = qst_save_img(save, parm, name, argc, argv);

@@ -159,10 +159,21 @@
     g2d:grab <X> <Y> <Width> <Height> <文件名> [...]
         显示图片局部保存（保存图片的附加参数从后面传入）
 
-    g2d:rotz <X> <Y> <Width> <Height> <CCW> <LERP> <文件名> [...]
+    g2d:zoom <X> <Y> <Width> <Height> <Scale> <Lerp> <文件名> [...]
+        显示图片缩放保存（保存图片的附加参数从后面传入）
+            Scale   图片缩放的比例
+            Lerp    是否双线性插值
+
+    g2d:rote <X> <Y> <Width> <Height> <CCW> <Lerp> <文件名> [...]
         显示图片旋转保存（保存图片的附加参数从后面传入）
             CCW     逆时针旋转角度
-            LERP    是否双线性插值
+            Lerp    是否双线性插值
+
+    g2d:rotz <X> <Y> <Width> <Height> <CCW> <Scale> <Lerp> <文件名> [...]
+        显示图片缩放旋转保存（保存图片的附加参数从后面传入）
+            CCW     逆时针旋转角度
+            Scale   图片缩放的比例
+            Lerp    是否双线性插值
 
     g2d:tile <TileW> <TileH> <StepX> <StepY> <文件名> [...]
         显示图片切片保存（保存图片的附加参数从后面传入）

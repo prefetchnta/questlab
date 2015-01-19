@@ -12,25 +12,19 @@ CR_API void_t   qst_draw_image (sQstView2D *parm);
 CR_API void_t   qst_make_image (sQstView2D *parm);
 CR_API void_t   qst_set_index (sQstView2D *parm, int32u index);
 CR_API void_t   qst_render_data (sQstView2D *parm, sLOADER *ldrs);
-CR_API void_t   qst_move_xy (sQstView2D *parm, sint_t delta_x,
-                             sint_t delta_y);
-CR_API bool_t   qst_save_now (const sQstView2D *parm,
-                              const ansi_t *name, uint_t argc,
-                              ansi_t *argv[]);
-CR_API bool_t   qst_save_all (const sQstView2D *parm,
-                              const ansi_t *name, uint_t argc,
-                              ansi_t *argv[]);
-CR_API bool_t   qst_save_show (const sQstView2D *parm,
-                               const ansi_t *name, uint_t argc,
-                               ansi_t *argv[]);
-CR_API bool_t   qst_save_show2 (const sQstView2D *parm,
-                                const ansi_t *name, uint_t argc,
-                                ansi_t *argv[], const sRECT *box,
-                                fp32_t ccw, bool_t fast);
-CR_API bool_t   qst_save_show3 (const sQstView2D *parm,
-                                const ansi_t *name, uint_t argc,
-                                ansi_t *argv[], uint_t tilew, uint_t tileh,
-                                uint_t stepx, uint_t stepy);
+CR_API void_t   qst_move_xy (sQstView2D *parm, sint_t delta_x, sint_t delta_y);
+CR_API bool_t   qst_save_now (const sQstView2D *parm, const ansi_t *name,
+                              uint_t argc, ansi_t *argv[]);
+CR_API bool_t   qst_save_all (const sQstView2D *parm, const ansi_t *name,
+                              uint_t argc, ansi_t *argv[]);
+CR_API bool_t   qst_save_show (const sQstView2D *parm, const ansi_t *name,
+                               uint_t argc, ansi_t *argv[]);
+CR_API bool_t   qst_save_show2 (const sQstView2D *parm, const ansi_t *name,
+                                uint_t argc, ansi_t *argv[], const sRECT *box,
+                                fp32_t ccw, fp32_t scale, bool_t lerp);
+CR_API bool_t   qst_save_show3 (const sQstView2D *parm, const ansi_t *name,
+                                uint_t argc, ansi_t *argv[], uint_t tilew,
+                                uint_t tileh, uint_t stepx, uint_t stepy);
 /*
 ---------------------------------------
     FMTZ 插件释放回调
@@ -1029,7 +1023,51 @@ qst_v2d_g2d_grab (
     if (box.hh == 0)
         box.hh = ctx->image->position.hh - box.y1;
     rect_set_wh(&box, box.x1, box.y1, box.ww, box.hh);
-    ret = qst_save_show2(ctx, argv[5], argc - 6, &argv[6], &box, -1.0f, FALSE);
+    ret = qst_save_show2(ctx, argv[5], argc - 6, &argv[6],
+                         &box, -1.0f, 0.0f, FALSE);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
+    保存当前显示图片 (缩放)
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_zoom (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sRECT       box;
+    bool_t      ret;
+    fp32_t      mul;
+    sQstView2D* ctx;
+
+    /* 参数解析 <X> <Y> <Width> <Height> <Scale> <Lerp> <文件名> [...] */
+    if (argc < 8)
+        return (FALSE);
+    ctx = (sQstView2D*)parm;
+    if (ctx->image == NULL)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
+    box.x1 = str2intxA(argv[1]);
+    box.y1 = str2intxA(argv[2]);
+    box.ww = str2intxA(argv[3]);
+    if (box.ww == 0)
+        box.ww = ctx->image->position.ww - box.x1;
+    box.hh = str2intxA(argv[4]);
+    if (box.hh == 0)
+        box.hh = ctx->image->position.hh - box.y1;
+    rect_set_wh(&box, box.x1, box.y1, box.ww, box.hh);
+    mul = str2fp32A(argv[5]);
+    ret = str2intxA(argv[6]) ? TRUE : FALSE;
+    ret = qst_save_show2(ctx, argv[7], argc - 8, &argv[8],
+                         &box, 0.0f, mul, ret);
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
     return (ret);
@@ -1041,7 +1079,7 @@ qst_v2d_g2d_grab (
 ---------------------------------------
 */
 static bool_t
-qst_v2d_g2d_rotz (
+qst_v2d_g2d_rote (
   __CR_IN__ void_t*     parm,
   __CR_IN__ uint_t      argc,
   __CR_IN__ ansi_t**    argv
@@ -1052,7 +1090,7 @@ qst_v2d_g2d_rotz (
     fp32_t      ccw;
     sQstView2D* ctx;
 
-    /* 参数解析 <X> <Y> <Width> <Height> <CCW> <LERP> <文件名> [...] */
+    /* 参数解析 <X> <Y> <Width> <Height> <CCW> <Lerp> <文件名> [...] */
     if (argc < 8)
         return (FALSE);
     ctx = (sQstView2D*)parm;
@@ -1085,7 +1123,67 @@ qst_v2d_g2d_rotz (
             ccw -= 360.0f;
     }
     ret = str2intxA(argv[6]) ? TRUE : FALSE;
-    ret = qst_save_show2(ctx, argv[7], argc - 8, &argv[8], &box, ccw, ret);
+    ret = qst_save_show2(ctx, argv[7], argc - 8, &argv[8],
+                         &box, ccw, 1.0f, ret);
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
+    _LEAVE_V2D_SINGLE_
+    return (ret);
+}
+
+/*
+---------------------------------------
+    保存当前显示图片 (旋转+缩放)
+---------------------------------------
+*/
+static bool_t
+qst_v2d_g2d_rotz (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sRECT       box;
+    bool_t      ret;
+    fp32_t      ccw;
+    fp32_t      mul;
+    sQstView2D* ctx;
+
+    /* 参数解析 <X> <Y> <Width> <Height> <CCW> <Scale> <Lerp> <文件名> [...] */
+    if (argc < 9)
+        return (FALSE);
+    ctx = (sQstView2D*)parm;
+    if (ctx->image == NULL)
+        return (FALSE);
+    _ENTER_V2D_SINGLE_
+    QST_SET_CURSOR(ctx->hwnd, ctx->cur_busy);
+    box.x1 = str2intxA(argv[1]);
+    box.y1 = str2intxA(argv[2]);
+    box.ww = str2intxA(argv[3]);
+    if (box.ww == 0)
+        box.ww = ctx->image->position.ww - box.x1;
+    box.hh = str2intxA(argv[4]);
+    if (box.hh == 0)
+        box.hh = ctx->image->position.hh - box.y1;
+    rect_set_wh(&box, box.x1, box.y1, box.ww, box.hh);
+    ccw = str2fp32A(argv[5]);
+    if (ccw < 0.0f) {
+        ccw = -ccw;
+        ret = TRUE;
+    }
+    else {
+        ret = FALSE;
+    }
+    while (ccw >= 360.0f)
+        ccw -= 360.0f;
+    if (ret) {
+        ccw = 360.0f - ccw;
+        if (ccw >= 360.0f)
+            ccw -= 360.0f;
+    }
+    mul = str2fp32A(argv[6]);
+    ret = str2intxA(argv[7]) ? TRUE : FALSE;
+    ret = qst_save_show2(ctx, argv[8], argc - 9, &argv[9],
+                         &box, ccw, mul, ret);
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
     return (ret);
@@ -1123,7 +1221,8 @@ qst_v2d_g2d_tile (
     if (adx == 0) adx = tww;
     ady = str2intxA(argv[4]);
     if (ady == 0) ady = thh;
-    ret = qst_save_show3(ctx, argv[5], argc - 6, &argv[6], tww, thh, adx, ady);
+    ret = qst_save_show3(ctx, argv[5], argc - 6, &argv[6],
+                         tww, thh, adx, ady);
     QST_SET_CURSOR(ctx->hwnd, ctx->cur_free);
     _LEAVE_V2D_SINGLE_
     return (ret);
@@ -1231,6 +1330,8 @@ static const sQST_CMD   s_cmdz[] =
     { "g2d:canvas",  qst_v2d_g2d_canvas  },
     { "g2d:refresh", qst_v2d_g2d_refresh },
     { "g2d:grab",    qst_v2d_g2d_grab    },
+    { "g2d:zoom",    qst_v2d_g2d_zoom    },
+    { "g2d:rote",    qst_v2d_g2d_rote    },
     { "g2d:rotz",    qst_v2d_g2d_rotz    },
     { "g2d:tile",    qst_v2d_g2d_tile    },
     { "g2d:save",    qst_v2d_g2d_save    },

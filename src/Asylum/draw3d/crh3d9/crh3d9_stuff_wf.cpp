@@ -362,7 +362,7 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
     base->real = struct_dup(obj, sWAVEFRONT);
     if (base->real == NULL)
         goto _failure1;
-    base->type = MODEL_TYPE_WF;
+    base->type = MODEL_TYPE_WF_OBJ;
     base->kill = wavefront_kill;
     base->tran = wavefront_tran;
     bound_get_aabb(&base->aabb, obj->p_v, obj->n_v, sizeof(vec3d_t));

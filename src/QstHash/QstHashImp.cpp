@@ -329,7 +329,7 @@ sum64_finish (
 }
 
 /*****************************************************************************/
-/*                                  CRC-7                                    */
+/*                                CRC-4/ITU                                  */
 /*****************************************************************************/
 
 /*
@@ -338,7 +338,277 @@ sum64_finish (
 ---------------------------------------
 */
 static void_t*
-crc7_init (void_t)
+crc4i_init (void_t)
+{
+    byte_t* ctx;
+
+    ctx = struct_new(byte_t);
+    if (ctx != NULL)
+        *ctx = 0x00;
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+crc4i_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+
+    *cvt = hash_crc_x(*cvt, 0x0C, TRUE, 4, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+crc4i_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+    byte_t  result = *cvt;
+
+    mem_free(ctx);
+    return (str_fmtA(": %02X", result));
+}
+
+/*****************************************************************************/
+/*                                CRC-5/EPC                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+crc5e_init (void_t)
+{
+    byte_t* ctx;
+
+    ctx = struct_new(byte_t);
+    if (ctx != NULL)
+        *ctx = 0x09;
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+crc5e_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+
+    *cvt = hash_crc_x(*cvt, 0x09, FALSE, 5, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+crc5e_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+    byte_t  result = *cvt;
+
+    mem_free(ctx);
+    return (str_fmtA(": %02X", result));
+}
+
+/*****************************************************************************/
+/*                                CRC-5/ITU                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+crc5i_init (void_t)
+{
+    byte_t* ctx;
+
+    ctx = struct_new(byte_t);
+    if (ctx != NULL)
+        *ctx = 0x00;
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+crc5i_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+
+    *cvt = hash_crc_x(*cvt, 0x15, TRUE, 5, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+crc5i_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+    byte_t  result = *cvt;
+
+    mem_free(ctx);
+    return (str_fmtA(": %02X", result));
+}
+
+/*****************************************************************************/
+/*                                CRC-5/USB                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+crc5u_init (void_t)
+{
+    byte_t* ctx;
+
+    ctx = struct_new(byte_t);
+    if (ctx != NULL)
+        *ctx = 0x1F;
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+crc5u_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+
+    *cvt = hash_crc_x(*cvt, 0x14, TRUE, 5, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+crc5u_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+    byte_t  result = *cvt ^ 0x1F;
+
+    mem_free(ctx);
+    return (str_fmtA(": %02X", result));
+}
+
+/*****************************************************************************/
+/*                                CRC-6/ITU                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+crc6i_init (void_t)
+{
+    byte_t* ctx;
+
+    ctx = struct_new(byte_t);
+    if (ctx != NULL)
+        *ctx = 0x00;
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+crc6i_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+
+    *cvt = hash_crc_x(*cvt, 0x30, TRUE, 6, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+crc6i_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    byte_t* cvt = (byte_t*)ctx;
+    byte_t  result = *cvt;
+
+    mem_free(ctx);
+    return (str_fmtA(": %02X", result));
+}
+
+/*****************************************************************************/
+/*                                CRC-7/MMC                                  */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+crc7m_init (void_t)
 {
     byte_t* ctx;
 
@@ -354,7 +624,7 @@ crc7_init (void_t)
 ---------------------------------------
 */
 static void_t
-crc7_update (
+crc7m_update (
   __CR_IO__ void_t*         ctx,
   __CR_IN__ const void_t*   data,
   __CR_IN__ leng_t          size
@@ -371,7 +641,7 @@ crc7_update (
 ---------------------------------------
 */
 static ansi_t*
-crc7_finish (
+crc7m_finish (
   __CR_IO__ void_t* ctx
     )
 {
@@ -1888,7 +2158,12 @@ CR_API const sQHSH_UNIT hasher[] = {
 { "CheckSum16", TRUE, sum32_init, sum32_update, sum16_finish },
 { "CheckSum32", TRUE, sum32_init, sum32_update, sum32_finish },
 { "CheckSum64", TRUE, sum64_init, sum64_update, sum64_finish },
-{ "CRC-7", TRUE, crc7_init, crc7_update, crc7_finish },
+{ "CRC-4/ITU", TRUE, crc4i_init, crc4i_update, crc4i_finish },
+{ "CRC-5/EPC", TRUE, crc5e_init, crc5e_update, crc5e_finish },
+{ "CRC-5/ITU", TRUE, crc5i_init, crc5i_update, crc5i_finish },
+{ "CRC-5/USB", TRUE, crc5u_init, crc5u_update, crc5u_finish },
+{ "CRC-6/ITU", TRUE, crc6i_init, crc6i_update, crc6i_finish },
+{ "CRC-7/MMC", TRUE, crc7m_init, crc7m_update, crc7m_finish },
 { "CRC-8/ATM", TRUE, crc8a_init, crc8a_update, crc8a_finish },
 { "CRC-8/DALLAS", TRUE, crc8d_init, crc8d_update, crc8d_finish },
 { "CRC-16/CCITT (0000)", TRUE, crc16c_init_not, crc16c_update, crc16c_finish },
