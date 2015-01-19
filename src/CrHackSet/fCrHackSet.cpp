@@ -1107,6 +1107,75 @@ zbar_decode (
 }
 
 /*
+---------------------------------------
+    图片转换到 HSL
+---------------------------------------
+*/
+static bool_t
+image_cto_hsl (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    image_to_hsl(dest);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片转换到 HSV
+---------------------------------------
+*/
+static bool_t
+image_cto_hsv (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    image_to_hsv(dest);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    图片转换到 YUV
+---------------------------------------
+*/
+static bool_t
+image_cto_yuv (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* dest;
+
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    image_to_yuv(dest);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1138,5 +1207,8 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_contrast", image_contrast },
     { "crhack_saturation", image_saturation },
     { "crhack_zbar_decode", zbar_decode },
+    { "crhack_to_hsl", image_cto_hsl },
+    { "crhack_to_hsv", image_cto_hsv },
+    { "crhack_to_yuv", image_cto_yuv },
     { NULL, NULL },
 };
