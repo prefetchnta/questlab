@@ -835,6 +835,60 @@ crc16c_finish (
 }
 
 /*****************************************************************************/
+/*                                CRC-16/DNP                                 */
+/*****************************************************************************/
+
+/*
+---------------------------------------
+    获取哈希对象
+---------------------------------------
+*/
+static void_t*
+crc16d_init (void_t)
+{
+    int16u* ctx;
+
+    ctx = struct_new(int16u);
+    if (ctx != NULL)
+        *ctx = 0x0000;
+    return (ctx);
+}
+
+/*
+---------------------------------------
+    更新哈希计算
+---------------------------------------
+*/
+static void_t
+crc16d_update (
+  __CR_IO__ void_t*         ctx,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    int16u* cvt = (int16u*)ctx;
+
+    *cvt = hash_crc16x(*cvt, 0xA6BC, TRUE, data, size);
+}
+
+/*
+---------------------------------------
+    结束哈希计算
+---------------------------------------
+*/
+static ansi_t*
+crc16d_finish (
+  __CR_IO__ void_t* ctx
+    )
+{
+    int16u* cvt = (int16u*)ctx;
+    int16u  result = *cvt ^ 0xFFFF;
+
+    mem_free(ctx);
+    return (str_fmtA(": %04X", result));
+}
+
+/*****************************************************************************/
 /*                            CRC-16/IBM (0000)                              */
 /*****************************************************************************/
 
@@ -2168,6 +2222,7 @@ CR_API const sQHSH_UNIT hasher[] = {
 { "CRC-8/DALLAS", TRUE, crc8d_init, crc8d_update, crc8d_finish },
 { "CRC-16/CCITT (0000)", TRUE, crc16c_init_not, crc16c_update, crc16c_finish },
 { "CRC-16/CCITT (FFFF)", TRUE, crc16c_init, crc16c_update, crc16c_finish },
+{ "CRC-16/DNP", TRUE, crc16d_init, crc16d_update, crc16d_finish },
 { "CRC-16/IBM (0000)", TRUE, crc16i_init, crc16i_update, crc16i_finish },
 { "CRC-16/IBM (FFFF)", TRUE, crc16i_init_not, crc16i_update, crc16i_finish },
 { "CRC-32/AAL5", TRUE, crc32a_init, crc32a_update, crc32a_finish },
