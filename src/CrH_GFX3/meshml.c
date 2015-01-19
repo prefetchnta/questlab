@@ -270,29 +270,32 @@ meshml_load (
             }
             if (str_cmpIA(node->name, CR_AS("material")) == 0) {
                 value = xml_attr_bufferU(CR_AS("ambient"), node);
-                if (value == NULL)
+                if (value == NULL) {
                     struct_zero(&mtmp.ka, vec3d_t);
-                else
-                if (meshml_parse_vecf(&mtmp.ka.x, value, 3) != 3)
-                    break;
-                else
+                }
+                else {
+                    if (meshml_parse_vecf(&mtmp.ka.x, value, 3) != 3)
+                        break;
                     mtmp.flags |= MESHML_KA;
+                }
                 value = xml_attr_bufferU(CR_AS("diffuse"), node);
-                if (value == NULL)
+                if (value == NULL) {
                     struct_zero(&mtmp.kd, vec3d_t);
-                else
-                if (meshml_parse_vecf(&mtmp.kd.x, value, 3) != 3)
-                    break;
-                else
+                }
+                else {
+                    if (meshml_parse_vecf(&mtmp.kd.x, value, 3) != 3)
+                        break;
                     mtmp.flags |= MESHML_KD;
+                }
                 value = xml_attr_bufferU(CR_AS("specular"), node);
-                if (value == NULL)
+                if (value == NULL) {
                     struct_zero(&mtmp.ks, vec3d_t);
-                else
-                if (meshml_parse_vecf(&mtmp.ks.x, value, 3) != 3)
-                    break;
-                else
+                }
+                else {
+                    if (meshml_parse_vecf(&mtmp.ks.x, value, 3) != 3)
+                        break;
                     mtmp.flags |= MESHML_KS;
+                }
                 value = xml_attr_bufferU(CR_AS("emit"), node);
                 if (value == NULL)
                     struct_zero(&mtmp.ke, vec3d_t);
