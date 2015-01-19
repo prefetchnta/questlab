@@ -148,6 +148,11 @@ CR_API bool_t   image_oper (const sIMAGE *dst, const sIMAGE *src,
 CR_API byte_t   histo_avge (const leng_t tab[256]);
 CR_API byte_t   histo_otsu (const leng_t tab[256]);
 
+/* 转换到特殊图 */
+CR_API bool_t   image_to_hsl (const sIMAGE *img);
+CR_API bool_t   image_to_hsv (const sIMAGE *img);
+CR_API bool_t   image_to_yuv (const sIMAGE *img);
+
 /* 转换到灰度图 */
 CR_API sIMAGE*  image_graying (const sIMAGE *img);
 
