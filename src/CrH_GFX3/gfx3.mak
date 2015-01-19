@@ -12,6 +12,7 @@ OBJ_LIST=.$(L)gfx3.$(O) \
          .$(L)terrain.$(O) \
          .$(L)interlock.$(O) \
          .$(L)heightmap.$(O) \
+         .$(L)meshml.$(O) \
          .$(L)wavefront.$(O) \
          .$(L)camera.$(O) \
          .$(L)frustum.$(O) \
@@ -26,6 +27,7 @@ SRC_LIST=.$(L)gfx3.$(C) \
          .$(L)terrain.$(C) \
          .$(L)interlock.$(C) \
          .$(L)heightmap.$(C) \
+         .$(L)meshml.$(C) \
          .$(L)wavefront.$(C) \
          .$(L)camera.$(C) \
          .$(L)frustum.$(C)

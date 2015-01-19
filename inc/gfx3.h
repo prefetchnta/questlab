@@ -327,11 +327,18 @@ CR_API leng_t   wfront_gen_mesh3 (vec3d_t *xyz, vec3d_t *nrm, vec3d_t *uvw,
 /* MeshML 材质结构 */
 typedef struct
 {
+        uint_t  flags;
         vec3d_t ka, kd, ks, ke;
         ansi_t* map_kd, *map_d, *bump;
-        fp32_t  opacity, specular_level, shininess;
+        fp32_t  opacity, splevel, shininess;
 
 } sMESHML_MTRL;
+
+/* 颜色标志 */
+#define MESHML_KA      1    /* 存在 Ka */
+#define MESHML_KD      2    /* 存在 Kd */
+#define MESHML_KS      4    /* 存在 Ks */
+#define MESHML_SET  0x8000  /* 已设参数 */
 
 /* MeshML 骨骼结构 */
 typedef struct
@@ -352,6 +359,35 @@ typedef struct
         leng_t  vnum, inum;
 
 } sMESHML_MESH;
+
+/* MeshML 模型文件 */
+typedef struct
+{
+        /* 版本号 */
+        uint_t          ver;
+
+        /* 顶点数据 */
+        leng_t          n_v;
+        vec3d_t*        p_v;
+        vec4d_t*        p_vn;
+        vec2d_t*        p_vt;
+
+        /* 网格数据 */
+        leng_t          n_g;
+        sMESHML_MESH*   p_g;
+
+        /* 材质数据 */
+        leng_t          n_m;
+        sMESHML_MTRL*   p_m;
+
+        /* 骨骼数据 */
+        leng_t          n_b;
+        sMESHML_BONE*   p_b;
+
+} sMESHML;
+
+CR_API bool_t   meshml_load (sMESHML *msh, const ansi_t *str);
+CR_API void_t   meshml_free (const sMESHML *msh);
 
 #endif  /* !__CR_GFX3_H__ */
 

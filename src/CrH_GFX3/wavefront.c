@@ -561,7 +561,7 @@ wfront_obj_load (
     if (obj->n_v == 0 || obj->p_v == NULL ||
         obj->n_f == 0 || obj->p_f == NULL ||
         obj->n_g == 0 || obj->p_g == NULL) {
-        err_set(__CR_WAVEFRONT_C__, CR_ERROR,
+        err_set(__CR_WAVEFRONT_C__, CR_NULL,
                 "wfront_obj_load()", "invalid OBJ format");
         goto _failure;
     }
@@ -1009,7 +1009,7 @@ wfront_mtl_load (
 
     /* 必须要有的数据 */
     if (obj->n_m == 0 || obj->p_m == NULL) {
-        err_set(__CR_WAVEFRONT_C__, CR_ERROR,
+        err_set(__CR_WAVEFRONT_C__, CR_NULL,
                 "wfront_mtl_load()", "invalid MTL format");
         goto _failure;
     }
@@ -1068,21 +1068,12 @@ wfront_obj_free (
     TRY_FREE(obj->p_vt);
     TRY_FREE(obj->p_vn);
     mem_free(obj->p_f);
-    for (idx = 0; idx < obj->n_g; idx++) {
-        mem_free(obj->p_g[idx].name);
-        TRY_FREE(obj->p_g[idx].mtl);
-    }
+    for (idx = 0; idx < obj->n_g; idx++)
+        wfront_g_free(&obj->p_g[idx]);
     mem_free(obj->p_g);
     if (obj->p_m != NULL) {
-        for (idx = 0; idx < obj->n_m; idx++) {
-            mem_free(obj->p_m[idx].name);
-            TRY_FREE(obj->p_m[idx].map_ka);
-            TRY_FREE(obj->p_m[idx].map_kd);
-            TRY_FREE(obj->p_m[idx].map_ks);
-            TRY_FREE(obj->p_m[idx].map_d);
-            TRY_FREE(obj->p_m[idx].map_ns);
-            TRY_FREE(obj->p_m[idx].bump);
-        }
+        for (idx = 0; idx < obj->n_m; idx++)
+            wfront_m_free(&obj->p_m[idx]);
         mem_free(obj->p_m);
     }
 }
