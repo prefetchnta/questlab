@@ -69,6 +69,15 @@
     <!-- RB 互换滤镜 -->
     <?crhack_swap_rb />
 
+    <!-- 转换到 HSL 滤镜 -->
+    <?crhack_to_hsl />
+
+    <!-- 转换到 HSV 滤镜 -->
+    <?crhack_to_hsv />
+
+    <!-- 转换到 YUV 滤镜 -->
+    <?crhack_to_yuv />
+
     <!-- 白色平衡滤镜 -->
     <?crhack_whitebl gate="127" />
 
