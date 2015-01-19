@@ -247,7 +247,7 @@ iGFX2_GDI_setPal (
     }
 
     /* 设置调色板 */
-    if (start >= count)
+    if (start >= type)
         start = 0;
     if (count > type - start)
         count = type - start;
