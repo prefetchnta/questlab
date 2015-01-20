@@ -72,14 +72,14 @@ meshml_m_free (
     sMESHML_MTRL*   unit;
 
     unit = (sMESHML_MTRL*)obj;
+    TRY_FREE(unit->self_ill);
+    TRY_FREE(unit->spr_lvl);
     TRY_FREE(unit->map_kd);
     TRY_FREE(unit->map_ks);
     TRY_FREE(unit->map_d);
-    TRY_FREE(unit->bump);
-    TRY_FREE(unit->spr_lvl);
-    TRY_FREE(unit->self_ill);
-    TRY_FREE(unit->gloss);
     TRY_FREE(unit->color);
+    TRY_FREE(unit->gloss);
+    TRY_FREE(unit->bump);
 }
 
 /*
@@ -465,7 +465,6 @@ meshml_load (
                     if (value == NULL ||
                         meshml_parse_vecf(&vtmp.xyz.x, value, 3) != 3)
                         break;
-                    vtmp.flags |= MESHML_XYZ;
                     if (node->closed) {
                         if (array_push_growT(&a_v, vec3d_t,
                                             &vtmp.xyz) == NULL) {
@@ -475,6 +474,9 @@ meshml_load (
                             goto _failure;
                         }
                         struct_zero(&vtmp, sMESHML_VX);
+                    }
+                    else {
+                        vtmp.flags |= MESHML_XYZ;
                     }
                     continue;
                 }
@@ -697,16 +699,9 @@ _failure:
     array_freeT(&a_vn, vec4d_t);
     array_freeT(&a_vt, vec2d_t);
     array_freeT(&a_v, vec3d_t);
+    meshml_m_free(&mtmp);
     TRY_FREE(gtmp.name);
     TRY_FREE(gtmp.ibuf);
-    TRY_FREE(mtmp.map_kd);
-    TRY_FREE(mtmp.map_ks);
-    TRY_FREE(mtmp.map_d);
-    TRY_FREE(mtmp.bump);
-    TRY_FREE(mtmp.spr_lvl);
-    TRY_FREE(mtmp.self_ill);
-    TRY_FREE(mtmp.gloss);
-    TRY_FREE(mtmp.color);
     TRY_FREE(btmp.name);
     xml_closeU(xml);
     return (FALSE);

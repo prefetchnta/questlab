@@ -64,8 +64,8 @@ wfront_m_free (
     TRY_FREE(unit->map_ka);
     TRY_FREE(unit->map_kd);
     TRY_FREE(unit->map_ks);
-    TRY_FREE(unit->map_d);
     TRY_FREE(unit->map_ns);
+    TRY_FREE(unit->map_d);
     TRY_FREE(unit->bump);
 }
 
@@ -1044,8 +1044,8 @@ _failure:
     TRY_FREE(mtmp.map_ka);
     TRY_FREE(mtmp.map_kd);
     TRY_FREE(mtmp.map_ks);
-    TRY_FREE(mtmp.map_d);
     TRY_FREE(mtmp.map_ns);
+    TRY_FREE(mtmp.map_d);
     TRY_FREE(mtmp.bump);
     ini_closeU(ini);
     return (FALSE);
