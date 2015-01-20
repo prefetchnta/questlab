@@ -329,8 +329,9 @@ typedef struct
 {
         uint_t  flags;
         vec3d_t ka, kd, ks, ke;
-        ansi_t* map_kd, *map_d, *bump;
         fp32_t  opacity, splevel, shininess;
+        ansi_t  *map_kd, *map_ks, *map_d, *bump;
+        ansi_t  *spr_lvl, *self_ill, *gloss, *color;
 
 } sMESHML_MTRL;
 

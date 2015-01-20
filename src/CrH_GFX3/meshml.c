@@ -36,10 +36,10 @@ typedef struct
 
 } sMESHML_VX;
 
-#define MESHML_XYZ      1   /* 存在 XYZ */
-#define MESHML_NRM      2   /* 存在 NRM */
-#define MESHML_UVW      4   /* 存在 UVW */
-#define MESHML_JID      8   /* 存在 JID */
+#define MESHML_XYZ     1    /* 存在 XYZ */
+#define MESHML_NRM     2    /* 存在 NRM */
+#define MESHML_UVW     4    /* 存在 UVW */
+#define MESHML_JID     8    /* 存在 JID */
 #define MESHML_SET  0x8000  /* 已设参数 */
 
 /*
@@ -73,8 +73,13 @@ meshml_m_free (
 
     unit = (sMESHML_MTRL*)obj;
     TRY_FREE(unit->map_kd);
+    TRY_FREE(unit->map_ks);
     TRY_FREE(unit->map_d);
     TRY_FREE(unit->bump);
+    TRY_FREE(unit->spr_lvl);
+    TRY_FREE(unit->self_ill);
+    TRY_FREE(unit->gloss);
+    TRY_FREE(unit->color);
 }
 
 /*
@@ -352,7 +357,17 @@ meshml_load (
                 mtmp.opacity = xml_attr_fp32U(CR_AS("opacity"),1,node);
                 mtmp.splevel = xml_attr_fp32U(CR_AS("specular_level"),0,node);
                 mtmp.shininess = xml_attr_fp32U(CR_AS("shininess"),0,node);
-                mtmp.flags |= MESHML_SET;
+                if (node->closed) {
+                    if (array_push_growT(&a_m, sMESHML_MTRL, &mtmp) == NULL) {
+                        err_set(__CR_MESHML_C__, CR_NULL,
+                                "meshml_load()", "array_push_growT() failure");
+                        goto _failure;
+                    }
+                    struct_zero(&mtmp, sMESHML_MTRL);
+                }
+                else {
+                    mtmp.flags |= MESHML_SET;
+                }
                 continue;
             }
             if (mtmp.flags) {
@@ -365,10 +380,20 @@ meshml_load (
                         break;
                     if (mem_cmp(value, "Diffuse Color\"", 14) == 0)
                         mtmp.map_kd = name;
-                    else if (mem_cmp(value, "Opacity\"", 8) == 0)
-                        mtmp.map_d = name;
+                    else if (mem_cmp(value, "Specular Color\"", 15) == 0)
+                        mtmp.map_ks = name;
+                    else if (mem_cmp(value, "Specular Level\"", 15) == 0)
+                        mtmp.spr_lvl = name;
+                    else if (mem_cmp(value, "Glossiness\"", 11) == 0)
+                        mtmp.gloss = name;
                     else if (mem_cmp(value, "Bump\"", 5) == 0)
                         mtmp.bump = name;
+                    else if (mem_cmp(value, "Color\"", 6) == 0)
+                        mtmp.color = name;
+                    else if (mem_cmp(value, "Opacity\"", 8) == 0)
+                        mtmp.map_d = name;
+                    else if (mem_cmp(value, "Self-Illumination\"", 18) == 0)
+                        mtmp.self_ill = name;
                     else
                         mem_free(name);
                     continue;
@@ -441,6 +466,16 @@ meshml_load (
                         meshml_parse_vecf(&vtmp.xyz.x, value, 3) != 3)
                         break;
                     vtmp.flags |= MESHML_XYZ;
+                    if (node->closed) {
+                        if (array_push_growT(&a_v, vec3d_t,
+                                            &vtmp.xyz) == NULL) {
+                            err_set(__CR_MESHML_C__, CR_NULL,
+                                    "meshml_load()",
+                                    "array_push_growT() failure");
+                            goto _failure;
+                        }
+                        struct_zero(&vtmp, sMESHML_VX);
+                    }
                     continue;
                 }
                 if (vtmp.flags) {
@@ -665,8 +700,13 @@ _failure:
     TRY_FREE(gtmp.name);
     TRY_FREE(gtmp.ibuf);
     TRY_FREE(mtmp.map_kd);
+    TRY_FREE(mtmp.map_ks);
     TRY_FREE(mtmp.map_d);
     TRY_FREE(mtmp.bump);
+    TRY_FREE(mtmp.spr_lvl);
+    TRY_FREE(mtmp.self_ill);
+    TRY_FREE(mtmp.gloss);
+    TRY_FREE(mtmp.color);
     TRY_FREE(btmp.name);
     xml_closeU(xml);
     return (FALSE);
