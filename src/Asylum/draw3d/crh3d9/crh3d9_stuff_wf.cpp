@@ -75,11 +75,11 @@ public:
             m_mtl.Ambient.g = m_mtl.Diffuse.g;
             m_mtl.Ambient.b = m_mtl.Diffuse.b;
         }
-        m_mtl.Ambient.a = 1.0f;
+        m_mtl.Ambient.a = 0.0f;
         m_mtl.Specular.r = mtl->ks.x;
         m_mtl.Specular.g = mtl->ks.y;
         m_mtl.Specular.b = mtl->ks.z;
-        m_mtl.Specular.a = 1.0f;
+        m_mtl.Specular.a = 0.0f;
         m_mtl.Emissive.r = 0.0f;
         m_mtl.Emissive.g = 0.0f;
         m_mtl.Emissive.b = 0.0f;
