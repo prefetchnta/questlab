@@ -335,10 +335,9 @@ typedef struct
 } sMESHML_MTRL;
 
 /* 颜色标志 */
-#define MESHML_KA      1    /* 存在 Ka */
-#define MESHML_KD      2    /* 存在 Kd */
-#define MESHML_KS      4    /* 存在 Ks */
-#define MESHML_SET  0x8000  /* 已设参数 */
+#define MESHML_KA   1   /* 存在 Ka */
+#define MESHML_KD   2   /* 存在 Kd */
+#define MESHML_KS   4   /* 存在 Ks */
 
 /* MeshML 骨骼结构 */
 typedef struct
@@ -357,8 +356,18 @@ typedef struct
         leng_t  start;
         leng_t  mtl_id;
         leng_t  vnum, inum;
+        vec2d_t tc_bb_min, tc_bb_max;
+        vec3d_t pos_bb_min, pos_bb_max;
 
 } sMESHML_MESH;
+
+/* MeshML 权重结构 */
+typedef struct
+{
+        byte_t  jid[4];
+        vec4d_t weight;
+
+} sMESHML_WGHT;
 
 /* MeshML 模型文件 */
 typedef struct
@@ -371,6 +380,7 @@ typedef struct
         vec3d_t*        p_v;
         vec4d_t*        p_vn;
         vec2d_t*        p_vt;
+        sMESHML_WGHT*   p_jd;
 
         /* 网格数据 */
         leng_t          n_g;

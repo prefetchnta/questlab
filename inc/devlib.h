@@ -43,6 +43,16 @@
 #define CR_SIO_FLU_TX   1   /* 写入状态 */
 #define CR_SIO_FLU_RT   2   /* 读写状态 */
 
+/* sio_io_get() 的标志 */
+#define CR_SIO_I_CTS    1   /* CTS */
+#define CR_SIO_I_DSR    2   /* DSR */
+#define CR_SIO_I_RING   4   /* RI/RING */
+#define CR_SIO_I_RLSD   8   /* CD/DCD/RLSD */
+
+/* sio_io_set() 的标志 */
+#define CR_SIO_O_DTR    0   /* DTR */
+#define CR_SIO_O_RTS    1   /* RTS */
+
 CR_API void_t   sio_init (void_t);
 CR_API void_t   sio_free (void_t);
 CR_API bool_t   sio_set_name (uint_t port, const ansi_t *name);
@@ -60,6 +70,9 @@ CR_API uint_t   sio_write (uint_t port, const void_t *data, uint_t size);
 CR_API bool_t   sio_set_buffer  (uint_t port, uint_t rx_size, uint_t tx_size);
 CR_API bool_t   sio_clear_error (uint_t port);
 CR_API bool_t   sio_rw_rest (uint_t port, leng_t *rx_len, leng_t *tx_len);
+CR_API bool_t   sio_set_bit9 (uint_t port, bool_t onoff);
+CR_API bool_t   sio_io_get (uint_t port, uint_t *value);
+CR_API bool_t   sio_io_set (uint_t port, uint_t pin, bool_t onoff);
 
 /*****************************************************************************/
 /*                                 网络通讯                                  */
