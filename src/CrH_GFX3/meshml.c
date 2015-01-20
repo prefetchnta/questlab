@@ -607,6 +607,11 @@ meshml_load (
                 "meshml_load()", "array_no_growT() failure");
         goto _failure;
     }
+    if (!array_no_growT(&a_j, sMESHML_WGHT)) {
+        err_set(__CR_MESHML_C__, FALSE,
+                "meshml_load()", "array_no_growT() failure");
+        goto _failure;
+    }
     if (!array_no_growT(&a_g, sMESHML_MESH)) {
         err_set(__CR_MESHML_C__, FALSE,
                 "meshml_load()", "array_no_growT() failure");
