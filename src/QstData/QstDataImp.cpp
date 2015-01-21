@@ -570,6 +570,7 @@ string_show (
 }
 
 /* BeaEngine 模式值 */
+static const ansi_t*    s_bea_archi = "X86";
 #define BEA_DEF_OPT (NoTabulation | SuffixedNumeral | \
                             ShowSegmentRegs)
 static UInt32   s_BeaArchi = 0;
@@ -599,7 +600,8 @@ unasm_bea_show (
     retc = Disasm(&unasm);
     if (retc <= 0)
         return (NULL);
-    return (str_fmtA(": (%u) %s", retc, unasm.CompleteInstr));
+    return (str_fmtA(" %s: (%u) %s", s_bea_archi, retc,
+                        unasm.CompleteInstr));
 }
 
 /*****************************************************************************/
@@ -629,7 +631,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "longdt", longdt_show },
     { "OLETIME", oletime_show },
     { "STRING", string_show },
-    { "UNASM", unasm_bea_show },
+    { "BEA", unasm_bea_show },
     { NULL, NULL }
 };
 
@@ -646,14 +648,20 @@ data_type (
     /* BeaEngine */
     if (chr_cmpA(type, "Bea:", 4) == 0) {
         type += 4;
-        if (strcmp(type, "X86") == 0)
+        if (strcmp(type, "X86") == 0) {
             s_BeaArchi = 0;
+            s_bea_archi = "X86";
+        }
         else
-        if (strcmp(type, "X64") == 0)
+        if (strcmp(type, "X64") == 0) {
             s_BeaArchi = 64;
+            s_bea_archi = "X64";
+        }
         else
-        if (strcmp(type, "8086") == 0)
+        if (strcmp(type, "8086") == 0) {
             s_BeaArchi = 16;
+            s_bea_archi = "8086";
+        }
         return;
     }
 }
