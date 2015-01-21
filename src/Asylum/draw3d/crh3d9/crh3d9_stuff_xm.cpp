@@ -157,9 +157,9 @@ static void xmesh_tran (asy::object_inst* dest, void* param,
 
             // rebuild AABB box
             mesh = (sD3D9_XMSH*)dest->base->real;
-            bpv = mesh->GetNumBytesPerVertex();
-            count = mesh->GetNumVertices();
-            mesh->LockVertexBuffer(D3DLOCK_READONLY, (LPVOID*)(&p_v));
+            bpv = mesh->xmesh->GetNumBytesPerVertex();
+            count = mesh->xmesh->GetNumVertices();
+            mesh->xmesh->LockVertexBuffer(D3DLOCK_READONLY, (LPVOID*)(&p_v));
             call->util_tran_vec3d(&tmp, p_v, &dest->tran);
             p_v = (vec3d_t*)((byte_t*)p_v + bpv);
             mem_cpy(&min, &tmp, sizeof(vec3d_t));
@@ -175,7 +175,7 @@ static void xmesh_tran (asy::object_inst* dest, void* param,
                 if (tmp.z > max.z) max.z = tmp.z;
             }
             bound_gen_aabb(&dest->bound.aabb, &min, &max);
-            mesh->UnlockVertexBuffer();
+            mesh->xmesh->UnlockVertexBuffer();
         }
     }
     else {  // dynamic object don't support scaling
