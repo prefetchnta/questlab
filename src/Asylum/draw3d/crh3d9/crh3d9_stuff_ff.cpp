@@ -618,4 +618,6 @@ void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::comm
     parm.nv = parm.nt = 0;
     parm.devs = main->get_main()->dev;
     pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(&parm);
+    main->m_vnum = parm.nv;
+    main->m_tnum = parm.nt;
 }

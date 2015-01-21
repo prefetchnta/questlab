@@ -109,6 +109,16 @@ _failure1:
     return (NULL);
 }
 
+/* =================================================================== */
+CR_API void crhack3d9_count (crh3d9_t render, size_t* vnum, size_t* tnum)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    if (vnum != NULL) *vnum = real->main.m_vnum;
+    if (tnum != NULL) *tnum = real->main.m_tnum;
+}
+
 /* ====================================== */
 CR_API void crhack3d9_kill (crh3d9_t render)
 {

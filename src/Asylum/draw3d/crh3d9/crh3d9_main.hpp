@@ -15,6 +15,9 @@ namespace asy {
 /***************/
 class crh3d9_main : public asylum
 {
+public:
+    size_t  m_vnum, m_tnum;
+
 private:
     sD3D9_MAIN*         m_main;
     sD3D9_TRAN*         m_tran;
@@ -49,6 +52,7 @@ public:
         }
         d3d9_tran_set_proj(m_main, FIXED_REG, m_tran);
         d3d9_tran_set_port(m_main, m_tran);
+        m_vnum = m_tnum = 0;
         return (true);
     }
 
