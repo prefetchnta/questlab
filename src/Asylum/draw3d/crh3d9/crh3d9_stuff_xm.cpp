@@ -59,6 +59,13 @@ public:
         }
         m_idx = idx;
         m_msh = xmesh->xmesh;
+        if (idx == 0) {
+            m_nv = m_msh->GetNumVertices();
+            m_nt = m_msh->GetNumFaces();
+        }
+        else {
+            m_nv = m_nt = 0;
+        }
         m_mtl = &mtrl->MatD3D;
         m_mtl->Ambient.r = m_mtl->Diffuse.r;
         m_mtl->Ambient.g = m_mtl->Diffuse.g;
