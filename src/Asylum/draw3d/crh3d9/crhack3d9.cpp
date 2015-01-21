@@ -191,15 +191,14 @@ CR_API void crhack3d9_clean (crh3d9_t render)
     real->pipe.trav_bfs<asy::crhack3d9_render_clear>(NULL);
 }
 
-/* ============================================= */
-CR_API sFRUSTUM* crhack3d9_update (crh3d9_t render)
+/* ======================================== */
+CR_API void crhack3d9_update (crh3d9_t render)
 {
     crhack3d9_main* real;
 
     real = (crhack3d9_main*)render;
     real->main.get_call()->tran_upd_view(real->main.get_tran());
     real->main.get_frustum(&real->frt, FRT_BIAS);
-    return (&real->frt);
 }
 
 /* ====================================== */
@@ -240,6 +239,15 @@ CR_API sCAMERA* crhack3d9_camera (crh3d9_t render)
 
     real = (crhack3d9_main*)render;
     return (&real->cam);
+}
+
+/* ============================================== */
+CR_API sFRUSTUM* crhack3d9_frustum (crh3d9_t render)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    return (&real->frt);
 }
 
 /* ============================================== */
