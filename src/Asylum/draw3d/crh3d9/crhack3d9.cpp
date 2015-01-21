@@ -440,6 +440,10 @@ CR_API bool crhack3d9_wf_obj (crh3d9_t render, const char* name,
         goto _failure;
     if (!wfront_obj_combine(&mesh))
         goto _failure;
+
+    create_crh3d9_attr_wf_t fattr;
+    create_crh3d9_mesh_wf_t fmesh;
+
     real = (crhack3d9_main*)render;
     if (type == NULL || strcmp(type, "fixed") == 0) {
         for (leng_t idx = 0; idx < mesh.n_m; idx++) {
@@ -453,13 +457,14 @@ CR_API bool crhack3d9_wf_obj (crh3d9_t render, const char* name,
                 goto _failure;
             }
         }
-        if (!create_crh3d9_base_wf(&base, &mesh, create_crh3d9_attr_wf_fixed,
-                        create_crh3d9_mesh_wf_ss, &real->texs, &real->main))
-            goto _failure;
+        fattr = create_crh3d9_attr_wf_fixed;
+        fmesh = create_crh3d9_mesh_wf_ss;
     }
     else {
         goto _failure;
     }
+    if (!create_crh3d9_base_wf(&base, &mesh, fattr, fmesh, &real->texs, &real->main))
+        goto _failure;
     if (real->base.insert(name, &base) == NULL) {
         base.free();
         goto _failure;
@@ -492,6 +497,7 @@ CR_API bool crhack3d9_xmesh (crh3d9_t render, const char* name, int32u flags,
         mesh = call->create_xmsh_mem(main, flags, dest, size);
     if (mesh == NULL)
         return (false);
+
     mtrl = (D3DXMATERIAL*)mesh->xattr->GetBufferPointer();
     for (DWORD idx = 0; idx < mesh->nattr; idx++) {
         const char* str = mtrl[idx].pTextureFilename;
@@ -504,14 +510,15 @@ CR_API bool crhack3d9_xmesh (crh3d9_t render, const char* name, int32u flags,
             goto _failure;
         }
     }
-    if (type == NULL || strcmp(type, "fixed") == 0) {
-        if (!create_crh3d9_base_xm(&base, mesh, create_crh3d9_attr_xm_fixed,
-                                   &real->texs, &real->main))
-            goto _failure;
-    }
-    else {
+
+    create_crh3d9_attr_xm_t fattr;
+
+    if (type == NULL || strcmp(type, "fixed") == 0)
+        fattr = create_crh3d9_attr_xm_fixed;
+    else
         goto _failure;
-    }
+    if (!create_crh3d9_base_xm(&base, mesh, fattr, &real->texs, &real->main))
+        goto _failure;
     if (real->base.insert(name, &base) == NULL) {
         base.free();
         goto _failure;
