@@ -28,6 +28,7 @@ public:
     crh3d9_attr_wf_fixed (const crh3d9_main* main)
     {
         m_type = 0;
+        m_nv = m_nt = 0;
         m_device = main->get_main()->dev;
     }
 
@@ -214,6 +215,8 @@ public:
         mem_free(ib);
         if (m_mesh == NULL)
             return (false);
+        m_nv = nv;
+        m_nt = ni / 3;
         return (true);
     }
 

@@ -59,17 +59,17 @@ public:
 class stuff_base : public asylum
 {
 protected:
-    int32u  m_nv, m_nt;
+    size_t  m_nv, m_nt;
 
 public:
     /* ================== */
-    int32u get_vnum () const
+    size_t get_vnum () const
     {
         return (m_nv);
     }
 
     /* ================== */
-    int32u get_tnum () const
+    size_t get_tnum () const
     {
         return (m_nt);
     }
