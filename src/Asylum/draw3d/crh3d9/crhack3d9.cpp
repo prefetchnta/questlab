@@ -417,8 +417,8 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
     return (true);
 }
 
-/* ============================================================= */
-CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
+/* ========================================================== */
+CR_API bool crhack3d9_wf_obj (crh3d9_t render, const char* name,
                     const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
                         bool_t neg_z, fp32_t scale, const char* type)
 {
@@ -468,5 +468,57 @@ CR_API bool crhack3d9_wavefront (crh3d9_t render, const char* name,
 
 _failure:
     wfront_obj_free(&mesh);
+    return (false);
+}
+
+/* ======================================================================= */
+CR_API bool crhack3d9_xmesh (crh3d9_t render, const char* name, int32u flags,
+                             const void* dest, size_t size, const char* type)
+{
+    sD3D9_MAIN*         main;
+    sD3D9_XMSH*         mesh;
+    D3DXMATERIAL*       mtrl;
+    crhack3d9_main*     real;
+    asy::crh3d9_texr    texr;
+    asy::object_base    base;
+    const sD3D9_CALL*   call;
+
+    real = (crhack3d9_main*)render;
+    main = real->main.get_main();
+    call = real->main.get_call();
+    if (size == 0)
+        mesh = call->create_xmsh_fileA(main, flags, (ansi_t*)dest);
+    else
+        mesh = call->create_xmsh_mem(main, flags, dest, size);
+    if (mesh == NULL)
+        return (false);
+    mtrl = (D3DXMATERIAL*)mesh->xattr->GetBufferPointer();
+    for (DWORD idx = 0; idx < mesh->nattr; idx++) {
+        const char* str = mtrl[idx].pTextureFilename;
+        if (str == NULL)
+            continue;
+        if (!texr.init(&real->main, str, 1))
+            goto _failure;
+        if (real->texs.insert(str, &texr) == NULL) {
+            texr.free();
+            goto _failure;
+        }
+    }
+    if (type == NULL || strcmp(type, "fixed") == 0) {
+        if (!create_crh3d9_base_xm(&base, mesh, create_crh3d9_attr_xm_fixed,
+                                   &real->texs, &real->main))
+            goto _failure;
+    }
+    else {
+        goto _failure;
+    }
+    if (real->base.insert(name, &base) == NULL) {
+        base.free();
+        goto _failure;
+    }
+    return (true);
+
+_failure:
+    call->release_xmsh(mesh);
     return (false);
 }
