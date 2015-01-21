@@ -546,6 +546,8 @@ namespace asy {
 /******************/
 struct crh3d9_cmmt_ctx
 {
+    size_t              nv;
+    size_t              nt;
     object_inst*        inst;
     LPDIRECT3DDEVICE9   devs;
 };
@@ -561,6 +563,7 @@ public:
     {
         IMesh*              mesh;
         size_t              size;
+        IAttrib*            attr;
         commit_unit*        list;
         crh3d9_cmmt_ctx*    parm;
 
@@ -574,14 +577,20 @@ public:
                 parm->inst  = list->inst;
                 parm->devs->SetTransform(D3DTS_WORLD, (D3DMATRIX*)(&list->inst->tran));
             }
-            if (list->unit->attr != NULL)
-                list->unit->attr->commit();
+            attr = list->unit->attr;
+            if (attr != NULL) {
+                attr->commit();
+                parm->nv += attr->get_vnum();
+                parm->nt += attr->get_tnum();
+            }
             if (list->unit->mesh != NULL) {
                 for (size_t ii = 0; ; ii++) {
                     mesh = list->unit->mesh[ii];
                     if (mesh == NULL)
                         break;
                     mesh->commit();
+                    parm->nv += mesh->get_vnum();
+                    parm->nt += mesh->get_tnum();
                 }
             }
             list += 1;
@@ -606,6 +615,7 @@ void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::comm
     asy::crh3d9_cmmt_ctx    parm;
 
     parm.inst = NULL;
+    parm.nv = parm.nt = 0;
     parm.devs = main->get_main()->dev;
     pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(&parm);
 }
