@@ -13,6 +13,9 @@
 typedef asy::IAttrib* (*create_crh3d9_attr_wf_t) (const sWAVEFRONT_M* mtl,
     const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main);
 
+typedef asy::IAttrib* (*create_crh3d9_attr_xm_t) (const sD3D9_XMSH* xmesh, DWORD idx,
+    const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main);
+
 typedef asy::IMesh* (*create_crh3d9_mesh_wf_t) (const sWAVEFRONT* obj, leng_t idx,
                                                 const asy::crh3d9_main* main);
 /******************/
@@ -40,6 +43,9 @@ CR_API asy::IEffect* create_crh3d9_ffct_root_fixed (cl32_t color, bool stencil, 
 CR_API asy::IAttrib* create_crh3d9_attr_wf_fixed (const sWAVEFRONT_M* mtl,
     const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main);
 
+CR_API asy::IAttrib* create_crh3d9_attr_xm_fixed (const sD3D9_XMSH* xmesh, DWORD idx,
+    const asy::map_acs<asy::crh3d9_texr>* texpool, const asy::crh3d9_main* main);
+
 /****************/
 /* Mesh Factory */
 /****************/
@@ -52,6 +58,10 @@ CR_API bool create_crh3d9_base_wf (asy::object_base* base, const sWAVEFRONT* obj
                             create_crh3d9_attr_wf_t fattr, create_crh3d9_mesh_wf_t fmesh,
                                     const asy::map_acs<asy::crh3d9_texr>* texpool,
                                             const asy::crh3d9_main* main);
+
+CR_API bool create_crh3d9_base_xm (asy::object_base* base, sD3D9_XMSH* xmesh,
+                create_crh3d9_attr_xm_t fattr, const asy::map_acs<asy::crh3d9_texr>* texpool,
+                                    const asy::crh3d9_main* main);
 /************************/
 /* CrHack3D9 Render API */
 /************************/

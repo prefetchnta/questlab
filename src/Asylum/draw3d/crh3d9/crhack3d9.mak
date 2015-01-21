@@ -8,12 +8,14 @@ OBJ_LIST=.$(L)asylum.$(O) \
          .$(L)crhack3d9.$(O) \
          .$(L)crh3d9_stuff_ff.$(O) \
          .$(L)crh3d9_stuff_wf.$(O) \
+         .$(L)crh3d9_stuff_xm.$(O)
 
 SRC_LIST=.$(L)asylum.$(P) \
          .$(L)draw3d$(L)asylum3d.$(P) \
          .$(L)draw3d$(L)crh3d9$(L)crhack3d9.$(P) \
          .$(L)draw3d$(L)crh3d9$(L)crh3d9_stuff_ff.$(P) \
-         .$(L)draw3d$(L)crh3d9$(L)crh3d9_stuff_wf.$(P)
+         .$(L)draw3d$(L)crh3d9$(L)crh3d9_stuff_wf.$(P) \
+         .$(L)draw3d$(L)crh3d9$(L)crh3d9_stuff_xm.$(P)
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /D "ASY_USE_DX9" $(SRC_LIST)
