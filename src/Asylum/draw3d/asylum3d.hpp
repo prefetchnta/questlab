@@ -53,10 +53,32 @@ public:
     virtual void leave () = 0;
 };
 
+/**************/
+/* Stuff Base */
+/**************/
+class stuff_base : public asylum
+{
+protected:
+    int32u  m_nv, m_nt;
+
+public:
+    /* ================== */
+    int32u get_vnum () const
+    {
+        return (m_nv);
+    }
+
+    /* ================== */
+    int32u get_tnum () const
+    {
+        return (m_nt);
+    }
+};
+
 /******************/
 /* Attribute Port */
 /******************/
-class IAttrib : public asylum
+class IAttrib : public stuff_base
 {
 protected:
     int64u  m_type;
@@ -86,7 +108,7 @@ public:
 /*************/
 /* Mesh Port */
 /*************/
-class IMesh : public asylum
+class IMesh : public stuff_base
 {
 public:
     /* ============== */
