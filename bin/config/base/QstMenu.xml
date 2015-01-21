@@ -76,7 +76,7 @@
     <MenuItem name="subDetect" text="探测(&D)">
         <MenuItem name="subDisasm" text="反汇编(&U)">
             <MenuItem name="subBeaEngine" text="BeaEngine (&B)">
-                <MenuItem name="subBeaX86" text="CPU - X86 (&1)" radio="1" group="1" />
+                <MenuItem name="subBeaX86" text="CPU - X86 (&1)" radio="1" group="1" checked="1" />
                 <MenuItem name="subBeaX64" text="CPU - X64 (&2)" radio="1" group="1" />
                 <MenuItem name="subBea8086" text="CPU - 8086 (&3)" radio="1" group="1" />
                 <MenuItem name="xxxSepBea" text="-" />

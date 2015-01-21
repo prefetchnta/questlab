@@ -28,9 +28,6 @@
 /* 外部库引用 */
 #pragma comment (lib, "BeaEngine.lib")
 
-/* 解析执行体 */
-ansi_t* (*s_unasm_doit) (const void_t *data, leng_t size);
-
 #if defined(_CR_BUILD_DLL_)
 /*
 =======================================
@@ -47,7 +44,6 @@ DllMain (
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
-            s_unasm_doit = NULL;
             break;
 
         case DLL_PROCESS_DETACH:
@@ -576,23 +572,25 @@ string_show (
 /* BeaEngine 模式值 */
 #define BEA_DEF_OPT (NoTabulation | SuffixedNumeral | \
                             ShowSegmentRegs)
-static UInt32   s_BeaArchi;
+static UInt32   s_BeaArchi = 0;
 static UInt64   s_BeaOptions = (BEA_DEF_OPT | MasmSyntax);
 
 /*
 ---------------------------------------
-    UNASM BeaEngine
+    BeaEngine
 ---------------------------------------
 */
 static ansi_t*
 unasm_bea_show (
   __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
     )
 {
     int     retc;
     DISASM  unasm;
 
+    CR_NOUSE(is_be);
     struct_zero(&unasm, DISASM);
     unasm.EIP = (UIntPtr)data;
     unasm.SecurityBlock = (UIntPtr)size;
@@ -602,24 +600,6 @@ unasm_bea_show (
     if (retc <= 0)
         return (NULL);
     return (str_fmtA(": (%u) %s", retc, unasm.CompleteInstr));
-}
-
-/*
----------------------------------------
-    UNASM
----------------------------------------
-*/
-static ansi_t*
-unasm_show (
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size,
-  __CR_IN__ bool_t          is_be
-    )
-{
-    CR_NOUSE(is_be);
-    if (s_unasm_doit == NULL)
-        return (NULL);
-    return (s_unasm_doit(data, size));
 }
 
 /*****************************************************************************/
@@ -649,7 +629,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "longdt", longdt_show },
     { "OLETIME", oletime_show },
     { "STRING", string_show },
-    { "UNASM", unasm_show },
+    { "UNASM", unasm_bea_show },
     { NULL, NULL }
 };
 
@@ -666,7 +646,6 @@ data_type (
     /* BeaEngine */
     if (chr_cmpA(type, "Bea:", 4) == 0) {
         type += 4;
-        s_unasm_doit = unasm_bea_show;
         if (strcmp(type, "X86") == 0)
             s_BeaArchi = 0;
         else
