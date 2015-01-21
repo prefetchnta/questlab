@@ -448,7 +448,7 @@ CR_API bool crhack3d9_wf_obj (crh3d9_t render, const char* name,
     if (type == NULL || strcmp(type, "fixed") == 0) {
         for (leng_t idx = 0; idx < mesh.n_m; idx++) {
             const char* str = mesh.p_m[idx].map_kd;
-            if (str == NULL)
+            if (str == NULL || real->texs.get(str) != NULL)
                 continue;
             if (!texr.init(&real->main, str, 1))
                 goto _failure;
@@ -501,7 +501,7 @@ CR_API bool crhack3d9_xmesh (crh3d9_t render, const char* name, int32u flags,
     mtrl = (D3DXMATERIAL*)mesh->xattr->GetBufferPointer();
     for (DWORD idx = 0; idx < mesh->nattr; idx++) {
         const char* str = mtrl[idx].pTextureFilename;
-        if (str == NULL)
+        if (str == NULL || real->texs.get(str) != NULL)
             continue;
         if (!texr.init(&real->main, str, 1))
             goto _failure;
