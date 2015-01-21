@@ -72,10 +72,10 @@ meshml_m_free (
     sMESHML_MTRL*   unit;
 
     unit = (sMESHML_MTRL*)obj;
-    TRY_FREE(unit->self_ill);
-    TRY_FREE(unit->spr_lvl);
+    TRY_FREE(unit->map_ns);
     TRY_FREE(unit->map_kd);
     TRY_FREE(unit->map_ks);
+    TRY_FREE(unit->map_ke);
     TRY_FREE(unit->map_d);
     TRY_FREE(unit->color);
     TRY_FREE(unit->gloss);
@@ -354,9 +354,9 @@ meshml_load (
                 else
                 if (meshml_parse_vecf(&mtmp.ke.x, value, 3) != 3)
                     break;
-                mtmp.opacity = xml_attr_fp32U(CR_AS("opacity"),1,node);
-                mtmp.splevel = xml_attr_fp32U(CR_AS("specular_level"),0,node);
-                mtmp.shininess = xml_attr_fp32U(CR_AS("shininess"),0,node);
+                mtmp.d = xml_attr_fp32U(CR_AS("opacity"), 1.0f, node);
+                mtmp.ns = xml_attr_fp32U(CR_AS("specular_level"), 0.0f, node);
+                mtmp.shine = xml_attr_fp32U(CR_AS("shininess"), 0.0f, node);
                 if (node->closed) {
                     if (array_push_growT(&a_m, sMESHML_MTRL, &mtmp) == NULL) {
                         err_set(__CR_MESHML_C__, CR_NULL,
@@ -383,7 +383,7 @@ meshml_load (
                     else if (mem_cmp(value, "Specular Color\"", 15) == 0)
                         mtmp.map_ks = name;
                     else if (mem_cmp(value, "Specular Level\"", 15) == 0)
-                        mtmp.spr_lvl = name;
+                        mtmp.map_ns = name;
                     else if (mem_cmp(value, "Glossiness\"", 11) == 0)
                         mtmp.gloss = name;
                     else if (mem_cmp(value, "Bump\"", 5) == 0)
@@ -393,7 +393,7 @@ meshml_load (
                     else if (mem_cmp(value, "Opacity\"", 8) == 0)
                         mtmp.map_d = name;
                     else if (mem_cmp(value, "Self-Illumination\"", 18) == 0)
-                        mtmp.self_ill = name;
+                        mtmp.map_ke = name;
                     else
                         mem_free(name);
                     continue;

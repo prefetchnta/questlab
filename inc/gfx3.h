@@ -328,10 +328,10 @@ CR_API leng_t   wfront_gen_mesh3 (vec3d_t *xyz, vec3d_t *nrm, vec3d_t *uvw,
 typedef struct
 {
         uint_t  flags;
+        fp32_t  d, ns, shine;
         vec3d_t ka, kd, ks, ke;
-        fp32_t  opacity, splevel, shininess;
         ansi_t  *map_kd, *map_ks, *map_d, *bump;
-        ansi_t  *spr_lvl, *self_ill, *gloss, *color;
+        ansi_t  *map_ns, *map_ke, *gloss, *color;
 
 } sMESHML_MTRL;
 
