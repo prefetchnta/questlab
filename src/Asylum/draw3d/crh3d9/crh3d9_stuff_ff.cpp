@@ -548,6 +548,9 @@ struct crh3d9_cmmt_ctx
 {
     size_t              nv;
     size_t              nt;
+    mat4x4_t            bllv;
+    mat4x4_t            bllh;
+    crh3d9_main*        main;
     object_inst*        inst;
     LPDIRECT3DDEVICE9   devs;
 };
@@ -575,7 +578,20 @@ public:
         for (size_t idx = 0; idx < size; idx++) {
             if (parm->inst != list->inst) {
                 parm->inst  = list->inst;
-                parm->devs->SetTransform(D3DTS_WORLD, (D3DMATRIX*)(&list->inst->tran));
+                if (list->inst->flag == INST_FLAG_BILLBOARDV) {
+                    mem_cpy(parm->main->get_mat<fp32_t>(), &parm->bllv, sizeof(mat4x4_t));
+                    parm->main->mul_mat(&list->inst->tran);
+                    parm->devs->SetTransform(D3DTS_WORLD, parm->main->get_mat<D3DMATRIX>());
+                }
+                else
+                if (list->inst->flag == INST_FLAG_BILLBOARDH) {
+                    mem_cpy(parm->main->get_mat<fp32_t>(), &parm->bllh, sizeof(mat4x4_t));
+                    parm->main->mul_mat(&list->inst->tran);
+                    parm->devs->SetTransform(D3DTS_WORLD, parm->main->get_mat<D3DMATRIX>());
+                }
+                else {
+                    parm->devs->SetTransform(D3DTS_WORLD, (D3DMATRIX*)(&list->inst->tran));
+                }
             }
             attr = list->unit->attr;
             if (attr != NULL) {
@@ -615,6 +631,13 @@ void crhack3d9_commit_fixed (asy::crh3d9_main* main, const asy::tree_l<asy::comm
     asy::crh3d9_cmmt_ctx    parm;
 
     parm.inst = NULL;
+    parm.main = main;
+    main->set_mat();
+    main->set_billboardv();
+    mem_cpy(&parm.bllv, main->get_mat<fp32_t>(), sizeof(mat4x4_t));
+    main->set_mat();
+    main->set_billboardh();
+    mem_cpy(&parm.bllh, main->get_mat<fp32_t>(), sizeof(mat4x4_t));
     parm.nv = parm.nt = 0;
     parm.devs = main->get_main()->dev;
     pipe->trav_dfs<asy::crh3d9_cmmt_fixed>(&parm);
