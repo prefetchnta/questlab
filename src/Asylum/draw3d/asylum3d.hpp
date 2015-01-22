@@ -16,7 +16,7 @@ namespace asy {
 class IEffect : public asylum
 {
 private:
-    int32s  m_ref_cnt;
+    int m_ref_cnt;
 
 public:
     /* ==== */
@@ -53,10 +53,10 @@ public:
     virtual void leave () = 0;
 };
 
-/**************/
-/* Stuff Base */
-/**************/
-class stuff_base : public asylum
+/***************/
+/* Commit Base */
+/***************/
+class commit_base : public asylum
 {
 protected:
     size_t  m_nv, m_nt;
@@ -78,7 +78,7 @@ public:
 /******************/
 /* Attribute Port */
 /******************/
-class IAttrib : public stuff_base
+class IAttrib : public commit_base
 {
 protected:
     int64u  m_type;
@@ -108,7 +108,7 @@ public:
 /*************/
 /* Mesh Port */
 /*************/
-class IMesh : public stuff_base
+class IMesh : public commit_base
 {
 public:
     /* ============== */
@@ -152,8 +152,8 @@ struct commit_batch
 struct object_inst;
 struct object_base
 {
+    int                 type;
     void*               real;
-    uint_t              type;
     sAABB               aabb;
     sSPHERE             ball;
     array<commit_batch> list;
@@ -176,9 +176,11 @@ struct object_base
 /*******************/
 struct object_inst
 {
-    int32u          type;
-    mat4x4_t        tran;
-    object_base*    base;
+    byte_t          type;   // Instance Type
+    byte_t          flag;   // Instance Flags
+    int16u          user;   // For User Use
+    mat4x4_t        tran;   // World Matrix
+    object_base*    base;   // To Base Object
 
     union {
         sAABB   aabb;
@@ -192,6 +194,11 @@ struct object_inst
 // Instance Type
 #define INST_TYPE_STATIC    0
 #define INST_TYPE_DYNAMIC   1
+
+// Instance Flags
+#define INST_FLAG_NORMAL        0
+#define INST_FLAG_BILLBOARDV    1
+#define INST_FLAG_BILLBOARDH    2
 
 /***************/
 /* Commit Unit */
