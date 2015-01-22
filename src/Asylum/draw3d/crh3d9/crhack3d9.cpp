@@ -304,6 +304,46 @@ CR_API bool crhack3d9_inst_visable (crh3d9_t render, asy::object_inst* inst)
     return (true);
 }
 
+/* ===================================================================== */
+CR_API void crhack3d9_inst_modify (crh3d9_t render, asy::object_inst* inst,
+                const vec3d_t* rote, const vec3d_t* move, const vec3d_t* scale)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    if (inst->type == INST_TYPE_DYNAMIC)
+        scale = NULL;
+    if (inst->base->tran != NULL) {
+        inst->base->tran(inst, (void*)(real->main.get_call()), rote, move, scale);
+    }
+    else {
+        if (inst->type == INST_TYPE_STATIC) {
+            mem_cpy(&inst->bound.aabb, &inst->base->aabb, sizeof(sAABB));
+            if (move != NULL) {
+                for (int idx = 0; idx < 8; idx++) {
+                    inst->bound.aabb.v[idx].x += move->x;
+                    inst->bound.aabb.v[idx].y += move->y;
+                    inst->bound.aabb.v[idx].z += move->z;
+                }
+            }
+        }
+        else {
+            mem_cpy(&inst->bound.ball, &inst->base->ball, sizeof(sSPHERE));
+            if (move != NULL) {
+                inst->bound.ball.center.x += move->x;
+                inst->bound.ball.center.y += move->y;
+                inst->bound.ball.center.z += move->z;
+            }
+        }
+        mem_cpy(inst->tran.m, s_no_trans, sizeof(mat4x4_t));
+        if (move != NULL) {
+            inst->tran.m[12] = move->x;
+            inst->tran.m[13] = move->y;
+            inst->tran.m[14] = move->z;
+        }
+    }
+}
+
 /* ========================================================================= */
 CR_API asy::commit_pipe* crhack3d9_pipe_get (crh3d9_t render, const char* name)
 {
