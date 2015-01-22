@@ -369,6 +369,7 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
                                 const char* base, const vec3d_t* rote,
                                 const vec3d_t* move, const vec3d_t* scale)
 {
+    const char*         frst;
     crhack3d9_main*     real;
     asy::object_inst    inst;
 
@@ -379,10 +380,20 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
     if (name[0] == '$') {
         scale = NULL;
         inst.type = INST_TYPE_DYNAMIC;
+        frst = name + 1;
     }
     else {
         inst.type = INST_TYPE_STATIC;
+        frst = name;
     }
+    if (frst[0] == '|')
+        inst.flag = INST_FLAG_BILLBOARDV;
+    else
+    if (frst[0] == '-')
+        inst.flag = INST_FLAG_BILLBOARDH;
+    else
+        inst.flag = INST_FLAG_NORMAL;
+    inst.user = 0;
     if (inst.base->tran != NULL) {
         inst.base->tran(&inst, (void*)(real->main.get_call()), rote, move, scale);
     }
