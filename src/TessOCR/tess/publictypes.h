@@ -73,6 +73,10 @@ inline bool PTIsTextType(PolyBlockType type) {
          type == PT_VERTICAL_TEXT || type == PT_CAPTION_TEXT ||
          type == PT_INLINE_EQUATION;
 }
+// Returns true if PolyBlockType is of pullout(inter-column) type
+inline bool PTIsPulloutType(PolyBlockType type) {
+  return type == PT_PULLOUT_IMAGE || type == PT_PULLOUT_TEXT;
+}
 
 /** String name for each block type. Keep in sync with PolyBlockType. */
 extern const char* kPolyBlockNames[];
@@ -158,24 +162,39 @@ enum PageSegMode {
   PSM_SINGLE_WORD,    ///< Treat the image as a single word.
   PSM_CIRCLE_WORD,    ///< Treat the image as a single word in a circle.
   PSM_SINGLE_CHAR,    ///< Treat the image as a single character.
+  PSM_SPARSE_TEXT,    ///< Find as much text as possible in no particular order.
+  PSM_SPARSE_TEXT_OSD,  ///< Sparse text with orientation and script det.
+  PSM_RAW_LINE,       ///< Treat the image as a single text line, bypassing
+                      ///< hacks that are Tesseract-specific.
 
   PSM_COUNT           ///< Number of enum entries.
 };
 
 /**
- * Macros that act on a PageSegMode to determine whether components of
+ * Inline functions that act on a PageSegMode to determine whether components of
  * layout analysis are enabled.
  * *Depend critically on the order of elements of PageSegMode.*
+ * NOTE that arg is an int for compatibility with INT_PARAM.
 */
-#define PSM_OSD_ENABLED(pageseg_mode) ((pageseg_mode) <= PSM_AUTO_OSD)
-#define PSM_COL_FIND_ENABLED(pageseg_mode) \
-  ((pageseg_mode) >= PSM_AUTO_OSD && (pageseg_mode) <= PSM_AUTO)
-#define PSM_BLOCK_FIND_ENABLED(pageseg_mode) \
-  ((pageseg_mode) >= PSM_AUTO_OSD && (pageseg_mode) <= PSM_SINGLE_COLUMN)
-#define PSM_LINE_FIND_ENABLED(pageseg_mode) \
-  ((pageseg_mode) >= PSM_AUTO_OSD && (pageseg_mode) <= PSM_SINGLE_BLOCK)
-#define PSM_WORD_FIND_ENABLED(pageseg_mode) \
-  ((pageseg_mode) >= PSM_AUTO_OSD && (pageseg_mode) <= PSM_SINGLE_LINE)
+inline bool PSM_OSD_ENABLED(int pageseg_mode) {
+  return pageseg_mode <= PSM_AUTO_OSD || pageseg_mode == PSM_SPARSE_TEXT_OSD;
+}
+inline bool PSM_COL_FIND_ENABLED(int pageseg_mode) {
+  return pageseg_mode >= PSM_AUTO_OSD && pageseg_mode <= PSM_AUTO;
+}
+inline bool PSM_SPARSE(int pageseg_mode) {
+  return pageseg_mode == PSM_SPARSE_TEXT || pageseg_mode == PSM_SPARSE_TEXT_OSD;
+}
+inline bool PSM_BLOCK_FIND_ENABLED(int pageseg_mode) {
+  return pageseg_mode >= PSM_AUTO_OSD && pageseg_mode <= PSM_SINGLE_COLUMN;
+}
+inline bool PSM_LINE_FIND_ENABLED(int pageseg_mode) {
+  return pageseg_mode >= PSM_AUTO_OSD && pageseg_mode <= PSM_SINGLE_BLOCK;
+}
+inline bool PSM_WORD_FIND_ENABLED(int pageseg_mode) {
+  return (pageseg_mode >= PSM_AUTO_OSD && pageseg_mode <= PSM_SINGLE_LINE) ||
+      pageseg_mode == PSM_SPARSE_TEXT || pageseg_mode == PSM_SPARSE_TEXT_OSD;
+}
 
 /**
  * enum of the elements of the page hierarchy, used in ResultIterator
