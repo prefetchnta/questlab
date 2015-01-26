@@ -210,7 +210,7 @@ public:
             return (NULL);
         }
         m_tbl.traverse<map_acs_rehash>(&tbl2);
-        m_tbl.setup(&tbl2);
+        m_tbl.replace(&tbl2);
         m_cnt = cnt;
         m_tbl.insert(&tmp.key, &tmp);
         return (ret);

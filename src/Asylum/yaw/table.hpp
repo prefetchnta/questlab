@@ -93,8 +93,8 @@ public:
         return (m_size);
     }
 
-    /* ====================================== */
-    void setup (const table_c<T, K, TCMP>* copy)
+    /* ======================================== */
+    void replace (const table_c<T, K, TCMP>* copy)
     {
         mem_free(m_flag);
         mem_free(m_list);
