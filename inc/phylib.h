@@ -136,9 +136,6 @@ CR_API void_t   image_back (const sIMAGE *dst, const sIMAGE *src,
 CR_API sIMAGE*  image_bound (const sIMAGE *img, uint_t xsize, uint_t ysize);
 CR_API bool_t   image_unbound (const sIMAGE *dst, const sIMAGE *src,
                                uint_t xsize, uint_t ysize);
-/* 垂直翻转图片 (若需要) */
-CR_API void_t   image_fuck_gdi (sIMAGE *img);
-
 /* 图片自定义运算 */
 typedef sint_t  (*pix_ops_t) (byte_t, byte_t);
 

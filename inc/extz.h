@@ -149,14 +149,13 @@ CR_API hwnd_t   window_open (void_t *instance, void_t *msg_proc,
 /* 应用程序窗口销毁 */
 CR_API bool_t   window_kill (hwnd_t hwnd, void_t *instance,
                              const ansi_t *name);
-/* 应用程序按键输入 */
+/* 应用程序输入相关 */
 CR_API bool_t   key_input_test (uint_t vkey);
 CR_API bool_t   key_input_click (uint_t vkey);
-
-/* 应用程序鼠标相关 */
 CR_API void_t   mouse_toggle (bool_t show);
 CR_API bool_t   mouse_set_pos (sint_t x, sint_t y);
 CR_API bool_t   mouse_get_pos (sint_t *x, sint_t *y);
+CR_API int32u   input_tick32 (void_t);
 
 /* 显示分辨率的更改 */
 typedef void_t*     dispmode_t;

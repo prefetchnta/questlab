@@ -119,6 +119,9 @@ CR_API void_t   image_del (const sIMAGE *img);
 /* 克隆位图 */
 CR_API sIMAGE*  image_dup (const sIMAGE *src);
 
+/* 垂直翻转图片 (若需要) */
+CR_API void_t   image_fuck_gdi (sIMAGE *img);
+
 /* 位图垂直翻转 */
 CR_API void_t   image_flp (const sIMAGE *img, bool_t solid);
 
