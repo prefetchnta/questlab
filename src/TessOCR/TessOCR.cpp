@@ -43,8 +43,8 @@ DllMain (
     建立 TESS-OCR 对象
 =======================================
 */
-CR_API tess_ocr_t
-tess_ocr_init (
+CR_API tessocr_t
+tessocr_init (
   __CR_IN__ const ansi_t*   path,
   __CR_IN__ const ansi_t*   lang
     )
@@ -58,7 +58,7 @@ tess_ocr_init (
         delete tess;
         return (NULL);
     }
-    return ((tess_ocr_t)tess);
+    return ((tessocr_t)tess);
 }
 
 /*
@@ -67,13 +67,13 @@ tess_ocr_init (
 =======================================
 */
 CR_API void_t
-tess_ocr_kill (
-  __CR_IN__ tess_ocr_t  tess_ocr
+tessocr_kill (
+  __CR_IN__ tessocr_t   tessocr
     )
 {
     TessBaseAPI*    tess;
 
-    tess = (TessBaseAPI*)tess_ocr;
+    tess = (TessBaseAPI*)tessocr;
     delete tess;
 }
 
@@ -83,15 +83,15 @@ tess_ocr_kill (
 =======================================
 */
 CR_API bool_t
-tess_ocr_set_param (
-  __CR_IN__ tess_ocr_t      tess_ocr,
+tessocr_set_param (
+  __CR_IN__ tessocr_t       tessocr,
   __CR_IN__ const ansi_t*   name,
   __CR_IN__ const ansi_t*   value
     )
 {
     TessBaseAPI*    tess;
 
-    tess = (TessBaseAPI*)tess_ocr;
+    tess = (TessBaseAPI*)tessocr;
     if (!tess->SetVariable(name, value))
         return (FALSE);
     return (TRUE);
@@ -103,8 +103,8 @@ tess_ocr_set_param (
 =======================================
 */
 CR_API bool_t
-tess_ocr_set_image (
-  __CR_IN__ tess_ocr_t      tess_ocr,
+tessocr_set_image (
+  __CR_IN__ tessocr_t       tessocr,
   __CR_IN__ const sIMAGE*   image
     )
 {
@@ -115,7 +115,7 @@ tess_ocr_set_image (
         image->fmt != CR_ARGB888 &&
         image->fmt != CR_ARGB8888)
         return (FALSE);
-    tess = (TessBaseAPI*)tess_ocr;
+    tess = (TessBaseAPI*)tessocr;
     tess->SetImage(image->data, image->position.ww,
                    image->position.hh, image->bpc, image->bpl);
     return (TRUE);
@@ -127,14 +127,14 @@ tess_ocr_set_image (
 =======================================
 */
 CR_API void_t
-tess_ocr_set_ppi (
-  __CR_IN__ tess_ocr_t  tess_ocr,
+tessocr_set_ppi (
+  __CR_IN__ tessocr_t   tessocr,
   __CR_IN__ uint_t      ppi
     )
 {
     TessBaseAPI*    tess;
 
-    tess = (TessBaseAPI*)tess_ocr;
+    tess = (TessBaseAPI*)tessocr;
     tess->SetSourceResolution(ppi);
 }
 
@@ -144,14 +144,14 @@ tess_ocr_set_ppi (
 =======================================
 */
 CR_API void_t
-tess_ocr_set_rect (
-  __CR_IN__ tess_ocr_t      tess_ocr,
+tessocr_set_rect (
+  __CR_IN__ tessocr_t       tessocr,
   __CR_IN__ const sRECT*    rect
     )
 {
     TessBaseAPI*    tess;
 
-    tess = (TessBaseAPI*)tess_ocr;
+    tess = (TessBaseAPI*)tessocr;
     tess->SetRectangle(rect->x1, rect->y1, rect->ww, rect->hh);
 }
 
@@ -161,13 +161,13 @@ tess_ocr_set_rect (
 =======================================
 */
 CR_API ansi_t*
-tess_ocr_get_utf8 (
-  __CR_IN__ tess_ocr_t  tess_ocr
+tessocr_get_utf8 (
+  __CR_IN__ tessocr_t   tessocr
     )
 {
     TessBaseAPI*    tess;
 
-    tess = (TessBaseAPI*)tess_ocr;
+    tess = (TessBaseAPI*)tessocr;
     return (tess->GetUTF8Text());
 }
 
@@ -177,7 +177,7 @@ tess_ocr_get_utf8 (
 =======================================
 */
 CR_API void_t
-tess_ocr_str_free (
+tessocr_str_free (
   __CR_IN__ ansi_t* string
     )
 {
