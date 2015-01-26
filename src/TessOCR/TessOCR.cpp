@@ -1,13 +1,10 @@
 
 #include "TessOCR.h"
-#pragma warning (push)
-#pragma warning (disable: 4244)
 #include "tess/baseapi.h"
-#pragma warning (pop)
 using namespace tesseract;
 
 /* 外部库引用 */
-#pragma comment (lib, "libtesseract302.lib")
+#pragma comment (lib, "libtesseract304.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*

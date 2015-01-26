@@ -72,12 +72,6 @@ make -fxSelectFile.mak
 del ..\..\bin\*.tds /Q
 cd..
 rem =====================
-call "%VS90COMNTOOLS%vsvars32.bat"
-rem =====================
-cd TessOCR
-nmake -fTessOCR.mak
-cd..
-rem =====================
 call "%VS100COMNTOOLS%vsvars32.bat"
 rem =====================
 cd QstCmdz
@@ -138,5 +132,9 @@ cd..
 rem =====================
 cd ResRouter
 nmake -fResRouter.mak
+cd..
+rem =====================
+cd TessOCR
+nmake -fTessOCR.mak
 cd..
 rem =====================

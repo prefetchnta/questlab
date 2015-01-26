@@ -1,7 +1,7 @@
 PROJECT=TessOCR
 SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).dll
-!INCLUDE "../vc2008_x86.mak"
+!INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)TessOCR.$(O)
 
