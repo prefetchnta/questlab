@@ -34,7 +34,7 @@ build_all:
     $(LD) $(LFLAGS) /DLL /LIBPATH:..$(L)..$(L)lib$(L)opencv $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)plugin$(L)
+    move $(PROJECT).lib ..$(L)..$(L)tmp$(L)
     del /Q *.obj
     del /Q 2.manifest
     del /Q $(PROJECT).exp
-    del /Q $(PROJECT).lib
