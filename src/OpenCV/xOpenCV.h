@@ -23,7 +23,7 @@
 #ifndef __QL_XOPENCV_H__
 #define __QL_XOPENCV_H__
 
-#include "../QstLibs/QstLibs.h"
+#include "crhack.h"
 
 /*****************************************************************************/
 /*                                公用库部分                                 */

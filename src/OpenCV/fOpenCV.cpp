@@ -1,5 +1,6 @@
 
 #include "xOpenCV.h"
+#include "../QstLibs/QstLibs.h"
 #include "opencv2/opencv.hpp"
 #include "libdecodeqr/decodeqr.h"
 using namespace cv;
