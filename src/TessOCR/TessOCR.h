@@ -23,7 +23,7 @@
 #ifndef __QL_TESSOCR_H__
 #define __QL_TESSOCR_H__
 
-#include "../QstLibs/QstLibs.h"
+#include "gfx2.h"
 
 /*****************************************************************************/
 /*                              TESSERACT-OCR                                */
