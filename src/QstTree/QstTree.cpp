@@ -141,7 +141,7 @@ qst_try_load (
     /* 设备文件不更新大小 */
     if (data->path[0] != CR_WC(':')) {
         size = file_sizeW(data->path);
-        if (size == (fsize_t)-1)
+        if (size == CR_F_ERROR)
             return;
         data->size = size;
     }
