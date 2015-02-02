@@ -157,14 +157,13 @@
 
     /* 编译器全局定义 */
     #if defined(_CR_OS_WIN32_)
-        /* 解决函数定义丢失的问题 (Win2000+) */
+        /* 最低要求为 Windows 2000 */
         #if     !defined(WINVER)
             #define WINVER  0x0500
         #elif   (WINVER < 0x0500)
             #undef  WINVER
             #define WINVER  0x0500
         #endif
-        /* 解决结构体找不到的问题 (Win2000+) */
         #if     !defined(_WIN32_WINNT)
             #define _WIN32_WINNT    0x0500
         #elif   (_WIN32_WINNT < 0x0500)

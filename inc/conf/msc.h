@@ -116,6 +116,21 @@
             #define _CRT_NONSTDC_NO_DEPRECATE
         #endif
     #endif
+    #if (_CR_CC_VER_ >= 1200 && _CR_CC_VER_ <= 1600)
+        /* 最低要求为 Windows 2000 */
+        #if     !defined(WINVER)
+            #define WINVER  0x0500
+        #elif   (WINVER < 0x0500)
+            #undef  WINVER
+            #define WINVER  0x0500
+        #endif
+        #if     !defined(_WIN32_WINNT)
+            #define _WIN32_WINNT    0x0500
+        #elif   (_WIN32_WINNT < 0x0500)
+            #undef  _WIN32_WINNT
+            #define _WIN32_WINNT    0x0500
+        #endif
+    #endif
     #pragma warning (disable: 4054) /* 函数指针2数据指针 */
     #pragma warning (disable: 4055) /* 数据指针2函数指针 */
     #pragma warning (disable: 4201) /*  匿名结构体的警告 */

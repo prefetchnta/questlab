@@ -111,6 +111,10 @@ typedef struct
 
 } sFMT_PIC;
 
+/* PNG 基本行过滤器 */
+CR_API bool_t   png_filter (byte_t *data, leng_t bpl, leng_t bpp,
+                            uint_t height, leng_t size);
+
 /***** 文件加载 API 组 *****/
 CR_API sFMT_PIC*    load_cr_bmp (iDATIN *datin, const sLOADER *param);
 CR_API sFMT_PIC*    load_cr_dds (iDATIN *datin, const sLOADER *param);
