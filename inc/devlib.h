@@ -42,6 +42,7 @@
 #define CR_SIO_FLU_RX   0   /* 读取状态 */
 #define CR_SIO_FLU_TX   1   /* 写入状态 */
 #define CR_SIO_FLU_RT   2   /* 读写状态 */
+#define CR_SIO_FLU_WR   3   /* 阻塞写入 */
 
 /* sio_io_get() 的标志 */
 #define CR_SIO_I_CTS    1   /* CTS */
