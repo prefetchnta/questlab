@@ -66,7 +66,7 @@ CR_API bool create_crh3d9_base_xm (asy::object_base* base, sD3D9_XMSH* xmesh,
 /* CrHack3D9 Render API */
 /************************/
 typedef void*   crh3d9_t;
-CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy, fp32_t zfar);
+CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy, fp32_t zfar, D3DMULTISAMPLE_TYPE fsaa);
 CR_API void crhack3d9_count (crh3d9_t render, size_t* vnum, size_t* tnum);
 CR_API void crhack3d9_kill (crh3d9_t render);
 CR_API bool crhack3d9_reset (crh3d9_t render);
