@@ -119,6 +119,7 @@ typedef struct
 #define MODEL_TYPE_WF_OBJ   0   /* WAVEFRONT OBJ */
 #define MODEL_TYPE_MESHML   1   /* KlayGE MeshML */
 #define MODEL_TYPE_X_MESH   2   /* DirectX Mesh */
+#define MODEL_TYPE_FMTLIB   3   /* FMTZ Engine OBJ */
 
 /*****************************************************************************/
 /*                                  高度图                                   */
@@ -399,6 +400,45 @@ typedef struct
 
 CR_API bool_t   meshml_load (sMESHML *msh, const ansi_t *str);
 CR_API void_t   meshml_free (const sMESHML *msh);
+
+/*****************************************************************************/
+/*                             FMTZ Engine OBJ                               */
+/*****************************************************************************/
+
+/* 模型材质 */
+typedef struct
+{
+        ansi_t* tex[8];
+        vec3d_t color[8];
+
+} FMTZ_MTRL;
+
+/* 模型部件 */
+typedef struct
+{
+        leng_t  mtl_id;
+        void_t  *vb, *ib;
+        uint_t  bpv, fvf;
+        uint_t  vnum, inum;
+
+} FMTZ_UNIT;
+
+/* 模型结构 */
+typedef struct
+{
+        /* 材质数据 */
+        leng_t      n_m;
+        FMTZ_MTRL*  p_m;
+
+        /* 网格数据 */
+        leng_t      n_g;
+        FMTZ_UNIT*  p_g;
+
+        /* 释放单元 */
+        void_t  (*mfree) (FMTZ_MTRL *m);
+        void_t  (*gfree) (FMTZ_UNIT *g);
+
+} FMTZ_MESH;
 
 #endif  /* !__CR_GFX3_H__ */
 
