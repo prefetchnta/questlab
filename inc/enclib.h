@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_ENCLIB_H__
-#define __CR_ENCLIB_H__ 0x2C121BBAUL
+#define __CR_ENCLIB_H__
 
 #include "defs.h"
 

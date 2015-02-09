@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_STRLIB_H__
-#define __CR_STRLIB_H__ 0x8F5D134FUL
+#define __CR_STRLIB_H__
 
 #include "defs.h"
 

@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_EXPAND_H__
-#define __CR_EXPAND_H__ 0xF26EB251UL
+#define __CR_EXPAND_H__
 
 #include "fmtz.h"
 

@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_BRING_INL__
-#define __CR_BRING_INL__ 0xFA3058A8UL
-
 #include "memlib.h"
 
 /* 默认数据类型 */
@@ -63,11 +60,8 @@ bring_init (
 {
     struct_zero(that, sBRING);
     that->data = mem_talloc(size, BRING_TYPE);
-    if (that->data == NULL) {
-        err_set(__CR_BRING_INL__, CR_NULL,
-                "bring_init()", "mem_talloc() failure");
+    if (that->data == NULL)
         return (FALSE);
-    }
     that->size = size;
     return (TRUE);
 }
@@ -256,8 +250,6 @@ bring_write (
 #if defined(CR_NO_STRUCT)
     #undef  static
 #endif
-
-#endif  /* !__CR_BRING_INL__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

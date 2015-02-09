@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_FMODEX_H__
-#define __CR_FMODEX_H__ 0xC77A880CUL
+#define __CR_FMODEX_H__
 
 #include "fmtz.h"
 

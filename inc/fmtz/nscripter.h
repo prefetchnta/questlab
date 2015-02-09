@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_NSCRIPTER_H__
-#define __CR_NSCRIPTER_H__ 0xE1F79E85UL
+#define __CR_NSCRIPTER_H__
 
 #include "fmtz.h"
 
