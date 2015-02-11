@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_JPG_C__
-#define __CR_JPG_C__ 0x5A3099C3UL
-
 #include "fmtz.h"
 #include "tjpgdec/tjpgd.h"
 
@@ -49,11 +46,8 @@ jpg_in_func (
     if (buff != NULL)
         return ((UINT)(CR_VCALL(datin)->read(datin, buff, nbyte)));
 
-    if (!CR_VCALL(datin)->seek(datin, nbyte, SEEK_CUR)) {
-        err_set(__CR_JPG_C__, FALSE,
-                "jpg_in_func()", "iDATIN::seek() failure");
+    if (!CR_VCALL(datin)->seek(datin, nbyte, SEEK_CUR))
         return (0);
-    }
     return (nbyte);
 }
 
@@ -104,7 +98,6 @@ load_cr_jpg (
     )
 {
     JDEC    jdec;
-    leng_t  read;
     void_t* work;
     sIODEV  devid;
     byte_t  head[11];
@@ -114,42 +107,24 @@ load_cr_jpg (
     sFMT_FRAME  temp;
 
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_JPG_C__, CR_NULL,
-                "load_cr_jpg()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    read = CR_VCALL(datin)->read(datin, head, 11);
-    if (read != 11) {
-        err_set(__CR_JPG_C__, read,
-                "load_cr_jpg()", "iDATIN::read() failure");
+    if (CR_VCALL(datin)->read(datin, head, 11) != 11)
         return (NULL);
-    }
-    if (mem_cmp2(head, "\xFF\xD8\xFF\xE0**JFIF", 11) != 0) {
-        err_set(__CR_JPG_C__, CR_ERROR,
-                "load_cr_jpg()", "invalid JPG format");
+    if (mem_cmp2(head, "\xFF\xD8\xFF\xE0**JFIF", 11) != 0)
         return (NULL);
-    }
-    if (!CR_VCALL(datin)->rewind(datin)) {
-        err_set(__CR_JPG_C__, FALSE,
-                "load_cr_jpg()", "iDATIN::rewind() failure");
+    if (!CR_VCALL(datin)->rewind(datin))
         return (NULL);
-    }
 
     /* 准备解压图片 */
     work = mem_malloc(3100);
-    if (work == NULL) {
-        err_set(__CR_JPG_C__, CR_NULL,
-                "load_cr_jpg()", "mem_malloc() failure");
+    if (work == NULL)
         return (NULL);
-    }
     devid.datin = datin;
     retc = jd_prepare(&jdec, jpg_in_func, work, 3100, &devid);
     if (retc != JDR_OK) {
-        err_set(__CR_JPG_C__, retc,
-                "load_cr_jpg()", "jd_prepare() failure");
         mem_free(work);
         return (NULL);
     }
@@ -165,8 +140,6 @@ load_cr_jpg (
     temp.pic = image_new(0, 0, jdec.width, jdec.height,
                          CR_ARGB888, FALSE, 4);
     if (temp.pic == NULL) {
-        err_set(__CR_JPG_C__, CR_NULL,
-                "load_cr_jpg()", "image_new() failure");
         mem_free(work);
         return (NULL);
     }
@@ -175,23 +148,15 @@ load_cr_jpg (
     devid.image = temp.pic;
     retc = jd_decomp(&jdec, jpg_out_func, 0);
     mem_free(work);
-    if (retc != JDR_OK) {
-        err_set(__CR_JPG_C__, retc,
-                "load_cr_jpg()", "jd_decomp() failure");
+    if (retc != JDR_OK)
         goto _failure;
-    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
-    if (rett == NULL) {
-        err_set(__CR_JPG_C__, CR_NULL,
-                "load_cr_jpg()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
-        err_set(__CR_JPG_C__, CR_NULL,
-                "load_cr_jpg()", "struct_dup() failure");
         mem_free(rett);
         goto _failure;
     }
@@ -205,8 +170,6 @@ _failure:
     image_del(temp.pic);
     return (NULL);
 }
-
-#endif  /* !__CR_JPG_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

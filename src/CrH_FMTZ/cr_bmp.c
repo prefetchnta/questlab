@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_BMP_C__
-#define __CR_BMP_C__ 0x04578D73UL
-
 #include "fmtz.h"
 #include "safe.h"
 #include "pixels.h"
@@ -74,29 +71,25 @@ bmp_unrle4 (
   __CR_IN__ const sIMAGE*   image
     )
 {
-    leng_t  idx, count, offset = 0;
+    leng_t  idx, cnt, offset = 0;
+    leng_t  end_of_line = image->bpl;
     byte_t  pair[2], *data = image->data;
-    leng_t  read, end_of_line = image->bpl;
 
     mem_zero(image->data, image->size);
     while (offset < image->size)
     {
         /* 两个字节一对 */
-        read = CR_VCALL(datin)->read(datin, pair, 2);
-        if (read != 2) {
-            err_set(__CR_BMP_C__, read,
-                    "bmp_unrle4()", "iDATIN::read() failure");
+        if (CR_VCALL(datin)->read(datin, pair, 2) != 2)
             return (FALSE);
-        }
 
         /* RLE 输出 */
         if (pair[0] != 0x00) {
-            count = (leng_t)pair[0];
-            if (count > image->size - offset)
-                count = image->size - offset;
+            cnt = (leng_t)pair[0];
+            if (cnt > image->size - offset)
+                cnt = image->size - offset;
             pair[0] = pair[1] >> 4;
             pair[1] = pair[1] & 0x0F;
-            for (idx = 0; idx < count; idx++)
+            for (idx = 0; idx < cnt; idx++)
                 data[offset++] = pair[idx & 1];
             continue;
         }
@@ -114,41 +107,29 @@ bmp_unrle4 (
                 break;
 
             case 0x02:  /* 移动坐标 */
-                read = CR_VCALL(datin)->read(datin, pair, 2);
-                if (read != 2) {
-                    err_set(__CR_BMP_C__, read,
-                            "bmp_unrle4()", "iDATIN::read() failure");
+                if (CR_VCALL(datin)->read(datin, pair, 2) != 2)
                     return (FALSE);
-                }
                 offset += pair[0] + pair[1] * image->bpl;
                 end_of_line += pair[1] * image->bpl;
                 break;
 
             default:    /* 直接复制 */
-                count = (leng_t)pair[1];
-                if (count > image->size - offset)
-                    count = image->size - offset;
-                for (idx = 0; idx < count; idx++) {
+                cnt = (leng_t)pair[1];
+                if (cnt > image->size - offset)
+                    cnt = image->size - offset;
+                for (idx = 0; idx < cnt; idx++) {
                     if (idx & 1) {
                         data[offset++] = pair[0] & 0x0F;
                         continue;
                     }
-                    read = CR_VCALL(datin)->read(datin, pair, 1);
-                    if (read != 1) {
-                        err_set(__CR_BMP_C__, read,
-                                "bmp_unrle4()", "iDATIN::read() failure");
+                    if (CR_VCALL(datin)->read(datin, pair, 1) != 1)
                         return (FALSE);
-                    }
                     data[offset++] = pair[0] >> 4;
                 }
-                count %= 4;
-                if (count == 1 || count == 2) {
-                    read = CR_VCALL(datin)->read(datin, pair, 1);
-                    if (read != 1) {
-                        err_set(__CR_BMP_C__, read,
-                                "bmp_unrle4()", "iDATIN::read() failure");
+                cnt %= 4;
+                if (cnt == 1 || cnt == 2) {
+                    if (CR_VCALL(datin)->read(datin, pair, 1) != 1)
                         return (FALSE);
-                    }
                 }
                 break;
         }
@@ -167,28 +148,24 @@ bmp_unrle8 (
   __CR_IN__ const sIMAGE*   image
     )
 {
-    leng_t  count, offset = 0;
+    leng_t  cnt, offset = 0;
+    leng_t  end_of_line = image->bpl;
     byte_t  pair[2], *data = image->data;
-    leng_t  read, end_of_line = image->bpl;
 
     mem_zero(image->data, image->size);
     while (offset < image->size)
     {
         /* 两个字节一对 */
-        read = CR_VCALL(datin)->read(datin, pair, 2);
-        if (read != 2) {
-            err_set(__CR_BMP_C__, read,
-                    "bmp_unrle8()", "iDATIN::read() failure");
+        if (CR_VCALL(datin)->read(datin, pair, 2) != 2)
             return (FALSE);
-        }
 
         /* RLE 输出 */
         if (pair[0] != 0x00) {
-            count = (leng_t)pair[0];
-            if (count > image->size - offset)
-                count = image->size - offset;
-            mem_set(data + offset, pair[1], count);
-            offset += count;
+            cnt = (leng_t)pair[0];
+            if (cnt > image->size - offset)
+                cnt = image->size - offset;
+            mem_set(data + offset, pair[1], cnt);
+            offset += cnt;
             continue;
         }
 
@@ -205,35 +182,23 @@ bmp_unrle8 (
                 break;
 
             case 0x02:  /* 移动坐标 */
-                read = CR_VCALL(datin)->read(datin, pair, 2);
-                if (read != 2) {
-                    err_set(__CR_BMP_C__, read,
-                            "bmp_unrle8()", "iDATIN::read() failure");
+                if (CR_VCALL(datin)->read(datin, pair, 2) != 2)
                     return (FALSE);
-                }
                 offset += pair[0] + pair[1] * image->bpl;
                 end_of_line += pair[1] * image->bpl;
                 break;
 
             default:    /* 直接复制 */
-                count = (leng_t)pair[1];
-                if (count > image->size - offset)
-                    count = image->size - offset;
-                read = CR_VCALL(datin)->read(datin, data + offset, count);
-                if (read != count) {
-                    err_set(__CR_BMP_C__, read,
-                            "bmp_unrle8()", "iDATIN::read() failure");
+                cnt = (leng_t)pair[1];
+                if (cnt > image->size - offset)
+                    cnt = image->size - offset;
+                if (CR_VCALL(datin)->read(datin, data + offset, cnt) != cnt)
                     return (FALSE);
-                }
-                if (count & 1) {
-                    read = CR_VCALL(datin)->read(datin, pair, 1);
-                    if (read != 1) {
-                        err_set(__CR_BMP_C__, read,
-                                "bmp_unrle8()", "iDATIN::read() failure");
+                if (cnt & 1) {
+                    if (CR_VCALL(datin)->read(datin, pair, 1) != 1)
                         return (FALSE);
-                    }
                 }
-                offset += count;
+                offset += cnt;
                 break;
         }
     }
@@ -253,7 +218,6 @@ load_cr_bmp (
 {
     uint_t  ww;
     sint_t  hh;
-    leng_t  read;
     bool_t  flip;
     uint_t  fcrh;
     byte_t  mask[12];
@@ -263,57 +227,25 @@ load_cr_bmp (
     sFMT_FRAME  temp;
 
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_BMP_C__, CR_NULL,
-                "load_cr_bmp()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sBMP_HDR))) {
-        err_set(__CR_BMP_C__, FALSE,
-                "load_cr_bmp()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sBMP_HDR)))
         return (NULL);
-    }
-    if (head.biMagic != mk_tag2("BM")) {
-        err_set(__CR_BMP_C__, head.biMagic,
-                "load_cr_bmp()", "invalid BMP format");
+    if (head.biMagic != mk_tag2("BM") || head.biReserved != 0UL ||
+        head.biInfoSize != CDWORD_LE(40) || head.biPlanes != CWORD_LE(1))
         return (NULL);
-    }
-    if (head.biReserved != 0UL) {
-        err_set(__CR_BMP_C__, head.biReserved,
-                "load_cr_bmp()", "invalid BMP format");
-        return (NULL);
-    }
-    if (head.biInfoSize != CDWORD_LE(40)) {
-        err_set(__CR_BMP_C__, head.biInfoSize,
-                "load_cr_bmp()", "invalid BMP format");
-        return (NULL);
-    }
-    if (head.biPlanes != CWORD_LE(1)) {
-        err_set(__CR_BMP_C__, head.biPlanes,
-                "load_cr_bmp()", "invalid BMP format");
-        return (NULL);
-    }
     head.biOffset = DWORD_LE(head.biOffset);
     if (head.biOffset < sizeof(sBMP_HDR) ||
-        head.biOffset >= dati_get_size(datin)) {
-        err_set(__CR_BMP_C__, head.biOffset,
-                "load_cr_bmp()", "invalid BMP format");
+        head.biOffset >= dati_get_size(datin))
         return (NULL);
-    }
 
     /* 对宽高的截断检查 */
-    if (cut_int32_u(&ww, DWORD_LE(head.biWidth))) {
-        err_set(__CR_BMP_C__, head.biWidth,
-                "load_cr_bmp()", "image width truncated");
+    if (cut_int32_u(&ww, DWORD_LE(head.biWidth)))
         return (NULL);
-    }
-    if (cut_int32_s(&hh, DWORD_LE(head.biHeight))) {
-        err_set(__CR_BMP_C__, head.biHeight,
-                "load_cr_bmp()", "image height truncated");
+    if (cut_int32_s(&hh, DWORD_LE(head.biHeight)))
         return (NULL);
-    }
 
     /* 图像是否颠倒 */
     if (hh < 0) {
@@ -328,12 +260,8 @@ load_cr_bmp (
     head.biBitCount = WORD_LE(head.biBitCount);
     head.biCompression = DWORD_LE(head.biCompression);
     if (head.biCompression == CR_BI_BITFIELDS) {
-        read = CR_VCALL(datin)->read(datin, mask, 12);
-        if (read != 12) {
-            err_set(__CR_BMP_C__, read,
-                    "load_cr_bmp()", "iDATIN::read() failure");
+        if (CR_VCALL(datin)->read(datin, mask, 12) != 12)
             return (NULL);
-        }
     }
 
     /* 生成图片对象 */
@@ -341,11 +269,8 @@ load_cr_bmp (
     switch (head.biBitCount)
     {
         case 1:
-            if (head.biCompression != CR_BI_RGB) {
-                err_set(__CR_BMP_C__, head.biCompression,
-                        "load_cr_bmp()", "invalid BMP format");
+            if (head.biCompression != CR_BI_RGB)
                 return (NULL);
-            }
             fcrh = CR_INDEX1;
             temp.fmt = CR_PIC_PALS;
             temp.bpp = 1;
@@ -355,11 +280,8 @@ load_cr_bmp (
 
         case 4:
             if (head.biCompression != CR_BI_RGB &&
-                head.biCompression != CR_BI_RLE4) {
-                err_set(__CR_BMP_C__, head.biCompression,
-                        "load_cr_bmp()", "invalid BMP format");
+                head.biCompression != CR_BI_RLE4)
                 return (NULL);
-            }
             if (head.biCompression != CR_BI_RLE4)
                 fcrh = CR_INDEX4;
             else
@@ -372,11 +294,8 @@ load_cr_bmp (
 
         case 8:
             if (head.biCompression != CR_BI_RGB &&
-                head.biCompression != CR_BI_RLE8) {
-                err_set(__CR_BMP_C__, head.biCompression,
-                        "load_cr_bmp()", "invalid BMP format");
+                head.biCompression != CR_BI_RLE8)
                 return (NULL);
-            }
             fcrh = CR_INDEX8;
             temp.fmt = CR_PIC_PALS;
             temp.bpp = 8;
@@ -386,11 +305,8 @@ load_cr_bmp (
 
         case 16:
             if (head.biCompression != CR_BI_RGB &&
-                head.biCompression != CR_BI_BITFIELDS) {
-                err_set(__CR_BMP_C__, head.biCompression,
-                        "load_cr_bmp()", "invalid BMP format");
+                head.biCompression != CR_BI_BITFIELDS)
                 return (NULL);
-            }
             temp.fmt = CR_PIC_ARGB;
             temp.bpp = 16;
             if (head.biCompression == CR_BI_RGB ||
@@ -416,18 +332,13 @@ load_cr_bmp (
             else
             {
                 /* 无法识别的颜色码值 */
-                err_set(__CR_BMP_C__, head.biCompression,
-                        "load_cr_bmp()", "invalid BMP format");
                 return (NULL);
             }
             break;
 
         case 24:
-            if (head.biCompression != CR_BI_RGB) {
-                err_set(__CR_BMP_C__, head.biCompression,
-                        "load_cr_bmp()", "invalid BMP format");
+            if (head.biCompression != CR_BI_RGB)
                 return (NULL);
-            }
             fcrh = CR_ARGB888;
             temp.fmt = CR_PIC_ARGB;
             temp.bpp = 24;
@@ -439,11 +350,8 @@ load_cr_bmp (
 
         case 32:
             if (head.biCompression != CR_BI_RGB &&
-                head.biCompression != CR_BI_BITFIELDS) {
-                err_set(__CR_BMP_C__, head.biCompression,
-                        "load_cr_bmp()", "invalid BMP format");
+                head.biCompression != CR_BI_BITFIELDS)
                 return (NULL);
-            }
             fcrh = CR_ARGB8888;
             temp.fmt = CR_PIC_ARGB;
             temp.bpp = 32;
@@ -456,92 +364,60 @@ load_cr_bmp (
 
         default:
         case 0: /* PNG/JPEG 不支持 */
-            err_set(__CR_BMP_C__, head.biBitCount,
-                    "load_cr_bmp()", "invalid BMP format");
             return (NULL);
     }
     /* BMP 一定是使用行4字节对齐的 */
     temp.pic = image_new(0, 0, ww, hh, fcrh, flip, 4);
-    if (temp.pic == NULL) {
-        err_set(__CR_BMP_C__, CR_NULL,
-                "load_cr_bmp()", "image_new() failure");
+    if (temp.pic == NULL)
         return (NULL);
-    }
 
     /* 读取调色板数据 */
     if (temp.bpp <= 8) {
         head.biClrUsed = DWORD_LE(head.biClrUsed);
-        if (head.biClrUsed > 256) {
-            err_set(__CR_BMP_C__, head.biClrUsed,
-                    "load_cr_bmp()", "invalid BMP format");
+        if (head.biClrUsed > 256)
             goto _failure;
-        }
         fcrh = (uint_t)head.biClrUsed;
         if (fcrh == 0)
             fcrh = ((uint_t)1) << temp.bpp;
         fcrh *= sizeof(int32u);
-        read = CR_VCALL(datin)->read(datin, temp.pic->pal, fcrh);
-        if (read != fcrh) {
-            err_set(__CR_BMP_C__, read,
-                    "load_cr_bmp()", "iDATIN::read() failure");
+        if (CR_VCALL(datin)->read(datin, temp.pic->pal, fcrh) != fcrh)
             goto _failure;
-        }
         fcrh /= sizeof(int32u);
         pal_4b_alp_sw(temp.pic->pal, FALSE, 0xFF, fcrh);
     }
 
     /* 读取图片数据 */
-    if (!CR_VCALL(datin)->seek(datin, head.biOffset, SEEK_SET)) {
-        err_set(__CR_BMP_C__, FALSE,
-                "load_cr_bmp()", "iDATIN::seek() failure");
+    if (!CR_VCALL(datin)->seek(datin, head.biOffset, SEEK_SET))
         goto _failure;
-    }
     switch (head.biCompression)
     {
         case CR_BI_RGB:
         case CR_BI_BITFIELDS:
-            read = CR_VCALL(datin)->read(datin, temp.pic->data,
-                                         temp.pic->size);
-            if (read != temp.pic->size) {
-                err_set(__CR_BMP_C__, read,
-                        "load_cr_bmp()", "iDATIN::read() failure");
+            if (CR_VCALL(datin)->read(datin, temp.pic->data,
+                    temp.pic->size) != temp.pic->size)
                 goto _failure;
-            }
             break;
 
         case CR_BI_RLE4:
-            if (!bmp_unrle4(datin, temp.pic)) {
-                err_set(__CR_BMP_C__, FALSE,
-                        "load_cr_bmp()", "bmp_unrle4() failure");
+            if (!bmp_unrle4(datin, temp.pic))
                 goto _failure;
-            }
             break;
 
         case CR_BI_RLE8:
-            if (!bmp_unrle8(datin, temp.pic)) {
-                err_set(__CR_BMP_C__, FALSE,
-                        "load_cr_bmp()", "bmp_unrle8() failure");
+            if (!bmp_unrle8(datin, temp.pic))
                 goto _failure;
-            }
             break;
 
         default:
-            err_set(__CR_BMP_C__, head.biCompression,
-                    "load_cr_bmp()", "invalid BMP format");
             goto _failure;
     }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
-    if (rett == NULL) {
-        err_set(__CR_BMP_C__, CR_NULL,
-                "load_cr_bmp()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
-        err_set(__CR_BMP_C__, CR_NULL,
-                "load_cr_bmp()", "struct_dup() failure");
         mem_free(rett);
         goto _failure;
     }
@@ -555,8 +431,6 @@ _failure:
     image_del(temp.pic);
     return (NULL);
 }
-
-#endif  /* !__CR_BMP_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

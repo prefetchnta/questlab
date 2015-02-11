@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_E_HACK_C__
-#define __CR_E_HACK_C__ 0x0BCA9EE8UL
-
 #include "fmtint.h"
 #include "pixels.h"
 #include "strlib.h"
@@ -63,11 +60,8 @@ engine_crhack (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL) {
-        err_set(__CR_E_HACK_C__, CR_NULL,
-                "engine_crhack()", "engine_init() failure");
+    if (engine == NULL)
         return (NULL);
-    }
     engine->fmtz_load = engine_crhack_load;
     engine->info = "CrHack FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -120,11 +114,8 @@ save_img_raw (
 
     /* 创建文件 */
     file = file_openA(name, CR_FO_WO);
-    if (file == NULL) {
-        err_set(__CR_E_HACK_C__, CR_NULL,
-                "save_img_raw()", "file_openA() failure");
+    if (file == NULL)
         return (FALSE);
-    }
     ww = img->position.ww;
     hh = img->position.hh;
 
@@ -133,16 +124,10 @@ save_img_raw (
     if (flag & 1)
     {
         /* 保存宽高 */
-        if (!file_putd(ww, file)) {
-            err_set(__CR_E_HACK_C__, FALSE,
-                    "save_img_raw()", "file_putd() failure");
+        if (!file_putd(ww, file))
             goto _failure;
-        }
-        if (!file_putd(hh, file)) {
-            err_set(__CR_E_HACK_C__, FALSE,
-                    "save_img_raw()", "file_putd() failure");
+        if (!file_putd(hh, file))
             goto _failure;
-        }
         flag -= 1;
     }
 
@@ -151,15 +136,10 @@ save_img_raw (
     {
         /* 灰度图片 */
         temp = img_auto_to_32(NULL, 0, 0, img);
-        if (temp == NULL) {
-            err_set(__CR_E_HACK_C__, CR_NULL,
-                    "save_img_raw()", "img_auto_to_32() failure");
+        if (temp == NULL)
             goto _failure;
-        }
         cnvt = image_new(0, 0, ww, hh, CR_INDEX8, temp->gdi, 4);
         if (cnvt == NULL) {
-            err_set(__CR_E_HACK_C__, CR_NULL,
-                    "save_img_raw()", "image_new() failure");
             image_del(temp);
             goto _failure;
         }
@@ -181,14 +161,9 @@ save_img_raw (
         }
         else {
             cnvt = image_new(0, 0, ww, hh, fmt, FALSE, 4);
-            if (cnvt == NULL) {
-                err_set(__CR_E_HACK_C__, CR_NULL,
-                        "save_img_raw()", "image_new() failure");
+            if (cnvt == NULL)
                 goto _failure;
-            }
             if (img_auto_to_xx(cnvt, img) == NULL) {
-                err_set(__CR_E_HACK_C__, CR_NULL,
-                        "save_img_raw()", "img_auto_to_xx() failure");
                 image_del(cnvt);
                 goto _failure;
             }
@@ -212,8 +187,6 @@ save_img_raw (
     for (; hh != 0; hh--) {
         back = file_write(line, nbpl, file);
         if (back != nbpl) {
-            err_set(__CR_E_HACK_C__, back,
-                    "save_img_raw()", "file_write() failure");
             if (cnvt != (sIMAGE*)img)
                 image_del(cnvt);
             goto _failure;
@@ -224,8 +197,6 @@ save_img_raw (
             line += cnvt->bpl;
         for (xx = 0; xx < flag; xx++) {
             if (!file_putb(0x00, file)) {
-                err_set(__CR_E_HACK_C__, FALSE,
-                        "save_img_raw()", "file_putb() failure");
                 if (cnvt != (sIMAGE*)img)
                     image_del(cnvt);
                 goto _failure;
@@ -354,8 +325,6 @@ save_img_grey (
 {
     return (save_img_raw(img, name, CR_INDEX8, 1, argc, argv));
 }
-
-#endif  /* !__CR_E_HACK_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
