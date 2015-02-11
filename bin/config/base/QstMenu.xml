@@ -11,6 +11,7 @@
         <MenuItem name="subG2dSaveNow" text="保存当前原图帧(&N)..." scut="Ctrl+N" />
         <MenuItem name="subG2dSaveAll" text="保存所有原图帧(&M)..." scut="Ctrl+M" />
         <MenuItem name="subG2dSaveShow" text="保存当前显示帧(&H)..." scut="Ctrl+H" />
+        <MenuItem name="subG2dSaveGrub" text="保存当前最小帧(&H)..." scut="Ctrl+G" />
         <MenuItem name="xxxSepOper3" text="-" />
         <MenuItem name="subWinShow" text="显示所有窗口(&R)" scut="Ctrl+R" />
         <MenuItem name="subWinLoad" text="加载窗口位置(&L)" scut="Ctrl+L" />

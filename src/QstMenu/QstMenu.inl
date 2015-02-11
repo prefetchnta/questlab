@@ -10,6 +10,7 @@ void __fastcall subG2dAlphaClick(TObject *Sender);
 void __fastcall subG2dSaveNowClick(TObject *Sender);
 void __fastcall subG2dSaveAllClick(TObject *Sender);
 void __fastcall subG2dSaveShowClick(TObject *Sender);
+void __fastcall subG2dSaveGrubClick(TObject *Sender);
 void __fastcall subWinShowClick(TObject *Sender);
 void __fastcall subWinLoadClick(TObject *Sender);
 void __fastcall subWinSaveClick(TObject *Sender);
@@ -161,7 +162,11 @@ g2d_img_save (
     if (temp.typ == 1)
         send = str_fmtA("g2d:saveall %s", file);
     else
+    if (temp.typ == 2)
         send = str_fmtA("g2d:savenow %s", file);
+    else
+    if (temp.typ == 3)
+        send = str_fmtA("g2d:grub %s", file);
     mem_free(file);
     if (send != NULL) {
         qst_send_cmdz(send);
@@ -199,6 +204,16 @@ void __fastcall TfrmMain::subG2dSaveShowClick(TObject *Sender)
     /* 保存显示图片帧 */
     parm.frm = this;
     parm.typ = 2;
+    misc_async_call(g2d_img_save, &parm.ctx);
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subG2dSaveGrubClick(TObject *Sender)
+{
+    sG2dSaveCtx parm;
+
+    /* 保存最小显示帧 */
+    parm.frm = this;
+    parm.typ = 3;
     misc_async_call(g2d_img_save, &parm.ctx);
 }
 //---------------------------------------------------------------------------
@@ -733,6 +748,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subG2dSaveNow);
     QST_MENU_EVENT(subG2dSaveAll);
     QST_MENU_EVENT(subG2dSaveShow);
+    QST_MENU_EVENT(subG2dSaveGrub);
     QST_MENU_EVENT(subWinShow);
     QST_MENU_EVENT(subWinLoad);
     QST_MENU_EVENT(subWinSave);
