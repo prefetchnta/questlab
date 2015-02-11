@@ -839,6 +839,95 @@ _failure1:
 
 /*
 =======================================
+    保存最小图片
+=======================================
+*/
+CR_API bool_t
+qst_save_min (
+  __CR_IN__ const sQstView2D*   parm,
+  __CR_IN__ const ansi_t*       name,
+  __CR_IN__ uint_t              argc,
+  __CR_IN__ ansi_t*             argv[]
+    )
+{
+    sRECT   box;
+    sIMAGE* save;
+    byte_t* line;
+    bool_t  retc;
+    sint_t  xx, yy;
+    sint_t  ww, hh;
+
+    if (parm->image == NULL)
+        return (FALSE);
+    ww = parm->image->position.ww;
+    hh = parm->image->position.hh;
+
+    /* 查找 X/Y 坐标的极值 */
+    line = parm->image->data;
+    for (yy = 0; yy < hh; yy++) {
+        for (xx = 0; xx < ww; xx++) {
+            if (line[xx * 4 + 3] != 0x00) {
+                box.x1 = xx;
+                box.y1 = yy;
+                goto _find_y2;
+            }
+        }
+        line += parm->image->bpl;
+    }
+    return (FALSE);
+
+_find_y2:
+    line  = parm->image->data;
+    line += parm->image->size;
+    line -= parm->image->bpl;
+    for (yy = hh - 1; yy >= 0; yy--) {
+        for (xx = ww - 1; xx >= 0; xx--) {
+            if (line[xx * 4 + 3] != 0x00) {
+                box.x2 = xx;
+                box.y2 = yy;
+                goto _find_xx;
+            }
+        }
+        line -= parm->image->bpl;
+    }
+    return (FALSE);
+
+_find_xx:
+    line  = parm->image->data;
+    line += parm->image->bpl * box.y1;
+    for (yy = box.y1; yy <= box.y2; yy++) {
+        for (xx = 0; xx < ww; xx++) {
+            if (line[xx * 4 + 3] != 0x00) {
+                if (box.x1 > xx)
+                    box.x1 = xx;
+                break;
+            }
+        }
+        if (xx < ww) {
+            for (xx = ww - 1; xx >= 0; xx--) {
+                if (line[xx * 4 + 3] != 0x00) {
+                    if (box.x2 < xx)
+                        box.x2 = xx;
+                    break;
+                }
+            }
+        }
+        line += parm->image->bpl;
+    }
+    if (box.x1 > box.x2 || box.y1 > box.y2)
+        return (FALSE);
+    box.ww = box.x2 - box.x1 + 1;
+    box.hh = box.y2 - box.y1 + 1;
+    save = image_grab(parm->image, &box);
+    if (save == NULL)
+        return (FALSE);
+    retc = qst_save_img(save, parm, name, argc, argv);
+    image_del(save);
+    return (retc);
+}
+
+/*
+=======================================
     保存显示图片
 =======================================
 */
