@@ -1,5 +1,6 @@
 
 #include "../QstLibs/QstLibs.h"
+#include "facedetect/facedetect-dll.h"
 
 #include <math.h>
 
@@ -1176,6 +1177,56 @@ image_cto_yuv (
 }
 
 /*
+---------------------------------------
+    人脸识别
+---------------------------------------
+*/
+static bool_t
+face_frontal (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sRECT   rect;
+    sIMAGE* dest;
+    sIMAGE* gray;
+
+    CR_NOUSE(netw);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    gray = image_graying(dest);
+    if (gray == NULL)
+        return (TRUE);
+
+    float scale;
+    int* result;
+    cpix_t color;
+    int min_size;
+    int max_size;
+    int neighbors;
+    short* points;
+
+    scale = xml_attr_fp32U("scale", 1.2f, param);
+    neighbors = xml_attr_intxU("min_neighbors", 2, param);
+    min_size = xml_attr_intxU("min_size", 24, param);
+    max_size = xml_attr_intxU("max_size", 0, param);
+    result = facedetect_frontal(gray->data, gray->position.ww,
+        gray->position.hh, gray->bpl, scale, neighbors, min_size, max_size);
+    if (result != NULL) {
+        color.val = 0xFF00FF00;
+        points = (short*)(result + 1);
+        for (int idx = 0; idx < *result; idx++, points += 6) {
+            rect_set_wh(&rect, points[0], points[1], points[2], points[3]);
+            draw_rect(dest, &rect, color, pixel_set32z);
+        }
+    }
+    image_del(gray);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1210,5 +1261,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_to_hsl", image_cto_hsl },
     { "crhack_to_hsv", image_cto_hsv },
     { "crhack_to_yuv", image_cto_yuv },
+    { "crhack_face_frontal", face_frontal },
     { NULL, NULL },
 };

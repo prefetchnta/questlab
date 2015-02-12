@@ -15,7 +15,8 @@ SRC_LIST=.$(L)xCrHackSet.$(P) \
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" $(SRC_LIST)
-    $(LD) $(LFLAGS) /DLL /LIBPATH:..$(L)..$(L)lib$(L)zbar $(OBJ_LIST)
+    $(LD) $(LFLAGS) /DLL /LIBPATH:..$(L)..$(L)lib$(L)zbar \
+        /LIBPATH:..$(L)..$(L)lib$(L)facedetect $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)plugin$(L)
     del /Q *.obj
