@@ -1212,8 +1212,16 @@ face_frontal (
     neighbors = xml_attr_intxU("min_neighbors", 2, param);
     min_size = xml_attr_intxU("min_size", 24, param);
     max_size = xml_attr_intxU("max_size", 0, param);
-    result = facedetect_frontal(gray->data, gray->position.ww,
-        gray->position.hh, gray->bpl, scale, neighbors, min_size, max_size);
+    if (str_cmpA(param->name, "crhack_face_frontal") == 0) {
+        result = facedetect_frontal(gray->data, gray->position.ww,
+                                    gray->position.hh, gray->bpl, scale,
+                                        neighbors, min_size, max_size);
+    }
+    else {
+        result = facedetect_multiview(gray->data, gray->position.ww,
+                                    gray->position.hh, gray->bpl, scale,
+                                        neighbors, min_size, max_size);
+    }
     if (result != NULL) {
         color.val = 0xFF00FF00;
         points = (short*)(result + 1);
