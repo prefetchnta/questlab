@@ -1178,11 +1178,11 @@ image_cto_yuv (
 
 /*
 ---------------------------------------
-    人脸识别 (正面)
+    人脸识别
 ---------------------------------------
 */
 static bool_t
-face_frontal (
+image_facedetect (
   __CR_IN__ void_t*     netw,
   __CR_IO__ void_t*     image,
   __CR_IN__ sXNODEu*    param
@@ -1227,7 +1227,12 @@ face_frontal (
         points = (short*)(result + 1);
         for (int idx = 0; idx < *result; idx++, points += 6) {
             rect_set_wh(&rect, points[0], points[1], points[2], points[3]);
-            draw_rect(dest, &rect, color, pixel_set32z);
+            for (int kk = 0; kk < 3; kk++) {
+                draw_rect(dest, &rect, color, pixel_set32z);
+                rect.x1 += 1;   rect.y1 += 1;
+                rect.x2 -= 1;   rect.y2 -= 1;
+                rect.ww -= 2;   rect.hh -= 2;
+            }
         }
     }
     image_del(gray);
@@ -1269,6 +1274,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_to_hsl", image_cto_hsl },
     { "crhack_to_hsv", image_cto_hsv },
     { "crhack_to_yuv", image_cto_yuv },
-    { "crhack_face_frontal", face_frontal },
+    { "crhack_face_frontal", image_facedetect },
+    { "crhack_face_multiview", image_facedetect },
     { NULL, NULL },
 };
