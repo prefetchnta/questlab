@@ -22,6 +22,9 @@
     <!-- 颜色扩散滤镜 -->
     <?crhack_diffuse min_x="-10" max_x="10" min_y="-10" max_y="10" />
 
+    <!-- 人脸识别 (正面) -->
+    <?crhack_face_frontal scale="1.2" min_neighbors="2"
+                          min_size="24" max_size="0" />
     <!-- 垂直翻转滤镜 -->
     <?crhack_flip_vv />
 
