@@ -216,10 +216,9 @@ load_cr_bmp (
   __CR_IN__ const sLOADER*  param
     )
 {
-    uint_t  ww;
     sint_t  hh;
     bool_t  flip;
-    uint_t  fcrh;
+    uint_t  fcrh, ww;
     byte_t  mask[12];
     /* ----------- */
     sBMP_HDR    head;

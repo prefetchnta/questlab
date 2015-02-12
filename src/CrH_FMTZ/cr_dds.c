@@ -99,7 +99,7 @@ load_cr_dds (
     uint_t  ww, hh;
     int32u  d3dfmt;
     byte_t* imgdat;
-    /* ----------- */
+    /* --------- */
     sDDS_HDR    head;
     sFMT_PIC*   rett;
     sFMT_FRAME  temp;

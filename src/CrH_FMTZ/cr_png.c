@@ -536,8 +536,8 @@ load_cr_png (
                 }
                 break;
 
-         /* case 16: */
             default:
+            case 16:
                 nbpl = ww;
                 nbpl *= 2;
                 if (!png_filter(ddata, nbpl, 2, hh, dptr))
@@ -619,8 +619,8 @@ load_cr_png (
                 }
                 break;
 
-         /* case 6: */
             default:
+            case 6:
                 if (head.info.depth == 8)
                 {
                     /* 直接逐行复制 */
