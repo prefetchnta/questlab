@@ -6,28 +6,12 @@ BIN_NAME=$(PROJECT).dll
 OBJ_LIST=.$(L)xOpenCV.$(O) \
          .$(L)cOpenCV.$(O) \
          .$(L)fOpenCV.$(O) \
-         .$(L)zOpenCV.$(O) \
-         .$(L)bitstream.$(O) \
-         .$(L)codedata.$(O) \
-         .$(L)container.$(O) \
-         .$(L)ecidecoder.$(O) \
-         .$(L)formatinfo.$(O) \
-         .$(L)galois.$(O) \
-         .$(L)imagereader.$(O) \
-         .$(L)libdecodeqr.$(O)
+         .$(L)zOpenCV.$(O)
 
 SRC_LIST=.$(L)xOpenCV.$(P) \
          .$(L)cOpenCV.$(P) \
          .$(L)fOpenCV.$(P) \
-         .$(L)zOpenCV.$(P) \
-         .$(L)libdecodeqr$(L)bitstream.$(P) \
-         .$(L)libdecodeqr$(L)codedata.$(P) \
-         .$(L)libdecodeqr$(L)container.$(P) \
-         .$(L)libdecodeqr$(L)ecidecoder.$(P) \
-         .$(L)libdecodeqr$(L)formatinfo.$(P) \
-         .$(L)libdecodeqr$(L)galois.$(P) \
-         .$(L)libdecodeqr$(L)imagereader.$(P) \
-         .$(L)libdecodeqr$(L)libdecodeqr.$(P)
+         .$(L)zOpenCV.$(P)
 
 build_all:
     $(CC) $(CFLAGS) /I "..\..\ocv" /EHsc /D "_CR_BUILD_DLL_" $(SRC_LIST)
