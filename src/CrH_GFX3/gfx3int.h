@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_GFX3INT_H__
-#define __CR_GFX3INT_H__ 0xC6A5667DUL
+#define __CR_GFX3INT_H__
 
 #include "gfx3.h"
 

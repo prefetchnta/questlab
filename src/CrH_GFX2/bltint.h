@@ -18,7 +18,7 @@
 /*****************************************************************************/
 
 #ifndef __CR_BLTINT_H__
-#define __CR_BLTINT_H__ 0x36DB6D4AUL
+#define __CR_BLTINT_H__
 
 #include "blit.h"
 
