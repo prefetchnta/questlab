@@ -812,6 +812,126 @@ struct ZeroIterator
 
 };
 
+
+/*
+ * Depending on processed distances, some of them are already squared (e.g. L2)
+ * and some are not (e.g.Hamming). In KMeans++ for instance we want to be sure
+ * we are working on ^2 distances, thus following templates to ensure that.
+ */
+template <typename Distance, typename ElementType>
+struct squareDistance
+{
+    typedef typename Distance::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return dist*dist; }
+};
+
+
+template <typename ElementType>
+struct squareDistance<L2_Simple<ElementType>, ElementType>
+{
+    typedef typename L2_Simple<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return dist; }
+};
+
+template <typename ElementType>
+struct squareDistance<L2<ElementType>, ElementType>
+{
+    typedef typename L2<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return dist; }
+};
+
+
+template <typename ElementType>
+struct squareDistance<MinkowskiDistance<ElementType>, ElementType>
+{
+    typedef typename MinkowskiDistance<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return dist; }
+};
+
+template <typename ElementType>
+struct squareDistance<HellingerDistance<ElementType>, ElementType>
+{
+    typedef typename HellingerDistance<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return dist; }
+};
+
+template <typename ElementType>
+struct squareDistance<ChiSquareDistance<ElementType>, ElementType>
+{
+    typedef typename ChiSquareDistance<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return dist; }
+};
+
+
+template <typename Distance>
+typename Distance::ResultType ensureSquareDistance( typename Distance::ResultType dist )
+{
+    typedef typename Distance::ElementType ElementType;
+
+    squareDistance<Distance, ElementType> dummy;
+    return dummy( dist );
+}
+
+
+/*
+ * ...and a template to ensure the user that he will process the normal distance,
+ * and not squared distance, without loosing processing time calling sqrt(ensureSquareDistance)
+ * that will result in doing actually sqrt(dist*dist) for L1 distance for instance.
+ */
+template <typename Distance, typename ElementType>
+struct simpleDistance
+{
+    typedef typename Distance::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return dist; }
+};
+
+
+template <typename ElementType>
+struct simpleDistance<L2_Simple<ElementType>, ElementType>
+{
+    typedef typename L2_Simple<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return sqrt(dist); }
+};
+
+template <typename ElementType>
+struct simpleDistance<L2<ElementType>, ElementType>
+{
+    typedef typename L2<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return sqrt(dist); }
+};
+
+
+template <typename ElementType>
+struct simpleDistance<MinkowskiDistance<ElementType>, ElementType>
+{
+    typedef typename MinkowskiDistance<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return sqrt(dist); }
+};
+
+template <typename ElementType>
+struct simpleDistance<HellingerDistance<ElementType>, ElementType>
+{
+    typedef typename HellingerDistance<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return sqrt(dist); }
+};
+
+template <typename ElementType>
+struct simpleDistance<ChiSquareDistance<ElementType>, ElementType>
+{
+    typedef typename ChiSquareDistance<ElementType>::ResultType ResultType;
+    ResultType operator()( ResultType dist ) { return sqrt(dist); }
+};
+
+
+template <typename Distance>
+typename Distance::ResultType ensureSimpleDistance( typename Distance::ResultType dist )
+{
+    typedef typename Distance::ElementType ElementType;
+
+    simpleDistance<Distance, ElementType> dummy;
+    return dummy( dist );
+}
+
 }
 
 #endif //OPENCV_FLANN_DIST_H_

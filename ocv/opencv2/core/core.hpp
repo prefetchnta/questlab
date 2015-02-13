@@ -284,6 +284,7 @@ CV_EXPORTS_W int64 getCPUTickCount();
   - CV_CPU_SSE4_2 - SSE 4.2
   - CV_CPU_POPCNT - POPCOUNT
   - CV_CPU_AVX - AVX
+  - CV_CPU_AVX2 - AVX2
 
   \note {Note that the function output is not static. Once you called cv::useOptimized(false),
   most of the hardware acceleration is disabled and thus the function will returns false,
@@ -495,7 +496,7 @@ public:
     //! dot product computed in double-precision arithmetics
     double ddot(const Matx<_Tp, m, n>& v) const;
 
-    //! convertion to another data type
+    //! conversion to another data type
     template<typename T2> operator Matx<T2, m, n>() const;
 
     //! change the matrix shape
@@ -636,7 +637,7 @@ public:
       For other dimensionalities the exception is raised
     */
     Vec cross(const Vec& v) const;
-    //! convertion to another data type
+    //! conversion to another data type
     template<typename T2> operator Vec<T2, cn>() const;
     //! conversion to 4-element CvScalar.
     operator CvScalar() const;
@@ -892,6 +893,7 @@ public:
 typedef Point_<int> Point2i;
 typedef Point2i Point;
 typedef Size_<int> Size2i;
+typedef Size_<double> Size2d;
 typedef Size2i Size;
 typedef Rect_<int> Rect;
 typedef Point_<float> Point2f;
@@ -2318,7 +2320,7 @@ CV_EXPORTS_W void patchNaNs(InputOutputArray a, double val=0);
 
 //! implements generalized matrix product algorithm GEMM from BLAS
 CV_EXPORTS_W void gemm(InputArray src1, InputArray src2, double alpha,
-                       InputArray src3, double gamma, OutputArray dst, int flags=0);
+                       InputArray src3, double beta, OutputArray dst, int flags=0);
 //! multiplies matrix by its transposition from the left or from the right
 CV_EXPORTS_W void mulTransposed( InputArray src, OutputArray dst, bool aTa,
                                  InputArray delta=noArray(),
@@ -2588,6 +2590,10 @@ CV_EXPORTS_AS(randShuffle) void randShuffle_(InputOutputArray dst, double iterFa
 //! draws the line segment (pt1, pt2) in the image
 CV_EXPORTS_W void line(CV_IN_OUT Mat& img, Point pt1, Point pt2, const Scalar& color,
                      int thickness=1, int lineType=8, int shift=0);
+
+//! draws an arrow from pt1 to pt2 in the image
+CV_EXPORTS_W void arrowedLine(CV_IN_OUT Mat& img, Point pt1, Point pt2, const Scalar& color,
+                     int thickness=1, int line_type=8, int shift=0, double tipLength=0.1);
 
 //! draws the rectangle outline or a solid rectangle with the opposite corners pt1 and pt2 in the image
 CV_EXPORTS_W void rectangle(CV_IN_OUT Mat& img, Point pt1, Point pt2,

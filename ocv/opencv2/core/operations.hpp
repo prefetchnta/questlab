@@ -56,7 +56,7 @@
   #define CV_XADD(addr,delta) _InterlockedExchangeAdd(const_cast<void*>(reinterpret_cast<volatile void*>(addr)), delta)
 #elif defined __GNUC__
 
-  #if defined __clang__ && __clang_major__ >= 3 && !defined __ANDROID__ && !defined __EMSCRIPTEN__
+  #if defined __clang__ && __clang_major__ >= 3 && !defined __ANDROID__ && !defined __EMSCRIPTEN__  && !defined(__CUDACC__)
     #ifdef __ATOMIC_SEQ_CST
         #define CV_XADD(addr, delta) __c11_atomic_fetch_add((_Atomic(int)*)(addr), (delta), __ATOMIC_SEQ_CST)
     #else
@@ -2625,12 +2625,15 @@ template<typename _Tp> inline Ptr<_Tp>::Ptr(const Ptr<_Tp>& _ptr)
 
 template<typename _Tp> inline Ptr<_Tp>& Ptr<_Tp>::operator = (const Ptr<_Tp>& _ptr)
 {
-    int* _refcount = _ptr.refcount;
-    if( _refcount )
-        CV_XADD(_refcount, 1);
-    release();
-    obj = _ptr.obj;
-    refcount = _refcount;
+    if (this != &_ptr)
+    {
+      int* _refcount = _ptr.refcount;
+      if( _refcount )
+          CV_XADD(_refcount, 1);
+      release();
+      obj = _ptr.obj;
+      refcount = _refcount;
+    }
     return *this;
 }
 
