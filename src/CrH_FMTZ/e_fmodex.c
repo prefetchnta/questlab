@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_E_FMODEX_C__
-#define __CR_E_FMODEX_C__ 0xFF65A817UL
-
 #include "safe.h"
 #include "fmtint.h"
 #include "strlib.h"
@@ -82,91 +79,53 @@ fmodex_init (void_t)
 
     /* FMODEx 推荐的初始化过程 */
     result = FMOD_System_Create(&system);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "fmodex_init()", "FMOD_System_Create() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     result = FMOD_System_GetVersion(system, &vers);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "fmodex_init()", "FMOD_System_GetVersion() failure");
+    if (result != FMOD_OK)
         goto _failure;
-    }
-    if (vers < FMOD_VERSION) {
-        err_set(__CR_E_FMODEX_C__, vers,
-                "fmodex_init()", "you are using an old version of fmodex");
+    if (vers < FMOD_VERSION)
         goto _failure;
-    }
     result = FMOD_System_GetNumDrivers(system, &ndrv);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "fmodex_init()", "FMOD_System_GetNumDrivers() failure");
+    if (result != FMOD_OK)
         goto _failure;
-    }
     if (ndrv == 0) {
         result = FMOD_System_SetOutput(system, FMOD_OUTPUTTYPE_NOSOUND);
-        if (result != FMOD_OK) {
-            err_set(__CR_E_FMODEX_C__, result,
-                    "fmodex_init()", "FMOD_System_SetOutput() failure");
+        if (result != FMOD_OK)
             goto _failure;
-        }
     }
     else {
         result = FMOD_System_GetDriverCaps(system, 0, &caps, 0, &spkmode);
-        if (result != FMOD_OK) {
-            err_set(__CR_E_FMODEX_C__, result,
-                    "fmodex_init()", "FMOD_System_GetDriverCaps() failure");
+        if (result != FMOD_OK)
             goto _failure;
-        }
         result = FMOD_System_SetSpeakerMode(system, spkmode);
-        if (result != FMOD_OK) {
-            err_set(__CR_E_FMODEX_C__, result,
-                    "fmodex_init()", "FMOD_System_SetSpeakerMode() failure");
+        if (result != FMOD_OK)
             goto _failure;
-        }
         if (caps & FMOD_CAPS_HARDWARE_EMULATED) {
             result = FMOD_System_SetDSPBufferSize(system, 1024, 10);
-            if (result != FMOD_OK) {
-                err_set(__CR_E_FMODEX_C__, result,
-                        "fmodex_init()",
-                        "FMOD_System_SetDSPBufferSize() failure");
+            if (result != FMOD_OK)
                 goto _failure;
-            }
         }
         result = FMOD_System_GetDriverInfo(system, 0, name, sizeof(name), 0);
-        if (result != FMOD_OK) {
-            err_set(__CR_E_FMODEX_C__, result,
-                    "fmodex_init()", "FMOD_System_GetDriverInfo() failure");
+        if (result != FMOD_OK)
             goto _failure;
-        }
         if (str_strA(name, "SigmaTel")) {
             result = FMOD_System_SetSoftwareFormat(system,
                             48000, FMOD_SOUND_FORMAT_PCMFLOAT, 0, 0,
                                 FMOD_DSP_RESAMPLER_LINEAR);
-            if (result != FMOD_OK) {
-                err_set(__CR_E_FMODEX_C__, result,
-                        "fmodex_init()",
-                        "FMOD_System_SetSoftwareFormat() failure");
+            if (result != FMOD_OK)
                 goto _failure;
-            }
         }
     }
     result = FMOD_System_Init(system, 100, FMOD_INIT_NORMAL, 0);
     if (result == FMOD_ERR_OUTPUT_CREATEBUFFER) {
         result = FMOD_System_SetSpeakerMode(system, FMOD_SPEAKERMODE_STEREO);
-        if (result != FMOD_OK) {
-            err_set(__CR_E_FMODEX_C__, result,
-                    "fmodex_init()", "FMOD_System_SetSpeakerMode() failure");
+        if (result != FMOD_OK)
             goto _failure;
-        }
         result = FMOD_System_Init(system, 100, FMOD_INIT_NORMAL, 0);
     }
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "fmodex_init()", "FMOD_System_Init() failure");
+    if (result != FMOD_OK)
         goto _failure;
-    }
 
     /* 设置全局对象 */
     s_fmodex = system;
@@ -242,11 +201,8 @@ iXMM_FMOD_play (
 
     real = (iXMM_FMOD*)that;
     result = FMOD_Channel_SetPaused(real->m_chn, FALSE);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::play()", "FMOD_Channel_SetPaused() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -265,11 +221,8 @@ iXMM_FMOD_pause (
 
     real = (iXMM_FMOD*)that;
     result = FMOD_Channel_SetPaused(real->m_chn, TRUE);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::pause()", "FMOD_Channel_SetPaused() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -292,11 +245,8 @@ iXMM_FMOD_stop (
     FMOD_Channel_Stop(real->m_chn);
     result = FMOD_System_PlaySound(s_fmodex, FMOD_CHANNEL_FREE,
                                    real->m_snd, TRUE, &channel);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::stop()", "FMOD_System_PlaySound() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     real->m_chn = channel;
     xmms_adj_volume(that, 0);
     return (TRUE);
@@ -320,18 +270,12 @@ iXMM_FMOD_set_pos (
 
     real = (iXMM_FMOD*)that;
     result = FMOD_Sound_GetLength(real->m_snd, &len, FMOD_TIMEUNIT_MS);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::set_pos()", "FMOD_Sound_GetLength() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     pos = (curt >= len) ? len : (uint_t)curt;
     result = FMOD_Channel_SetPosition(real->m_chn, pos, FMOD_TIMEUNIT_MS);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::set_pos()", "FMOD_Channel_SetPosition() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -356,23 +300,15 @@ iXMM_FMOD_get_pos (
     if (total != NULL) {
         result = FMOD_Sound_GetLength(real->m_snd, &len,
                                 FMOD_TIMEUNIT_MS);
-        if (result != FMOD_OK) {
-            err_set(__CR_E_FMODEX_C__, result,
-                    "iXMMEDIA::get_pos()",
-                    "FMOD_Sound_GetLength() failure");
+        if (result != FMOD_OK)
             return (FALSE);
-        }
         *total = len;
     }
     if (curt != NULL) {
         result = FMOD_Channel_GetPosition(real->m_chn, &pos,
                                 FMOD_TIMEUNIT_MS);
-        if (result != FMOD_OK) {
-            err_set(__CR_E_FMODEX_C__, result,
-                    "iXMMEDIA::get_pos()",
-                    "FMOD_Channel_GetPosition() failure");
+        if (result != FMOD_OK)
             return (FALSE);
-        }
         *curt = pos;
     }
     return (TRUE);
@@ -395,11 +331,8 @@ iXMM_FMOD_is_over (
 
     real = (iXMM_FMOD*)that;
     result = FMOD_Channel_IsPlaying(real->m_chn, &retc);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::is_over()", "FMOD_Channel_IsPlaying() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     *over = retc ? FALSE : TRUE;
     return (TRUE);
 }
@@ -427,11 +360,8 @@ iXMM_FMOD_set_volume (
         percent = 100;
     vols = ((float)percent) / 100.0f;
     result = FMOD_Channel_SetVolume(real->m_chn, vols);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::set_volume()", "FMOD_Channel_SetVolume() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     that->__volume__ = percent;
     return (TRUE);
 }
@@ -453,14 +383,11 @@ iXMM_FMOD_get_volume (
 
     real = (iXMM_FMOD*)that;
     result = FMOD_Channel_GetVolume(real->m_chn, &vols);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "iXMMEDIA::get_volume()", "FMOD_Channel_GetVolume() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
     that->__volume__ = (sint_t)(vols * 100.0f);
     if (percent != NULL)
-       *percent  = that->__volume__;
+        *percent = that->__volume__;
     return (TRUE);
 }
 
@@ -546,11 +473,8 @@ fmodex_info (
     /* 获取所有信息 */
     result = FMOD_Sound_GetFormat(port->m_snd, &snd_type,
                         &snd_fmts, &chns, &bits);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "fmodex_info()", "FMOD_Sound_GetFormat() failure");
+    if (result != FMOD_OK)
         return (FALSE);
-    }
 
     /* 音频格式类型 */
     switch (snd_type)
@@ -742,11 +666,8 @@ fmodex_info (
 
     /* 合成说明字符串 */
     allx = str_fmtA("%s (%s) - %uch / %ubits", type, fmts, chns, bits);
-    if (allx == NULL) {
-        err_set(__CR_E_FMODEX_C__, CR_NULL,
-                "fmodex_info()", "str_fmtA() failure");
+    if (allx == NULL)
         return (FALSE);
-    }
     str_cpyA(port->m_inf, allx);
     mem_free(allx);
     return (TRUE);
@@ -775,11 +696,8 @@ load_fmodex (
     FMOD_CREATESOUNDEXINFO  ex_info;
 
     /* 必须先初始化 */
-    if (s_fmodex == NULL) {
-        err_set(__CR_E_FMODEX_C__, CR_NULL,
-                "load_fmodex()", "must initialize FMOD first");
+    if (s_fmodex == NULL)
         return (NULL);
-    }
     mode = FMOD_LOOP_OFF | FMOD_2D | FMOD_HARDWARE | FMOD_ACCURATETIME;
 
     /* 不支持文件区段功能 */
@@ -794,28 +712,19 @@ load_fmodex (
         case CR_LDR_WIDE:
             data = NULL;
             path = utf16_to_local(CR_LOCAL, param->name.wide);
-            if (path == NULL) {
-                err_set(__CR_E_FMODEX_C__, CR_NULL,
-                        "load_fmodex()", "utf16_to_local() failure");
+            if (path == NULL)
                 return (NULL);
-            }
             result = FMOD_System_CreateStream(s_fmodex, path, mode,
                                               NULL, &sound);
             mem_free(path);
             break;
 
         case CR_LDR_BUFF:
-            if (cut_size(&size, param->buff.size)) {
-                err_set(__CR_E_FMODEX_C__, param->buff.size,
-                        "load_fmodex()", "<param->buff.size> truncated");
+            if (cut_size(&size, param->buff.size))
                 return (NULL);
-            }
             data = mem_dup(param->buff.data, param->buff.size);
-            if (data == NULL) {
-                err_set(__CR_E_FMODEX_C__, CR_NULL,
-                        "load_fmodex()", "mem_dup() failure");
+            if (data == NULL)
                 return (NULL);
-            }
             path = (ansi_t*)data;
             mode |= FMOD_OPENMEMORY;
             mem_zero(&ex_info, sizeof(ex_info));
@@ -826,41 +735,28 @@ load_fmodex (
             break;
 
         default:
-            err_set(__CR_E_FMODEX_C__, param->type,
-                    "load_fmodex()", "invalid param: param->type");
             return (NULL);
     }
 
     /* 无法支持的格式 */
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "load_fmodex()", "FMOD_System_CreateStream() failure");
+    if (result != FMOD_OK)
         goto _failure1;
-    }
 
     /* 生成播放通道对象 */
     result = FMOD_System_PlaySound(s_fmodex, FMOD_CHANNEL_FREE,
                                    sound, TRUE, &channel);
-    if (result != FMOD_OK) {
-        err_set(__CR_E_FMODEX_C__, result,
-                "load_fmodex()", "FMOD_System_PlaySound() failure");
+    if (result != FMOD_OK)
         goto _failure2;
-    }
 
     /* 生成媒体播放接口对象 */
     port = struct_new(iXMM_FMOD);
-    if (port == NULL) {
-        err_set(__CR_E_FMODEX_C__, CR_NULL,
-                "load_fmodex()", "struct_new() failure");
+    if (port == NULL)
         goto _failure3;
-    }
     struct_zero(port, iXMM_FMOD);
     port->m_dat = data;
     port->m_snd = sound;
     port->m_chn = channel;
     if (!fmodex_info(port)) {
-        err_set(__CR_E_FMODEX_C__, FALSE,
-                "load_fmodex()", "fmodex_info() failure");
         iXMM_FMOD_release((iXMMEDIA*)port);
         return (NULL);
     }
@@ -870,8 +766,6 @@ load_fmodex (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
-        err_set(__CR_E_FMODEX_C__, CR_NULL,
-                "load_fmodex()", "struct_new() failure");
         iXMM_FMOD_release((iXMMEDIA*)port);
         return (NULL);
     }
@@ -932,14 +826,9 @@ engine_fmodex (void_t)
     sENGINE*    engine;
 
     engine = engine_init(NULL, NULL, NULL, NULL);
-    if (engine == NULL) {
-        err_set(__CR_E_FMODEX_C__, CR_NULL,
-                "engine_fmodex()", "engine_init() failure");
+    if (engine == NULL)
         return (NULL);
-    }
     if (!fmodex_init()) {
-        err_set(__CR_E_FMODEX_C__, FALSE,
-                "engine_fmodex()", "fmodex_init() failure");
         engine_free(engine);
         return (NULL);
     }
@@ -961,8 +850,6 @@ engine_get (void_t)
     return (engine_fmodex());
 }
 #endif  /* _CR_BUILD_DLL_ */
-
-#endif  /* !__CR_E_FMODEX_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
