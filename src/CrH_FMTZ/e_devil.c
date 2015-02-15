@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_E_DEVIL_C__
-#define __CR_E_DEVIL_C__ 0xB5EFB3D1UL
-
 #include "safe.h"
 #include "fmtint.h"
 #include "strlib.h"
@@ -393,11 +390,8 @@ devil_info (
     ww = ilGetInteger(IL_IMAGE_WIDTH);
     hh = ilGetInteger(IL_IMAGE_HEIGHT);
     frame->pic = image_new(0, 0, ww, hh, CR_ARGB8888, FALSE, 4);
-    if (frame->pic == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "devil_info()", "image_new() failure");
+    if (frame->pic == NULL)
         return (FALSE);
-    }
     ilCopyPixels(0, 0, 0, ww, hh, 1, IL_BGRA, IL_UNSIGNED_BYTE,
                  frame->pic->data);
     return (TRUE);
@@ -467,38 +461,25 @@ iPIC_IL_get (
     sFMT_FRAME  temp;
 
     /* 帧号过滤 */
-    if (index >= that->__count__) {
-        err_set(__CR_E_DEVIL_C__, index,
-                "iPICTURE::get()", "index: out of bounds");
+    if (index >= that->__count__)
         return (NULL);
-    }
 
     /* 获取指定帧 */
     real = (iPIC_IL*)that;
     ilBindImage(real->m_image);
-    if (!ilActiveImage((ILuint)index)) {
-        err_set(__CR_E_DEVIL_C__, FALSE,
-                "iPICTURE::get()", "ilActiveImage() failure");
+    if (!ilActiveImage((ILuint)index))
         return (NULL);
-    }
-    if (!devil_info(&temp)) {
-        err_set(__CR_E_DEVIL_C__, FALSE,
-                "iPICTURE::get()", "devil_info() failure");
+    if (!devil_info(&temp))
         return (NULL);
-    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
     if (rett == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "iPICTURE::get()", "struct_new() failure");
         image_del(temp.pic);
         return (NULL);
     }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "iPICTURE::get()", "struct_dup() failure");
         image_del(temp.pic);
         mem_free(rett);
         return (NULL);
@@ -542,11 +523,8 @@ devil_load (
     sFMT_FRAME  temp;
 
     /* 必须先初始化 */
-    if (!s_init) {
-        err_set(__CR_E_DEVIL_C__, FALSE,
-                "devil_load()", "must initialize DevIL first");
+    if (!s_init)
         return (NULL);
-    }
 
     /* 未知格式自动识别 */
     if (format == IL_TYPE_UNKNOWN)
@@ -557,11 +535,8 @@ devil_load (
             case CR_LDR_ANSI:
 #if defined(UNICODE) || defined(_UNICODE)
                 path = local_to_utf16(CR_LOCAL, loader->name.ansi);
-                if (path == NULL) {
-                    err_set(__CR_E_DEVIL_C__, CR_NULL,
-                            "devil_load()", "local_to_utf16() failure");
+                if (path == NULL)
                     return (NULL);
-                }
                 format = ilDetermineType(path);
                 if (format == IL_TYPE_UNKNOWN)
                     format = ilTypeFromExt(path);
@@ -580,11 +555,8 @@ devil_load (
                     format = ilTypeFromExt(loader->name.wide);
 #else
                 path = utf16_to_local(CR_LOCAL, loader->name.wide);
-                if (path == NULL) {
-                    err_set(__CR_E_DEVIL_C__, CR_NULL,
-                            "devil_load()", "utf16_to_local() failure");
+                if (path == NULL)
                     return (NULL);
-                }
                 format = ilDetermineType(path);
                 if (format == IL_TYPE_UNKNOWN)
                     format = ilTypeFromExt(path);
@@ -593,26 +565,18 @@ devil_load (
                 break;
 
             case CR_LDR_BUFF:
-                if (cut_size(&size, loader->buff.size)) {
-                    err_set(__CR_E_DEVIL_C__, loader->buff.size,
-                            "devil_load()", "<loader->buff.size> truncated");
+                if (cut_size(&size, loader->buff.size))
                     return (NULL);
-                }
                 format = ilDetermineTypeL(loader->buff.data, size);
                 break;
 
             default:
-                err_set(__CR_E_DEVIL_C__, loader->type,
-                        "devil_load()", "invalid param: loader->type");
                 return (NULL);
         }
 
         /* 还是无法确定格式 */
-        if (format == IL_TYPE_UNKNOWN) {
-            err_set(__CR_E_DEVIL_C__, format,
-                    "devil_load()", "invalid DevIL format");
+        if (format == IL_TYPE_UNKNOWN)
             return (NULL);
-        }
     }
 
     /* 加载确定的文件格式 */
@@ -622,11 +586,8 @@ devil_load (
             data = NULL;
 #if defined(UNICODE) || defined(_UNICODE)
             path = local_to_utf16(CR_LOCAL, loader->name.ansi);
-            if (path == NULL) {
-                err_set(__CR_E_DEVIL_C__, CR_NULL,
-                        "devil_load()", "local_to_utf16() failure");
+            if (path == NULL)
                 return (NULL);
-            }
             ilGenImages(1, &imgs);
             ilBindImage(imgs);
             okay = ilLoad(format, path);
@@ -646,11 +607,8 @@ devil_load (
             okay = ilLoad(format, loader->name.wide);
 #else
             path = utf16_to_local(CR_LOCAL, loader->name.wide);
-            if (path == NULL) {
-                err_set(__CR_E_DEVIL_C__, CR_NULL,
-                        "devil_load()", "utf16_to_local() failure");
+            if (path == NULL)
                 return (NULL);
-            }
             ilGenImages(1, &imgs);
             ilBindImage(imgs);
             okay = ilLoad(format, path);
@@ -659,58 +617,40 @@ devil_load (
             break;
 
         case CR_LDR_BUFF:
-            if (cut_size(&size, loader->buff.size)) {
-                err_set(__CR_E_DEVIL_C__, loader->buff.size,
-                        "devil_load()", "<loader->buff.size> truncated");
+            if (cut_size(&size, loader->buff.size))
                 return (NULL);
-            }
             data = mem_dup(loader->buff.data, loader->buff.size);
-            if (data == NULL) {
-                err_set(__CR_E_DEVIL_C__, CR_NULL,
-                        "devil_load()", "mem_dup() failure");
+            if (data == NULL)
                 return (NULL);
-            }
             ilGenImages(1, &imgs);
             ilBindImage(imgs);
             okay = ilLoadL(format, data, size);
             break;
 
         default:
-            err_set(__CR_E_DEVIL_C__, loader->type,
-                    "devil_load()", "invalid param: loader->type");
             return (NULL);
     }
 
     /* 图片加载失败 */
-    if (!okay) {
-        err_set(__CR_E_DEVIL_C__, FALSE,
-                "devil_load()", "invalid DevIL format");
+    if (!okay)
         goto _failure;
-    }
 
     /* 单帧图片不使用流接口 */
     cnts = ilGetInteger(IL_NUM_IMAGES) + 1;
     if (cnts == 1) {
-        if (!devil_info(&temp)) {
-            err_set(__CR_E_DEVIL_C__, FALSE,
-                    "devil_load()", "devil_info() failure");
+        if (!devil_info(&temp))
             goto _failure;
-        }
         ilDeleteImages(1, &imgs);
         TRY_FREE(data);
 
         /* 返回读取的文件数据 */
         rets = struct_new(sFMT_PIC);
         if (rets == NULL) {
-            err_set(__CR_E_DEVIL_C__, CR_NULL,
-                    "devil_load()", "struct_new() failure");
             image_del(temp.pic);
             return (NULL);
         }
         rets->frame = struct_dup(&temp, sFMT_FRAME);
         if (rets->frame == NULL) {
-            err_set(__CR_E_DEVIL_C__, CR_NULL,
-                    "devil_load()", "struct_dup() failure");
             image_del(temp.pic);
             mem_free(rets);
             return (NULL);
@@ -723,11 +663,8 @@ devil_load (
 
     /* 生成多帧图片接口对象 */
     port = struct_new(iPIC_IL);
-    if (port == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "devil_load()", "struct_new() failure");
+    if (port == NULL)
         goto _failure;
-    }
     port->m_fdata = data;
     port->m_image = imgs;
     port->m_infor = devil_type(format);
@@ -737,8 +674,6 @@ devil_load (
     /* 返回读取的文件数据 */
     retm = struct_new(sFMT_PRT);
     if (retm == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "devil_load()", "struct_new() failure");
         iPIC_IL_release((iPICTURE*)port);
         return (NULL);
     }
@@ -1552,14 +1487,9 @@ engine_devil (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL) {
-        err_set(__CR_E_DEVIL_C__, CR_NULL,
-                "engine_devil()", "engine_init() failure");
+    if (engine == NULL)
         return (NULL);
-    }
     if (!devil_init()) {
-        err_set(__CR_E_DEVIL_C__, FALSE,
-                "engine_devil()", "devil_init() failure");
         engine_free(engine);
         return (NULL);
     }
@@ -1581,8 +1511,6 @@ engine_get (void_t)
     return (engine_devil());
 }
 #endif  /* _CR_BUILD_DLL_ */
-
-#endif  /* !__CR_E_DEVIL_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
