@@ -96,7 +96,6 @@ typedef unsigned long long  int64u;
 typedef   signed int    sfast_t;
 typedef unsigned int    ufast_t;
 #else
-    #define _CR_NO_ERROR_SET_
 typedef   signed char   sfast_t;
 typedef unsigned char   ufast_t;
 #endif
@@ -273,31 +272,16 @@ typedef void_t* (STDCALL *stdfunc_t) (void_t*, void_t*);
 
 /* 无用参数和代码消除警告宏 */
 #if !defined(_CR_CC_BCC_)
-    #define CR_NOCOD(v)
     #define CR_NOUSE(v)     ((v) = (v))
 #else
-    #define CR_NOCOD(v) fmj_xzz1((int32u)(v))
-    #define CR_NOUSE(v) fmj_xzz2((uchar*)(v))
-/*
-=======================================
-    取消无效代码的警告
-=======================================
-*/
-cr_inline int32u
-fmj_xzz1 (
-  __CR_UU__ int32u  nouse
-    )
-{
-    return ((int32u)nouse);
-}
-
+    #define CR_NOUSE(v) fmj_xzz((uchar*)(v))
 /*
 =======================================
     取消无用参数的警告
 =======================================
 */
 cr_inline void_t*
-fmj_xzz2 (
+fmj_xzz (
   __CR_UU__ void_t* nouse
     )
 {
@@ -552,7 +536,7 @@ typedef struct
 {
         int32u          file;   /* 出错的文件编号 */
         uint_t          line;   /* 出错的代码行数 */
-        maxu_t          l3rd;   /* 第三方返回代码 */
+        int32u          l3rd;   /* 第三方返回代码 */
         const ansi_t*   func;   /* 出错的函数名称 */
         const ansi_t*   text;   /* 出错的文本提示 */
 
@@ -570,19 +554,8 @@ typedef struct
 typedef void_t (*errlog_t) (const sERROR*);
 
 CR_API void_t   error_hook (errlog_t func);
-CR_API void_t   error_set (int32u file, uint_t line, maxu_t l3rd,
+CR_API void_t   error_set (int32u file, uint_t line, int32u l3rd,
                            const ansi_t *func, const ansi_t *text);
-/* 简化使用的宏 */
-#if     defined(_CR_NO_ERROR_SET_)
-    #define err_set(file, l3rd, func, text)     CR_NOCOD(file)
-
-#elif   defined(_CR_NO_ERROR_STR_)
-    #define err_set(file, l3rd, func, text) \
-                error_set(file, __LINE__, (maxu_t)(l3rd), NULL, NULL)
-#else
-    #define err_set(file, l3rd, func, text) \
-                error_set(file, __LINE__, (maxu_t)(l3rd), func, text)
-#endif
 
 /*****************************************************************************/
 /*                               杂项公用定义                                */
