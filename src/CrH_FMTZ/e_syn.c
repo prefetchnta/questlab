@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_E_SYN_C__
-#define __CR_E_SYN_C__ 0x40D7F244UL
-
 #include "fmtint.h"
 #include "pixels.h"
 #include "fmtz/syn.h"
@@ -68,11 +65,8 @@ engine_syn (void_t)
     sENGINE*    engine;
 
     engine = engine_init(s_finda, s_findw, s_loada, s_loadw);
-    if (engine == NULL) {
-        err_set(__CR_E_SYN_C__, CR_NULL,
-                "engine_syn()", "engine_init() failure");
+    if (engine == NULL)
         return (NULL);
-    }
     engine->fmtz_load = engine_syn_load;
     engine->info = "SYN FMTz Engine (Done by CrHackOS)";
     return (engine);
@@ -119,35 +113,20 @@ save_img_argb (
     /* 创建文件 */
     CR_NOUSE(argc); CR_NOUSE(argv);
     file = file_openA(name, CR_FO_WO);
-    if (file == NULL) {
-        err_set(__CR_E_SYN_C__, CR_NULL,
-                "save_img_argb()", "file_openA() failure");
+    if (file == NULL)
         return (FALSE);
-    }
 
     /* 保存文件头 */
-    if (!file_putd(mk_tag4("BGRA"), file)) {
-        err_set(__CR_E_SYN_C__, FALSE,
-                "save_img_argb()", "file_putd() failure");
+    if (!file_putd(mk_tag4("BGRA"), file))
         goto _failure;
-    }
-    if (!file_putd(0x08080808UL, file)) {
-        err_set(__CR_E_SYN_C__, FALSE,
-                "save_img_argb()", "file_putd() failure");
+    if (!file_putd(0x08080808UL, file))
         goto _failure;
-    }
     vals = img->position.ww;
-    if (!file_putd_le(vals, file)) {
-        err_set(__CR_E_SYN_C__, FALSE,
-                "save_img_argb()", "file_putd_le() failure");
+    if (!file_putd_le(vals, file))
         goto _failure;
-    }
     vals = img->position.hh;
-    if (!file_putd_le(vals, file)) {
-        err_set(__CR_E_SYN_C__, FALSE,
-                "save_img_argb()", "file_putd_le() failure");
+    if (!file_putd_le(vals, file))
         goto _failure;
-    }
 
     /* 转换格式 */
     if (img->fmt == CR_ARGB8888) {
@@ -155,11 +134,8 @@ save_img_argb (
     }
     else {
         cnvt = img_auto_to_32(NULL, 0, 0, img);
-        if (cnvt == NULL) {
-            err_set(__CR_E_SYN_C__, CR_NULL,
-                    "save_img_argb()", "img_auto_to_32() failure");
+        if (cnvt == NULL)
             goto _failure;
-        }
     }
 
     /* 写入文件 */
@@ -172,8 +148,6 @@ save_img_argb (
     for (; hh != 0; hh--) {
         back = file_write(line, nbpl, file);
         if (back != nbpl) {
-            err_set(__CR_E_SYN_C__, back,
-                    "save_img_argb()", "file_write() failure");
             if (cnvt != (sIMAGE*)img)
                 image_del(cnvt);
             goto _failure;
@@ -193,8 +167,6 @@ _failure:
     file_deleteA(name);
     return (FALSE);
 }
-
-#endif  /* !__CR_E_SYN_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
