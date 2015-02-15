@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_TGL_IPAC_C__
-#define __CR_TGL_IPAC_C__ 0x30A683EBUL
-
 #include "strlib.h"
 #include "fmtz/tgl.h"
 #include "../fmtint.h"
@@ -107,7 +104,6 @@ iPAK_IPAC_getFileData (
   __CR_IN__ bool_t      hash
     )
 {
-    leng_t      read;
     int64u      size;
     void_t*     data;
     iDATIN*     file;
@@ -117,11 +113,8 @@ iPAK_IPAC_getFileData (
     /* 定位文件索引 */
     CR_NOUSE(hash);
     real = (iPAK_IPAC*)that;
-    if (index >= real->m_cnt) {
-        err_set(__CR_TGL_IPAC_C__, index,
-                "iPACKAGE::getFileData()", "index: out of bounds");
+    if (index >= real->m_cnt)
         return (FALSE);
-    }
     item = real->pack.__filelst__;
     item += (uint_t)index;
 
@@ -129,35 +122,22 @@ iPAK_IPAC_getFileData (
     size = item->size;
     if (size == 0) {
         data = mem_malloc(1);
-        if (data == NULL) {
-            err_set(__CR_TGL_IPAC_C__, CR_NULL,
-                    "iPACKAGE::getFileData()", "mem_malloc() failure");
+        if (data == NULL)
             return (FALSE);
-        }
         size = 1;
         *(byte_t*)data = 0x00;
     }
     else {
         data = mem_malloc64(size);
-        if (data == NULL) {
-            err_set(__CR_TGL_IPAC_C__, CR_NULL,
-                    "iPACKAGE::getFileData()", "mem_malloc64() failure");
+        if (data == NULL)
             return (FALSE);
-        }
         file = real->m_file;
 
         /* 定位到文件并读起数据 */
-        if (!CR_VCALL(file)->seek64(file, item->offs, SEEK_SET)) {
-            err_set(__CR_TGL_IPAC_C__, FALSE,
-                    "iPACKAGE::getFileData()", "iDATIN::seek64() failure");
+        if (!CR_VCALL(file)->seek64(file, item->offs, SEEK_SET))
             goto _failure;
-        }
-        read = CR_VCALL(file)->read(file, data, (leng_t)size);
-        if (read != (leng_t)size) {
-            err_set(__CR_TGL_IPAC_C__, read,
-                    "iPACKAGE::getFileData()", "iDATIN::read() failure");
+        if (CR_VCALL(file)->read(file, data, (leng_t)size) != (leng_t)size)
             goto _failure;
-        }
     }
 
     /* 返回文件数据 */
@@ -185,11 +165,8 @@ iPAK_IPAC_getFileInfo (
 
     /* 定位文件索引 */
     real = (iPAK_IPAC*)that;
-    if (index >= real->m_cnt) {
-        err_set(__CR_TGL_IPAC_C__, index,
-                "iPACKAGE::getFileInfo()", "index: out of bounds");
+    if (index >= real->m_cnt)
         return (FALSE);
-    }
 
     /* 返回文件信息 */
     idx = (uint_t)index;
@@ -238,7 +215,6 @@ load_tgl_ipac (
     int16u      cnt;
     int32u      offs;
     int32u      size;
-    leng_t      read;
     sFMT_PRT*   rett;
     sIPAC_HDR   head;
     iPAK_IPAC*  port;
@@ -247,33 +223,21 @@ load_tgl_ipac (
 
     /* 必须使用自己私有的读取接口 */
     datin = create_file_inX(param);
-    if (datin == NULL) {
-        err_set(__CR_TGL_IPAC_C__, CR_NULL,
-                "load_tgl_ipac()", "create_file_inX() failure");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sIPAC_HDR))) {
-        err_set(__CR_TGL_IPAC_C__, FALSE,
-                "load_tgl_ipac()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sIPAC_HDR)))
         goto _failure1;
-    }
-    if (head.magic != mk_tag4("IPAC")) {
-        err_set(__CR_TGL_IPAC_C__, head.magic,
-                "load_tgl_ipac()", "invalid IPAC format");
+    if (head.magic != mk_tag4("IPAC"))
         goto _failure1;
-    }
 
     /* 分配子文件属性表 */
     cnt = WORD_LE(head.count);
     if (cnt != 0) {
         list = mem_talloc(cnt, sPAK_FILE);
-        if (list == NULL) {
-            err_set(__CR_TGL_IPAC_C__, CR_NULL,
-                    "load_tgl_ipac()", "mem_talloc() failure");
+        if (list == NULL)
             goto _failure1;
-        }
         str[16] = CR_AC(NIL);
         mem_tzero(list, cnt, sPAK_FILE);
     }
@@ -285,32 +249,19 @@ load_tgl_ipac (
     for (idx = 0; idx < cnt; idx++)
     {
         /* 读取文件名不保证\0结尾 */
-        read = CR_VCALL(datin)->read(datin, str, 16);
-        if (read != 16) {
-            err_set(__CR_TGL_IPAC_C__, read,
-                    "load_tgl_ipac()", "iDATIN::read() failure");
+        if (CR_VCALL(datin)->read(datin, str, 16) != 16)
             goto _failure2;
-        }
 
         /* 文件的包内偏移和大小 */
-        if (!CR_VCALL(datin)->getd_le(datin, &offs)) {
-            err_set(__CR_TGL_IPAC_C__, FALSE,
-                    "load_tgl_ipac()", "iDATIN::getd_le() failure");
+        if (!CR_VCALL(datin)->getd_le(datin, &offs))
             goto _failure2;
-        }
-        if (!CR_VCALL(datin)->getd_le(datin, &size)) {
-            err_set(__CR_TGL_IPAC_C__, FALSE,
-                    "load_tgl_ipac()", "iDATIN::getd_le() failure");
+        if (!CR_VCALL(datin)->getd_le(datin, &size))
             goto _failure2;
-        }
 
         /* 文件名统一使用 UTF-8 编码 */
         list[idx].name = local_to_utf8(param->page, str);
-        if (list[idx].name == NULL) {
-            err_set(__CR_TGL_IPAC_C__, CR_NULL,
-                    "load_tgl_ipac()", "local_to_utf8() failure");
+        if (list[idx].name == NULL)
             goto _failure2;
-        }
 
         /* 设置公用文件属性 */
         list[idx].skip = sizeof(sPAK_FILE);
@@ -323,18 +274,13 @@ load_tgl_ipac (
 
     /* 生成读包接口对象 */
     port = struct_new(iPAK_IPAC);
-    if (port == NULL) {
-        err_set(__CR_TGL_IPAC_C__, CR_NULL,
-                "load_tgl_ipac()", "struct_new() failure");
+    if (port == NULL)
         goto _failure2;
-    }
     port->m_cnt = cnt;
     port->m_file = datin;
     port->pack.__filelst__ = list;
     port->pack.__vptr__ = &s_pack_vtbl;
     if (!pack_init_list((iPACKAGE*)port, TRUE)) {
-        err_set(__CR_TGL_IPAC_C__, FALSE,
-                "load_tgl_ipac()", "pack_init_list() failure");
         mem_free(port);
         goto _failure2;
     }
@@ -342,8 +288,6 @@ load_tgl_ipac (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
-        err_set(__CR_TGL_IPAC_C__, CR_NULL,
-                "load_tgl_ipac()", "struct_new() failure");
         iPAK_IPAC_release((iPACKAGE*)port);
         return (NULL);
     }
@@ -365,8 +309,6 @@ _failure1:
     CR_VCALL(datin)->release(datin);
     return (NULL);
 }
-
-#endif  /* !__CR_TGL_IPAC_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

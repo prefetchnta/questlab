@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_TGL_IEL1_C__
-#define __CR_TGL_IEL1_C__ 0x3ACC90F3UL
-
 #include "enclib.h"
 #include "fmtz/tgl.h"
 
@@ -59,57 +56,37 @@ load_tgl_iel1 (
     sIEL1_HDR   head;
 
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_TGL_IEL1_C__, CR_NULL,
-                "load_tgl_iel1()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sIEL1_HDR))) {
-        err_set(__CR_TGL_IEL1_C__, FALSE,
-                "load_tgl_iel1()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sIEL1_HDR)))
         return (NULL);
-    }
-    if (head.magic != mk_tag4("IEL1")) {
-        err_set(__CR_TGL_IEL1_C__, head.magic,
-                "load_tgl_iel1()", "invalid IEL1 format");
+    if (head.magic != mk_tag4("IEL1"))
         return (NULL);
-    }
 
     /* 读取所有后续数据 */
     temp = CR_VCALL(datin)->get(datin, &pksz, FALSE);
-    if (temp == NULL) {
-        err_set(__CR_TGL_IEL1_C__, CR_NULL,
-                "load_tgl_iel1()", "iDATIN::get() failure");
+    if (temp == NULL)
         return (NULL);
-    }
 
     /* 分配目标数据缓冲 */
     head.unsize = DWORD_LE(head.unsize);
     data = mem_malloc32(head.unsize);
     if (data == NULL) {
-        err_set(__CR_TGL_IEL1_C__, CR_NULL,
-                "load_tgl_iel1()", "mem_malloc32() failure");
         mem_free(temp);
         return (NULL);
     }
     unsz = (leng_t)(head.unsize);
     pksz = uncompr_lzss(data, unsz, temp, pksz, 0);
     mem_free(temp);
-    if (pksz != unsz) {
-        err_set(__CR_TGL_IEL1_C__, pksz,
-                "load_tgl_iel1()", "uncompr_lzss() failure");
+    if (pksz != unsz)
         goto _failure;
-    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_DAT);
-    if (rett == NULL) {
-        err_set(__CR_TGL_IEL1_C__, CR_NULL,
-                "load_tgl_iel1()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
     CR_NOUSE(param);
     rett->type = CR_FMTZ_DEC;
     rett->unsz = unsz;
@@ -122,8 +99,6 @@ _failure:
     mem_free(data);
     return (NULL);
 }
-
-#endif  /* !__CR_TGL_IEL1_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

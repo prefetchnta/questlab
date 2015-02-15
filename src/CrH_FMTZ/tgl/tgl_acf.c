@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_TGL_ACF_C__
-#define __CR_TGL_ACF_C__ 0xF11F7FBAUL
-
 #include "pixels.h"
 #include "strlib.h"
 #include "fmtz/tgl.h"
@@ -112,11 +109,8 @@ iPIC_ACF_get (
     sFMT_FRAME  temp;
 
     /* 帧号过滤 */
-    if (index >= that->__count__) {
-        err_set(__CR_TGL_ACF_C__, index,
-                "iPICTURE::get()", "index: out of bounds");
+    if (index >= that->__count__)
         return (NULL);
-    }
 
     /* 生成图片对象 */
     real = (iPIC_ACF*)that;
@@ -128,11 +122,8 @@ iPIC_ACF_get (
     attr = &real->m_attr[index];
     temp.pic = image_new(0, 0, attr->ww, attr->hh, CR_INDEX8,
                          real->m_flip, 4);
-    if (temp.pic == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "iPICTURE::get()", "image_new() failure");
+    if (temp.pic == NULL)
         return (NULL);
-    }
 
     /* 读取图形数据 */
     dest = temp.pic->data;
@@ -146,15 +137,10 @@ iPIC_ACF_get (
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
-    if (rett == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "iPICTURE::get()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "iPICTURE::get()", "struct_dup() failure");
         mem_free(rett);
         goto _failure;
     }
@@ -189,7 +175,7 @@ load_tgl_acf (
     int32u      cnts;
     int32u      pals;
     int32u      vals;
-    leng_t      read;
+    leng_t      back;
     byte_t*     file;
     byte_t*     dats;
     fsize_t     flsz;
@@ -199,45 +185,28 @@ load_tgl_acf (
     byte_t      pair[2];
 
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "load_tgl_acf()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!CR_VCALL(datin)->getd_no(datin, &vals)) {
-        err_set(__CR_TGL_ACF_C__, FALSE,
-                "load_tgl_acf()", "iDATIN::getd_no() failure");
+    if (!CR_VCALL(datin)->getd_no(datin, &vals))
         return (NULL);
-    }
     if (vals == mk_tag4("0FCA")) {
         file = NULL;
         type = 0;   /* 无压缩, 颠倒 */
     }
     else
     if (vals == mk_tag4("1FCA")) {
-        if (!CR_VCALL(datin)->getd_le(datin, &vals)) {
-            err_set(__CR_TGL_ACF_C__, FALSE,
-                    "load_tgl_acf()", "iDATIN::getd_le() failure");
+        if (!CR_VCALL(datin)->getd_le(datin, &vals))
             return (NULL);
-        }
-        if ((int32s)vals <= 0) {
-            err_set(__CR_TGL_ACF_C__, vals,
-                    "load_tgl_acf()", "invalid ACF format");
+        if ((int32s)vals <= 0)
             return (NULL);
-        }
         file = (byte_t*)mem_malloc32(vals + 8);
-        if (file == NULL) {
-            err_set(__CR_TGL_ACF_C__, CR_NULL,
-                    "load_tgl_acf()", "mem_malloc32() failure");
+        if (file == NULL)
             return (NULL);
-        }
         dats = file + 8;
         for (cnts = vals; cnts != 0;) {
             if (!CR_VCALL(datin)->getb_no(datin, pair)) {
-                err_set(__CR_TGL_ACF_C__, FALSE,
-                        "load_tgl_acf()", "iDATIN::getb_no() failure");
                 mem_free(file);
                 return (NULL);
             }
@@ -247,10 +216,7 @@ load_tgl_acf (
                 type = 1;
             }
             else {
-                read = CR_VCALL(datin)->read(datin, pair, 2);
-                if (read != 2) {
-                    err_set(__CR_TGL_ACF_C__, read,
-                            "load_tgl_acf()", "iDATIN::read() failure");
+                if (CR_VCALL(datin)->read(datin, pair, 2) != 2) {
                     mem_free(file);
                     return (NULL);
                 }
@@ -272,8 +238,6 @@ load_tgl_acf (
         /* 生成一个内存文件对象 */
         datin = create_buff_in(file, (leng_t)vals, TRUE);
         if (datin == NULL) {
-            err_set(__CR_TGL_ACF_C__, CR_NULL,
-                    "load_tgl_acf()", "create_buff_in() failure");
             mem_free(file);
             return (NULL);
         }
@@ -285,74 +249,41 @@ load_tgl_acf (
         type = 2;   /* 无压缩, 不颠倒 */
     }
     else {
-        err_set(__CR_TGL_ACF_C__, vals,
-                "load_tgl_acf()", "invalid ACF format");
         return (NULL);
     }
 
     /* 读取调色板大小 */
-    if (!CR_VCALL(datin)->seek(datin, 20, SEEK_SET)) {
-        err_set(__CR_TGL_ACF_C__, FALSE,
-                "load_tgl_acf()", "iDATIN::seek() failure");
+    if (!CR_VCALL(datin)->seek(datin, 20, SEEK_SET))
         goto _failure1;
-    }
-    if (!CR_VCALL(datin)->getd_le(datin, &pals)) {
-        err_set(__CR_TGL_ACF_C__, FALSE,
-                "load_tgl_acf()", "iDATIN::getd_le() failure");
+    if (!CR_VCALL(datin)->getd_le(datin, &pals))
         goto _failure1;
-    }
-    if (pals == 0 || pals > 1024 || pals % 4 != 0) {
-        err_set(__CR_TGL_ACF_C__, pals,
-                "load_tgl_acf()", "invalid ACF format");
+    if (pals == 0 || pals > 1024 || pals % 4 != 0)
         goto _failure1;
-    }
     flsz = dati_get_size(datin);
-    if (flsz <= 72 + pals) {
-        err_set(__CR_TGL_ACF_C__, pals,
-                "load_tgl_acf()", "invalid ACF format");
+    if (flsz <= 72 + pals)
         goto _failure1;
-    }
     flsz -= 72 + pals;
 
     /* 读取图片索引大小 */
-    if (!CR_VCALL(datin)->seek(datin, 36, SEEK_SET)) {
-        err_set(__CR_TGL_ACF_C__, FALSE,
-                "load_tgl_acf()", "iDATIN::seek() failure");
+    if (!CR_VCALL(datin)->seek(datin, 36, SEEK_SET))
         goto _failure1;
-    }
-    if (!CR_VCALL(datin)->getd_le(datin, &cnts)) {
-        err_set(__CR_TGL_ACF_C__, FALSE,
-                "load_tgl_acf()", "iDATIN::getd_le() failure");
+    if (!CR_VCALL(datin)->getd_le(datin, &cnts))
         goto _failure1;
-    }
-    if (cnts == 0 || flsz <= cnts ||
-        cnts % sizeof(sACF_IDX) != 0) {
-        err_set(__CR_TGL_ACF_C__, cnts,
-                "load_tgl_acf()", "invalid ACF format");
+    if (cnts == 0 || flsz <= cnts || cnts % sizeof(sACF_IDX) != 0)
         goto _failure1;
-    }
     flsz -= cnts;
     cnts /= sizeof(sACF_IDX);
 
     /* 读取所有帧属性数据 */
-    if (!CR_VCALL(datin)->seek(datin, 72 + pals, SEEK_SET)) {
-        err_set(__CR_TGL_ACF_C__, FALSE,
-                "load_tgl_acf()", "iDATIN::seek() failure");
+    if (!CR_VCALL(datin)->seek(datin, 72 + pals, SEEK_SET))
         goto _failure1;
-    }
     attr = mem_talloc32(cnts, sACF_IDX);
-    if (attr == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "load_tgl_acf()", "mem_talloc32() failure");
+    if (attr == NULL)
         goto _failure1;
-    }
     for (vals = 0; vals < cnts; vals++) {
-        read = CR_VCALL(datin)->read(datin, &attr[vals], sizeof(sACF_IDX));
-        if (read != sizeof(sACF_IDX)) {
-            err_set(__CR_TGL_ACF_C__, read,
-                    "load_tgl_acf()", "iDATIN::read() failure");
+        back = CR_VCALL(datin)->read(datin, &attr[vals], sizeof(sACF_IDX));
+        if (back != sizeof(sACF_IDX))
             goto _failure2;
-        }
 
         /* 跳过非法的废帧 */
         attr[vals].offset = DWORD_LE(attr[vals].offset);
@@ -368,39 +299,24 @@ load_tgl_acf (
     }
 
     /* 空图片检查 */
-    if (cnts == 0) {
-        err_set(__CR_TGL_ACF_C__, cnts,
-                "load_tgl_acf()", "invalid ACF format");
+    if (cnts == 0)
         goto _failure2;
-    }
 
     /* 读取所有图片帧数据 */
-    dats = CR_VCALL(datin)->get(datin, &read, FALSE);
-    if (dats == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "load_tgl_acf()", "iDATIN::get() failure");
+    dats = CR_VCALL(datin)->get(datin, &back, FALSE);
+    if (dats == NULL)
         goto _failure2;
-    }
-    if (read < flsz) {
-        err_set(__CR_TGL_ACF_C__, read,
-                "load_tgl_acf()", "invalid ACF format");
+    if (back < flsz)
         goto _failure3;
-    }
 
     /* 定位到调色板数据 */
-    if (!CR_VCALL(datin)->seek(datin, 72, SEEK_SET)) {
-        err_set(__CR_TGL_ACF_C__, FALSE,
-                "load_tgl_acf()", "iDATIN::seek() failure");
+    if (!CR_VCALL(datin)->seek(datin, 72, SEEK_SET))
         goto _failure3;
-    }
 
     /* 生成多帧图片接口对象 */
     port = struct_new(iPIC_ACF);
-    if (port == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "load_tgl_acf()", "struct_new() failure");
+    if (port == NULL)
         goto _failure3;
-    }
     struct_zero(port, iPIC_ACF);
     port->m_dats = dats;
     port->m_attr = attr;
@@ -408,10 +324,8 @@ load_tgl_acf (
     port->pics.__vptr__ = &s_pics_vtbl;
 
     /* 读取全局调色板数据 */
-    read = CR_VCALL(datin)->read(datin, port->m_pal, (leng_t)pals);
-    if (read != (leng_t)pals) {
-        err_set(__CR_TGL_ACF_C__, read,
-                "load_tgl_acf()", "iDATIN::read() failure");
+    back = CR_VCALL(datin)->read(datin, port->m_pal, (leng_t)pals);
+    if (back != (leng_t)pals) {
         mem_free(port);
         goto _failure3;
     }
@@ -438,8 +352,6 @@ load_tgl_acf (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
-        err_set(__CR_TGL_ACF_C__, CR_NULL,
-                "load_tgl_acf()", "struct_new() failure");
         iPIC_ACF_release((iPICTURE*)port);
         return (NULL);
     }
@@ -459,8 +371,6 @@ _failure1:
         CR_VCALL(datin)->release(datin);
     return (NULL);
 }
-
-#endif  /* !__CR_TGL_ACF_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
