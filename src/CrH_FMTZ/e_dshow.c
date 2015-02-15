@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_E_DSHOW_C__
-#define __CR_E_DSHOW_C__ 0xF9B32960UL
-
 #include "extz.h"
 #include "fmtint.h"
 #include "strlib.h"
@@ -117,12 +114,7 @@ iXMM_DSHW_play (
     iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_play(real->m_dshw)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::play()", "dshow_play() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (dshow_play(real->m_dshw));
 }
 
 /*
@@ -138,12 +130,7 @@ iXMM_DSHW_pause (
     iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_pause(real->m_dshw)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::pause()", "dshow_pause() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (dshow_pause(real->m_dshw));
 }
 
 /*
@@ -156,15 +143,10 @@ iXMM_DSHW_stop (
   __CR_IN__ iXMMEDIA*   that
     )
 {
-    iXMM_DSHW*      real;
+    iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_stop(real->m_dshw)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::stop()", "dshow_stop() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (dshow_stop(real->m_dshw));
 }
 
 /*
@@ -181,12 +163,7 @@ iXMM_DSHW_set_pos (
     iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_set_position(real->m_dshw, curt)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::set_pos()", "dshow_set_position() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (dshow_set_position(real->m_dshw, curt));
 }
 
 /*
@@ -204,12 +181,7 @@ iXMM_DSHW_get_pos (
     iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_get_position(real->m_dshw, curt, total)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::get_pos()", "dshow_get_position() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (dshow_get_position(real->m_dshw, curt, total));
 }
 
 /*
@@ -226,12 +198,7 @@ iXMM_DSHW_is_over (
     iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_is_over(real->m_dshw, over)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::is_over()", "dshow_is_over() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (dshow_is_over(real->m_dshw, over));
 }
 
 /*
@@ -255,11 +222,8 @@ iXMM_DSHW_set_volume (
     if (percent > 100)
         percent = 100;
     vols = (DSHOW_AV_MAX * percent) / 100;
-    if (!dshow_set_volume(real->m_dshw, vols)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::set_volume()", "dshow_set_volume() failure");
+    if (!dshow_set_volume(real->m_dshw, vols))
         return (FALSE);
-    }
     that->__volume__ = percent;
     return (TRUE);
 }
@@ -279,14 +243,11 @@ iXMM_DSHW_get_volume (
     iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_get_volume(real->m_dshw, &vols)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::get_volume()", "dshow_get_volume() failure");
+    if (!dshow_get_volume(real->m_dshw, &vols))
         return (FALSE);
-    }
     that->__volume__ = (vols * 100) / DSHOW_AV_MAX;
     if (percent != NULL)
-       *percent  = that->__volume__;
+        *percent = that->__volume__;
     return (TRUE);
 }
 
@@ -320,12 +281,7 @@ iXMM_DSHW_video_size (
     iXMM_DSHW*  real;
 
     real = (iXMM_DSHW*)that;
-    if (!dshow_video_size(real->m_dshw, width, height)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::video_size()", "dshow_video_size() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (dshow_video_size(real->m_dshw, width, height));
 }
 
 /*
@@ -345,11 +301,8 @@ iXMM_DSHW_video_setwin (
 
     real = (iXMM_DSHW*)that;
     mode = full ? XMM_VIDEO_FULLSCREEN : XMM_VIDEO_NATIVE;
-    if (!dshow_video_setwin(real->m_dshw, hwnd, mode)) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "iXMMEDIA::video_setwin()", "dshow_video_setwin() failure");
+    if (!dshow_video_setwin(real->m_dshw, hwnd, mode))
         return (FALSE);
-    }
     that->__hwnd__ = hwnd;
     that->__full__ = full;
     return (TRUE);
@@ -381,43 +334,25 @@ load_dshow (
     iXMM_DSHW*  port;
 
     /* 必须先初始化 */
-    if (!s_init) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "load_dshow()", "must initialize COM first");
+    if (!s_init)
         return (NULL);
-    }
 
     /* 只支持磁盘文件 */
     if (param->type != CR_LDR_ANSI &&
-        param->type != CR_LDR_WIDE) {
-        err_set(__CR_E_DSHOW_C__, param->type,
-                "load_dshow()", "invalid param: param->type");
+        param->type != CR_LDR_WIDE)
         return (NULL);
-    }
 
     /* 加载文件尝试 */
-    if (param->type == CR_LDR_ANSI) {
+    if (param->type == CR_LDR_ANSI)
         dshw = dshow_loadA(param->name.ansi);
-        if (dshw == NULL) {
-            err_set(__CR_E_DSHOW_C__, CR_NULL,
-                    "load_dshow()", "dshow_loadA() failure");
-            return (NULL);
-        }
-    }
-    else {
+    else
         dshw = dshow_loadW(param->name.wide);
-        if (dshw == NULL) {
-            err_set(__CR_E_DSHOW_C__, CR_NULL,
-                    "load_dshow()", "dshow_loadW() failure");
-            return (NULL);
-        }
-    }
+    if (dshw == NULL)
+        return (NULL);
 
     /* 生成媒体播放接口对象 */
     port = struct_new(iXMM_DSHW);
     if (port == NULL) {
-        err_set(__CR_E_DSHOW_C__, CR_NULL,
-                "load_dshow()", "struct_new() failure");
         dshow_free(dshw);
         return (NULL);
     }
@@ -429,8 +364,6 @@ load_dshow (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
-        err_set(__CR_E_DSHOW_C__, CR_NULL,
-                "load_dshow()", "struct_new() failure");
         iXMM_DSHW_release((iXMMEDIA*)port);
         return (NULL);
     }
@@ -483,14 +416,9 @@ engine_dshow (void_t)
     sENGINE*    engine;
 
     engine = engine_init(NULL, NULL, NULL, NULL);
-    if (engine == NULL) {
-        err_set(__CR_E_DSHOW_C__, CR_NULL,
-                "engine_dshow()", "engine_init() failure");
+    if (engine == NULL)
         return (NULL);
-    }
     if (!dshow_init()) {
-        err_set(__CR_E_DSHOW_C__, FALSE,
-                "engine_dshow()", "dshow_init() failure");
         engine_free(engine);
         return (NULL);
     }
@@ -512,8 +440,6 @@ engine_get (void_t)
     return (engine_dshow());
 }
 #endif  /* _CR_BUILD_DLL_ */
-
-#endif  /* !__CR_E_DSHOW_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
