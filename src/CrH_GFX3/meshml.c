@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_MESHML_C__
-#define __CR_MESHML_C__ 0x1D90C33DUL
-
 #include "gfx3.h"
 #include "datlib.h"
 #include "parser.h"
@@ -209,11 +206,8 @@ meshml_load (
 
     /* 解析 XML 字符串 */
     xml = xml_parseU(str);
-    if (xml == NULL) {
-        err_set(__CR_MESHML_C__, CR_NULL,
-                "meshml_load()", "xml_parseU() failure");
+    if (xml == NULL)
         return (FALSE);
-    }
 
     /* 初始化列表 */
     array_initT(&a_v, vec3d_t);
@@ -241,11 +235,8 @@ meshml_load (
     else
         idx = 0;
     if (xml->nodes[idx].closed ||
-        str_cmpIA(xml->nodes[idx].name, CR_AS("model")) != 0) {
-        err_set(__CR_MESHML_C__, CR_ERROR,
-                "meshml_load()", "invalid XML root tag");
+        str_cmpIA(xml->nodes[idx].name, CR_AS("model")) != 0)
         goto _failure;
-    }
     type = MESHML_TAG_NONE;
     msh->ver = xml_attr_intxU(CR_AS("version"), 0, &xml->nodes[idx]);
 
@@ -298,11 +289,8 @@ meshml_load (
                 }
                 /* 压入骨骼列表 */
                 if (str_cmpIA(node->name, CR_AS("/bone")) == 0) {
-                    if (array_push_growT(&a_b, sMESHML_BONE, &btmp) == NULL) {
-                        err_set(__CR_MESHML_C__, CR_NULL,
-                                "meshml_load()", "array_push_growT() failure");
+                    if (array_push_growT(&a_b, sMESHML_BONE, &btmp) == NULL)
                         goto _failure;
-                    }
                     struct_zero(&btmp, sMESHML_BONE);
                     continue;
                 }
@@ -358,11 +346,8 @@ meshml_load (
                 mtmp.ns = xml_attr_fp32U(CR_AS("specular_level"), 0.0f, node);
                 mtmp.shine = xml_attr_fp32U(CR_AS("shininess"), 0.0f, node);
                 if (node->closed) {
-                    if (array_push_growT(&a_m, sMESHML_MTRL, &mtmp) == NULL) {
-                        err_set(__CR_MESHML_C__, CR_NULL,
-                                "meshml_load()", "array_push_growT() failure");
+                    if (array_push_growT(&a_m, sMESHML_MTRL, &mtmp) == NULL)
                         goto _failure;
-                    }
                     struct_zero(&mtmp, sMESHML_MTRL);
                 }
                 else {
@@ -401,11 +386,8 @@ meshml_load (
                 /* 压入材质列表 */
                 if (str_cmpIA(node->name, CR_AS("/material")) == 0) {
                     mtmp.flags &= ~MESHML_SET;
-                    if (array_push_growT(&a_m, sMESHML_MTRL, &mtmp) == NULL) {
-                        err_set(__CR_MESHML_C__, CR_NULL,
-                                "meshml_load()", "array_push_growT() failure");
+                    if (array_push_growT(&a_m, sMESHML_MTRL, &mtmp) == NULL)
                         goto _failure;
-                    }
                     struct_zero(&mtmp, sMESHML_MTRL);
                     continue;
                 }
@@ -467,12 +449,8 @@ meshml_load (
                         break;
                     if (node->closed) {
                         if (array_push_growT(&a_v, vec3d_t,
-                                            &vtmp.xyz) == NULL) {
-                            err_set(__CR_MESHML_C__, CR_NULL,
-                                    "meshml_load()",
-                                    "array_push_growT() failure");
+                                            &vtmp.xyz) == NULL)
                             goto _failure;
-                        }
                         struct_zero(&vtmp, sMESHML_VX);
                     }
                     else {
@@ -512,38 +490,22 @@ meshml_load (
                     /* 压入顶点列表 */
                     if (str_cmpIA(node->name, CR_AS("/vertex")) == 0) {
                         if (array_push_growT(&a_v, vec3d_t,
-                                            &vtmp.xyz) == NULL) {
-                            err_set(__CR_MESHML_C__, CR_NULL,
-                                    "meshml_load()",
-                                    "array_push_growT() failure");
+                                            &vtmp.xyz) == NULL)
                             goto _failure;
-                        }
                         if (vtmp.flags & MESHML_UVW) {
                             if (array_push_growT(&a_vt, vec2d_t,
-                                                &vtmp.uvw) == NULL) {
-                                err_set(__CR_MESHML_C__, CR_NULL,
-                                        "meshml_load()",
-                                        "array_push_growT() failure");
+                                                &vtmp.uvw) == NULL)
                                 goto _failure;
-                            }
                         }
                         if (vtmp.flags & MESHML_NRM) {
                             if (array_push_growT(&a_vn, vec4d_t,
-                                                &vtmp.nrm) == NULL) {
-                                err_set(__CR_MESHML_C__, CR_NULL,
-                                        "meshml_load()",
-                                        "array_push_growT() failure");
+                                                &vtmp.nrm) == NULL)
                                 goto _failure;
-                            }
                         }
                         if (vtmp.flags & MESHML_JID) {
                             if (array_push_growT(&a_j, sMESHML_WGHT,
-                                                &vtmp.jidwt) == NULL) {
-                                err_set(__CR_MESHML_C__, CR_NULL,
-                                        "meshml_load()",
-                                        "array_push_growT() failure");
+                                                &vtmp.jidwt) == NULL)
                                 goto _failure;
-                            }
                         }
                         struct_zero(&vtmp, sMESHML_VX);
                         continue;
@@ -556,30 +518,20 @@ meshml_load (
                         break;
                     for (ii = 0; ii < 3; ii++) {
                         if (array_push_growT(&a_i, int32u,
-                                            &index[ii]) == NULL) {
-                            err_set(__CR_MESHML_C__, CR_NULL,
-                                    "meshml_load()",
-                                    "array_push_growT() failure");
+                                            &index[ii]) == NULL)
                             goto _failure;
-                        }
                     }
                     continue;
                 }
                 /* 压入网格列表 */
                 if (str_cmpIA(node->name, CR_AS("/mesh")) == 0) {
-                    if (!array_no_growT(&a_i, int32u)) {
-                        err_set(__CR_MESHML_C__, FALSE,
-                                "meshml_load()", "array_no_growT() failure");
+                    if (!array_no_growT(&a_i, int32u))
                         goto _failure;
-                    }
                     gtmp.ibuf = array_get_dataT(&a_i, int32u);
                     gtmp.inum = array_get_sizeT(&a_i, int32u);
                     gtmp.vnum = array_get_sizeT(&a_v, vec3d_t) - gtmp.start;
-                    if (array_push_growT(&a_g, sMESHML_MESH, &gtmp) == NULL) {
-                        err_set(__CR_MESHML_C__, CR_NULL,
-                                "meshml_load()", "array_push_growT() failure");
+                    if (array_push_growT(&a_g, sMESHML_MESH, &gtmp) == NULL)
                         goto _failure;
-                    }
                     gtmp.name = NULL;
                     gtmp.ibuf = NULL;
                     gtmp.start += gtmp.vnum;
@@ -622,48 +574,24 @@ meshml_load (
     }
 
     /* 节点必须闭合 */
-    if (type != MESHML_TAG_DONE) {
-        err_set(__CR_MESHML_C__, type,
-                "meshml_load()", "invalid MESHML format");
+    if (type != MESHML_TAG_DONE)
         goto _failure;
-    }
 
     /* 固定缓冲大小 */
-    if (!array_no_growT(&a_v, vec3d_t)) {
-        err_set(__CR_MESHML_C__, FALSE,
-                "meshml_load()", "array_no_growT() failure");
+    if (!array_no_growT(&a_v, vec3d_t))
         goto _failure;
-    }
-    if (!array_no_growT(&a_vt, vec2d_t)) {
-        err_set(__CR_MESHML_C__, FALSE,
-                "meshml_load()", "array_no_growT() failure");
+    if (!array_no_growT(&a_vt, vec2d_t))
         goto _failure;
-    }
-    if (!array_no_growT(&a_vn, vec4d_t)) {
-        err_set(__CR_MESHML_C__, FALSE,
-                "meshml_load()", "array_no_growT() failure");
+    if (!array_no_growT(&a_vn, vec4d_t))
         goto _failure;
-    }
-    if (!array_no_growT(&a_j, sMESHML_WGHT)) {
-        err_set(__CR_MESHML_C__, FALSE,
-                "meshml_load()", "array_no_growT() failure");
+    if (!array_no_growT(&a_j, sMESHML_WGHT))
         goto _failure;
-    }
-    if (!array_no_growT(&a_g, sMESHML_MESH)) {
-        err_set(__CR_MESHML_C__, FALSE,
-                "meshml_load()", "array_no_growT() failure");
+    if (!array_no_growT(&a_g, sMESHML_MESH))
         goto _failure;
-    }
-    if (!array_no_growT(&a_m, sMESHML_MTRL)) {
-        err_set(__CR_MESHML_C__, FALSE,
-                "meshml_load()", "array_no_growT() failure");
+    if (!array_no_growT(&a_m, sMESHML_MTRL))
         goto _failure;
-    }
-    if (!array_no_growT(&a_b, sMESHML_BONE)) {
-        err_set(__CR_MESHML_C__, FALSE,
-                "meshml_load()", "array_no_growT() failure");
+    if (!array_no_growT(&a_b, sMESHML_BONE))
         goto _failure;
-    }
 
     /* 返回读取的数据 */
     msh->n_v = array_get_sizeT(&a_v, vec3d_t);
@@ -681,11 +609,8 @@ meshml_load (
     /* 必须要有的数据 */
     if (msh->n_v == 0 || msh->p_v == NULL ||
         msh->n_g == 0 || msh->p_g == NULL ||
-        msh->n_m == 0 || msh->p_m == NULL) {
-        err_set(__CR_MESHML_C__, CR_NULL,
-                "meshml_load()", "invalid MESHML format");
+        msh->n_m == 0 || msh->p_m == NULL)
         goto _failure;
-    }
     array_freeT(&a_i, int32u);
     xml_closeU(xml);
     return (TRUE);
@@ -735,8 +660,6 @@ meshml_free (
         mem_free(msh->p_b);
     }
 }
-
-#endif  /* !__CR_MESHML_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

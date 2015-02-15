@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_HEIGHTMAP_C__
-#define __CR_HEIGHTMAP_C__ 0x0D6C265FUL
-
 #include "safe.h"
 #include "memlib.h"
 #include "gfx3int.h"
@@ -49,44 +46,20 @@ height_map_new (
     sHEIGHTMAP* rett;
 
     /* 参数过滤 */
-    if (type > HTMAP_TYPE_REAL) {
-        err_set(__CR_HEIGHTMAP_C__, type,
-                "height_map_new()", "invalid param: type");
+    if (type > HTMAP_TYPE_REAL ||
+        width < 2 || height < 2 || grid <= 0.0f)
         return (NULL);
-    }
-    if (width < 2) {
-        err_set(__CR_HEIGHTMAP_C__, width,
-                "height_map_new()", "invalid param: width");
-        return (NULL);
-    }
-    if (height < 2) {
-        err_set(__CR_HEIGHTMAP_C__, height,
-                "height_map_new()", "invalid param: height");
-        return (NULL);
-    }
-    if (grid <= 0.0f) {
-        err_set(__CR_HEIGHTMAP_C__, grid,
-                "height_map_new()", "invalid param: grid");
-        return (NULL);
-    }
 
     /* 创建对象 */
     rett = struct_new(sHEIGHTMAP);
-    if (rett == NULL) {
-        err_set(__CR_HEIGHTMAP_C__, CR_NULL,
-                "height_map_new()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     if (cut_mul(&size, width, height)) {
-        err_set(__CR_HEIGHTMAP_C__, CR_NULL,
-                "height_map_new()", "arithmetic mul overflow");
         mem_free(rett);
         return (NULL);
     }
     rett->map = mem_talloc(size, fp32_t);
     if (rett->map == NULL) {
-        err_set(__CR_HEIGHTMAP_C__, CR_NULL,
-                "height_map_new()", "mem_talloc() failure");
         mem_free(rett);
         return (NULL);
     }
@@ -362,8 +335,6 @@ height_map_place (
     /* 计算底面的偏移值 */
     return (min - aabb->v[AABB_MIN_IDX].y);
 }
-
-#endif  /* !__CR_HEIGHTMAP_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

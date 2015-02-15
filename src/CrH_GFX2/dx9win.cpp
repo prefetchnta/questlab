@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_DX9WIN_CPP__
-#define __CR_DX9WIN_CPP__ 0xE2363BD9UL
-
 #include "memlib.h"
 #include "strlib.h"
 #include "gfx2/dx9win.h"
@@ -85,11 +82,8 @@ iGFX2_DX9M_reset (
 
     /* 重新获取窗口大小 */
     real = (iGFX2_DX9M*)that;
-    if (!GetClientRect(real->m_hdle.hwnd, &rect)) {
-        err_set(__CR_DX9WIN_CPP__, GetLastError(),
-                "iGFX2::reset()", "GetClientRect() failure");
+    if (!GetClientRect(real->m_hdle.hwnd, &rect))
         return (FALSE);
-    }
 
     /* 如果发生了改变则复位设备 */
     if ((uint_t)rect.right  != that->__back__.position.ww ||
@@ -98,11 +92,8 @@ iGFX2_DX9M_reset (
         real->m_sprt->OnLostDevice();
         if (!real->m_hdle.call->main_reset(real->m_main, FALSE,
                 rect.right, rect.bottom, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
-                                FALSE, D3DMULTISAMPLE_NONE)) {
-            err_set(__CR_DX9WIN_CPP__, FALSE,
-                    "iGFX2::reset()", "d3d9_main_reset() failure");
+                                FALSE, D3DMULTISAMPLE_NONE))
             return (FALSE);
-        }
         real->m_sprt->OnResetDevice();
         rect_set_wh(&that->__back__.clip_win, 0, 0, rect.right, rect.bottom);
         struct_cpy(&that->__back__.position, &that->__back__.clip_win, sRECT);
@@ -154,11 +145,8 @@ iGFX2_DX9M_flip (
 
     real = (iGFX2_DX9M*)that;
     retc = real->m_main->dev->Present(NULL, NULL, NULL, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "iGFX2::flip()", "IDirect3D9::Present() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     CR_NOUSE(sync);
     return (TRUE);
 }
@@ -181,11 +169,8 @@ iGFX2_DX9M_clear (
     real = (iGFX2_DX9M*)that;
     retc = real->m_main->dev->Clear(0, NULL, D3DCLEAR_TARGET,
                                     color, 1.0f, 0);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "iGFX2::clear()", "IDirect3D9::Clear() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     CR_NOUSE(param);
     return (TRUE);
 }
@@ -240,71 +225,48 @@ create_dx9_canvas (
         scn_cw = GetSystemMetrics(SM_CXSCREEN);
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
         if (!SetWindowPos(hdle->hwnd, HWND_TOP, 0, 0,
-                          scn_cw, scn_ch, SWP_SHOWWINDOW)) {
-            err_set(__CR_DX9WIN_CPP__, GetLastError(),
-                    "create_dx9_canvas()", "SetWindowPos() failure");
+                          scn_cw, scn_ch, SWP_SHOWWINDOW))
             return (NULL);
-        }
     }
     else if (scn_cw == 0 || scn_ch == 0)
     {
         /* 非法宽高, 获取窗口大小 */
-        if (!GetClientRect(hdle->hwnd, &rect)) {
-            err_set(__CR_DX9WIN_CPP__, GetLastError(),
-                    "create_dx9_canvas()", "GetClientRect() failure");
+        if (!GetClientRect(hdle->hwnd, &rect))
             return (NULL);
-        }
         scn_cw = rect.right;
         scn_ch = rect.bottom;
     }
 
     /* 生成对象 */
     rett = struct_new(iGFX2_DX9M);
-    if (rett == NULL) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                "create_dx9_canvas()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     struct_zero(&rett->__back__, sIMAGE);
 
     /* 创建 D3D9 设备 */
     rett->m_main = hdle->call->create_main(hdle->hwnd, FALSE,
                         scn_cw, scn_ch, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
                                     FALSE, D3DMULTISAMPLE_NONE);
-    if (rett->m_main == NULL) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                "create_dx9_canvas()", "d3d9_create_main() failure");
+    if (rett->m_main == NULL)
         goto _failure1;
-    }
 
     /* 创建填充用的纹理 */
     fill = hdle->call->create_tex2(rett->m_main, 1, 1, D3DFMT_A8R8G8B8,
                                    D3DPOOL_MANAGED, 0, 1);
-    if (fill == NULL) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                "create_dx9_canvas()", "d3d9_create_tex2() failure");
+    if (fill == NULL)
         goto _failure2;
-    }
     rett->m_fill = (iGFX2*)create_dx9_bitmap(rett, fill, FALSE);
     if (rett->m_fill == NULL) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                "create_dx9_canvas()", "create_dx9_bitmap() failure");
         hdle->call->release_texr(fill);
         goto _failure2;
     }
-    if (!CR_VCALL(rett->m_fill)->clear(rett->m_fill, 0xFFFFFFFFUL, 0)) {
-        err_set(__CR_DX9WIN_CPP__, FALSE,
-                "create_dx9_canvas()", "iGFX2::clear() failure");
+    if (!CR_VCALL(rett->m_fill)->clear(rett->m_fill, 0xFFFFFFFFUL, 0))
         goto _failure3;
-    }
 
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(rett->m_main->dev, &rett->m_sprt);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "create_dx9_canvas()", "D3DXCreateSprite() failure");
+    if (FAILED(retc))
         goto _failure3;
-    }
 
     /* 返回生成的对象 */
     rett->__vptr__ = &s_canvas_vtbl;
@@ -416,13 +378,9 @@ iGFX2_DX9S_lock (
     D3DLOCKED_RECT  info;
 
     real = (iGFX2_DX9S*)that;
-    retc = real->m_texture->obj.tex2->LockRect(0, &info, NULL,
-                                               real->m_flags);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "iGFX2::lock()", "IDirect3DTexture9::LockRect() failure");
+    retc = real->m_texture->obj.tex2->LockRect(0, &info, NULL, real->m_flags);
+    if (FAILED(retc))
         return (NULL);
-    }
     real->__back__.data = (byte_t*)info.pBits;
     real->__back__.bpl  = (leng_t )info.Pitch;
     real->__back__.size = real->__back__.bpl *
@@ -520,11 +478,8 @@ iGFX2_DX9S_clear (
     /* 填充 */
     real = (iGFX2_DX9S*)that;
     retc = D3DXFillTexture(real->m_texture->obj.tex2, tex_fill, &fill);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "iGFX2::clear()", "D3DXFillTexture() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     CR_NOUSE(param);
     return (TRUE);
 }
@@ -571,19 +526,13 @@ create_dx9_bitmap (
     iGFX2_DX9S* rett;
 
     /* 必须是 2D 贴图 */
-    if (texture->face != 1) {
-        err_set(__CR_DX9WIN_CPP__, texture->face,
-                "create_dx9_bitmap()", "2d texture needed");
+    if (texture->face != 1)
         return (NULL);
-    }
 
     /* 生成对象并设置图片参数 */
     rett = struct_new(iGFX2_DX9S);
-    if (rett == NULL) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                "create_dx9_bitmap()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     if (!image_set(&rett->__back__, NULL, (leng_t)(-1L), 0, 0,
                 texture->info.Width, texture->info.Height,
                 image_d3d_to_crh(texture->info.Format), FALSE, 8)) {
@@ -624,12 +573,7 @@ fill_dx9_draw (
     zoom.dh = fill->dh;
     zoom.sx = zoom.sy = 0;
     zoom.sw = zoom.sh = 1;
-    if (!blit_dx9_zoom(dst, (iGFX2_DX9S*)dst->m_fill, &zoom, color)) {
-        err_set(__CR_DX9WIN_CPP__, FALSE,
-                "fill_dx9_draw()", "blit_dx9_zoom() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (blit_dx9_zoom(dst, (iGFX2_DX9S*)dst->m_fill, &zoom, color));
 }
 
 /*
@@ -658,18 +602,12 @@ blit_dx9_copy (
     rect.bottom = (LONG)(rect.top  + blit->sh);
     D3DXMatrixTransformation2D(&matx, NULL, 0.0f, NULL, NULL, 0.0f, &dpos);
     retc = dst->m_sprt->SetTransform(&matx);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_copy()", "ID3DXSprite::SetTransform() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              NULL, NULL, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_copy()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -702,18 +640,12 @@ blit_dx9_zoom (
     scle.y = (fp32_t)zoom->dh / (fp32_t)zoom->sh;
     D3DXMatrixTransformation2D(&matx, NULL, 0.0f, &scle, NULL, 0.0f, &dpos);
     retc = dst->m_sprt->SetTransform(&matx);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_zoom()", "ID3DXSprite::SetTransform() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              NULL, NULL, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_zoom()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -749,18 +681,12 @@ blit_dx9_rote (
     cntr.y = (fp32_t)blit->sh * cy;
     D3DXMatrixTransformation2D(&matx, NULL, 0.0f, NULL, &cntr, ccw, &dpos);
     retc = dst->m_sprt->SetTransform(&matx);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_rote()", "ID3DXSprite::SetTransform() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              NULL, NULL, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_rote()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -801,18 +727,12 @@ blit_dx9_full (
     scle.y /= (fp32_t)zoom->sh;
     D3DXMatrixTransformation2D(&matx, NULL, 0.0f, &scle, &cntr, ccw, &dpos);
     retc = dst->m_sprt->SetTransform(&matx);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_full()", "ID3DXSprite::SetTransform() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              NULL, NULL, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_full()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -833,18 +753,12 @@ blit_dx9_matx (
     HRESULT retc;
 
     retc = dst->m_sprt->SetTransform(matx);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_matx()", "ID3DXSprite::SetTransform() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, rect,
                              NULL, NULL, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "blit_dx9_matx()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -1002,11 +916,8 @@ iFONT_DX9_draw_tran (
     }
     else {
         utf16 = (wide_t*)str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
-        if (utf16 == NULL) {
-            err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                    "iFONT::draw_tran()", "str_acp2uni() failure");
+        if (utf16 == NULL)
             return (FALSE);
-        }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
     }
 
@@ -1015,15 +926,11 @@ iFONT_DX9_draw_tran (
     temp.top    = rect->y1;
     temp.right  = rect->x2 + 1;
     temp.bottom = rect->y2 + 1;
-    if (real->m_font->DrawTextW(real->m_sprt, utf16,
-            (INT)leng, &temp, DT_LEFT, real->__color__) == 0) {
-        err_set(__CR_DX9WIN_CPP__, 0L,
-                "iFONT::draw_tran()", "ID3DXFont::DrawTextW() failure");
+    if (real->m_font->DrawTextW(real->m_sprt, utf16, (INT)leng,
+                        &temp, DT_LEFT, real->__color__) == 0)
         rett = FALSE;
-    }
-    else {
+    else
         rett = TRUE;
-    }
 
     if (utf16 != (wide_t*)text)
         mem_free(utf16);
@@ -1056,11 +963,8 @@ iFONT_DX9_calc_rect (
     }
     else {
         utf16 = (wide_t*)str_acp2uni(cpage, (ansi_t*)text, &leng, TRUE);
-        if (utf16 == NULL) {
-            err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                    "iFONT::calc_rect()", "str_acp2uni() failure");
+        if (utf16 == NULL)
             return (FALSE);
-        }
         leng = leng / sizeof(wide_t) - 1;   /* 去掉后面的 NIL 字符 */
     }
 
@@ -1069,10 +973,8 @@ iFONT_DX9_calc_rect (
     temp.top    = 0;
     temp.right  = rect->ww;
     temp.bottom = rect->hh;
-    if (real->m_font->DrawTextW(real->m_sprt, utf16,
-            (INT)leng, &temp, DT_LEFT | DT_CALCRECT, 0) == 0) {
-        err_set(__CR_DX9WIN_CPP__, 0L,
-                "iFONT::calc_rect()", "ID3DXFont::DrawTextW() failure");
+    if (real->m_font->DrawTextW(real->m_sprt, utf16, (INT)leng,
+                        &temp, DT_LEFT | DT_CALCRECT, 0) == 0) {
         rett = FALSE;
     }
     else {
@@ -1109,18 +1011,13 @@ create_dx9_fontA (
     iFONT_DX9*  font;
 
     font = struct_new(iFONT_DX9);
-    if (font == NULL) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                "create_dx9_fontA()", "struct_new() failure");
+    if (font == NULL)
         return (NULL);
-    }
     struct_zero(font, iFONT_DX9);
 
     /* 生成字体对象 */
     retc = D3DXCreateFontIndirectA(devs->m_main->dev, desc, &font->m_font);
     if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "create_dx9_fontA()", "D3DXCreateFontIndirectA() failure");
         mem_free(font);
         return (NULL);
     }
@@ -1128,8 +1025,6 @@ create_dx9_fontA (
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(devs->m_main->dev, &font->m_sprt);
     if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "create_dx9_fontA()", "D3DXCreateSprite() failure");
         font->m_font->Release();
         mem_free(font);
         return (NULL);
@@ -1153,18 +1048,13 @@ create_dx9_fontW (
     iFONT_DX9*  font;
 
     font = struct_new(iFONT_DX9);
-    if (font == NULL) {
-        err_set(__CR_DX9WIN_CPP__, CR_NULL,
-                "create_dx9_fontW()", "struct_new() failure");
+    if (font == NULL)
         return (NULL);
-    }
     struct_zero(font, iFONT_DX9);
 
     /* 生成字体对象 */
     retc = D3DXCreateFontIndirectW(devs->m_main->dev, desc, &font->m_font);
     if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "create_dx9_fontW()", "D3DXCreateFontIndirectW() failure");
         mem_free(font);
         return (NULL);
     }
@@ -1172,8 +1062,6 @@ create_dx9_fontW (
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(devs->m_main->dev, &font->m_sprt);
     if (FAILED(retc)) {
-        err_set(__CR_DX9WIN_CPP__, retc,
-                "create_dx9_fontW()", "D3DXCreateSprite() failure");
         font->m_font->Release();
         mem_free(font);
         return (NULL);
@@ -1227,8 +1115,6 @@ dx9call_get (void_t)
 }
 
 #endif  /* _CR_HAVE_D3D9_ */
-
-#endif  /* !__CR_DX9WIN_CPP__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_UCFONT_C__
-#define __CR_UCFONT_C__ 0x7D0BD487UL
-
 #include "bltint.h"
 #include "memlib.h"
 #include "strlib.h"
@@ -103,19 +100,13 @@ iFONT_UC_setMode (
     pixdraw_t   draw;
     iFONT_UC*   real = (iFONT_UC*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_UCFONT_C__, CR_NULL,
-                "iFONT::setMode()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
 
     /* 根据目标表面和渲染模式设置写点函数 */
     draw = pixel_find_draw(real->m_fcrh, real->m_flip, mode);
-    if (draw == NULL) {
-        err_set(__CR_UCFONT_C__, mode,
-                "iFONT::setMode()", "invalid param: mode");
+    if (draw == NULL)
         return (FALSE);
-    }
     real->pixel_draw = draw;
     real->font.__draw_mode__ = mode;
     return (TRUE);
@@ -137,17 +128,12 @@ iFONT_UC_bind (
     iFONT_UC*   real = (iFONT_UC*)that;
 
     dest = CR_VCALL(gfx2)->lock(gfx2);
-    if (dest == NULL) {
-        err_set(__CR_UCFONT_C__, CR_NULL,
-                "iFONT::bind()", "iGFX2::lock() failure");
+    if (dest == NULL)
         return (FALSE);
-    }
 
     /* 根据目标表面设置颜色转换函数 (不支持低位索引格式) */
     cnvt = pixel_find_cnvt(dest->fmt);
     if (dest->fmt < CR_INDEX8 || cnvt == NULL) {
-        err_set(__CR_UCFONT_C__, dest->fmt,
-                "iFONT::bind()", "invalid param: gfx2->__back__.fmt");
         CR_VCALL(gfx2)->unlock(gfx2);
         return (FALSE);
     }
@@ -178,11 +164,8 @@ iFONT_UC_setColor (
     cpix_t      cnvt;
     iFONT_UC*   real = (iFONT_UC*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_UCFONT_C__, CR_NULL,
-                "iFONT::setColor()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
     cnvt = real->pixel_cnvt(real->m_pal, color);
     real->font.__color__ = cnvt.val;
     return (TRUE);
@@ -202,11 +185,8 @@ iFONT_UC_setBkColor (
     cpix_t      cnvt;
     iFONT_UC*   real = (iFONT_UC*)that;
 
-    if (real->m_draw == NULL) {
-        err_set(__CR_UCFONT_C__, CR_NULL,
-                "iFONT::setBkColor()", "no binding interface");
+    if (real->m_draw == NULL)
         return (FALSE);
-    }
     cnvt = real->pixel_cnvt(real->m_pal, color);
     real->font.__bkcolor__ = cnvt.val;
     return (TRUE);
@@ -431,11 +411,8 @@ create_ucdos_font (
     iFONT_UC*   font;
 
     font = struct_new(iFONT_UC);
-    if (font == NULL) {
-        err_set(__CR_UCFONT_C__, CR_NULL,
-                "create_ucdos_font()", "struct_new() failure");
+    if (font == NULL)
         return (NULL);
-    }
     struct_zero(font, iFONT_UC);
 
     font->m_ascf = asc;
@@ -452,15 +429,11 @@ create_ucdos_font (
         case 48: font->font.__vptr__ = &s_fnt48_vtbl; break;
 
         default:
-            err_set(__CR_UCFONT_C__, size,
-                    "create_ucdos_font()", "invalid param: size");
             mem_free(font);
             return (NULL);
     }
     return ((iFONT*)font);
 }
-
-#endif  /* !__CR_UCFONT_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_TERRAIN_C__
-#define __CR_TERRAIN_C__ 0x9B064B12UL
-
 #include "gfx3int.h"
 
 /*
@@ -51,26 +48,11 @@ gen_terrain_tile (
 
     /* 参数过滤 */
     real = (sHEIGHTMAP*)htmap;
-    if (x >= real->x2) {
-        err_set(__CR_TERRAIN_C__, x,
-                "gen_terrain_tile()", "invalid param: x");
+    if (x >= real->x2 ||
+        z >= real->z2 ||
+        w < 2 || w > real->ww - x ||
+        h < 2 || h > real->hh - z)
         return (0);
-    }
-    if (z >= real->z2) {
-        err_set(__CR_TERRAIN_C__, z,
-                "gen_terrain_tile()", "invalid param: z");
-        return (0);
-    }
-    if (w < 2 || w > real->ww - x) {
-        err_set(__CR_TERRAIN_C__, w,
-                "gen_terrain_tile()", "invalid param: w");
-        return (0);
-    }
-    if (h < 2 || h > real->hh - z) {
-        err_set(__CR_TERRAIN_C__, h,
-                "gen_terrain_tile()", "invalid param: h");
-        return (0);
-    }
     count  = w;
     count *= h;
     if (xyz == NULL)
@@ -112,8 +94,6 @@ gen_terrain_tile (
     }
     return (count);
 }
-
-#endif  /* !__CR_TERRAIN_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_DX8WIN_CPP__
-#define __CR_DX8WIN_CPP__ 0x0DF450E7UL
-
 #include "memlib.h"
 #include "strlib.h"
 #include "gfx2/dx8win.h"
@@ -85,11 +82,8 @@ iGFX2_DX8M_reset (
 
     /* 重新获取窗口大小 */
     real = (iGFX2_DX8M*)that;
-    if (!GetClientRect(real->m_hdle.hwnd, &rect)) {
-        err_set(__CR_DX8WIN_CPP__, GetLastError(),
-                "iGFX2::reset()", "GetClientRect() failure");
+    if (!GetClientRect(real->m_hdle.hwnd, &rect))
         return (FALSE);
-    }
 
     /* 如果发生了改变则复位设备 */
     if ((uint_t)rect.right  != that->__back__.position.ww ||
@@ -98,11 +92,8 @@ iGFX2_DX8M_reset (
         real->m_sprt->OnLostDevice();
         if (!real->m_hdle.call->main_reset(real->m_main, FALSE,
                 rect.right, rect.bottom, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
-                                FALSE, D3DMULTISAMPLE_NONE)) {
-            err_set(__CR_DX8WIN_CPP__, FALSE,
-                    "iGFX2::reset()", "d3d8_main_reset() failure");
+                                FALSE, D3DMULTISAMPLE_NONE))
             return (FALSE);
-        }
         real->m_sprt->OnResetDevice();
         rect_set_wh(&that->__back__.clip_win, 0, 0, rect.right, rect.bottom);
         struct_cpy(&that->__back__.position, &that->__back__.clip_win, sRECT);
@@ -154,11 +145,8 @@ iGFX2_DX8M_flip (
 
     real = (iGFX2_DX8M*)that;
     retc = real->m_main->dev->Present(NULL, NULL, NULL, NULL);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "iGFX2::flip()", "IDirect3D8::Present() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     CR_NOUSE(sync);
     return (TRUE);
 }
@@ -181,11 +169,8 @@ iGFX2_DX8M_clear (
     real = (iGFX2_DX8M*)that;
     retc = real->m_main->dev->Clear(0, NULL, D3DCLEAR_TARGET,
                                     color, 1.0f, 0);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "iGFX2::clear()", "IDirect3D8::Clear() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     CR_NOUSE(param);
     return (TRUE);
 }
@@ -240,71 +225,48 @@ create_dx8_canvas (
         scn_cw = GetSystemMetrics(SM_CXSCREEN);
         scn_ch = GetSystemMetrics(SM_CYSCREEN);
         if (!SetWindowPos(hdle->hwnd, HWND_TOP, 0, 0,
-                          scn_cw, scn_ch, SWP_SHOWWINDOW)) {
-            err_set(__CR_DX8WIN_CPP__, GetLastError(),
-                    "create_dx8_canvas()", "SetWindowPos() failure");
+                          scn_cw, scn_ch, SWP_SHOWWINDOW))
             return (NULL);
-        }
     }
     else if (scn_cw == 0 || scn_ch == 0)
     {
         /* 非法宽高, 获取窗口大小 */
-        if (!GetClientRect(hdle->hwnd, &rect)) {
-            err_set(__CR_DX8WIN_CPP__, GetLastError(),
-                    "create_dx8_canvas()", "GetClientRect() failure");
+        if (!GetClientRect(hdle->hwnd, &rect))
             return (NULL);
-        }
         scn_cw = rect.right;
         scn_ch = rect.bottom;
     }
 
     /* 生成对象 */
     rett = struct_new(iGFX2_DX8M);
-    if (rett == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_canvas()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     struct_zero(&rett->__back__, sIMAGE);
 
     /* 创建 D3D8 设备 */
     rett->m_main = hdle->call->create_main(hdle->hwnd, FALSE,
                         scn_cw, scn_ch, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
                                     FALSE, D3DMULTISAMPLE_NONE);
-    if (rett->m_main == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_canvas()", "d3d8_create_main() failure");
+    if (rett->m_main == NULL)
         goto _failure1;
-    }
 
     /* 创建填充用的纹理 */
     fill = hdle->call->create_tex2(rett->m_main, 1, 1, D3DFMT_A8R8G8B8,
                                    D3DPOOL_MANAGED, 0, 1);
-    if (fill == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_canvas()", "d3d8_create_tex2() failure");
+    if (fill == NULL)
         goto _failure2;
-    }
     rett->m_fill = (iGFX2*)create_dx8_bitmap(rett, fill, FALSE);
     if (rett->m_fill == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_canvas()", "create_dx8_bitmap() failure");
         hdle->call->release_texr(fill);
         goto _failure2;
     }
-    if (!CR_VCALL(rett->m_fill)->clear(rett->m_fill, 0xFFFFFFFFUL, 0)) {
-        err_set(__CR_DX8WIN_CPP__, FALSE,
-                "create_dx8_canvas()", "iGFX2::clear() failure");
+    if (!CR_VCALL(rett->m_fill)->clear(rett->m_fill, 0xFFFFFFFFUL, 0))
         goto _failure3;
-    }
 
     /* 生成精灵绘制对象 */
     retc = D3DXCreateSprite(rett->m_main->dev, &rett->m_sprt);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "create_dx8_canvas()", "D3DXCreateSprite() failure");
+    if (FAILED(retc))
         goto _failure3;
-    }
 
     /* 返回生成的对象 */
     rett->__vptr__ = &s_canvas_vtbl;
@@ -416,13 +378,9 @@ iGFX2_DX8S_lock (
     D3DLOCKED_RECT  info;
 
     real = (iGFX2_DX8S*)that;
-    retc = real->m_texture->obj.tex2->LockRect(0, &info, NULL,
-                                               real->m_flags);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "iGFX2::lock()", "IDirect3DTexture8::LockRect() failure");
+    retc = real->m_texture->obj.tex2->LockRect(0, &info, NULL, real->m_flags);
+    if (FAILED(retc))
         return (NULL);
-    }
     real->__back__.data = (byte_t*)info.pBits;
     real->__back__.bpl  = (leng_t )info.Pitch;
     real->__back__.size = real->__back__.bpl *
@@ -520,11 +478,8 @@ iGFX2_DX8S_clear (
     /* 填充 */
     real = (iGFX2_DX8S*)that;
     retc = D3DXFillTexture(real->m_texture->obj.tex2, tex_fill, &fill);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "iGFX2::clear()", "D3DXFillTexture() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     CR_NOUSE(param);
     return (TRUE);
 }
@@ -571,19 +526,13 @@ create_dx8_bitmap (
     iGFX2_DX8S* rett;
 
     /* 必须是 2D 贴图 */
-    if (texture->face != 1) {
-        err_set(__CR_DX8WIN_CPP__, texture->face,
-                "create_dx8_bitmap()", "2d texture needed");
+    if (texture->face != 1)
         return (NULL);
-    }
 
     /* 生成对象并设置图片参数 */
     rett = struct_new(iGFX2_DX8S);
-    if (rett == NULL) {
-        err_set(__CR_DX8WIN_CPP__, CR_NULL,
-                "create_dx8_bitmap()", "struct_new() failure");
+    if (rett == NULL)
         return (NULL);
-    }
     if (!image_set(&rett->__back__, NULL, (leng_t)(-1L), 0, 0,
                 texture->info.Width, texture->info.Height,
                 image_d3d_to_crh(texture->info.Format), FALSE, 8)) {
@@ -624,12 +573,7 @@ fill_dx8_draw (
     zoom.dh = fill->dh;
     zoom.sx = zoom.sy = 0;
     zoom.sw = zoom.sh = 1;
-    if (!blit_dx8_zoom(dst, (iGFX2_DX8S*)dst->m_fill, &zoom, color)) {
-        err_set(__CR_DX8WIN_CPP__, FALSE,
-                "fill_dx8_draw()", "blit_dx8_zoom() failure");
-        return (FALSE);
-    }
-    return (TRUE);
+    return (blit_dx8_zoom(dst, (iGFX2_DX8S*)dst->m_fill, &zoom, color));
 }
 
 /*
@@ -657,11 +601,8 @@ blit_dx8_copy (
     rect.bottom = (LONG)(rect.top  + blit->sh);
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              NULL, NULL, 0.0f, &dpos, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_copy()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -693,11 +634,8 @@ blit_dx8_zoom (
     scle.y = (fp32_t)zoom->dh / (fp32_t)zoom->sh;
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              &scle, NULL, 0.0f, &dpos, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_zoom()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -732,11 +670,8 @@ blit_dx8_rote (
     cntr.y = (fp32_t)blit->sh * cy;
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              NULL, &cntr, ccw, &dpos, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_rote()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -776,11 +711,8 @@ blit_dx8_full (
     scle.y /= (fp32_t)zoom->sh;
     retc = dst->m_sprt->Draw(src->m_texture->obj.tex2, &rect,
                              &scle, &cntr, ccw, &dpos, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_full()", "ID3DXSprite::Draw() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -802,11 +734,8 @@ blit_dx8_matx (
 
     retc = dst->m_sprt->DrawTransform(src->m_texture->obj.tex2,
                                       rect, matx, color);
-    if (FAILED(retc)) {
-        err_set(__CR_DX8WIN_CPP__, retc,
-                "blit_dx8_matx()", "ID3DXSprite::DrawTransform() failure");
+    if (FAILED(retc))
         return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -844,8 +773,6 @@ dx8call_get (void_t)
 }
 
 #endif  /* _CR_HAVE_D3D8_ */
-
-#endif  /* !__CR_DX8WIN_CPP__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

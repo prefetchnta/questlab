@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_INTERLOCK_C__
-#define __CR_INTERLOCK_C__ 0x9B28F6E5UL
-
 #include "gfx3.h"
 #include "memlib.h"
 
@@ -41,11 +38,8 @@ gen_interlock (
     uint_t  sz, xx, zz, ii, lv;
 
     /* 参数过滤 */
-    if ((tile_size < 2) || (tile_size > 256)) {
-        err_set(__CR_INTERLOCK_C__, tile_size,
-                "gen_interlock()", "invalid param: tile_size");
+    if ((tile_size < 2) || (tile_size > 256))
         return (0);
-    }
 
     /* 计算最多的等级 */
     lv = 1;
@@ -79,11 +73,8 @@ gen_interlock (
         inum[point] = ((tile_size - 1) / step) *
                       ((tile_size - 1) / step) * 6;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         for (zz = 0; zz < tile_size - 1; zz += step)
         for (xx = 0; xx < tile_size - 1; xx += step) {
@@ -110,11 +101,8 @@ gen_interlock (
                       ((tile_size - 1) / step) * 6 +
                       ((tile_size - 1) / step) * 9;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         sz = tile_size - step - 1;
         for (xx = 0; xx < tile_size - 1; xx += step) {
@@ -150,11 +138,8 @@ gen_interlock (
                       ((tile_size - 1) / step) * 6 +
                       ((tile_size - 1) / step) * 9;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         for (xx = 0; xx < tile_size - 1; xx += step) {
             ti[0] = (int16u)(xx);
@@ -189,11 +174,8 @@ gen_interlock (
                       ((tile_size - 1) / step) * 6 +
                       ((tile_size - 1) / step) * 9;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         sz = tile_size - step - 1;
         for (zz = 0; zz < tile_size - 1; zz += step) {
@@ -229,11 +211,8 @@ gen_interlock (
                       ((tile_size - 1) / step) * 6 +
                       ((tile_size - 1) / step) * 9;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         for (zz = 0; zz < tile_size - 1; zz += step) {
             ti[0] = (int16u)((zz + step) * tile_size + step);
@@ -268,11 +247,8 @@ gen_interlock (
                       ((tile_size - 1) / step - 1) * 6 +
                       ((tile_size - 1) / step - 1) * 2 * 9 + 12;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         sz = tile_size - step - 1;
         for (xx = 0; xx < tile_size - step - 1; xx += step) {
@@ -333,11 +309,8 @@ gen_interlock (
                       ((tile_size - 1) / step - 1) * 6 +
                       ((tile_size - 1) / step - 1) * 2 * 9 + 12;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         sz = tile_size - step - 1;
         for (xx = step; xx < tile_size - 1; xx += step) {
@@ -398,11 +371,8 @@ gen_interlock (
                       ((tile_size - 1) / step - 1) * 6 +
                       ((tile_size - 1) / step - 1) * 2 * 9 + 12;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         sz = tile_size - step - 1;
         for (xx = 0; xx < tile_size - step - 1; xx += step) {
@@ -463,11 +433,8 @@ gen_interlock (
                       ((tile_size - 1) / step - 1) * 6 +
                       ((tile_size - 1) / step - 1) * 2 * 9 + 12;
         pibuf[point] = mem_talloc(inum[point], int16u);
-        if (pibuf[point] == NULL) {
-            err_set(__CR_INTERLOCK_C__, CR_NULL,
-                    "gen_interlock()", "mem_talloc() failure");
+        if (pibuf[point] == NULL)
             goto _failure;
-        }
         ti = pibuf[point];
         for (xx = step; xx < tile_size - 1; xx += step) {
             ti[0] = (int16u)(xx);
@@ -525,8 +492,6 @@ _failure:
         mem_free(pibuf[ii]);
     return (0);
 }
-
-#endif  /* !__CR_INTERLOCK_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
