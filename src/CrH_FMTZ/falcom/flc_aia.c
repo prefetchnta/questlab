@@ -17,9 +17,6 @@
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_FLC_AIA_C__
-#define __CR_FLC_AIA_C__ 0x3367C9E0UL
-
 #include "strlib.h"
 #include "fmtz/falcom.h"
 
@@ -47,11 +44,8 @@ decode_aia (
         line = 0;
         do
         {
-            if (srclen < 2) {
-                err_set(__CR_FLC_AIA_C__, srclen,
-                        "decode_aia()", "source buffer overflow");
+            if (srclen < 2)
                 return (FALSE);
-            }
             srclen -= 2;
             val  = *src++;
             val <<= 8;
@@ -60,20 +54,14 @@ decode_aia (
             if (val & 0x8000)
             {
                 val &= 0xFFF;
-                if (val > width - line) {
-                    err_set(__CR_FLC_AIA_C__, val,
-                            "decode_aia()", "dest buffer overflow");
+                if (val > width - line)
                     return (FALSE);
-                }
                 line += val;
 
                 if (val & 1)
                 {
-                    if (srclen < 1) {
-                        err_set(__CR_FLC_AIA_C__, srclen,
-                                "decode_aia()", "source buffer overflow");
+                    if (srclen < 1)
                         return (FALSE);
-                    }
                     srclen -= 1;
                     dst[0] = pal[*src++];
                     dst += 1;
@@ -81,11 +69,8 @@ decode_aia (
                 }
                 if (val & 2)
                 {
-                    if (srclen < 2) {
-                        err_set(__CR_FLC_AIA_C__, srclen,
-                                "decode_aia()", "source buffer overflow");
+                    if (srclen < 2)
                         return (FALSE);
-                    }
                     srclen -= 2;
                     dst[0] = pal[*src++];
                     dst[1] = pal[*src++];
@@ -95,11 +80,8 @@ decode_aia (
                 if (val != 0)
                 {
                     val = (val - 1) / 4 + 1;
-                    if (srclen < val * 4) {
-                        err_set(__CR_FLC_AIA_C__, srclen,
-                                "decode_aia()", "source buffer overflow");
+                    if (srclen < val * 4)
                         return (FALSE);
-                    }
                     srclen -= val * 4;
                     for (; val != 0; val--) {
                         dst[0] = pal[*src++];
@@ -114,18 +96,12 @@ decode_aia (
             if (val & 0x4000)
             {
                 val &= 0xFFF;
-                if (val > width - line) {
-                    err_set(__CR_FLC_AIA_C__, val,
-                            "decode_aia()", "dest buffer overflow");
+                if (val > width - line)
                     return (FALSE);
-                }
                 line += val;
 
-                if (srclen < val * 2) {
-                    err_set(__CR_FLC_AIA_C__, srclen,
-                            "decode_aia()", "source buffer overflow");
+                if (srclen < val * 2)
                     return (FALSE);
-                }
                 srclen -= val * 2;
                 for (; val != 0; val--) {
                     alpha = *src++;
@@ -136,11 +112,8 @@ decode_aia (
             }
             else
             {
-                if (val > width - line) {
-                    err_set(__CR_FLC_AIA_C__, val,
-                            "decode_aia()", "dest buffer overflow");
+                if (val > width - line)
                     return (FALSE);
-                }
                 line += val;
                 for (; val != 0; val--)
                     *dst++ = 0UL;
@@ -270,11 +243,8 @@ iPIC_AIA_get (
     sFMT_FRAME  temp;
 
     /* 帧号过滤 */
-    if (index >= that->__count__) {
-        err_set(__CR_FLC_AIA_C__, index,
-                "iPICTURE::get()", "index: out of bounds");
+    if (index >= that->__count__)
         return (NULL);
-    }
 
     /* 生成图片对象 */
     real = (iPIC_AIA*)that;
@@ -288,11 +258,8 @@ iPIC_AIA_get (
     temp.wh[3] = 8;
     temp.pic = image_new(0, 0, real->m_ww, real->m_hh,
                          CR_ARGB8888, FALSE, 4);
-    if (temp.pic == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "iPICTURE::get()", "image_new() failure");
+    if (temp.pic == NULL)
         return (NULL);
-    }
     mem_zero(temp.pic->data, temp.pic->size);
 
     /* 解码图形数据 */
@@ -303,23 +270,15 @@ iPIC_AIA_get (
     dest += attr->y1 * bpln + attr->x1;
     if (!decode_aia(dest, &real->m_dats[attr->offset],
             real->m_size - attr->offset, &real->m_pals[paln * 256],
-                attr->x2, attr->y2, real->m_ww - attr->x2)) {
-        err_set(__CR_FLC_AIA_C__, FALSE,
-                "iPICTURE::get()", "decode_aia() failure");
+                attr->x2, attr->y2, real->m_ww - attr->x2))
         goto _failure;
-    }
 
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PIC);
-    if (rett == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "iPICTURE::get()", "struct_new() failure");
+    if (rett == NULL)
         goto _failure;
-    }
     rett->frame = struct_dup(&temp, sFMT_FRAME);
     if (rett->frame == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "iPICTURE::get()", "struct_dup() failure");
         mem_free(rett);
         goto _failure;
     }
@@ -350,7 +309,7 @@ load_flc_aia (
   __CR_IN__ const sLOADER*  param
     )
 {
-    leng_t  read;
+    leng_t  back;
     leng_t  size;
     byte_t* pals;
     byte_t* dats;
@@ -364,23 +323,14 @@ load_flc_aia (
     iPIC_AIA*   port;
 
     /* 这个参数可能为空 */
-    if (datin == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "load_flc_aia()", "invalid param: datin");
+    if (datin == NULL)
         return (NULL);
-    }
 
     /* 读取 & 检查头部 */
-    if (!(CR_VCALL(datin)->geType(datin, &head, sAIA_HDR))) {
-        err_set(__CR_FLC_AIA_C__, FALSE,
-                "load_flc_aia()", "iDATIN::geType() failure");
+    if (!(CR_VCALL(datin)->geType(datin, &head, sAIA_HDR)))
         return (NULL);
-    }
-    if (head.magic != mk_tag4("AIA")) {
-        err_set(__CR_FLC_AIA_C__, head.magic,
-                "load_flc_aia()", "invalid AIA format");
+    if (head.magic != mk_tag4("AIA"))
         return (NULL);
-    }
     offs = DWORD_LE(head.idx_num);
     offs *= sizeof(int32u) * 4;
     if (head.version == CWORD_LE(0x140)) {
@@ -398,26 +348,18 @@ load_flc_aia (
         offs += 40;
     }
     else {
-        err_set(__CR_FLC_AIA_C__, head.version,
-                "load_flc_aia()", "invalid AIA format");
         return (NULL);
     }
 
     /* 定位到已知数据区域 */
-    if (!CR_VCALL(datin)->seek(datin, offs, SEEK_SET)) {
-        err_set(__CR_FLC_AIA_C__, FALSE,
-                "load_flc_aia()", "iDATIN::seek() failure");
+    if (!CR_VCALL(datin)->seek(datin, offs, SEEK_SET))
         return (NULL);
-    }
 
     /* 读取所有帧属性数据 */
     head.img_num = DWORD_LE(head.img_num);
     attr = mem_talloc32(head.img_num, sAIA_IDX);
-    if (attr == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "load_flc_aia()", "mem_talloc32() failure");
+    if (attr == NULL)
         return (NULL);
-    }
 
     /* 准备好一些属性值 */
     ww = WORD_LE(head.ww1);
@@ -427,12 +369,9 @@ load_flc_aia (
 
     /* 逐个读入有效的帧属性 */
     for (cnt = idx = 0; idx < head.img_num; idx++) {
-        read = CR_VCALL(datin)->read(datin, &attr[cnt], sizeof(sAIA_IDX));
-        if (read != sizeof(sAIA_IDX)) {
-            err_set(__CR_FLC_AIA_C__, read,
-                    "load_flc_aia()", "iDATIN::read() failure");
+        back = CR_VCALL(datin)->read(datin, &attr[cnt], sizeof(sAIA_IDX));
+        if (back != sizeof(sAIA_IDX))
             goto _failure1;
-        }
 
         /* 跳过非法的废帧 */
         attr[cnt].offset = DWORD_LE(attr[cnt].offset);
@@ -458,52 +397,32 @@ load_flc_aia (
     }
 
     /* 空图片检查 */
-    if (cnt == 0) {
-        err_set(__CR_FLC_AIA_C__, cnt,
-                "load_flc_aia()", "invalid AIA format");
+    if (cnt == 0)
         goto _failure1;
-    }
 
     /* 读取所有调色板数据 */
     pals = (byte_t*)mem_calloc32(head.pal_num, 1024);
-    if (pals == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "load_flc_aia()", "mem_calloc32() failure");
+    if (pals == NULL)
         goto _failure1;
-    }
     size = (leng_t)head.pal_num;
     size *= 1024;
-    read = CR_VCALL(datin)->read(datin, pals, size);
-    if (read != size) {
-        err_set(__CR_FLC_AIA_C__, read,
-                "load_flc_aia()", "iDATIN::read() failure");
+    if (CR_VCALL(datin)->read(datin, pals, size) != size)
         goto _failure2;
-    }
-    for (read = 0; read < size; read += 4)
-        pals[read + 3] = 0xFF;
+    for (back = 0; back < size; back += 4)
+        pals[back + 3] = 0xFF;
 
     /* 读取所有图形数据 */
     dats = (byte_t*)mem_malloc32(head.img_size);
-    if (dats == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "load_flc_aia()", "mem_malloc32() failure");
+    if (dats == NULL)
         goto _failure2;
-    }
     size = (leng_t)head.img_size;
-    read = CR_VCALL(datin)->read(datin, dats, size);
-    if (read != size) {
-        err_set(__CR_FLC_AIA_C__, read,
-                "load_flc_aia()", "iDATIN::read() failure");
+    if (CR_VCALL(datin)->read(datin, dats, size) != size)
         goto _failure3;
-    }
 
     /* 生成多帧图片接口对象 */
     port = struct_new(iPIC_AIA);
-    if (port == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "load_flc_aia()", "struct_new() failure");
+    if (port == NULL)
         goto _failure3;
-    }
     port->m_ww = ww;
     port->m_hh = hh;
     port->m_attr = attr;
@@ -516,8 +435,6 @@ load_flc_aia (
     /* 返回读取的文件数据 */
     rett = struct_new(sFMT_PRT);
     if (rett == NULL) {
-        err_set(__CR_FLC_AIA_C__, CR_NULL,
-                "load_flc_aia()", "struct_new() failure");
         iPIC_AIA_release((iPICTURE*)port);
         return (NULL);
     }
@@ -536,8 +453,6 @@ _failure1:
     mem_free(attr);
     return (NULL);
 }
-
-#endif  /* !__CR_FLC_AIA_C__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */
