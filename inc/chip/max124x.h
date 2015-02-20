@@ -22,42 +22,23 @@
 
 #include "defs.h"
 
-/*****************************************************************************/
-/*                             MAX1246/MAX1247                               */
-/*****************************************************************************/
-
 /* 模拟通道编号 */
-#define MAX1246_CH0_COM     1   /* 单端 */
-#define MAX1246_CH1_COM     5   /* 单端 */
-#define MAX1246_CH2_COM     2   /* 单端 */
-#define MAX1246_CH3_COM     6   /* 单端 */
+#define MAX124X_CH0_COM     1   /* 单端 */
+#define MAX124X_CH1_COM     5   /* 单端 */
+#define MAX124X_CH2_COM     2   /* 单端 */
+#define MAX124X_CH3_COM     6   /* 单端 */
 /* ------------------------------------ */
-#define MAX1247_CH0_COM     1   /* 单端 */
-#define MAX1247_CH1_COM     5   /* 单端 */
-#define MAX1247_CH2_COM     2   /* 单端 */
-#define MAX1247_CH3_COM     6   /* 单端 */
-/* ------------------------------------ */
-#define MAX1246_CH0_CH1     1   /* 差分 */
-#define MAX1246_CH2_CH3     2   /* 差分 */
-#define MAX1246_CH1_CH0     5   /* 差分 */
-#define MAX1246_CH3_CH2     6   /* 差分 */
-/* ------------------------------------ */
-#define MAX1247_CH0_CH1     1   /* 差分 */
-#define MAX1247_CH2_CH3     2   /* 差分 */
-#define MAX1247_CH1_CH0     5   /* 差分 */
-#define MAX1247_CH3_CH2     6   /* 差分 */
+#define MAX124X_CH0_CH1     1   /* 差分 */
+#define MAX124X_CH2_CH3     2   /* 差分 */
+#define MAX124X_CH1_CH0     5   /* 差分 */
+#define MAX124X_CH3_CH2     6   /* 差分 */
 /* ------------------------------------ */
 
 /* 时钟掉电模式 */
-#define MAX1246_FULL_PWRD   0   /* Full power-down */
-#define MAX1246_FAST_PWRD   1   /* Fast power-down */
-#define MAX1246_INT_CLOCK   2   /* Internal clock mode */
-#define MAX1246_EXT_CLOCK   3   /* External clock mode */
-/* --------------------------------------------------- */
-#define MAX1247_FULL_PWRD   0   /* Full power-down */
-#define MAX1247_FAST_PWRD   1   /* Fast power-down */
-#define MAX1247_INT_CLOCK   2   /* Internal clock mode */
-#define MAX1247_EXT_CLOCK   3   /* External clock mode */
+#define MAX124X_FULL_PWRD   0   /* Full power-down */
+#define MAX124X_FAST_PWRD   1   /* Fast power-down */
+#define MAX124X_INT_CLOCK   2   /* Internal clock mode */
+#define MAX124X_EXT_CLOCK   3   /* External clock mode */
 /* --------------------------------------------------- */
 
 /*
@@ -71,9 +52,7 @@
  *      start       (1)         起始位必为1
  *=============================================================================
  */
-#define MAX1246_CNTRL(pd, sgl, uni, sel) \
-            ((pd) | ((sgl) << 2) | ((uni) << 3) | ((sel) << 4) | 0x80)
-#define MAX1247_CNTRL(pd, sgl, uni, sel) \
+#define MAX124X_CNTRL(pd, sgl, uni, sel) \
             ((pd) | ((sgl) << 2) | ((uni) << 3) | ((sel) << 4) | 0x80)
 
 #endif  /* !__CR_MAX124X_H__ */
