@@ -245,8 +245,8 @@ typedef struct
 {
         uint_t  flags;
         ansi_t  *name;
-        fp32_t  d, ns, ni;
-        vec3d_t ka, kd, ks, tf;
+        fp32_t  d, ns, ni, tr;
+        vec3d_t ka, kd, ks, ke, tf;
         uint_t  illum, halo, sharpness;
         ansi_t  *map_ka, *map_kd, *map_ks;
         ansi_t  *map_d, *map_ns, *bump;

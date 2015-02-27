@@ -239,8 +239,8 @@ wfront_obj_load (
 {
     sINIu*  ini;
     fp32_t  ttt;
-    leng_t  idx;
     uint_t  cnt, ii;
+    leng_t  idx, kk;
     sARRAY  a_v, a_vt, *aa;
     sARRAY  a_vn, a_f, a_g;
     /* ----------------- */
@@ -267,7 +267,7 @@ wfront_obj_load (
     struct_zero(&gtmp, sWAVEFRONT_G);
 
     /* 逐行解析 */
-    for (idx = 0; idx < ini->count; idx++)
+    for (kk = 0, idx = 0; idx < ini->count; idx++)
     {
         /* 跳过没用的行 */
         line = skip_spaceA(ini->lines[idx]);
@@ -390,9 +390,18 @@ wfront_obj_load (
             if (!is_spaceA(line[6]))
                 goto _failure;
 
-            /* 必须有前后顺序且不重复 */
-            if (gtmp.name == NULL || gtmp.mtl != NULL)
+            /* 根据材质拆分几何体 */
+            if (gtmp.name == NULL)
                 goto _failure;
+            if (gtmp.mtl != NULL) {
+                gtmp.end = array_get_sizeT(&a_f, sWAVEFRONT_F);
+                if (array_push_growT(&a_g, sWAVEFRONT_G, &gtmp) == NULL)
+                    goto _failure;
+                gtmp.name = str_fmtA("split_mesh_%05u", kk++);
+                if (gtmp.name == NULL)
+                    goto _failure;
+                gtmp.beg = gtmp.end;
+            }
             gtmp.mtl = wfront_parse_name(skip_spaceA(line + 7));
             if (gtmp.mtl == NULL)
                 goto _failure;
@@ -611,6 +620,10 @@ wfront_mtl_load (
                 vtmp = &mtmp.ks;
                 mtmp.flags |= WAVEFRONT_KS;
             }
+            else
+            if (line[1] == CR_AC('e')) {
+                vtmp = &mtmp.ke;
+            }
             else {
                 goto _failure;
             }
@@ -618,16 +631,27 @@ wfront_mtl_load (
                 goto _failure;
             continue;
         }
-        if (line[0] == CR_AC('T') && line[1] == CR_AC('f'))
+        if (line[0] == CR_AC('T'))
         {
             /* 非法的行 */
             if (!is_spaceA(line[2]))
                 goto _failure;
 
             /* 解析颜色矢量 */
-            if (!wfront_parse_v3d(&mtmp.tf, line + 3, FALSE))
-                goto _failure;
-            continue;
+            if (line[1] == CR_AC('f')) {
+                if (!wfront_parse_v3d(&mtmp.tf, line + 3, FALSE))
+                    goto _failure;
+                continue;
+            }
+
+            /* 解析浮点数 */
+            if (line[1] == CR_AC('r')) {
+                line = skip_spaceA(line + 3);
+                mtmp.tr = str2fp32A(line, &skip);
+                if (skip != 0)
+                    continue;
+            }
+            goto _failure;
         }
 
         /* 浮点标量参数 */
