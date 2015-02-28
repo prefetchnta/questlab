@@ -21,6 +21,7 @@
 #define __CR_GFX3_H__
 
 #include "gfx2.h"
+#include "fileio.h"
 
 /*****************************************************************************/
 /*                                 数据结构                                  */
@@ -309,6 +310,7 @@ typedef struct
 
 } sWAVEFRONT;
 
+/* 基本的格式 */
 CR_API bool_t   wfront_obj_load (sWAVEFRONT *obj, const ansi_t *str,
                                  bool_t swap_yz, bool_t neg_z);
 CR_API bool_t   wfront_mtl_load (sWAVEFRONT *obj, const ansi_t *str);
@@ -320,6 +322,8 @@ CR_API leng_t   wfront_gen_mesh2 (vec3d_t *xyz, vec3d_t *nrm, vec2d_t *uvw,
 CR_API leng_t   wfront_gen_mesh3 (vec3d_t *xyz, vec3d_t *nrm, vec3d_t *uvw,
                         leng_t bpv1, leng_t bpv2, leng_t bpv3, void_t *ibuf,
                             leng_t *inum, const sWAVEFRONT *obj, leng_t idx);
+/* 二进制格式 */
+CR_API bool_t   wfront_bobj_load (sWAVEFRONT *obj, iDATIN *datin);
 
 /*****************************************************************************/
 /*                              KlayGE MeshML                                */
@@ -355,9 +359,8 @@ typedef struct
 {
         ansi_t  *name;
         int32u  *ibuf;
-        leng_t  start;
-        leng_t  mtl_id;
         leng_t  vnum, inum;
+        leng_t  start, mtl_id;
         vec2d_t tc_bb_min, tc_bb_max;
         vec3d_t pos_bb_min, pos_bb_max;
 
@@ -400,45 +403,6 @@ typedef struct
 
 CR_API bool_t   meshml_load (sMESHML *msh, const ansi_t *str);
 CR_API void_t   meshml_free (const sMESHML *msh);
-
-/*****************************************************************************/
-/*                             FMTZ Engine OBJ                               */
-/*****************************************************************************/
-
-/* 模型材质 */
-typedef struct
-{
-        ansi_t* tex[8];
-        vec3d_t color[8];
-
-} FMTZ_MTRL;
-
-/* 模型部件 */
-typedef struct
-{
-        leng_t  mtl_id;
-        void_t  *vb, *ib;
-        uint_t  bpv, fvf;
-        uint_t  vnum, inum;
-
-} FMTZ_UNIT;
-
-/* 模型结构 */
-typedef struct
-{
-        /* 材质数据 */
-        leng_t      n_m;
-        FMTZ_MTRL*  p_m;
-
-        /* 网格数据 */
-        leng_t      n_g;
-        FMTZ_UNIT*  p_g;
-
-        /* 释放单元 */
-        void_t  (*mfree) (FMTZ_MTRL *m);
-        void_t  (*gfree) (FMTZ_UNIT *g);
-
-} FMTZ_MESH;
 
 #endif  /* !__CR_GFX3_H__ */
 

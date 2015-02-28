@@ -20,11 +20,63 @@
 #ifndef __CR_FMTZ_H__
 #define __CR_FMTZ_H__
 
-#include "gfx2.h"
+#include "gfx3.h"
 #include "datlib.h"
 #include "devlib.h"
-#include "fileio.h"
 #include "plugin.h"
+
+/*****************************************************************************/
+/*                               外部文件加载                                */
+/*****************************************************************************/
+
+/* 外部文件返回结构 */
+typedef struct
+{
+        bool_t  is_free;    /* 是否释放内存 */
+        sLOADER ex_file;    /* 外部文件结果 */
+
+} sEX_FILE;
+
+/* 释放外部文件 */
+CR_API void_t   filex_free (const sEX_FILE *filex);
+
+/* 两个用得到的函数类型 */
+typedef bool_t  (*router_load_t) (sEX_FILE*, const ansi_t*,
+                                  const ansi_t*, uint_t);
+typedef bool_t  (*resource_load_t) (sEX_FILE*, const ansi_t*,
+                            const ansi_t*, const ansi_t*, uint_t);
+/* 外部文件加载接口表 */
+typedef struct
+{
+        /* 启动加载器 (可选) */
+        void_t  (*init) (socket_t netw, const ansi_t *root);
+
+        /* 释放加载器 (可选) */
+        void_t  (*kill) (void_t);
+
+        /* 加载外部文件 (必须) */
+        bool_t  (*load) (sEX_FILE *filex, const ansi_t *type,
+                         const ansi_t *mount, const ansi_t *name,
+                         uint_t cpage);
+} sRES_LOADER;
+
+/* 资源路由加载接口表 */
+typedef struct
+{
+        /* 设置外部文件加载接口 */
+        void_t  (*setup) (resource_load_t loader);
+
+        /* 通过路由加载外部文件 */
+        bool_t  (*load) (sEX_FILE *filex, const ansi_t *type,
+                         const ansi_t *name, uint_t cpage);
+} sRES_ROUTER;
+
+/* 获取外部文件路由接口表的函数类型 */
+typedef const sRES_ROUTER*  (*router_get_t) (void_t);
+
+/* 两个获取接口表的函数 */
+CR_API const sRES_LOADER*   res_loader_get (void_t);
+CR_API const sRES_ROUTER*   res_router_get (void_t);
 
 /*****************************************************************************/
 /*                                文件总格式                                 */
@@ -37,6 +89,7 @@
 #define CR_FMTZ_RCT     3   /* 区域文件 */
 #define CR_FMTZ_TXT     4   /* 文本文件 */
 #define CR_FMTZ_PRT     5   /* 对象文件 */
+#define CR_FMTZ_MDL     6   /* 模型文件 */
 
 /* 文件格式总结构 */
 typedef struct
@@ -59,6 +112,7 @@ typedef bool_t  (*save_img_fmtz_t) (const sIMAGE *img, const ansi_t *name,
 #define CR_FMTZ_MASK_TXT    0x00000008UL    /* 文本文件 */
 #define CR_FMTZ_MASK_PAK    0x00000010UL    /* 封包文件 */
 #define CR_FMTZ_MASK_XMM    0x00000020UL    /* 媒体文件 */
+#define CR_FMTZ_MASK_MDL    0x00000040UL    /* 模型文件 */
 #define CR_FMTZ_MASK_ALL    0xFFFFFFFFUL    /* 所有文件 */
 
 /*****************************************************************************/
@@ -180,6 +234,45 @@ typedef struct
         const ansi_t*   infor;  /* 格式说明 */
 
 } sFMT_PRT;
+
+/*****************************************************************************/
+/*                               模型文件格式                                */
+/*****************************************************************************/
+
+/* 模型材质 */
+typedef struct
+{
+        vec3d_t     clr[8];
+        sEX_FILE    tex[8];
+
+} FMTZ_MTRL;
+
+/* 模型部件 */
+typedef struct
+{
+        leng_t  mtl_id;
+        void_t  *vb, *ib;
+        uint_t  bpv, fvf;
+        uint_t  vnum, inum;
+
+} FMTZ_UNIT;
+
+/* 模型结构 */
+typedef struct
+{
+        /* 材质数据 */
+        leng_t      n_m;
+        FMTZ_MTRL*  p_m;
+
+        /* 网格数据 */
+        leng_t      n_g;
+        FMTZ_UNIT*  p_g;
+
+        /* 释放单元 */
+        void_t  (*mfree) (FMTZ_MTRL *m);
+        void_t  (*gfree) (FMTZ_UNIT *g);
+
+} FMTZ_MESH;
 
 /*****************************************************************************/
 /*                              FMTZ 插件结构                                */
@@ -528,59 +621,6 @@ pict_get_count (
 CR_API iPACKAGE*    fmtz_get_pack (const sFMTZ *fmtz);
 CR_API iXMMEDIA*    fmtz_get_xmms (const sFMTZ *fmtz);
 CR_API iPICTURE*    fmtz_get_pict (const sFMTZ *fmtz);
-
-/*****************************************************************************/
-/*                               外部文件加载                                */
-/*****************************************************************************/
-
-/* 外部文件返回结构 */
-typedef struct
-{
-        bool_t  is_free;    /* 是否释放内存 */
-        sLOADER ex_file;    /* 外部文件结果 */
-
-} sEX_FILE;
-
-/* 释放外部文件 */
-CR_API void_t   filex_free (const sEX_FILE *filex);
-
-/* 两个用得到的函数类型 */
-typedef bool_t  (*router_load_t) (sEX_FILE*, const ansi_t*,
-                                  const ansi_t*, uint_t);
-typedef bool_t  (*resource_load_t) (sEX_FILE*, const ansi_t*,
-                            const ansi_t*, const ansi_t*, uint_t);
-/* 外部文件加载接口表 */
-typedef struct
-{
-        /* 启动加载器 (可选) */
-        void_t  (*init) (socket_t netw, const ansi_t *root);
-
-        /* 释放加载器 (可选) */
-        void_t  (*kill) (void_t);
-
-        /* 加载外部文件 (必须) */
-        bool_t  (*load) (sEX_FILE *filex, const ansi_t *type,
-                         const ansi_t *mount, const ansi_t *name,
-                         uint_t cpage);
-} sRES_LOADER;
-
-/* 资源路由加载接口表 */
-typedef struct
-{
-        /* 设置外部文件加载接口 */
-        void_t  (*setup) (resource_load_t loader);
-
-        /* 通过路由加载外部文件 */
-        bool_t  (*load) (sEX_FILE *filex, const ansi_t *type,
-                         const ansi_t *name, uint_t cpage);
-} sRES_ROUTER;
-
-/* 获取外部文件路由接口表的函数类型 */
-typedef const sRES_ROUTER*  (*router_get_t) (void_t);
-
-/* 两个获取接口表的函数 */
-CR_API const sRES_LOADER*   res_loader_get (void_t);
-CR_API const sRES_ROUTER*   res_router_get (void_t);
 
 #endif  /* !__CR_FMTZ_H__ */
 

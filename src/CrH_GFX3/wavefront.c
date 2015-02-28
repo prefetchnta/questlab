@@ -1153,6 +1153,371 @@ wfront_gen_mesh3 (
     return (obj->p_g[idx].num);
 }
 
+/*
+---------------------------------------
+    加载二进制格式 OBJ 模型
+---------------------------------------
+*/
+static bool_t
+wfront_bobj_load_g (
+  __CR_OT__ sWAVEFRONT* obj,
+  __CR_IO__ iDATIN*     datin
+    )
+{
+    byte_t  by;
+    int32u  dw;
+    leng_t  idx;
+    leng_t  size;
+
+    for (idx = 0; idx < obj->n_g; idx++)
+    {
+        /* 模型名称 */
+        if (!CR_VCALL(datin)->getb_no(datin, &by))
+            goto _failure1;
+        if (by <= 1)
+            goto _failure1;
+        size = (leng_t)by;
+        obj->p_g[idx].name = str_allocA(size);
+        if (obj->p_g[idx].name == NULL)
+            goto _failure1;
+        if (CR_VCALL(datin)->read(datin, obj->p_g[idx].name, size) != size)
+            goto _failure2;
+        if (obj->p_g[idx].name[size - 1] != 0x00)
+            goto _failure2;
+
+        /* 材质名称 */
+        if (!CR_VCALL(datin)->getb_no(datin, &by))
+            goto _failure2;
+        if (by <= 1) {
+            obj->p_g[idx].mtl = NULL;
+        }
+        else {
+            size = (leng_t)by;
+            obj->p_g[idx].mtl = str_allocA(size);
+            if (obj->p_g[idx].mtl == NULL)
+                goto _failure2;
+            if (CR_VCALL(datin)->read(datin, obj->p_g[idx].mtl, size) != size)
+                goto _failure3;
+            if (obj->p_g[idx].mtl[size - 1] != 0x00)
+                goto _failure3;
+        }
+
+        /* 模型顶点相关的参数 */
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure3;
+        if (dw >= obj->n_f)
+            goto _failure3;
+        obj->p_g[idx].beg = (leng_t)dw;
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure3;
+        if (dw >= obj->n_f || dw <= obj->p_g[idx].beg)
+            goto _failure3;
+        obj->p_g[idx].end = (leng_t)dw;
+        obj->p_g[idx].num = 0;
+
+        /* 材质索引号 */
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure3;
+        if (dw > obj->n_m)
+            goto _failure3;
+        obj->p_g[idx].attr = (leng_t)dw;
+    }
+    return (TRUE);
+
+_failure3:
+    TRY_FREE(obj->p_g[idx].mtl);
+_failure2:
+    mem_free(obj->p_g[idx].name);
+_failure1:
+    for (size = 0; size < idx; size++)
+        wfront_g_free(&obj->p_g[size]);
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    加载二进制格式 MTL 材质
+---------------------------------------
+*/
+static bool_t
+wfront_bobj_load_m (
+  __CR_OT__ sWAVEFRONT* obj,
+  __CR_IO__ iDATIN*     datin
+    )
+{
+    byte_t  by;
+    ansi_t  **lst;
+    int32u  dw, *ptr;
+    leng_t  idx, size, kk;
+
+    for (idx = 0; idx < obj->n_m; idx++)
+    {
+        /* 材质标志 */
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure1;
+        obj->p_m[idx].flags = (uint_t)dw;
+
+        /* 材质名称 */
+        if (!CR_VCALL(datin)->getb_no(datin, &by))
+            goto _failure1;
+        if (by <= 1)
+            goto _failure1;
+        size = (leng_t)by;
+        obj->p_m[idx].name = str_allocA(size);
+        if (obj->p_m[idx].name == NULL)
+            goto _failure1;
+        if (CR_VCALL(datin)->read(datin, obj->p_m[idx].name, size) != size)
+            goto _failure2;
+        if (obj->p_m[idx].name[size - 1] != 0x00)
+            goto _failure2;
+
+        /* 一堆浮点数 */
+        ptr = (int32u*)(&obj->p_m[idx].d);
+        for (kk = 0; kk < 4 + 5 * 3; kk++, ptr++) {
+            if (!CR_VCALL(datin)->getd_le(datin, ptr))
+                goto _failure2;
+        }
+
+        /* 一堆整数 */
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure2;
+        if (dw > 10)
+            goto _failure2;
+        obj->p_m[idx].illum = (uint_t)dw;
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure2;
+        if (dw > 1)
+            goto _failure2;
+        obj->p_m[idx].halo = (uint_t)dw;
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure2;
+        if (dw > 1000)
+            goto _failure2;
+        obj->p_m[idx].sharpness = (uint_t)dw;
+
+        /* 一堆字符串 */
+        lst = &obj->p_m[idx].map_ka;
+        for (kk = 0; kk < 6; kk++, lst++) {
+            if (!CR_VCALL(datin)->getb_no(datin, &by))
+                goto _failure3;
+            if (by <= 1) {
+                lst[kk] = NULL;
+            }
+            else {
+                size = (leng_t)by;
+                lst[kk] = str_allocA(size);
+                if (lst[kk] == NULL)
+                    goto _failure3;
+                if (CR_VCALL(datin)->read(datin, lst[kk], size) != size) {
+                    mem_free(lst[kk]);
+                    goto _failure3;
+                }
+                if ((lst[kk])[size - 1] != 0x00) {
+                    mem_free(lst[kk]);
+                    goto _failure3;
+                }
+            }
+        }
+    }
+    return (TRUE);
+
+_failure3:
+    for (size = 0; size < kk; size++)
+        TRY_FREE(lst[size]);
+_failure2:
+    mem_free(obj->p_m[idx].name);
+_failure1:
+    for (size = 0; size < idx; size++)
+        wfront_m_free(&obj->p_m[size]);
+    return (FALSE);
+}
+
+/*
+=======================================
+    加载二进制格式 OBJ 模型
+=======================================
+*/
+CR_API bool_t
+wfront_bobj_load (
+  __CR_OT__ sWAVEFRONT* obj,
+  __CR_IO__ iDATIN*     datin
+    )
+{
+    byte_t  by;
+    leng_t  size;
+    int32u  dw, *ptr;
+
+    /* 文件标志 */
+    if (!CR_VCALL(datin)->getd_no(datin, &dw))
+        return (FALSE);
+    if (dw != mk_tag4("BOBJ"))
+        return (FALSE);
+
+    /* 材质文件 */
+    if (!CR_VCALL(datin)->getb_no(datin, &by))
+        return (FALSE);
+    if (by <= 1) {
+        obj->mtl = NULL;
+    }
+    else {
+        size = (leng_t)by;
+        obj->mtl = str_allocA(size);
+        if (obj->mtl == NULL)
+            return (FALSE);
+        if (CR_VCALL(datin)->read(datin, obj->mtl, size) != size)
+            goto _failure1;
+        if (obj->mtl[size - 1] != 0x00)
+            goto _failure1;
+    }
+
+    /* 空间坐标 */
+    if (!CR_VCALL(datin)->getd_le(datin, &dw))
+        goto _failure1;
+    obj->p_v = mem_talloc32(dw, vec3d_t);
+    if (obj->p_v == NULL)
+        goto _failure1;
+    obj->n_v = (leng_t)dw;
+    size = obj->n_v * sizeof(vec3d_t);
+    if (CR_VCALL(datin)->read(datin, obj->p_v, size) != size)
+        goto _failure2;
+#if defined(_CR_ORDER_BE_)
+    ptr = (int32u*)obj->p_v;
+    for (size = 0; size < obj->n_v; size++) {
+        ptr[0] = xchg_int32u(ptr[0]);
+        ptr[1] = xchg_int32u(ptr[1]);
+        ptr[2] = xchg_int32u(ptr[2]);
+        ptr += 3;
+    }
+#endif
+
+    /* 贴图坐标 */
+    if (!CR_VCALL(datin)->getd_le(datin, &dw))
+        goto _failure2;
+    if (dw == 0) {
+        obj->n_vt = 0;
+        obj->p_vt = NULL;
+    }
+    else {
+        obj->p_vt = mem_talloc32(dw, vec3d_t);
+        if (obj->p_vt == NULL)
+            goto _failure2;
+        obj->n_vt = (leng_t)dw;
+        size = obj->n_vt * sizeof(vec3d_t);
+        if (CR_VCALL(datin)->read(datin, obj->p_vt, size) != size)
+            goto _failure3;
+#if defined(_CR_ORDER_BE_)
+        ptr = (int32u*)obj->p_vt;
+        for (size = 0; size < obj->n_vt; size++) {
+            ptr[0] = xchg_int32u(ptr[0]);
+            ptr[1] = xchg_int32u(ptr[1]);
+            ptr[2] = xchg_int32u(ptr[2]);
+            ptr += 3;
+        }
+#endif
+    }
+
+    /* 法线向量 */
+    if (!CR_VCALL(datin)->getd_le(datin, &dw))
+        goto _failure3;
+    if (dw == 0) {
+        obj->n_vn = 0;
+        obj->p_vn = NULL;
+    }
+    else {
+        obj->p_vn = mem_talloc32(dw, vec3d_t);
+        if (obj->p_vn == NULL)
+            goto _failure3;
+        obj->n_vn = (leng_t)dw;
+        size = obj->n_vn * sizeof(vec3d_t);
+        if (CR_VCALL(datin)->read(datin, obj->p_vn, size) != size)
+            goto _failure4;
+#if defined(_CR_ORDER_BE_)
+        ptr = (int32u*)obj->p_vn;
+        for (size = 0; size < obj->n_vn; size++) {
+            ptr[0] = xchg_int32u(ptr[0]);
+            ptr[1] = xchg_int32u(ptr[1]);
+            ptr[2] = xchg_int32u(ptr[2]);
+            ptr += 3;
+        }
+#endif
+    }
+
+    /* 顶点索引 */
+    if (!CR_VCALL(datin)->getd_le(datin, &dw))
+        goto _failure4;
+    obj->p_f = mem_talloc32(dw, sWAVEFRONT_F);
+    if (obj->p_f == NULL)
+        goto _failure4;
+    obj->n_f = (leng_t)dw;
+    size = obj->n_f * sizeof(sWAVEFRONT_F);
+    if (CR_VCALL(datin)->read(datin, obj->p_f, size) != size)
+        goto _failure5;
+    ptr = (int32u*)obj->p_f;
+    for (size = 0; size < obj->n_f; size++) {
+        ptr[0] = DWORD_LE(ptr[0]);
+        if (ptr[0] == 0 || ptr[0] > obj->n_v)
+            goto _failure5;
+        ptr[1] = DWORD_LE(ptr[1]);
+        if (ptr[1] > obj->n_vt)
+            goto _failure5;
+        ptr[2] = DWORD_LE(ptr[2]);
+        if (ptr[2] > obj->n_vn)
+            goto _failure5;
+        ptr[3] = 1;
+        ptr += 4;
+    }
+
+    /* 材质列表 */
+    if (!CR_VCALL(datin)->getd_le(datin, &dw))
+        goto _failure5;
+    if (dw == 0) {
+        obj->n_m = 0;
+        obj->p_m = NULL;
+    }
+    else {
+        obj->p_m = mem_talloc32(dw, sWAVEFRONT_M);
+        if (obj->p_m == NULL)
+            goto _failure5;
+        obj->n_m = (leng_t)dw;
+        if (!wfront_bobj_load_m(obj, datin)) {
+            mem_free(obj->p_m);
+            goto _failure5;
+        }
+    }
+
+    /* 模型列表 */
+    if (!CR_VCALL(datin)->getd_le(datin, &dw))
+        goto _failure6;
+    obj->p_g = mem_talloc32(dw, sWAVEFRONT_G);
+    if (obj->p_g == NULL)
+        goto _failure6;
+    obj->n_g = (leng_t)dw;
+    if (!wfront_bobj_load_g(obj, datin))
+        goto _failure7;
+    wfront_count_vertex(obj);
+    return (TRUE);
+
+_failure7:
+    mem_free(obj->p_g);
+_failure6:
+    if (obj->p_m != NULL) {
+        for (size = 0; size < obj->n_m; size++)
+            wfront_m_free(&obj->p_m[size]);
+        mem_free(obj->p_m);
+    }
+_failure5:
+    mem_free(obj->p_f);
+_failure4:
+    TRY_FREE(obj->p_vn);
+_failure3:
+    TRY_FREE(obj->p_vt);
+_failure2:
+    mem_free(obj->p_v);
+_failure1:
+    TRY_FREE(obj->mtl);
+    return (FALSE);
+}
+
 /*****************************************************************************/
 /* _________________________________________________________________________ */
 /* uBMAzRBoAKAHaACQD6FoAIAPqbgA/7rIA+5CM9uKw8D4Au7u7mSIJ0t18mYz0mYz9rAQZCgHc */
