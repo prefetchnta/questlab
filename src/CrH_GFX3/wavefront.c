@@ -637,21 +637,22 @@ wfront_mtl_load (
             if (!is_spaceA(line[2]))
                 goto _failure;
 
-            /* 解析颜色矢量 */
+            /* 解析两种参数 */
             if (line[1] == CR_AC('f')) {
                 if (!wfront_parse_v3d(&mtmp.tf, line + 3, FALSE))
                     goto _failure;
-                continue;
             }
-
-            /* 解析浮点数 */
+            else
             if (line[1] == CR_AC('r')) {
                 line = skip_spaceA(line + 3);
                 mtmp.tr = str2fp32A(line, &skip);
-                if (skip != 0)
-                    continue;
+                if (skip == 0)
+                    goto _failure;
             }
-            goto _failure;
+            else {
+                goto _failure;
+            }
+            continue;
         }
 
         /* 浮点标量参数 */

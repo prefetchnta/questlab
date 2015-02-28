@@ -81,9 +81,9 @@ public:
         m_mtl.Specular.g = mtl->ks.y;
         m_mtl.Specular.b = mtl->ks.z;
         m_mtl.Specular.a = 0.0f;
-        m_mtl.Emissive.r = 0.0f;
-        m_mtl.Emissive.g = 0.0f;
-        m_mtl.Emissive.b = 0.0f;
+        m_mtl.Emissive.r = mtl->ke.x;
+        m_mtl.Emissive.g = mtl->ke.y;
+        m_mtl.Emissive.b = mtl->ke.z;
         m_mtl.Emissive.a = 0.0f;
         m_mtl.Power = mtl->ns;
         if (m_mtl.Diffuse.a < 1.0f)
