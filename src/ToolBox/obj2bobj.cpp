@@ -151,51 +151,49 @@ int main (int argc, char *argv[])
     /* 材质列表 */
     if (fwrite(&mesh.n_m, 1, 4, fp) != 4)
         goto _failure;
-    if (mesh.n_m != 0) {
-        for (leng_t idx = 0; idx < mesh.n_m; idx++)
-        {
-            /* 材质标志 */
-            if (fwrite(&mesh.p_m[idx].flags, 1, 4, fp) != 4)
-                goto _failure;
+    for (leng_t idx = 0; idx < mesh.n_m; idx++)
+    {
+        /* 材质标志 */
+        if (fwrite(&mesh.p_m[idx].flags, 1, 4, fp) != 4)
+            goto _failure;
 
-            /* 材质名称 */
-            dw = strlen(mesh.p_m[idx].name) + 1;
-            if (dw <= 1 || dw > 255)
-                goto _failure;
+        /* 材质名称 */
+        dw = strlen(mesh.p_m[idx].name) + 1;
+        if (dw <= 1 || dw > 255)
+            goto _failure;
+        if (fwrite(&dw, 1, 1, fp) != 1)
+            goto _failure;
+        if (fwrite(mesh.p_m[idx].name, 1, dw, fp) != dw)
+            goto _failure;
+
+        /* 一堆浮点数 */
+        dw = (4 + 5 * 3) * 4;
+        if (fwrite(&mesh.p_m[idx].d, 1, dw, fp) != dw)
+            goto _failure;
+
+        /* 一堆整数 */
+        dw = 3 * 4;
+        if (fwrite(&mesh.p_m[idx].illum, 1, dw, fp) != dw)
+            goto _failure;
+
+        ansi_t **lst;
+
+        /* 一堆字符串 */
+        lst = &mesh.p_m[idx].map_ka;
+        for (leng_t kk = 0; kk < 6; kk++) {
+            if (lst[kk] != NULL) {
+                dw = strlen(lst[kk]) + 1;
+                if (dw <= 1 || dw > 255)
+                    dw = 0;
+            }
+            else {
+                dw = 0;
+            }
             if (fwrite(&dw, 1, 1, fp) != 1)
                 goto _failure;
-            if (fwrite(mesh.p_m[idx].name, 1, dw, fp) != dw)
-                goto _failure;
-
-            /* 一堆浮点数 */
-            dw = (4 + 5 * 3) * 4;
-            if (fwrite(&mesh.p_m[idx].d, 1, dw, fp) != dw)
-                goto _failure;
-
-            /* 一堆整数 */
-            dw = 3 * 4;
-            if (fwrite(&mesh.p_m[idx].illum, 1, dw, fp) != dw)
-                goto _failure;
-
-            ansi_t **lst;
-
-            /* 一堆字符串 */
-            lst = &mesh.p_m[idx].map_ka;
-            for (leng_t kk = 0; kk < 6; kk++) {
-                if (lst[kk] != NULL) {
-                    dw = strlen(lst[kk]) + 1;
-                    if (dw <= 1 || dw > 255)
-                        dw = 0;
-                }
-                else {
-                    dw = 0;
-                }
-                if (fwrite(&dw, 1, 1, fp) != 1)
+            if (dw != 0) {
+                if (fwrite(lst[kk], 1, dw, fp) != dw)
                     goto _failure;
-                if (dw != 0) {
-                    if (fwrite(lst[kk], 1, dw, fp) != dw)
-                        goto _failure;
-                }
             }
         }
     }
