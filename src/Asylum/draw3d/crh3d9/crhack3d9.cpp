@@ -34,6 +34,7 @@ struct crhack3d9_node
 /*************************/
 struct crhack3d9_main
 {
+    sbin_t                          sbin;
     asy::crh3d9_main                main;
     asy::map_acs<asy::crh3d9_texr>  texs;
     asy::map_acs<asy::object_base>  base;
@@ -58,15 +59,12 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy, fp32_t zfar, D3DMULTISAM
     sbin_t      sbin;
     nopfunc_t   func;
 
-    sbin = sbin_testA("GFX3_D3D9.dll");
-    if (sbin == NULL) {
-        sbin = sbin_loadA("GFX3_D3D9.dll");
-        if (sbin == NULL)
-            return (NULL);
-    }
+    sbin = sbin_loadA("GFX3_D3D9.dll");
+    if (sbin == NULL)
+        return (NULL);
     func = sbin_exportT(sbin, "d3d9call_get", nopfunc_t);
     if (func == NULL)
-        return (NULL);
+        goto _failure0;
     hdle.call = (const sD3D9_CALL*)func();
 #endif
     hdle.hwnd = hwnd;
@@ -75,7 +73,7 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy, fp32_t zfar, D3DMULTISAM
 
     rett = struct_new(crhack3d9_main);
     if (rett == NULL)
-        return (NULL);
+        goto _failure0;
     if (!rett->main.init(&hdle, fovy, zfar, FALSE, 0, 0, D3DFMT_UNKNOWN, D3DFMT_D24X8, TRUE, fsaa)) {
         if (!rett->main.init(&hdle, fovy, zfar, FALSE, 0, 0, D3DFMT_UNKNOWN, D3DFMT_D16, TRUE, fsaa))
             goto _failure1;
@@ -88,6 +86,11 @@ CR_API crh3d9_t crhack3d9_init (HWND hwnd, fp32_t fovy, fp32_t zfar, D3DMULTISAM
         goto _failure4;
     if (!rett->node.init())
         goto _failure5;
+#if defined(ASY_USE_STATIC)
+    rett->sbin = NULL;
+#else
+    rett->sbin = sbin;
+#endif
     rett->main.set_camera(&rett->cam);
     rett->main.get_frustum(&rett->frt, FRT_BIAS);
     mem_set(&rett->pipe, 0, sizeof(rett->pipe));
@@ -104,6 +107,10 @@ _failure2:
     rett->main.free();
 _failure1:
     mem_free(rett);
+_failure0:
+#if !defined(ASY_USE_STATIC)
+    sbin_unload(sbin);
+#endif
     return (NULL);
 }
 
@@ -130,6 +137,8 @@ CR_API void crhack3d9_kill (crh3d9_t render)
     real->base.free();
     real->texs.free();
     real->main.free();
+    if (real->sbin != NULL)
+        sbin_unload(real->sbin);
     mem_free(render);
 }
 
