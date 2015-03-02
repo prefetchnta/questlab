@@ -1210,10 +1210,12 @@ wfront_bobj_load_g (
         obj->p_g[idx].beg = (leng_t)dw;
         if (!CR_VCALL(datin)->getd_le(datin, &dw))
             goto _failure3;
-        if (dw >= obj->n_f || dw <= obj->p_g[idx].beg)
+        if (dw > obj->n_f || dw <= obj->p_g[idx].beg)
             goto _failure3;
         obj->p_g[idx].end = (leng_t)dw;
-        obj->p_g[idx].num = 0;
+        if (!CR_VCALL(datin)->getd_le(datin, &dw))
+            goto _failure3;
+        obj->p_g[idx].num = (leng_t)dw;
 
         /* 材质索引号 */
         if (!CR_VCALL(datin)->getd_le(datin, &dw))
@@ -1297,7 +1299,7 @@ wfront_bobj_load_m (
 
         /* 一堆字符串 */
         lst = &obj->p_m[idx].map_ka;
-        for (kk = 0; kk < 6; kk++, lst++) {
+        for (kk = 0; kk < 6; kk++) {
             if (!CR_VCALL(datin)->getb_no(datin, &by))
                 goto _failure3;
             if (by <= 1) {
@@ -1463,7 +1465,7 @@ wfront_bobj_load (
         ptr[2] = DWORD_LE(ptr[2]);
         if (ptr[2] > obj->n_vn)
             goto _failure5;
-        ptr[3] = 1;
+        ptr[3] = DWORD_LE(ptr[3]);
         ptr += 4;
     }
 
@@ -1494,7 +1496,6 @@ wfront_bobj_load (
     obj->n_g = (leng_t)dw;
     if (!wfront_bobj_load_g(obj, datin))
         goto _failure7;
-    wfront_count_vertex(obj);
     return (TRUE);
 
 _failure7:
