@@ -475,58 +475,68 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
     return (true);
 }
 
-/* ========================================================== */
-CR_API bool crhack3d9_wf_obj (crh3d9_t render, const char* name,
-                    const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
-                        bool_t neg_z, fp32_t scale, const char* type)
+/* ============================================================== */
+static bool crhack3d9_wf_obj_int (crh3d9_t render, const char* name,
+                    const sWAVEFRONT* mesh, fp32_t scale, const char* type)
 {
-    sWAVEFRONT          mesh;
     crhack3d9_main*     real;
     asy::crh3d9_texr    texr;
     asy::object_base    base;
 
-    if (!wfront_obj_load(&mesh, obj, swap_yz, neg_z))
-        return (false);
     if (scale > 0.0f) {
-        for (leng_t idx = 0; idx < mesh.n_v; idx++) {
-            mesh.p_v[idx].x *= scale;
-            mesh.p_v[idx].y *= scale;
-            mesh.p_v[idx].z *= scale;
+        for (leng_t idx = 0; idx < mesh->n_v; idx++) {
+            mesh->p_v[idx].x *= scale;
+            mesh->p_v[idx].y *= scale;
+            mesh->p_v[idx].z *= scale;
         }
     }
-    if (!wfront_mtl_load(&mesh, mtl))
-        goto _failure;
-    if (!wfront_obj_combine(&mesh))
-        goto _failure;
 
     create_crh3d9_attr_wf_t fattr;
     create_crh3d9_mesh_wf_t fmesh;
 
     real = (crhack3d9_main*)render;
     if (type == NULL || strcmp(type, "fixed") == 0) {
-        for (leng_t idx = 0; idx < mesh.n_m; idx++) {
-            const char* str = mesh.p_m[idx].map_kd;
+        for (leng_t idx = 0; idx < mesh->n_m; idx++) {
+            const char* str = mesh->p_m[idx].map_kd;
             if (str == NULL || real->texs.get(str) != NULL)
                 continue;
             if (!texr.init(&real->main, str, 1))
-                goto _failure;
+                return (false);
             if (real->texs.insert(str, &texr) == NULL) {
                 texr.free();
-                goto _failure;
+                return (false);
             }
         }
         fattr = create_crh3d9_attr_wf_fixed;
         fmesh = create_crh3d9_mesh_wf_ss;
     }
     else {
-        goto _failure;
+        return (false);
     }
-    if (!create_crh3d9_base_wf(&base, &mesh, fattr, fmesh, &real->texs, &real->main))
-        goto _failure;
+    if (!create_crh3d9_base_wf(&base, mesh, fattr, fmesh, &real->texs, &real->main))
+        return (false);
     if (real->base.insert(name, &base) == NULL) {
         base.free();
-        goto _failure;
+        return (false);
     }
+    return (true);
+}
+
+/* ========================================================== */
+CR_API bool crhack3d9_wf_obj (crh3d9_t render, const char* name,
+                    const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
+                        bool_t neg_z, fp32_t scale, const char* type)
+{
+    sWAVEFRONT  mesh;
+
+    if (!wfront_obj_load(&mesh, obj, swap_yz, neg_z))
+        return (false);
+    if (!wfront_mtl_load(&mesh, mtl))
+        goto _failure;
+    if (!wfront_obj_combine(&mesh))
+        goto _failure;
+    if (!crhack3d9_wf_obj_int(render, name, &mesh, scale, type))
+        goto _failure;
     return (true);
 
 _failure:
