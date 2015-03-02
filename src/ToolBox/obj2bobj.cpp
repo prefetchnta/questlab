@@ -233,6 +233,8 @@ int main (int argc, char *argv[])
             goto _failure;
         if (fwrite(&mesh.p_g[idx].end, 1, 4, fp) != 4)
             goto _failure;
+        if (fwrite(&mesh.p_g[idx].num, 1, 4, fp) != 4)
+            goto _failure;
         if (fwrite(&mesh.p_g[idx].attr, 1, 4, fp) != 4)
             goto _failure;
     }
