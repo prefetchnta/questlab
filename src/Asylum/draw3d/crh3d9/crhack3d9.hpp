@@ -95,6 +95,8 @@ CR_API bool crhack3d9_instance (crh3d9_t render, const char* name,
 CR_API bool crhack3d9_wf_obj (crh3d9_t render, const char* name,
                     const ansi_t* obj, const ansi_t* mtl, bool_t swap_yz,
                         bool_t neg_z, fp32_t scale, const char* type);
+CR_API bool crhack3d9_wf_bobj (crh3d9_t render, const char* name, iDATIN* datin,
+                               fp32_t scale, const char* type);
 CR_API bool crhack3d9_xmesh (crh3d9_t render, const char* name, int32u flags,
                              const void* dest, size_t size, const char* type);
 

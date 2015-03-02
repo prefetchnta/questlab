@@ -544,6 +544,21 @@ _failure:
     return (false);
 }
 
+/* ========================================================================== */
+CR_API bool crhack3d9_wf_bobj (crh3d9_t render, const char* name, iDATIN* datin,
+                               fp32_t scale, const char* type)
+{
+    sWAVEFRONT  mesh;
+
+    if (!wfront_bobj_load(&mesh, datin))
+        return (false);
+    if (!crhack3d9_wf_obj_int(render, name, &mesh, scale, type)) {
+        wfront_obj_free(&mesh);
+        return (false);
+    }
+    return (true);
+}
+
 /* ======================================================================= */
 CR_API bool crhack3d9_xmesh (crh3d9_t render, const char* name, int32u flags,
                              const void* dest, size_t size, const char* type)
