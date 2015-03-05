@@ -99,5 +99,8 @@ CR_API bool crhack3d9_wf_bobj (crh3d9_t render, const char* name, iDATIN* datin,
                                fp32_t scale, const char* type);
 CR_API bool crhack3d9_xmesh (crh3d9_t render, const char* name, int32u flags,
                              const void* dest, size_t size, const char* type);
+CR_API bool crhack3d9_texture (crh3d9_t render, const char* name, const char* file,
+                               uint_t face, cl32_t keycolor);
+CR_API asy::crh3d9_texr* crhack3d9_texr_get (crh3d9_t render, const char* name);
 
 #endif  /* __CRHACK3D9_HPP__ */

@@ -612,3 +612,31 @@ _failure:
     call->release_xmsh(mesh);
     return (false);
 }
+
+/* ============================================================================= */
+CR_API bool crhack3d9_texture (crh3d9_t render, const char* name, const char* file,
+                               uint_t face, cl32_t keycolor)
+{
+    crhack3d9_main*     real;
+    asy::crh3d9_texr    texr;
+
+    real = (crhack3d9_main*)render;
+    if (real->texs.get(name) != NULL)
+        return (true);
+    if (!texr.init(&real->main, file, face, keycolor))
+        return (false);
+    if (real->texs.insert(name, &texr) == NULL) {
+        texr.free();
+        return (false);
+    }
+    return (true);
+}
+
+/* ========================================================================= */
+CR_API asy::crh3d9_texr* crhack3d9_texr_get (crh3d9_t render, const char* name)
+{
+    crhack3d9_main* real;
+
+    real = (crhack3d9_main*)render;
+    return (real->texs.get(name));
+}
