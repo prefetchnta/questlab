@@ -614,8 +614,8 @@ _failure:
 }
 
 /* ============================================================================= */
-CR_API bool crhack3d9_texture (crh3d9_t render, const char* name, const char* file,
-                               uint_t face, cl32_t keycolor)
+CR_API bool crhack3d9_texture (crh3d9_t render, const char* name, const void* dest,
+                               size_t size, uint_t face, cl32_t keycolor)
 {
     crhack3d9_main*     real;
     asy::crh3d9_texr    texr;
@@ -623,8 +623,14 @@ CR_API bool crhack3d9_texture (crh3d9_t render, const char* name, const char* fi
     real = (crhack3d9_main*)render;
     if (real->texs.get(name) != NULL)
         return (true);
-    if (!texr.init(&real->main, file, face, keycolor))
-        return (false);
+    if (size == 0) {
+        if (!texr.init(&real->main, (char*)dest, face, keycolor))
+            return (false);
+    }
+    else {
+        if (!texr.init(&real->main, dest, size, face, keycolor))
+            return (false);
+    }
     if (real->texs.insert(name, &texr) == NULL) {
         texr.free();
         return (false);
