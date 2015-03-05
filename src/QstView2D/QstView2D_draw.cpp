@@ -748,10 +748,10 @@ qst_save_now (
     int32u      idx;
     sFMT_PIC*   pic;
 
-    if (parm->paint == NULL && parm->fmtz == NULL)
-        return (FALSE);
     if (parm->paint != NULL)
         return (qst_save_img(parm->paint, parm, name, argc, argv));
+    if (parm->fmtz == NULL)
+        return (FALSE);
     idx = (parm->slide != NULL) ? 0 : parm->index;
     pic = (sFMT_PIC*)parm->fmtz;
     return (qst_save_img(pic->frame[idx].pic, parm, name, argc, argv));
@@ -779,7 +779,7 @@ qst_save_all (
     const ansi_t*   fmt;
 
     if (parm->paint != NULL)
-        return (qst_save_now(parm, name, argc, argv));
+        return (qst_save_img(parm->paint, parm, name, argc, argv));
     if (parm->fmtz == NULL)
         return (FALSE);
     pic = (sFMT_PIC*)parm->fmtz;
