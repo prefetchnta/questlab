@@ -847,16 +847,25 @@ NameError: mistake
       <a name="property-import"></a>
        The 'import' statement includes a properties file as if the text were
        inline at that point. The imported properties file
-       must be in the same directory as the current file and a properties
-       extension is assumed. Therefore a "import Lua" statement in
+       is either relative to the base file or absolute and a '.properties'
+       extension is assumed. Therefore an "import Lua" statement in
        c:\os\scite\bin\SciTEGlobal.properties will import
        c:\os\scite\bin\Lua.properties.
+       Any import statements in imported files are relative to directory of the original file,
+       rather than the current file.
     </p>
     <p>
        All of the properties files in a directory can be imported with "import *".
        This does not import generic properties files like user properties or abbreviations.
        The set of files that are imported can be controlled with the imports.include and imports.exclude
        properties.
+    </p>
+    <p>
+       Imported files are not scope walls: properties may be redefined in another file.
+       Thus, if a file contains both "import cplusplus", "import java", and "style.cpp.1=fore:$(comment.colour)" then
+       cplusplus.properties contains "comment.colour=#800000" and java.properties contains
+       "comment.colour=#008000" then the last definition wins and is active for the definitions in the base
+       file as well as any definitions in cplusplus.properties and java.properties.
     </p>
     <p>
       <a name="property-if"></a>
@@ -2206,6 +2215,10 @@ NameError: mistake
 	<tr id='property-lexer.cpp.update.preprocessor'>
 	<td>lexer.cpp.update.preprocessor</td>
 	<td>Set to 1 to update preprocessor definitions when #define found.</td>
+	</tr>
+	<tr id='property-lexer.cpp.verbatim.strings.allow.escapes'>
+	<td>lexer.cpp.verbatim.strings.allow.escapes</td>
+	<td>Set to 1 to allow verbatim strings to contain escape sequences.</td>
 	</tr>
 	<tr id='property-lexer.css.hss.language'>
 	<td>lexer.css.hss.language</td>
@@ -4107,8 +4120,8 @@ groupundo - yes or no
      </tr>
      <tr>
       <td>style</td>
-      <td>one of plain, squiggle, tt, diagonal, strike, hidden, box, roundbox, straightbox, dash,
-      dots, squigglelow, dotbox, squigglepixmap, or compositionthick.<br />
+      <td>one of plain, squiggle, tt, diagonal, strike, hidden, box, roundbox, straightbox, fullbox, dash,
+      dots, squigglelow, dotbox, squigglepixmap, compositionthick, or compositionthin.<br />
       </td>
       <td>plain</td>
      </tr>
