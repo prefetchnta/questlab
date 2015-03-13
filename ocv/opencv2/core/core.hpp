@@ -230,9 +230,9 @@ CV_EXPORTS ErrorCallback redirectError( ErrorCallback errCallback,
 
 CV_EXPORTS void glob(String pattern, std::vector<String>& result, bool recursive = false);
 
-CV_EXPORTS void setNumThreads(int nthreads);
-CV_EXPORTS int getNumThreads();
-CV_EXPORTS int getThreadNum();
+CV_EXPORTS_W void setNumThreads(int nthreads);
+CV_EXPORTS_W int getNumThreads();
+CV_EXPORTS_W int getThreadNum();
 
 CV_EXPORTS_W const string& getBuildInformation();
 
@@ -716,9 +716,6 @@ public:
 };
 
 
-/*!
-  \typedef
-*/
 typedef Complex<float> Complexf;
 typedef Complex<double> Complexd;
 
@@ -885,11 +882,6 @@ public:
 };
 
 
-/*!
-  \typedef
-
-  shorter aliases for the most popular cv::Point_<>, cv::Size_<> and cv::Rect_<> specializations
-*/
 typedef Point_<int> Point2i;
 typedef Point2i Point;
 typedef Size_<int> Size2i;
@@ -1304,6 +1296,38 @@ public:
     int* refcount; //< the associated reference counter
 };
 
+template<typename T>
+Ptr<T> makePtr();
+
+template<typename T, typename A1>
+Ptr<T> makePtr(const A1& a1);
+
+template<typename T, typename A1, typename A2>
+Ptr<T> makePtr(const A1& a1, const A2& a2);
+
+template<typename T, typename A1, typename A2, typename A3>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3);
+
+template<typename T, typename A1, typename A2, typename A3, typename A4>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3, const A4& a4);
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5);
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6);
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7);
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8);
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9);
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9, typename A10>
+Ptr<T> makePtr(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10);
 
 //////////////////////// Input/Output Array Arguments /////////////////////////////////
 
@@ -1622,8 +1646,6 @@ public:
    cv::Mat::rows contains the number of matrix rows and cv::Mat::cols - the number of matrix columns. There is yet another member,
    cv::Mat::step that is used to actually compute address of a matrix element. cv::Mat::step is needed because the matrix can be
    a part of another matrix or because there can some padding space in the end of each row for a proper alignment.
-
-   \image html roi.png
 
    Given these parameters, address of the matrix element M_{ij} is computed as following:
 
@@ -2266,7 +2288,7 @@ CV_EXPORTS_W void absdiff(InputArray src1, InputArray src2, OutputArray dst);
 //! set mask elements for those array elements which are within the element-specific bounding box (dst = lowerb <= src && src < upperb)
 CV_EXPORTS_W void inRange(InputArray src, InputArray lowerb,
                           InputArray upperb, OutputArray dst);
-//! compares elements of two arrays (dst = src1 <cmpop> src2)
+//! compares elements of two arrays (dst = src1 \<cmpop\> src2)
 CV_EXPORTS_W void compare(InputArray src1, InputArray src2, OutputArray dst, int cmpop);
 //! computes per-element minimum of two arrays (dst = min(src1, src2))
 CV_EXPORTS_W void min(InputArray src1, InputArray src2, OutputArray dst);
@@ -2731,7 +2753,7 @@ CV_EXPORTS_W Size getTextSize(const string& text, int fontFace,
 
  While cv::Mat is sufficient in most cases, cv::Mat_ can be more convenient if you use a lot of element
  access operations and if you know matrix type at compile time.
- Note that cv::Mat::at<_Tp>(int y, int x) and cv::Mat_<_Tp>::operator ()(int y, int x) do absolutely the
+ Note that cv::Mat::at\<_Tp\>(int y, int x) and cv::Mat_\<_Tp\>::operator ()(int y, int x) do absolutely the
  same thing and run at the same speed, but the latter is certainly shorter:
 
  \code
@@ -3443,6 +3465,7 @@ public:
     void convertTo( SparseMat& m, int rtype, double alpha=1 ) const;
     //! converts sparse matrix to dense n-dim matrix with optional type conversion and scaling.
     /*!
+      \param m Destination matrix
       \param rtype The output matrix data type. When it is =-1, the output array will have the same data type as (*this)
       \param alpha The scale factor
       \param beta The optional delta added to the scaled values before the conversion

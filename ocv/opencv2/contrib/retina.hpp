@@ -88,7 +88,7 @@ enum RETINA_COLORSAMPLINGMETHOD
 class RetinaFilter;
 
 /**
- * @class Retina a wrapper class which allows the Gipsa/Listic Labs model to be used.
+ * a wrapper class which allows the Gipsa/Listic Labs model to be used.
  * This retina model allows spatio-temporal image processing (applied on still images, video sequences).
  * As a summary, these are the retina model properties:
  * => It applies a spectral whithening (mid-frequency details enhancement)
@@ -199,7 +199,6 @@ public:
      * => if the xml file does not exist, then default setup is applied
      * => warning, Exceptions are thrown if read XML file is not valid
      * @param newParameters : a parameters structures updated with the new target configuration
-         * @param applyDefaultSetupOnFailure : set to true if an error must be thrown on error
      */
     void setup(RetinaParameters newParameters);
 
@@ -216,7 +215,7 @@ public:
 
     /**
      * write xml/yml formated parameters information
-     * @rparam fs : the filename of the xml file that will be open and writen with formatted parameters information
+     * @param fs : the filename of the xml file that will be open and writen with formatted parameters information
      */
     virtual void write( std::string fs ) const;
 
@@ -242,7 +241,7 @@ public:
      * @param HcellsSpatialConstant: the spatial constant of the first order low pass filter of the horizontal cells, use it to cut low spatial frequencies (local luminance), unit is pixels, typical value is 5 pixel, this value is also used for local contrast computing when computing the local contrast adaptation at the ganglion cells level (Inner Plexiform Layer parvocellular channel model)
      * @param ganglionCellsSensitivity: the compression strengh of the ganglion cells local adaptation output, set a value between 160 and 250 for best results, a high value increases more the low value sensitivity... and the output saturates faster, recommended value: 230
      */
-    void setupOPLandIPLParvoChannel(const bool colorMode=true, const bool normaliseOutput = true, const float photoreceptorsLocalAdaptationSensitivity=0.7, const float photoreceptorsTemporalConstant=0.5, const float photoreceptorsSpatialConstant=0.53, const float horizontalCellsGain=0, const float HcellsTemporalConstant=1, const float HcellsSpatialConstant=7, const float ganglionCellsSensitivity=0.7);
+    void setupOPLandIPLParvoChannel(const bool colorMode=true, const bool normaliseOutput = true, const float photoreceptorsLocalAdaptationSensitivity=0.7f, const float photoreceptorsTemporalConstant=0.5f, const float photoreceptorsSpatialConstant=0.53f, const float horizontalCellsGain=0, const float HcellsTemporalConstant=1, const float HcellsSpatialConstant=7, const float ganglionCellsSensitivity=0.7f);
 
     /**
      * set parameters values for the Inner Plexiform Layer (IPL) magnocellular channel
@@ -256,7 +255,7 @@ public:
      * @param localAdaptintegration_tau: specifies the temporal constant of the low pas filter involved in the computation of the local "motion mean" for the local adaptation computation
      * @param localAdaptintegration_k: specifies the spatial constant of the low pas filter involved in the computation of the local "motion mean" for the local adaptation computation
      */
-    void setupIPLMagnoChannel(const bool normaliseOutput = true, const float parasolCells_beta=0, const float parasolCells_tau=0, const float parasolCells_k=7, const float amacrinCellsTemporalCutFrequency=1.2, const float V0CompressionParameter=0.95, const float localAdaptintegration_tau=0, const float localAdaptintegration_k=7);
+    void setupIPLMagnoChannel(const bool normaliseOutput = true, const float parasolCells_beta=0, const float parasolCells_tau=0, const float parasolCells_k=7, const float amacrinCellsTemporalCutFrequency=1.2f, const float V0CompressionParameter=0.95f, const float localAdaptintegration_tau=0, const float localAdaptintegration_k=7);
 
     /**
      * method which allows retina to be applied on an input image, after run, encapsulated retina module is ready to deliver its outputs using dedicated acccessors, see getParvo and getMagno methods
