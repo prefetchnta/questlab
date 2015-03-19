@@ -1501,6 +1501,17 @@ fimage_save (
                 tmp = FreeImage_ConvertTo4Bits(src);
                 break;
 
+            case 6:
+                if (type != 24) {
+                    tmp = FreeImage_ConvertTo24Bits(src);
+                    if (tmp == NULL)
+                        goto _failure;
+                    FreeImage_Unload(src);
+                    src = tmp;
+                }
+                tmp = FreeImage_ColorQuantize(src, FIQ_LFPQUANT);
+                break;
+
             case 7:
                 if (type != 24) {
                     tmp = FreeImage_ConvertTo24Bits(src);
