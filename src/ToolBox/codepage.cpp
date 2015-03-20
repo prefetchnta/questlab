@@ -242,6 +242,7 @@ do_each_file (
   __CR_IN__ sSEARCHa*   finfo
     )
 {
+    leng_t      idx;
     leng_t      len;
     ansi_t*     src;
     ansi_t*     dst;
@@ -295,25 +296,40 @@ do_each_file (
                               src, -1, NULL, 0);
     if (len == 0)
         goto _func_out;
-    tmp = str_allocW(len);
-    if (tmp == NULL)
-        goto _func_out;
-    MultiByteToWideChar(ctx->from, 0, src, -1, tmp, len);
-    mem_free(src);
+    if (ctx->to == CR_UTF16LE || ctx->to == CR_UTF16BE) {
+        tmp = str_allocW(len + 1);
+        if (tmp == NULL)
+            goto _func_out;
+        len = MultiByteToWideChar(ctx->from, 0, src, -1, tmp + 1, len);
+        mem_cpy(tmp, BOM_UTF16LE, 2);
+        if (ctx->to == CR_UTF16BE) {
+            for (idx = 0; idx < len; idx++)
+                tmp[idx] = xchg_int16u(tmp[idx]);
+        }
+        len = len * 2 + 1;
+        dst = (ansi_t*)tmp;
+    }
+    else {
+        tmp = str_allocW(len);
+        if (tmp == NULL)
+            goto _func_out;
+        MultiByteToWideChar(ctx->from, 0, src, -1, tmp, len);
+        mem_free(src);
 
-    /* 转换到目标编码 */
-    len = WideCharToMultiByte(ctx->to, 0, tmp, -1, NULL, 0, NULL, NULL);
-    if (len == 0) {
+        /* 转换到目标编码 */
+        len = WideCharToMultiByte(ctx->to, 0, tmp, -1, NULL, 0, NULL, NULL);
+        if (len == 0) {
+            mem_free(tmp);
+            return (TRUE);
+        }
+        dst = str_allocA(len);
+        if (dst == NULL) {
+            mem_free(tmp);
+            return (TRUE);
+        }
+        len = WideCharToMultiByte(ctx->to, 0, tmp, -1, dst, len, NULL, NULL);
         mem_free(tmp);
-        return (TRUE);
     }
-    dst = str_allocA(len);
-    if (dst == NULL) {
-        mem_free(tmp);
-        return (TRUE);
-    }
-    len = WideCharToMultiByte(ctx->to, 0, tmp, -1, dst, len, NULL, NULL);
-    mem_free(tmp);
 
     /* 写入整个文件 (去掉后面的0) */
     if (!file_saveA(finfo->name, dst, len - 1)) {
