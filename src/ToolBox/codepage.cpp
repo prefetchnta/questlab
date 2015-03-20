@@ -308,6 +308,7 @@ do_each_file (
         }
         len = len * 2 + 1;
         dst = (ansi_t*)tmp;
+        mem_free(src);
     }
     else {
         tmp = str_allocW(len);
