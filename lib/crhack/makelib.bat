@@ -57,10 +57,17 @@ coff2omf CrH_GFX3.lib omf\CrH_GFX3.lib
 move CrH_GFX3.lib coff\CrH_GFX3.lib
 rem ========================================
 :crh_math
-if not exist CrH_MATH.lib goto bat_exit
+if not exist CrH_MATH.lib goto gfx2_gdi
 del coff\CrH_MATH.lib
 del omf\CrH_MATH.lib
 coff2omf CrH_MATH.lib omf\CrH_MATH.lib
 move CrH_MATH.lib coff\CrH_MATH.lib
+rem ========================================
+:gfx2_gdi
+if not exist GFX2_GDI.lib goto bat_exit
+del coff\GFX2_GDI.lib
+del omf\GFX2_GDI.lib
+coff2omf GFX2_GDI.lib omf\GFX2_GDI.lib
+move GFX2_GDI.lib coff\GFX2_GDI.lib
 rem ========================================
 :bat_exit
