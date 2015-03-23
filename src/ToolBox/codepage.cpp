@@ -199,13 +199,10 @@ static void_t usage (void_t)
     检查是否是 UTF-8
 ---------------------------------------
 */
-static bool_t
-is_utf8_file (
-  __CR_IN__ const ansi_t*   str
-    )
+static bool_t is_utf8_file (const ansi_t *str)
 {
-    leng_t  temp;
-    int32u  ucs4;
+    leng_t temp;
+    int32u ucs4;
 
     /* BOM 标志检查 */
     if (chr_cmpA(str, BOM_UTF8, 3) == 0)
@@ -236,18 +233,12 @@ typedef struct
     文件处理回调
 ---------------------------------------
 */
-static bool_t
-do_each_file (
-  __CR_IO__ void_t*     param,
-  __CR_IN__ sSEARCHa*   finfo
-    )
+static bool_t do_each_file (void_t *param, sSEARCHa *finfo)
 {
-    leng_t      idx;
-    leng_t      len;
-    ansi_t*     src;
-    ansi_t*     dst;
-    wide_t*     tmp;
-    sCP_PARAM*  ctx;
+    wide_t *tmp;
+    sCP_PARAM *ctx;
+    leng_t idx, len;
+    ansi_t *src, *dst;
 
     /* 统计文件总数 */
     ctx = (sCP_PARAM*)param;
@@ -259,7 +250,7 @@ do_each_file (
         return (TRUE);
 
     /* 过滤掉大文件 */
-    if (finfo->size > CR_M2B(8))
+    if (finfo->size > CR_M2B(4))
         return (TRUE);
     if (ctx->del_u8_bom && finfo->size <= 3)
         return (TRUE);
@@ -354,7 +345,7 @@ _func_out:
 */
 int main (int argc, char *argv[])
 {
-    sCP_PARAM   ft;
+    sCP_PARAM ft;
 
     /* 建立 CrHack 系统 */
     if (!set_app_type(CR_APP_CUI))

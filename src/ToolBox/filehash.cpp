@@ -148,7 +148,7 @@ static bool_t hasher (void_t *param, sSEARCHa *info)
     if (info->size <= s_total)
     {
         sVFILE file;
-        void_t* data;
+        void_t *data;
 
         /* 内存映射 */
         data = file_mappingA(info->name, &file);

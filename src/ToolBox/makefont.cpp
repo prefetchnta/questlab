@@ -45,7 +45,7 @@ typedef struct
 */
 static void_t font_info_free (void_t *obj)
 {
-    sFONT_INFO* fnt = (sFONT_INFO*)obj;
+    sFONT_INFO *fnt = (sFONT_INFO*)obj;
 
     if (fnt->font_out != NULL)
         CR_VCALL(fnt->font_out)->release(fnt->font_out);
@@ -184,8 +184,7 @@ static bool_t get_char_mask (file_t file, iGFX2 *main, iFONT *font,
     switch (FNT_TYPE(attrb))
     {
         case 0:
-        case 1:
-            /* 低位在前 */
+        case 1: /* 低位在前 */
             if (attrb & FNT_LB_FRST) {
                 for (; size != 0; size -= 4 * 8) {
                     data = 0x00;
@@ -361,7 +360,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
     max_w = max_h = 0;
     for (leng_t idx = 1; idx < tag_count; idx++)
     {
-        sFONT_INFO* unit;
+        sFONT_INFO *unit;
         uint_t char_type;
 
         /* 绑定目标字体 */
