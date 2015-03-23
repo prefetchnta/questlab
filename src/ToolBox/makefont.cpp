@@ -23,6 +23,7 @@
 #include "../QstLibs/QstLibs.h"
 
 #include "gfx2/gdiwin.h"
+#pragma comment (lib, "GFX2_GDI.lib")
 
 static uint_t   s_align;    /* 对齐参数 */
 
@@ -494,9 +495,9 @@ int main (int argc, char *argv[])
         return (QST_ERROR);
 
     /* 参数解析 <配置文件> */
-    if (argc != 2) {
+    if (argc < 2) {
         printf("makefont <configure.xml>\n");
-        return (FALSE);
+        return (QST_ERROR);
     }
 
     ansi_t *text;
@@ -505,7 +506,7 @@ int main (int argc, char *argv[])
     text = file_load_as_strA(argv[1]);
     if (text == NULL) {
         printf("missing config file <%s>\n", argv[1]);
-        return (-1);
+        return (QST_ERROR);
     }
 
     sXMLw *xml;
@@ -515,14 +516,14 @@ int main (int argc, char *argv[])
     mem_free(text);
     if (xml == NULL) {
         printf("invalid config file <%s>\n", argv[1]);
-        return (-1);
+        return (QST_ERROR);
     }
 
     /* 第一个标签指定字体大小及属性 */
     if (xml->nodes[0].closed ||
         str_cmpIW(xml->nodes[0].name, CR_WS("FONT")) != 0) {
         printf("invalid config file <%s>\n", argv[1]);
-        return (-1);
+        return (QST_ERROR);
     }
 
     sARRAY list;
@@ -540,7 +541,7 @@ int main (int argc, char *argv[])
     if (fnt_w < 8 || api_w > fnt_w ||
         fnt_h < 8 || api_h > fnt_h) {
         printf("invalid font size attribute\n");
-        return (-1);
+        return (QST_ERROR);
     }
 
     /* 点阵宽必须对齐到整字节 */
@@ -554,7 +555,7 @@ int main (int argc, char *argv[])
 
         default:
             printf("font attrb <%u> not supported yet\n", FNT_TYPE(attrb));
-            return (-1);
+            return (QST_ERROR);
     }
     if (attrb & FNT_XY_FLIP)
         fnt_h += (uint_t)CR_PADDED(fnt_h, s_align);
@@ -580,7 +581,7 @@ int main (int argc, char *argv[])
         if (temp.font_name == NULL ||
             str_lenW(temp.font_name) >= LF_FACESIZE) {
             printf("invalid range name attribute\n");
-            return (-1);
+            return (QST_ERROR);
         }
         temp.sch = xml_attr_intx32W(CR_WS("schar"), 0UL, &xml->nodes[idx]);
         temp.ech = xml_attr_intx32W(CR_WS("echar"), 0UL, &xml->nodes[idx]);
@@ -591,28 +592,26 @@ int main (int argc, char *argv[])
                 ((temp.sch >> 16) & 255) > ((temp.ech >> 16) & 255) ||
                 ((temp.sch >> 24) & 255) > ((temp.ech >> 24) & 255)) {
                 printf("invalid range schar or echar attribute\n");
-                return (-1);
+                return (QST_ERROR);
             }
         }
         else {
             if (temp.sch > temp.ech) {
                 printf("invalid range schar or echar attribute\n");
-                return (-1);
+                return (QST_ERROR);
             }
         }
         temp.font_out = NULL;
         temp.font_bold = xml_attr_intxW(CR_WS("bold"),0, &xml->nodes[idx]);
         if (array_push_growT(&list, sFONT_INFO, &temp) == NULL) {
             printf("out of memory\n");
-            return (-1);
+            return (QST_ERROR);
         }
     }
-    xml_closeW(xml);
-
-    sint_t rett;
 
     /* 根据列表生成字库 */
-    rett = make_font(&list, attrb, chset, cpage, api_w, api_h, fnt_w, fnt_h);
+    make_font(&list, attrb, chset, cpage, api_w, api_h, fnt_w, fnt_h);
     array_freeT(&list, sFONT_INFO);
-    return (rett);
+    xml_closeW(xml);
+    return (QST_OKAY);
 }
