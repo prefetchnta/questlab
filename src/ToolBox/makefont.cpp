@@ -583,9 +583,9 @@ int main (int argc, char *argv[])
             printf("invalid range name attribute\n");
             return (QST_ERROR);
         }
-        temp.sch = xml_attr_intx32W(CR_WS("schar"), 0UL, &xml->nodes[idx]);
-        temp.ech = xml_attr_intx32W(CR_WS("echar"), 0UL, &xml->nodes[idx]);
-        temp.char_type = xml_attr_intxW(CR_WS("type"),0, &xml->nodes[idx]);
+        temp.sch = xml_attr_intx32W(CR_WS("schar"), 0, &xml->nodes[idx]);
+        temp.ech = xml_attr_intx32W(CR_WS("echar"), 0, &xml->nodes[idx]);
+        temp.char_type = xml_attr_intxW(CR_WS("type"), 0, &xml->nodes[idx]);
         if (temp.char_type == 0) {
             if (((temp.sch >>  0) & 255) > ((temp.ech >>  0) & 255) ||
                 ((temp.sch >>  8) & 255) > ((temp.ech >>  8) & 255) ||
@@ -602,7 +602,7 @@ int main (int argc, char *argv[])
             }
         }
         temp.font_out = NULL;
-        temp.font_bold = xml_attr_intxW(CR_WS("bold"),0, &xml->nodes[idx]);
+        temp.font_bold = xml_attr_intxW(CR_WS("bold"), 0, &xml->nodes[idx]);
         if (array_push_growT(&list, sFONT_INFO, &temp) == NULL) {
             printf("out of memory\n");
             return (QST_ERROR);
