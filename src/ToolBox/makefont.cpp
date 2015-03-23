@@ -314,7 +314,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
         unit->font_out = create_gdi_fontW(&info);
         if (unit->font_out == NULL) {
             printf("can't create gdi font\n");
-            goto _failure2;
+            goto _failure1;
         }
     }
 
@@ -322,7 +322,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
     main = (iGFX2*)create_gdi_bitmap(fnt_w, fnt_h, CR_ARGB8888);
     if (main == NULL) {
         printf("can't create gdi bitmap\n");
-        goto _failure2;
+        goto _failure1;
     }
 
     iFONT *font;
@@ -335,7 +335,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
     /* 绑定第一个字体 */
     font = get_char_font(main, list, 0);
     if (font == NULL)
-        goto _failure1;
+        goto _failure2;
 
     /* 生成 ASCII 字库 (0x20 - 0x7E) */
     printf("ASC - size (%u x %u)\n", fnt_w / 2, fnt_h);
@@ -344,7 +344,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
         chr[0] = (ansi_t)ch;
         if (!get_char_mask(fasc, main, font, chr, attrb, cpage,
                            fnt_w / 2, fnt_h, &max_w, &max_h))
-            goto _failure1;
+            goto _failure2;
     }
     printf("ASC - true (%u x %u)\n", max_w, max_h);
 
@@ -366,7 +366,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
         /* 绑定目标字体 */
         font = get_char_font(main, list, idx);
         if (font == NULL)
-            goto _failure1;
+            goto _failure2;
         unit = array_get_unitT(list, sFONT_INFO, idx);
 
         /* 根据编码范围类型枚举字符 */
@@ -398,7 +398,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
                                 if (!get_char_mask(fhzk, main, font, chr,
                                                    attrb, cpage, fnt_w, fnt_h,
                                                    &max_w, &max_h))
-                                    goto _failure1;
+                                    goto _failure2;
                             }
                         }
                     }
@@ -416,7 +416,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
                             if (!get_char_mask(fhzk, main, font, chr,
                                                attrb, cpage, fnt_w, fnt_h,
                                                &max_w, &max_h))
-                                goto _failure1;
+                                goto _failure2;
                         }
                     }
                 }
@@ -431,7 +431,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
                         if (!get_char_mask(fhzk, main, font, chr,
                                            attrb, cpage, fnt_w, fnt_h,
                                            &max_w, &max_h))
-                            goto _failure1;
+                            goto _failure2;
                     }
                 }
             }
@@ -442,7 +442,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
                     if (!get_char_mask(fhzk, main, font, chr,
                                        attrb, cpage, fnt_w, fnt_h,
                                        &max_w, &max_h))
-                        goto _failure1;
+                        goto _failure2;
                 }
             }
         }
@@ -460,7 +460,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
                 if (!get_char_mask(fhzk, main, font, chr,
                                    attrb, cpage, fnt_w, fnt_h,
                                    &max_w, &max_h))
-                    goto _failure1;
+                    goto _failure2;
             }
         }
     }
@@ -472,9 +472,9 @@ _success:
     printf("job's done\n");
     return (TRUE);
 
-_failure1:
-    CR_VCALL(main)->release(main);
 _failure2:
+    CR_VCALL(main)->release(main);
+_failure1:
     file_close(fasc);
     file_close(fhzk);
     file_deleteA("ASC");
