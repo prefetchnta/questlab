@@ -39,11 +39,11 @@ int main (int argc, char *argv[])
     if (!set_app_type(CR_APP_CUI))
         return (QST_ERROR);
 
-    /* 参数解析 <0/1> <输入文件> <输出文件> */
-    if ((argc < 4) ||
-        (strcmp(argv[1], "0") != 0 &&
-         strcmp(argv[1], "1") != 0)) {
-        printf("obj2bobj <0/1> <input.obj> <output.bobj>\n");
+    /* 参数解析 <是否合并网格> <输入文件> <输出文件> <是否输出纹理> */
+    if ((argc < 5) ||
+        (strcmp(argv[1], "0") != 0 && strcmp(argv[1], "1") != 0) ||
+        (strcmp(argv[4], "0") != 0 && strcmp(argv[4], "1") != 0)) {
+        printf("obj2bobj <0/1> <input.obj> <output.bobj> <0/1>\n");
         return (QST_ERROR);
     }
 
@@ -181,7 +181,8 @@ int main (int argc, char *argv[])
         /* 一堆字符串 */
         lst = &mesh.p_m[idx].map_ka;
         for (leng_t kk = 0; kk < 6; kk++) {
-            if (lst[kk] != NULL) {
+            if ((lst[kk] != NULL) &&
+                ((((argv[4])[0]) & 1) || file_existA(lst[kk]))) {
                 dw = strlen(lst[kk]) + 1;
                 if (dw <= 1 || dw > 255)
                     dw = 0;
