@@ -177,6 +177,9 @@ typedef struct
         sD3D8_TEXR* (*create_tex2_crh) (sD3D8_MAIN *main,
                             const sIMAGE *image, D3DPOOL pool, int32u usage,
                                     uint_t level, int32u mip_type);
+
+        bool_t  (*tex2_image_set) (sD3D8_TEXR *texr, const sIMAGE *image,
+                                   bool_t mip_map, int32u mip_type);
         /* 生成 3D */
         sD3D8_TEXR* (*create_tex3) (sD3D8_MAIN *main, uint_t size,
                                     D3DFORMAT format, D3DPOOL pool,

@@ -880,6 +880,65 @@ d3d8_create_tex2_crh (
 
 /*
 =======================================
+    更新 2D 纹理对象
+=======================================
+*/
+CR_API bool_t
+d3d8_tex2_image_set (
+  __CR_IO__ sD3D8_TEXR*     texr,
+  __CR_IN__ const sIMAGE*   image,
+  __CR_IN__ bool_t          mip_map,
+  __CR_IN__ int32u          mip_type
+    )
+{
+    uint_t          line;
+    leng_t          copy;
+    leng_t          sbpl;
+    byte_t*         sptr;
+    byte_t*         dptr;
+    HRESULT         retc;
+    D3DFORMAT       tfmt;
+    D3DLOCKED_RECT  info;
+
+    tfmt = (D3DFORMAT)image_crh_to_d3d(image->fmt);
+    if (tfmt == D3DFMT_UNKNOWN)
+        return (FALSE);
+
+    /* 锁定纹理对象复制数据 */
+    retc = texr->obj.tex2->LockRect(0, &info, NULL, 0);
+    if (FAILED(retc))
+        return (FALSE);
+
+    /* DXTC 格式直接复制, 否则逐行复制 */
+    if (image->fmt <= CR_DXT5) {
+        mem_cpy(info.pBits, image->data, image->size);
+    }
+    else {
+        dptr = (byte_t*)info.pBits;
+        if (!image->gdi) {
+            sbpl = image->bpl;
+            sptr = image->data;
+        }
+        else {
+            sbpl = 0 - image->bpl;
+            sptr = image->data + image->clip_win.y2 * image->bpl;
+        }
+        line = image->position.hh;
+        copy = image->position.ww * image->bpc;
+        for (; line != 0; line--) {
+            mem_cpy(dptr, sptr, copy);
+            sptr += sbpl;
+            dptr += info.Pitch;
+        }
+    }
+    texr->obj.tex2->UnlockRect(0);
+    if (mip_map)
+        D3DXFilterTexture(texr->obj.base, NULL, 0, mip_type);
+    return (TRUE);
+}
+
+/*
+=======================================
     生成 3D 纹理对象
 =======================================
 */
@@ -1946,6 +2005,7 @@ static const sD3D8_CALL s_d3d8call =
     d3d8_create_tex2_fileW,
     d3d8_create_tex2_mem,
     d3d8_create_tex2_crh,
+    d3d8_tex2_image_set,
     d3d8_create_tex3,
     d3d8_create_tex3_fileA,
     d3d8_create_tex3_fileW,
