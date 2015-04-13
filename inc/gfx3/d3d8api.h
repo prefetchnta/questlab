@@ -89,7 +89,7 @@ typedef struct
 /* D3D8 变换对象 */
 typedef struct
 {
-        D3DXMATRIXA16   world, view, proj;
+        D3DXMATRIXA16   world, view, proj, one;
         D3DXMATRIXA16   tworld, tview, tproj, wvp;
         vec4d_t         eye, lookat, upvec, vvec;
         fp32_t          fovy, aspect, znear, zfar;
@@ -259,6 +259,9 @@ typedef struct
         /* 信息 */
         void_t  (*tran_pickup) (sD3D8_TRAN *tran, sRADIAL *dest,
                                 sint_t scn_x, sint_t scn_y);
+
+        void_t  (*tran_convert) (sD3D8_TRAN *tran, vec2d_t *dest,
+                                 const vec3d_t *space);
 
         void_t  (*tran_frustum) (sD3D8_TRAN *tran, sFRUSTUM *dest,
                                  fp32_t bias);

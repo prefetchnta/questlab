@@ -1381,6 +1381,7 @@ d3d8_create_tran (
     rett->view_port.Height = height;
     rett->view_port.MinZ = 0.0f;
     rett->view_port.MaxZ = 1.0f;
+    D3DXMatrixIdentity(&rett->one);
     D3DXMatrixIdentity(&rett->world);
     D3DXMatrixIdentity(&rett->tworld);
     D3DXMatrixMultiply(&rett->wvp, &rett->world, &rett->view);
@@ -1513,6 +1514,26 @@ d3d8_tran_pickup (
     dest->dir.x = vec.x * mat._11 + vec.y * mat._21 + vec.z * mat._31;
     dest->dir.y = vec.x * mat._12 + vec.y * mat._22 + vec.z * mat._32;
     dest->dir.z = vec.x * mat._13 + vec.y * mat._23 + vec.z * mat._33;
+}
+
+/*
+=======================================
+    空间转屏幕坐标
+=======================================
+*/
+CR_API void_t
+d3d8_tran_convert (
+  __CR_IN__ sD3D8_TRAN*     tran,
+  __CR_OT__ vec2d_t*        dest,
+  __CR_IN__ const vec3d_t*  space
+    )
+{
+    D3DXVECTOR3     scn;
+
+    D3DXVec3Project(&scn, (D3DXVECTOR3*)space, &tran->view_port,
+                    &tran->proj, &tran->view, &tran->one);
+    dest->x = scn.x;
+    dest->y = scn.y;
 }
 
 /*
@@ -1954,6 +1975,7 @@ static const sD3D8_CALL s_d3d8call =
     d3d8_tran_update_port,
     d3d8_tran_update_mwvp,
     d3d8_tran_pickup,
+    d3d8_tran_convert,
     d3d8_tran_frustum,
     d3d8_tran_billboardv,
     d3d8_tran_billboardh,
