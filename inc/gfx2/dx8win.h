@@ -33,6 +33,7 @@
 typedef struct
 {
         HWND                hwnd;   /* 窗口句柄 */
+        sD3D8_MAIN*         main;   /* 预先生成 */
         const sD3D8_CALL*   call;   /* 调用接口 */
 
 } sDX8_HDLE;

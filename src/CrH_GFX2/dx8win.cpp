@@ -46,7 +46,8 @@ iGFX2_DX8M_release (
     real = (iGFX2_DX8M*)that;
     real->m_sprt->Release();
     CR_VCALL(real->m_fill)->release(real->m_fill);
-    real->m_hdle.call->release_main(real->m_main);
+    if (real->m_hdle.main == NULL)
+        real->m_hdle.call->release_main(real->m_main);
     mem_free(that);
 }
 
@@ -244,11 +245,16 @@ create_dx8_canvas (
     struct_zero(&rett->__back__, sIMAGE);
 
     /* 创建 D3D8 设备 */
-    rett->m_main = hdle->call->create_main(hdle->hwnd, FALSE,
-                        scn_cw, scn_ch, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
-                                    FALSE, D3DMULTISAMPLE_NONE);
-    if (rett->m_main == NULL)
-        goto _failure1;
+    if (hdle->main == NULL) {
+        rett->m_main = hdle->call->create_main(hdle->hwnd, FALSE,
+                            scn_cw, scn_ch, D3DFMT_UNKNOWN, D3DFMT_UNKNOWN,
+                                        FALSE, D3DMULTISAMPLE_NONE);
+        if (rett->m_main == NULL)
+            goto _failure1;
+    }
+    else {
+        rett->m_main = hdle->main;
+    }
 
     /* 创建填充用的纹理 */
     fill = hdle->call->create_tex2(rett->m_main, 1, 1, D3DFMT_A8R8G8B8,
@@ -278,7 +284,8 @@ create_dx8_canvas (
 _failure3:
     CR_VCALL(rett->m_fill)->release(rett->m_fill);
 _failure2:
-    hdle->call->release_main(rett->m_main);
+    if (hdle->main == NULL)
+        hdle->call->release_main(rett->m_main);
 _failure1:
     mem_free(rett);
     return (NULL);
