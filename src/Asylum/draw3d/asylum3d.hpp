@@ -235,6 +235,7 @@ struct commit_pipe
 /* Effect Factory */
 /******************/
 CR_API asy::IEffect* create_asy3d_ffct_dummy (void);
+CR_API asy::IEffect* create_asy3d_ffct_profile (fp32_t* delta);
 CR_API asy::IEffect* create_asy3d_ffct_array (asy::IEffect** list, size_t count);
 
 #endif  /* __ASYLUM3D_HPP__ */

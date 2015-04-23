@@ -37,6 +37,43 @@ public:
     }
 };
 
+/******************/
+/* Effect Profile */
+/******************/
+class asy3d_ffct_profile : public IEffect
+{
+private:
+    fp32_t*     m_delta;
+    xtime_t     m_timer;
+
+public:
+    /* =========================================== */
+    asy3d_ffct_profile (xtime_t timer, fp32_t* delta)
+    {
+        m_delta = delta;
+        m_timer = timer;
+    }
+
+    /* ======================== */
+    virtual ~asy3d_ffct_profile ()
+    {
+        timer_del(m_timer);
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+        timer_set_base(m_timer);
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+        *m_delta = timer_get_delta(m_timer);
+    }
+};
+
 /****************/
 /* Effect Array */
 /****************/
@@ -87,6 +124,26 @@ CR_API asy::IEffect* create_asy3d_ffct_dummy (void)
     asy::IEffect*   ffct;
 
     ffct = new asy::asy3d_ffct_dummy ();
+    return (ffct);
+}
+
+/* ======================================================== */
+CR_API asy::IEffect* create_asy3d_ffct_profile (fp32_t* delta)
+{
+    xtime_t         xtim;
+    asy::IEffect*   ffct;
+
+    if (delta == NULL) {
+        ffct = new asy::asy3d_ffct_dummy ();
+    }
+    else {
+        xtim = timer_new();
+        if (xtim == NULL)
+            return (NULL);
+        ffct = new asy::asy3d_ffct_profile (xtim, delta);
+        if (ffct == NULL)
+            timer_del(xtim);
+    }
     return (ffct);
 }
 
