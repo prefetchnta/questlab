@@ -10,6 +10,34 @@
 namespace asy {
 
 /****************/
+/* Effect Dummy */
+/****************/
+class asy3d_ffct_dummy : public IEffect
+{
+public:
+    /* ============= */
+    asy3d_ffct_dummy ()
+    {
+    }
+
+    /* ====================== */
+    virtual ~asy3d_ffct_dummy ()
+    {
+    }
+
+public:
+    /* =============== */
+    virtual void enter ()
+    {
+    }
+
+    /* =============== */
+    virtual void leave ()
+    {
+    }
+};
+
+/****************/
 /* Effect Array */
 /****************/
 class asy3d_ffct_array : public IEffect
@@ -52,6 +80,15 @@ public:
 };
 
 }   /* namespace */
+
+/* ============================================= */
+CR_API asy::IEffect* create_asy3d_ffct_dummy (void)
+{
+    asy::IEffect*   ffct;
+
+    ffct = new asy::asy3d_ffct_dummy ();
+    return (ffct);
+}
 
 /* ========================================================================== */
 CR_API asy::IEffect* create_asy3d_ffct_array (asy::IEffect** list, size_t count)
