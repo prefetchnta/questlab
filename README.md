@@ -302,10 +302,10 @@
 ##【其他组件】
 
 - **CrH_CORE (VS2010 SP1)**
-<p>（闭源）<b>CrHack SDK</b> 跨平台核心基础库。</p>
+<p><b>CrHack SDK</b> 跨平台核心基础库。</p>
 
 - **CrH_MATH (VS2010 SP1)**
-<p>（闭源）<b>CrHack SDK</b> 跨平台运算函数库。</p>
+<p><b>CrHack SDK</b> 跨平台运算函数库。</p>
 
 - **CrH_GFX2 (VS2010 SP1)**
 <p>属于 <b>CrHack SDK</b> 本体的跨平台软件 <b>2D</b> 渲染函数库。</p>
