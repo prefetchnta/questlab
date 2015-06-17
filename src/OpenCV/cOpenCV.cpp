@@ -154,7 +154,7 @@ qst_ocv_lineto (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     newx = (sint_t)str2intxA(argv[1]);
     newy = (sint_t)str2intxA(argv[2]);
@@ -192,7 +192,7 @@ qst_ocv_line (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     sx = (sint_t)str2intxA(argv[1]);
     sy = (sint_t)str2intxA(argv[2]);
@@ -230,7 +230,7 @@ qst_ocv_rect_xy (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     sx = (sint_t)str2intxA(argv[1]);
     sy = (sint_t)str2intxA(argv[2]);
@@ -268,7 +268,7 @@ qst_ocv_rect_wh (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     sx = (sint_t)str2intxA(argv[1]);
     sy = (sint_t)str2intxA(argv[2]);
@@ -305,7 +305,7 @@ qst_ocv_circle (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     cx = (sint_t)str2intxA(argv[1]);
     cy = (sint_t)str2intxA(argv[2]);
@@ -344,7 +344,7 @@ qst_ocv_ellps_arc (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     cx = (sint_t)str2intxA(argv[1]);
     cy = (sint_t)str2intxA(argv[2]);
@@ -386,7 +386,7 @@ qst_ocv_ellps_agl (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     cx = (sint_t)str2intxA(argv[1]);
     cy = (sint_t)str2intxA(argv[2]);
@@ -437,7 +437,7 @@ qst_ocv_text (
         return (FALSE);
     ilab_img2ipl_set(&image, draw);
 
-    Mat img(&image, false);
+    Mat img = cvarrToMat(&image, false);
 
     /*  CV_FONT_HERSHEY_SIMPLEX         0
         CV_FONT_HERSHEY_PLAIN           1

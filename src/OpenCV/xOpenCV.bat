@@ -1,4 +1,4 @@
 @echo off
-call "%VS100COMNTOOLS%vsvars32.bat"
+call "%VS120COMNTOOLS%vsvars32.bat"
 nmake -fxOpenCV.mak
 pause

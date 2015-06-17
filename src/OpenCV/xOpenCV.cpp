@@ -5,9 +5,7 @@ using namespace cv;
 
 /* 外部库引用 */
 #pragma comment (lib, "QstLibs.lib")
-#pragma comment (lib, "opencv_core2411.lib")
-#pragma comment (lib, "opencv_highgui2411.lib")
-#pragma comment (lib, "opencv_imgproc2411.lib")
+#pragma comment (lib, "opencv_world300.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*

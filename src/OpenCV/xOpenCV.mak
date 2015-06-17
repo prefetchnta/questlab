@@ -1,7 +1,7 @@
 PROJECT=xOpenCV
 SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).dll
-!INCLUDE "../vc2010_x86.mak"
+!INCLUDE "../vc2013_x86.mak"
 
 OBJ_LIST=.$(L)xOpenCV.$(O) \
          .$(L)cOpenCV.$(O) \

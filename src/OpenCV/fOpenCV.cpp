@@ -33,7 +33,7 @@ adaptive_binary (
     type = xml_attr_intxU("type", CV_ADAPTIVE_THRESH_MEAN_C, param);
     size = xml_attr_intxU("size", 65, param);
 
-    Mat outp, inpt(&draw, false);
+    Mat outp, inpt = cvarrToMat(&draw, false);
 
     if (size < 3)
         size = 3;
@@ -73,7 +73,7 @@ box_blur (
     ksize_x = xml_attr_intxU("ksize_x", 9, param);
     ksize_y = xml_attr_intxU("ksize_y", 9, param);
 
-    Mat inpt(&draw, false);
+    Mat inpt = cvarrToMat(&draw, false);
 
     /* 卷积核大小必须为奇数 */
     if (ksize_x < 3)
@@ -117,7 +117,7 @@ gaussian_blur (
     sigma_x = xml_attr_fp64U("sigma_x", 0.0, param);
     sigma_y = xml_attr_fp64U("sigma_y", 0.0, param);
 
-    Mat inpt(&draw, false);
+    Mat inpt = cvarrToMat(&draw, false);
 
     /* 卷积核大小必须为奇数 */
     if (ksize_x < 3)
@@ -156,7 +156,7 @@ median_blur (
         return (TRUE);
     size = xml_attr_intxU("ksize", 5, param);
 
-    Mat inpt(&draw, false);
+    Mat inpt = cvarrToMat(&draw, false);
 
     /* 卷积核大小必须为奇数 */
     if (size < 3)
@@ -204,8 +204,8 @@ hough_circles (
     max_radius = xml_attr_intxU("max_radius", ww / 2, param);
 
     size_t  idx, count;
-    vector<Vec3f>   result;
-    Mat outp, inpt(&draw, false);
+    std::vector<Vec3f>  result;
+    Mat outp, inpt = cvarrToMat(&draw, false);
 
     /* 变换需要8位单通道的图片 */
     cvtColor(inpt, outp, CV_BGR2GRAY);
@@ -256,14 +256,14 @@ hough_lines (
     the = xml_attr_fp64U("theta", CV_PI / 180, param);
 
     size_t  idx, count;
-    Mat outp, inpt(&draw, false);
+    Mat outp, inpt = cvarrToMat(&draw, false);
 
     /* 两种搜索直线的方法 */
     Canny(inpt, outp, param1, param2, ksize);
     if (str_cmpA(param->name, "opencv_hough_lines") == 0)
     {
         fp64_t  srn, stn;
-        vector<Vec2f>   lines;
+        std::vector<Vec2f>  lines;
 
         srn = xml_attr_fp64U("srn", 0.0, param);
         stn = xml_attr_fp64U("stn", 0.0, param);
@@ -292,8 +292,8 @@ hough_lines (
     }
     else
     {
-        vector<Vec4i>   lines;
         fp64_t  min_len, max_gap;
+        std::vector<Vec4i>  lines;
 
         thres = xml_attr_intxU("thres", 80, param);
         min_len = xml_attr_fp64U("min_len", 30.0, param);
