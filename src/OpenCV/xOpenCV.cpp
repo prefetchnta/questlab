@@ -20,12 +20,17 @@ DllMain (
   __CR_UU__ LPVOID  reserved
     )
 {
+    static bool_t xcom = FALSE;
+
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
+            xcom = com_init();
             break;
 
         case DLL_PROCESS_DETACH:
+            if (xcom)
+                com_kill();
             break;
     }
     CR_NOUSE(hinst);
@@ -256,6 +261,33 @@ ilab_camera_new (
     if (cap != NULL)
         cvSetCaptureProperty(cap, CV_CAP_PROP_CONVERT_RGB, 1.0);
     return ((camera_t)cap);
+}
+
+/*
+=======================================
+    获取摄像头对象 (通过名字)
+=======================================
+*/
+CR_API camera_t
+ilab_camera_new2 (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    uint_t          id, num;
+    const ansi_t*   clist[8];
+
+    num = dshow_cam_list(clist, 8);
+    if (num == 0)
+        return (NULL);
+    for (id = 0; id < num; id++) {
+        if (strcmp(clist[id], name) == 0)
+            break;
+    }
+    for (uint_t jj = 0; jj < num; jj++)
+        TRY_FREE(clist[jj]);
+    if (id >= num)
+        return (NULL);
+    return (ilab_camera_new(id));
 }
 
 /*

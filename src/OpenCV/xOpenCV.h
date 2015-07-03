@@ -47,6 +47,7 @@ typedef void_t*     camera_t;
 
 /* OpenCV 摄像头读取 */
 CR_API camera_t ilab_camera_new (uint_t id);
+CR_API camera_t ilab_camera_new2 (const ansi_t *name);
 CR_API void_t   ilab_camera_del (camera_t cam);
 CR_API ipls_t*  ilab_camera_get (camera_t cam);
 

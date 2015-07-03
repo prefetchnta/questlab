@@ -104,6 +104,8 @@ CR_API bool_t   dshow_get_balance (dshow_t dshow, sint_t *balance);
 CR_API bool_t   dshow_set_position (dshow_t dshow, int64u curt);
 CR_API bool_t   dshow_get_position (dshow_t dshow, int64u *curt,
                                     int64u *total);
+/* 摄像头相关 */
+CR_API uint_t   dshow_cam_list (const ansi_t **name, uint_t max_num);
 
 /*****************************************************************************/
 /*                               网络扩展接口                                */
