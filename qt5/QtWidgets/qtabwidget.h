@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWidgets module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -57,7 +49,6 @@ class QStyleOptionTabWidgetFrame;
 class Q_WIDGETS_EXPORT QTabWidget : public QWidget
 {
     Q_OBJECT
-    Q_ENUMS(TabPosition TabShape)
     Q_PROPERTY(TabPosition tabPosition READ tabPosition WRITE setTabPosition)
     Q_PROPERTY(TabShape tabShape READ tabShape WRITE setTabShape)
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentChanged)
@@ -68,6 +59,7 @@ class Q_WIDGETS_EXPORT QTabWidget : public QWidget
     Q_PROPERTY(bool documentMode READ documentMode WRITE setDocumentMode)
     Q_PROPERTY(bool tabsClosable READ tabsClosable WRITE setTabsClosable)
     Q_PROPERTY(bool movable READ isMovable WRITE setMovable)
+    Q_PROPERTY(bool tabBarAutoHide READ tabBarAutoHide WRITE setTabBarAutoHide)
 
 public:
     explicit QTabWidget(QWidget *parent = 0);
@@ -107,6 +99,7 @@ public:
     int count() const;
 
     enum TabPosition { North, South, West, East };
+    Q_ENUM(TabPosition)
     TabPosition tabPosition() const;
     void setTabPosition(TabPosition);
 
@@ -117,13 +110,14 @@ public:
     void setMovable(bool movable);
 
     enum TabShape { Rounded, Triangular };
+    Q_ENUM(TabShape)
     TabShape tabShape() const;
     void setTabShape(TabShape s);
 
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
-    int heightForWidth(int width) const;
-    bool hasHeightForWidth() const;
+    QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
+    int heightForWidth(int width) const Q_DECL_OVERRIDE;
+    bool hasHeightForWidth() const Q_DECL_OVERRIDE;
 
     void setCornerWidget(QWidget * w, Qt::Corner corner = Qt::TopRightCorner);
     QWidget * cornerWidget(Qt::Corner corner = Qt::TopRightCorner) const;
@@ -139,6 +133,9 @@ public:
 
     bool documentMode() const;
     void setDocumentMode(bool set);
+
+    bool tabBarAutoHide() const;
+    void setTabBarAutoHide(bool enabled);
 
     void clear();
 
@@ -158,13 +155,13 @@ protected:
     virtual void tabInserted(int index);
     virtual void tabRemoved(int index);
 
-    void showEvent(QShowEvent *);
-    void resizeEvent(QResizeEvent *);
-    void keyPressEvent(QKeyEvent *);
-    void paintEvent(QPaintEvent *);
+    void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent *) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void setTabBar(QTabBar *);
-    void changeEvent(QEvent *);
-    bool event(QEvent *);
+    void changeEvent(QEvent *) Q_DECL_OVERRIDE;
+    bool event(QEvent *) Q_DECL_OVERRIDE;
     void initStyleOption(QStyleOptionTabWidgetFrame *option) const;
 
 

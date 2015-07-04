@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the ActiveQt framework of the Qt Toolkit.
 **
@@ -17,8 +17,8 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
 **
@@ -51,6 +51,8 @@ struct IUnknown;
 struct IDispatch;
 
 QT_BEGIN_NAMESPACE
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_GCC("-Woverloaded-virtual") // gcc complains about QObject::metaObject() being hidden.
 
 class QWidget;
 class QSettings;
@@ -60,35 +62,35 @@ class QAxFactory : public QObject
 public:
     QAxFactory(const QUuid &libId, const QUuid &appId);
     virtual ~QAxFactory();
-    
+
     virtual QStringList featureList() const = 0;
 
     virtual QObject *createObject(const QString &key) = 0;
     virtual const QMetaObject *metaObject(const QString &key) const = 0;
     virtual bool createObjectWrapper(QObject *object, IDispatch **wrapper);
-    
+
     virtual QUuid classID(const QString &key) const;
     virtual QUuid interfaceID(const QString &key) const;
     virtual QUuid eventsID(const QString &key) const;
-    
+
     virtual QUuid typeLibID() const;
     virtual QUuid appID() const;
-    
+
     virtual void registerClass(const QString &key, QSettings *) const;
     virtual void unregisterClass(const QString &key, QSettings *) const;
-    
+
     virtual bool validateLicenseKey(const QString &key, const QString &licenseKey) const;
-    
+
     virtual QString exposeToSuperClass(const QString &key) const;
     virtual bool stayTopLevel(const QString &key) const;
     virtual bool hasStockEvents(const QString &key) const;
     virtual bool isService() const;
-    
+
     enum ServerType {
         SingleInstance,
         MultipleInstances
     };
-    
+
     static bool isServer();
     static QString serverDirPath();
     static QString serverFilePath();
@@ -96,7 +98,7 @@ public:
     static bool stopServer();
 
     static bool registerActiveObject(QObject *object);
-    
+
 private:
     QUuid typelib;
     QUuid app;
@@ -120,12 +122,12 @@ inline bool QAxFactory::stopServer()
     return qax_stopServer();
 }
 
-#define QAXFACTORY_EXPORT(IMPL, TYPELIB, APPID)	\
+#define QAXFACTORY_EXPORT(IMPL, TYPELIB, APPID) \
     QT_BEGIN_NAMESPACE \
-    QAxFactory *qax_instantiate()		\
-    {							\
-        IMPL *impl = new IMPL(QUuid(TYPELIB), QUuid(APPID));	\
-        return impl;					\
+    QAxFactory *qax_instantiate()               \
+    {                                                   \
+        IMPL *impl = new IMPL(QUuid(TYPELIB), QUuid(APPID));    \
+        return impl;                                    \
     } \
     QT_END_NAMESPACE
 
@@ -185,7 +187,7 @@ public:
     QAxClass(const QString &libId, const QString &appId)
     : QAxFactory(libId, appId)
     {}
-    
+
     const QMetaObject *metaObject(const QString &) const { return &T::staticMetaObject; }
     QStringList featureList() const { return QStringList(QString(T::staticMetaObject.className())); }
     QObject *createObject(const QString &key)
@@ -218,20 +220,20 @@ public:
             factory = new QAxClass<Class>(typeLibID().toString(), appID().toString()); \
             qRegisterMetaType<Class*>(#Class"*"); \
             keys = factory->featureList(); \
-            for (it = keys.begin(); it != keys.end(); ++it) { \
-                factoryKeys += *it; \
-                factories.insert(*it, factory); \
-                creatable.insert(*it, true); \
+            foreach (const QString &key, keys) { \
+                factoryKeys += key; \
+                factories.insert(key, factory); \
+                creatable.insert(key, true); \
             }\
 
 #define QAXTYPE(Class) \
             factory = new QAxClass<Class>(typeLibID().toString(), appID().toString()); \
             qRegisterMetaType<Class*>(#Class"*"); \
             keys = factory->featureList(); \
-            for (it = keys.begin(); it != keys.end(); ++it) { \
-                factoryKeys += *it; \
-                factories.insert(*it, factory); \
-                creatable.insert(*it, false); \
+            foreach (const QString &key, keys) { \
+                factoryKeys += key; \
+                factories.insert(key, factory); \
+                creatable.insert(key, false); \
             }\
 
 #define QAXFACTORY_END() \
@@ -281,13 +283,14 @@ public:
             return f ? f->hasStockEvents(key) : false; \
         } \
     }; \
-    QAxFactory *qax_instantiate()		\
-    {							\
-        QAxFactoryList *impl = new QAxFactoryList();	\
-        return impl;					\
+    QAxFactory *qax_instantiate()               \
+    {                                                   \
+        QAxFactoryList *impl = new QAxFactoryList();    \
+        return impl;                                    \
     } \
     QT_END_NAMESPACE
 
+QT_WARNING_POP
 QT_END_NAMESPACE
 
 #ifndef Q_COM_METATYPE_DECLARED

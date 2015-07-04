@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -187,10 +179,11 @@ public:
 
     // #### Qt 5: Q_PID is a pointer on Windows and a value on Unix
     Q_PID pid() const;
+    qint64 processId() const;
 
     bool waitForStarted(int msecs = 30000);
-    bool waitForReadyRead(int msecs = 30000);
-    bool waitForBytesWritten(int msecs = 30000);
+    bool waitForReadyRead(int msecs = 30000) Q_DECL_OVERRIDE;
+    bool waitForBytesWritten(int msecs = 30000) Q_DECL_OVERRIDE;
     bool waitForFinished(int msecs = 30000);
 
     QByteArray readAllStandardOutput();
@@ -200,20 +193,26 @@ public:
     QProcess::ExitStatus exitStatus() const;
 
     // QIODevice
-    qint64 bytesAvailable() const;
-    qint64 bytesToWrite() const;
-    bool isSequential() const;
-    bool canReadLine() const;
-    void close();
-    bool atEnd() const;
+    qint64 bytesAvailable() const Q_DECL_OVERRIDE;
+    qint64 bytesToWrite() const Q_DECL_OVERRIDE;
+    bool isSequential() const Q_DECL_OVERRIDE;
+    bool canReadLine() const Q_DECL_OVERRIDE;
+    void close() Q_DECL_OVERRIDE;
+    bool atEnd() const Q_DECL_OVERRIDE;
 
     static int execute(const QString &program, const QStringList &arguments);
-    static int execute(const QString &program);
+    static int execute(const QString &command);
 
-    static bool startDetached(const QString &program, const QStringList &arguments, const QString &workingDirectory,
-                              qint64 *pid = 0);
-    static bool startDetached(const QString &program, const QStringList &arguments);
-    static bool startDetached(const QString &program);
+    static bool startDetached(const QString &program, const QStringList &arguments,
+                              const QString &workingDirectory
+#if defined(Q_QDOC)
+                              = QString()
+#endif
+                              , qint64 *pid = 0);
+#if !defined(Q_QDOC)
+    static bool startDetached(const QString &program, const QStringList &arguments); // ### Qt6: merge overloads
+#endif
+    static bool startDetached(const QString &command);
 
     static QStringList systemEnvironment();
 
@@ -224,30 +223,14 @@ public Q_SLOTS:
     void kill();
 
 Q_SIGNALS:
-    void started(
-#if !defined(Q_QDOC)
-        QPrivateSignal
-#endif
-    );
+    void started(QPrivateSignal);
     void finished(int exitCode); // ### Qt 6: merge the two signals with a default value
     void finished(int exitCode, QProcess::ExitStatus exitStatus);
     void error(QProcess::ProcessError error);
-    void stateChanged(QProcess::ProcessState state
-#if !defined(Q_QDOC)
-        , QPrivateSignal
-#endif
-    );
+    void stateChanged(QProcess::ProcessState state, QPrivateSignal);
 
-    void readyReadStandardOutput(
-#if !defined(Q_QDOC)
-        QPrivateSignal
-#endif
-    );
-    void readyReadStandardError(
-#if !defined(Q_QDOC)
-        QPrivateSignal
-#endif
-    );
+    void readyReadStandardOutput(QPrivateSignal);
+    void readyReadStandardError(QPrivateSignal);
 
 protected:
     void setProcessState(ProcessState state);
@@ -255,8 +238,8 @@ protected:
     virtual void setupChildProcess();
 
     // QIODevice
-    qint64 readData(char *data, qint64 maxlen);
-    qint64 writeData(const char *data, qint64 len);
+    qint64 readData(char *data, qint64 maxlen) Q_DECL_OVERRIDE;
+    qint64 writeData(const char *data, qint64 len) Q_DECL_OVERRIDE;
 
 private:
     Q_DECLARE_PRIVATE(QProcess)
@@ -267,7 +250,6 @@ private:
     Q_PRIVATE_SLOT(d_func(), bool _q_canWrite())
     Q_PRIVATE_SLOT(d_func(), bool _q_startupNotification())
     Q_PRIVATE_SLOT(d_func(), bool _q_processDied())
-    Q_PRIVATE_SLOT(d_func(), void _q_notified())
     friend class QProcessManager;
 };
 

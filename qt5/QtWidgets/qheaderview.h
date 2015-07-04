@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWidgets module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -59,11 +51,10 @@ class Q_WIDGETS_EXPORT QHeaderView : public QAbstractItemView
     Q_PROPERTY(bool highlightSections READ highlightSections WRITE setHighlightSections)
     Q_PROPERTY(bool stretchLastSection READ stretchLastSection WRITE setStretchLastSection)
     Q_PROPERTY(bool cascadingSectionResizes READ cascadingSectionResizes WRITE setCascadingSectionResizes)
-    Q_PROPERTY(int defaultSectionSize READ defaultSectionSize WRITE setDefaultSectionSize)
+    Q_PROPERTY(int defaultSectionSize READ defaultSectionSize WRITE setDefaultSectionSize RESET resetDefaultSectionSize)
     Q_PROPERTY(int minimumSectionSize READ minimumSectionSize WRITE setMinimumSectionSize)
     Q_PROPERTY(int maximumSectionSize READ maximumSectionSize WRITE setMaximumSectionSize)
     Q_PROPERTY(Qt::Alignment defaultAlignment READ defaultAlignment WRITE setDefaultAlignment)
-    Q_ENUMS(ResizeMode)
 
 public:
 
@@ -75,17 +66,18 @@ public:
         ResizeToContents,
         Custom = Fixed
     };
+    Q_ENUM(ResizeMode)
 
     explicit QHeaderView(Qt::Orientation orientation, QWidget *parent = 0);
     virtual ~QHeaderView();
 
-    void setModel(QAbstractItemModel *model);
+    void setModel(QAbstractItemModel *model) Q_DECL_OVERRIDE;
 
     Qt::Orientation orientation() const;
     int offset() const;
     int length() const;
-    QSize sizeHint() const;
-    void setVisible(bool v);
+    QSize sizeHint() const Q_DECL_OVERRIDE;
+    void setVisible(bool v) Q_DECL_OVERRIDE;
     int sectionSizeHint(int logicalIndex) const;
 
     int visualIndexAt(int position) const;
@@ -164,6 +156,7 @@ public:
 
     int defaultSectionSize() const;
     void setDefaultSectionSize(int size);
+    void resetDefaultSectionSize();
 
     int minimumSectionSize() const;
     void setMinimumSectionSize(int size);
@@ -173,7 +166,7 @@ public:
     Qt::Alignment defaultAlignment() const;
     void setDefaultAlignment(Qt::Alignment alignment);
 
-    void doItemsLayout();
+    void doItemsLayout() Q_DECL_OVERRIDE;
     bool sectionsMoved() const;
     bool sectionsHidden() const;
 
@@ -182,7 +175,7 @@ public:
     bool restoreState(const QByteArray &state);
 #endif
 
-    void reset();
+    void reset() Q_DECL_OVERRIDE;
 
 public Q_SLOTS:
     void setOffset(int offset);
@@ -214,36 +207,36 @@ protected:
 
     void initializeSections();
     void initializeSections(int start, int end);
-    void currentChanged(const QModelIndex &current, const QModelIndex &old);
+    void currentChanged(const QModelIndex &current, const QModelIndex &old) Q_DECL_OVERRIDE;
 
-    bool event(QEvent *e);
-    void paintEvent(QPaintEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void mouseDoubleClickEvent(QMouseEvent *e);
-    bool viewportEvent(QEvent *e);
+    bool event(QEvent *e) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *e) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    bool viewportEvent(QEvent *e) Q_DECL_OVERRIDE;
 
     virtual void paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const;
     virtual QSize sectionSizeFromContents(int logicalIndex) const;
 
-    int horizontalOffset() const;
-    int verticalOffset() const;
-    void updateGeometries();
-    void scrollContentsBy(int dx, int dy);
+    int horizontalOffset() const Q_DECL_OVERRIDE;
+    int verticalOffset() const Q_DECL_OVERRIDE;
+    void updateGeometries() Q_DECL_OVERRIDE;
+    void scrollContentsBy(int dx, int dy) Q_DECL_OVERRIDE;
 
-    void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
-    void rowsInserted(const QModelIndex &parent, int start, int end);
+    void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>()) Q_DECL_OVERRIDE;
+    void rowsInserted(const QModelIndex &parent, int start, int end) Q_DECL_OVERRIDE;
 
-    QRect visualRect(const QModelIndex &index) const;
-    void scrollTo(const QModelIndex &index, ScrollHint hint);
+    QRect visualRect(const QModelIndex &index) const Q_DECL_OVERRIDE;
+    void scrollTo(const QModelIndex &index, ScrollHint hint) Q_DECL_OVERRIDE;
 
-    QModelIndex indexAt(const QPoint &p) const;
-    bool isIndexHidden(const QModelIndex &index) const;
+    QModelIndex indexAt(const QPoint &p) const Q_DECL_OVERRIDE;
+    bool isIndexHidden(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
-    QModelIndex moveCursor(CursorAction, Qt::KeyboardModifiers);
-    void setSelection(const QRect& rect, QItemSelectionModel::SelectionFlags flags);
-    QRegion visualRegionForSelection(const QItemSelection &selection) const;
+    QModelIndex moveCursor(CursorAction, Qt::KeyboardModifiers) Q_DECL_OVERRIDE;
+    void setSelection(const QRect& rect, QItemSelectionModel::SelectionFlags flags) Q_DECL_OVERRIDE;
+    QRegion visualRegionForSelection(const QItemSelection &selection) const Q_DECL_OVERRIDE;
     void initStyleOption(QStyleOptionHeader *option) const;
 
     friend class QTableView;

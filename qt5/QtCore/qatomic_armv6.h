@@ -1,40 +1,32 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2015 The Qt Company Ltd.
 ** Copyright (C) 2011 Thiago Macieira <thiago@kde.org>
-** Contact: http://www.qt-project.org/legal
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -69,16 +61,6 @@ QT_END_NAMESPACE
 #define Q_ATOMIC_POINTER_FETCH_AND_STORE_IS_ALWAYS_NATIVE
 #define Q_ATOMIC_POINTER_FETCH_AND_ADD_IS_ALWAYS_NATIVE
 
-template<> struct QAtomicIntegerTraits<int> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned int> { enum { IsInteger = 1 }; };
-#if defined(Q_COMPILER_UNICODE_STRINGS) && !defined(Q_PROCESSOR_ARM_V6)
-// for ARMv5, ensure that char32_t (an uint_least32_t), is 32-bit
-// it's extremely unlikely it won't be on a 32-bit ARM, but just to be sure
-// For ARMv6 and up, we're sure it works, but the definition is below
-template<> struct QAtomicIntegerTraits<char32_t>
-{ enum { IsInteger = sizeof(char32_t) == sizeof(int) ? 1 : -1 }; };
-#endif
-
 template <int size> struct QBasicAtomicOps: QGenericAtomicOps<QBasicAtomicOps<size> >
 {
     template <typename T>
@@ -91,6 +73,8 @@ template <int size> struct QBasicAtomicOps: QGenericAtomicOps<QBasicAtomicOps<si
     static inline Q_DECL_CONSTEXPR bool isTestAndSetNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isTestAndSetWaitFree() Q_DECL_NOTHROW { return false; }
     template <typename T> static bool testAndSetRelaxed(T &_q_value, T expectedValue, T newValue) Q_DECL_NOTHROW;
+    template <typename T> static bool testAndSetRelaxed(T &_q_value, T expectedValue,
+                                                        T newValue, T *currentValue) Q_DECL_NOTHROW;
 
     static inline Q_DECL_CONSTEXPR bool isFetchAndStoreNative() Q_DECL_NOTHROW { return true; }
     template <typename T> static T fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHROW;
@@ -98,6 +82,10 @@ template <int size> struct QBasicAtomicOps: QGenericAtomicOps<QBasicAtomicOps<si
     static inline Q_DECL_CONSTEXPR bool isFetchAndAddNative() Q_DECL_NOTHROW { return true; }
     template <typename T> static
     T fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveType<T>::AdditiveT valueToAdd) Q_DECL_NOTHROW;
+
+private:
+    template <typename T> static inline T shrinkFrom32Bit(T value);
+    template <typename T> static inline T extendTo32Bit(T value);
 };
 
 template <typename T> struct QAtomicOps : QBasicAtomicOps<sizeof(T)>
@@ -173,6 +161,29 @@ bool QBasicAtomicOps<4>::testAndSetRelaxed(T &_q_value, T expectedValue, T newVa
 }
 
 template<> template <typename T> inline
+bool QBasicAtomicOps<4>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    T tempValue;
+    int result;
+    asm volatile("0:\n"
+                 "ldrex %[tempValue], [%[_q_value]]\n"
+                 "eors %[result], %[tempValue], %[expectedValue]\n"
+                 "itt eq\n"
+                 "strexeq %[result], %[newValue], [%[_q_value]]\n"
+                 "teqeq %[result], #1\n"
+                 "beq 0b\n"
+                 : [result] "=&r" (result),
+                   [tempValue] "=&r" (tempValue),
+                   "+m" (_q_value)
+                 : [expectedValue] "r" (expectedValue),
+                   [newValue] "r" (newValue),
+                   [_q_value] "r" (&_q_value)
+                 : "cc");
+    *currentValue = tempValue;
+    return result == 0;
+}
+
+template<> template <typename T> inline
 T QBasicAtomicOps<4>::fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHROW
 {
     T originalValue;
@@ -220,20 +231,9 @@ T QBasicAtomicOps<4>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveTy
     || defined(__ARM_ARCH_6K__)
 // LDREXB, LDREXH and LDREXD are available on ARMv6K or higher
 
-template<> struct QAtomicIntegerTraits<char> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<signed char> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned char> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<short> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned short> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<long> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned long> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<long long> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned long long> { enum { IsInteger = 1 }; };
-
-# ifdef Q_COMPILER_UNICODE_STRINGS
-template<> struct QAtomicIntegerTraits<char16_t> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<char32_t> { enum { IsInteger = 1 }; };
-# endif
+template<> struct QAtomicOpsSupport<1> { enum { IsSupported = 1 }; };
+template<> struct QAtomicOpsSupport<2> { enum { IsSupported = 1 }; };
+template<> struct QAtomicOpsSupport<8> { enum { IsSupported = 1 }; };
 
 #define Q_ATOMIC_INT8_IS_SUPPORTED
 #define Q_ATOMIC_INT8_REFERENCE_COUNTING_IS_ALWAYS_NATIVE
@@ -252,6 +252,36 @@ template<> struct QAtomicIntegerTraits<char32_t> { enum { IsInteger = 1 }; };
 #define Q_ATOMIC_INT64_TEST_AND_SET_IS_ALWAYS_NATIVE
 #define Q_ATOMIC_INT64_FETCH_AND_STORE_IS_ALWAYS_NATIVE
 #define Q_ATOMIC_INT64_FETCH_AND_ADD_IS_ALWAYS_NATIVE
+
+// note: if T is signed, parameters are passed sign-extended in the
+// registers. However, our 8- and 16-bit operations don't do sign
+// extension. So we need to clear out the input on entry and sign-extend again
+// on exit.
+template<int Size> template <typename T>
+T QBasicAtomicOps<Size>::shrinkFrom32Bit(T value)
+{
+    Q_STATIC_ASSERT(Size == 1 || Size == 2);
+    if (T(-1) > T(0))
+        return value;   // unsigned, ABI will zero extend
+    if (Size == 1)
+        asm volatile("and %0, %0, %1" : "+r" (value) : "I" (0xff));
+    else
+        asm volatile("and %0, %0, %1" : "+r" (value) : "r" (0xffff));
+    return value;
+}
+
+template<int Size> template <typename T>
+T QBasicAtomicOps<Size>::extendTo32Bit(T value)
+{
+    Q_STATIC_ASSERT(Size == 1 || Size == 2);
+    if (T(-1) > T(0))
+        return value;   // unsigned, ABI will zero extend
+    if (Size == 1)
+        asm volatile("sxtb %0, %0" : "+r" (value));
+    else
+        asm volatile("sxth %0, %0" : "+r" (value));
+    return value;
+}
 
 template<> template<typename T> inline
 bool QBasicAtomicOps<1>::ref(T &_q_value) Q_DECL_NOTHROW
@@ -304,10 +334,33 @@ bool QBasicAtomicOps<1>::testAndSetRelaxed(T &_q_value, T expectedValue, T newVa
                  "beq 0b\n"
                  : [result] "=&r" (result),
                    "+m" (_q_value)
-                 : [expectedValue] "r" (expectedValue),
+                 : [expectedValue] "r" (shrinkFrom32Bit(expectedValue)),
                    [newValue] "r" (newValue),
                    [_q_value] "r" (&_q_value)
                  : "cc");
+    return result == 0;
+}
+
+template<> template <typename T> inline
+bool QBasicAtomicOps<1>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    T tempValue;
+    T result;
+    asm volatile("0:\n"
+                 "ldrexb %[tempValue], [%[_q_value]]\n"
+                 "eors %[result], %[tempValue], %[expectedValue]\n"
+                 "itt eq\n"
+                 "strexbeq %[result], %[newValue], [%[_q_value]]\n"
+                 "teqeq %[result], #1\n"
+                 "beq 0b\n"
+                 : [result] "=&r" (result),
+                   [tempValue] "=&r" (tempValue),
+                   "+m" (_q_value)
+                 : [expectedValue] "r" (shrinkFrom32Bit(expectedValue)),
+                   [newValue] "r" (newValue),
+                   [_q_value] "r" (&_q_value)
+                 : "cc");
+    *currentValue = extendTo32Bit(tempValue);
     return result == 0;
 }
 
@@ -327,7 +380,7 @@ T QBasicAtomicOps<1>::fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHR
                  : [newValue] "r" (newValue),
                    [_q_value] "r" (&_q_value)
                  : "cc");
-    return originalValue;
+    return extendTo32Bit(originalValue);
 }
 
 template<> template <typename T> inline
@@ -349,7 +402,7 @@ T QBasicAtomicOps<1>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveTy
                  : [valueToAdd] "r" (valueToAdd * QAtomicAdditiveType<T>::AddScale),
                    [_q_value] "r" (&_q_value)
                  : "cc");
-    return originalValue;
+    return extendTo32Bit(originalValue);
 }
 
 template<> template<typename T> inline
@@ -403,10 +456,33 @@ bool QBasicAtomicOps<2>::testAndSetRelaxed(T &_q_value, T expectedValue, T newVa
                  "beq 0b\n"
                  : [result] "=&r" (result),
                    "+m" (_q_value)
-                 : [expectedValue] "r" (expectedValue),
+                 : [expectedValue] "r" (shrinkFrom32Bit(expectedValue)),
                    [newValue] "r" (newValue),
                    [_q_value] "r" (&_q_value)
                  : "cc");
+    return result == 0;
+}
+
+template<> template <typename T> inline
+bool QBasicAtomicOps<2>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    T tempValue;
+    T result;
+    asm volatile("0:\n"
+                 "ldrexh %[tempValue], [%[_q_value]]\n"
+                 "eors %[result], %[tempValue], %[expectedValue]\n"
+                 "itt eq\n"
+                 "strexheq %[result], %[newValue], [%[_q_value]]\n"
+                 "teqeq %[result], #1\n"
+                 "beq 0b\n"
+                 : [result] "=&r" (result),
+                   [tempValue] "=&r" (tempValue),
+                   "+m" (_q_value)
+                 : [expectedValue] "r" (shrinkFrom32Bit(expectedValue)),
+                   [newValue] "r" (newValue),
+                   [_q_value] "r" (&_q_value)
+                 : "cc");
+    *currentValue = extendTo32Bit(tempValue);
     return result == 0;
 }
 
@@ -426,7 +502,7 @@ T QBasicAtomicOps<2>::fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHR
                  : [newValue] "r" (newValue),
                    [_q_value] "r" (&_q_value)
                  : "cc");
-    return originalValue;
+    return extendTo32Bit(originalValue);
 }
 
 template<> template <typename T> inline
@@ -448,7 +524,7 @@ T QBasicAtomicOps<2>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveTy
                  : [valueToAdd] "r" (valueToAdd * QAtomicAdditiveType<T>::AddScale),
                    [_q_value] "r" (&_q_value)
                  : "cc");
-    return originalValue;
+    return extendTo32Bit(originalValue);
 }
 
 // Explanation from GCC's source code (config/arm/arm.c) on the modifiers below:
@@ -518,6 +594,31 @@ bool QBasicAtomicOps<8>::testAndSetRelaxed(T &_q_value, T expectedValue, T newVa
                    [newValue] "r" (newValue),
                    [_q_value] "r" (&_q_value)
                  : "cc");
+    return quint32(result) == 0;
+}
+
+template<> template <typename T> inline
+bool QBasicAtomicOps<8>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    T tempValue;
+    T result;
+    asm volatile("0:\n"
+                 "ldrexd %[tempValue], %H[tempValue], [%[_q_value]]\n"
+                 "eor %[result], %[tempValue], %[expectedValue]\n"
+                 "eor %H[result], %H[tempValue], %H[expectedValue]\n"
+                 "orrs %[result], %[result], %H[result]\n"
+                 "itt eq\n"
+                 "strexdeq %[result], %[newValue], %H[newValue], [%[_q_value]]\n"
+                 "teqeq %[result], #1\n"
+                 "beq 0b\n"
+                 : [result] "=&r" (result),
+                   [tempValue] "=&r" (tempValue),
+                   "+m" (_q_value)
+                 : [expectedValue] "r" (expectedValue),
+                   [newValue] "r" (newValue),
+                   [_q_value] "r" (&_q_value)
+                 : "cc");
+    *currentValue = tempValue;
     return quint32(result) == 0;
 }
 

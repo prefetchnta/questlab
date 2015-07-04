@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -82,6 +74,10 @@ public:
     QJsonValue(qint64 n);
     QJsonValue(const QString &s);
     QJsonValue(QLatin1String s);
+#ifndef QT_NO_CAST_FROM_ASCII
+    inline QT_ASCII_CAST_WARN QJsonValue(const char *s)
+        : d(0), t(String) { stringDataFromQStringHelper(QString::fromUtf8(s)); }
+#endif
     QJsonValue(const QJsonArray &a);
     QJsonValue(const QJsonObject &o);
 
@@ -123,6 +119,7 @@ private:
     friend Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonValue &);
 
     QJsonValue(QJsonPrivate::Data *d, QJsonPrivate::Base *b, const QJsonPrivate::Value& v);
+    void stringDataFromQStringHelper(const QString &string);
 
     void detach();
 
@@ -149,6 +146,7 @@ public:
     QJsonValueRef &operator = (const QJsonValue &val);
     QJsonValueRef &operator = (const QJsonValueRef &val);
 
+    QVariant toVariant() const;
     inline QJsonValue::Type type() const { return toValue().type(); }
     inline bool isNull() const { return type() == QJsonValue::Null; }
     inline bool isBool() const { return type() == QJsonValue::Bool; }
@@ -165,6 +163,12 @@ public:
     QJsonArray toArray() const;
     QJsonObject toObject() const;
 
+    // ### Qt 6: Add default values
+    inline bool toBool(bool defaultValue) const { return toValue().toBool(defaultValue); }
+    inline int toInt(int defaultValue) const { return toValue().toInt(defaultValue); }
+    inline double toDouble(double defaultValue) const { return toValue().toDouble(defaultValue); }
+    inline QString toString(const QString &defaultValue) const { return toValue().toString(defaultValue); }
+
     inline bool operator==(const QJsonValue &other) const { return toValue() == other; }
     inline bool operator!=(const QJsonValue &other) const { return toValue() != other; }
 
@@ -178,6 +182,33 @@ private:
     uint is_object : 1;
     uint index : 31;
 };
+
+#ifndef Q_QDOC
+// ### Qt 6: Get rid of these fake pointer classes
+class QJsonValuePtr
+{
+    QJsonValue value;
+public:
+    explicit QJsonValuePtr(const QJsonValue& val)
+        : value(val) {}
+
+    QJsonValue& operator*() { return value; }
+    QJsonValue* operator->() { return &value; }
+};
+
+class QJsonValueRefPtr
+{
+    QJsonValueRef valueRef;
+public:
+    QJsonValueRefPtr(QJsonArray *array, int idx)
+        : valueRef(array, idx) {}
+    QJsonValueRefPtr(QJsonObject *object, int idx)
+        : valueRef(object, idx)  {}
+
+    QJsonValueRef& operator*() { return valueRef; }
+    QJsonValueRef* operator->() { return &valueRef; }
+};
+#endif
 
 #if !defined(QT_NO_DEBUG_STREAM) && !defined(QT_JSON_READONLY)
 Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonValue &);

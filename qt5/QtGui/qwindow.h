@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -85,13 +77,12 @@ class QPlatformWindow;
 class QBackingStore;
 class QScreen;
 class QAccessibleInterface;
+class QWindowContainer;
 
 class Q_GUI_EXPORT QWindow : public QObject, public QSurface
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWindow)
-
-    Q_ENUMS(Visibility)
 
     // All properties which are declared here are inherited by QQuickWindow and therefore available in QML.
     // So please think carefully about what it does to the QML namespace if you add any new ones,
@@ -103,7 +94,7 @@ class Q_GUI_EXPORT QWindow : public QObject, public QSurface
     // C++ properties in qwindow.cpp AND as QML properties in qquickwindow.cpp.
     // http://qt-project.org/doc/qt-5.0/qtqml/qtqml-cppintegration-definetypes.html#type-revisions-and-versions
 
-    Q_PROPERTY(QString title READ title WRITE setTitle)
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY windowTitleChanged)
     Q_PROPERTY(Qt::WindowModality modality READ modality WRITE setModality NOTIFY modalityChanged)
     Q_PROPERTY(Qt::WindowFlags flags READ flags WRITE setFlags)
     Q_PROPERTY(int x READ x WRITE setX NOTIFY xChanged)
@@ -129,13 +120,14 @@ public:
         Maximized,
         FullScreen
     };
+    Q_ENUM(Visibility)
 
     explicit QWindow(QScreen *screen = 0);
     explicit QWindow(QWindow *parent);
     virtual ~QWindow();
 
     void setSurfaceType(SurfaceType surfaceType);
-    SurfaceType surfaceType() const;
+    SurfaceType surfaceType() const Q_DECL_OVERRIDE;
 
     bool isVisible() const;
 
@@ -156,7 +148,7 @@ public:
     void setModality(Qt::WindowModality modality);
 
     void setFormat(const QSurfaceFormat &format);
-    QSurfaceFormat format() const;
+    QSurfaceFormat format() const Q_DECL_OVERRIDE;
     QSurfaceFormat requestedFormat() const;
 
     void setFlags(Qt::WindowFlags flags);
@@ -223,7 +215,7 @@ public:
     inline int x() const { return geometry().x(); }
     inline int y() const { return geometry().y(); }
 
-    inline QSize size() const { return geometry().size(); }
+    QSize size() const Q_DECL_OVERRIDE { return geometry().size(); }
     inline QPoint position() const { return geometry().topLeft(); }
 
     void setPosition(const QPoint &pt);
@@ -293,10 +285,13 @@ public Q_SLOTS:
 
     Q_REVISION(1) void alert(int msec);
 
+    Q_REVISION(3) void requestUpdate();
+
 Q_SIGNALS:
     void screenChanged(QScreen *screen);
     void modalityChanged(Qt::WindowModality modality);
     void windowStateChanged(Qt::WindowState windowState);
+    Q_REVISION(2) void windowTitleChanged(const QString &title);
 
     void xChanged(int arg);
     void yChanged(int arg);
@@ -318,9 +313,6 @@ Q_SIGNALS:
 
     Q_REVISION(1) void opacityChanged(qreal opacity);
 
-private Q_SLOTS:
-    void screenDestroyed(QObject *screen);
-
 protected:
     virtual void exposeEvent(QExposeEvent *);
     virtual void resizeEvent(QResizeEvent *);
@@ -332,7 +324,7 @@ protected:
     virtual void hideEvent(QHideEvent *);
     // TODO Qt 6 - add closeEvent virtual handler
 
-    virtual bool event(QEvent *);
+    virtual bool event(QEvent *) Q_DECL_OVERRIDE;
     virtual void keyPressEvent(QKeyEvent *);
     virtual void keyReleaseEvent(QKeyEvent *);
     virtual void mousePressEvent(QMouseEvent *);
@@ -352,14 +344,28 @@ protected:
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_clearAlert())
-    QPlatformSurface *surfaceHandle() const;
+    QPlatformSurface *surfaceHandle() const Q_DECL_OVERRIDE;
 
     Q_DISABLE_COPY(QWindow)
 
     friend class QGuiApplication;
     friend class QGuiApplicationPrivate;
+    friend class QWindowContainer;
     friend Q_GUI_EXPORT QWindowPrivate *qt_window_private(QWindow *window);
 };
+
+#ifndef Q_QDOC
+template <> inline QWindow *qobject_cast<QWindow*>(QObject *o)
+{
+    if (!o || !o->isWindowType()) return 0;
+    return static_cast<QWindow*>(o);
+}
+template <> inline const QWindow *qobject_cast<const QWindow*>(const QObject *o)
+{
+    if (!o || !o->isWindowType()) return 0;
+    return static_cast<const QWindow*>(o);
+}
+#endif // !Q_QDOC
 
 QT_END_NAMESPACE
 

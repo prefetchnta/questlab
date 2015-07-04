@@ -8,6 +8,8 @@
 #include "qndefnfcurirecord.h"
 #include "qndefrecord.h"
 #include "qnearfieldmanager.h"
+#include "qnearfieldsharemanager.h"
+#include "qnearfieldsharetarget.h"
 #include "qnearfieldtarget.h"
 #include "qnfcglobal.h"
 #include "qqmlndefrecord.h"

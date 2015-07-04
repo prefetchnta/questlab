@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -83,6 +75,7 @@
      BSD4     - Any BSD 4.4 system
      UNIX     - Any UNIX BSD/SYSV system
      ANDROID  - Android platform
+     HAIKU    - Haiku
 
    The following operating systems have variants:
      LINUX    - both Q_OS_LINUX and Q_OS_ANDROID are defined when building for Android
@@ -113,7 +106,7 @@
 #  if defined(WINCE) || defined(_WIN32_WCE)
 #    define Q_OS_WINCE
 #  elif defined(WINAPI_FAMILY)
-#    if WINAPI_FAMILY==WINAPI_FAMILY_PHONE_APP
+#    if defined(WINAPI_FAMILY_PHONE_APP) && WINAPI_FAMILY==WINAPI_FAMILY_PHONE_APP
 #      define Q_OS_WINPHONE
 #      define Q_OS_WINRT
 #    elif WINAPI_FAMILY==WINAPI_FAMILY_APP
@@ -177,6 +170,8 @@
 #  define Q_OS_INTEGRITY
 #elif defined(VXWORKS) /* there is no "real" VxWorks define - this has to be set in the mkspec! */
 #  define Q_OS_VXWORKS
+#elif defined(__HAIKU__)
+#  define Q_OS_HAIKU
 #elif defined(__MAKEDEPEND__)
 #else
 #  error "Qt has not been ported to this OS - see http://www.qt-project.org/"
@@ -235,6 +230,12 @@
 #  if !defined(__MAC_10_9)
 #       define __MAC_10_9 1090
 #  endif
+#  if !defined(__MAC_10_10)
+#       define __MAC_10_10 101000
+#  endif
+#  if !defined(__MAC_10_11)
+#       define __MAC_10_11 101100
+#  endif
 #  if !defined(MAC_OS_X_VERSION_10_7)
 #       define MAC_OS_X_VERSION_10_7 1070
 #  endif
@@ -243,6 +244,12 @@
 #  endif
 #  if !defined(MAC_OS_X_VERSION_10_9)
 #       define MAC_OS_X_VERSION_10_9 1090
+#  endif
+#  if !defined(MAC_OS_X_VERSION_10_10)
+#       define MAC_OS_X_VERSION_10_10 101000
+#  endif
+#  if !defined(MAC_OS_X_VERSION_10_11)
+#       define MAC_OS_X_VERSION_10_11 101100
 #  endif
 #
 #  if !defined(__IPHONE_4_3)
@@ -262,6 +269,27 @@
 #  endif
 #  if !defined(__IPHONE_7_0)
 #       define __IPHONE_7_0 70000
+#  endif
+#  if !defined(__IPHONE_7_1)
+#       define __IPHONE_7_1 70100
+#  endif
+#  if !defined(__IPHONE_8_0)
+#       define __IPHONE_8_0 80000
+#  endif
+#  if !defined(__IPHONE_8_1)
+#       define __IPHONE_8_1 80100
+#  endif
+#  if !defined(__IPHONE_8_2)
+#       define __IPHONE_8_2 80200
+#  endif
+#  if !defined(__IPHONE_8_3)
+#       define __IPHONE_8_3 80300
+#  endif
+#  if !defined(__IPHONE_8_4)
+#       define __IPHONE_8_4 80400
+#  endif
+#  if !defined(__IPHONE_9_0)
+#       define __IPHONE_9_0 90000
 #  endif
 #endif
 

@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtDeclarative module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -54,10 +46,10 @@
 
 #define QML_DECLARE_TYPE(TYPE) \
     Q_DECLARE_METATYPE(TYPE *) \
-    Q_DECLARE_METATYPE(QDeclarativeListProperty<TYPE>) 
+    Q_DECLARE_METATYPE(QDeclarativeListProperty<TYPE>)
 
 #define QML_DECLARE_TYPE_HASMETATYPE(TYPE) \
-    Q_DECLARE_METATYPE(QDeclarativeListProperty<TYPE>) 
+    Q_DECLARE_METATYPE(QDeclarativeListProperty<TYPE>)
 
 #define QML_DECLARE_INTERFACE(INTERFACE) \
     QML_DECLARE_TYPE(INTERFACE)
@@ -94,7 +86,7 @@ int qmlRegisterType()
     QByteArray listName("QDeclarativeListProperty<" + name + ">");
 
     QDeclarativePrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterMetaType<T *>(pointerName.constData()),
         qRegisterMetaType<QDeclarativeListProperty<T> >(listName.constData()),
@@ -106,7 +98,7 @@ int qmlRegisterType()
         QDeclarativePrivate::attachedPropertiesFunc<T>(),
         QDeclarativePrivate::attachedPropertiesMetaObject<T>(),
 
-        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(), 
+        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueSource>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueInterceptor>::cast(),
 
@@ -164,7 +156,7 @@ int qmlRegisterType(const char *uri, int versionMajor, int versionMinor, const c
     QByteArray listName("QDeclarativeListProperty<" + name + ">");
 
     QDeclarativePrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterMetaType<T *>(pointerName.constData()),
         qRegisterMetaType<QDeclarativeListProperty<T> >(listName.constData()),
@@ -176,7 +168,7 @@ int qmlRegisterType(const char *uri, int versionMajor, int versionMinor, const c
         QDeclarativePrivate::attachedPropertiesFunc<T>(),
         QDeclarativePrivate::attachedPropertiesMetaObject<T>(),
 
-        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(), 
+        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueSource>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueInterceptor>::cast(),
 
@@ -267,7 +259,7 @@ int qmlRegisterExtendedType()
     QByteArray listName("QDeclarativeListProperty<" + name + ">");
 
     QDeclarativePrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterMetaType<T *>(pointerName.constData()),
         qRegisterMetaType<QDeclarativeListProperty<T> >(listName.constData()),
@@ -279,7 +271,7 @@ int qmlRegisterExtendedType()
         QDeclarativePrivate::attachedPropertiesFunc<T>(),
         QDeclarativePrivate::attachedPropertiesMetaObject<T>(),
 
-        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(), 
+        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueSource>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueInterceptor>::cast(),
 
@@ -293,7 +285,7 @@ int qmlRegisterExtendedType()
 }
 
 template<typename T, typename E>
-int qmlRegisterExtendedType(const char *uri, int versionMajor, int versionMinor, 
+int qmlRegisterExtendedType(const char *uri, int versionMajor, int versionMinor,
                             const char *qmlName)
 {
     QByteArray name(T::staticMetaObject.className());
@@ -302,14 +294,14 @@ int qmlRegisterExtendedType(const char *uri, int versionMajor, int versionMinor,
     QByteArray listName("QDeclarativeListProperty<" + name + ">");
 
     QDeclarativeAttachedPropertiesFunc attached = QDeclarativePrivate::attachedPropertiesFunc<E>();
-    const QMetaObject * attachedMetaObject = QDeclarativePrivate::attachedPropertiesMetaObject<E>(); 
+    const QMetaObject * attachedMetaObject = QDeclarativePrivate::attachedPropertiesMetaObject<E>();
     if (!attached) {
         attached = QDeclarativePrivate::attachedPropertiesFunc<T>();
         attachedMetaObject = QDeclarativePrivate::attachedPropertiesMetaObject<T>();
     }
 
     QDeclarativePrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterMetaType<T *>(pointerName.constData()),
         qRegisterMetaType<QDeclarativeListProperty<T> >(listName.constData()),
@@ -321,7 +313,7 @@ int qmlRegisterExtendedType(const char *uri, int versionMajor, int versionMinor,
         attached,
         attachedMetaObject,
 
-        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(), 
+        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueSource>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueInterceptor>::cast(),
 
@@ -355,7 +347,7 @@ int qmlRegisterInterface(const char *typeName)
 }
 
 template<typename T>
-int qmlRegisterCustomType(const char *uri, int versionMajor, int versionMinor, 
+int qmlRegisterCustomType(const char *uri, int versionMajor, int versionMinor,
                           const char *qmlName, QDeclarativeCustomParser *parser)
 {
     QByteArray name(T::staticMetaObject.className());
@@ -364,7 +356,7 @@ int qmlRegisterCustomType(const char *uri, int versionMajor, int versionMinor,
     QByteArray listName("QDeclarativeListProperty<" + name + ">");
 
     QDeclarativePrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterMetaType<T *>(pointerName.constData()),
         qRegisterMetaType<QDeclarativeListProperty<T> >(listName.constData()),
@@ -376,7 +368,7 @@ int qmlRegisterCustomType(const char *uri, int versionMajor, int versionMinor,
         QDeclarativePrivate::attachedPropertiesFunc<T>(),
         QDeclarativePrivate::attachedPropertiesMetaObject<T>(),
 
-        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(), 
+        QDeclarativePrivate::StaticCastSelector<T,QDeclarativeParserStatus>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueSource>::cast(),
         QDeclarativePrivate::StaticCastSelector<T,QDeclarativePropertyValueInterceptor>::cast(),
 

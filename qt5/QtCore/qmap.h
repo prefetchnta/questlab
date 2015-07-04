@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -102,9 +94,6 @@ struct Q_CORE_EXPORT QMapNodeBase
     void setColor(Color c) { if (c == Black) p |= Black; else p &= ~Black; }
     QMapNodeBase *parent() const { return reinterpret_cast<QMapNodeBase *>(p & ~Mask); }
     void setParent(QMapNodeBase *pp) { p = (p & Mask) | quintptr(pp); }
-
-    QMapNodeBase *minimumNode() { QMapNodeBase *n = this; while (n->left) n = n->left; return n; }
-    const QMapNodeBase *minimumNode() const { const QMapNodeBase *n = this; while (n->left) n = n->left; return n; }
 };
 
 template <class Key, class T>
@@ -120,9 +109,6 @@ struct QMapNode : public QMapNodeBase
     inline const QMapNode *previousNode() const { return static_cast<const QMapNode *>(QMapNodeBase::previousNode()); }
     inline QMapNode *nextNode() { return static_cast<QMapNode *>(QMapNodeBase::nextNode()); }
     inline QMapNode *previousNode() { return static_cast<QMapNode *>(QMapNodeBase::previousNode()); }
-
-    QMapNode *minimumNode() { return static_cast<QMapNode *>(QMapNodeBase::minimumNode()); }
-    const QMapNode *minimumNode() const { return static_cast<QMapNode *>(QMapNodeBase::minimumNode()); }
 
     QMapNode<Key, T> *copy(QMapData<Key, T> *d) const;
 
@@ -260,6 +246,11 @@ QMapNode<Key, T> *QMapNode<Key, T>::copy(QMapData<Key, T> *d) const
     return n;
 }
 
+#if defined(Q_CC_MSVC)
+#pragma warning( push )
+#pragma warning( disable : 4127 ) // conditional expression is constant
+#endif
+
 template <class Key, class T>
 void QMapNode<Key, T>::destroySubTree()
 {
@@ -274,6 +265,10 @@ void QMapNode<Key, T>::destroySubTree()
             rightNode()->destroySubTree();
     }
 }
+
+#if defined(Q_CC_MSVC)
+#pragma warning( pop )
+#endif
 
 template <class Key, class T>
 void QMapData<Key, T>::deleteNode(QMapNode<Key, T> *z)
@@ -368,6 +363,7 @@ public:
 
     inline void detach() { if (d->ref.isShared()) detach_helper(); }
     inline bool isDetached() const { return !d->ref.isShared(); }
+#if QT_SUPPORTS(UNSHARABLE_CONTAINERS)
     inline void setSharable(bool sharable)
     {
         if (sharable == d->ref.isSharable())
@@ -377,6 +373,7 @@ public:
         // Don't call on shared_null
         d->ref.setSharable(sharable);
     }
+#endif
     inline bool isSharedWith(const QMap<Key, T> &other) const { return d == other.d; }
 
     void clear();
@@ -1160,29 +1157,11 @@ public:
     inline QMultiMap operator+(const QMultiMap &other) const
     { QMultiMap result = *this; result += other; return result; }
 
-#if !defined(Q_NO_USING_KEYWORD) && !defined(Q_CC_RVCT)
-    // RVCT compiler doesn't handle using-keyword right when used functions are overloaded in child class
     using QMap<Key, T>::contains;
     using QMap<Key, T>::remove;
     using QMap<Key, T>::count;
     using QMap<Key, T>::find;
     using QMap<Key, T>::constFind;
-#else
-    inline bool contains(const Key &key) const
-    { return QMap<Key, T>::contains(key); }
-    inline int remove(const Key &key)
-    { return QMap<Key, T>::remove(key); }
-    inline int count(const Key &key) const
-    { return QMap<Key, T>::count(key); }
-    inline int count() const
-    { return QMap<Key, T>::count(); }
-    inline typename QMap<Key, T>::iterator find(const Key &key)
-    { return QMap<Key, T>::find(key); }
-    inline typename QMap<Key, T>::const_iterator find(const Key &key) const
-    { return QMap<Key, T>::find(key); }
-    inline typename QMap<Key, T>::const_iterator constFind(const Key &key) const
-    { return QMap<Key, T>::constFind(key); }
-#endif
 
     bool contains(const Key &key, const T &value) const;
 

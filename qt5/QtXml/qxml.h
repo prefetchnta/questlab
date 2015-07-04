@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtXml module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -237,29 +229,29 @@ public:
     QXmlSimpleReader();
     virtual ~QXmlSimpleReader();
 
-    bool feature(const QString& name, bool *ok = 0) const;
-    void setFeature(const QString& name, bool value);
-    bool hasFeature(const QString& name) const;
+    bool feature(const QString& name, bool *ok = 0) const Q_DECL_OVERRIDE;
+    void setFeature(const QString& name, bool value) Q_DECL_OVERRIDE;
+    bool hasFeature(const QString& name) const Q_DECL_OVERRIDE;
 
-    void* property(const QString& name, bool *ok = 0) const;
-    void setProperty(const QString& name, void* value);
-    bool hasProperty(const QString& name) const;
+    void* property(const QString& name, bool *ok = 0) const Q_DECL_OVERRIDE;
+    void setProperty(const QString& name, void* value) Q_DECL_OVERRIDE;
+    bool hasProperty(const QString& name) const Q_DECL_OVERRIDE;
 
-    void setEntityResolver(QXmlEntityResolver* handler);
-    QXmlEntityResolver* entityResolver() const;
-    void setDTDHandler(QXmlDTDHandler* handler);
-    QXmlDTDHandler* DTDHandler() const;
-    void setContentHandler(QXmlContentHandler* handler);
-    QXmlContentHandler* contentHandler() const;
-    void setErrorHandler(QXmlErrorHandler* handler);
-    QXmlErrorHandler* errorHandler() const;
-    void setLexicalHandler(QXmlLexicalHandler* handler);
-    QXmlLexicalHandler* lexicalHandler() const;
-    void setDeclHandler(QXmlDeclHandler* handler);
-    QXmlDeclHandler* declHandler() const;
+    void setEntityResolver(QXmlEntityResolver* handler) Q_DECL_OVERRIDE;
+    QXmlEntityResolver* entityResolver() const Q_DECL_OVERRIDE;
+    void setDTDHandler(QXmlDTDHandler* handler) Q_DECL_OVERRIDE;
+    QXmlDTDHandler* DTDHandler() const Q_DECL_OVERRIDE;
+    void setContentHandler(QXmlContentHandler* handler) Q_DECL_OVERRIDE;
+    QXmlContentHandler* contentHandler() const Q_DECL_OVERRIDE;
+    void setErrorHandler(QXmlErrorHandler* handler) Q_DECL_OVERRIDE;
+    QXmlErrorHandler* errorHandler() const Q_DECL_OVERRIDE;
+    void setLexicalHandler(QXmlLexicalHandler* handler) Q_DECL_OVERRIDE;
+    QXmlLexicalHandler* lexicalHandler() const Q_DECL_OVERRIDE;
+    void setDeclHandler(QXmlDeclHandler* handler) Q_DECL_OVERRIDE;
+    QXmlDeclHandler* declHandler() const Q_DECL_OVERRIDE;
 
-    bool parse(const QXmlInputSource& input);
-    bool parse(const QXmlInputSource* input);
+    bool parse(const QXmlInputSource& input) Q_DECL_OVERRIDE;
+    bool parse(const QXmlInputSource* input) Q_DECL_OVERRIDE;
     virtual bool parse(const QXmlInputSource* input, bool incremental);
     virtual bool parseContinue();
 
@@ -269,6 +261,7 @@ private:
     QScopedPointer<QXmlSimpleReaderPrivate> d_ptr;
 
     friend class QXmlSimpleReaderLocator;
+    friend class QDomHandler;
 };
 
 //
@@ -368,40 +361,40 @@ public:
     QXmlDefaultHandler();
     virtual ~QXmlDefaultHandler();
 
-    void setDocumentLocator(QXmlLocator* locator);
-    bool startDocument();
-    bool endDocument();
-    bool startPrefixMapping(const QString& prefix, const QString& uri);
-    bool endPrefixMapping(const QString& prefix);
-    bool startElement(const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts);
-    bool endElement(const QString& namespaceURI, const QString& localName, const QString& qName);
-    bool characters(const QString& ch);
-    bool ignorableWhitespace(const QString& ch);
-    bool processingInstruction(const QString& target, const QString& data);
-    bool skippedEntity(const QString& name);
+    void setDocumentLocator(QXmlLocator* locator) Q_DECL_OVERRIDE;
+    bool startDocument() Q_DECL_OVERRIDE;
+    bool endDocument() Q_DECL_OVERRIDE;
+    bool startPrefixMapping(const QString& prefix, const QString& uri) Q_DECL_OVERRIDE;
+    bool endPrefixMapping(const QString& prefix) Q_DECL_OVERRIDE;
+    bool startElement(const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts) Q_DECL_OVERRIDE;
+    bool endElement(const QString& namespaceURI, const QString& localName, const QString& qName) Q_DECL_OVERRIDE;
+    bool characters(const QString& ch) Q_DECL_OVERRIDE;
+    bool ignorableWhitespace(const QString& ch) Q_DECL_OVERRIDE;
+    bool processingInstruction(const QString& target, const QString& data) Q_DECL_OVERRIDE;
+    bool skippedEntity(const QString& name) Q_DECL_OVERRIDE;
 
-    bool warning(const QXmlParseException& exception);
-    bool error(const QXmlParseException& exception);
-    bool fatalError(const QXmlParseException& exception);
+    bool warning(const QXmlParseException& exception) Q_DECL_OVERRIDE;
+    bool error(const QXmlParseException& exception) Q_DECL_OVERRIDE;
+    bool fatalError(const QXmlParseException& exception) Q_DECL_OVERRIDE;
 
-    bool notationDecl(const QString& name, const QString& publicId, const QString& systemId);
-    bool unparsedEntityDecl(const QString& name, const QString& publicId, const QString& systemId, const QString& notationName);
+    bool notationDecl(const QString& name, const QString& publicId, const QString& systemId) Q_DECL_OVERRIDE;
+    bool unparsedEntityDecl(const QString& name, const QString& publicId, const QString& systemId, const QString& notationName) Q_DECL_OVERRIDE;
 
-    bool resolveEntity(const QString& publicId, const QString& systemId, QXmlInputSource*& ret);
+    bool resolveEntity(const QString& publicId, const QString& systemId, QXmlInputSource*& ret) Q_DECL_OVERRIDE;
 
-    bool startDTD(const QString& name, const QString& publicId, const QString& systemId);
-    bool endDTD();
-    bool startEntity(const QString& name);
-    bool endEntity(const QString& name);
-    bool startCDATA();
-    bool endCDATA();
-    bool comment(const QString& ch);
+    bool startDTD(const QString& name, const QString& publicId, const QString& systemId) Q_DECL_OVERRIDE;
+    bool endDTD() Q_DECL_OVERRIDE;
+    bool startEntity(const QString& name) Q_DECL_OVERRIDE;
+    bool endEntity(const QString& name) Q_DECL_OVERRIDE;
+    bool startCDATA() Q_DECL_OVERRIDE;
+    bool endCDATA() Q_DECL_OVERRIDE;
+    bool comment(const QString& ch) Q_DECL_OVERRIDE;
 
-    bool attributeDecl(const QString& eName, const QString& aName, const QString& type, const QString& valueDefault, const QString& value);
-    bool internalEntityDecl(const QString& name, const QString& value);
-    bool externalEntityDecl(const QString& name, const QString& publicId, const QString& systemId);
+    bool attributeDecl(const QString& eName, const QString& aName, const QString& type, const QString& valueDefault, const QString& value) Q_DECL_OVERRIDE;
+    bool internalEntityDecl(const QString& name, const QString& value) Q_DECL_OVERRIDE;
+    bool externalEntityDecl(const QString& name, const QString& publicId, const QString& systemId) Q_DECL_OVERRIDE;
 
-    QString errorString() const;
+    QString errorString() const Q_DECL_OVERRIDE;
 
 private:
     QXmlDefaultHandlerPrivate *d;

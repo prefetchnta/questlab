@@ -24,6 +24,7 @@
 #include "abstractwidgetbox.h"
 #include "abstractwidgetdatabase.h"
 #include "abstractwidgetfactory.h"
+#include "container.h"
 #include "dynamicpropertysheet.h"
 #include "extrainfo.h"
 #include "layoutdecoration.h"
@@ -31,10 +32,6 @@
 #include "propertysheet.h"
 #include "taskmenu.h"
 #include "abstractformbuilder.h"
-#include "container.h"
-#include "customwidget.h"
-#include "extension.h"
 #include "formbuilder.h"
-#include "qdesignerexportwidget.h"
 #include "qtdesignerversion.h"
 #endif

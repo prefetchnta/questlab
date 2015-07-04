@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the ActiveQt framework of the Qt Toolkit.
 **
@@ -17,8 +17,8 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
 **
@@ -57,7 +57,7 @@ public:
     QAxObject(const QString &c, QObject *parent = 0);
     QAxObject(IUnknown *iface, QObject *parent = 0);
     ~QAxObject();
-    
+
     bool doVerb(const QString &verb);
 
 protected:
@@ -68,21 +68,13 @@ private:
     const QMetaObject *parentMetaObject() const;
 };
 
-#if defined Q_CC_MSVC && _MSC_VER < 1300
-template <> inline QAxObject *qobject_cast_helper<QAxObject*>(const QObject *o, QAxObject *)
-#else
 template <> inline QAxObject *qobject_cast<QAxObject*>(const QObject *o)
-#endif
 {
     void *result = o ? const_cast<QObject *>(o)->qt_metacast("QAxObject") : 0;
     return (QAxObject*)(result);
 }
 
-#if defined Q_CC_MSVC && _MSC_VER < 1300
-template <> inline QAxObject *qobject_cast_helper<QAxObject*>(QObject *o, QAxObject *)
-#else
 template <> inline QAxObject *qobject_cast<QAxObject*>(QObject *o)
-#endif
 {
     void *result = o ? o->qt_metacast("QAxObject") : 0;
     return (QAxObject*)(result);

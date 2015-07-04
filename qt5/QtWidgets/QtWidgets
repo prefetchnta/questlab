@@ -1,7 +1,13 @@
 #ifndef QT_QTWIDGETS_MODULE_H
 #define QT_QTWIDGETS_MODULE_H
 #include <QtWidgets/QtWidgetsDepends>
+#include "complexwidgets.h"
+#include "itemviews.h"
+#include "qaccessiblemenu.h"
 #include "qaccessiblewidget.h"
+#include "qaccessiblewidgets.h"
+#include "rangecontrols.h"
+#include "simplewidgets.h"
 #include "qcolordialog.h"
 #include "qdialog.h"
 #include "qerrormessage.h"
@@ -54,6 +60,7 @@
 #include "qgridlayout.h"
 #include "qlayout.h"
 #include "qlayoutitem.h"
+#include "qopenglwidget.h"
 #include "qshortcut.h"
 #include "qsizepolicy.h"
 #include "qstackedlayout.h"

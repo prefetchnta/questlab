@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -46,12 +38,11 @@
 #pragma qt_class(QtMath)
 #endif
 
-#include <math.h>
-
 #include <QtCore/qglobal.h>
 
-QT_BEGIN_NAMESPACE
+#include <cmath>
 
+QT_BEGIN_NAMESPACE
 
 #define QT_SINE_TABLE_SIZE 256
 
@@ -59,139 +50,86 @@ extern Q_CORE_EXPORT const qreal qt_sine_table[QT_SINE_TABLE_SIZE];
 
 inline int qCeil(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return int(ceilf(float(v)));
-    else
-#endif
-        return int(ceil(v));
+    using std::ceil;
+    return int(ceil(v));
 }
 
 inline int qFloor(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return int(floorf(float(v)));
-    else
-#endif
-        return int(floor(v));
+    using std::floor;
+    return int(floor(v));
 }
 
 inline qreal qFabs(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if(sizeof(qreal) == sizeof(float))
-        return fabsf(float(v));
-    else
-#endif
-        return fabs(v);
+    using std::fabs;
+    return fabs(v);
 }
 
 inline qreal qSin(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return sinf(float(v));
-    else
-#endif
-        return sin(v);
+    using std::sin;
+    return sin(v);
 }
 
 inline qreal qCos(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return cosf(float(v));
-    else
-#endif
-        return cos(v);
+    using std::cos;
+    return cos(v);
 }
 
 inline qreal qTan(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return tanf(float(v));
-    else
-#endif
-        return tan(v);
+    using std::tan;
+    return tan(v);
 }
 
 inline qreal qAcos(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return acosf(float(v));
-    else
-#endif
-       return acos(v);
+    using std::acos;
+    return acos(v);
 }
 
 inline qreal qAsin(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return asinf(float(v));
-    else
-#endif
-        return asin(v);
+    using std::asin;
+    return asin(v);
 }
 
 inline qreal qAtan(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return atanf(float(v));
-    else
-#endif
-        return atan(v);
+    using std::atan;
+    return atan(v);
 }
 
 inline qreal qAtan2(qreal y, qreal x)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return atan2f(float(y), float(x));
-    else
-#endif
-        return atan2(y, x);
+    using std::atan2;
+    return atan2(y, x);
 }
 
 inline qreal qSqrt(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return sqrtf(float(v));
-    else
-#endif
-        return sqrt(v);
+    using std::sqrt;
+    return sqrt(v);
 }
 
 inline qreal qLn(qreal v)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return logf(float(v));
-    else
-#endif
-        return log(v);
+    using std::log;
+    return log(v);
 }
 
 inline qreal qExp(qreal v)
 {
-    // only one signature
-    // exists, exp(double)
+    using std::exp;
     return exp(v);
 }
 
 inline qreal qPow(qreal x, qreal y)
 {
-#ifdef QT_USE_MATH_H_FLOATS
-    if (sizeof(qreal) == sizeof(float))
-        return powf(float(x), float(y));
-    else
-#endif
-        return pow(x, y);
+    using std::pow;
+    return pow(x, y);
 }
 
 #ifndef M_E
@@ -284,6 +222,57 @@ Q_DECL_CONSTEXPR inline float qRadiansToDegrees(float radians)
 Q_DECL_CONSTEXPR inline double qRadiansToDegrees(double radians)
 {
     return radians * (180 / M_PI);
+}
+
+
+#if defined(Q_CC_GNU)
+// clz instructions exist in at least MIPS, ARM, PowerPC and X86, so we can assume this builtin always maps to an efficient instruction.
+inline quint32 qNextPowerOfTwo(quint32 v)
+{
+    if (v == 0)
+        return 1;
+    return 2U << (31 ^ __builtin_clz(v));
+}
+
+inline quint64 qNextPowerOfTwo(quint64 v)
+{
+    if (v == 0)
+        return 1;
+    return Q_UINT64_C(2) << (63 ^ __builtin_clzll(v));
+}
+#else
+inline quint32 qNextPowerOfTwo(quint32 v)
+{
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    ++v;
+    return v;
+}
+
+inline quint64 qNextPowerOfTwo(quint64 v)
+{
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v |= v >> 32;
+    ++v;
+    return v;
+}
+#endif
+
+inline quint32 qNextPowerOfTwo(qint32 v)
+{
+    return qNextPowerOfTwo(quint32(v));
+}
+
+inline quint64 qNextPowerOfTwo(qint64 v)
+{
+    return qNextPowerOfTwo(quint64(v));
 }
 
 QT_END_NAMESPACE

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the ActiveQt framework of the Qt Toolkit.
 **
@@ -17,8 +17,8 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
 **
@@ -58,12 +58,12 @@ class QAxWidget : public QWidget, public QAxBase
 public:
     QObject* qObject() const { return (QWidget*)this; }
     const char *className() const;
-    
+
     QAxWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
     QAxWidget(const QString &c, QWidget *parent = 0, Qt::WindowFlags f = 0);
     QAxWidget(IUnknown *iface, QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~QAxWidget();
-    
+
     void clear();
     bool doVerb(const QString &verb);
 
@@ -76,7 +76,7 @@ protected:
     bool initialize(IUnknown**);
     virtual bool createHostWindow(bool);
     bool createHostWindow(bool, const QByteArray&);
-    
+
     void changeEvent(QEvent *e);
     void resizeEvent(QResizeEvent *);
 
@@ -92,21 +92,13 @@ private:
     const QMetaObject *parentMetaObject() const;
 };
 
-#if defined Q_CC_MSVC && _MSC_VER < 1300
-template <> inline QAxWidget *qobject_cast_helper<QAxWidget*>(const QObject *o, QAxWidget *)
-#else
 template <> inline QAxWidget *qobject_cast<QAxWidget*>(const QObject *o)
-#endif
 {
     void *result = o ? const_cast<QObject *>(o)->qt_metacast("QAxWidget") : 0;
     return (QAxWidget*)(result);
 }
 
-#if defined Q_CC_MSVC && _MSC_VER < 1300
-template <> inline QAxWidget *qobject_cast_helper<QAxWidget*>(QObject *o, QAxWidget *)
-#else
 template <> inline QAxWidget *qobject_cast<QAxWidget*>(QObject *o)
-#endif
 {
     void *result = o ? o->qt_metacast("QAxWidget") : 0;
     return (QAxWidget*)(result);

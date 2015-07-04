@@ -1,45 +1,37 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
 
-#include <QtCore/qglobal.h>
+#include <QtCore/qtypetraits.h>
 
 #ifndef QTYPEINFO_H
 #define QTYPEINFO_H
@@ -60,10 +52,11 @@ class QTypeInfo
 public:
     enum {
         isPointer = false,
+        isIntegral = QtPrivate::is_integral<T>::value,
         isComplex = true,
         isStatic = true,
         isLarge = (sizeof(T)>sizeof(void*)),
-        isDummy = false,
+        isDummy = false, //### Qt6: remove
         sizeOf = sizeof(T)
     };
 };
@@ -74,6 +67,7 @@ class QTypeInfo<void>
 public:
     enum {
         isPointer = false,
+        isIntegral = false,
         isComplex = false,
         isStatic = false,
         isLarge = false,
@@ -88,6 +82,7 @@ class QTypeInfo<T*>
 public:
     enum {
         isPointer = true,
+        isIntegral = false,
         isComplex = false,
         isStatic = false,
         isLarge = false,
@@ -125,6 +120,7 @@ public:
         isStatic = QTypeInfo<T1>::isStatic || QTypeInfo<T2>::isStatic || QTypeInfo<T3>::isStatic || QTypeInfo<T4>::isStatic,
         isLarge = sizeof(T) > sizeof(void*),
         isPointer = false,
+        isIntegral = false,
         isDummy = false,
         sizeOf = sizeof(T)
     };
@@ -138,6 +134,7 @@ class QTypeInfo< CONTAINER<T> > \
 public: \
     enum { \
         isPointer = false, \
+        isIntegral = false, \
         isComplex = true, \
         isStatic = false, \
         isLarge = (sizeof(CONTAINER<T>) > sizeof(void*)), \
@@ -180,6 +177,7 @@ public: \
         isStatic = (((FLAGS) & (Q_MOVABLE_TYPE | Q_PRIMITIVE_TYPE)) == 0), \
         isLarge = (sizeof(TYPE)>sizeof(void*)), \
         isPointer = false, \
+        isIntegral = QtPrivate::is_integral< TYPE >::value, \
         isDummy = (((FLAGS) & Q_DUMMY_TYPE) != 0), \
         sizeOf = sizeof(TYPE) \
     }; \
@@ -204,19 +202,12 @@ Q_DECLARE_TYPEINFO_BODY(QFlags<T>, Q_PRIMITIVE_TYPE);
    types must define a member-swap, and be defined in the same
    namespace as Qt for this to work.
 */
-#define Q_DECLARE_SHARED_STL(TYPE) \
-QT_END_NAMESPACE \
-namespace std { \
-    template<> inline void swap< QT_PREPEND_NAMESPACE(TYPE) >(QT_PREPEND_NAMESPACE(TYPE) &value1, QT_PREPEND_NAMESPACE(TYPE) &value2) \
-    { value1.swap(value2); } \
-} \
-QT_BEGIN_NAMESPACE
 
 #define Q_DECLARE_SHARED(TYPE)                                          \
 Q_DECLARE_TYPEINFO(TYPE, Q_MOVABLE_TYPE); \
-template <> inline void qSwap<TYPE>(TYPE &value1, TYPE &value2) \
-{ value1.swap(value2); } \
-Q_DECLARE_SHARED_STL(TYPE)
+inline void swap(TYPE &value1, TYPE &value2) \
+    Q_DECL_NOEXCEPT_EXPR(noexcept(value1.swap(value2))) \
+{ value1.swap(value2); }
 
 /*
    QTypeInfo primitive specializations
@@ -238,6 +229,15 @@ Q_DECLARE_TYPEINFO(double, Q_PRIMITIVE_TYPE);
 #ifndef Q_OS_DARWIN
 Q_DECLARE_TYPEINFO(long double, Q_PRIMITIVE_TYPE);
 #endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+// We can't do it now because it would break BC on QList<char32_t>
+Q_DECLARE_TYPEINFO(char16_t, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(char32_t, Q_PRIMITIVE_TYPE);
+#  if !defined(Q_CC_MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+Q_DECLARE_TYPEINFO(wchar_t, Q_PRIMITIVE_TYPE);
+#  endif
+#endif // Qt 6
 
 QT_END_NAMESPACE
 #endif // QTYPEINFO_H

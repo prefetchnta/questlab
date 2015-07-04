@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -134,18 +126,20 @@ Q_GUI_EXPORT QDebug operator<<(QDebug, const QTextFormat &);
 class Q_GUI_EXPORT QTextFormat
 {
     Q_GADGET
-    Q_ENUMS(FormatType Property ObjectTypes)
 public:
     enum FormatType {
         InvalidFormat = -1,
         BlockFormat = 1,
         CharFormat = 2,
         ListFormat = 3,
+#if QT_DEPRECATED_SINCE(5, 3)
         TableFormat = 4,
+#endif
         FrameFormat = 5,
 
         UserFormat = 100
     };
+    Q_ENUM(FormatType)
 
     enum Property {
         ObjectIndex = 0x0,
@@ -263,6 +257,7 @@ public:
         // --
         UserProperty = 0x100000
     };
+    Q_ENUM(Property)
 
     enum ObjectTypes {
         NoObject,
@@ -272,6 +267,7 @@ public:
 
         UserObject = 0x1000
     };
+    Q_ENUM(ObjectTypes)
 
     enum PageBreakFlag {
         PageBreak_Auto = 0,
@@ -295,6 +291,7 @@ public:
     void merge(const QTextFormat &other);
 
     inline bool isValid() const { return type() != InvalidFormat; }
+    inline bool isEmpty() const { return propertyCount() == 0; }
 
     int type() const;
 
@@ -407,7 +404,13 @@ public:
     QTextCharFormat();
 
     bool isValid() const { return isCharFormat(); }
-    void setFont(const QFont &font);
+
+    enum FontPropertiesInheritanceBehavior {
+        FontPropertiesSpecifiedOnly,
+        FontPropertiesAll
+    };
+    void setFont(const QFont &font, FontPropertiesInheritanceBehavior behavior);
+    void setFont(const QFont &font); // ### Qt6: Merge with above
     QFont font() const;
 
     inline void setFontFamily(const QString &family)

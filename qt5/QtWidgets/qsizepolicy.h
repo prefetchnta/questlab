@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWidgets module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -52,7 +44,7 @@ class QVariant;
 class Q_WIDGETS_EXPORT QSizePolicy
 {
     Q_GADGET
-    Q_ENUMS(Policy)
+    Q_FLAGS(ControlTypes)
 
 public:
     enum PolicyFlag {
@@ -71,6 +63,7 @@ public:
         Expanding = GrowFlag | ShrinkFlag | ExpandFlag,
         Ignored = ShrinkFlag | GrowFlag | IgnoreFlag
     };
+    Q_ENUM(Policy)
 
     enum ControlType {
         DefaultType      = 0x00000001,
@@ -93,7 +86,6 @@ public:
 
     QSizePolicy() : data(0) { }
 
-    // ### Qt 5: merge these two constructors (with type == DefaultType)
     QSizePolicy(Policy horizontal, Policy vertical, ControlType type = DefaultType)
         : data(0) {
         bits.horPolicy = horizontal;
@@ -109,12 +101,8 @@ public:
     void setControlType(ControlType type);
 
     Qt::Orientations expandingDirections() const {
-        Qt::Orientations result;
-        if (verticalPolicy() & ExpandFlag)
-            result |= Qt::Vertical;
-        if (horizontalPolicy() & ExpandFlag)
-            result |= Qt::Horizontal;
-        return result;
+        return ( (verticalPolicy()   & ExpandFlag) ? Qt::Vertical   : Qt::Orientations() )
+             | ( (horizontalPolicy() & ExpandFlag) ? Qt::Horizontal : Qt::Orientations() ) ;
     }
 
     void setHeightForWidth(bool b) { bits.hfw = b;  }
@@ -124,7 +112,7 @@ public:
 
     bool operator==(const QSizePolicy& s) const { return data == s.data; }
     bool operator!=(const QSizePolicy& s) const { return data != s.data; }
-    operator QVariant() const; // implemented in qlayoutitem.cpp
+    operator QVariant() const;
 
     int horizontalStretch() const { return static_cast<int>(bits.horStretch); }
     int verticalStretch() const { return static_cast<int>(bits.verStretch); }
@@ -159,11 +147,14 @@ private:
         quint32 data;
     };
 };
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+// Can't add in Qt 5, as QList<QSizePolicy> would be BiC:
+Q_DECLARE_TYPEINFO(QSizePolicy, Q_PRIMITIVE_TYPE);
+#endif
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(QSizePolicy::ControlTypes)
 
 #ifndef QT_NO_DATASTREAM
-// implemented in qlayout.cpp
 Q_WIDGETS_EXPORT QDataStream &operator<<(QDataStream &, const QSizePolicy &);
 Q_WIDGETS_EXPORT QDataStream &operator>>(QDataStream &, QSizePolicy &);
 #endif

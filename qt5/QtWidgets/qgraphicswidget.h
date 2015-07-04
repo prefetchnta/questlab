@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWidgets module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -108,12 +100,12 @@ public:
     inline void resize(qreal w, qreal h) { resize(QSizeF(w, h)); }
     QSizeF size() const;
 
-    void setGeometry(const QRectF &rect);
+    void setGeometry(const QRectF &rect) Q_DECL_OVERRIDE;
     inline void setGeometry(qreal x, qreal y, qreal w, qreal h);
     inline QRectF rect() const { return QRectF(QPointF(), size()); }
 
     void setContentsMargins(qreal left, qreal top, qreal right, qreal bottom);
-    void getContentsMargins(qreal *left, qreal *top, qreal *right, qreal *bottom) const;
+    void getContentsMargins(qreal *left, qreal *top, qreal *right, qreal *bottom) const Q_DECL_OVERRIDE;
 
     void setWindowFrameMargins(qreal left, qreal top, qreal right, qreal bottom);
     void getWindowFrameMargins(qreal *left, qreal *top, qreal *right, qreal *bottom) const;
@@ -145,7 +137,11 @@ public:
 #ifndef QT_NO_ACTION
     //actions
     void addAction(QAction *action);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    void addActions(const QList<QAction*> &actions);
+#else
     void addActions(QList<QAction*> actions);
+#endif
     void insertAction(QAction *before, QAction *action);
     void insertActions(QAction *before, QList<QAction*> actions);
     void removeAction(QAction *action);
@@ -158,22 +154,18 @@ public:
     enum {
         Type = 11
     };
-    int type() const;
+    int type() const Q_DECL_OVERRIDE;
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) Q_DECL_OVERRIDE;
     virtual void paintWindowFrame(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    QRectF boundingRect() const;
-    QPainterPath shape() const;
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    QPainterPath shape() const Q_DECL_OVERRIDE;
 
 #if 0
     void dumpFocusChain();
 #endif
 
-#ifdef Q_NO_USING_KEYWORD
-    const QObjectList &children() const { return QObject::children(); }
-#else
     using QObject::children;
-#endif
 
 Q_SIGNALS:
     void geometryChanged();
@@ -185,28 +177,28 @@ public Q_SLOTS:
 protected:
     virtual void initStyleOption(QStyleOption *option) const;
 
-    QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
-    void updateGeometry();
+    QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const Q_DECL_OVERRIDE;
+    void updateGeometry() Q_DECL_OVERRIDE;
 
     // Notification
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
     virtual QVariant propertyChange(const QString &propertyName, const QVariant &value);
 
     // Scene events
-    bool sceneEvent(QEvent *event);
+    bool sceneEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual bool windowFrameEvent(QEvent *e);
     virtual Qt::WindowFrameSection windowFrameSectionAt(const QPointF& pos) const;
 
     // Base event handlers
-    bool event(QEvent *event);
+    bool event(QEvent *event) Q_DECL_OVERRIDE;
     //virtual void actionEvent(QActionEvent *event);
     virtual void changeEvent(QEvent *event);
     virtual void closeEvent(QCloseEvent *event);
     //void create(WId window = 0, bool initializeWindow = true, bool destroyOldWindow = true);
     //void destroy(bool destroyWindow = true, bool destroySubWindows = true);
-    void focusInEvent(QFocusEvent *event);
+    void focusInEvent(QFocusEvent *event) Q_DECL_OVERRIDE;
     virtual bool focusNextPrevChild(bool next);
-    void focusOutEvent(QFocusEvent *event);
+    void focusOutEvent(QFocusEvent *event) Q_DECL_OVERRIDE;
     virtual void hideEvent(QHideEvent *event);
     //virtual int metric(PaintDeviceMetric m ) const;
     virtual void moveEvent(QGraphicsSceneMoveEvent *event);
@@ -215,8 +207,8 @@ protected:
     virtual void resizeEvent(QGraphicsSceneResizeEvent *event);
     virtual void showEvent(QShowEvent *event);
     //virtual void tabletEvent(QTabletEvent *event);
-    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event) Q_DECL_OVERRIDE;
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) Q_DECL_OVERRIDE;
     virtual void grabMouseEvent(QEvent *event);
     virtual void ungrabMouseEvent(QEvent *event);
     virtual void grabKeyboardEvent(QEvent *event);

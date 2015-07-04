@@ -1,39 +1,31 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Klaralvdalens Datakonsult AB (KDAB)
-** Contact: http://www.qt-project.org/legal
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -678,12 +670,14 @@ inline void QOpenGLFunctions_3_3_Core::glCullFace(GLenum mode)
 // OpenGL 1.1 core functions
 inline void QOpenGLFunctions_3_3_Core::glIndexubv(const GLubyte *c)
 {
-    d_1_1_Core->Indexubv(c);
+    Q_UNUSED(c);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glIndexub(GLubyte c)
 {
-    d_1_1_Core->Indexub(c);
+    Q_UNUSED(c);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline GLboolean QOpenGLFunctions_3_3_Core::glIsTexture(GLuint texture)
@@ -743,7 +737,9 @@ inline void QOpenGLFunctions_3_3_Core::glPolygonOffset(GLfloat factor, GLfloat u
 
 inline void QOpenGLFunctions_3_3_Core::glGetPointerv(GLenum pname, GLvoid* *params)
 {
-    d_1_1_Core->GetPointerv(pname, params);
+    Q_UNUSED(pname);
+    Q_UNUSED(params);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices)
@@ -1813,152 +1809,220 @@ inline void QOpenGLFunctions_3_3_Core::glVertexAttribP1ui(GLuint index, GLenum t
 
 inline void QOpenGLFunctions_3_3_Core::glSecondaryColorP3uiv(GLenum type, const GLuint *color)
 {
-    d_3_3_Core->SecondaryColorP3uiv(type, color);
+    Q_UNUSED(type);
+    Q_UNUSED(color);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glSecondaryColorP3ui(GLenum type, GLuint color)
 {
-    d_3_3_Core->SecondaryColorP3ui(type, color);
+    Q_UNUSED(type);
+    Q_UNUSED(color);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glColorP4uiv(GLenum type, const GLuint *color)
 {
-    d_3_3_Core->ColorP4uiv(type, color);
+    Q_UNUSED(type);
+    Q_UNUSED(color);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glColorP4ui(GLenum type, GLuint color)
 {
-    d_3_3_Core->ColorP4ui(type, color);
+    Q_UNUSED(type);
+    Q_UNUSED(color);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glColorP3uiv(GLenum type, const GLuint *color)
 {
-    d_3_3_Core->ColorP3uiv(type, color);
+    Q_UNUSED(type);
+    Q_UNUSED(color);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glColorP3ui(GLenum type, GLuint color)
 {
-    d_3_3_Core->ColorP3ui(type, color);
+    Q_UNUSED(type);
+    Q_UNUSED(color);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glNormalP3uiv(GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->NormalP3uiv(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glNormalP3ui(GLenum type, GLuint coords)
 {
-    d_3_3_Core->NormalP3ui(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP4uiv(GLenum texture, GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->MultiTexCoordP4uiv(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP4ui(GLenum texture, GLenum type, GLuint coords)
 {
-    d_3_3_Core->MultiTexCoordP4ui(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP3uiv(GLenum texture, GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->MultiTexCoordP3uiv(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP3ui(GLenum texture, GLenum type, GLuint coords)
 {
-    d_3_3_Core->MultiTexCoordP3ui(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP2uiv(GLenum texture, GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->MultiTexCoordP2uiv(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP2ui(GLenum texture, GLenum type, GLuint coords)
 {
-    d_3_3_Core->MultiTexCoordP2ui(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP1uiv(GLenum texture, GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->MultiTexCoordP1uiv(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glMultiTexCoordP1ui(GLenum texture, GLenum type, GLuint coords)
 {
-    d_3_3_Core->MultiTexCoordP1ui(texture, type, coords);
+    Q_UNUSED(texture);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP4uiv(GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->TexCoordP4uiv(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP4ui(GLenum type, GLuint coords)
 {
-    d_3_3_Core->TexCoordP4ui(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP3uiv(GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->TexCoordP3uiv(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP3ui(GLenum type, GLuint coords)
 {
-    d_3_3_Core->TexCoordP3ui(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP2uiv(GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->TexCoordP2uiv(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP2ui(GLenum type, GLuint coords)
 {
-    d_3_3_Core->TexCoordP2ui(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP1uiv(GLenum type, const GLuint *coords)
 {
-    d_3_3_Core->TexCoordP1uiv(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glTexCoordP1ui(GLenum type, GLuint coords)
 {
-    d_3_3_Core->TexCoordP1ui(type, coords);
+    Q_UNUSED(type);
+    Q_UNUSED(coords);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glVertexP4uiv(GLenum type, const GLuint *value)
 {
-    d_3_3_Core->VertexP4uiv(type, value);
+    Q_UNUSED(type);
+    Q_UNUSED(value);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glVertexP4ui(GLenum type, GLuint value)
 {
-    d_3_3_Core->VertexP4ui(type, value);
+    Q_UNUSED(type);
+    Q_UNUSED(value);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glVertexP3uiv(GLenum type, const GLuint *value)
 {
-    d_3_3_Core->VertexP3uiv(type, value);
+    Q_UNUSED(type);
+    Q_UNUSED(value);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glVertexP3ui(GLenum type, GLuint value)
 {
-    d_3_3_Core->VertexP3ui(type, value);
+    Q_UNUSED(type);
+    Q_UNUSED(value);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glVertexP2uiv(GLenum type, const GLuint *value)
 {
-    d_3_3_Core->VertexP2uiv(type, value);
+    Q_UNUSED(type);
+    Q_UNUSED(value);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glVertexP2ui(GLenum type, GLuint value)
 {
-    d_3_3_Core->VertexP2ui(type, value);
+    Q_UNUSED(type);
+    Q_UNUSED(value);
+    QOPENGL_DEPRECATEDFUNCTION;
 }
 
 inline void QOpenGLFunctions_3_3_Core::glGetQueryObjectui64v(GLuint id, GLenum pname, GLuint64 *params)

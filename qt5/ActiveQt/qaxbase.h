@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the ActiveQt framework of the Qt Toolkit.
 **
@@ -17,8 +17,8 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
 **
@@ -63,15 +63,15 @@ class QAxBase
 
 public:
     typedef QMap<QString, QVariant> PropertyBag;
-    
+
     QAxBase(IUnknown *iface = 0);
     virtual ~QAxBase();
-    
+
     QString control() const;
-    
+
     long queryInterface(const QUuid &, void**) const;
-    
-    QVariant dynamicCall(const char *name, const QVariant &v1 = QVariant(), 
+
+    QVariant dynamicCall(const char *name, const QVariant &v1 = QVariant(),
                                            const QVariant &v2 = QVariant(),
                                            const QVariant &v3 = QVariant(),
                                            const QVariant &v4 = QVariant(),
@@ -96,21 +96,21 @@ public:
 
     virtual QObject *qObject() const = 0;
     virtual const char *className() const = 0;
-    
+
     PropertyBag propertyBag() const;
     void setPropertyBag(const PropertyBag&);
-    
+
     QString generateDocumentation();
-    
+
     virtual bool propertyWritable(const char*) const;
     virtual void setPropertyWritable(const char*, bool);
-    
+
     bool isNull() const;
 
     QStringList verbs() const;
-    
+
     QVariant asVariant() const;
-    
+
 #ifdef qdoc
 Q_SIGNALS:
     void signal(const QString&,int,void*);
@@ -137,6 +137,11 @@ protected:
     void initializeFrom(QAxBase *that);
     void connectNotify();
     long indexOfVerb(const QString &verb) const;
+    QVariant dynamicCall(const char *name, QList<QVariant> &vars, unsigned flags);
+    static QVariantList argumentsToList(const QVariant &var1, const QVariant &var2,
+                                        const QVariant &var3, const QVariant &var4,
+                                        const QVariant &var5, const QVariant &var6,
+                                        const QVariant &var7, const QVariant &var8);
 
     virtual const QMetaObject *fallbackMetaObject() const = 0;
 
@@ -148,33 +153,31 @@ protected:
     static const uint qt_meta_data_QAxBase[];
 
 private:
+    enum DynamicCallHelperFlags {
+        NoPropertyGet = 0x1 // Suppresses DISPATCH_PROPERTYGET, use for plain functions.
+    };
+
+    friend class QAxScript;
     friend class QAxEventSink;
     friend void *qax_createObjectWrapper(int, IUnknown*);
     bool initializeLicensedHelper(void *factory, const QString &key, IUnknown **ptr);
     QAxBasePrivate *d;
     QAxMetaObject *internalMetaObject() const;
-    
+
     virtual const QMetaObject *parentMetaObject() const = 0;
     int internalProperty(QMetaObject::Call, int index, void **v);
     int internalInvoke(QMetaObject::Call, int index, void **v);
-    bool dynamicCallHelper(const char *name, void *out, QList<QVariant> &var, QByteArray &type);
+    bool dynamicCallHelper(const char *name, void *out, QList<QVariant> &var,
+                           QByteArray &type, unsigned flags = 0);
 };
 
-#if defined Q_CC_MSVC && _MSC_VER < 1300
-template <> inline QAxBase *qobject_cast_helper<QAxBase*>(const QObject *o, QAxBase *)
-#else
 template <> inline QAxBase *qobject_cast<QAxBase*>(const QObject *o)
-#endif
 {
     void *result = o ? const_cast<QObject *>(o)->qt_metacast("QAxBase") : 0;
     return (QAxBase*)(result);
 }
 
-#if defined Q_CC_MSVC && _MSC_VER < 1300
-template <> inline QAxBase *qobject_cast_helper<QAxBase*>(QObject *o, QAxBase *)
-#else
 template <> inline QAxBase *qobject_cast<QAxBase*>(QObject *o)
-#endif
 {
     void *result = o ? o->qt_metacast("QAxBase") : 0;
     return (QAxBase*)(result);
@@ -198,7 +201,7 @@ inline QDataStream &operator >>(QDataStream &s, QAxBase &c)
     s >> bag;
     c.setPropertyBag(bag);
     c.qObject()->blockSignals(false);
-    
+
     return s;
 }
 
@@ -207,7 +210,7 @@ inline QDataStream &operator <<(QDataStream &s, const QAxBase &c)
     QAxBase::PropertyBag bag = c.propertyBag();
     s << c.control();
     s << bag;
-    
+
     return s;
 }
 #endif // QT_NO_DATASTREAM

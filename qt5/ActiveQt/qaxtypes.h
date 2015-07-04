@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the ActiveQt framework of the Qt Toolkit.
 **
@@ -17,8 +17,8 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
 **
@@ -41,7 +41,7 @@
 #ifndef QAXTYPES_H
 #define QAXTYPES_H
 
-#include "qaxtypefunctions.h"
+#include <ActiveQt/qaxtypefunctions.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -53,10 +53,10 @@ QT_BEGIN_NAMESPACE
 #   define VARIANTToQVariantFunc VARIANTToQVariant_container
 #endif
 
-extern bool QVariantToVARIANTFunc(const QVariant &var, VARIANT &arg, const QByteArray &typeName = 0, bool out = false);
+extern bool QVariantToVARIANTFunc(const QVariant &var, VARIANT &arg, const QByteArray &typeName = QByteArray(), bool out = false);
 extern QVariant VARIANTToQVariantFunc(const VARIANT &arg, const QByteArray &typeName, uint type = 0);
 
-inline bool QVariantToVARIANT(const QVariant &var, VARIANT &arg, const QByteArray &typeName = 0, bool out = false)
+inline bool QVariantToVARIANT(const QVariant &var, VARIANT &arg, const QByteArray &typeName = QByteArray(), bool out = false)
 {
     return QVariantToVARIANTFunc(var, arg, typeName, out);
 }

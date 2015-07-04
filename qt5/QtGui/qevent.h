@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -135,6 +127,9 @@ public:
     QT_DEPRECATED inline QPointF posF() const { return l; }
 #endif
 
+    Qt::MouseEventSource source() const;
+    Qt::MouseEventFlags flags() const;
+
 protected:
     QPointF l, w, s;
     Qt::MouseButton b;
@@ -167,6 +162,8 @@ protected:
 class Q_GUI_EXPORT QWheelEvent : public QInputEvent
 {
 public:
+    enum { DefaultDeltasPerStep = 120 };
+
     QWheelEvent(const QPointF &pos, int delta,
                 Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers,
                 Qt::Orientation orient = Qt::Vertical);
@@ -179,7 +176,9 @@ public:
     QWheelEvent(const QPointF &pos, const QPointF& globalPos,
                 QPoint pixelDelta, QPoint angleDelta, int qt4Delta, Qt::Orientation qt4Orientation,
                 Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, Qt::ScrollPhase phase);
-
+    QWheelEvent(const QPointF &pos, const QPointF &globalPos, QPoint pixelDelta, QPoint angleDelta,
+                int qt4Delta, Qt::Orientation qt4Orientation, Qt::MouseButtons buttons,
+                Qt::KeyboardModifiers modifiers, Qt::ScrollPhase phase, Qt::MouseEventSource source);
     ~QWheelEvent();
 
 
@@ -204,6 +203,8 @@ public:
 
     inline Qt::ScrollPhase phase() const { return Qt::ScrollPhase(ph); }
 
+    Qt::MouseEventSource source() const { return Qt::MouseEventSource(src); }
+
 protected:
     QPointF p;
     QPointF g;
@@ -213,21 +214,30 @@ protected:
     Qt::Orientation qt4O;
     Qt::MouseButtons mouseState;
     uint ph : 2;
-    int reserved : 30;
+    uint src: 2;
+    int reserved : 28;
 };
 #endif
 
 #ifndef QT_NO_TABLETEVENT
 class Q_GUI_EXPORT QTabletEvent : public QInputEvent
 {
+    Q_GADGET
 public:
     enum TabletDevice { NoDevice, Puck, Stylus, Airbrush, FourDMouse,
                         XFreeEraser /*internal*/, RotationStylus };
+    Q_ENUM(TabletDevice)
     enum PointerType { UnknownPointer, Pen, Cursor, Eraser };
+    Q_ENUM(PointerType)
     QTabletEvent(Type t, const QPointF &pos, const QPointF &globalPos,
                  int device, int pointerType, qreal pressure, int xTilt, int yTilt,
                  qreal tangentialPressure, qreal rotation, int z,
-                 Qt::KeyboardModifiers keyState, qint64 uniqueID);
+                 Qt::KeyboardModifiers keyState, qint64 uniqueID); // ### remove in Qt 6
+    QTabletEvent(Type t, const QPointF &pos, const QPointF &globalPos,
+                 int device, int pointerType, qreal pressure, int xTilt, int yTilt,
+                 qreal tangentialPressure, qreal rotation, int z,
+                 Qt::KeyboardModifiers keyState, qint64 uniqueID,
+                 Qt::MouseButton button, Qt::MouseButtons buttons);
     ~QTabletEvent();
 
     inline QPoint pos() const { return mPos.toPoint(); }
@@ -254,6 +264,8 @@ public:
     inline qreal rotation() const { return mRot; }
     inline int xTilt() const { return mXT; }
     inline int yTilt() const { return mYT; }
+    Qt::MouseButton button() const;
+    Qt::MouseButtons buttons() const;
 
 protected:
     QPointF mPos, mGPos;
@@ -261,9 +273,8 @@ protected:
     qreal mPress, mTangential, mRot;
     qint64 mUnique;
 
-    // I don't know what the future holds for tablets but there could be some
-    // new devices coming along, and there seem to be "holes" in the
-    // OS-specific events for this.
+    // QTabletEventPrivate for extra storage.
+    // ### Qt 6: QPointingEvent will have Buttons, QTabletEvent will inherit
     void *mExtra;
 };
 #endif // QT_NO_TABLETEVENT
@@ -374,8 +385,6 @@ public:
     inline const QRegion &region() const { return m_region; }
 
 protected:
-    friend class QApplication;
-    friend class QCoreApplication;
     QRect m_rect;
     QRegion m_region;
     bool m_erased;
@@ -392,7 +401,6 @@ public:
 protected:
     QPoint p, oldp;
     friend class QApplication;
-    friend class QCoreApplication;
 };
 
 class Q_GUI_EXPORT QExposeEvent : public QEvent
@@ -407,6 +415,23 @@ protected:
     QRegion rgn;
 };
 
+class Q_GUI_EXPORT QPlatformSurfaceEvent : public QEvent
+{
+public:
+    enum SurfaceEventType {
+        SurfaceCreated,
+        SurfaceAboutToBeDestroyed
+    };
+
+    explicit QPlatformSurfaceEvent(SurfaceEventType surfaceEventType);
+    ~QPlatformSurfaceEvent();
+
+    inline SurfaceEventType surfaceEventType() const { return m_surfaceEventType; }
+
+protected:
+    SurfaceEventType m_surfaceEventType;
+};
+
 class Q_GUI_EXPORT QResizeEvent : public QEvent
 {
 public:
@@ -418,7 +443,6 @@ public:
 protected:
     QSize s, olds;
     friend class QApplication;
-    friend class QCoreApplication;
 };
 
 
@@ -598,7 +622,6 @@ public:
     inline void ignore(const QRect & r) { ignore(); rect = r; }
 
 protected:
-    friend class QApplication;
     QRect rect;
 };
 
@@ -757,13 +780,19 @@ public:
         enum InfoFlag {
             Pen  = 0x0001
         };
+#ifndef Q_MOC_RUN
+        // otherwise moc gives
+        // Error: Meta object features not supported for nested classes
         Q_DECLARE_FLAGS(InfoFlags, InfoFlag)
+#endif
 
         explicit TouchPoint(int id = -1);
         TouchPoint(const TouchPoint &other);
 #ifdef Q_COMPILER_RVALUE_REFS
-        TouchPoint(TouchPoint &&other) : d(other.d) { other.d = 0; }
-        TouchPoint &operator=(TouchPoint &&other)
+        TouchPoint(TouchPoint &&other) Q_DECL_NOEXCEPT
+            : d(0)
+        { qSwap(d, other.d); }
+        TouchPoint &operator=(TouchPoint &&other) Q_DECL_NOEXCEPT
         { qSwap(d, other.d); return *this; }
 #endif
         ~TouchPoint();
@@ -771,7 +800,8 @@ public:
         TouchPoint &operator=(const TouchPoint &other)
         { if ( d != other.d ) { TouchPoint copy(other); swap(copy); } return *this; }
 
-        void swap(TouchPoint &other) { qSwap(d, other.d); }
+        void swap(TouchPoint &other) Q_DECL_NOEXCEPT
+        { qSwap(d, other.d); }
 
         int id() const;
 
@@ -877,6 +907,10 @@ protected:
 };
 Q_DECLARE_TYPEINFO(QTouchEvent::TouchPoint, Q_MOVABLE_TYPE);
 Q_DECLARE_OPERATORS_FOR_FLAGS(QTouchEvent::TouchPoint::InfoFlags)
+
+#ifndef QT_NO_DEBUG_STREAM
+Q_GUI_EXPORT QDebug operator<<(QDebug, const QTouchEvent::TouchPoint &);
+#endif
 
 class Q_GUI_EXPORT QScrollPrepareEvent : public QEvent
 {

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the ActiveQt framework of the Qt Toolkit.
 **
@@ -17,8 +17,8 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
 **
@@ -40,9 +40,7 @@
 #ifndef QAXTYPEFUNCTIONS_P_H
 #define QAXTYPEFUNCTIONS_P_H
 
-#if !defined(_WINDOWS_) && !defined(_WINDOWS_H) && !defined(__WINDOWS__)
-#error Must include windows.h first!
-#endif
+#include <QtCore/qt_windows.h>
 
 #include <QtGui/qcolor.h>
 #include <QtGui/qfont.h>
@@ -50,6 +48,8 @@
 #include <QtCore/qvariant.h>
 
 QT_BEGIN_NAMESPACE
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_GCC("-Wnon-virtual-dtor") // gcc complains about IAxServerBase inheriting IUnknown with non virtual destructor.
 
 extern GUID IID_IAxServerBase;
 struct IAxServerBase : public IUnknown
@@ -83,6 +83,7 @@ extern void clearVARIANT(VARIANT *var);
 #define QAX_INPROC_SERVER  (0x51540001)
 #define QAX_OUTPROC_SERVER (0x51540002)
 
+QT_WARNING_POP
 QT_END_NAMESPACE
 
 #endif // QAXTYPEFUNCTIONS_P_H

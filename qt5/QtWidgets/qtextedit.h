@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWidgets module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -66,7 +58,6 @@ class Q_WIDGETS_EXPORT QTextEdit : public QAbstractScrollArea
     Q_OBJECT
     Q_DECLARE_PRIVATE(QTextEdit)
     Q_FLAGS(AutoFormatting)
-    Q_ENUMS(LineWrapMode)
     Q_PROPERTY(AutoFormatting autoFormatting READ autoFormatting WRITE setAutoFormatting)
     Q_PROPERTY(bool tabChangesFocus READ tabChangesFocus WRITE setTabChangesFocus)
     Q_PROPERTY(QString documentTitle READ documentTitle WRITE setDocumentTitle)
@@ -93,6 +84,7 @@ public:
         FixedPixelWidth,
         FixedColumnWidth
     };
+    Q_ENUM(LineWrapMode)
 
     enum AutoFormattingFlag {
         AutoNone = 0,
@@ -162,6 +154,9 @@ public:
     void setWordWrapMode(QTextOption::WrapMode policy);
 
     bool find(const QString &exp, QTextDocument::FindFlags options = 0);
+#ifndef QT_NO_REGEXP
+    bool find(const QRegExp &exp, QTextDocument::FindFlags options = 0);
+#endif
 
     QString toPlainText() const;
 #ifndef QT_NO_TEXTHTMLPARSER
@@ -208,7 +203,8 @@ public:
 
     void print(QPagedPaintDevice *printer) const;
 
-    QVariant inputMethodQuery(Qt::InputMethodQuery property) const;
+    QVariant inputMethodQuery(Qt::InputMethodQuery property) const Q_DECL_OVERRIDE;
+    Q_INVOKABLE QVariant inputMethodQuery(Qt::InputMethodQuery query, QVariant argument) const;
 
 public Q_SLOTS:
     void setFontPointSize(qreal s);
@@ -261,44 +257,46 @@ Q_SIGNALS:
     void cursorPositionChanged();
 
 protected:
-    virtual bool event(QEvent *e);
-    virtual void timerEvent(QTimerEvent *e);
-    virtual void keyPressEvent(QKeyEvent *e);
-    virtual void keyReleaseEvent(QKeyEvent *e);
-    virtual void resizeEvent(QResizeEvent *e);
-    virtual void paintEvent(QPaintEvent *e);
-    virtual void mousePressEvent(QMouseEvent *e);
-    virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
-    virtual void mouseDoubleClickEvent(QMouseEvent *e);
-    virtual bool focusNextPrevChild(bool next);
+    virtual bool event(QEvent *e) Q_DECL_OVERRIDE;
+    virtual void timerEvent(QTimerEvent *e) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
+    virtual void resizeEvent(QResizeEvent *e) Q_DECL_OVERRIDE;
+    virtual void paintEvent(QPaintEvent *e) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    virtual void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    virtual void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    virtual void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    virtual bool focusNextPrevChild(bool next) Q_DECL_OVERRIDE;
 #ifndef QT_NO_CONTEXTMENU
-    virtual void contextMenuEvent(QContextMenuEvent *e);
+    virtual void contextMenuEvent(QContextMenuEvent *e) Q_DECL_OVERRIDE;
 #endif
 #ifndef QT_NO_DRAGANDDROP
-    virtual void dragEnterEvent(QDragEnterEvent *e);
-    virtual void dragLeaveEvent(QDragLeaveEvent *e);
-    virtual void dragMoveEvent(QDragMoveEvent *e);
-    virtual void dropEvent(QDropEvent *e);
+    virtual void dragEnterEvent(QDragEnterEvent *e) Q_DECL_OVERRIDE;
+    virtual void dragLeaveEvent(QDragLeaveEvent *e) Q_DECL_OVERRIDE;
+    virtual void dragMoveEvent(QDragMoveEvent *e) Q_DECL_OVERRIDE;
+    virtual void dropEvent(QDropEvent *e) Q_DECL_OVERRIDE;
 #endif
-    virtual void focusInEvent(QFocusEvent *e);
-    virtual void focusOutEvent(QFocusEvent *e);
-    virtual void showEvent(QShowEvent *);
-    virtual void changeEvent(QEvent *e);
+    virtual void focusInEvent(QFocusEvent *e) Q_DECL_OVERRIDE;
+    virtual void focusOutEvent(QFocusEvent *e) Q_DECL_OVERRIDE;
+    virtual void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
+    virtual void changeEvent(QEvent *e) Q_DECL_OVERRIDE;
 #ifndef QT_NO_WHEELEVENT
-    virtual void wheelEvent(QWheelEvent *e);
+    virtual void wheelEvent(QWheelEvent *e) Q_DECL_OVERRIDE;
 #endif
 
     virtual QMimeData *createMimeDataFromSelection() const;
     virtual bool canInsertFromMimeData(const QMimeData *source) const;
     virtual void insertFromMimeData(const QMimeData *source);
 
-    virtual void inputMethodEvent(QInputMethodEvent *);
+    virtual void inputMethodEvent(QInputMethodEvent *) Q_DECL_OVERRIDE;
 
     QTextEdit(QTextEditPrivate &dd, QWidget *parent);
 
-    virtual void scrollContentsBy(int dx, int dy);
+    virtual void scrollContentsBy(int dx, int dy) Q_DECL_OVERRIDE;
     virtual void doSetTextCursor(const QTextCursor &cursor);
+
+    void zoomInF(float range);
 
 private:
     Q_DISABLE_COPY(QTextEdit)

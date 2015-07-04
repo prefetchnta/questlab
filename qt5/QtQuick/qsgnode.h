@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtQuick module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -49,8 +41,11 @@
 
 QT_BEGIN_NAMESPACE
 
-// #define QSG_RUNTIME_DESCRIPTION
+#ifndef QT_NO_DEBUG
+#define QSG_RUNTIME_DESCRIPTION
+#endif
 
+class QSGAbstractRenderer;
 class QSGRenderer;
 
 class QSGNode;
@@ -92,9 +87,14 @@ public:
         // QSGBasicGeometryNode
         OwnsGeometry                = 0x00010000,
         OwnsMaterial                = 0x00020000,
-        OwnsOpaqueMaterial          = 0x00040000
+        OwnsOpaqueMaterial          = 0x00040000,
 
         // Uppermost 8 bits are reserved for internal use.
+#ifndef qdoc
+        IsVisitableNode             = 0x01000000
+#else
+        InternalReserved            = 0x01000000
+#endif
     };
     Q_DECLARE_FLAGS(Flags, Flag)
 
@@ -132,6 +132,7 @@ public:
     void appendChildNode(QSGNode *node);
     void insertChildNodeBefore(QSGNode *node, QSGNode *before);
     void insertChildNodeAfter(QSGNode *node, QSGNode *after);
+    void reparentChildNodesTo(QSGNode *newParent);
 
     int childCount() const;
     QSGNode *childAtIndex(int i) const;
@@ -142,9 +143,9 @@ public:
 
     inline NodeType type() const { return m_type; }
 
-    void clearDirty() { m_dirtyState = 0; }
+    QT_DEPRECATED void clearDirty() { }
     void markDirty(DirtyState bits);
-    DirtyState dirtyState() const { return m_dirtyState; }
+    QT_DEPRECATED DirtyState dirtyState() const { return 0; }
 
     virtual bool isSubtreeBlocked() const;
 
@@ -161,6 +162,7 @@ protected:
 private:
     friend class QSGRootNode;
     friend class QSGBatchRenderer::Renderer;
+    friend class QSGRenderer;
 
     void init();
     void destroy();
@@ -182,9 +184,7 @@ protected:
     QScopedPointer<QSGNodePrivate> d_ptr;
 };
 
-#ifdef QSG_RUNTIME_DESCRIPTION
 void Q_QUICK_EXPORT qsgnode_set_description(QSGNode *node, const QString &description);
-#endif
 
 class Q_QUICK_EXPORT QSGBasicGeometryNode : public QSGNode
 {
@@ -297,11 +297,11 @@ public:
 private:
     void notifyNodeChange(QSGNode *node, DirtyState state);
 
-    friend class QSGRenderer;
+    friend class QSGAbstractRenderer;
     friend class QSGNode;
     friend class QSGGeometryNode;
 
-    QList<QSGRenderer *> m_renderers;
+    QList<QSGAbstractRenderer *> m_renderers;
 };
 
 

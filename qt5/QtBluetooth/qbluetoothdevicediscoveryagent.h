@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtBluetooth module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -44,10 +36,8 @@
 
 #include <QtBluetooth/qbluetoothglobal.h>
 
-#include <QObject>
-
+#include <QtCore/QObject>
 #include <QtBluetooth/QBluetoothDeviceInfo>
-
 #include <QtBluetooth/QBluetoothAddress>
 
 QT_BEGIN_NAMESPACE
@@ -57,7 +47,8 @@ class QBluetoothDeviceDiscoveryAgentPrivate;
 class Q_BLUETOOTH_EXPORT QBluetoothDeviceDiscoveryAgent : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QBluetoothDeviceDiscoveryAgent::InquiryType inquiryType READ inquiryType WRITE setInquiryType)
+    Q_PROPERTY(QBluetoothDeviceDiscoveryAgent::InquiryType inquiryType
+               READ inquiryType WRITE setInquiryType)
 
 public:
     // FIXME: add more errors
@@ -66,7 +57,9 @@ public:
         NoError,
         InputOutputError,
         PoweredOffError,
-        UnknownError = 100 //New errors must be added before Unknown error
+        InvalidBluetoothAdapterError,
+        UnsupportedPlatformError,
+        UnknownError = 100 // New errors must be added before Unknown error
     };
 
     enum InquiryType {
@@ -75,9 +68,11 @@ public:
     };
 
     QBluetoothDeviceDiscoveryAgent(QObject *parent = 0);
-    explicit QBluetoothDeviceDiscoveryAgent(const QBluetoothAddress &deviceAdapter, QObject *parent = 0);
+    explicit QBluetoothDeviceDiscoveryAgent(const QBluetoothAddress &deviceAdapter,
+                                            QObject *parent = 0);
     ~QBluetoothDeviceDiscoveryAgent();
 
+    // TODO Remove inquiry type in Qt 6 -> not really used anywhere
     QBluetoothDeviceDiscoveryAgent::InquiryType inquiryType() const;
     void setInquiryType(QBluetoothDeviceDiscoveryAgent::InquiryType type);
 
@@ -105,6 +100,11 @@ private:
 #ifdef QT_BLUEZ_BLUETOOTH
     Q_PRIVATE_SLOT(d_func(), void _q_deviceFound(const QString &address, const QVariantMap &dict))
     Q_PRIVATE_SLOT(d_func(), void _q_propertyChanged(const QString &name, const QDBusVariant &value))
+    Q_PRIVATE_SLOT(d_func(), void _q_InterfacesAdded(const QDBusObjectPath &path, InterfaceList interfaceList))
+    Q_PRIVATE_SLOT(d_func(), void _q_discoveryFinished())
+    Q_PRIVATE_SLOT(d_func(), void _q_discoveryInterrupted(const QString &path))
+    Q_PRIVATE_SLOT(d_func(), void _q_PropertiesChanged(const QString &interface, const QVariantMap &changed_properties, const QStringList &invalidated_properties))
+    Q_PRIVATE_SLOT(d_func(), void _q_extendedDeviceDiscoveryTimeout())
 #endif
 };
 

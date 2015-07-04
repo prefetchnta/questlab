@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -45,7 +37,9 @@
 #include <QtCore/qglobal.h>
 
 QT_BEGIN_NAMESPACE
-
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_GCC("-Wdeprecated-declarations")
+QT_WARNING_DISABLE_CLANG("-Wdeprecated-declarations")
 
 /*
     Warning: The contents of QAlgorithmsPrivate is not a part of the public Qt API
@@ -55,28 +49,28 @@ namespace QAlgorithmsPrivate {
 
 #if QT_DEPRECATED_SINCE(5, 2)
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qSortHelper(RandomAccessIterator start, RandomAccessIterator end, const T &t, LessThan lessThan);
+QT_DEPRECATED_X("Use std::sort") Q_OUTOFLINE_TEMPLATE void qSortHelper(RandomAccessIterator start, RandomAccessIterator end, const T &t, LessThan lessThan);
 template <typename RandomAccessIterator, typename T>
-QT_DEPRECATED inline void qSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &dummy);
+QT_DEPRECATED_X("Use std::sort") inline void qSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &dummy);
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qStableSortHelper(RandomAccessIterator start, RandomAccessIterator end, const T &t, LessThan lessThan);
+QT_DEPRECATED_X("Use std::stable_sort") Q_OUTOFLINE_TEMPLATE void qStableSortHelper(RandomAccessIterator start, RandomAccessIterator end, const T &t, LessThan lessThan);
 template <typename RandomAccessIterator, typename T>
-QT_DEPRECATED inline void qStableSortHelper(RandomAccessIterator, RandomAccessIterator, const T &);
+QT_DEPRECATED_X("Use std::stable_sort") inline void qStableSortHelper(RandomAccessIterator, RandomAccessIterator, const T &);
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan);
+QT_DEPRECATED_X("Use std::lower_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan);
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan);
+QT_DEPRECATED_X("Use std::upper_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan);
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFindHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan);
+QT_DEPRECATED_X("Use std::binary_search") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFindHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan);
 #endif // QT_DEPRECATED_SINCE(5, 2)
 
 }
 
 #if QT_DEPRECATED_SINCE(5, 2)
 template <typename InputIterator, typename OutputIterator>
-QT_DEPRECATED inline OutputIterator qCopy(InputIterator begin, InputIterator end, OutputIterator dest)
+QT_DEPRECATED_X("Use std::copy") inline OutputIterator qCopy(InputIterator begin, InputIterator end, OutputIterator dest)
 {
     while (begin != end)
         *dest++ = *begin++;
@@ -84,7 +78,7 @@ QT_DEPRECATED inline OutputIterator qCopy(InputIterator begin, InputIterator end
 }
 
 template <typename BiIterator1, typename BiIterator2>
-QT_DEPRECATED inline BiIterator2 qCopyBackward(BiIterator1 begin, BiIterator1 end, BiIterator2 dest)
+QT_DEPRECATED_X("Use std::copy_backward") inline BiIterator2 qCopyBackward(BiIterator1 begin, BiIterator1 end, BiIterator2 dest)
 {
     while (begin != end)
         *--dest = *--end;
@@ -92,7 +86,7 @@ QT_DEPRECATED inline BiIterator2 qCopyBackward(BiIterator1 begin, BiIterator1 en
 }
 
 template <typename InputIterator1, typename InputIterator2>
-QT_DEPRECATED inline bool qEqual(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
+QT_DEPRECATED_X("Use std::equal") inline bool qEqual(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
 {
     for (; first1 != last1; ++first1, ++first2)
         if (!(*first1 == *first2))
@@ -101,20 +95,20 @@ QT_DEPRECATED inline bool qEqual(InputIterator1 first1, InputIterator1 last1, In
 }
 
 template <typename ForwardIterator, typename T>
-QT_DEPRECATED inline void qFill(ForwardIterator first, ForwardIterator last, const T &val)
+QT_DEPRECATED_X("Use std::fill") inline void qFill(ForwardIterator first, ForwardIterator last, const T &val)
 {
     for (; first != last; ++first)
         *first = val;
 }
 
 template <typename Container, typename T>
-QT_DEPRECATED inline void qFill(Container &container, const T &val)
+QT_DEPRECATED_X("Use std::fill") inline void qFill(Container &container, const T &val)
 {
     qFill(container.begin(), container.end(), val);
 }
 
 template <typename InputIterator, typename T>
-QT_DEPRECATED inline InputIterator qFind(InputIterator first, InputIterator last, const T &val)
+QT_DEPRECATED_X("Use std::find") inline InputIterator qFind(InputIterator first, InputIterator last, const T &val)
 {
     while (first != last && !(*first == val))
         ++first;
@@ -122,13 +116,13 @@ QT_DEPRECATED inline InputIterator qFind(InputIterator first, InputIterator last
 }
 
 template <typename Container, typename T>
-QT_DEPRECATED inline typename Container::const_iterator qFind(const Container &container, const T &val)
+QT_DEPRECATED_X("Use std::find") inline typename Container::const_iterator qFind(const Container &container, const T &val)
 {
     return qFind(container.constBegin(), container.constEnd(), val);
 }
 
 template <typename InputIterator, typename T, typename Size>
-QT_DEPRECATED inline void qCount(InputIterator first, InputIterator last, const T &value, Size &n)
+QT_DEPRECATED_X("Use std::count") inline void qCount(InputIterator first, InputIterator last, const T &value, Size &n)
 {
     for (; first != last; ++first)
         if (*first == value)
@@ -136,7 +130,7 @@ QT_DEPRECATED inline void qCount(InputIterator first, InputIterator last, const 
 }
 
 template <typename Container, typename T, typename Size>
-QT_DEPRECATED inline void qCount(const Container &container, const T &value, Size &n)
+QT_DEPRECATED_X("Use std::count") inline void qCount(const Container &container, const T &value, Size &n)
 {
     qCount(container.constBegin(), container.constEnd(), value, n);
 }
@@ -153,7 +147,7 @@ LessThan qGreater()
 }
 #else
 template <typename T>
-class QT_DEPRECATED qLess
+class QT_DEPRECATED_X("Use std::less") qLess
 {
 public:
     inline bool operator()(const T &t1, const T &t2) const
@@ -163,7 +157,7 @@ public:
 };
 
 template <typename T>
-class QT_DEPRECATED qGreater
+class QT_DEPRECATED_X("Use std::greater") qGreater
 {
 public:
     inline bool operator()(const T &t1, const T &t2) const
@@ -174,21 +168,21 @@ public:
 #endif
 
 template <typename RandomAccessIterator>
-QT_DEPRECATED inline void qSort(RandomAccessIterator start, RandomAccessIterator end)
+QT_DEPRECATED_X("Use std::sort") inline void qSort(RandomAccessIterator start, RandomAccessIterator end)
 {
     if (start != end)
         QAlgorithmsPrivate::qSortHelper(start, end, *start);
 }
 
 template <typename RandomAccessIterator, typename LessThan>
-QT_DEPRECATED inline void qSort(RandomAccessIterator start, RandomAccessIterator end, LessThan lessThan)
+QT_DEPRECATED_X("Use std::sort") inline void qSort(RandomAccessIterator start, RandomAccessIterator end, LessThan lessThan)
 {
     if (start != end)
         QAlgorithmsPrivate::qSortHelper(start, end, *start, lessThan);
 }
 
 template<typename Container>
-QT_DEPRECATED inline void qSort(Container &c)
+QT_DEPRECATED_X("Use std::sort") inline void qSort(Container &c)
 {
 #ifdef Q_CC_BOR
     // Work around Borland 5.5 optimizer bug
@@ -199,21 +193,21 @@ QT_DEPRECATED inline void qSort(Container &c)
 }
 
 template <typename RandomAccessIterator>
-QT_DEPRECATED inline void qStableSort(RandomAccessIterator start, RandomAccessIterator end)
+QT_DEPRECATED_X("Use std::stable_sort") inline void qStableSort(RandomAccessIterator start, RandomAccessIterator end)
 {
     if (start != end)
         QAlgorithmsPrivate::qStableSortHelper(start, end, *start);
 }
 
 template <typename RandomAccessIterator, typename LessThan>
-QT_DEPRECATED inline void qStableSort(RandomAccessIterator start, RandomAccessIterator end, LessThan lessThan)
+QT_DEPRECATED_X("Use std::stable_sort") inline void qStableSort(RandomAccessIterator start, RandomAccessIterator end, LessThan lessThan)
 {
     if (start != end)
         QAlgorithmsPrivate::qStableSortHelper(start, end, *start, lessThan);
 }
 
 template<typename Container>
-QT_DEPRECATED inline void qStableSort(Container &c)
+QT_DEPRECATED_X("Use std::stable_sort") inline void qStableSort(Container &c)
 {
 #ifdef Q_CC_BOR
     // Work around Borland 5.5 optimizer bug
@@ -224,7 +218,7 @@ QT_DEPRECATED inline void qStableSort(Container &c)
 }
 
 template <typename RandomAccessIterator, typename T>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value)
+QT_DEPRECATED_X("Use std::lower_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value)
 {
     // Implementation is duplicated from QAlgorithmsPrivate to keep existing code
     // compiling. We have to allow using *begin and value with different types,
@@ -247,19 +241,19 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBound(RandomAccess
 }
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
+QT_DEPRECATED_X("Use std::lower_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
 {
     return QAlgorithmsPrivate::qLowerBoundHelper(begin, end, value, lessThan);
 }
 
 template <typename Container, typename T>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE typename Container::const_iterator qLowerBound(const Container &container, const T &value)
+QT_DEPRECATED_X("Use std::lower_bound") Q_OUTOFLINE_TEMPLATE typename Container::const_iterator qLowerBound(const Container &container, const T &value)
 {
     return QAlgorithmsPrivate::qLowerBoundHelper(container.constBegin(), container.constEnd(), value, qLess<T>());
 }
 
 template <typename RandomAccessIterator, typename T>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value)
+QT_DEPRECATED_X("Use std::upper_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value)
 {
     // Implementation is duplicated from QAlgorithmsPrivate.
     RandomAccessIterator middle;
@@ -280,19 +274,19 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBound(RandomAccess
 }
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
+QT_DEPRECATED_X("Use std::upper_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBound(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
 {
     return QAlgorithmsPrivate::qUpperBoundHelper(begin, end, value, lessThan);
 }
 
 template <typename Container, typename T>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE typename Container::const_iterator qUpperBound(const Container &container, const T &value)
+QT_DEPRECATED_X("Use std::upper_bound") Q_OUTOFLINE_TEMPLATE typename Container::const_iterator qUpperBound(const Container &container, const T &value)
 {
     return QAlgorithmsPrivate::qUpperBoundHelper(container.constBegin(), container.constEnd(), value, qLess<T>());
 }
 
 template <typename RandomAccessIterator, typename T>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFind(RandomAccessIterator begin, RandomAccessIterator end, const T &value)
+QT_DEPRECATED_X("Use std::binary_search") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFind(RandomAccessIterator begin, RandomAccessIterator end, const T &value)
 {
     // Implementation is duplicated from QAlgorithmsPrivate.
     RandomAccessIterator it = qLowerBound(begin, end, value);
@@ -304,13 +298,13 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFind(RandomAccess
 }
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFind(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
+QT_DEPRECATED_X("Use std::binary_search") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFind(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
 {
     return QAlgorithmsPrivate::qBinaryFindHelper(begin, end, value, lessThan);
 }
 
 template <typename Container, typename T>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE typename Container::const_iterator qBinaryFind(const Container &container, const T &value)
+QT_DEPRECATED_X("Use std::binary_search") Q_OUTOFLINE_TEMPLATE typename Container::const_iterator qBinaryFind(const Container &container, const T &value)
 {
     return QAlgorithmsPrivate::qBinaryFindHelper(container.constBegin(), container.constEnd(), value, qLess<T>());
 }
@@ -340,7 +334,7 @@ namespace QAlgorithmsPrivate {
 #if QT_DEPRECATED_SINCE(5, 2)
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qSortHelper(RandomAccessIterator start, RandomAccessIterator end, const T &t, LessThan lessThan)
+QT_DEPRECATED_X("Use std::sort") Q_OUTOFLINE_TEMPLATE void qSortHelper(RandomAccessIterator start, RandomAccessIterator end, const T &t, LessThan lessThan)
 {
 top:
     int span = int(end - start);
@@ -393,13 +387,13 @@ top:
 }
 
 template <typename RandomAccessIterator, typename T>
-QT_DEPRECATED inline void qSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &dummy)
+QT_DEPRECATED_X("Use std::sort") inline void qSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &dummy)
 {
     qSortHelper(begin, end, dummy, qLess<T>());
 }
 
 template <typename RandomAccessIterator>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qReverse(RandomAccessIterator begin, RandomAccessIterator end)
+QT_DEPRECATED_X("Use std::reverse") Q_OUTOFLINE_TEMPLATE void qReverse(RandomAccessIterator begin, RandomAccessIterator end)
 {
     --end;
     while (begin < end)
@@ -407,7 +401,7 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qReverse(RandomAccessIterator begin, Ran
 }
 
 template <typename RandomAccessIterator>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qRotate(RandomAccessIterator begin, RandomAccessIterator middle, RandomAccessIterator end)
+QT_DEPRECATED_X("Use std::rotate") Q_OUTOFLINE_TEMPLATE void qRotate(RandomAccessIterator begin, RandomAccessIterator middle, RandomAccessIterator end)
 {
     qReverse(begin, middle);
     qReverse(middle, end);
@@ -415,7 +409,7 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qRotate(RandomAccessIterator begin, Rand
 }
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qMerge(RandomAccessIterator begin, RandomAccessIterator pivot, RandomAccessIterator end, T &t, LessThan lessThan)
+QT_DEPRECATED_X("Use std::merge") Q_OUTOFLINE_TEMPLATE void qMerge(RandomAccessIterator begin, RandomAccessIterator pivot, RandomAccessIterator end, T &t, LessThan lessThan)
 {
     const int len1 = pivot - begin;
     const int len2 = end - pivot;
@@ -450,7 +444,7 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qMerge(RandomAccessIterator begin, Rando
 }
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qStableSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &t, LessThan lessThan)
+QT_DEPRECATED_X("Use std::stable_sort") Q_OUTOFLINE_TEMPLATE void qStableSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &t, LessThan lessThan)
 {
     const int span = end - begin;
     if (span < 2)
@@ -463,13 +457,13 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE void qStableSortHelper(RandomAccessIterator b
 }
 
 template <typename RandomAccessIterator, typename T>
-QT_DEPRECATED inline void qStableSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &dummy)
+QT_DEPRECATED_X("Use std::stable_sort") inline void qStableSortHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &dummy)
 {
     qStableSortHelper(begin, end, dummy, qLess<T>());
 }
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
+QT_DEPRECATED_X("Use std::lower_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
 {
     RandomAccessIterator middle;
     int n = int(end - begin);
@@ -490,7 +484,7 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qLowerBoundHelper(Random
 
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
+QT_DEPRECATED_X("Use std::upper_bound") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBoundHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
 {
     RandomAccessIterator middle;
     int n = end - begin;
@@ -510,7 +504,7 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qUpperBoundHelper(Random
 }
 
 template <typename RandomAccessIterator, typename T, typename LessThan>
-QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFindHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
+QT_DEPRECATED_X("Use std::binary_search") Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFindHelper(RandomAccessIterator begin, RandomAccessIterator end, const T &value, LessThan lessThan)
 {
     RandomAccessIterator it = qLowerBoundHelper(begin, end, value, lessThan);
 
@@ -532,7 +526,7 @@ QT_DEPRECATED Q_OUTOFLINE_TEMPLATE RandomAccessIterator qBinaryFindHelper(Random
 #define QALGORITHMS_USE_BUILTIN_POPCOUNT
 #endif
 
-Q_DECL_CONSTEXPR inline uint qPopulationCount(quint32 v)
+Q_DECL_CONST_FUNCTION Q_DECL_CONSTEXPR inline uint qPopulationCount(quint32 v) Q_DECL_NOTHROW
 {
 #ifdef QALGORITHMS_USE_BUILTIN_POPCOUNT
     return __builtin_popcount(v);
@@ -545,7 +539,7 @@ Q_DECL_CONSTEXPR inline uint qPopulationCount(quint32 v)
 #endif
 }
 
-Q_DECL_CONSTEXPR inline uint qPopulationCount(quint8 v)
+Q_DECL_CONST_FUNCTION Q_DECL_CONSTEXPR inline uint qPopulationCount(quint8 v) Q_DECL_NOTHROW
 {
 #ifdef QALGORITHMS_USE_BUILTIN_POPCOUNT
     return __builtin_popcount(v);
@@ -555,7 +549,7 @@ Q_DECL_CONSTEXPR inline uint qPopulationCount(quint8 v)
 #endif
 }
 
-Q_DECL_CONSTEXPR inline uint qPopulationCount(quint16 v)
+Q_DECL_CONST_FUNCTION Q_DECL_CONSTEXPR inline uint qPopulationCount(quint16 v) Q_DECL_NOTHROW
 {
 #ifdef QALGORITHMS_USE_BUILTIN_POPCOUNT
     return __builtin_popcount(v);
@@ -566,7 +560,7 @@ Q_DECL_CONSTEXPR inline uint qPopulationCount(quint16 v)
 #endif
 }
 
-Q_DECL_CONSTEXPR inline uint qPopulationCount(quint64 v)
+Q_DECL_CONST_FUNCTION Q_DECL_CONSTEXPR inline uint qPopulationCount(quint64 v) Q_DECL_NOTHROW
 {
 #ifdef QALGORITHMS_USE_BUILTIN_POPCOUNT
     return __builtin_popcountll(v);
@@ -581,7 +575,7 @@ Q_DECL_CONSTEXPR inline uint qPopulationCount(quint64 v)
 #endif
 }
 
-Q_DECL_CONSTEXPR inline uint qPopulationCount(long unsigned int v)
+Q_DECL_CONST_FUNCTION Q_DECL_CONSTEXPR inline uint qPopulationCount(long unsigned int v) Q_DECL_NOTHROW
 {
     return qPopulationCount(static_cast<quint64>(v));
 }
@@ -590,7 +584,7 @@ Q_DECL_CONSTEXPR inline uint qPopulationCount(long unsigned int v)
 #undef QALGORITHMS_USE_BUILTIN_POPCOUNT
 #endif
 
-
+QT_WARNING_POP
 QT_END_NAMESPACE
 
 #endif // QALGORITHMS_H

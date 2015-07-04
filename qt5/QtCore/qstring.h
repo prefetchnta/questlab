@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -41,6 +33,10 @@
 
 #ifndef QSTRING_H
 #define QSTRING_H
+
+#if defined(QT_NO_CAST_FROM_ASCII) && defined(QT_RESTRICTED_CAST_FROM_ASCII)
+#error QT_NO_CAST_FROM_ASCII and QT_RESTRICTED_CAST_FROM_ASCII must not be defined at the same time
+#endif
 
 #include <QtCore/qchar.h>
 #include <QtCore/qbytearray.h>
@@ -101,7 +97,7 @@ public:
     inline bool operator>=(const QString &s) const;
     inline bool operator<=(const QString &s) const;
 
-#ifndef QT_NO_CAST_FROM_ASCII
+#if !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
     inline QT_ASCII_CAST_WARN bool operator==(const char *s) const;
     inline QT_ASCII_CAST_WARN bool operator!=(const char *s) const;
     inline QT_ASCII_CAST_WARN bool operator<(const char *s) const;
@@ -115,7 +111,7 @@ public:
     inline QT_ASCII_CAST_WARN bool operator>(const QByteArray &s) const;
     inline QT_ASCII_CAST_WARN bool operator<=(const QByteArray &s) const;
     inline QT_ASCII_CAST_WARN bool operator>=(const QByteArray &s) const;
-#endif // QT_NO_CAST_FROM_ASCII
+#endif // !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
 
 private:
     int m_size;
@@ -167,8 +163,8 @@ Q_STATIC_ASSERT_X(sizeof(qunicodechar) == 2,
             Q_STATIC_STRING_DATA_HEADER_INITIALIZER(Size), \
             QT_UNICODE_LITERAL(str) }; \
         QStringDataPtr holder = { qstring_literal.data_ptr() }; \
-        const QString s(holder); \
-        return s; \
+        const QString qstring_literal_temp(holder); \
+        return qstring_literal_temp; \
     }()) \
     /**/
 
@@ -214,22 +210,22 @@ class Q_CORE_EXPORT QString
 public:
     typedef QStringData Data;
 
-    inline QString();
+    inline QString() Q_DECL_NOTHROW;
     explicit QString(const QChar *unicode, int size = -1);
     QString(QChar c);
     QString(int size, QChar c);
     inline QString(QLatin1String latin1);
-    inline QString(const QString &);
+    inline QString(const QString &) Q_DECL_NOTHROW;
     inline ~QString();
     QString &operator=(QChar c);
-    QString &operator=(const QString &);
+    QString &operator=(const QString &) Q_DECL_NOTHROW;
     inline QString &operator=(QLatin1String latin1);
 #ifdef Q_COMPILER_RVALUE_REFS
-    inline QString(QString && other) : d(other.d) { other.d = Data::sharedNull(); }
-    inline QString &operator=(QString &&other)
+    inline QString(QString && other) Q_DECL_NOTHROW : d(other.d) { other.d = Data::sharedNull(); }
+    inline QString &operator=(QString &&other) Q_DECL_NOTHROW
     { qSwap(d, other.d); return *this; }
 #endif
-    inline void swap(QString &other) { qSwap(d, other.d); }
+    inline void swap(QString &other) Q_DECL_NOTHROW { qSwap(d, other.d); }
     inline int size() const { return d->size; }
     inline int count() const { return d->size; }
     inline int length() const;
@@ -304,6 +300,8 @@ public:
 
     QString &vsprintf(const char *format, va_list ap) Q_ATTRIBUTE_FORMAT_PRINTF(2, 0);
     QString &sprintf(const char *format, ...) Q_ATTRIBUTE_FORMAT_PRINTF(2, 3);
+    static QString vasprintf(const char *format, va_list ap) Q_ATTRIBUTE_FORMAT_PRINTF(1, 0);
+    static QString asprintf(const char *format, ...) Q_ATTRIBUTE_FORMAT_PRINTF(1, 2);
 
     int indexOf(QChar c, int from = 0, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
     int indexOf(const QString &s, int from = 0, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
@@ -316,6 +314,7 @@ public:
 
     inline bool contains(QChar c, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
     inline bool contains(const QString &s, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
+    inline bool contains(QLatin1String s, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
     inline bool contains(const QStringRef &s, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
     int count(QChar c, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
     int count(const QString &s, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
@@ -334,7 +333,9 @@ public:
 
 #ifndef QT_NO_REGULAREXPRESSION
     int indexOf(const QRegularExpression &re, int from = 0) const;
+    int indexOf(const QRegularExpression &re, int from, QRegularExpressionMatch *rmatch) const; // ### Qt 6: merge overloads
     int lastIndexOf(const QRegularExpression &re, int from = -1) const;
+    int lastIndexOf(const QRegularExpression &re, int from, QRegularExpressionMatch *rmatch) const; // ### Qt 6: merge overloads
     bool contains(const QRegularExpression &re) const;
     bool contains(const QRegularExpression &re, QRegularExpressionMatch *match) const; // ### Qt 6: merge overloads
     int count(const QRegularExpression &re) const;
@@ -376,12 +377,44 @@ public:
     QString leftJustified(int width, QChar fill = QLatin1Char(' '), bool trunc = false) const Q_REQUIRED_RESULT;
     QString rightJustified(int width, QChar fill = QLatin1Char(' '), bool trunc = false) const Q_REQUIRED_RESULT;
 
+#if defined(Q_COMPILER_REF_QUALIFIERS) && !defined(QT_COMPILING_QSTRING_COMPAT_CPP)
+#  if defined(Q_CC_GNU)
+    // required due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61941
+#    pragma push_macro("Q_REQUIRED_RESULT")
+#    undef Q_REQUIRED_RESULT
+#    define Q_REQUIRED_RESULT
+#    define Q_REQUIRED_RESULT_pushed
+#  endif
+    QString toLower() const & Q_REQUIRED_RESULT
+    { return toLower_helper(*this); }
+    QString toLower() && Q_REQUIRED_RESULT
+    { return toLower_helper(*this); }
+    QString toUpper() const & Q_REQUIRED_RESULT
+    { return toUpper_helper(*this); }
+    QString toUpper() && Q_REQUIRED_RESULT
+    { return toUpper_helper(*this); }
+    QString toCaseFolded() const & Q_REQUIRED_RESULT
+    { return toCaseFolded_helper(*this); }
+    QString toCaseFolded() && Q_REQUIRED_RESULT
+    { return toCaseFolded_helper(*this); }
+    QString trimmed() const & Q_REQUIRED_RESULT
+    { return trimmed_helper(*this); }
+    QString trimmed() && Q_REQUIRED_RESULT
+    { return trimmed_helper(*this); }
+    QString simplified() const & Q_REQUIRED_RESULT
+    { return simplified_helper(*this); }
+    QString simplified() && Q_REQUIRED_RESULT
+    { return simplified_helper(*this); }
+#  ifdef Q_REQUIRED_RESULT_pushed
+#    pragma pop_macro("Q_REQUIRED_RESULT")
+#  endif
+#else
     QString toLower() const Q_REQUIRED_RESULT;
     QString toUpper() const Q_REQUIRED_RESULT;
     QString toCaseFolded() const Q_REQUIRED_RESULT;
-
     QString trimmed() const Q_REQUIRED_RESULT;
     QString simplified() const Q_REQUIRED_RESULT;
+#endif
     QString toHtmlEscaped() const Q_REQUIRED_RESULT;
 
     QString &insert(int i, QChar c);
@@ -440,13 +473,19 @@ public:
 
     QStringList split(const QString &sep, SplitBehavior behavior = KeepEmptyParts,
                       Qt::CaseSensitivity cs = Qt::CaseSensitive) const Q_REQUIRED_RESULT;
+    QVector<QStringRef> splitRef(const QString &sep, SplitBehavior behavior = KeepEmptyParts,
+                      Qt::CaseSensitivity cs = Qt::CaseSensitive) const Q_REQUIRED_RESULT;
     QStringList split(QChar sep, SplitBehavior behavior = KeepEmptyParts,
+                      Qt::CaseSensitivity cs = Qt::CaseSensitive) const Q_REQUIRED_RESULT;
+    QVector<QStringRef> splitRef(QChar sep, SplitBehavior behavior = KeepEmptyParts,
                       Qt::CaseSensitivity cs = Qt::CaseSensitive) const Q_REQUIRED_RESULT;
 #ifndef QT_NO_REGEXP
     QStringList split(const QRegExp &sep, SplitBehavior behavior = KeepEmptyParts) const Q_REQUIRED_RESULT;
+    QVector<QStringRef> splitRef(const QRegExp &sep, SplitBehavior behavior = KeepEmptyParts) const Q_REQUIRED_RESULT;
 #endif
 #ifndef QT_NO_REGULAREXPRESSION
     QStringList split(const QRegularExpression &sep, SplitBehavior behavior = KeepEmptyParts) const Q_REQUIRED_RESULT;
+    QVector<QStringRef> splitRef(const QRegularExpression &sep, SplitBehavior behavior = KeepEmptyParts) const Q_REQUIRED_RESULT;
 #endif
     enum NormalizationForm {
         NormalizationForm_D,
@@ -456,13 +495,28 @@ public:
     };
     QString normalized(NormalizationForm mode, QChar::UnicodeVersion version = QChar::Unicode_Unassigned) const Q_REQUIRED_RESULT;
 
-    QString repeated(int times) const;
+    QString repeated(int times) const Q_REQUIRED_RESULT;
 
     const ushort *utf16() const;
 
+#if defined(Q_COMPILER_REF_QUALIFIERS) && !defined(QT_COMPILING_QSTRING_COMPAT_CPP)
+    QByteArray toLatin1() const & Q_REQUIRED_RESULT
+    { return toLatin1_helper(*this); }
+    QByteArray toLatin1() && Q_REQUIRED_RESULT
+    { return toLatin1_helper_inplace(*this); }
+    QByteArray toUtf8() const & Q_REQUIRED_RESULT
+    { return toUtf8_helper(*this); }
+    QByteArray toUtf8() && Q_REQUIRED_RESULT
+    { return toUtf8_helper(*this); }
+    QByteArray toLocal8Bit() const & Q_REQUIRED_RESULT
+    { return toLocal8Bit_helper(constData(), size()); }
+    QByteArray toLocal8Bit() && Q_REQUIRED_RESULT
+    { return toLocal8Bit_helper(constData(), size()); }
+#else
     QByteArray toLatin1() const Q_REQUIRED_RESULT;
     QByteArray toUtf8() const Q_REQUIRED_RESULT;
     QByteArray toLocal8Bit() const Q_REQUIRED_RESULT;
+#endif
     QVector<uint> toUcs4() const Q_REQUIRED_RESULT;
 
     // note - this are all inline so we can benefit from strlen() compile time optimizations
@@ -488,6 +542,13 @@ public:
     static QString fromUtf16(const ushort *, int size = -1);
     static QString fromUcs4(const uint *, int size = -1);
     static QString fromRawData(const QChar *, int size);
+
+#if defined(Q_COMPILER_UNICODE_STRINGS)
+    static QString fromUtf16(const char16_t *str, int size = -1)
+    { return fromUtf16(reinterpret_cast<const ushort *>(str), size); }
+    static QString fromUcs4(const char32_t *str, int size = -1)
+    { return fromUcs4(reinterpret_cast<const uint *>(str), size); }
+#endif
 
 #if QT_DEPRECATED_SINCE(5, 0)
     QT_DEPRECATED static inline QString fromAscii(const char *str, int size = -1)
@@ -529,6 +590,7 @@ public:
     int localeAwareCompare(const QStringRef &s) const;
     static int localeAwareCompare(const QString& s1, const QStringRef& s2);
 
+    // ### Qt6: make inline except for the long long versions
     short  toShort(bool *ok=0, int base=10) const;
     ushort toUShort(bool *ok=0, int base=10) const;
     int toInt(bool *ok=0, int base=10) const;
@@ -574,7 +636,16 @@ public:
     inline bool operator>=(QLatin1String s) const { return !operator<(s); }
 
     // ASCII compatibility
-#ifndef QT_NO_CAST_FROM_ASCII
+#if defined(QT_RESTRICTED_CAST_FROM_ASCII)
+    template <int N>
+    inline QString(const char (&ch)[N])
+        : d(fromAscii_helper(ch, N - 1))
+    {}
+    template <int N>
+    inline QString &operator=(const char (&ch)[N])
+    { return (*this = fromLatin1(ch, N - 1)); }
+#endif
+#if !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
     inline QT_ASCII_CAST_WARN QString(const char *ch)
         : d(fromAscii_helper(ch, ch ? int(strlen(ch)) : -1))
     {}
@@ -664,6 +735,13 @@ public:
     static inline QString fromStdWString(const std::wstring &s);
     inline std::wstring toStdWString() const;
 
+#if defined(Q_COMPILER_UNICODE_STRINGS) || defined(Q_QDOC)
+    static inline QString fromStdU16String(const std::u16string &s);
+    inline std::u16string toStdU16String() const;
+    static inline QString fromStdU32String(const std::u32string &s);
+    inline std::u32string toStdU32String() const;
+#endif
+
 #if defined(Q_OS_MAC) || defined(Q_QDOC)
     static QString fromCFString(CFStringRef string);
     CFStringRef toCFString() const Q_DECL_CF_RETURNS_RETAINED;
@@ -687,7 +765,7 @@ public:
     Q_DECL_CONSTEXPR inline QString(QStringDataPtr dd) : d(dd.ptr) {}
 
 private:
-#if defined(QT_NO_CAST_FROM_ASCII) && !defined(Q_NO_DECLARED_NOT_DEFINED)
+#if defined(QT_NO_CAST_FROM_ASCII)
     QString &operator+=(const char *s);
     QString &operator+=(const QByteArray &s);
     QString(const char *ch);
@@ -700,7 +778,6 @@ private:
 
     void reallocData(uint alloc, bool grow = false);
     void expand(int i);
-    void updateProperties() const;
     QString multiArg(int numArgs, const QString **args) const;
     static int compare_helper(const QChar *data1, int length1,
                               const QChar *data2, int length2,
@@ -713,11 +790,28 @@ private:
                               Qt::CaseSensitivity cs = Qt::CaseSensitive);
     static int localeAwareCompare_helper(const QChar *data1, int length1,
                                          const QChar *data2, int length2);
+    static QString toLower_helper(const QString &str);
+    static QString toLower_helper(QString &str);
+    static QString toUpper_helper(const QString &str);
+    static QString toUpper_helper(QString &str);
+    static QString toCaseFolded_helper(const QString &str);
+    static QString toCaseFolded_helper(QString &str);
+    static QString trimmed_helper(const QString &str);
+    static QString trimmed_helper(QString &str);
+    static QString simplified_helper(const QString &str);
+    static QString simplified_helper(QString &str);
     static Data *fromLatin1_helper(const char *str, int size = -1);
     static Data *fromAscii_helper(const char *str, int size = -1);
     static QString fromUtf8_helper(const char *str, int size);
     static QString fromLocal8Bit_helper(const char *, int size);
+    static QByteArray toLatin1_helper(const QString &);
+    static QByteArray toLatin1_helper(const QChar *data, int size);
+    static QByteArray toLatin1_helper_inplace(QString &);
+    static QByteArray toUtf8_helper(const QString &);
+    static QByteArray toLocal8Bit_helper(const QChar *data, int size);
     static int toUcs4_helper(const ushort *uc, int length, uint *out);
+    static qlonglong toIntegral_helper(const QChar *data, int len, bool *ok, int base);
+    static qulonglong toIntegral_helper(const QChar *data, uint len, bool *ok, int base);
     void replace_helper(uint *indices, int nIndices, int blen, const QChar *after, int alen);
     friend class QCharRef;
     friend class QTextCodec;
@@ -725,6 +819,24 @@ private:
     friend class QByteArray;
     friend class QCollator;
     friend struct QAbstractConcatenable;
+
+    template <typename T> static
+    T toIntegral_helper(const QChar *data, int len, bool *ok, int base)
+    {
+        // ### Qt6: use std::conditional<std::is_unsigned<T>::value, qulonglong, qlonglong>::type
+        const bool isUnsigned = T(0) < T(-1);
+        typedef typename QtPrivate::QConditional<isUnsigned, qulonglong, qlonglong>::Type Int64;
+        typedef typename QtPrivate::QConditional<isUnsigned, uint, int>::Type Int32;
+
+        // we select the right overload by casting size() to int or uint
+        Int64 val = toIntegral_helper(data, Int32(len), ok, base);
+        if (T(val) != val) {
+            if (ok)
+                *ok = false;
+            val = 0;
+        }
+        return T(val);
+    }
 
 public:
     typedef Data * DataPtr;
@@ -762,7 +874,7 @@ inline QString &QString::operator=(QLatin1String s)
 }
 inline void QString::clear()
 { if (!isNull()) *this = QString(); }
-inline QString::QString(const QString &other) : d(other.d)
+inline QString::QString(const QString &other) Q_DECL_NOTHROW : d(other.d)
 { Q_ASSERT(&other != this); d->ref.ref(); }
 inline int QString::capacity() const
 { return d->alloc ? d->alloc - 1 : 0; }
@@ -821,6 +933,9 @@ inline QString QString::arg(const QString &a1, const QString &a2, const QString 
 inline QString QString::section(QChar asep, int astart, int aend, SectionFlags aflags) const
 { return section(QString(asep), astart, aend, aflags); }
 
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_MSVC(4127)   // "conditional expression is constant"
+
 inline int QString::toWCharArray(wchar_t *array) const
 {
     if (sizeof(wchar_t) == sizeof(QChar)) {
@@ -829,6 +944,9 @@ inline int QString::toWCharArray(wchar_t *array) const
     }
     return toUcs4_helper(d->data(), size(), reinterpret_cast<uint *>(array));
 }
+
+QT_WARNING_POP
+
 inline QString QString::fromWCharArray(const wchar_t *string, int size)
 {
     return sizeof(wchar_t) == sizeof(QChar) ? fromUtf16(reinterpret_cast<const ushort *>(string), size)
@@ -887,7 +1005,21 @@ public:
 
     QChar::Category category() const { return QChar(*this).category(); }
     QChar::Direction direction() const { return QChar(*this).direction(); }
-    QChar::Joining joining() const { return QChar(*this).joining(); }
+    QChar::JoiningType joiningType() const { return QChar(*this).joiningType(); }
+#if QT_DEPRECATED_SINCE(5, 3)
+    QT_DEPRECATED QChar::Joining joining() const
+    {
+        switch (QChar(*this).joiningType()) {
+        case QChar::Joining_Causing: return QChar::Center;
+        case QChar::Joining_Dual: return QChar::Dual;
+        case QChar::Joining_Right: return QChar::Right;
+        case QChar::Joining_None:
+        case QChar::Joining_Left:
+        case QChar::Joining_Transparent:
+        default: return QChar::OtherJoining;
+        }
+    }
+#endif
     bool hasMirrored() const { return QChar(*this).hasMirrored(); }
     QChar mirroredChar() const { return QChar(*this).mirroredChar(); }
     QString decomposition() const { return QChar(*this).decomposition(); }
@@ -917,7 +1049,7 @@ inline void QCharRef::setRow(uchar arow) { QChar(*this).setRow(arow); }
 inline void QCharRef::setCell(uchar acell) { QChar(*this).setCell(acell); }
 
 
-inline QString::QString() : d(Data::sharedNull()) {}
+inline QString::QString() Q_DECL_NOTHROW : d(Data::sharedNull()) {}
 inline QString::~QString() { if (!d->ref.deref()) Data::deallocate(d); }
 
 inline void QString::reserve(int asize)
@@ -969,6 +1101,8 @@ inline bool QString::contains(const QString &s, Qt::CaseSensitivity cs) const
 { return indexOf(s, 0, cs) != -1; }
 inline bool QString::contains(const QStringRef &s, Qt::CaseSensitivity cs) const
 { return indexOf(s, 0, cs) != -1; }
+inline bool QString::contains(QLatin1String s, Qt::CaseSensitivity cs) const
+{ return indexOf(s, 0, cs) != -1; }
 inline bool QString::contains(QChar c, Qt::CaseSensitivity cs) const
 { return indexOf(c, 0, cs) != -1; }
 
@@ -1010,7 +1144,7 @@ inline bool QLatin1String::operator>=(const QString &s) const
 inline bool QLatin1String::operator<=(const QString &s) const
 { return s >= *this; }
 
-#ifndef QT_NO_CAST_FROM_ASCII
+#if !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
 inline bool QString::operator==(const char *s) const
 { return QString::compare_helper(constData(), size(), s, -1) == 0; }
 inline bool QString::operator!=(const char *s) const
@@ -1101,7 +1235,7 @@ inline bool QByteArray::operator<=(const QString &s) const
 { return QString::compare_helper(s.constData(), s.size(), constData(), qstrnlen(constData(), size())) <= 0; }
 inline bool QByteArray::operator>=(const QString &s) const
 { return QString::compare_helper(s.constData(), s.size(), constData(), qstrnlen(constData(), size())) >= 0; }
-#endif   // QT_NO_CAST_FROM_ASCII
+#endif // !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
 
 #ifndef QT_NO_CAST_TO_ASCII
 inline QByteArray &QByteArray::append(const QString &s)
@@ -1129,7 +1263,7 @@ inline const QString operator+(const QString &s1, QChar s2)
 { QString t(s1); t += s2; return t; }
 inline const QString operator+(QChar s1, const QString &s2)
 { QString t(s1); t += s2; return t; }
-#  ifndef QT_NO_CAST_FROM_ASCII
+#  if !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
 inline QT_ASCII_CAST_WARN const QString operator+(const QString &s1, const char *s2)
 { QString t(s1); t += QString::fromUtf8(s2); return t; }
 inline QT_ASCII_CAST_WARN const QString operator+(const char *s1, const QString &s2)
@@ -1146,7 +1280,7 @@ inline QT_ASCII_CAST_WARN const QString operator+(const QString &s, const QByteA
 #endif // QT_USE_QSTRINGBUILDER
 
 inline std::string QString::toStdString() const
-{ const QByteArray asc = toUtf8(); return std::string(asc.constData(), asc.length()); }
+{ return toUtf8().toStdString(); }
 
 inline QString QString::fromStdString(const std::string &s)
 { return fromUtf8(s.data(), int(s.size())); }
@@ -1169,6 +1303,25 @@ inline std::wstring QString::toStdWString() const
 inline QString QString::fromStdWString(const std::wstring &s)
 { return fromWCharArray(s.data(), int(s.size())); }
 
+#if defined(Q_COMPILER_UNICODE_STRINGS)
+inline QString QString::fromStdU16String(const std::u16string &s)
+{ return fromUtf16(s.data(), int(s.size())); }
+
+inline std::u16string QString::toStdU16String() const
+{ return std::u16string(reinterpret_cast<const char16_t*>(utf16()), length()); }
+
+inline QString QString::fromStdU32String(const std::u32string &s)
+{ return fromUcs4(s.data(), int(s.size())); }
+
+inline std::u32string QString::toStdU32String() const
+{
+    std::u32string u32str(length(), char32_t(0));
+    int len = toUcs4_helper(d->data(), length(), reinterpret_cast<uint*>(&u32str[0]));
+    u32str.resize(len);
+    return u32str;
+}
+#endif
+
 #if !defined(QT_NO_DATASTREAM) || (defined(QT_BOOTSTRAPPED) && !defined(QT_BUILD_QMAKE))
 Q_CORE_EXPORT QDataStream &operator<<(QDataStream &, const QString &);
 Q_CORE_EXPORT QDataStream &operator>>(QDataStream &, QString &);
@@ -1183,6 +1336,12 @@ class Q_CORE_EXPORT QStringRef {
     int m_position;
     int m_size;
 public:
+    typedef QString::size_type size_type;
+    typedef QString::value_type value_type;
+    typedef QString::const_iterator const_iterator;
+    typedef QString::const_pointer const_pointer;
+    typedef QString::const_reference const_reference;
+
     // ### Qt 6: make this constructor constexpr, after the destructor is made trivial
     inline QStringRef():m_string(0), m_position(0), m_size(0){}
     inline QStringRef(const QString *string, int position, int size);
@@ -1224,6 +1383,11 @@ public:
     int count(QChar c, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
     int count(const QStringRef &s, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
 
+    QVector<QStringRef> split(const QString &sep, QString::SplitBehavior behavior = QString::KeepEmptyParts,
+                      Qt::CaseSensitivity cs = Qt::CaseSensitive) const Q_REQUIRED_RESULT;
+    QVector<QStringRef> split(QChar sep, QString::SplitBehavior behavior = QString::KeepEmptyParts,
+                      Qt::CaseSensitivity cs = Qt::CaseSensitive) const Q_REQUIRED_RESULT;
+
     QStringRef left(int n) const Q_REQUIRED_RESULT;
     QStringRef right(int n) const Q_REQUIRED_RESULT;
     QStringRef mid(int pos, int n = -1) const Q_REQUIRED_RESULT;
@@ -1247,6 +1411,10 @@ public:
     }
     inline const QChar *data() const { return unicode(); }
     inline const QChar *constData() const {  return unicode(); }
+    inline const QChar *begin() const { return unicode(); }
+    inline const QChar *cbegin() const { return unicode(); }
+    inline const QChar *end() const { return unicode() + size(); }
+    inline const QChar *cend() const { return unicode() + size(); }
 
 #if QT_DEPRECATED_SINCE(5, 0)
     QT_DEPRECATED QByteArray toAscii() const Q_REQUIRED_RESULT
@@ -1267,7 +1435,7 @@ public:
     inline const QChar at(int i) const
         { Q_ASSERT(uint(i) < uint(size())); return m_string->at(i + m_position); }
 
-#ifndef QT_NO_CAST_FROM_ASCII
+#if !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
     // ASCII compatibility
     inline QT_ASCII_CAST_WARN bool operator==(const char *s) const;
     inline QT_ASCII_CAST_WARN bool operator!=(const char *s) const;
@@ -1341,7 +1509,7 @@ inline bool operator<=(const QStringRef &s1, const QStringRef &s2)
 inline bool operator>=(const QStringRef &s1, const QStringRef &s2)
 { return !(s1 < s2); }
 
-#ifndef QT_NO_CAST_FROM_ASCII
+#if !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
 inline QT_ASCII_CAST_WARN bool QStringRef::operator==(const char *s) const
 { return QString::compare_helper(constData(), size(), s, -1) == 0; }
 inline QT_ASCII_CAST_WARN bool QStringRef::operator!=(const char *s) const
@@ -1367,7 +1535,7 @@ inline QT_ASCII_CAST_WARN bool operator>(const char *s1, const QStringRef &s2)
 { return QString::compare_helper(s2.constData(), s2.size(), s1, -1) <= 0; }
 inline QT_ASCII_CAST_WARN bool operator>=(const char *s1, const QStringRef &s2)
 { return QString::compare_helper(s2.constData(), s2.size(), s1, -1) >= 0; }
-#endif // QT_NO_CAST_FROM_ASCII
+#endif // !defined(QT_NO_CAST_FROM_ASCII) && !defined(QT_RESTRICTED_CAST_FROM_ASCII)
 
 inline int QString::compare(const QStringRef &s, Qt::CaseSensitivity cs) const
 { return QString::compare_helper(constData(), length(), s.constData(), s.length(), cs); }

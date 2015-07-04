@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -151,8 +143,13 @@ class QItemSelectionModelPrivate;
 class Q_CORE_EXPORT QItemSelectionModel : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QAbstractItemModel *model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(bool hasSelection READ hasSelection NOTIFY selectionChanged STORED false DESIGNABLE false)
+    Q_PROPERTY(QModelIndex currentIndex READ currentIndex NOTIFY currentChanged STORED false DESIGNABLE false)
+    Q_PROPERTY(QItemSelection selection READ selection NOTIFY selectionChanged STORED false DESIGNABLE false)
+    Q_PROPERTY(QModelIndexList selectedIndexes READ selectedIndexes NOTIFY selectionChanged STORED false DESIGNABLE false)
+
     Q_DECLARE_PRIVATE(QItemSelectionModel)
-    Q_FLAGS(SelectionFlags)
 
 public:
 
@@ -171,28 +168,33 @@ public:
     };
 
     Q_DECLARE_FLAGS(SelectionFlags, SelectionFlag)
+    Q_FLAG(SelectionFlags)
 
-    explicit QItemSelectionModel(QAbstractItemModel *model);
+    explicit QItemSelectionModel(QAbstractItemModel *model = 0);
     explicit QItemSelectionModel(QAbstractItemModel *model, QObject *parent);
     virtual ~QItemSelectionModel();
 
     QModelIndex currentIndex() const;
 
-    bool isSelected(const QModelIndex &index) const;
-    bool isRowSelected(int row, const QModelIndex &parent) const;
-    bool isColumnSelected(int column, const QModelIndex &parent) const;
+    Q_INVOKABLE bool isSelected(const QModelIndex &index) const;
+    Q_INVOKABLE bool isRowSelected(int row, const QModelIndex &parent) const;
+    Q_INVOKABLE bool isColumnSelected(int column, const QModelIndex &parent) const;
 
-    bool rowIntersectsSelection(int row, const QModelIndex &parent) const;
-    bool columnIntersectsSelection(int column, const QModelIndex &parent) const;
+    Q_INVOKABLE bool rowIntersectsSelection(int row, const QModelIndex &parent) const;
+    Q_INVOKABLE bool columnIntersectsSelection(int column, const QModelIndex &parent) const;
 
     bool hasSelection() const;
 
     QModelIndexList selectedIndexes() const;
-    QModelIndexList selectedRows(int column = 0) const;
-    QModelIndexList selectedColumns(int row = 0) const;
+    Q_INVOKABLE QModelIndexList selectedRows(int column = 0) const;
+    Q_INVOKABLE QModelIndexList selectedColumns(int row = 0) const;
     const QItemSelection selection() const;
 
+    // ### Qt 6: Merge these two as "QAbstractItemModel *model() const"
     const QAbstractItemModel *model() const;
+    QAbstractItemModel *model();
+
+    void setModel(QAbstractItemModel *model);
 
 public Q_SLOTS:
     virtual void setCurrentIndex(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
@@ -209,6 +211,7 @@ Q_SIGNALS:
     void currentChanged(const QModelIndex &current, const QModelIndex &previous);
     void currentRowChanged(const QModelIndex &current, const QModelIndex &previous);
     void currentColumnChanged(const QModelIndex &current, const QModelIndex &previous);
+    void modelChanged(QAbstractItemModel *model);
 
 protected:
     QItemSelectionModel(QItemSelectionModelPrivate &dd, QAbstractItemModel *model);
@@ -250,5 +253,8 @@ Q_CORE_EXPORT QDebug operator<<(QDebug, const QItemSelectionRange &);
 #endif // QT_NO_ITEMVIEWS
 
 QT_END_NAMESPACE
+
+Q_DECLARE_METATYPE(QItemSelectionRange)
+Q_DECLARE_METATYPE(QItemSelection)
 
 #endif // QITEMSELECTIONMODEL_H

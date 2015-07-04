@@ -16,5 +16,9 @@
 #include "qbluetoothtransferreply.h"
 #include "qbluetoothtransferrequest.h"
 #include "qbluetoothuuid.h"
+#include "qlowenergycharacteristic.h"
+#include "qlowenergycontroller.h"
+#include "qlowenergydescriptor.h"
+#include "qlowenergyservice.h"
 #include "qtbluetoothversion.h"
 #endif

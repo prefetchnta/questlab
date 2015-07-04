@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -80,8 +72,9 @@ public:
 #  endif
     };
 #endif
-#if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
     enum WinVersion {
+        WV_None     = 0x0000,
+
         WV_32s      = 0x0001,
         WV_95       = 0x0002,
         WV_98       = 0x0003,
@@ -97,6 +90,7 @@ public:
         WV_WINDOWS7 = 0x0090,
         WV_WINDOWS8 = 0x00a0,
         WV_WINDOWS8_1 = 0x00b0,
+        WV_WINDOWS10 = 0x00c0,
         WV_NT_based = 0x00f0,
 
         /* version numbers */
@@ -108,6 +102,7 @@ public:
         WV_6_1      = WV_WINDOWS7,
         WV_6_2      = WV_WINDOWS8,
         WV_6_3      = WV_WINDOWS8_1,
+        WV_10_0     = WV_WINDOWS10,
 
         WV_CE       = 0x0100,
         WV_CENET    = 0x0200,
@@ -115,13 +110,18 @@ public:
         WV_CE_6     = 0x0400,
         WV_CE_based = 0x0f00
     };
+#if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
     static const WinVersion WindowsVersion;
     static WinVersion windowsVersion();
-
+#else
+    static const WinVersion WindowsVersion = WV_None;
+    static WinVersion windowsVersion() { return WV_None; }
 #endif
-#ifdef Q_OS_MAC
-#  define Q_MV_IOS(major, minor) (QSysInfo::MV_IOS | major << 4 | minor)
+
+#define Q_MV_OSX(major, minor) (major == 10 ? minor + 2 : (major == 9 ? 1 : 0))
+#define Q_MV_IOS(major, minor) (QSysInfo::MV_IOS | major << 4 | minor)
     enum MacVersion {
+        MV_None    = 0xffff,
         MV_Unknown = 0x0000,
 
         /* version */
@@ -136,6 +136,8 @@ public:
         MV_10_7 = 0x0009,
         MV_10_8 = 0x000A,
         MV_10_9 = 0x000B,
+        MV_10_10 = 0x000C,
+        MV_10_11 = 0x000D,
 
         /* codenames */
         MV_CHEETAH = MV_10_0,
@@ -148,6 +150,8 @@ public:
         MV_LION = MV_10_7,
         MV_MOUNTAINLION = MV_10_8,
         MV_MAVERICKS = MV_10_9,
+        MV_YOSEMITE = MV_10_10,
+        MV_ELCAPITAN = MV_10_11,
 
         /* iOS */
         MV_IOS     = 1 << 8,
@@ -157,11 +161,31 @@ public:
         MV_IOS_6_0 = Q_MV_IOS(6, 0),
         MV_IOS_6_1 = Q_MV_IOS(6, 1),
         MV_IOS_7_0 = Q_MV_IOS(7, 0),
-        MV_IOS_7_1 = Q_MV_IOS(7, 1)
+        MV_IOS_7_1 = Q_MV_IOS(7, 1),
+        MV_IOS_8_0 = Q_MV_IOS(8, 0),
+        MV_IOS_8_1 = Q_MV_IOS(8, 1),
+        MV_IOS_8_2 = Q_MV_IOS(8, 2),
+        MV_IOS_8_3 = Q_MV_IOS(8, 3),
+        MV_IOS_8_4 = Q_MV_IOS(8, 4),
+        MV_IOS_9_0 = Q_MV_IOS(9, 0)
     };
+#if defined(Q_OS_MAC)
     static const MacVersion MacintoshVersion;
     static MacVersion macVersion();
+#else
+    static const MacVersion MacintoshVersion = MV_None;
+    static MacVersion macVersion() { return MV_None; }
 #endif
+
+    static QString buildCpuArchitecture();
+    static QString currentCpuArchitecture();
+    static QString buildAbi();
+
+    static QString kernelType();
+    static QString kernelVersion();
+    static QString productType();
+    static QString productVersion();
+    static QString prettyProductName();
 };
 
 QT_END_NAMESPACE

@@ -1,40 +1,32 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Copyright (C) 2012 Intel Corporation.
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Copyright (C) 2014 Intel Corporation.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -43,13 +35,17 @@
 #ifndef QGLOBAL_H
 #define QGLOBAL_H
 
+#ifdef __cplusplus
+#  include <cstddef>
+#endif
+
 #include <stddef.h>
 
-#define QT_VERSION_STR   "5.2.1"
+#define QT_VERSION_STR   "5.5.0"
 /*
    QT_VERSION is (major << 16) + (minor << 8) + patch.
 */
-#define QT_VERSION 0x050201
+#define QT_VERSION 0x050500
 /*
    can be used like #if (QT_VERSION >= QT_VERSION_CHECK(4, 4, 0))
 */
@@ -58,7 +54,14 @@
 #if !defined(QT_BUILD_QMAKE) && !defined(QT_BUILD_CONFIGURE)
 #include <QtCore/qconfig.h>
 #include <QtCore/qfeatures.h>
-#define QT_SUPPORTS(FEATURE) (!defined(QT_NO_##FEATURE))
+#endif
+#ifdef _MSC_VER
+#  define QT_SUPPORTS(FEATURE) (!defined QT_NO_##FEATURE)
+#else
+#  define QT_SUPPORTS(FEATURE) (!defined(QT_NO_##FEATURE))
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#  define QT_NO_UNSHARABLE_CONTAINERS
 #endif
 
 /* These two macros makes it possible to turn the builtin line expander into a
@@ -191,7 +194,7 @@ typedef qint64 qlonglong;
 typedef quint64 qulonglong;
 
 #ifndef QT_POINTER_SIZE
-#  if defined(Q_OS_WIN64)
+#  if defined(Q_OS_WIN64) || (defined(Q_OS_WINRT) && defined(_M_X64))
 #   define QT_POINTER_SIZE 8
 #  elif defined(Q_OS_WIN32) || defined(Q_OS_WINCE) || defined(Q_OS_WINRT)
 #   define QT_POINTER_SIZE 4
@@ -221,11 +224,14 @@ typedef double qreal;
 
 #if defined(QT_NO_DEPRECATED)
 #  undef QT_DEPRECATED
+#  undef QT_DEPRECATED_X
 #  undef QT_DEPRECATED_VARIABLE
 #  undef QT_DEPRECATED_CONSTRUCTOR
 #elif defined(QT_DEPRECATED_WARNINGS)
 #  undef QT_DEPRECATED
 #  define QT_DEPRECATED Q_DECL_DEPRECATED
+#  undef QT_DEPRECATED_X
+#  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
 #  undef QT_DEPRECATED_VARIABLE
 #  define QT_DEPRECATED_VARIABLE Q_DECL_VARIABLE_DEPRECATED
 #  undef QT_DEPRECATED_CONSTRUCTOR
@@ -233,6 +239,8 @@ typedef double qreal;
 #else
 #  undef QT_DEPRECATED
 #  define QT_DEPRECATED
+#  undef QT_DEPRECATED_X
+#  define QT_DEPRECATED_X(text)
 #  undef QT_DEPRECATED_VARIABLE
 #  define QT_DEPRECATED_VARIABLE
 #  undef QT_DEPRECATED_CONSTRUCTOR
@@ -432,6 +440,8 @@ template <>    struct QIntegerForSize<2> { typedef quint16 Unsigned; typedef qin
 template <>    struct QIntegerForSize<4> { typedef quint32 Unsigned; typedef qint32 Signed; };
 template <>    struct QIntegerForSize<8> { typedef quint64 Unsigned; typedef qint64 Signed; };
 template <class T> struct QIntegerForSizeof: QIntegerForSize<sizeof(T)> { };
+typedef QIntegerForSize<Q_PROCESSOR_WORDSIZE>::Signed qregisterint;
+typedef QIntegerForSize<Q_PROCESSOR_WORDSIZE>::Unsigned qregisteruint;
 typedef QIntegerForSizeof<void*>::Unsigned quintptr;
 typedef QIntegerForSizeof<void*>::Signed qptrdiff;
 typedef qptrdiff qintptr;
@@ -473,6 +483,14 @@ typedef qptrdiff qintptr;
 #  endif
 #else
 #  define Q_ATTRIBUTE_FORMAT_PRINTF(A, B)
+#endif
+
+#ifdef Q_CC_MSVC
+#  define Q_NEVER_INLINE __declspec(noinline)
+#elif defined(Q_CC_GNU)
+#  define Q_NEVER_INLINE __attribute__((noinline))
+#else
+#  define Q_NEVER_INLINE
 #endif
 
 //defines the type for the WNDPROC on windows
@@ -527,12 +545,12 @@ Q_DECL_CONSTEXPR inline const T &qBound(const T &min, const T &val, const T &max
 
 #ifdef Q_OS_DARWIN
 #  define QT_MAC_PLATFORM_SDK_EQUAL_OR_ABOVE(osx, ios) \
-    (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= osx) || \
-    (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= ios)
+    ((defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && osx != __MAC_NA && __MAC_OS_X_VERSION_MAX_ALLOWED >= osx) || \
+     (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && ios != __IPHONE_NA && __IPHONE_OS_VERSION_MAX_ALLOWED >= ios))
 
 #  define QT_MAC_DEPLOYMENT_TARGET_BELOW(osx, ios) \
-    (defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && osx != __MAC_NA && __MAC_OS_X_VERSION_MIN_REQUIRED < osx) || \
-    (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && ios != __IPHONE_NA && __IPHONE_OS_VERSION_MIN_REQUIRED < ios)
+    ((defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && osx != __MAC_NA && __MAC_OS_X_VERSION_MIN_REQUIRED < osx) || \
+     (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && ios != __IPHONE_NA && __IPHONE_OS_VERSION_MIN_REQUIRED < ios))
 
 #  define QT_IOS_PLATFORM_SDK_EQUAL_OR_ABOVE(ios) \
       QT_MAC_PLATFORM_SDK_EQUAL_OR_ABOVE(__MAC_NA, ios)
@@ -559,6 +577,15 @@ class QDataStream;
 #endif
 
 #if defined(Q_OS_WINRT)
+#  define QT_NO_FILESYSTEMWATCHER
+#  define QT_NO_GETADDRINFO
+#  define QT_NO_NETWORKPROXY
+#  define QT_NO_PROCESS
+#  define QT_NO_SOCKETNOTIFIER
+#  define QT_NO_SOCKS5
+#endif
+
+#if defined(Q_OS_IOS)
 #  define QT_NO_PROCESS
 #endif
 
@@ -609,14 +636,7 @@ Q_CORE_EXPORT bool qSharedBuild() Q_DECL_NOTHROW;
 /*
    Avoid "unused parameter" warnings
 */
-
-#if defined(Q_CC_RVCT)
-template <typename T>
-inline void qUnused(T &x) { (void)x; }
-#  define Q_UNUSED(x) qUnused(x);
-#else
-#  define Q_UNUSED(x) (void)x;
-#endif
+#define Q_UNUSED(x) (void)x;
 
 /*
    Debugging and error handling
@@ -630,6 +650,10 @@ inline void qUnused(T &x) { (void)x; }
 #  define qPrintable(string) QString(string).toLocal8Bit().constData()
 #endif
 
+#ifndef qUtf8Printable
+#  define qUtf8Printable(string) QString(string).toUtf8().constData()
+#endif
+
 class QString;
 Q_CORE_EXPORT QString qt_error_string(int errorCode = -1);
 
@@ -640,7 +664,7 @@ Q_CORE_EXPORT void qt_assert(const char *assertion, const char *file, int line) 
 
 #if !defined(Q_ASSERT)
 #  if defined(QT_NO_DEBUG) && !defined(QT_FORCE_ASSERTS)
-#    define Q_ASSERT(cond) qt_noop()
+#    define Q_ASSERT(cond) do { } while ((false) && (cond))
 #  else
 #    define Q_ASSERT(cond) ((!(cond)) ? qt_assert(#cond,__FILE__,__LINE__) : qt_noop())
 #  endif
@@ -657,7 +681,7 @@ Q_CORE_EXPORT void qt_assert_x(const char *where, const char *what, const char *
 
 #if !defined(Q_ASSERT_X)
 #  if defined(QT_NO_DEBUG) && !defined(QT_FORCE_ASSERTS)
-#    define Q_ASSERT_X(cond, where, what) qt_noop()
+#    define Q_ASSERT_X(cond, where, what) do { } while ((false) && (cond))
 #  else
 #    define Q_ASSERT_X(cond, where, what) ((!(cond)) ? qt_assert_x(where, what,__FILE__,__LINE__) : qt_noop())
 #  endif
@@ -790,8 +814,20 @@ static inline bool qIsNull(float f)
 #  define Q_DUMMY_COMPARISON_OPERATOR(C)
 #endif
 
+namespace QtPrivate
+{
+namespace SwapExceptionTester { // insulate users from the "using std::swap" below
+    using std::swap; // import std::swap
+    template <typename T>
+    void checkSwap(T &t)
+        Q_DECL_NOEXCEPT_EXPR(noexcept(swap(t, t)));
+    // declared, but not implemented (only to be used in unevaluated contexts (noexcept operator))
+}
+} // namespace QtPrivate
+
 template <typename T>
 inline void qSwap(T &value1, T &value2)
+    Q_DECL_NOEXCEPT_EXPR(noexcept(QtPrivate::SwapExceptionTester::checkSwap(value1)))
 {
     using std::swap;
     swap(value1, value2);
@@ -819,18 +855,22 @@ Q_CORE_EXPORT void qFreeAligned(void *ptr);
 #endif
 #if defined(QT_NO_WARNINGS)
 #  if defined(Q_CC_MSVC)
-#    pragma warning(disable: 4251) /* class 'type' needs to have dll-interface to be used by clients of class 'type2' */
-#    pragma warning(disable: 4244) /* conversion from 'type1' to 'type2', possible loss of data */
-#    pragma warning(disable: 4275) /* non - DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier' */
-#    pragma warning(disable: 4514) /* unreferenced inline function has been removed */
-#    pragma warning(disable: 4800) /* 'type' : forcing value to bool 'true' or 'false' (performance warning) */
-#    pragma warning(disable: 4097) /* typedef-name 'identifier1' used as synonym for class-name 'identifier2' */
-#    pragma warning(disable: 4706) /* assignment within conditional expression */
-#    pragma warning(disable: 4786) /* 'identifier' : identifier was truncated to 'number' characters in the debug information */
-#    pragma warning(disable: 4355) /* 'this' : used in base member initializer list */
-#    pragma warning(disable: 4231) /* nonstandard extension used : 'identifier' before template explicit instantiation */
-#    pragma warning(disable: 4710) /* function not inlined */
-#    pragma warning(disable: 4530) /* C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc */
+QT_WARNING_DISABLE_MSVC(4251) /* class 'type' needs to have dll-interface to be used by clients of class 'type2' */
+QT_WARNING_DISABLE_MSVC(4244) /* conversion from 'type1' to 'type2', possible loss of data */
+QT_WARNING_DISABLE_MSVC(4275) /* non - DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier' */
+QT_WARNING_DISABLE_MSVC(4514) /* unreferenced inline function has been removed */
+QT_WARNING_DISABLE_MSVC(4800) /* 'type' : forcing value to bool 'true' or 'false' (performance warning) */
+QT_WARNING_DISABLE_MSVC(4097) /* typedef-name 'identifier1' used as synonym for class-name 'identifier2' */
+QT_WARNING_DISABLE_MSVC(4706) /* assignment within conditional expression */
+#    if _MSC_VER <= 1310 // MSVC 2003
+QT_WARNING_DISABLE_MSVC(4786) /* 'identifier' : identifier was truncated to 'number' characters in the debug information */
+#    endif
+QT_WARNING_DISABLE_MSVC(4355) /* 'this' : used in base member initializer list */
+#    if _MSC_VER < 1800 // MSVC 2013
+QT_WARNING_DISABLE_MSVC(4231) /* nonstandard extension used : 'identifier' before template explicit instantiation */
+#    endif
+QT_WARNING_DISABLE_MSVC(4710) /* function not inlined */
+QT_WARNING_DISABLE_MSVC(4530) /* C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc */
 #  elif defined(Q_CC_BOR)
 #    pragma option -w-inl
 #    pragma option -w-aus
@@ -842,22 +882,43 @@ Q_CORE_EXPORT void qFreeAligned(void *ptr);
 #  endif
 #endif
 
-#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL) && !defined(Q_CC_RVCT)
-/* make use of typeof-extension */
+#if defined(Q_COMPILER_DECLTYPE) || defined(Q_CC_GNU)
+/* make use of decltype or GCC's __typeof__ extension */
 template <typename T>
 class QForeachContainer {
+    QForeachContainer &operator=(const QForeachContainer &) Q_DECL_EQ_DELETE;
 public:
-    inline QForeachContainer(const T& t) : c(t), brk(0), i(c.begin()), e(c.end()) { }
+    inline QForeachContainer(const T& t) : c(t), i(c.begin()), e(c.end()), control(1) { }
     const T c;
-    int brk;
     typename T::const_iterator i, e;
+    int control;
 };
 
-#define Q_FOREACH(variable, container)                                \
-for (QForeachContainer<__typeof__(container)> _container_(container); \
-     !_container_.brk && _container_.i != _container_.e;              \
-     __extension__  ({ ++_container_.brk; ++_container_.i; }))                       \
-    for (variable = *_container_.i;; __extension__ ({--_container_.brk; break;}))
+// We need to use __typeof__ if we don't have decltype or if the compiler
+// hasn't been updated to the fix of Core Language Defect Report 382
+// (http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#382).
+// GCC 4.3 and 4.4 have support for decltype, but are affected by DR 382.
+#  if defined(Q_COMPILER_DECLTYPE) && \
+    (defined(Q_CC_CLANG) || defined(Q_CC_INTEL) || !defined(Q_CC_GNU) || Q_CC_GNU >= 405)
+#    define QT_FOREACH_DECLTYPE(x) typename QtPrivate::remove_reference<decltype(x)>::type
+#  else
+#    define QT_FOREACH_DECLTYPE(x) __typeof__((x))
+#  endif
+
+// Explanation of the control word:
+//  - it's initialized to 1
+//  - that means both the inner and outer loops start
+//  - if there were no breaks, at the end of the inner loop, it's set to 0, which
+//    causes it to exit (the inner loop is run exactly once)
+//  - at the end of the outer loop, it's inverted, so it becomes 1 again, allowing
+//    the outer loop to continue executing
+//  - if there was a break inside the inner loop, it will exit with control still
+//    set to 1; in that case, the outer loop will invert it to 0 and will exit too
+#  define Q_FOREACH(variable, container)                                \
+for (QForeachContainer<QT_FOREACH_DECLTYPE(container)> _container_((container)); \
+     _container_.control && _container_.i != _container_.e;         \
+     ++_container_.i, _container_.control ^= 1)                     \
+    for (variable = *_container_.i; _container_.control; _container_.control = 0)
 
 #else
 
@@ -865,8 +926,11 @@ struct QForeachContainerBase {};
 
 template <typename T>
 class QForeachContainer : public QForeachContainerBase {
+    QForeachContainer &operator=(const QForeachContainer &) Q_DECL_EQ_DELETE;
 public:
     inline QForeachContainer(const T& t): c(t), brk(0), i(c.begin()), e(c.end()){}
+    QForeachContainer(const QForeachContainer &other)
+        : c(other.c), brk(other.brk), i(other.i), e(other.e) {}
     const T c;
     mutable int brk;
     mutable typename T::const_iterator i, e;
@@ -961,7 +1025,7 @@ Q_CORE_EXPORT QString qtTrId(const char *id, int n = -1);
    dynamic_cast to cause a compile failure.
 */
 
-#ifdef QT_NO_DYNAMIC_CAST
+#if defined(QT_NO_DYNAMIC_CAST) && !defined(dynamic_cast)
 #  define dynamic_cast QT_PREPEND_NAMESPACE(qt_dynamic_cast_check)
 
   template<typename T, typename X>
@@ -985,6 +1049,7 @@ Q_CORE_EXPORT bool qunsetenv(const char *varName);
 
 Q_CORE_EXPORT bool qEnvironmentVariableIsEmpty(const char *varName) Q_DECL_NOEXCEPT;
 Q_CORE_EXPORT bool qEnvironmentVariableIsSet(const char *varName) Q_DECL_NOEXCEPT;
+Q_CORE_EXPORT int  qEnvironmentVariableIntValue(const char *varName, bool *ok=0) Q_DECL_NOEXCEPT;
 
 inline int qIntCast(double f) { return int(f); }
 inline int qIntCast(float f) { return int(f); }
@@ -997,22 +1062,19 @@ Q_CORE_EXPORT int qrand();
 
 #define QT_MODULE(x)
 
-#ifdef Q_OS_QNX
-// QNX doesn't have SYSV style shared memory. Multiprocess QWS apps,
-// shared fonts and QSystemSemaphore + QSharedMemory are not available
-#  define QT_NO_SYSTEMSEMAPHORE
-#  define QT_NO_SHAREDMEMORY
-#endif
-
-#if !defined(QT_BOOTSTRAPPED) && defined(QT_REDUCE_RELOCATIONS) && defined(__ELF__) && !defined(__PIC__) && !defined(__PIE__)
+#if !defined(QT_BOOTSTRAPPED) && defined(QT_REDUCE_RELOCATIONS) && defined(__ELF__) && \
+    (!defined(__PIC__) || (defined(__PIE__) && defined(Q_CC_GNU) && Q_CC_GNU >= 500))
 #  error "You must build your code with position independent code if Qt was built with -reduce-relocations. "\
-         "Compile your code with -fPIC or -fPIE."
+         "Compile your code with -fPIC (-fPIE is not enough)."
 #endif
 
 namespace QtPrivate {
 //like std::enable_if
 template <bool B, typename T = void> struct QEnableIf;
 template <typename T> struct QEnableIf<true, T> { typedef T Type; };
+
+template <bool B, typename T, typename F> struct QConditional { typedef T Type; };
+template <typename T, typename F> struct QConditional<false, T, F> { typedef F Type; };
 }
 
 #ifndef Q_FORWARD_DECLARE_OBJC_CLASS
@@ -1030,14 +1092,18 @@ template <typename T> struct QEnableIf<true, T> { typedef T Type; };
 #endif
 
 QT_END_NAMESPACE
-// Q_GLOBAL_STATIC
-#include <QtCore/qglobalstatic.h>
 
-// qDebug and friends
-#include <QtCore/qlogging.h>
-#include <QtCore/qflags.h>
-#include <QtCore/qsysinfo.h>
+// We need to keep QTypeInfo, QSysInfo, QFlags, qDebug & family in qglobal.h for compatibility with Qt 4.
+// Be careful when changing the order of these files.
 #include <QtCore/qtypeinfo.h>
+#include <QtCore/qsysinfo.h>
+#include <QtCore/qlogging.h>
+
+#include <QtCore/qflags.h>
+
+#include <QtCore/qatomic.h>
+#include <QtCore/qglobalstatic.h>
+#include <QtCore/qnumeric.h>
 
 #endif /* __cplusplus */
 

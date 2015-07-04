@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtTest module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -48,11 +40,19 @@
 #include <QtCore/qnamespace.h>
 #include <QtCore/qmetatype.h>
 #include <QtCore/qtypetraits.h>
+#include <QtCore/qsharedpointer.h>
+#include <QtCore/qtemporarydir.h>
 
 #include <string.h>
 
+#ifndef QT_NO_EXCEPTIONS
+#  include <exception>
+#endif // QT_NO_EXCEPTIONS
+
+
 QT_BEGIN_NAMESPACE
 
+class QRegularExpression;
 
 #define QVERIFY(statement) \
 do {\
@@ -83,38 +83,88 @@ do {\
         return;\
 } while (0)
 
-// Will try to wait for the expression to become true while allowing event processing
-#define QTRY_VERIFY_WITH_TIMEOUT(__expr, __timeout) \
-do { \
-    const int __step = 50; \
-    const int __timeoutValue = __timeout; \
+
+#ifndef QT_NO_EXCEPTIONS
+
+#  define QVERIFY_EXCEPTION_THROWN(expression, exceptiontype) \
+    do {\
+        QT_TRY {\
+            QT_TRY {\
+                expression;\
+                QTest::qFail("Expected exception of type " #exceptiontype " to be thrown" \
+                             " but no exception caught", __FILE__, __LINE__);\
+                return;\
+            } QT_CATCH (const exceptiontype &) {\
+            }\
+        } QT_CATCH (const std::exception &e) {\
+            QByteArray msg = QByteArray() + "Expected exception of type " #exceptiontype \
+                             " to be thrown but std::exception caught with message: " + e.what(); \
+            QTest::qFail(msg.constData(), __FILE__, __LINE__);\
+            return;\
+        } QT_CATCH (...) {\
+            QTest::qFail("Expected exception of type " #exceptiontype " to be thrown" \
+                         " but unknown exception caught", __FILE__, __LINE__);\
+            return;\
+        }\
+    } while (0)
+
+#else // QT_NO_EXCEPTIONS
+
+/*
+ * The expression passed to the macro should throw an exception and we can't
+ * catch it because Qt has been compiled without exception support. We can't
+ * skip the expression because it may have side effects and must be executed.
+ * So, users must use Qt with exception support enabled if they use exceptions
+ * in their code.
+ */
+#  define QVERIFY_EXCEPTION_THROWN(expression, exceptiontype) \
+    Q_STATIC_ASSERT_X(false, "Support of exceptions is disabled")
+
+#endif // !QT_NO_EXCEPTIONS
+
+
+#define QTRY_LOOP_IMPL(__expr, __timeoutValue, __step) \
     if (!(__expr)) { \
         QTest::qWait(0); \
     } \
-    for (int __i = 0; __i < __timeoutValue && !(__expr); __i+=__step) { \
+    int __i = 0; \
+    for (; __i < __timeoutValue && !(__expr); __i += __step) { \
         QTest::qWait(__step); \
-    } \
+    }
+
+#define QTRY_TIMEOUT_DEBUG_IMPL(__expr, __timeoutValue, __step)\
+    if (!(__expr)) { \
+        QTRY_LOOP_IMPL((__expr), (2 * __timeoutValue), __step);\
+        if (__expr) { \
+            QString msg = QString::fromUtf8("QTestLib: This test case check (\"%1\") failed because the requested timeout (%2 ms) was too short, %3 ms would have been sufficient this time."); \
+            msg = msg.arg(QString::fromUtf8(#__expr)).arg(__timeoutValue).arg(__timeoutValue + __i); \
+            QFAIL(qPrintable(msg)); \
+        } \
+    }
+
+#define QTRY_IMPL(__expr, __timeout)\
+    const int __step = 50; \
+    const int __timeoutValue = __timeout; \
+    QTRY_LOOP_IMPL((__expr), __timeoutValue, __step); \
+    QTRY_TIMEOUT_DEBUG_IMPL((__expr), __timeoutValue, __step)\
+
+// Will try to wait for the expression to become true while allowing event processing
+#define QTRY_VERIFY_WITH_TIMEOUT(__expr, __timeout) \
+do { \
+    QTRY_IMPL((__expr), __timeout);\
     QVERIFY(__expr); \
 } while (0)
 
-#define QTRY_VERIFY(__expr) QTRY_VERIFY_WITH_TIMEOUT(__expr, 5000)
+#define QTRY_VERIFY(__expr) QTRY_VERIFY_WITH_TIMEOUT((__expr), 5000)
 
 // Will try to wait for the comparison to become successful while allowing event processing
-
 #define QTRY_COMPARE_WITH_TIMEOUT(__expr, __expected, __timeout) \
 do { \
-    const int __step = 50; \
-    const int __timeoutValue = __timeout; \
-    if ((__expr) != (__expected)) { \
-        QTest::qWait(0); \
-    } \
-    for (int __i = 0; __i < __timeoutValue && ((__expr) != (__expected)); __i+=__step) { \
-        QTest::qWait(__step); \
-    } \
-    QCOMPARE(__expr, __expected); \
+    QTRY_IMPL(((__expr) == (__expected)), __timeout);\
+    QCOMPARE((__expr), __expected); \
 } while (0)
 
-#define QTRY_COMPARE(__expr, __expected) QTRY_COMPARE_WITH_TIMEOUT(__expr, __expected, 5000)
+#define QTRY_COMPARE(__expr, __expected) QTRY_COMPARE_WITH_TIMEOUT((__expr), __expected, 5000)
 
 #define QSKIP_INTERNAL(statement) \
 do {\
@@ -161,6 +211,9 @@ do {\
     QTest::qFindTestData(basepath, __FILE__, __LINE__)
 #endif
 
+# define QEXTRACTTESTDATA(resourcePath) \
+    QTest::qExtractTestData(resourcePath)
+
 class QObject;
 class QTestData;
 
@@ -177,11 +230,15 @@ namespace QTest
 
 
     Q_TESTLIB_EXPORT char *toHexRepresentation(const char *ba, int length);
+    Q_TESTLIB_EXPORT char *toPrettyCString(const char *unicode, int length);
+    Q_TESTLIB_EXPORT char *toPrettyUnicode(const ushort *unicode, int length);
     Q_TESTLIB_EXPORT char *toString(const char *);
     Q_TESTLIB_EXPORT char *toString(const void *);
 
     Q_TESTLIB_EXPORT int qExec(QObject *testObject, int argc = 0, char **argv = 0);
     Q_TESTLIB_EXPORT int qExec(QObject *testObject, const QStringList &arguments);
+
+    Q_TESTLIB_EXPORT void setMainSourcePath(const char *file, const char *builddir = 0);
 
     Q_TESTLIB_EXPORT bool qVerify(bool statement, const char *statementStr, const char *description,
                                  const char *file, int line);
@@ -191,7 +248,11 @@ namespace QTest
                            const char *file, int line);
     Q_TESTLIB_EXPORT void qWarn(const char *message, const char *file = 0, int line = 0);
     Q_TESTLIB_EXPORT void ignoreMessage(QtMsgType type, const char *message);
+#ifndef QT_NO_REGULAREXPRESSION
+    Q_TESTLIB_EXPORT void ignoreMessage(QtMsgType type, const QRegularExpression &messagePattern);
+#endif
 
+    Q_TESTLIB_EXPORT QSharedPointer<QTemporaryDir> qExtractTestData(const QString &dirName);
     Q_TESTLIB_EXPORT QString qFindTestData(const char* basepath, const char* file = 0, int line = 0, const char* builddir = 0);
     Q_TESTLIB_EXPORT QString qFindTestData(const QString& basepath, const char* file = 0, int line = 0, const char* builddir = 0);
 
@@ -230,7 +291,7 @@ namespace QTest
                         const char *file, int line)
     {
         return compare_helper(t1 == t2, "Compared values are not the same",
-                              toString<T>(t1), toString<T>(t2), actual, expected, file, line);
+                              toString(t1), toString(t2), actual, expected, file, line);
     }
 
     Q_TESTLIB_EXPORT bool qCompare(float const &t1, float const &t2,

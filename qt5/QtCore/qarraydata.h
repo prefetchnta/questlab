@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -80,7 +72,9 @@ struct Q_CORE_EXPORT QArrayData
 
     enum AllocationOption {
         CapacityReserved    = 0x1,
+#if QT_SUPPORTS(UNSHARABLE_CONTAINERS)
         Unsharable          = 0x2,
+#endif
         RawData             = 0x4,
         Grow                = 0x8,
 
@@ -99,8 +93,6 @@ struct Q_CORE_EXPORT QArrayData
     AllocationOptions detachFlags() const
     {
         AllocationOptions result;
-        if (!ref.isSharable())
-            result |= Unsharable;
         if (capacityReserved)
             result |= CapacityReserved;
         return result;
@@ -116,12 +108,12 @@ struct Q_CORE_EXPORT QArrayData
 
     static QArrayData *allocate(size_t objectSize, size_t alignment,
             size_t capacity, AllocationOptions options = Default)
-        Q_REQUIRED_RESULT;
+        Q_DECL_NOTHROW Q_REQUIRED_RESULT;
     static void deallocate(QArrayData *data, size_t objectSize,
-            size_t alignment);
+            size_t alignment) Q_DECL_NOTHROW;
 
     static const QArrayData shared_null[2];
-    static QArrayData *sharedNull() { return const_cast<QArrayData*>(shared_null); }
+    static QArrayData *sharedNull() Q_DECL_NOTHROW { return const_cast<QArrayData*>(shared_null); }
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(QArrayData::AllocationOptions)
@@ -135,14 +127,14 @@ struct QTypedArrayData
     public:
         T *i;
         typedef std::random_access_iterator_tag  iterator_category;
-        typedef qptrdiff difference_type;
+        typedef int difference_type;
         typedef T value_type;
         typedef T *pointer;
         typedef T &reference;
 
         inline iterator() : i(0) {}
         inline iterator(T *n) : i(n) {}
-        inline iterator(const iterator &o): i(o.i){}
+        inline iterator(const iterator &o): i(o.i){} // #### Qt 6: remove, the implicit version is fine
         inline T &operator*() const { return *i; }
         inline T *operator->() const { return i; }
         inline T &operator[](int j) const { return *(i + j); }
@@ -169,14 +161,14 @@ struct QTypedArrayData
     public:
         const T *i;
         typedef std::random_access_iterator_tag  iterator_category;
-        typedef qptrdiff difference_type;
+        typedef int difference_type;
         typedef T value_type;
         typedef const T *pointer;
         typedef const T &reference;
 
         inline const_iterator() : i(0) {}
         inline const_iterator(const T *n) : i(n) {}
-        inline const_iterator(const const_iterator &o): i(o.i) {}
+        inline const_iterator(const const_iterator &o): i(o.i) {} // #### Qt 6: remove, the default version is fine
         inline explicit const_iterator(const iterator &o): i(o.i) {}
         inline const T &operator*() const { return *i; }
         inline const T *operator->() const { return i; }
@@ -245,7 +237,7 @@ struct QTypedArrayData
         return result;
     }
 
-    static QTypedArrayData *sharedNull()
+    static QTypedArrayData *sharedNull() Q_DECL_NOTHROW
     {
         Q_STATIC_ASSERT(sizeof(QTypedArrayData) == sizeof(QArrayData));
         return static_cast<QTypedArrayData *>(QArrayData::sharedNull());
@@ -356,6 +348,14 @@ namespace QtPrivate {
 #define Q_ARRAY_LITERAL(Type, Array) \
     QT_PREPEND_NAMESPACE(QtPrivate::qMakeArrayLiteral)<Type>( Array )
 #endif // !defined(Q_ARRAY_LITERAL)
+
+namespace QtPrivate {
+struct Q_CORE_EXPORT QContainerImplHelper
+{
+    enum CutResult { Null, Empty, Full, Subset };
+    static CutResult mid(int originalLength, int *position, int *length);
+};
+}
 
 QT_END_NAMESPACE
 

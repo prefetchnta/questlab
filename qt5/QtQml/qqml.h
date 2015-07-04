@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtQml module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -55,10 +47,10 @@
 
 #define QML_DECLARE_TYPE(TYPE) \
     Q_DECLARE_METATYPE(TYPE *) \
-    Q_DECLARE_METATYPE(QQmlListProperty<TYPE>) 
+    Q_DECLARE_METATYPE(QQmlListProperty<TYPE>)
 
 #define QML_DECLARE_TYPE_HASMETATYPE(TYPE) \
-    Q_DECLARE_METATYPE(QQmlListProperty<TYPE>) 
+    Q_DECLARE_METATYPE(QQmlListProperty<TYPE>)
 
 #define QML_DECLARE_INTERFACE(INTERFACE) \
     QML_DECLARE_TYPE(INTERFACE)
@@ -91,13 +83,13 @@ class QQmlPropertyValueInterceptor;
     const char *className = T::staticMetaObject.className(); \
     const int nameLen = int(strlen(className)); \
     QVarLengthArray<char,48> pointerName(nameLen+2); \
-    memcpy(pointerName.data(), className, nameLen); \
+    memcpy(pointerName.data(), className, size_t(nameLen)); \
     pointerName[nameLen] = '*'; \
     pointerName[nameLen+1] = '\0'; \
     const int listLen = int(strlen("QQmlListProperty<")); \
     QVarLengthArray<char,64> listName(listLen + nameLen + 2); \
-    memcpy(listName.data(), "QQmlListProperty<", listLen); \
-    memcpy(listName.data()+listLen, className, nameLen); \
+    memcpy(listName.data(), "QQmlListProperty<", size_t(listLen)); \
+    memcpy(listName.data()+listLen, className, size_t(nameLen)); \
     listName[listLen+nameLen] = '>'; \
     listName[listLen+nameLen+1] = '\0';
 
@@ -109,7 +101,7 @@ int qmlRegisterType()
     QML_GETTYPENAMES
 
     QQmlPrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterNormalizedMetaType<T *>(pointerName.constData()),
         qRegisterNormalizedMetaType<QQmlListProperty<T> >(listName.constData()),
@@ -121,7 +113,7 @@ int qmlRegisterType()
         QQmlPrivate::attachedPropertiesFunc<T>(),
         QQmlPrivate::attachedPropertiesMetaObject<T>(),
 
-        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(), 
+        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueSource>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueInterceptor>::cast(),
 
@@ -198,13 +190,51 @@ int qmlRegisterUncreatableType(const char *uri, int versionMajor, int versionMin
     return QQmlPrivate::qmlregister(QQmlPrivate::TypeRegistration, &type);
 }
 
+template<typename T, typename E>
+int qmlRegisterExtendedUncreatableType(const char *uri, int versionMajor, int versionMinor, const char *qmlName, const QString& reason)
+{
+    QML_GETTYPENAMES
+
+    QQmlAttachedPropertiesFunc attached = QQmlPrivate::attachedPropertiesFunc<E>();
+    const QMetaObject * attachedMetaObject = QQmlPrivate::attachedPropertiesMetaObject<E>();
+    if (!attached) {
+        attached = QQmlPrivate::attachedPropertiesFunc<T>();
+        attachedMetaObject = QQmlPrivate::attachedPropertiesMetaObject<T>();
+    }
+
+    QQmlPrivate::RegisterType type = {
+        0,
+
+        qRegisterNormalizedMetaType<T *>(pointerName.constData()),
+        qRegisterNormalizedMetaType<QQmlListProperty<T> >(listName.constData()),
+        0, 0,
+        reason,
+
+        uri, versionMajor, versionMinor, qmlName, &T::staticMetaObject,
+
+        attached,
+        attachedMetaObject,
+
+        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(),
+        QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueSource>::cast(),
+        QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueInterceptor>::cast(),
+
+        QQmlPrivate::createParent<E>, &E::staticMetaObject,
+
+        0,
+        0
+    };
+
+    return QQmlPrivate::qmlregister(QQmlPrivate::TypeRegistration, &type);
+}
+
 template<typename T>
 int qmlRegisterType(const char *uri, int versionMajor, int versionMinor, const char *qmlName)
 {
     QML_GETTYPENAMES
 
     QQmlPrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterNormalizedMetaType<T *>(pointerName.constData()),
         qRegisterNormalizedMetaType<QQmlListProperty<T> >(listName.constData()),
@@ -216,7 +246,7 @@ int qmlRegisterType(const char *uri, int versionMajor, int versionMinor, const c
         QQmlPrivate::attachedPropertiesFunc<T>(),
         QQmlPrivate::attachedPropertiesMetaObject<T>(),
 
-        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(), 
+        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueSource>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueInterceptor>::cast(),
 
@@ -298,7 +328,7 @@ int qmlRegisterExtendedType()
     QML_GETTYPENAMES
 
     QQmlPrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterNormalizedMetaType<T *>(pointerName.constData()),
         qRegisterNormalizedMetaType<QQmlListProperty<T> >(listName.constData()),
@@ -310,7 +340,7 @@ int qmlRegisterExtendedType()
         QQmlPrivate::attachedPropertiesFunc<T>(),
         QQmlPrivate::attachedPropertiesMetaObject<T>(),
 
-        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(), 
+        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueSource>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueInterceptor>::cast(),
 
@@ -324,20 +354,20 @@ int qmlRegisterExtendedType()
 }
 
 template<typename T, typename E>
-int qmlRegisterExtendedType(const char *uri, int versionMajor, int versionMinor, 
+int qmlRegisterExtendedType(const char *uri, int versionMajor, int versionMinor,
                             const char *qmlName)
 {
     QML_GETTYPENAMES
 
     QQmlAttachedPropertiesFunc attached = QQmlPrivate::attachedPropertiesFunc<E>();
-    const QMetaObject * attachedMetaObject = QQmlPrivate::attachedPropertiesMetaObject<E>(); 
+    const QMetaObject * attachedMetaObject = QQmlPrivate::attachedPropertiesMetaObject<E>();
     if (!attached) {
         attached = QQmlPrivate::attachedPropertiesFunc<T>();
         attachedMetaObject = QQmlPrivate::attachedPropertiesMetaObject<T>();
     }
 
     QQmlPrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterNormalizedMetaType<T *>(pointerName.constData()),
         qRegisterNormalizedMetaType<QQmlListProperty<T> >(listName.constData()),
@@ -349,7 +379,7 @@ int qmlRegisterExtendedType(const char *uri, int versionMajor, int versionMinor,
         attached,
         attachedMetaObject,
 
-        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(), 
+        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueSource>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueInterceptor>::cast(),
 
@@ -383,13 +413,13 @@ int qmlRegisterInterface(const char *typeName)
 }
 
 template<typename T>
-int qmlRegisterCustomType(const char *uri, int versionMajor, int versionMinor, 
+int qmlRegisterCustomType(const char *uri, int versionMajor, int versionMinor,
                           const char *qmlName, QQmlCustomParser *parser)
 {
     QML_GETTYPENAMES
 
     QQmlPrivate::RegisterType type = {
-        0, 
+        0,
 
         qRegisterNormalizedMetaType<T *>(pointerName.constData()),
         qRegisterNormalizedMetaType<QQmlListProperty<T> >(listName.constData()),
@@ -401,11 +431,50 @@ int qmlRegisterCustomType(const char *uri, int versionMajor, int versionMinor,
         QQmlPrivate::attachedPropertiesFunc<T>(),
         QQmlPrivate::attachedPropertiesMetaObject<T>(),
 
-        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(), 
+        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueSource>::cast(),
         QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueInterceptor>::cast(),
 
         0, 0,
+
+        parser,
+        0
+    };
+
+    return QQmlPrivate::qmlregister(QQmlPrivate::TypeRegistration, &type);
+}
+
+template<typename T, typename E>
+int qmlRegisterCustomExtendedType(const char *uri, int versionMajor, int versionMinor,
+                          const char *qmlName, QQmlCustomParser *parser)
+{
+    QML_GETTYPENAMES
+
+    QQmlAttachedPropertiesFunc attached = QQmlPrivate::attachedPropertiesFunc<E>();
+    const QMetaObject * attachedMetaObject = QQmlPrivate::attachedPropertiesMetaObject<E>();
+    if (!attached) {
+        attached = QQmlPrivate::attachedPropertiesFunc<T>();
+        attachedMetaObject = QQmlPrivate::attachedPropertiesMetaObject<T>();
+    }
+
+    QQmlPrivate::RegisterType type = {
+        0,
+
+        qRegisterNormalizedMetaType<T *>(pointerName.constData()),
+        qRegisterNormalizedMetaType<QQmlListProperty<T> >(listName.constData()),
+        sizeof(T), QQmlPrivate::createInto<T>,
+        QString(),
+
+        uri, versionMajor, versionMinor, qmlName, &T::staticMetaObject,
+
+        attached,
+        attachedMetaObject,
+
+        QQmlPrivate::StaticCastSelector<T,QQmlParserStatus>::cast(),
+        QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueSource>::cast(),
+        QQmlPrivate::StaticCastSelector<T,QQmlPropertyValueInterceptor>::cast(),
+
+        QQmlPrivate::createParent<E>, &E::staticMetaObject,
 
         parser,
         0
@@ -419,7 +488,9 @@ class QQmlEngine;
 class QJSValue;
 class QJSEngine;
 
+#ifndef Q_QDOC
 namespace QtQml {
+#endif
     // declared in namespace to avoid symbol conflicts with QtDeclarative
     Q_QML_EXPORT void qmlExecuteDeferred(QObject *);
     Q_QML_EXPORT QQmlContext *qmlContext(const QObject *);
@@ -427,9 +498,11 @@ namespace QtQml {
     Q_QML_EXPORT QObject *qmlAttachedPropertiesObjectById(int, const QObject *, bool create = true);
     Q_QML_EXPORT QObject *qmlAttachedPropertiesObject(int *, const QObject *,
                                                       const QMetaObject *, bool create);
+#ifndef Q_QDOC
 }
+#endif
 
-#ifdef Q_CC_CLANG
+#if defined(Q_CC_CLANG) && !defined(Q_CC_INTEL)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wheader-hygiene"
 #endif
@@ -437,7 +510,7 @@ namespace QtQml {
 // This is necessary to allow for QtQuick1 and QtQuick2 scenes in a single application.
 using namespace QtQml;
 
-#ifdef Q_CC_CLANG
+#if defined(Q_CC_CLANG) && !defined(Q_CC_INTEL)
 #pragma clang diagnostic pop
 #endif
 
@@ -506,7 +579,7 @@ inline int qmlRegisterSingletonType(const QUrl &url, const char *uri, int versio
 
 inline int qmlRegisterType(const QUrl &url, const char *uri, int versionMajor, int versionMinor, const char *qmlName)
 {
-    if (url.isRelative()) { 
+    if (url.isRelative()) {
         // User input check must go here, because QQmlPrivate::qmlregister is also used internally for composite types
         qWarning("qmlRegisterType requires absolute URLs.");
         return 0;

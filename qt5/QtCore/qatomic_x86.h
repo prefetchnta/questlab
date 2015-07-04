@@ -1,40 +1,32 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2015 The Qt Company Ltd.
 ** Copyright (C) 2011 Thiago Macieira <thiago@kde.org>
-** Contact: http://www.qt-project.org/legal
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -89,9 +81,6 @@ QT_END_NAMESPACE
 #define Q_ATOMIC_POINTER_FETCH_AND_ADD_IS_ALWAYS_NATIVE
 #define Q_ATOMIC_POINTER_FETCH_AND_ADD_IS_WAIT_FREE
 
-template<> struct QAtomicIntegerTraits<int> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned int> { enum { IsInteger = 1 }; };
-
 template <int size> struct QBasicAtomicOps: QGenericAtomicOps<QBasicAtomicOps<size> >
 {
     static inline Q_DECL_CONSTEXPR bool isReferenceCountingNative() Q_DECL_NOTHROW { return true; }
@@ -102,6 +91,8 @@ template <int size> struct QBasicAtomicOps: QGenericAtomicOps<QBasicAtomicOps<si
     static inline Q_DECL_CONSTEXPR bool isTestAndSetNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isTestAndSetWaitFree() Q_DECL_NOTHROW { return true; }
     template <typename T> static bool testAndSetRelaxed(T &_q_value, T expectedValue, T newValue) Q_DECL_NOTHROW;
+    template <typename T> static bool
+    testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW;
 
     static inline Q_DECL_CONSTEXPR bool isFetchAndStoreNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isFetchAndStoreWaitFree() Q_DECL_NOTHROW { return true; }
@@ -120,21 +111,9 @@ template <typename T> struct QAtomicOps : QBasicAtomicOps<sizeof(T)>
 
 #if defined(Q_CC_GNU)
 
-template<> struct QAtomicIntegerTraits<char> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<signed char> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned char> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<short> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned short> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<long> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned long> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<long long> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned long long> { enum { IsInteger = 1 }; };
-
-# ifdef Q_COMPILER_UNICODE_STRINGS
-template<> struct QAtomicIntegerTraits<char16_t> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<char32_t> { enum { IsInteger = 1 }; };
-# endif
-
+template<> struct QAtomicOpsSupport<1> { enum { IsSupported = 1 }; };
+template<> struct QAtomicOpsSupport<2> { enum { IsSupported = 1 }; };
+template<> struct QAtomicOpsSupport<8> { enum { IsSupported = 1 }; };
 
 /*
  * Guide for the inline assembly below:
@@ -268,6 +247,36 @@ bool QBasicAtomicOps<1>::testAndSetRelaxed(T &_q_value, T expectedValue, T newVa
 }
 
 template<int size> template <typename T> inline
+bool QBasicAtomicOps<size>::testAndSetRelaxed(T &_q_value, T expectedValue,
+                                              T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    unsigned char ret;
+    asm volatile("lock\n"
+                 "cmpxchg %3,%2\n"
+                 "sete %1\n"
+                 : "=a" (newValue), "=qm" (ret), "+m" (_q_value)
+                 : "r" (newValue), "0" (expectedValue)
+                 : "memory");
+    *currentValue = newValue;
+    return ret != 0;
+}
+
+template<> template <typename T> inline
+bool QBasicAtomicOps<1>::testAndSetRelaxed(T &_q_value, T expectedValue,
+                                           T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    unsigned char ret;
+    asm volatile("lock\n"
+                 "cmpxchg %3,%2\n"
+                 "sete %1\n"
+                 : "=a" (newValue), "=qm" (ret), "+m" (_q_value)
+                 : "q" (newValue), "0" (expectedValue)
+                 : "memory");
+    *currentValue = newValue;
+    return ret != 0;
+}
+
+template<int size> template <typename T> inline
 T QBasicAtomicOps<size>::fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHROW
 {
     asm volatile("xchg %0,%1"
@@ -339,6 +348,8 @@ T QBasicAtomicOps<1>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveTy
 #define Q_ATOMIC_INT16_FETCH_AND_ADD_IS_ALWAYS_NATIVE
 #define Q_ATOMIC_INT16_FETCH_AND_ADD_IS_WAIT_FREE
 
+#ifdef Q_PROCESSOR_X86_64
+
 #define Q_ATOMIC_INT64_IS_SUPPORTED
 
 #define Q_ATOMIC_INT64_REFERENCE_COUNTING_IS_ALWAYS_NATIVE
@@ -353,7 +364,6 @@ T QBasicAtomicOps<1>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveTy
 #define Q_ATOMIC_INT64_FETCH_AND_ADD_IS_ALWAYS_NATIVE
 #define Q_ATOMIC_INT64_FETCH_AND_ADD_IS_WAIT_FREE
 
-#ifdef Q_PROCESSOR_X86_64
 // native support for 64-bit types
 template<> template<typename T> inline
 bool QBasicAtomicOps<8>::ref(T &_q_value) Q_DECL_NOTHROW

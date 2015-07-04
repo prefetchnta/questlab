@@ -6,6 +6,7 @@
 #include "qambientlightsensor.h"
 #include "qambienttemperaturesensor.h"
 #include "qcompass.h"
+#include "qdistancesensor.h"
 #include "qgyroscope.h"
 #include "qholstersensor.h"
 #include "qirproximitysensor.h"

@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -63,9 +55,6 @@ class QLocalePrivate;
 class Q_CORE_EXPORT QLocale
 {
     Q_GADGET
-    Q_ENUMS(Language)
-    Q_ENUMS(Country)
-    Q_ENUMS(MeasurementSystem)
     friend class QString;
     friend class QStringRef;
     friend class QByteArray;
@@ -390,6 +379,34 @@ public:
         TaiDam = 309,
         TaiNua = 310,
         Ugaritic = 311,
+        Akoose = 312,
+        Lakota = 313,
+        StandardMoroccanTamazight = 314,
+        Mapuche = 315,
+        CentralKurdish = 316,
+        LowerSorbian = 317,
+        UpperSorbian = 318,
+        Kenyang = 319,
+        Mohawk = 320,
+        Nko = 321,
+        Prussian = 322,
+        Kiche = 323,
+        SouthernSami = 324,
+        LuleSami = 325,
+        InariSami = 326,
+        SkoltSami = 327,
+        Warlpiri = 328,
+        ManichaeanMiddlePersian = 329,
+        Mende = 330,
+        AncientNorthArabian = 331,
+        LinearA = 332,
+        HmongNjua = 333,
+        Ho = 334,
+        Lezghian = 335,
+        Bassa = 336,
+        Mono = 337,
+        TedimChin = 338,
+        Maithili = 339,
         Norwegian = NorwegianBokmal,
         Moldavian = Romanian,
         SerboCroatian = Serbian,
@@ -404,7 +421,7 @@ public:
         Chewa = Nyanja,
         Frisian = WesternFrisian,
         Uigur = Uighur,
-        LastLanguage = Ugaritic
+        LastLanguage = Maithili
     };
 
     enum Script {
@@ -513,9 +530,32 @@ public:
         UgariticScript = 102,
         BrailleScript = 103,
         HiraganaScript = 104,
+        CaucasianAlbanianScript = 105,
+        BassaVahScript = 106,
+        DuployanScript = 107,
+        ElbasanScript = 108,
+        GranthaScript = 109,
+        PahawhHmongScript = 110,
+        KhojkiScript = 111,
+        LinearAScript = 112,
+        MahajaniScript = 113,
+        ManichaeanScript = 114,
+        MendeKikakuiScript = 115,
+        ModiScript = 116,
+        MroScript = 117,
+        OldNorthArabianScript = 118,
+        NabataeanScript = 119,
+        PalmyreneScript = 120,
+        PauCinHauScript = 121,
+        OldPermicScript = 122,
+        PsalterPahlaviScript = 123,
+        SiddhamScript = 124,
+        KhudawadiScript = 125,
+        TirhutaScript = 126,
+        VarangKshitiScript = 127,
         SimplifiedChineseScript = SimplifiedHanScript,
         TraditionalChineseScript = TraditionalHanScript,
-        LastScript = HiraganaScript
+        LastScript = VarangKshitiScript
     };
     enum Country {
         AnyCountry = 0,
@@ -786,12 +826,16 @@ public:
     };
 // GENERATED PART ENDS HERE
 
+    Q_ENUM(Language)
+    Q_ENUM(Country)
+
     enum MeasurementSystem {
         MetricSystem,
         ImperialUSSystem,
         ImperialUKSystem,
         ImperialSystem = ImperialUSSystem // Qt 4 compatibility
     };
+    Q_ENUM(MeasurementSystem)
 
     enum FormatType { LongFormat, ShortFormat, NarrowFormat };
     enum NumberOption {

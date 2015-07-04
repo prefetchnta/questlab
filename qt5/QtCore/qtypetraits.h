@@ -1,39 +1,31 @@
 /****************************************************************************
 **
 ** Copyright (C) 2012 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz <marc.mutz@kdab.com>
-** Contact: http://www.qt-project.org/legal
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -82,11 +74,15 @@
 //   is_pointer
 //   is_enum
 //   is_reference
+//   is_const
+//   is_volatile
 //   is_pod
 //   has_trivial_constructor
 //   has_trivial_copy
 //   has_trivial_assign
 //   has_trivial_destructor
+//   is_signed
+//   is_unsigned
 //   remove_const
 //   remove_volatile
 //   remove_cv
@@ -325,6 +321,11 @@ template <class T> struct is_enum<const volatile T> : is_enum<T> { };
 template<typename T> struct is_reference : false_type {};
 template<typename T> struct is_reference<T&> : true_type {};
 
+// Specified by TR1 [4.5.3] Type Properties
+template <typename T> struct is_const : false_type {};
+template <typename T> struct is_const<const T> : true_type {};
+template <typename T> struct is_volatile : false_type {};
+template <typename T> struct is_volatile<volatile T> : true_type {};
 
 // We can't get is_pod right without compiler help, so fail conservatively.
 // We will assume it's false except for arithmetic types, enumerations,
@@ -504,6 +505,27 @@ Q_STATIC_ASSERT((!is_unsigned<qint64>::value));
 
 Q_STATIC_ASSERT((!is_signed<quint64>::value));
 Q_STATIC_ASSERT(( is_signed<qint64>::value));
+
+template<class T = void> struct is_default_constructible;
+
+template<> struct is_default_constructible<void>
+{
+protected:
+    template<bool> struct test { typedef char type; };
+public:
+    static bool const value = false;
+};
+template<> struct is_default_constructible<>::test<true> { typedef double type; };
+
+template<class T> struct is_default_constructible : is_default_constructible<>
+{
+private:
+    template<class U> static typename test<!!sizeof(::new U())>::type sfinae(U*);
+    template<class U> static char sfinae(...);
+public:
+    static bool const value = sizeof(sfinae<T>(0)) > 1;
+};
+
 
 } // namespace QtPrivate
 

@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -47,10 +39,6 @@
 // include stdlib.h and hope that it defines __GLIBC__ for glibc-based systems
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef __GLIBC__
-#include <byteswap.h>
-#endif
 
 QT_BEGIN_NAMESPACE
 
@@ -75,7 +63,7 @@ template <typename T> inline void qbswap(const T src, uchar *dest)
 }
 
 // Used to implement a type-safe and alignment-safe copy operation
-// If you want to avoid the memcopy, you must write specializations for this function
+// If you want to avoid the memcpy, you must write specializations for these functions
 template <typename T> inline void qToUnaligned(const T src, uchar *dest)
 {
     // Using sizeof(T) inside memcpy function produces internal compiler error with
@@ -83,198 +71,13 @@ template <typename T> inline void qToUnaligned(const T src, uchar *dest)
     const size_t size = sizeof(T);
     memcpy(dest, &src, size);
 }
-
-/* T qFromLittleEndian(const uchar *src)
- * This function will read a little-endian encoded value from \a src
- * and return the value in host-endian encoding.
- * There is no requirement that \a src must be aligned.
-*/
-#if defined Q_CC_SUN
-inline quint64 qFromLittleEndian_helper(const uchar *src, quint64 *dest)
+template <typename T> inline T qFromUnaligned(const uchar *src)
 {
-    return 0
-        | src[0]
-        | src[1] * Q_UINT64_C(0x0000000000000100)
-        | src[2] * Q_UINT64_C(0x0000000000010000)
-        | src[3] * Q_UINT64_C(0x0000000001000000)
-        | src[4] * Q_UINT64_C(0x0000000100000000)
-        | src[5] * Q_UINT64_C(0x0000010000000000)
-        | src[6] * Q_UINT64_C(0x0001000000000000)
-        | src[7] * Q_UINT64_C(0x0100000000000000);
+    T dest;
+    const size_t size = sizeof(T);
+    memcpy(&dest, src, size);
+    return dest;
 }
-
-inline quint32 qFromLittleEndian_helper(const uchar *src, quint32 *dest)
-{
-    return 0
-        | src[0]
-        | src[1] * quint32(0x00000100)
-        | src[2] * quint32(0x00010000)
-        | src[3] * quint32(0x01000000);
-}
-
-inline quint16 qFromLittleEndian_helper(const uchar *src, quint16 *dest)
-{
-    return 0
-        | src[0]
-        | src[1] * 0x0100;
-}
-
-inline qint64 qFromLittleEndian_helper(const uchar *src, qint64 * dest)
-{ return static_cast<qint64>(qFromLittleEndian_helper(src, reinterpret_cast<quint64*>(0))); }
-inline qint32 qFromLittleEndian_helper(const uchar *src, qint32 * dest)
-{ return static_cast<qint32>(qFromLittleEndian_helper(src, reinterpret_cast<quint32*>(0))); }
-inline qint16 qFromLittleEndian_helper(const uchar *src, qint16 * dest)
-{ return static_cast<qint16>(qFromLittleEndian_helper(src, reinterpret_cast<quint16*>(0))); }
-
-template <class T> inline T qFromLittleEndian(const uchar *src)
-{
-    return qFromLittleEndian_helper(src, reinterpret_cast<T*>(0));
-}
-
-#else
-template <typename T> inline T qFromLittleEndian(const uchar *src);
-template <> inline quint64 qFromLittleEndian<quint64>(const uchar *src)
-{
-    return 0
-        | src[0]
-        | src[1] * Q_UINT64_C(0x0000000000000100)
-        | src[2] * Q_UINT64_C(0x0000000000010000)
-        | src[3] * Q_UINT64_C(0x0000000001000000)
-        | src[4] * Q_UINT64_C(0x0000000100000000)
-        | src[5] * Q_UINT64_C(0x0000010000000000)
-        | src[6] * Q_UINT64_C(0x0001000000000000)
-        | src[7] * Q_UINT64_C(0x0100000000000000);
-}
-
-template <> inline quint32 qFromLittleEndian<quint32>(const uchar *src)
-{
-    return 0
-        | src[0]
-        | src[1] * quint32(0x00000100)
-        | src[2] * quint32(0x00010000)
-        | src[3] * quint32(0x01000000);
-}
-
-template <> inline quint16 qFromLittleEndian<quint16>(const uchar *src)
-{
-    return quint16(0
-                   | src[0]
-                   | src[1] * 0x0100);
-}
-
-// signed specializations
-template <> inline qint64 qFromLittleEndian<qint64>(const uchar *src)
-{ return static_cast<qint64>(qFromLittleEndian<quint64>(src)); }
-
-template <> inline qint32 qFromLittleEndian<qint32>(const uchar *src)
-{ return static_cast<qint32>(qFromLittleEndian<quint32>(src)); }
-
-template <> inline qint16 qFromLittleEndian<qint16>(const uchar *src)
-{ return static_cast<qint16>(qFromLittleEndian<quint16>(src)); }
-#endif
-
-template <> inline quint8 qFromLittleEndian<quint8>(const uchar *src)
-{ return static_cast<quint8>(src[0]); }
-template <> inline qint8 qFromLittleEndian<qint8>(const uchar *src)
-{ return static_cast<qint8>(src[0]); }
-
-/* This function will read a big-endian (also known as network order) encoded value from \a src
- * and return the value in host-endian encoding.
- * There is no requirement that \a src must be aligned.
-*/
-#if defined Q_CC_SUN
-inline quint64 qFromBigEndian_helper(const uchar *src, quint64 *dest)
-{
-    return 0
-        | src[7]
-        | src[6] * Q_UINT64_C(0x0000000000000100)
-        | src[5] * Q_UINT64_C(0x0000000000010000)
-        | src[4] * Q_UINT64_C(0x0000000001000000)
-        | src[3] * Q_UINT64_C(0x0000000100000000)
-        | src[2] * Q_UINT64_C(0x0000010000000000)
-        | src[1] * Q_UINT64_C(0x0001000000000000)
-        | src[0] * Q_UINT64_C(0x0100000000000000);
-}
-
-inline quint32 qFromBigEndian_helper(const uchar *src, quint32 * dest)
-{
-    return 0
-        | src[3]
-        | src[2] * quint32(0x00000100)
-        | src[1] * quint32(0x00010000)
-        | src[0] * quint32(0x01000000);
-}
-
-inline quint16 qFromBigEndian_helper(const uchar *src, quint16 * des)
-{
-    return 0
-        | src[1]
-        | src[0] * 0x0100;
-}
-
-
-inline qint64 qFromBigEndian_helper(const uchar *src, qint64 * dest)
-{ return static_cast<qint64>(qFromBigEndian_helper(src, reinterpret_cast<quint64*>(0))); }
-inline qint32 qFromBigEndian_helper(const uchar *src, qint32 * dest)
-{ return static_cast<qint32>(qFromBigEndian_helper(src, reinterpret_cast<quint32*>(0))); }
-inline qint16 qFromBigEndian_helper(const uchar *src, qint16 * dest)
-{ return static_cast<qint16>(qFromBigEndian_helper(src, reinterpret_cast<quint16*>(0))); }
-
-template <class T> inline T qFromBigEndian(const uchar *src)
-{
-    return qFromBigEndian_helper(src, reinterpret_cast<T*>(0));
-}
-
-#else
-template <class T> inline T qFromBigEndian(const uchar *src);
-template<>
-inline quint64 qFromBigEndian<quint64>(const uchar *src)
-{
-    return 0
-        | src[7]
-        | src[6] * Q_UINT64_C(0x0000000000000100)
-        | src[5] * Q_UINT64_C(0x0000000000010000)
-        | src[4] * Q_UINT64_C(0x0000000001000000)
-        | src[3] * Q_UINT64_C(0x0000000100000000)
-        | src[2] * Q_UINT64_C(0x0000010000000000)
-        | src[1] * Q_UINT64_C(0x0001000000000000)
-        | src[0] * Q_UINT64_C(0x0100000000000000);
-}
-
-template<>
-inline quint32 qFromBigEndian<quint32>(const uchar *src)
-{
-    return 0
-        | src[3]
-        | src[2] * quint32(0x00000100)
-        | src[1] * quint32(0x00010000)
-        | src[0] * quint32(0x01000000);
-}
-
-template<>
-inline quint16 qFromBigEndian<quint16>(const uchar *src)
-{
-    return quint16( 0
-                    | src[1]
-                    | src[0] * quint16(0x0100));
-}
-
-
-// signed specializations
-template <> inline qint64 qFromBigEndian<qint64>(const uchar *src)
-{ return static_cast<qint64>(qFromBigEndian<quint64>(src)); }
-
-template <> inline qint32 qFromBigEndian<qint32>(const uchar *src)
-{ return static_cast<qint32>(qFromBigEndian<quint32>(src)); }
-
-template <> inline qint16 qFromBigEndian<qint16>(const uchar *src)
-{ return static_cast<qint16>(qFromBigEndian<quint16>(src)); }
-#endif
-
-template <> inline quint8 qFromBigEndian<quint8>(const uchar *src)
-{ return static_cast<quint8>(src[0]); }
-template <> inline qint8 qFromBigEndian<qint8>(const uchar *src)
-{ return static_cast<qint8>(src[0]); }
 
 /*
  * T qbswap(T source).
@@ -284,18 +87,31 @@ template <> inline qint8 qFromBigEndian<qint8>(const uchar *src)
 */
 template <typename T> T qbswap(T source);
 
-#ifdef __GLIBC__
+#ifdef __has_builtin
+#  define QT_HAS_BUILTIN(x)     __has_builtin(x)
+#else
+#  define QT_HAS_BUILTIN(x)     0
+#endif
+
+// GCC 4.3 implemented all the intrinsics, but the 16-bit one only got implemented in 4.8;
+// Clang 2.6 implemented the 32- and 64-bit but waited until 3.2 to implement the 16-bit one
+#if (defined(Q_CC_GNU) && Q_CC_GNU >= 403) || QT_HAS_BUILTIN(__builtin_bswap32)
 template <> inline quint64 qbswap<quint64>(quint64 source)
 {
-    return bswap_64(source);
+    return __builtin_bswap64(source);
 }
 template <> inline quint32 qbswap<quint32>(quint32 source)
 {
-    return bswap_32(source);
+    return __builtin_bswap32(source);
 }
-template <> inline quint16 qbswap<quint16>(quint16 source)
+
+template <> inline void qbswap<quint64>(quint64 source, uchar *dest)
 {
-    return bswap_16(source);
+    qToUnaligned<quint64>(__builtin_bswap64(source), dest);
+}
+template <> inline void qbswap<quint32>(quint32 source, uchar *dest)
+{
+    qToUnaligned<quint32>(__builtin_bswap32(source), dest);
 }
 #else
 template <> inline quint64 qbswap<quint64>(quint64 source)
@@ -319,14 +135,26 @@ template <> inline quint32 qbswap<quint32>(quint32 source)
         | ((source & 0x00ff0000) >> 8)
         | ((source & 0xff000000) >> 24);
 }
-
+#endif // GCC & Clang intrinsics
+#if (defined(Q_CC_GNU) && Q_CC_GNU >= 408) || QT_HAS_BUILTIN(__builtin_bswap16)
+template <> inline quint16 qbswap<quint16>(quint16 source)
+{
+    return __builtin_bswap16(source);
+}
+template <> inline void qbswap<quint16>(quint16 source, uchar *dest)
+{
+    qToUnaligned<quint16>(__builtin_bswap16(source), dest);
+}
+#else
 template <> inline quint16 qbswap<quint16>(quint16 source)
 {
     return quint16( 0
                     | ((source & 0x00ff) << 8)
                     | ((source & 0xff00) >> 8) );
 }
-#endif // __GLIBC__
+#endif // GCC & Clang intrinsics
+
+#undef QT_HAS_BUILTIN
 
 // signed specializations
 template <> inline qint64 qbswap<qint64>(qint64 source)
@@ -342,6 +170,21 @@ template <> inline qint32 qbswap<qint32>(qint32 source)
 template <> inline qint16 qbswap<qint16>(qint16 source)
 {
     return qbswap<quint16>(quint16(source));
+}
+
+template <> inline void qbswap<qint64>(qint64 source, uchar *dest)
+{
+    qbswap<quint64>(quint64(source), dest);
+}
+
+template <> inline void qbswap<qint32>(qint32 source, uchar *dest)
+{
+    qbswap<quint32>(quint32(source), dest);
+}
+
+template <> inline void qbswap<qint16>(qint16 source, uchar *dest)
+{
+    qbswap<quint16>(quint16(source), dest);
 }
 
 #if Q_BYTE_ORDER == Q_BIG_ENDIAN
@@ -384,6 +227,35 @@ template <> inline qint8 qbswap<qint8>(qint8 source)
 {
     return source;
 }
+
+/* T qFromLittleEndian(const uchar *src)
+ * This function will read a little-endian encoded value from \a src
+ * and return the value in host-endian encoding.
+ * There is no requirement that \a src must be aligned.
+*/
+template <typename T> inline T qFromLittleEndian(const uchar *src)
+{
+    return qFromLittleEndian(qFromUnaligned<T>(src));
+}
+
+template <> inline quint8 qFromLittleEndian<quint8>(const uchar *src)
+{ return static_cast<quint8>(src[0]); }
+template <> inline qint8 qFromLittleEndian<qint8>(const uchar *src)
+{ return static_cast<qint8>(src[0]); }
+
+/* This function will read a big-endian (also known as network order) encoded value from \a src
+ * and return the value in host-endian encoding.
+ * There is no requirement that \a src must be aligned.
+*/
+template <class T> inline T qFromBigEndian(const uchar *src)
+{
+    return qFromBigEndian(qFromUnaligned<T>(src));
+}
+
+template <> inline quint8 qFromBigEndian<quint8>(const uchar *src)
+{ return static_cast<quint8>(src[0]); }
+template <> inline qint8 qFromBigEndian<qint8>(const uchar *src)
+{ return static_cast<qint8>(src[0]); }
 
 QT_END_NAMESPACE
 

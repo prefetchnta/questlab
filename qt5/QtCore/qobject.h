@@ -1,40 +1,32 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2015 The Qt Company Ltd.
 ** Copyright (C) 2013 Olivier Goffart <ogoffart@woboq.com>
-** Contact: http://www.qt-project.org/legal
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -145,8 +137,8 @@ public:
     inline bool isWidgetType() const { return d_ptr->isWidget; }
     inline bool isWindowType() const { return d_ptr->isWindow; }
 
-    inline bool signalsBlocked() const { return d_ptr->blockSig; }
-    bool blockSignals(bool b);
+    inline bool signalsBlocked() const Q_DECL_NOTHROW { return d_ptr->blockSig; }
+    bool blockSignals(bool b) Q_DECL_NOTHROW;
 
     QThread *thread() const;
     void moveToThread(QThread *thread);
@@ -156,13 +148,17 @@ public:
 
     template<typename T>
     inline T findChild(const QString &aName = QString(), Qt::FindChildOptions options = Qt::FindChildrenRecursively) const
-    { return static_cast<T>(qt_qFindChild_helper(this, aName, reinterpret_cast<T>(0)->staticMetaObject, options)); }
+    {
+        typedef typename QtPrivate::remove_cv<typename QtPrivate::remove_pointer<T>::type>::type ObjType;
+        return static_cast<T>(qt_qFindChild_helper(this, aName, ObjType::staticMetaObject, options));
+    }
 
     template<typename T>
     inline QList<T> findChildren(const QString &aName = QString(), Qt::FindChildOptions options = Qt::FindChildrenRecursively) const
     {
+        typedef typename QtPrivate::remove_cv<typename QtPrivate::remove_pointer<T>::type>::type ObjType;
         QList<T> list;
-        qt_qFindChildren_helper(this, aName, reinterpret_cast<T>(0)->staticMetaObject,
+        qt_qFindChildren_helper(this, aName, ObjType::staticMetaObject,
                                 reinterpret_cast<QList<void *> *>(&list), options);
         return list;
     }
@@ -171,8 +167,9 @@ public:
     template<typename T>
     inline QList<T> findChildren(const QRegExp &re, Qt::FindChildOptions options = Qt::FindChildrenRecursively) const
     {
+        typedef typename QtPrivate::remove_cv<typename QtPrivate::remove_pointer<T>::type>::type ObjType;
         QList<T> list;
-        qt_qFindChildren_helper(this, re, reinterpret_cast<T>(0)->staticMetaObject,
+        qt_qFindChildren_helper(this, re, ObjType::staticMetaObject,
                                 reinterpret_cast<QList<void *> *>(&list), options);
         return list;
     }
@@ -182,8 +179,9 @@ public:
     template<typename T>
     inline QList<T> findChildren(const QRegularExpression &re, Qt::FindChildOptions options = Qt::FindChildrenRecursively) const
     {
+        typedef typename QtPrivate::remove_cv<typename QtPrivate::remove_pointer<T>::type>::type ObjType;
         QList<T> list;
-        qt_qFindChildren_helper(this, re, reinterpret_cast<T>(0)->staticMetaObject,
+        qt_qFindChildren_helper(this, re, ObjType::staticMetaObject,
                                 reinterpret_cast<QList<void *> *>(&list), options);
         return list;
     }
@@ -206,9 +204,9 @@ public:
                         const char *member, Qt::ConnectionType type = Qt::AutoConnection) const;
 
 #ifdef Q_QDOC
-    static QMetaObject::Connection connect(const QObject *sender, PointerToMemberFunction signal, const QObject *receiver, PointerToMemberFunction method, Qt::ConnectionType type);
+    static QMetaObject::Connection connect(const QObject *sender, PointerToMemberFunction signal, const QObject *receiver, PointerToMemberFunction method, Qt::ConnectionType type = Qt::AutoConnection);
     static QMetaObject::Connection connect(const QObject *sender, PointerToMemberFunction signal, Functor functor);
-    static QMetaObject::Connection connect(const QObject *sender, PointerToMemberFunction signal, const QObject *context, Functor functor, Qt::ConnectionType type);
+    static QMetaObject::Connection connect(const QObject *sender, PointerToMemberFunction signal, const QObject *context, Functor functor, Qt::ConnectionType type = Qt::AutoConnection);
 #else
     //Connect a signal to a pointer to qobject member function
     template <typename Func1, typename Func2>
@@ -415,11 +413,7 @@ public:
 
 Q_SIGNALS:
     void destroyed(QObject * = 0);
-    void objectNameChanged(const QString &objectName
-#if !defined(Q_QDOC)
-    , QPrivateSignal
-#endif
-    );
+    void objectNameChanged(const QString &objectName, QPrivateSignal);
 
 public:
     inline QObject *parent() const { return d_ptr->parent; }
@@ -450,6 +444,8 @@ protected:
     QScopedPointer<QObjectData> d_ptr;
 
     static const QMetaObject staticQtMetaObject;
+    friend inline const QMetaObject *qt_getQtMetaObject() Q_DECL_NOEXCEPT
+    { return &staticQtMetaObject; }
 
     friend struct QMetaObject;
     friend struct QMetaObjectPrivate;
@@ -519,7 +515,7 @@ inline T qobject_cast(QObject *object)
     typedef typename QtPrivate::remove_cv<typename QtPrivate::remove_pointer<T>::type>::type ObjType;
     Q_STATIC_ASSERT_X(QtPrivate::HasQ_OBJECT_Macro<ObjType>::Value,
                     "qobject_cast requires the type to have a Q_OBJECT macro");
-    return static_cast<T>(reinterpret_cast<T>(object)->staticMetaObject.cast(object));
+    return static_cast<T>(ObjType::staticMetaObject.cast(object));
 }
 
 template <class T>
@@ -528,7 +524,7 @@ inline T qobject_cast(const QObject *object)
     typedef typename QtPrivate::remove_cv<typename QtPrivate::remove_pointer<T>::type>::type ObjType;
     Q_STATIC_ASSERT_X(QtPrivate::HasQ_OBJECT_Macro<ObjType>::Value,
                       "qobject_cast requires the type to have a Q_OBJECT macro");
-    return static_cast<T>(reinterpret_cast<T>(object)->staticMetaObject.cast(object));
+    return static_cast<T>(ObjType::staticMetaObject.cast(object));
 }
 
 
@@ -548,6 +544,83 @@ template <class T> inline const char * qobject_interface_iid()
 #ifndef QT_NO_DEBUG_STREAM
 Q_CORE_EXPORT QDebug operator<<(QDebug, const QObject *);
 #endif
+
+class QSignalBlocker
+{
+public:
+    inline explicit QSignalBlocker(QObject *o) Q_DECL_NOTHROW;
+    inline explicit QSignalBlocker(QObject &o) Q_DECL_NOTHROW;
+    inline ~QSignalBlocker();
+
+#ifdef Q_COMPILER_RVALUE_REFS
+    inline QSignalBlocker(QSignalBlocker &&other) Q_DECL_NOTHROW;
+    inline QSignalBlocker &operator=(QSignalBlocker &&other) Q_DECL_NOTHROW;
+#endif
+
+    inline void reblock() Q_DECL_NOTHROW;
+    inline void unblock() Q_DECL_NOTHROW;
+private:
+    Q_DISABLE_COPY(QSignalBlocker)
+    QObject * m_o;
+    bool m_blocked;
+    bool m_inhibited;
+};
+
+QSignalBlocker::QSignalBlocker(QObject *o) Q_DECL_NOTHROW
+    : m_o(o),
+      m_blocked(o && o->blockSignals(true)),
+      m_inhibited(false)
+{}
+
+QSignalBlocker::QSignalBlocker(QObject &o) Q_DECL_NOTHROW
+    : m_o(&o),
+      m_blocked(o.blockSignals(true)),
+      m_inhibited(false)
+{}
+
+#ifdef Q_COMPILER_RVALUE_REFS
+QSignalBlocker::QSignalBlocker(QSignalBlocker &&other) Q_DECL_NOTHROW
+    : m_o(other.m_o),
+      m_blocked(other.m_blocked),
+      m_inhibited(other.m_inhibited)
+{
+    other.m_o = 0;
+}
+
+QSignalBlocker &QSignalBlocker::operator=(QSignalBlocker &&other) Q_DECL_NOTHROW
+{
+    if (this != &other) {
+        // if both *this and other block the same object's signals:
+        // unblock *this iff our dtor would unblock, but other's wouldn't
+        if (m_o != other.m_o || (!m_inhibited && other.m_inhibited))
+            unblock();
+        m_o = other.m_o;
+        m_blocked = other.m_blocked;
+        m_inhibited = other.m_inhibited;
+        // disable other:
+        other.m_o = 0;
+    }
+    return *this;
+}
+#endif
+
+QSignalBlocker::~QSignalBlocker()
+{
+    if (m_o && !m_inhibited)
+        m_o->blockSignals(m_blocked);
+}
+
+void QSignalBlocker::reblock() Q_DECL_NOTHROW
+{
+    if (m_o) m_o->blockSignals(true);
+    m_inhibited = false;
+}
+
+void QSignalBlocker::unblock() Q_DECL_NOTHROW
+{
+    if (m_o) m_o->blockSignals(m_blocked);
+    m_inhibited = true;
+}
 
 namespace QtPrivate {
     inline QObject & deref_for_methodcall(QObject &o) { return  o; }

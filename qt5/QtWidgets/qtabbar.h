@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWidgets module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -57,7 +49,6 @@ class Q_WIDGETS_EXPORT QTabBar: public QWidget
 {
     Q_OBJECT
 
-    Q_ENUMS(Shape)
     Q_PROPERTY(Shape shape READ shape WRITE setShape)
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentChanged)
     Q_PROPERTY(int count READ count)
@@ -70,6 +61,8 @@ class Q_WIDGETS_EXPORT QTabBar: public QWidget
     Q_PROPERTY(bool expanding READ expanding WRITE setExpanding)
     Q_PROPERTY(bool movable READ isMovable WRITE setMovable)
     Q_PROPERTY(bool documentMode READ documentMode WRITE setDocumentMode)
+    Q_PROPERTY(bool autoHide READ autoHide WRITE setAutoHide)
+    Q_PROPERTY(bool changeCurrentOnDrag READ changeCurrentOnDrag WRITE setChangeCurrentOnDrag)
 
 public:
     explicit QTabBar(QWidget* parent=0);
@@ -78,6 +71,7 @@ public:
     enum Shape { RoundedNorth, RoundedSouth, RoundedWest, RoundedEast,
                  TriangularNorth, TriangularSouth, TriangularWest, TriangularEast
     };
+    Q_ENUM(Shape)
 
     enum ButtonPosition {
         LeftSide,
@@ -136,8 +130,8 @@ public:
     int currentIndex() const;
     int count() const;
 
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
+    QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
 
     void setDrawBase(bool drawTheBase);
     bool drawBase() const;
@@ -166,6 +160,12 @@ public:
     bool documentMode() const;
     void setDocumentMode(bool set);
 
+    bool autoHide() const;
+    void setAutoHide(bool hide);
+
+    bool changeCurrentOnDrag() const;
+    void setChangeCurrentOnDrag(bool change);
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
 
@@ -183,19 +183,20 @@ protected:
     virtual void tabRemoved(int index);
     virtual void tabLayoutChange();
 
-    bool event(QEvent *);
-    void resizeEvent(QResizeEvent *);
-    void showEvent(QShowEvent *);
-    void hideEvent(QHideEvent *);
-    void paintEvent(QPaintEvent *);
-    void mousePressEvent (QMouseEvent *);
-    void mouseMoveEvent (QMouseEvent *);
-    void mouseReleaseEvent (QMouseEvent *);
+    bool event(QEvent *) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
+    void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+    void mousePressEvent (QMouseEvent *) Q_DECL_OVERRIDE;
+    void mouseMoveEvent (QMouseEvent *) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent (QMouseEvent *) Q_DECL_OVERRIDE;
 #ifndef QT_NO_WHEELEVENT
-    void wheelEvent(QWheelEvent *event);
+    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
 #endif
-    void keyPressEvent(QKeyEvent *);
-    void changeEvent(QEvent *);
+    void keyPressEvent(QKeyEvent *) Q_DECL_OVERRIDE;
+    void changeEvent(QEvent *) Q_DECL_OVERRIDE;
+    void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
     void initStyleOption(QStyleOptionTab *option, int tabIndex) const;
 
 #ifndef QT_NO_ACCESSIBILITY

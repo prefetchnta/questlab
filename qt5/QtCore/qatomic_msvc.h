@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -50,9 +42,14 @@
 
 // use compiler intrinsics for all atomic functions
 # define QT_INTERLOCKED_PREFIX _
-# define QT_INTERLOCKED_PROTOTYPE __cdecl
+# define QT_INTERLOCKED_PROTOTYPE
 # define QT_INTERLOCKED_DECLARE_PROTOTYPES
 # define QT_INTERLOCKED_INTRINSIC
+# define Q_ATOMIC_INT16_IS_SUPPORTED
+
+# ifdef _WIN64
+#  define Q_ATOMIC_INT64_IS_SUPPORTED
+# endif
 
 #else // Q_OS_WINCE
 
@@ -130,6 +127,20 @@ extern "C" {
     __int64 QT_INTERLOCKED_FUNCTION( ExchangeAdd64 )(__int64 QT_INTERLOCKED_VOLATILE *, __int64);
 # endif
 
+# ifdef Q_ATOMIC_INT16_IS_SUPPORTED
+    short QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( Increment16 )(short QT_INTERLOCKED_VOLATILE *);
+    short QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( Decrement16 )(short QT_INTERLOCKED_VOLATILE *);
+    short QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( CompareExchange16 )(short QT_INTERLOCKED_VOLATILE *, short, short);
+    short QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( Exchange16 )(short QT_INTERLOCKED_VOLATILE *, short);
+    short QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( ExchangeAdd16 )(short QT_INTERLOCKED_VOLATILE *, short);
+# endif
+# ifdef Q_ATOMIC_INT64_IS_SUPPORTED
+    __int64 QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( Increment64 )(__int64 QT_INTERLOCKED_VOLATILE *);
+    __int64 QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( Decrement64 )(__int64 QT_INTERLOCKED_VOLATILE *);
+    __int64 QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( CompareExchange64 )(__int64 QT_INTERLOCKED_VOLATILE *, __int64, __int64);
+    __int64 QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( Exchange64 )(__int64 QT_INTERLOCKED_VOLATILE *, __int64);
+    //above already: qint64 QT_INTERLOCKED_PROTOTYPE QT_INTERLOCKED_FUNCTION( ExchangeAdd64 )(qint64 QT_INTERLOCKED_VOLATILE *, qint64);
+# endif
 }
 
 #endif // QT_INTERLOCKED_DECLARE_PROTOTYPES
@@ -157,21 +168,6 @@ extern "C" {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Interlocked* replacement macros
-
-#define QT_INTERLOCKED_INCREMENT(value) \
-    QT_INTERLOCKED_FUNCTION(Increment)(value)
-
-#define QT_INTERLOCKED_DECREMENT(value) \
-    QT_INTERLOCKED_FUNCTION(Decrement)(value)
-
-#define QT_INTERLOCKED_COMPARE_EXCHANGE(value, newValue, expectedValue) \
-    QT_INTERLOCKED_FUNCTION(CompareExchange)((value), (newValue), (expectedValue))
-
-#define QT_INTERLOCKED_EXCHANGE(value, newValue) \
-    QT_INTERLOCKED_FUNCTION(Exchange)((value), (newValue))
-
-#define QT_INTERLOCKED_EXCHANGE_ADD(value, valueToAdd) \
-    QT_INTERLOCKED_FUNCTION(ExchangeAdd)((value), (valueToAdd))
 
 #if defined(Q_OS_WINCE) || defined(__i386__) || defined(_M_IX86)
 
@@ -258,71 +254,193 @@ QT_END_NAMESPACE
 #define Q_ATOMIC_POINTER_FETCH_AND_ADD_IS_ALWAYS_NATIVE
 #define Q_ATOMIC_POINTER_FETCH_AND_ADD_IS_WAIT_FREE
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef Q_ATOMIC_INT16_IS_SUPPORTED
+# define Q_ATOMIC_INT16_REFERENCE_COUNTING_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT16_REFERENCE_COUNTING_IS_WAIT_FREE
 
-template<> struct QAtomicIntegerTraits<int> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned int> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<long> { enum { IsInteger = 1 }; };
-template<> struct QAtomicIntegerTraits<unsigned long> { enum { IsInteger = 1 }; };
-#ifdef Q_COMPILER_UNICODE_STRINGS
-template<> struct QAtomicIntegerTraits<char32_t> { enum { IsInteger = 1 }; };
+# define Q_ATOMIC_INT16_TEST_AND_SET_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT16_TEST_AND_SET_IS_WAIT_FREE
+
+# define Q_ATOMIC_INT16_FETCH_AND_STORE_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT16_FETCH_AND_STORE_IS_WAIT_FREE
+
+# define Q_ATOMIC_INT16_FETCH_AND_ADD_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT16_FETCH_AND_ADD_IS_WAIT_FREE
+
+template<> struct QAtomicOpsSupport<2> { enum { IsSupported = 1 }; };
 #endif
 
-// No definition, needs specialization
-template <int N> struct QAtomicOpsBySize;
+#ifdef Q_ATOMIC_INT64_IS_SUPPORTED
+# define Q_ATOMIC_INT64_REFERENCE_COUNTING_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT64_REFERENCE_COUNTING_IS_WAIT_FREE
 
-template <>
-struct QAtomicOpsBySize<4> : QGenericAtomicOps<QAtomicOpsBySize<4> >
+# define Q_ATOMIC_INT64_TEST_AND_SET_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT64_TEST_AND_SET_IS_WAIT_FREE
+
+# define Q_ATOMIC_INT64_FETCH_AND_STORE_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT64_FETCH_AND_STORE_IS_WAIT_FREE
+
+# define Q_ATOMIC_INT64_FETCH_AND_ADD_IS_ALWAYS_NATIVE
+# define Q_ATOMIC_INT64_FETCH_AND_ADD_IS_WAIT_FREE
+
+template<> struct QAtomicOpsSupport<8> { enum { IsSupported = 1 }; };
+#endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <int N> struct QAtomicWindowsType { typedef typename QIntegerForSize<N>::Signed Type; };
+template <> struct QAtomicWindowsType<4> { typedef long Type; };
+
+
+template <int N> struct QAtomicOpsBySize : QGenericAtomicOps<QAtomicOpsBySize<N> >
 {
-    // The 32-bit Interlocked*() API takes parameters as longs.
-    typedef long Type;
-
     static inline Q_DECL_CONSTEXPR bool isReferenceCountingNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isReferenceCountingWaitFree() Q_DECL_NOTHROW { return true; }
-    static bool ref(long &_q_value) Q_DECL_NOTHROW;
-    static bool deref(long &_q_value) Q_DECL_NOTHROW;
+    template <typename T> static bool ref(T &_q_value) Q_DECL_NOTHROW;
+    template <typename T> static bool deref(T &_q_value) Q_DECL_NOTHROW;
 
     static inline Q_DECL_CONSTEXPR bool isTestAndSetNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isTestAndSetWaitFree() Q_DECL_NOTHROW { return true; }
-    static bool testAndSetRelaxed(long &_q_value, long expectedValue, long newValue) Q_DECL_NOTHROW;
+    template <typename T> static bool testAndSetRelaxed(T &_q_value, T expectedValue, T newValue) Q_DECL_NOTHROW;
+    template <typename T>
+    static bool testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW;
 
     static inline Q_DECL_CONSTEXPR bool isFetchAndStoreNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isFetchAndStoreWaitFree() Q_DECL_NOTHROW { return true; }
-    static long fetchAndStoreRelaxed(long &_q_value, long newValue) Q_DECL_NOTHROW;
+    template <typename T> static T fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHROW;
 
     static inline Q_DECL_CONSTEXPR bool isFetchAndAddNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isFetchAndAddWaitFree() Q_DECL_NOTHROW { return true; }
-    static long fetchAndAddRelaxed(long &_q_value, QAtomicAdditiveType<long>::AdditiveT valueToAdd) Q_DECL_NOTHROW;
+    template <typename T> static T fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveType<T>::AdditiveT valueToAdd) Q_DECL_NOTHROW;
+
+private:
+    typedef typename QAtomicWindowsType<N>::Type Type;
+    template <typename T> static inline Type *atomic(T *t)
+    { Q_STATIC_ASSERT(sizeof(T) == sizeof(Type)); return reinterpret_cast<Type *>(t); }
+    template <typename T> static inline Type value(T t)
+    { Q_STATIC_ASSERT(sizeof(T) == sizeof(Type)); return Type(t); }
 };
 
 template <typename T>
 struct QAtomicOps : QAtomicOpsBySize<sizeof(T)>
-{ };
-
-inline bool QAtomicOpsBySize<4>::ref(long &_q_value) Q_DECL_NOTHROW
 {
-    return QT_INTERLOCKED_INCREMENT(&_q_value) != 0;
+    typedef T Type;
+};
+
+template<> template<typename T>
+inline bool QAtomicOpsBySize<4>::ref(T &_q_value) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(Increment)(atomic(&_q_value)) != 0;
 }
 
-inline bool QAtomicOpsBySize<4>::deref(long &_q_value) Q_DECL_NOTHROW
+template<> template<typename T>
+inline bool QAtomicOpsBySize<4>::deref(T &_q_value) Q_DECL_NOTHROW
 {
-    return QT_INTERLOCKED_DECREMENT(&_q_value) != 0;
+    return QT_INTERLOCKED_FUNCTION(Decrement)(atomic(&_q_value)) != 0;
 }
 
-inline bool QAtomicOpsBySize<4>::testAndSetRelaxed(long &_q_value, long expectedValue, long newValue) Q_DECL_NOTHROW
+template<> template<typename T>
+inline bool QAtomicOpsBySize<4>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue) Q_DECL_NOTHROW
 {
-    return QT_INTERLOCKED_COMPARE_EXCHANGE(&_q_value, newValue, expectedValue) == expectedValue;
+    return QT_INTERLOCKED_FUNCTION(CompareExchange)(atomic(&_q_value), value(newValue), value(expectedValue)) == value(expectedValue);
 }
 
-inline long QAtomicOpsBySize<4>::fetchAndStoreRelaxed(long &_q_value, long newValue) Q_DECL_NOTHROW
+template<> template <typename T>
+inline bool QAtomicOpsBySize<4>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW
 {
-    return QT_INTERLOCKED_EXCHANGE(&_q_value, newValue);
+    *currentValue = T(QT_INTERLOCKED_FUNCTION(CompareExchange)(atomic(&_q_value), newValue, expectedValue));
+    return *currentValue == expectedValue;
 }
 
-inline long QAtomicOpsBySize<4>::fetchAndAddRelaxed(long &_q_value, QAtomicAdditiveType<long>::AdditiveT valueToAdd) Q_DECL_NOTHROW
+template<> template<typename T>
+inline T QAtomicOpsBySize<4>::fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHROW
 {
-    return QT_INTERLOCKED_EXCHANGE_ADD(&_q_value, valueToAdd * QAtomicAdditiveType<long>::AddScale);
+    return QT_INTERLOCKED_FUNCTION(Exchange)(atomic(&_q_value), value(newValue));
 }
+
+template<> template<typename T>
+inline T QAtomicOpsBySize<4>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveType<T>::AdditiveT valueToAdd) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(ExchangeAdd)(atomic(&_q_value), value<T>(valueToAdd * QAtomicAdditiveType<T>::AddScale));
+}
+
+#ifdef Q_ATOMIC_INT16_IS_SUPPORTED
+template<> template<typename T>
+inline bool QAtomicOpsBySize<2>::ref(T &_q_value) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(Increment16)(atomic(&_q_value)) != 0;
+}
+
+template<> template<typename T>
+inline bool QAtomicOpsBySize<2>::deref(T &_q_value) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(Decrement16)(atomic(&_q_value)) != 0;
+}
+
+template<> template<typename T>
+inline bool QAtomicOpsBySize<2>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(CompareExchange16)(atomic(&_q_value), value(newValue), value(expectedValue)) == value(expectedValue);
+}
+
+template<> template <typename T>
+inline bool QAtomicOpsBySize<2>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    *currentValue = T(QT_INTERLOCKED_FUNCTION(CompareExchange16)(atomic(&_q_value), newValue, expectedValue));
+    return *currentValue == expectedValue;
+}
+
+template<> template<typename T>
+inline T QAtomicOpsBySize<2>::fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(Exchange16)(atomic(&_q_value), value(newValue));
+}
+
+template<> template<typename T>
+inline T QAtomicOpsBySize<2>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveType<T>::AdditiveT valueToAdd) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(ExchangeAdd16)(atomic(&_q_value), value<T>(valueToAdd * QAtomicAdditiveType<T>::AddScale));
+}
+#endif
+
+#ifdef Q_ATOMIC_INT64_IS_SUPPORTED
+template<> template<typename T>
+inline bool QAtomicOpsBySize<8>::ref(T &_q_value) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(Increment64)(atomic(&_q_value)) != 0;
+}
+
+template<> template<typename T>
+inline bool QAtomicOpsBySize<8>::deref(T &_q_value) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(Decrement64)(atomic(&_q_value)) != 0;
+}
+
+template<> template<typename T>
+inline bool QAtomicOpsBySize<8>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(CompareExchange64)(atomic(&_q_value), value(newValue), value(expectedValue)) == value(expectedValue);
+}
+
+template<> template <typename T>
+inline bool QAtomicOpsBySize<8>::testAndSetRelaxed(T &_q_value, T expectedValue, T newValue, T *currentValue) Q_DECL_NOTHROW
+{
+    *currentValue = T(QT_INTERLOCKED_FUNCTION(CompareExchange64)(atomic(&_q_value), newValue, expectedValue));
+    return *currentValue == expectedValue;
+}
+
+template<> template<typename T>
+inline T QAtomicOpsBySize<8>::fetchAndStoreRelaxed(T &_q_value, T newValue) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(Exchange64)(atomic(&_q_value), value(newValue));
+}
+
+template<> template<typename T>
+inline T QAtomicOpsBySize<8>::fetchAndAddRelaxed(T &_q_value, typename QAtomicAdditiveType<T>::AdditiveT valueToAdd) Q_DECL_NOTHROW
+{
+    return QT_INTERLOCKED_FUNCTION(ExchangeAdd64)(atomic(&_q_value), value<T>(valueToAdd * QAtomicAdditiveType<T>::AddScale));
+}
+#endif
 
 // Specialization for pointer types, since we have Interlocked*Pointer() variants in some configurations
 template <typename T>
@@ -333,6 +451,7 @@ struct QAtomicOps<T *> : QGenericAtomicOps<QAtomicOps<T *> >
     static inline Q_DECL_CONSTEXPR bool isTestAndSetNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isTestAndSetWaitFree() Q_DECL_NOTHROW { return true; }
     static bool testAndSetRelaxed(T *&_q_value, T *expectedValue, T *newValue) Q_DECL_NOTHROW;
+    static bool testAndSetRelaxed(T *&_q_value, T *expectedValue, T *newValue, T **currentValue) Q_DECL_NOTHROW;
 
     static inline Q_DECL_CONSTEXPR bool isFetchAndStoreNative() Q_DECL_NOTHROW { return true; }
     static inline Q_DECL_CONSTEXPR bool isFetchAndStoreWaitFree() Q_DECL_NOTHROW { return true; }
@@ -347,6 +466,13 @@ template <typename T>
 inline bool QAtomicOps<T *>::testAndSetRelaxed(T *&_q_value, T *expectedValue, T *newValue) Q_DECL_NOTHROW
 {
     return QT_INTERLOCKED_COMPARE_EXCHANGE_POINTER(&_q_value, newValue, expectedValue) == expectedValue;
+}
+
+template <typename T>
+inline bool QAtomicOps<T *>::testAndSetRelaxed(T *&_q_value, T *expectedValue, T *newValue, T **currentValue) Q_DECL_NOTHROW
+{
+    *currentValue = reinterpret_cast<T *>(QT_INTERLOCKED_COMPARE_EXCHANGE_POINTER(&_q_value, newValue, expectedValue));
+    return *currentValue == expectedValue;
 }
 
 template <typename T>

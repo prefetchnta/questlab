@@ -1,39 +1,31 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Klaralvdalens Datakonsult AB (KDAB).
-** Contact: http://www.qt-project.org/legal
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -95,27 +87,6 @@ public:
         ResetTextureUnit,
         DontResetTextureUnit
     };
-
-    explicit QOpenGLTexture(Target target);
-    explicit QOpenGLTexture(const QImage& image, MipMapGeneration genMipMaps = GenerateMipMaps);
-    ~QOpenGLTexture();
-
-    // Creation and destruction
-    bool create();
-    void destroy();
-    bool isCreated() const;
-    GLuint textureId() const;
-
-    // Binding and releasing
-    void bind();
-    void bind(uint unit, TextureUnitReset reset = DontResetTextureUnit);
-    void release();
-    void release(uint unit, TextureUnitReset reset = DontResetTextureUnit);
-
-    bool isBound() const;
-    bool isBound(uint unit);
-    static GLuint boundTextureId(BindingTarget target);
-    static GLuint boundTextureId(uint unit, BindingTarget target);
 
     enum TextureFormat {
         NoFormat               = 0,         // GL_NONE
@@ -201,6 +172,7 @@ public:
         D32                    = 0x81A7,    // GL_DEPTH_COMPONENT32
         D32F                   = 0x8CAC,    // GL_DEPTH_COMPONENT32F
         D32FS8X24              = 0x8CAD,    // GL_DEPTH32F_STENCIL8
+        S8                     = 0x8D48,    // GL_STENCIL_INDEX8
 
         // Compressed formats
         RGB_DXT1               = 0x83F0,    // GL_COMPRESSED_RGB_S3TC_DXT1_EXT
@@ -214,6 +186,16 @@ public:
         RGB_BP_UNSIGNED_FLOAT  = 0x8E8F,    // GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB
         RGB_BP_SIGNED_FLOAT    = 0x8E8E,    // GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB
         RGB_BP_UNorm           = 0x8E8C,    // GL_COMPRESSED_RGBA_BPTC_UNORM_ARB
+        R11_EAC_UNorm          = 0x9270,    // GL_COMPRESSED_R11_EAC
+        R11_EAC_SNorm          = 0x9271,    // GL_COMPRESSED_SIGNED_R11_EAC
+        RG11_EAC_UNorm         = 0x9272,    // GL_COMPRESSED_RG11_EAC
+        RG11_EAC_SNorm         = 0x9273,    // GL_COMPRESSED_SIGNED_RG11_EAC
+        RGB8_ETC2              = 0x9274,    // GL_COMPRESSED_RGB8_ETC2
+        SRGB8_ETC2             = 0x9275,    // GL_COMPRESSED_SRGB8_ETC2
+        RGB8_PunchThrough_Alpha1_ETC2 = 0x9276, // GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2
+        SRGB8_PunchThrough_Alpha1_ETC2 = 0x9277, // GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2
+        RGBA8_ETC2_EAC         = 0x9278,    // GL_COMPRESSED_RGBA8_ETC2_EAC
+        SRGB8_Alpha8_ETC2_EAC  = 0x9279,    // GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC
 
         // sRGB formats
         SRGB8                  = 0x8C41,    // GL_SRGB8
@@ -259,28 +241,6 @@ public:
     };
 #endif
 
-    // Storage allocation
-    void setFormat(TextureFormat format);
-    TextureFormat format() const;
-    void setSize(int width, int height = 1, int depth = 1);
-    int width() const;
-    int height() const;
-    int depth() const;
-    void setMipLevels(int levels);
-    int mipLevels() const;
-    int maximumMipLevels() const;
-    void setLayers(int layers);
-    int layers() const;
-    int faces() const;
-    void allocateStorage();
-    bool isStorageAllocated() const;
-
-    QOpenGLTexture *createTextureView(Target target,
-                                      TextureFormat viewFormat,
-                                      int minimumMipmapLevel, int maximumMipmapLevel,
-                                      int minimumLayer, int maximumLayer) const;
-    bool isTextureView() const;
-
     enum CubeMapFace {
         CubeMapPositiveX = 0x8515,  // GL_TEXTURE_CUBE_MAP_POSITIVE_X
         CubeMapNegativeX = 0x8516,  // GL_TEXTURE_CUBE_MAP_NEGATIVE_X
@@ -304,6 +264,7 @@ public:
         BGR_Integer    = 0x8D9A,    // GL_BGR_INTEGER
         RGBA_Integer   = 0x8D99,    // GL_RGBA_INTEGER
         BGRA_Integer   = 0x8D9B,    // GL_BGRA_INTEGER
+        Stencil        = 0x1901,    // GL_STENCIL_INDEX
         Depth          = 0x1902,    // GL_DEPTH_COMPONENT
         DepthStencil   = 0x84F9,    // GL_DEPTH_STENCIL
         Alpha          = 0x1906,    // GL_ALPHA
@@ -332,74 +293,13 @@ public:
         UInt16_R5G6B5_Rev  = 0x8364,    // GL_UNSIGNED_SHORT_5_6_5_REV
         UInt16_RGBA4       = 0x8033,    // GL_UNSIGNED_SHORT_4_4_4_4
         UInt16_RGBA4_Rev   = 0x8365,    // GL_UNSIGNED_SHORT_4_4_4_4_REV
+        UInt32_RGBA8       = 0x8035,    // GL_UNSIGNED_INT_8_8_8_8
+        UInt32_RGBA8_Rev   = 0x8367,    // GL_UNSIGNED_INT_8_8_8_8_REV
         UInt32_RGB10A2     = 0x8036,    // GL_UNSIGNED_INT_10_10_10_2
-        UInt32_RGB10A2_Rev = 0x8368     // GL_UNSIGNED_INT_2_10_10_10_REV
+        UInt32_RGB10A2_Rev = 0x8368,    // GL_UNSIGNED_INT_2_10_10_10_REV
+        UInt32_D24S8       = 0x84FA,    // GL_UNSIGNED_INT_24_8
+        Float32_D32_UInt32_S8_X24 = 0x8DAD // GL_FLOAT_32_UNSIGNED_INT_24_8_REV
     };
-
-    // Pixel transfer
-    void setData(int mipLevel, int layer, CubeMapFace cubeFace,
-                 PixelFormat sourceFormat, PixelType sourceType,
-                 void *data, const QOpenGLPixelTransferOptions * const options = 0);
-    void setData(int mipLevel, int layer,
-                 PixelFormat sourceFormat, PixelType sourceType,
-                 void *data, const QOpenGLPixelTransferOptions * const options = 0);
-    void setData(int mipLevel,
-                 PixelFormat sourceFormat, PixelType sourceType,
-                 void *data, const QOpenGLPixelTransferOptions * const options = 0);
-    void setData(PixelFormat sourceFormat, PixelType sourceType,
-                 void *data, const QOpenGLPixelTransferOptions * const options = 0);
-
-    // Compressed data upload
-    void setCompressedData(int mipLevel, int layer, CubeMapFace cubeFace,
-                           int dataSize, void *data,
-                           const QOpenGLPixelTransferOptions * const options = 0);
-    void setCompressedData(int mipLevel, int layer,
-                           int dataSize, void *data,
-                           const QOpenGLPixelTransferOptions * const options = 0);
-    void setCompressedData(int mipLevel, int dataSize, void *data,
-                           const QOpenGLPixelTransferOptions * const options = 0);
-    void setCompressedData(int dataSize, void *data,
-                           const QOpenGLPixelTransferOptions * const options = 0);
-
-    // Helpful overloads for setData
-    void setData(const QImage& image, MipMapGeneration genMipMaps = GenerateMipMaps);
-
-    // Features
-    enum Feature {
-        ImmutableStorage            = 0x00000001,
-        ImmutableMultisampleStorage = 0x00000002,
-        TextureRectangle            = 0x00000004,
-        TextureArrays               = 0x00000008,
-        Texture3D                   = 0x00000010,
-        TextureMultisample          = 0x00000020,
-        TextureBuffer               = 0x00000040,
-        TextureCubeMapArrays        = 0x00000080,
-        Swizzle                     = 0x00000100,
-        StencilTexturing            = 0x00000200,
-        AnisotropicFiltering        = 0x00000400,
-        NPOTTextures                = 0x00000800,
-        NPOTTextureRepeat           = 0x00001000,
-#ifndef Q_QDOC
-        MaxFeatureFlag              = 0x00002000
-#endif
-    };
-    Q_DECLARE_FLAGS(Features, Feature)
-
-    static bool hasFeature(Feature feature);
-
-    // Texture Parameters
-    void setMipBaseLevel(int baseLevel);
-    int mipBaseLevel() const;
-    void setMipMaxLevel(int maxLevel);
-    int mipMaxLevel() const;
-    void setMipLevelRange(int baseLevel, int maxLevel);
-    QPair<int, int> mipLevelRange() const;
-
-    void setAutoMipMapGenerationEnabled(bool enabled);
-    bool isAutoMipMapGenerationEnabled() const;
-
-    void generateMipMaps();
-    void generateMipMaps(int baseLevel, bool resetBaseLevel = true);
 
     enum SwizzleComponent {
         SwizzleRed   = 0x8E42,  // GL_TEXTURE_SWIZZLE_R
@@ -417,6 +317,166 @@ public:
         OneValue   = 1       // GL_ONE
     };
 
+    enum WrapMode {
+        Repeat         = 0x2901, // GL_REPEAT
+        MirroredRepeat = 0x8370, // GL_MIRRORED_REPEAT
+        ClampToEdge    = 0x812F, // GL_CLAMP_TO_EDGE
+        ClampToBorder  = 0x812D  // GL_CLAMP_TO_BORDER
+    };
+
+    enum CoordinateDirection {
+        DirectionS = 0x2802, // GL_TEXTURE_WRAP_S
+        DirectionT = 0x2803, // GL_TEXTURE_WRAP_T
+        DirectionR = 0x8072  // GL_TEXTURE_WRAP_R
+    };
+
+    // Features
+    enum Feature {
+        ImmutableStorage            = 0x00000001,
+        ImmutableMultisampleStorage = 0x00000002,
+        TextureRectangle            = 0x00000004,
+        TextureArrays               = 0x00000008,
+        Texture3D                   = 0x00000010,
+        TextureMultisample          = 0x00000020,
+        TextureBuffer               = 0x00000040,
+        TextureCubeMapArrays        = 0x00000080,
+        Swizzle                     = 0x00000100,
+        StencilTexturing            = 0x00000200,
+        AnisotropicFiltering        = 0x00000400,
+        NPOTTextures                = 0x00000800,
+        NPOTTextureRepeat           = 0x00001000,
+        Texture1D                   = 0x00002000,
+        TextureComparisonOperators  = 0x00004000,
+        TextureMipMapLevel          = 0x00008000,
+#ifndef Q_QDOC
+        MaxFeatureFlag              = 0x00010000
+#endif
+    };
+    Q_DECLARE_FLAGS(Features, Feature)
+
+    explicit QOpenGLTexture(Target target);
+    explicit QOpenGLTexture(const QImage& image, MipMapGeneration genMipMaps = GenerateMipMaps);
+    ~QOpenGLTexture();
+
+    Target target() const;
+
+    // Creation and destruction
+    bool create();
+    void destroy();
+    bool isCreated() const;
+    GLuint textureId() const;
+
+    // Binding and releasing
+    void bind();
+    void bind(uint unit, TextureUnitReset reset = DontResetTextureUnit);
+    void release();
+    void release(uint unit, TextureUnitReset reset = DontResetTextureUnit);
+
+    bool isBound() const;
+    bool isBound(uint unit);
+    static GLuint boundTextureId(BindingTarget target);
+    static GLuint boundTextureId(uint unit, BindingTarget target);
+
+    // Storage allocation
+    void setFormat(TextureFormat format);
+    TextureFormat format() const;
+    void setSize(int width, int height = 1, int depth = 1);
+    int width() const;
+    int height() const;
+    int depth() const;
+    void setMipLevels(int levels);
+    int mipLevels() const;
+    int maximumMipLevels() const;
+    void setLayers(int layers);
+    int layers() const;
+    int faces() const;
+    void setSamples(int samples);
+    int samples() const;
+    void setFixedSamplePositions(bool fixed);
+    bool isFixedSamplePositions() const;
+    void allocateStorage();
+    void allocateStorage(PixelFormat pixelFormat, PixelType pixelType);
+    bool isStorageAllocated() const;
+
+    QOpenGLTexture *createTextureView(Target target,
+                                      TextureFormat viewFormat,
+                                      int minimumMipmapLevel, int maximumMipmapLevel,
+                                      int minimumLayer, int maximumLayer) const;
+    bool isTextureView() const;
+
+    // Pixel transfer
+    // ### Qt 6: remove the non-const void * overloads
+#if QT_DEPRECATED_SINCE(5, 3)
+    QT_DEPRECATED void setData(int mipLevel, int layer, CubeMapFace cubeFace,
+                               PixelFormat sourceFormat, PixelType sourceType,
+                               void *data, const QOpenGLPixelTransferOptions * const options = 0);
+    QT_DEPRECATED void setData(int mipLevel, int layer,
+                               PixelFormat sourceFormat, PixelType sourceType,
+                               void *data, const QOpenGLPixelTransferOptions * const options = 0);
+    QT_DEPRECATED void setData(int mipLevel,
+                               PixelFormat sourceFormat, PixelType sourceType,
+                               void *data, const QOpenGLPixelTransferOptions * const options = 0);
+    QT_DEPRECATED void setData(PixelFormat sourceFormat, PixelType sourceType,
+                               void *data, const QOpenGLPixelTransferOptions * const options = 0);
+#endif // QT_DEPRECATED_SINCE(5, 3)
+
+    void setData(int mipLevel, int layer, CubeMapFace cubeFace,
+                 PixelFormat sourceFormat, PixelType sourceType,
+                 const void *data, const QOpenGLPixelTransferOptions * const options = 0);
+    void setData(int mipLevel, int layer,
+                 PixelFormat sourceFormat, PixelType sourceType,
+                 const void *data, const QOpenGLPixelTransferOptions * const options = 0);
+    void setData(int mipLevel,
+                 PixelFormat sourceFormat, PixelType sourceType,
+                 const void *data, const QOpenGLPixelTransferOptions * const options = 0);
+    void setData(PixelFormat sourceFormat, PixelType sourceType,
+                 const void *data, const QOpenGLPixelTransferOptions * const options = 0);
+
+    // Compressed data upload
+    // ### Qt 6: remove the non-const void * overloads
+#if QT_DEPRECATED_SINCE(5, 3)
+    QT_DEPRECATED void setCompressedData(int mipLevel, int layer, CubeMapFace cubeFace,
+                                         int dataSize, void *data,
+                                         const QOpenGLPixelTransferOptions * const options = 0);
+    QT_DEPRECATED void setCompressedData(int mipLevel, int layer,
+                                         int dataSize, void *data,
+                                         const QOpenGLPixelTransferOptions * const options = 0);
+    QT_DEPRECATED void setCompressedData(int mipLevel, int dataSize, void *data,
+                                         const QOpenGLPixelTransferOptions * const options = 0);
+    QT_DEPRECATED void setCompressedData(int dataSize, void *data,
+                                         const QOpenGLPixelTransferOptions * const options = 0);
+#endif // QT_DEPRECATED_SINCE(5, 3)
+
+    void setCompressedData(int mipLevel, int layer, CubeMapFace cubeFace,
+                           int dataSize, const void *data,
+                           const QOpenGLPixelTransferOptions * const options = 0);
+    void setCompressedData(int mipLevel, int layer,
+                           int dataSize, const void *data,
+                           const QOpenGLPixelTransferOptions * const options = 0);
+    void setCompressedData(int mipLevel, int dataSize, const void *data,
+                           const QOpenGLPixelTransferOptions * const options = 0);
+    void setCompressedData(int dataSize, const void *data,
+                           const QOpenGLPixelTransferOptions * const options = 0);
+
+    // Helpful overloads for setData
+    void setData(const QImage& image, MipMapGeneration genMipMaps = GenerateMipMaps);
+
+    static bool hasFeature(Feature feature);
+
+    // Texture Parameters
+    void setMipBaseLevel(int baseLevel);
+    int mipBaseLevel() const;
+    void setMipMaxLevel(int maxLevel);
+    int mipMaxLevel() const;
+    void setMipLevelRange(int baseLevel, int maxLevel);
+    QPair<int, int> mipLevelRange() const;
+
+    void setAutoMipMapGenerationEnabled(bool enabled);
+    bool isAutoMipMapGenerationEnabled() const;
+
+    void generateMipMaps();
+    void generateMipMaps(int baseLevel, bool resetBaseLevel = true);
+
     void setSwizzleMask(SwizzleComponent component, SwizzleValue value);
     void setSwizzleMask(SwizzleValue r, SwizzleValue g,
                         SwizzleValue b, SwizzleValue a);
@@ -429,6 +489,28 @@ public:
 
     void setDepthStencilMode(DepthStencilMode mode);
     DepthStencilMode depthStencilMode() const;
+
+    enum ComparisonFunction {
+        CompareLessEqual    = 0x0203,   // GL_LEQUAL
+        CompareGreaterEqual = 0x0206,   // GL_GEQUAL
+        CompareLess         = 0x0201,   // GL_LESS
+        CompareGreater      = 0x0204,   // GL_GREATER
+        CompareEqual        = 0x0202,   // GL_EQUAL
+        CommpareNotEqual    = 0x0205,   // GL_NOTEQUAL
+        CompareAlways       = 0x0207,   // GL_ALWAYS
+        CompareNever        = 0x0200    // GL_NEVER
+    };
+
+    void setComparisonFunction(ComparisonFunction function);
+    ComparisonFunction comparisonFunction() const;
+
+    enum ComparisonMode {
+        CompareRefToTexture = 0x884E,   // GL_COMPARE_REF_TO_TEXTURE
+        CompareNone         = 0x0000    // GL_NONE
+    };
+
+    void setComparisonMode(ComparisonMode mode);
+    ComparisonMode comparisonMode() const;
 
     // Sampling Parameters
     enum Filter {
@@ -449,19 +531,6 @@ public:
     QPair<Filter, Filter> minMagFilters() const;
     void setMaximumAnisotropy(float anisotropy);
     float maximumAnisotropy() const;
-
-    enum WrapMode {
-        Repeat         = 0x2901, // GL_REPEAT
-        MirroredRepeat = 0x8370, // GL_MIRRORED_REPEAT
-        ClampToEdge    = 0x812F, // GL_CLAMP_TO_EDGE
-        ClampToBorder  = 0x812D  // GL_CLAMP_TO_BORDER
-    };
-
-    enum CoordinateDirection {
-        DirectionS = 0x2802, // GL_TEXTURE_WRAP_S
-        DirectionT = 0x2803, // GL_TEXTURE_WRAP_T
-        DirectionR = 0x8072  // GL_TEXTURE_WRAP_R
-    };
 
     void setWrapMode(WrapMode mode);
     void setWrapMode(CoordinateDirection direction, WrapMode mode);

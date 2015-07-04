@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWidgets module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -71,8 +63,8 @@ public:
     QMdiSubWindow(QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~QMdiSubWindow();
 
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
+    QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
 
     void setWidget(QWidget *widget);
     QWidget *widget() const;
@@ -109,28 +101,28 @@ public Q_SLOTS:
     void showShaded();
 
 protected:
-    bool eventFilter(QObject *object, QEvent *event);
-    bool event(QEvent *event);
-    void showEvent(QShowEvent *showEvent);
-    void hideEvent(QHideEvent *hideEvent);
-    void changeEvent(QEvent *changeEvent);
-    void closeEvent(QCloseEvent *closeEvent);
-    void leaveEvent(QEvent *leaveEvent);
-    void resizeEvent(QResizeEvent *resizeEvent);
-    void timerEvent(QTimerEvent *timerEvent);
-    void moveEvent(QMoveEvent *moveEvent);
-    void paintEvent(QPaintEvent *paintEvent);
-    void mousePressEvent(QMouseEvent *mouseEvent);
-    void mouseDoubleClickEvent(QMouseEvent *mouseEvent);
-    void mouseReleaseEvent(QMouseEvent *mouseEvent);
-    void mouseMoveEvent(QMouseEvent *mouseEvent);
-    void keyPressEvent(QKeyEvent *keyEvent);
+    bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE;
+    bool event(QEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *showEvent) Q_DECL_OVERRIDE;
+    void hideEvent(QHideEvent *hideEvent) Q_DECL_OVERRIDE;
+    void changeEvent(QEvent *changeEvent) Q_DECL_OVERRIDE;
+    void closeEvent(QCloseEvent *closeEvent) Q_DECL_OVERRIDE;
+    void leaveEvent(QEvent *leaveEvent) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *resizeEvent) Q_DECL_OVERRIDE;
+    void timerEvent(QTimerEvent *timerEvent) Q_DECL_OVERRIDE;
+    void moveEvent(QMoveEvent *moveEvent) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *paintEvent) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent *keyEvent) Q_DECL_OVERRIDE;
 #ifndef QT_NO_CONTEXTMENU
-    void contextMenuEvent(QContextMenuEvent *contextMenuEvent);
+    void contextMenuEvent(QContextMenuEvent *contextMenuEvent) Q_DECL_OVERRIDE;
 #endif
-    void focusInEvent(QFocusEvent *focusInEvent);
-    void focusOutEvent(QFocusEvent *focusOutEvent);
-    void childEvent(QChildEvent *childEvent);
+    void focusInEvent(QFocusEvent *focusInEvent) Q_DECL_OVERRIDE;
+    void focusOutEvent(QFocusEvent *focusOutEvent) Q_DECL_OVERRIDE;
+    void childEvent(QChildEvent *childEvent) Q_DECL_OVERRIDE;
 
 private:
     Q_DISABLE_COPY(QMdiSubWindow)

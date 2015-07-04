@@ -29,8 +29,10 @@
 #include "qsslcertificateextension.h"
 #include "qsslcipher.h"
 #include "qsslconfiguration.h"
+#include "qsslellipticcurve.h"
 #include "qsslerror.h"
 #include "qsslkey.h"
+#include "qsslpresharedkeyauthenticator.h"
 #include "qsslsocket.h"
 #include "qtnetworkversion.h"
 #endif

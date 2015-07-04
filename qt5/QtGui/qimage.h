@@ -1,39 +1,31 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL$
+** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 2.1 or version 3 as published by the Free
+** Software Foundation and appearing in the file LICENSE.LGPLv21 and
+** LICENSE.LGPLv3 included in the packaging of this file. Please review the
+** following information to ensure the GNU Lesser General Public License
+** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
+** As a special exception, The Qt Company gives you certain additional
+** rights. These rights are described in The Qt Company LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
 **
 ** $QT_END_LICENSE$
 **
@@ -45,6 +37,7 @@
 #include <QtGui/qtransform.h>
 #include <QtGui/qpaintdevice.h>
 #include <QtGui/qrgb.h>
+#include <QtGui/qpixelformat.h>
 #include <QtCore/qbytearray.h>
 #include <QtCore/qrect.h>
 #include <QtCore/qstring.h>
@@ -113,22 +106,22 @@ public:
         Format_RGBX8888,
         Format_RGBA8888,
         Format_RGBA8888_Premultiplied,
+        Format_BGR30,
+        Format_A2BGR30_Premultiplied,
+        Format_RGB30,
+        Format_A2RGB30_Premultiplied,
+        Format_Alpha8,
+        Format_Grayscale8,
 #if 0
         // reserved for future use
-        Format_RGB15,
         Format_Grayscale16,
-        Format_Grayscale8,
-        Format_Grayscale4,
-        Format_Grayscale4LSB,
-        Format_Grayscale2,
-        Format_Grayscale2LSB
 #endif
 #ifndef Q_QDOC
         NImageFormats
 #endif
     };
 
-    QImage();
+    QImage() Q_DECL_NOEXCEPT;
     QImage(const QSize &size, Format format);
     QImage(int width, int height, Format format);
     QImage(uchar *data, int width, int height, Format format, QImageCleanupFunction cleanupFunction = 0, void *cleanupInfo = 0);
@@ -143,7 +136,7 @@ public:
 
     QImage(const QImage &);
 #ifdef Q_COMPILER_RVALUE_REFS
-    inline QImage(QImage &&other)
+    inline QImage(QImage &&other) Q_DECL_NOEXCEPT
         : QPaintDevice(), d(0)
     { qSwap(d, other.d); }
 #endif
@@ -151,14 +144,15 @@ public:
 
     QImage &operator=(const QImage &);
 #ifdef Q_COMPILER_RVALUE_REFS
-    inline QImage &operator=(QImage &&other)
+    inline QImage &operator=(QImage &&other) Q_DECL_NOEXCEPT
     { qSwap(d, other.d); return *this; }
 #endif
-    inline void swap(QImage &other) { qSwap(d, other.d); }
+    inline void swap(QImage &other) Q_DECL_NOEXCEPT
+    { qSwap(d, other.d); }
 
     bool isNull() const;
 
-    int devType() const;
+    int devType() const Q_DECL_OVERRIDE;
 
     bool operator==(const QImage &) const;
     bool operator!=(const QImage &) const;
@@ -172,7 +166,19 @@ public:
 
     Format format() const;
 
+#if defined(Q_COMPILER_REF_QUALIFIERS) && !defined(QT_COMPILING_QIMAGE_COMPAT_CPP)
+    QImage convertToFormat(Format f, Qt::ImageConversionFlags flags = Qt::AutoColor) const & Q_REQUIRED_RESULT
+    { return convertToFormat_helper(f, flags); }
+    QImage convertToFormat(Format f, Qt::ImageConversionFlags flags = Qt::AutoColor) && Q_REQUIRED_RESULT
+    {
+        if (convertToFormat_inplace(f, flags))
+            return std::move(*this);
+        else
+            return convertToFormat_helper(f, flags);
+    }
+#else
     QImage convertToFormat(Format f, Qt::ImageConversionFlags flags = Qt::AutoColor) const Q_REQUIRED_RESULT;
+#endif
     QImage convertToFormat(Format f, const QVector<QRgb> &colorTable, Qt::ImageConversionFlags flags = Qt::AutoColor) const Q_REQUIRED_RESULT;
 
     int width() const;
@@ -215,7 +221,11 @@ public:
     void setPixel(const QPoint &pt, uint index_or_rgb);
 
     QVector<QRgb> colorTable() const;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    void setColorTable(const QVector<QRgb> &colors);
+#else
     void setColorTable(const QVector<QRgb> colors);
+#endif
 
     qreal devicePixelRatio() const;
     void setDevicePixelRatio(qreal scaleFactor);
@@ -245,8 +255,19 @@ public:
     static QMatrix trueMatrix(const QMatrix &, int w, int h);
     QImage transformed(const QTransform &matrix, Qt::TransformationMode mode = Qt::FastTransformation) const;
     static QTransform trueMatrix(const QTransform &, int w, int h);
+#if defined(Q_COMPILER_REF_QUALIFIERS) && !defined(QT_COMPILING_QIMAGE_COMPAT_CPP)
+    QImage mirrored(bool horizontally = false, bool vertically = true) const &
+        { return mirrored_helper(horizontally, vertically); }
+    QImage &&mirrored(bool horizontally = false, bool vertically = true) &&
+        { mirrored_inplace(horizontally, vertically); return qMove(*this); }
+    QImage rgbSwapped() const &
+        { return rgbSwapped_helper(); }
+    QImage &&rgbSwapped() &&
+        { rgbSwapped_inplace(); return qMove(*this); }
+#else
     QImage mirrored(bool horizontally = false, bool vertically = true) const;
     QImage rgbSwapped() const;
+#endif
     void invertPixels(InvertMode = InvertRgb);
 
 
@@ -268,7 +289,7 @@ public:
 #endif
     qint64 cacheKey() const;
 
-    QPaintEngine *paintEngine() const;
+    QPaintEngine *paintEngine() const Q_DECL_OVERRIDE;
 
     // Auxiliary data
     int dotsPerMeterX() const;
@@ -281,6 +302,10 @@ public:
     QStringList textKeys() const;
     QString text(const QString &key = QString()) const;
     void setText(const QString &key, const QString &value);
+
+    QPixelFormat pixelFormat() const Q_DECL_NOTHROW;
+    static QPixelFormat toPixelFormat(QImage::Format format) Q_DECL_NOTHROW;
+    static QImage::Format toImageFormat(QPixelFormat format) Q_DECL_NOTHROW;
 
 #if QT_DEPRECATED_SINCE(5, 0)
     QT_DEPRECATED inline QString text(const char* key, const char* lang=0) const;
@@ -297,7 +322,14 @@ public:
 #endif
 
 protected:
-    virtual int metric(PaintDeviceMetric metric) const;
+    virtual int metric(PaintDeviceMetric metric) const Q_DECL_OVERRIDE;
+    QImage mirrored_helper(bool horizontal, bool vertical) const;
+    QImage rgbSwapped_helper() const;
+    void mirrored_inplace(bool horizontal, bool vertical);
+    void rgbSwapped_inplace();
+    QImage convertToFormat_helper(Format format, Qt::ImageConversionFlags flags) const;
+    bool convertToFormat_inplace(Format format, Qt::ImageConversionFlags flags);
+    QImage smoothScaled(int w, int h) const;
 
 private:
     friend class QWSOnScreenSurface;
@@ -323,13 +355,9 @@ inline void QImage::setPixel(const QPoint &pt, uint index_or_rgb) { setPixel(pt.
 
 #if QT_DEPRECATED_SINCE(5, 0)
 
-#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#elif defined(Q_CC_MSVC)
-# pragma warning(push)
-# pragma warning(disable: 4996)
-#endif
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_GCC("-Wdeprecated-declarations")
+QT_WARNING_DISABLE_MSVC(4996)
 
 inline QString QImage::text(const char* key, const char* lang) const
 {
@@ -401,11 +429,7 @@ inline void QImage::setText(const char* key, const char* lang, const QString &s)
     setText(k, s);
 }
 
-#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
-# pragma GCC diagnostic pop
-#elif defined(Q_CC_MSVC)
-# pragma warning(pop)
-#endif
+QT_WARNING_POP
 
 inline int QImage::numColors() const
 {

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the ActiveQt framework of the Qt Toolkit.
 **
@@ -17,8 +17,8 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
 **
@@ -47,6 +47,8 @@ struct IUnknown;
 
 QT_BEGIN_NAMESPACE
 
+class QWidget;
+
 class QUuid;
 
 class QAxAggregated
@@ -62,10 +64,7 @@ protected:
 
     inline IUnknown *controllingUnknown() const
     { return controlling_unknown; }
-    inline QWidget *widget() const 
-    {
-        return qobject_cast<QWidget*>(the_object);
-    }
+    QWidget *widget() const;
     inline QObject *object() const { return the_object; }
 
 private:
@@ -74,10 +73,10 @@ private:
 };
 
 #define QAXAGG_IUNKNOWN \
-    HRESULT WINAPI QueryInterface(REFIID iid, LPVOID *iface) { \
-    return controllingUnknown()->QueryInterface(iid, iface); } \
-    ULONG WINAPI AddRef() {return controllingUnknown()->AddRef(); } \
-    ULONG WINAPI Release() {return controllingUnknown()->Release(); } \
+    HRESULT WINAPI QueryInterface(REFIID iid, LPVOID *iface) Q_DECL_OVERRIDE \
+        { return controllingUnknown()->QueryInterface(iid, iface); } \
+    ULONG WINAPI AddRef() Q_DECL_OVERRIDE { return controllingUnknown()->AddRef(); } \
+    ULONG WINAPI Release() Q_DECL_OVERRIDE { return controllingUnknown()->Release(); } \
 
 QT_END_NAMESPACE
 
