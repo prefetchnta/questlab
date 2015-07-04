@@ -5,8 +5,7 @@
 #include "QstComm.h"
 
 #pragma warning (push)
-#pragma warning (disable: 4127)
-#pragma warning (disable: 4512)
+#pragma warning (disable: 4481)
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QMainWindow>
