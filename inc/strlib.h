@@ -42,6 +42,7 @@ CR_API bool_t   is_wordzA (ansi_t ch);  /* 变量字符 */
 CR_API bool_t   is_timesA (ansi_t ch);  /* 时间分割 */
 CR_API bool_t   is_datesA (ansi_t ch);  /* 日期分割 */
 CR_API bool_t   is_slashA (ansi_t ch);  /* 路径分割 */
+CR_API bool_t   is_plateA (ansi_t ch);  /* 车牌符号 */
 
 CR_API bool_t   is_alnumW (wide_t ch);  /* 数字字母 */
 CR_API bool_t   is_alphaW (wide_t ch);  /*     字母 */
@@ -59,6 +60,7 @@ CR_API bool_t   is_wordzW (wide_t ch);  /* 变量字符 */
 CR_API bool_t   is_timesW (wide_t ch);  /* 时间分割 */
 CR_API bool_t   is_datesW (wide_t ch);  /* 日期分割 */
 CR_API bool_t   is_slashW (wide_t ch);  /* 路径分割 */
+CR_API bool_t   is_plateW (wide_t ch);  /* 车牌符号 */
 
 /*****************************************************************************/
 /*                              字符串工具函数                               */
@@ -284,6 +286,8 @@ CR_API uint_t   offset_eucjp (const ansi_t *str);
 CR_API uint_t   offset_ascii (const ansi_t *str);
 CR_API uint_t   offset_gb2312 (const ansi_t *str);
 CR_API uint_t   offset_gb18030 (const ansi_t *str);
+
+CR_API leng_t   str_length (const ansi_t *str, offs_cha_t get_offs);
 
 /* 文本自动断行 */
 CR_API ansi_t*  text_wrap1 (const ansi_t *text, uint_t count,
