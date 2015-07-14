@@ -5,4 +5,4 @@ CrH_CORE.dll
 
 [fixme]
 
-QstComm ��ɫ�ı���֧�ַ� ASCII ������ֺ������� telnet ת���
+QstComm 彩色文本不支持非 ASCII 码的文字和完整的 TELNET 转义符
