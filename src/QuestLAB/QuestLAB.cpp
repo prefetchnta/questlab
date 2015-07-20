@@ -66,8 +66,17 @@ WinMain (
     /* 获取命令行参数, 不包括进程文件名 */
     argv = misc_get_param(cmd_line, &argc);
 
-    ansi_t  exec[256];
+    DWORD   leng;
     ansi_t* conf_name;
+    ansi_t  exec[MAX_PATHA];
+
+    /* 输出当前的绝对目录 */
+    leng = GetCurrentDirectoryA(sizeof(exec), exec);
+    if (leng > 1 && leng < sizeof(exec)) {
+        if (exec[leng - 1] == '\\')
+            exec[leng - 1] = 0x00;
+        file_saveA(QST_ROOT_START, exec, str_lenA(exec));
+    }
 
     /* 参数解析 [配置名称] */
     if (argc == 0 || str_lenA(argv[0]) > 64)
