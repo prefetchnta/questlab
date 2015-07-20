@@ -62,9 +62,9 @@ WinMain (
     if (argc < 1)
         return (QST_ERROR);
 
+    leng_t  size;
     ansi_t* root;
     ansi_t* exec;
-    ansi_t* venv;
 
     /* 合成 PYTHONHOME 目录 */
     exec = file_load_as_strA(QST_ROOT_START);
@@ -94,12 +94,6 @@ WinMain (
         mem_free(root);
         return (QST_ERROR);
     }
-    venv = str_fmtA("PYTHONHOME=%s\0", root);
-    if (venv == NULL) {
-        mem_free(exec);
-        mem_free(root);
-        return (QST_ERROR);
-    }
 
     STARTUPINFOA        si;
     PROCESS_INFORMATION pi;
@@ -107,13 +101,16 @@ WinMain (
     /* 启动脚本 */
     mem_zero(&si, sizeof(si));
     si.cb = sizeof(STARTUPINFOA);
+    SetEnvironmentVariableA("PYTHONHOME", root);
+    size  = str_lenA(root);
+    size -= str_lenA("\\python");
+    root[size] = 0x00;
     if (CreateProcessA(NULL, exec, NULL, NULL, FALSE,
-                       cf, venv, NULL, &si, &pi)) {
+                       cf, NULL, root, &si, &pi)) {
         WaitForSingleObject(pi.hProcess, INFINITE);
         CloseHandle(pi.hThread);
         CloseHandle(pi.hProcess);
     }
-    mem_free(venv);
     mem_free(exec);
     mem_free(root);
     return (QST_OKAY);
