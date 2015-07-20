@@ -58,7 +58,7 @@ WinMain (
     /* 获取命令行参数, 不包括进程文件名 */
     argv = misc_get_param(cmd_line, &argc);
 
-    /* 参数解析 <脚本文件> */
+    /* 参数解析 <脚本文件> [相对路径] */
     if (argc < 1)
         return (QST_ERROR);
 
@@ -68,8 +68,17 @@ WinMain (
 
     /* 合成 PYTHONHOME 目录 */
     exec = file_load_as_strA(QST_ROOT_START);
-    if (exec == NULL)
-        return (QST_ERROR);
+    if (exec == NULL) {
+        if (argc < 2)
+            return (QST_ERROR);
+        root = str_fmtA("%s\\" QST_ROOT_START, argv[1]);
+        if (root == NULL)
+            return (QST_ERROR);
+        exec = file_load_as_strA(root);
+        mem_free(root);
+        if (exec == NULL)
+            return (QST_ERROR);
+    }
     root = str_fmtA("%s\\python", exec);
     mem_free(exec);
     if (root == NULL)
