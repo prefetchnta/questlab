@@ -249,6 +249,34 @@ CR_API void_t   crypto_xxtea_enc (int32u *data, leng_t num,
                                   const int32u key[4]);
 CR_API void_t   crypto_xxtea_dec (int32u *data, leng_t num,
                                   const int32u key[4]);
+/* PADDING MODE */
+#define CR_PADDING_PKCS5        0x100
+#define CR_PADDING_PKCS7        0x200
+#define CR_PADDING_ANSI_X923    0x300
+#define CR_PADDING_ISO10126     0x400
+
+/* ALL-EBC */
+CR_API leng_t   crypto_all_ebc_enc (void_t *ctx, void_t *dst,
+                                    leng_t dstlen, leng_t dstblk,
+                                    const void_t *src, leng_t srclen,
+                                    leng_t srcblk, uint_t fill,
+                                    enc_parm_t func);
+
+CR_API leng_t   crypto_all_ebc_dec (void_t *ctx, void_t *dst,
+                                    leng_t dstlen, leng_t dstblk,
+                                    const void_t *src, leng_t srclen,
+                                    leng_t srcblk, enc_parm_t func);
+/* ALL-CBC */
+CR_API leng_t   crypto_all_cbc_enc (void_t *ctx, void_t *dst,
+                                    leng_t dstlen, const void_t *src,
+                                    leng_t srclen, const void_t *ivec,
+                                    leng_t block, uint_t fill,
+                                    enc_parm_t func);
+
+CR_API leng_t   crypto_all_cbc_dec (void_t *ctx, void_t *dst,
+                                    leng_t dstlen, const void_t *src,
+                                    leng_t srclen, const void_t *ivec,
+                                    leng_t block, enc_parm_t func);
 
 #endif  /* !__CR_CRYPTO_H__ */
 
