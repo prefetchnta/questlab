@@ -783,10 +783,19 @@ NameError: mistake
        variable=value
     </p>
     <p>
-       For long values, a '\' character at the end of the line continues that value on the next
-      line. Space characters are significant so <span class="example">x&nbsp;=1</span> defines a variable called
-      "x&nbsp;".
-      Values may include the values of other variables by using $(variablename). There are
+       For long values, a '\' character at the end of the line continues that value on the next line.
+       Space characters are significant in values but leading and trailing spaces are not significant in variable names
+       so "<span class="example">&nbsp;x&nbsp;=1</span>" defines a variable called "x".
+       Values may include the values of other variables by using $(variablename).
+      </p>
+      <p>
+      On Windows, values may be scaled using the current screen dots-per-inch so that they use more
+      pixels on high resolution screens and appear a reasonable size.
+      <span class="example">margin.width=$(scale&nbsp;16)</span> makes the margin 16 pixels wide
+      on a normal screen and 32 pixels wide when the screen is set to 200%.
+      </p>
+      <p>
+      There are
       some variables set by the environment to access the name of the current file as well:
     </p>
        <table cellpadding="0" cellspacing="0" border="1" summary="Variables set by the environment for use in property files">
@@ -813,6 +822,7 @@ NameError: mistake
                <tr id='property-SciteDirectoryHome'><td>SciteDirectoryHome</td><td>directory in which the Directory Options file is found</td></tr>
                <tr id='property-APIPath'><td>APIPath</td><td>list of full paths of API files from api.<i>filepattern</i></td></tr>
                <tr id='property-AbbrevPath'><td>AbbrevPath</td><td>full path of abbreviations file</td></tr>
+               <tr id='property-ScaleFactor'><td>ScaleFactor</td><td>the screen's scaling factor with a default value of 100</td></tr>
         </table>
     <p>
        Some features use file name patterns to see which variable to use. For example, the lexer
@@ -2847,7 +2857,7 @@ c:\cygwin\bin\xargs -0 fgrep -G -n "$(find.what)"
 	If not set then Find in Files directory will be prefilled by directory of current file.
         </td>
       </tr>
-      <tr class="windowsonly" id='property-find.in.files.close.on.find'>
+      <tr id='property-find.in.files.close.on.find'>
         <td>
           find.in.files.close.on.find
         </td>
@@ -2924,6 +2934,18 @@ c:\cygwin\bin\xargs -0 fgrep -G -n "$(find.what)"
           0 choosing windowed mode and 1 the in-line mode.
           If there is no setting then a mode is chosen that may differ
           between platforms and locales.
+        </td>
+      </tr>
+      <tr id='property-ime.autocomplete'>
+        <td>
+          ime.autocomplete
+        </td>
+        <td>
+          Setting 1 enables autocompletion on ime input.
+          To see the autocomplete box and calltip box,
+          autocomplete.*.start.characters and calltip.*.word.characters should be given.
+          Others such as calltip.parameters.* with ime characters are not supported.
+          It defaults to 0, so disabled.
         </td>
       </tr>
       <tr id='property-imports.include'>
@@ -3157,6 +3179,51 @@ imports.include=fortran lisp
            Style 37 is used for displaying indentation guides. Only the fore and back are used.<br />
            Style 38 is used for displaying calltips. Only the font, size, fore and back are used.<br />
            A * can be used instead of a lexer to indicate a global style setting.
+        </td>
+      </tr>
+      <tr id='property-substyles'>
+        <td>
+          substyles.<i>lexer</i>.<i>stylenumber</i>
+        </td>
+        <td>
+          Substyles are mainly used to display sets of identifiers distinctly.
+          When working with a particular library, you may want to highlight all the calls to functions in that library
+          differently to your own functions or operating system calls.
+          Substyles splits one style, commonly an identifier style, into several groups.
+          Only some lexers support this and within a lexer it will only be supported for some styles.
+          Currently the cpp lexer allows substyles for identifiers (11) and
+          comment doc keywords (17), and the python lexer allows substyles for identifiers (11).
+          Language properties files will specify the styles that can be split.<br />
+          This setting defines how many substyles are allocated to a particular main style.
+          To allow 2 extra styles for identifiers in C++:
+          <div class="example">
+                substyles.cpp.11=2
+          </div>
+        </td>
+      </tr>
+      <tr id='property-substylewords'>
+        <td>
+          substylewords.<i>mainstyle</i>.<i>substyle</i>.<i>filepattern</i>
+        </td>
+        <td>
+          This property defines which words are to be styled in a particular substyle, in a similar way to keywords.
+          For example, to use the first substyle of identifiers (11) for the C++ standard library identifiers "std", "map",
+          "string", and "vector":
+          <div class="example">
+                substylewords.11.1.$(file.patterns.cpp)=std map string vector
+          </div>
+        </td>
+      </tr>
+      <tr id='property-style.sub'>
+        <td>
+          style.<i>lexer</i>.<i>mainstyle</i>.<i>substyle</i>
+        </td>
+        <td>
+          This property defines the visual appearance of a substyle.
+          For example, to display the first substyle of identifiers (11) as pink:
+          <div class="example">
+                style.cpp.11.1=fore:#EE00AA
+          </div>
         </td>
       </tr>
       <tr class="windows-osx" id='property-font.quality'>
