@@ -34,6 +34,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
       Variant *TargetFrameName, Variant *PostData, Variant *Headers,
       VARIANT_BOOL *Cancel)
 {
+    leng_t      size;
     bool_t      rett;
     ansi_t*     line;
     ansi_t*     file;
@@ -58,10 +59,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         mem_free(urla);
         if (line == NULL)
             return;
-        rett = misc_call_exe(line, FALSE, TRUE);
-        mem_free(line);
-        if (rett)
-            this->Close();
+        rett = TRUE;
     }
     else
     if (chr_cmpA(urla, "python://", 9) == 0)
@@ -73,16 +71,27 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         mem_free(urla);
         if (line == NULL)
             return;
-        rett = misc_call_exe(line, FALSE, TRUE);
-        mem_free(line);
-        if (rett)
-            this->Close();
+        rett = TRUE;
     }
     else
     {
         /* 普通网页跳转 */
         *Cancel = FALSE;
         mem_free(urla);
+        rett = FALSE;
+    }
+
+    /* 执行指定命令 */
+    if (rett) {
+        size = str_lenA(line);
+        if (is_slashA(line[size - 2])) {
+            line[size - 2] = '\"';
+            line[size - 1] = 0x00;
+        }
+        rett = misc_call_exe(line, FALSE, TRUE);
+        mem_free(line);
+        if (rett)
+            this->Close();
     }
 }
 //---------------------------------------------------------------------------

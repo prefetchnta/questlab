@@ -44,7 +44,7 @@ object frmMain: TfrmMain
     object lstType: TComboBox
       Left = 184
       Top = 8
-      Width = 97
+      Width = 107
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
@@ -53,10 +53,12 @@ object frmMain: TfrmMain
       Text = ' QstBatch'
       Items.Strings = (
         ' QstBatch'
-        ' Filter2D')
+        ' Filter2D'
+        ' Python CUI'
+        ' Python GUI')
     end
     object btnRefresh: TButton
-      Left = 288
+      Left = 298
       Top = 8
       Width = 89
       Height = 25
@@ -65,7 +67,7 @@ object frmMain: TfrmMain
       OnClick = btnRefreshClick
     end
     object btnAction: TButton
-      Left = 384
+      Left = 394
       Top = 8
       Width = 89
       Height = 25
@@ -74,7 +76,7 @@ object frmMain: TfrmMain
       OnClick = btnActionClick
     end
     object btnSave: TButton
-      Left = 656
+      Left = 666
       Top = 8
       Width = 89
       Height = 25
@@ -83,7 +85,7 @@ object frmMain: TfrmMain
       OnClick = btnSaveClick
     end
     object btnLoad: TButton
-      Left = 480
+      Left = 490
       Top = 8
       Width = 89
       Height = 25
@@ -92,7 +94,7 @@ object frmMain: TfrmMain
       OnClick = btnLoadClick
     end
     object edtSPage: TEdit
-      Left = 576
+      Left = 586
       Top = 8
       Width = 73
       Height = 21
