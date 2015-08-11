@@ -243,8 +243,8 @@ typedef struct
 /* 文本执行类型列表 */
 #define QST_ACT_QSTBATCH    0x00    /* QstBatch */
 #define QST_ACT_FILTER2D    0x01    /* Filter2D */
-#define QST_ACT_DOPY_CUI    0x02    /* Python CUI */
-#define QST_ACT_DOPY_GUI    0x03    /* Python GUI */
+#define QST_ACT_C_PY_CUI    0x02    /* Python CUI */
+#define QST_ACT_C_PY_GUI    0x03    /* Python GUI */
 
 /* 扩展名匹配类型列表 */
 static const sQST_MATCH s_fmatch[] =
@@ -253,8 +253,8 @@ static const sQST_MATCH s_fmatch[] =
     /* ----------------------- */
     { QST_ACT_FILTER2D, ".f2d" },
     /* ----------------------- */
-    { QST_ACT_DOPY_CUI, ".py"  },
-    { QST_ACT_DOPY_GUI, ".pyw" },
+    { QST_ACT_C_PY_CUI, ".py"  },
+    { QST_ACT_C_PY_GUI, ".pyw" },
 };
 
 /*
@@ -782,13 +782,13 @@ qst_file_action (
             cmd_shl_send(s_wrk_ctx.netw, "qv2d:flt:load " QST_TMP_SCRIPT);
             break;
 
-        case QST_ACT_DOPY_CUI:  /* Python CUI */
+        case QST_ACT_C_PY_CUI:  /* Python CUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".py", CR_UTF8))
                 return;
             misc_call_exe("RunPython.exe " QST_TMP_SCRIPT ".py", FALSE, TRUE);
             break;
 
-        case QST_ACT_DOPY_GUI:  /* Python GUI */
+        case QST_ACT_C_PY_GUI:  /* Python GUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".pyw", CR_UTF8))
                 return;
             misc_call_exe("RunPython.exe " QST_TMP_SCRIPT ".pyw", FALSE, TRUE);
