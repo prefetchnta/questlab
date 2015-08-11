@@ -64,6 +64,21 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
             this->Close();
     }
     else
+    if (chr_cmpA(urla, "python://", 9) == 0)
+    {
+        /* RunPython 执行脚本 */
+        *Cancel = TRUE;
+        file = urla + 9;
+        line = str_fmtA("RunPython.exe \"%s\"", file);
+        mem_free(urla);
+        if (line == NULL)
+            return;
+        rett = misc_call_exe(line, FALSE, TRUE);
+        mem_free(line);
+        if (rett)
+            this->Close();
+    }
+    else
     {
         /* 普通网页跳转 */
         *Cancel = FALSE;
