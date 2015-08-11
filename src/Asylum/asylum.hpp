@@ -140,8 +140,6 @@
 #include "yaw/tree_l.hpp"
 #include "yaw/map_acs.hpp"
 
-/* Misaka Network */
-
 /* Asylum3D */
 #include "draw3d/asylum3d.hpp"
 #if defined(ASY_USE_DX9)
