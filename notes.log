@@ -2,6 +2,7 @@
 [build]
 
 RunWebIE.exe
+QstText.exe
 
 [fixme]
 

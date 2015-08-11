@@ -243,6 +243,8 @@ typedef struct
 /* 文本执行类型列表 */
 #define QST_ACT_QSTBATCH    0x00    /* QstBatch */
 #define QST_ACT_FILTER2D    0x01    /* Filter2D */
+#define QST_ACT_DOPY_CUI    0x02    /* Python CUI */
+#define QST_ACT_DOPY_GUI    0x03    /* Python GUI */
 
 /* 扩展名匹配类型列表 */
 static const sQST_MATCH s_fmatch[] =
@@ -250,6 +252,9 @@ static const sQST_MATCH s_fmatch[] =
     { QST_ACT_QSTBATCH, ".qst" },
     /* ----------------------- */
     { QST_ACT_FILTER2D, ".f2d" },
+    /* ----------------------- */
+    { QST_ACT_DOPY_CUI, ".py"  },
+    { QST_ACT_DOPY_GUI, ".pyw" },
 };
 
 /*
@@ -263,6 +268,7 @@ qst_check_type (
   __CR_IN__ const ansi_t*   name
     )
 {
+    /* 用来选择文件类型和刷新语法高亮 */
     for (uint_t idx = 0; idx < cntsof(s_fmatch); idx++) {
         if (filext_checkA(name, s_fmatch[idx].fext)) {
             form->lstType->ItemIndex = s_fmatch[idx].type;
@@ -761,17 +767,31 @@ qst_file_action (
     )
 {
     /* 先保存到临时文件再执行 */
-    if (!qst_save_file(QST_TMP_SCRIPT, CR_UTF8))
-        return;
     switch (item_idx)
     {
         default: return;
         case QST_ACT_QSTBATCH:  /* QstBatch */
+            if (!qst_save_file(QST_TMP_SCRIPT, CR_UTF8))
+                return;
             misc_call_exe("QstCmdz.exe " QST_TMP_SCRIPT, FALSE, TRUE);
             break;
 
         case QST_ACT_FILTER2D:  /* Filter2D */
+            if (!qst_save_file(QST_TMP_SCRIPT, CR_UTF8))
+                return;
             cmd_shl_send(s_wrk_ctx.netw, "qv2d:flt:load " QST_TMP_SCRIPT);
+            break;
+
+        case QST_ACT_DOPY_CUI:  /* Python CUI */
+            if (!qst_save_file(QST_TMP_SCRIPT ".py", CR_UTF8))
+                return;
+            misc_call_exe("RunPython.exe " QST_TMP_SCRIPT ".py", FALSE, TRUE);
+            break;
+
+        case QST_ACT_DOPY_GUI:  /* Python GUI */
+            if (!qst_save_file(QST_TMP_SCRIPT ".pyw", CR_UTF8))
+                return;
+            misc_call_exe("RunPython.exe " QST_TMP_SCRIPT ".pyw", FALSE, TRUE);
             break;
     }
 }
