@@ -1217,10 +1217,17 @@ image_facedetect (
                                     gray->position.hh, gray->bpl, scale,
                                         neighbors, min_size, max_size);
     }
-    else {
+    else
+    if (str_cmpA(param->name, "crhack_face_multiview") == 0) {
         result = facedetect_multiview(gray->data, gray->position.ww,
                                     gray->position.hh, gray->bpl, scale,
                                         neighbors, min_size, max_size);
+    }
+    else {
+        result = facedetect_multiview_reinforce(gray->data,
+                                    gray->position.ww, gray->position.hh,
+                                        gray->bpl, scale, neighbors,
+                                            min_size, max_size);
     }
     if (result != NULL) {
         color.val = 0xFF00FF00;
@@ -1276,5 +1283,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_to_yuv", image_cto_yuv },
     { "crhack_face_frontal", image_facedetect },
     { "crhack_face_multiview", image_facedetect },
+    { "crhack_face_reinforce", image_facedetect },
     { NULL, NULL },
 };

@@ -28,6 +28,9 @@
     <!-- 人脸识别 (多角度) -->
     <?crhack_face_multiview scale="1.2" min_size="24" max_size="0"
                                         min_neighbors="2" />
+    <!-- 人脸识别 (多角度) -->
+    <?crhack_face_reinforce scale="1.2" min_size="24" max_size="0"
+                                        min_neighbors="2" />
     <!-- 垂直翻转滤镜 -->
     <?crhack_flip_vv />
 
