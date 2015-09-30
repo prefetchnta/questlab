@@ -2246,6 +2246,10 @@ NameError: mistake
 	<td>lexer.d.fold.at.else</td>
 	<td>This option enables D folding on a "} else {" line of an if statement.</td>
 	</tr>
+	<tr id='property-lexer.errorlist.escape.sequences'>
+	<td>lexer.errorlist.escape.sequences</td>
+	<td>Set to 1 to interpret escape sequences.</td>
+	</tr>
 	<tr id='property-lexer.errorlist.value.separate'>
 	<td>lexer.errorlist.value.separate</td>
 	<td>For lines in the output pane that are matches from Find in Files or GCC-style diagnostics, style the path and line number separately from the rest of the line with style 21 used for the rest of the line. This allows matched text to be more easily distinguished from its location.</td>
@@ -2762,6 +2766,18 @@ Prev File|IDM_PREVFILE|<br/>
 	  A value of 23 or 24 may work well.
         </td>
       </tr>
+      <tr class="osxonly" id='property-strip.shortcuts.enable'>
+        <td>
+         strip.shortcuts.enable
+        </td>
+        <td>
+          On OS X, default behaviour is to allow use of shortcuts in the Find and Replace strips
+          such as &#x2318;W to turn "Match whole word only" on or off.
+          This prevents closing the file with &#x2318;W so shortcuts can be disabled for strips
+          by setting this property to 0.
+          This property is only read at start up.
+        </td>
+      </tr>
       <tr id='property-find.replace.advanced'>
         <td>
          find.replace.advanced
@@ -2917,6 +2933,7 @@ c:\cygwin\bin\xargs -0 fgrep -G -n "$(find.what)"
 	  <tr><td>Arabic</td><td align="right">178</td></tr>
 	  <tr class="windowsonly"><td>Thai</td><td align="right">222</td></tr>
 	  <tr class="windowsonly"><td>Vietnamese</td><td align="right">163</td></tr>
+	  <tr class="gtkonly"><td>Cyrillic (CP866 on GTK+)</td><td align="right">866</td></tr>
 	  <tr><td>Cyrillic (CP1251 on Windows, KOI8-R on GTK+)</td><td align="right">204</td></tr>
 	  <tr class="gtkonly"><td>Cyrillic (CP1251 on GTK+)</td><td align="right">1251</td></tr>
 	  <tr class="gtkonly"><td>European with Euro (ISO 8859-15)</td><td align="right">1000</td></tr>
@@ -3433,17 +3450,6 @@ groupundo - yes or no
         <td>
         Defines a command to be executed for help on the SciTE program itself which normally
         means displaying this file in a browser.
-        </td>
-      </tr>
-      <tr class="gtkonly" id='property-command.print'>
-        <td>
-          <a name='property-command.print.subsystem'></a>
-          command.print.<i>filepattern</i><br />
-          command.print.subsystem.<i>filepattern</i>
-        </td>
-        <td>
-        Defines a command to be executed when print is invoked on GTK+ 2.x.
-        On Windows and GTK+ 3.x, printing is performed directly by SciTE.
         </td>
       </tr>
       <tr id='property-time.commands'>
