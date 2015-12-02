@@ -62,6 +62,8 @@ public:
         ServiceAlreadyRegisteredError,
         UnsupportedProtocolError
     };
+    Q_ENUM(Error)
+
     QBluetoothServer(QBluetoothServiceInfo::Protocol serverType, QObject *parent = 0);
     ~QBluetoothServer();
 

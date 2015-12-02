@@ -64,6 +64,7 @@ private:
     Q_DECLARE_PRIVATE(QAbstractServiceProvider)
 };
 
+class QAbstractFrameAdvanceService;
 class QOpenGLInformationService;
 class QSystemInformationService;
 class QServiceLocatorPrivate;
@@ -77,6 +78,8 @@ public:
     enum ServiceType {
         SystemInformation,
         OpenGLInformation,
+        CollisionService,
+        FrameAdvanceService,
 #if !defined(Q_QDOC)
         DefaultServiceCount, // Add additional default services before here
 #endif
@@ -98,6 +101,7 @@ public:
     // Convenience accessors for Qt3D provided services
     QSystemInformationService *systemInformation();
     QOpenGLInformationService *openGLInformation();
+    QAbstractFrameAdvanceService *frameAdvanceService();
 
 private:
     Q_DISABLE_COPY(QServiceLocator)

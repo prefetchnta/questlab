@@ -45,8 +45,6 @@ class QNearFieldShareTarget;
 class Q_NFC_EXPORT QNearFieldShareManager : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(ShareError)
-    Q_ENUMS(ShareMode)
 
 public:
     explicit QNearFieldShareManager(QObject *parent = 0);
@@ -63,12 +61,14 @@ public:
         ShareAlreadyInProgressError,
         SharePermissionDeniedError
     };
+    Q_ENUM(ShareError)
 
     enum ShareMode {
         NoShare = 0x00,
         NdefShare = 0x01,
         FileShare = 0x02
     };
+    Q_ENUM(ShareMode)
     Q_DECLARE_FLAGS(ShareModes, ShareMode)
 
 public:

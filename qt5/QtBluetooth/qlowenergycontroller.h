@@ -55,6 +55,7 @@ public:
         InvalidBluetoothAdapterError,
         ConnectionError
     };
+    Q_ENUM(Error)
 
     enum ControllerState {
         UnconnectedState = 0,
@@ -64,11 +65,13 @@ public:
         DiscoveredState,
         ClosingState
     };
+    Q_ENUM(ControllerState)
 
     enum RemoteAddressType {
         PublicAddress = 0,
         RandomAddress
     };
+    Q_ENUM(RemoteAddressType)
 
     explicit QLowEnergyController(const QBluetoothAddress &remoteDevice,
                                      QObject *parent = 0); // TODO Qt 6 remove ctor
@@ -115,8 +118,5 @@ private:
 };
 
 QT_END_NAMESPACE
-
-Q_DECLARE_METATYPE(QLowEnergyController::ControllerState)
-Q_DECLARE_METATYPE(QLowEnergyController::Error)
 
 #endif // QLOWENERGYCONTROLLER_H

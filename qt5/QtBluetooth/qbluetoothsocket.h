@@ -67,6 +67,7 @@ public:
         ClosingState = QAbstractSocket::ClosingState,
         ListeningState = QAbstractSocket::ListeningState
     };
+    Q_ENUM(SocketState)
 
     enum SocketError {
         NoSocketError = -2,
@@ -78,6 +79,7 @@ public:
         OperationError = QAbstractSocket::OperationError //19
         //New enums (independent of QAbstractSocket) should be added from 100 onwards
     };
+    Q_ENUM(SocketError)
 
     explicit QBluetoothSocket(QBluetoothServiceInfo::Protocol socketType, QObject *parent = 0);   // create socket of type socketType
     QBluetoothSocket(QObject *parent = 0);  // create a blank socket
@@ -160,8 +162,5 @@ Q_BLUETOOTH_EXPORT QDebug operator<<(QDebug, QBluetoothSocket::SocketState);
 #endif
 
 QT_END_NAMESPACE
-
-Q_DECLARE_METATYPE(QBluetoothSocket::SocketError)
-Q_DECLARE_METATYPE(QBluetoothSocket::SocketState)
 
 #endif

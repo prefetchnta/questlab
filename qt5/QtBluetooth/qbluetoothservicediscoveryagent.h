@@ -66,11 +66,13 @@ public:
         //New Errors must be added after Unknown Error the space before UnknownError is reserved
         //for future device discovery errors
     };
+    Q_ENUM(Error)
 
     enum DiscoveryMode {
         MinimalDiscovery,
         FullDiscovery
     };
+    Q_ENUM(DiscoveryMode)
 
     QBluetoothServiceDiscoveryAgent(QObject *parent = 0);
     explicit QBluetoothServiceDiscoveryAgent(const QBluetoothAddress &deviceAdapter, QObject *parent = 0);
@@ -123,7 +125,5 @@ private:
 };
 
 QT_END_NAMESPACE
-
-Q_DECLARE_METATYPE(QBluetoothServiceDiscoveryAgent::Error)
 
 #endif

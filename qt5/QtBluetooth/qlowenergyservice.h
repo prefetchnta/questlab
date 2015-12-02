@@ -50,6 +50,7 @@ public:
         PrimaryService = 0x0001,
         IncludedService = 0x0002
     };
+    Q_ENUM(ServiceType)
     Q_DECLARE_FLAGS(ServiceTypes, ServiceType)
 
     enum ServiceError {
@@ -61,6 +62,7 @@ public:
         CharacteristicReadError,
         DescriptorReadError
     };
+    Q_ENUM(ServiceError)
 
     enum ServiceState {
         InvalidService = 0,
@@ -69,11 +71,13 @@ public:
         DiscoveringServices,// discoverDetails() called and running
         ServiceDiscovered   // all details have been synchronized
     };
+    Q_ENUM(ServiceState)
 
     enum WriteMode {
         WriteWithResponse = 0,
         WriteWithoutResponse
     };
+    Q_ENUM(WriteMode)
 
     ~QLowEnergyService();
 
@@ -129,8 +133,5 @@ private:
 Q_DECLARE_OPERATORS_FOR_FLAGS(QLowEnergyService::ServiceTypes)
 
 QT_END_NAMESPACE
-
-Q_DECLARE_METATYPE(QLowEnergyService::ServiceState)
-Q_DECLARE_METATYPE(QLowEnergyService::ServiceError)
 
 #endif // QLOWENERGYSERVICE_H

@@ -1,12 +1,14 @@
 #ifndef QT_QT3DCORE_MODULE_H
 #define QT_QT3DCORE_MODULE_H
 #include <Qt3DCore/Qt3DCoreDepends>
+#include "qabstractfunctor.h"
 #include "qbackendnodefactory.h"
 #include "qbackendscenepropertychange.h"
+#include "qboundingsphere.h"
+#include "qboundingvolume.h"
+#include "qboundingvolumeprovider.h"
 #include "qray3d.h"
-#include "qscene.h"
 #include "qscenechange.h"
-#include "qsceneinterface.h"
 #include "qsceneobserverinterface.h"
 #include "qscenepropertychange.h"
 #include "qabstractaspect.h"
@@ -29,6 +31,9 @@
 #include "qframeallocator.h"
 #include "qhandle.h"
 #include "qhandlemanager.h"
+#include "qabstractcollisionqueryservice.h"
+#include "qabstractframeadvanceservice.h"
+#include "qcollisionqueryresult.h"
 #include "qopenglinformationservice.h"
 #include "qservicelocator.h"
 #include "qsysteminformationservice.h"

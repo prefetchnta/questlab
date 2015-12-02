@@ -58,7 +58,7 @@ public:
         ResourceBusyError,
         SessionError
     };
-
+    Q_ENUM(TransferError)
 
     ~QBluetoothTransferReply();
 
@@ -95,7 +95,5 @@ private:
 };
 
 QT_END_NAMESPACE
-
-Q_DECLARE_METATYPE(QBluetoothTransferReply::TransferError)
 
 #endif // QBLUETOOTHTRANSFERREPLY_H

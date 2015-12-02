@@ -56,6 +56,7 @@ public:
         NdefWriteTargetAccess = 0x02,
         TagTypeSpecificTargetAccess = 0x04
     };
+    Q_ENUM(TargetAccessMode)
     Q_DECLARE_FLAGS(TargetAccessModes, TargetAccessMode)
 
     explicit QNearFieldManager(QObject *parent = 0);
