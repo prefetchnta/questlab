@@ -181,10 +181,19 @@ qst_csi_render (
             CR_VCALL(s_html)->write(s_html, "</span>", 8);
         }
         str = (ansi_t*)(CR_VCALL(s_html)->flush(s_html));
-        send = str_fmtA("%s%s", span, str);
-        if (send != NULL) {
-            ((CTextOper*)(parm->oper))->html(send);
-            mem_free(send);
+        str = str_fmtA("%s%s", span, str);
+        if (str != NULL) {
+            if (parm->page != CR_UTF8) {
+                send = local_to_utf8(parm->page, str);
+                mem_free(str);
+            }
+            else {
+                send = str;
+            }
+            if (send != NULL) {
+                ((CTextOper*)(parm->oper))->html(send);
+                mem_free(send);
+            }
         }
         CR_VCALL(s_html)->reput(s_html, 0);
         s_have = FALSE;
@@ -414,9 +423,11 @@ qst_csi_show (
     {
         case 0:     /* 查找 ESC 阶段 */
             if (cha != 0x1B) {
-                if (cha != CR_AC('\n') &&
-                    cha != CR_AC('\r') && !is_printA(cha))
-                    cha = CR_AC('?');
+                if (!s_buffer) {
+                    if (cha != CR_AC('\n') &&
+                        cha != CR_AC('\r') && !is_printA(cha))
+                        cha = CR_AC('?');
+                }
                 qst_csi_output(ctx, cha);
             }
             else {

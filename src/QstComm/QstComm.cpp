@@ -133,6 +133,7 @@ WinMain (
     s_wrk_ctx.comm.stype = "text";
     s_wrk_ctx.comm.title = NULL;
     s_wrk_ctx.comm.render = qst_txt_show;
+    s_wrk_ctx.page = get_sys_codepage();
     qst_update_title(&s_wrk_ctx);
     thrd = thread_new(0, qst_com_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL)

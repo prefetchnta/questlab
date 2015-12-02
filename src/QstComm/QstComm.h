@@ -82,6 +82,7 @@ typedef struct
         HWND        hwnd;       /* 窗口句柄 */
         bool_t      quit;       /* 是否退出 */
         lock_t      lock;       /* 同步的锁 */
+        uint_t      page;       /* 显示编码 */
         void_t*     oper;       /* 操作对象 */
         socket_t    netw;       /* 网络连接 */
         sQCOM_ctx   comm;       /* 通讯结构 */

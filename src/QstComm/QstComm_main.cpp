@@ -612,6 +612,33 @@ qst_com_rtype (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    设置默认文本编码
+---------------------------------------
+*/
+static bool_t
+qst_com_cpage (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    uint_t  page;
+
+    /* 参数解析 <编码> */
+    if (argc < 2)
+        return (FALSE);
+    page = str2intxA(argv[1]);
+    if (page == CR_LOCAL)
+        page = get_sys_codepage();
+    else
+    if (is_cr_widechar(page))
+        page = CR_UTF8;
+    ((sQstComm*)parm)->page = page;
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -633,6 +660,7 @@ static const sQST_CMD   s_cmdz[] =
     { "com:udpv4", qst_com_udpv4 },
     { "com:stype", qst_com_stype },
     { "com:rtype", qst_com_rtype },
+    { "com:cpage", qst_com_cpage },
 
     /***** 私有命令映射 *****/
     { "qcom:app:exit", qst_com_app_exit },
