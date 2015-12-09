@@ -396,6 +396,8 @@ NameError: mistake
         <li>C/C++/C#*</li>
         <li>Clarion*</li>
         <li>cmake*</li>
+        <li>COBOL</li>
+        <li>Coffeescript</li>
         <li>conf (Apache)*</li>
         <li>CSound*</li>
         <li>CSS*</li>
@@ -410,6 +412,7 @@ NameError: mistake
         <li>Forth*</li>
         <li>GAP*</li>
         <li>Gettext</li>
+        <li>Go*</li>
         <li>Haskell</li>
         <li>HTML*</li>
         <li>HTML with embedded JavaScript, VBScript, PHP and ASP*</li>
@@ -420,6 +423,7 @@ NameError: mistake
         <li>Intel HEX*</li>
         <li>Java*</li>
         <li>JavaScript*</li>
+        <li>KiXtart</li>
         <li>LISP*</li>
         <li>LOT*</li>
         <li>Lout*</li>
@@ -429,8 +433,11 @@ NameError: mistake
         <li>Metapost*</li>
         <li>MMIXAL</li>
         <li>MSSQL</li>
+        <li>Modula 3</li>
+        <li>Nimrod</li>
         <li>nnCron</li>
         <li>NSIS*</li>
+        <li>Objective C</li>
         <li>Objective Caml*</li>
         <li>Opal</li>
         <li>Octave*</li>
@@ -442,21 +449,27 @@ NameError: mistake
         <li>POV-Ray*</li>
         <li>PowerBasic*</li>
         <li>PowerShell*</li>
+        <li>PowerPro</li>
         <li>PureBasic*</li>
         <li>Python*</li>
         <li>R*</li>
         <li>Rebol*</li>
+        <li>Registry</li>
         <li>Ruby*</li>
+        <li>Rust</li>
         <li>Scheme*</li>
         <li>scriptol*</li>
+        <li>SORCUS Installation</li>
         <li>Specman E*</li>
         <li>Spice</li>
         <li>Smalltalk</li>
         <li>SQL and PLSQL</li>
         <li>S-Record</li>
+        <li>Swift</li>
         <li>TADS3*</li>
         <li>TeX and LaTeX</li>
         <li>Tcl/Tk*</li>
+        <li>Vala*</li>
         <li>VB and VBScript*</li>
         <li>Verilog*</li>
         <li>VHDL*</li>
@@ -789,6 +802,19 @@ NameError: mistake
        Values may include the values of other variables by using $(variablename).
       </p>
       <p>
+      The "star" function may be used to collect the values of all variables that start with a particular prefix.
+      <span class="example">all.languages=$(star&nbsp;language.)</span> finds every variable
+      that starts with "language." and assigns that to all.languages.
+      This can be used to combine settings from many files for user interface elements such as the Language menu.
+      Within a property file level (local, directory, user, global) the ordering is alphabetically by variable name
+      which allows a degree of control over the ordering.
+      Prefixes that are used by the standard distribution are
+      <a href="#property-star-filter">"*filter."</a>, <a href="#property-star-language">"*language."</a>,
+      and <a href="#property-star-source.patterns">"*source.patterns."</a> with the
+      initial "*" being a convention that the variables are meant for use in a star function.
+      These prefixes are discussed in the <a href="#DefinedVariables">"Defined variables"</a> section.
+      </p>
+      <p>
       On Windows, values may be scaled using the current screen dots-per-inch so that they use more
       pixels on high resolution screens and appear a reasonable size.
       <span class="example">margin.width=$(scale&nbsp;16)</span> makes the margin 16 pixels wide
@@ -890,6 +916,16 @@ NameError: mistake
       non-indented statement is found the if clause is finished. Only simple set
       statements are allowed in if clauses. The evaluation of if statements occurs
       at read time, not at evaluation time.
+    </p>
+    <p>
+      <a name="property-module"></a>
+      The 'module' statement is meant for use in the single-file distribution Sc1 where all of the
+      standard .properties files are joined together as a resource in the executable.
+      The module statement marks which file each segment originally came from so that the
+      imports.include and imports.exclude properties will work with Sc1 and unwanted properties
+      will not be active. The syntax is "module &lt;name&gt;" and the effect is to either process or
+      ignore all text up to the next module statement depending on whether the name is in
+      imports.include or imports.exclude.
     </p>
     <h3 id="Parameters">
        Command parameters and prompting
@@ -1019,7 +1055,9 @@ NameError: mistake
         </td>
         <td>
           Setting view.whitespace to 1 makes SciTE start up with whitespace visible.<br />
-          Setting view.indentation.whitespace to 0 hides visible whitespace inside indentation.
+          Setting view.indentation.whitespace to 0 hides visible whitespace inside indentation.<br />
+          Setting view.indentation.whitespace to 1 makes indentation whitespace visible<br />
+          Setting view.indentation.whitespace to 2 makes indentation whitespace only visible
         </td>
       </tr>
       <tr id='property-whitespace.fore'>
@@ -1088,13 +1126,16 @@ NameError: mistake
       <tr id='property-blank.margin.left'>
         <td>
           <a name='property-blank.margin.right'></a>
+          <a name='property-output.blank.margin.left'></a>
           blank.margin.left<br />
-           blank.margin.right
+          blank.margin.right<br />
+          output.blank.margin.left
         </td>
         <td>
           There is a blank margin on both sides of the text. It is drawn in the background colour
           of default text. This defaults to one pixel for both left and right sides but may be
-          altered with these settings.
+          altered with these settings.<br />
+          If output.blank.margin.left is set then it overrides blank.margin.left for the output pane.
         </td>
       </tr>
       <tr id='property-margin.width'>
@@ -2578,11 +2619,14 @@ Prev File|IDM_PREVFILE|<br/>
         <td>
           This is a complex expression used for determining the file types that will be available in
           the open file dialog. For each type of file, there is some explanatory text, a '|'
-          character, some file patterns, and another '|' character. In the distributed
-          SciTEGlobal.properties file, the line continuation character '\', is used to spread these
-          items out, one per line. These file types appear in the "Files of type:" pull down. The
-          first item is the default, so you may wish to change the first item to include the file
-          types you commonly open.<br />
+          character, some file patterns, and another '|' character. These file types appear in the "Files of type:" pull down.
+          The first item is the default, so you may wish to change the first item to include the file
+          types you commonly open.
+          The default value for this setting is built up by combining some specific settings for "All Source" and "All Files"
+          with all the <a href="#property-star-filter">*filter</a> settings.
+          The "All Source" item uses a set of file patterns which combines all the
+          <a href="#property-star-source.patterns">*source.patterns</a> settings.
+          <br />
         </td>
       </tr>
       <tr class="windowsonly" id='property-save.filter'>
@@ -2593,6 +2637,29 @@ Prev File|IDM_PREVFILE|<br/>
           This is a complex expression used for determining the file types that will be available in
           the save file dialog. The structure of the property is the same as open.filter.<br />
           Does not work on GTK+.
+        </td>
+      </tr>
+      <tr id='property-star-source.patterns'>
+        <td>
+          *source.patterns.<i>name</i>
+        </td>
+        <td>
+          Set a value to be included in the set of file extensions used for the "All Source" pull down menu item in the Open dialog
+          when using the default value for <a href="#property-open.filter">open.filter</a>.
+          For example, <span class="example">*source.patterns.ruby=*.rb;*.rbw;</span> adds the file patterns *.rb and *.rbw
+          to the set of source extensions.
+        </td>
+      </tr>
+      <tr id='property-star-filter'>
+        <td>
+          *filter.<i>name</i>
+        </td>
+        <td>
+          Set a value to be included in the file type pull down menu in the Open dialog
+          when using the default value for <a href="#property-open.filter">open.filter</a>.
+          For example, <span class="example">*filter.ruby=Ruby (rb rbw)|*.rb;*.rbw|</span> adds a "Ruby" item to the file type
+          pull down menu. Selecting that item will show files that match the patterns *.rb and *.rbw.
+          There must be 2 '|' characters in the setting.
         </td>
       </tr>
       <tr id='property-max.file.size'>
@@ -2980,7 +3047,16 @@ c:\cygwin\bin\xargs -0 fgrep -G -n "$(find.what)"
 imports.include=fortran lisp
 	</div>
 	The imports.exclude property is examined only if imports.include is empty or missing.
-	This property stops the named files from being imported.
+	This property stops the named files from being imported.<br />
+          The properties files shipped with SciTE, and which can be included or excluded with these properties, are:<br />
+          abaqus ada asl asm asn1 au3 ave avs baan blitzbasic
+          bullant caml cmake cobol coffeescript conf cpp csound css d ecl
+          eiffel erlang escript flagship forth fortran freebasic gap haskell
+          hex html inno kix latex lisp lot lout lua matlab metapost
+          mmixal modula3 nimrod nncrontab nsis opal oscript others
+          pascal perl pov powerpro powershell ps purebasic python r rebol
+          registry ruby rust scriptol smalltalk sorcins specman spice sql
+          tacl tal tcl tex txt2tags vb verilog vhdl yaml.
         </td>
       </tr>
       <tr id='property-command.discover.properties'>
@@ -3943,8 +4019,23 @@ groupundo - yes or no
                 Defines the entries in the Language menu and the file extensions they map to.
 		Each menu item is defined by 3 elements, language name, extension and an optional
 		keyboard equivalent. Each element is terminated by '|'. For example:<br />
-		H&amp;ypertext|html|F12|<br />
+		<span class="example">H&amp;ypertext|html|F12|</span><br />
 		Menu items may be commented out by prefixing the name with '#'.
+                The default value for this setting is built up by combining all
+                <a href="#property-star-language">*language</a> settings.
+        </td>
+      </tr>
+      <tr id='property-star-language'>
+        <td>
+          *language.<i>name</i>
+        </td>
+        <td>
+          Set a value to be included in the Language menu when using the default value for
+          <a href="#property-menu.language">menu.language</a>.
+          For example, <span class="example">*language.ruby=Ruby|rb|F9|</span> adds a "Ruby"
+          item to the Language menu which maps to the "rb" file extension and can be chosen with the F9 key.
+          More than one language may be defined in one variable.
+          There must be a multiple of 3 '|' characters in the setting.
         </td>
       </tr>
       <tr class="gtkonly" id='property-menukey.*'>
@@ -4319,4 +4410,3 @@ groupundo - yes or no
     </p>
   </body>
 </html>
-
