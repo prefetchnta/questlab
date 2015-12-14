@@ -66,6 +66,14 @@ CR_API ipls_t*  ilab_video_get (xvideo_t avi);
 CR_API int64u   ilab_video_count (xvideo_t avi);
 CR_API int64u   ilab_video_seek (xvideo_t avi, int64u frame);
 
+/* OpenCV 内置图片过滤器 */
+CR_API bool_t   image_ocv_blur_box (sIMAGE *image, uint_t ksize_x,
+                                    uint_t ksize_y);
+CR_API bool_t   image_ocv_blur_gauss (sIMAGE *image, uint_t ksize_x,
+                                      uint_t ksize_y, fp64_t sigma_x,
+                                      fp64_t sigma_y);
+CR_API bool_t   image_ocv_blur_median (sIMAGE *image, uint_t ksize);
+
 /*****************************************************************************/
 /*                                格式库部分                                 */
 /*****************************************************************************/

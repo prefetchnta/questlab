@@ -508,3 +508,100 @@ ilab_video_seek (
     tmp = (int64s)cvGetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES);
     return ((int64u)tmp);
 }
+
+/*****************************************************************************/
+/*                                图片过滤器                                 */
+/*****************************************************************************/
+
+/*
+=======================================
+    均值模糊处理
+=======================================
+*/
+CR_API bool_t
+image_ocv_blur_box (
+  __CR_IO__ sIMAGE* image,
+  __CR_IN__ uint_t  ksize_x,
+  __CR_IN__ uint_t  ksize_y
+    )
+{
+    IplImage    draw;
+
+    if (!ilab_img2ipl_set(&draw, image))
+        return (FALSE);
+
+    Mat inpt = cvarrToMat(&draw, false);
+
+    /* 卷积核大小必须为奇数 */
+    if (ksize_x < 3)
+        ksize_x = 3;
+    else if (ksize_x % 2 == 0)
+        ksize_x += 1;
+    if (ksize_y < 3)
+        ksize_y = 3;
+    else if (ksize_y % 2 == 0)
+        ksize_y += 1;
+    blur(inpt, inpt, Size(ksize_x, ksize_y));
+    return (TRUE);
+}
+
+/*
+=======================================
+    高斯模糊处理
+=======================================
+*/
+CR_API bool_t
+image_ocv_blur_gauss (
+  __CR_IO__ sIMAGE* image,
+  __CR_IN__ uint_t  ksize_x,
+  __CR_IN__ uint_t  ksize_y,
+  __CR_IN__ fp64_t  sigma_x,
+  __CR_IN__ fp64_t  sigma_y
+    )
+{
+    IplImage    draw;
+
+    if (!ilab_img2ipl_set(&draw, image))
+        return (FALSE);
+
+    Mat inpt = cvarrToMat(&draw, false);
+
+    /* 卷积核大小必须为奇数 */
+    if (ksize_x < 3)
+        ksize_x = 3;
+    else if (ksize_x % 2 == 0)
+        ksize_x += 1;
+    if (ksize_y < 3)
+        ksize_y = 3;
+    else if (ksize_y % 2 == 0)
+        ksize_y += 1;
+    GaussianBlur(inpt, inpt, Size(ksize_x, ksize_y), sigma_x, sigma_y);
+    return (TRUE);
+}
+
+/*
+=======================================
+    中值模糊处理
+=======================================
+*/
+CR_API bool_t
+image_ocv_blur_median (
+  __CR_IO__ sIMAGE* image,
+  __CR_IN__ uint_t  ksize
+    )
+{
+    IplImage    draw;
+
+    if (!ilab_img2ipl_set(&draw, image))
+        return (FALSE);
+
+    Mat inpt = cvarrToMat(&draw, false);
+
+    /* 卷积核大小必须为奇数 */
+    if (ksize < 3)
+        ksize = 3;
+    else if (ksize % 2 == 0)
+        ksize += 1;
+    medianBlur(inpt, inpt, ksize);
+    return (TRUE);
+}
