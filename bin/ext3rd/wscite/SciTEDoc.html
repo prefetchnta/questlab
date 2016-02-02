@@ -1407,6 +1407,16 @@ NameError: mistake
         New files are not affected by this setting.
         </td>
       </tr>
+      <tr id='property-read.only.indicator'>
+        <td>
+           read.only.indicator
+        </td>
+        <td>
+        If this option is set, SciTE indicates that the buffer is read only
+        by adding a "pipe"-character (|) to the file name in the tab bar and
+        in the buffer menu.
+        </td>
+      </tr>
       <tr id='property-background.open.size'>
         <td>
           <a name='property-background.save.size'></a>
@@ -1614,12 +1624,14 @@ NameError: mistake
         <td>
           <a name='property-selection.additional.typing'></a>
           selection.multiple<br />
-          selection.additional.typing
+          selection.additional.typing<br />
+          selection.multipaste
         </td>
         <td>
 	Set selection.multiple to make multiple selections with the mouse by holding down the Ctrl key.<br />
 	Set selection.additional.typing to 1. to allow typing, backspace and delete to affect all selections including each line
-	of rectangular selections. When set to 0, typing only affects the main selection.
+	of rectangular selections. When set to 0, typing only affects the main selection.<br />
+	Set selection.multipaste to 1 to paste at all selections. If set to 0, the paste will only be inserted at the last selection.
         </td>
       </tr>
       <tr id='property-virtual.space'>
@@ -2593,6 +2605,23 @@ Prev File|IDM_PREVFILE|<br/>
           effect.
         </td>
       </tr>
+      <tr id='property-idle.styling'>
+        <td>
+          <a name='property-output.idle.styling'></a>
+          idle.styling<br />
+          output.idle.styling
+        </td>
+        <td>
+          By default (0), syntax styling is performed for all the currently visible text before displaying it.
+          On very large files, this may make scrolling down slow.
+          With idle.styling=1, a small amount of styling is performed before display and then
+          further styling is performed incrementally in the background. This may result in the
+          text initially appearing uncoloured and then, some time later, it is coloured.
+          Text after the currently visible portion may be styled in the background with 2.
+          To style both before and after the visible text in the background use the value 3.
+          output.idle.styling is the equivalent setting for the output pane.
+        </td>
+      </tr>
       <tr id='property-cache.layout'>
         <td>
           <a name='property-output.cache.layout'></a>
@@ -3236,8 +3265,9 @@ imports.include=fortran lisp
           number. These settings determine the visual style to be used for each style number of
           each lexer.<br />
            The value of each setting is a set of ',' separated fields, some of which have a
-          subvalue after a ':'. The fields are font, size, fore, back, italics, notitalics, bold,
-          notbold, weight, eolfilled, noteolfilled, underlined, notunderlined, and case.
+          subvalue after a ':'. The fields are: <div class="example">font, size, fore, back, italics, notitalics, bold,
+          notbold, weight, eolfilled, noteolfilled, underlined, notunderlined, case,
+          visible, notvisible, changeable, and notchangeable</div>
         The font field has a subvalue which is the name of
           the font, the fore and back have colour subvalues,
           the size field has a (fractional) numeric size subvalue,
