@@ -18,7 +18,7 @@
 - **Borland C++Builder 6.0 Update4**
 - **Microsoft Visual Studio 2003 SP1**
 - **Microsoft Visual Studio 2010 SP1**
-- **Microsoft Visual Studio 2013 Update4**
+- **Microsoft Visual Studio 2013 Update5**
 
 ##【部件简介】
 
@@ -133,7 +133,7 @@
  - NScripter Archive (NSA)
  - NScripter script file (nscript.dat)
 
-##xOpenCV (VS2013 UPD4)
+##xOpenCV (VS2013 UPD5)
 
 <p>基于 <b>OpenCV</b> 库的复合扩展插件，为 <b>QstView2D</b> 提供一些图像处理识别相关的图片滤镜和图形绘制命令扩展，并支持摄像头与视频文件的图片输入以及支持加载以下几种图片格式：</p>
  - Windows bitmaps - \*.bmp, \*.dib
