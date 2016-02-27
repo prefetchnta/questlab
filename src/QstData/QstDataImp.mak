@@ -8,7 +8,7 @@ OBJ_LIST=.$(L)QstDataImp.$(O)
 SRC_LIST=.$(L)QstDataImp.$(P)
 
 build_all:
-    $(CC) $(CFLAGS) /I "..\..\bea" /D "_CR_BUILD_DLL_" $(SRC_LIST)
+    $(CC) $(CFLAGS) /I "..\..\dev\bea" /D "_CR_BUILD_DLL_" $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL /LIBPATH:..$(L)..$(L)lib$(L)bea $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)
