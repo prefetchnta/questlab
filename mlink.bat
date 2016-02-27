@@ -1,8 +1,9 @@
 @echo off
-if exist inc goto crh_fmtz
-mklink /D /J inc D:\PRJ\CrHack\inc
+cd dev
+if exist crhack goto crh_fmtz
+mklink /D /J crhack D:\PRJ\CrHack\inc
 :crh_fmtz
-cd src
+cd ..\src
 if exist CrH_FMTZ goto crh_gfx2
 mklink /D /J CrH_FMTZ D:\PRJ\CrHack\src\_fmtz_
 :crh_gfx2

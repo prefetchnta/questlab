@@ -1,8 +1,9 @@
 @echo off
-if exist inc goto crh_fmtz
-junction inc D:\PRJ\CrHack\inc
+cd dev
+if exist crhack goto crh_fmtz
+junction crhack D:\PRJ\CrHack\inc
 :crh_fmtz
-cd src
+cd ..\src
 if exist CrH_FMTZ goto crh_gfx2
 junction CrH_FMTZ D:\PRJ\CrHack\src\_fmtz_
 :crh_gfx2
