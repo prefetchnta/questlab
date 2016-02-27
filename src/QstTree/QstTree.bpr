@@ -32,13 +32,13 @@
     <USERDEFINES value="_CR_NO_ERROR_SET_"/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="QstTree.cpp"/>
-    <INCLUDEPATH value=".;..\..\dev\crhack;..\..\dev\vtv;$(BCB)\include;$(BCB)\include\vcl"/>
+    <INCLUDEPATH value=".;..\..\inc\crhack;..\..\inc\vtv;$(BCB)\include;$(BCB)\include\vcl"/>
     <LIBPATH value=".;..\..\lib\crhack\omf;$(BCB)\lib\obj;$(BCB)\lib\psdk;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I. -I..\..\dev\crhack -I..\..\dev\vtv -I$(BCB)\include -I$(BCB)\include\vcl 
+    <IDLCFLAGS value="-I. -I..\..\inc\crhack -I..\..\inc\vtv -I$(BCB)\include -I$(BCB)\include\vcl 
       -src_suffix cpp -D_CR_NO_ERROR_SET_ -boa"/>
     <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -RT- -X- -a8 -6 -b- -d -k- -vi -c 
       -tW -tWM -dc"/>
@@ -93,7 +93,7 @@ Comments=
 
 [HistoryLists\hlIncludePath]
 Count=1
-Item0=.;..\..\dev\crhack;..\..\dev\vtv;$(BCB)\include;$(BCB)\include\vcl
+Item0=.;..\..\inc\crhack;..\..\inc\vtv;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
 Count=1

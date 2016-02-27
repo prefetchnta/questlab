@@ -26,7 +26,7 @@ SRC_LIST=.$(L)QstComm.$(P) \
 build_all:
     $(QT) QstCommInt.h > QstCommInt.$(P)
     $(RC) $(RFLAGS)
-    $(CC) $(CFLAGS) /I "..\..\dev\qt5" /EHsc $(SRC_LIST)
+    $(CC) $(CFLAGS) /I "..\..\inc\qt5" /EHsc $(SRC_LIST)
     $(LD) $(LFLAGS) /LIBPATH:..$(L)..$(L)lib$(L)qt5 $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)

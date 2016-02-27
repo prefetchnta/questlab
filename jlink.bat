@@ -1,5 +1,5 @@
 @echo off
-cd dev
+cd inc
 if exist crhack goto crh_fmtz
 junction crhack D:\PRJ\CrHack\inc
 :crh_fmtz
