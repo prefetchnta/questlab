@@ -1,5 +1,6 @@
 
 #include "xIMGLAB.h"
+#include "../QstLibs/QstLibs.h"
 
 /* 外部库引用 */
 #pragma comment (lib, "CrH_GFX2.lib")
