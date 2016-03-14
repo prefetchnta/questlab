@@ -1,5 +1,5 @@
 /* ========================================================================================== */
-/* FMOD Ex - C++ header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2014.      */
+/* FMOD Ex - C++ header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2016.      */
 /*                                                                                            */
 /* Use this header in conjunction with fmod.h (which contains all the constants / callbacks)  */
 /* to develop using C++ classes.                                                              */

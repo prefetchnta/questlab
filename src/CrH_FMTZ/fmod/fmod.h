@@ -1,6 +1,6 @@
 
 /* ============================================================================================ */
-/* FMOD Ex - Main C/C++ header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2014. */
+/* FMOD Ex - Main C/C++ header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2016. */
 /*                                                                                              */
 /* This header is the base header for all other FMOD headers.  If you are programming in C      */
 /* use this exclusively, or if you are programming C++ use this in conjunction with FMOD.HPP    */
@@ -15,7 +15,7 @@
     0xaaaabbcc -> aaaa = major version number.  bb = minor version number.  cc = development version number.
 */
 
-#define FMOD_VERSION    0x00044459
+#define FMOD_VERSION    0x00044461
 
 /*
     Compiler specific settings.
