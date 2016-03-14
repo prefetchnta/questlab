@@ -411,7 +411,7 @@ CR_API void_t   meshml_free (const sMESHML *msh);
 /*****************************************************************************/
 /*                              Direct3D8 API                                */
 /*****************************************************************************/
-#if     defined(_CR_USE_D3D8_)
+#if     defined(_CR_USE_D3D8_) && (_CR_CC_VER_ < 1900)
 
 #include "gfx3/d3d8api.h"
 #include "gfx3/d3d8api.inl"

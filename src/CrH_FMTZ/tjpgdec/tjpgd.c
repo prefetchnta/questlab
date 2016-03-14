@@ -30,7 +30,9 @@
 #elif   defined(_CR_CC_MSC_)
     #pragma warning (disable: 4127)
     #pragma warning (disable: 4244)
-
+    #if (_CR_CC_VER_ >= 1900)
+        #pragma warning (disable: 4457)
+    #endif
 #elif   defined(_CR_CC_ARMCC_NEW_)
     #pragma diag_suppress 188
 
@@ -714,7 +716,7 @@ JRESULT mcu_output (
 	}
 
 	/* Output the RGB rectangular */
-	return outfunc(jd, jd->workbuf, &rect) ? JDR_OK : JDR_INTR; 
+	return outfunc(jd, jd->workbuf, &rect) ? JDR_OK : JDR_INTR;
 }
 
 
@@ -830,7 +832,7 @@ JRESULT jd_prepare (
 			if (seg[5] != 3) return JDR_FMT3;	/* Err: Supports only Y/Cb/Cr format */
 
 			/* Check three image components */
-			for (i = 0; i < 3; i++) {	
+			for (i = 0; i < 3; i++) {
 				b = seg[7 + 3 * i];							/* Get sampling factor */
 				if (!i) {	/* Y component */
 					if (b != 0x11 && b != 0x22 && b != 0x21)/* Check sampling factor */
