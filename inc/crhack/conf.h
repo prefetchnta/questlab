@@ -336,6 +336,14 @@
 #elif   defined(_CR_OS_NAKED_)
     #define _CR_OS_STR_ "@NAKED"
 
+/* MacOS */
+#elif   defined(_CR_OS_MACOSH_)
+    #define _CR_OS_STR_ "@MACOS"
+
+/* MacOS X */
+#elif   defined(_CR_OS_MACOSX_)
+    #define _CR_OS_STR_ "@MACOSX"
+
 /* Android */
 #elif   defined(_CR_OS_ANDROID_)
     #define _CR_OS_STR_ "@ANDROID"

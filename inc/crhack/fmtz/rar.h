@@ -22,6 +22,11 @@
 
 #include "fmtz.h"
 
+/* RAR 文件校验类型 */
+#define FMTZ_RAR_HASH_NONE      0
+#define FMTZ_RAR_HASH_CRC32     1
+#define FMTZ_RAR_HASH_BLAKE2    2
+
 /* RAR 文件信息结构 */
 typedef struct
 {
@@ -34,6 +39,8 @@ typedef struct
         int32u  fattr;  /* 文件属性 */
         int16u  ftime;  /* 文件时间 (DOS) */
         int16u  fdate;  /* 文件日期 (DOS) */
+        int32u  htype;  /* 文件校验的类型 */
+        byte_t  hash[32];   /* 附加校验值 */
 
 } sPAK_RAR_FILE;
 

@@ -24,25 +24,39 @@
 /* 考虑到 GCC 可能有多种平台的兼容版本  */
 /* 所以其配置头文件放到头文件列表的最后 */
 /****************************************/
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__clang__)
 
     /* 编译器类型定义 */
     #define _CR_CC_GCC_
     /*------------------------------------------------*/
 
     /* 编译器版本定义 */
-    #ifndef __GNUC_PATCHLEVEL__
-        #define _CR_CC_VER_ (__GNUC__ * 10000 + \
-                             __GNUC_MINOR__ * 100)
+    #if defined(__clang__)
+        #ifndef __clang_patchlevel__
+            #define _CR_CC_VER_ (__clang_major__ * 10000 + \
+                                 __clang_minor__ * 100)
+        #else
+            #define _CR_CC_VER_ (__clang_major__ * 10000 + \
+                                 __clang_minor__ * 100 + \
+                                 __clang_patchlevel__)
+        #endif
     #else
-        #define _CR_CC_VER_ (__GNUC__ * 10000 + \
-                             __GNUC_MINOR__ * 100 + \
-                             __GNUC_PATCHLEVEL__)
+        #ifndef __GNUC_PATCHLEVEL__
+            #define _CR_CC_VER_ (__GNUC__ * 10000 + \
+                                 __GNUC_MINOR__ * 100)
+        #else
+            #define _CR_CC_VER_ (__GNUC__ * 10000 + \
+                                 __GNUC_MINOR__ * 100 + \
+                                 __GNUC_PATCHLEVEL__)
     #endif
     /*------------------------------------------------*/
 
     /* 编译器名称定义 */
-    #if     defined(__MINGW64__)
+    #if     defined(__clang__)
+        #define _CR_CC_CLANG_
+        #define _CR_CC_STR_     "CLANG"
+
+    #elif   defined(__MINGW64__)
         #define _CR_CC_MINGW_
         #define _CR_CC_MINGW64_
         #define _CR_CC_STR_     "GCC (MinGW64)"
@@ -136,6 +150,9 @@
     #elif   defined(MSDOS) || defined(__MSDOS) || \
             defined(__MSDOS__)
         #define _CR_OS_DOS32_
+
+    #elif   defined(__APPLE__)
+        #define _CR_OS_MACOSX_
 
     /* *NIX 操作系统必须放在最后 */
     #elif   defined(unix) || defined(__unix) || \

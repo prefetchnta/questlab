@@ -403,6 +403,8 @@ load_rar (
         temp.fattr = (int32u)(info.FileAttr);
         temp.ftime = (int16u)(info.FileTime & 0xFFFF);
         temp.fdate = (int16u)(info.FileTime >> 16);
+        temp.htype = (int32u)(info.HashType);
+        mem_cpy(temp.hash, info.Hash, sizeof(temp.hash));
 
         /* 文件信息压入列表 */
         if (array_push_growT(&list, sPAK_RAR_FILE, &temp) == NULL) {

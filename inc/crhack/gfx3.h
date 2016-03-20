@@ -407,11 +407,12 @@ CR_API void_t   meshml_free (const sMESHML *msh);
 #endif  /* !__CR_GFX3_H__ */
 
 /* 只使用微软自家的编译器 */
-#if     defined(_CR_CC_MSC_) && (_CR_CC_VER_ >= 1400)
+#if defined(_CR_CC_MSC_) && (_CR_CC_VER_ >= 1400) && !defined(_CR_OS_WINCE_)
 /*****************************************************************************/
 /*                              Direct3D8 API                                */
 /*****************************************************************************/
-#if     defined(_CR_USE_D3D8_) && (_CR_CC_VER_ < 1900)
+#if     defined(_CR_USE_D3D8_) && (_CR_CC_VER_ < 1900) && \
+        defined(_CR_OS_WIN32_)
 
 #include "gfx3/d3d8api.h"
 #include "gfx3/d3d8api.inl"
