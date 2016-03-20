@@ -222,20 +222,20 @@ iPAK_RAR_getFileData (
         struct_zero(&info, RARHeaderDataEx);
         while (real->m_cur != item->id) {
             rett = RARReadHeaderEx(real->m_rar, &info);
-            if (rett != 0)
+            if (rett != ERAR_SUCCESS)
                 goto _failure2;
             rett = RARProcessFile(real->m_rar, RAR_SKIP, NULL, NULL);
-            if (rett != 0 && rett != ERAR_BAD_DATA)
+            if (rett != ERAR_SUCCESS && rett != ERAR_BAD_DATA)
                 goto _failure2;
             real->m_cur += 1;
         }
 
         /* 测试目标文件就不会有磁盘操作了 */
         rett = RARReadHeaderEx(real->m_rar, &info);
-        if (rett != 0)
+        if (rett != ERAR_SUCCESS)
             goto _failure2;
         rett = RARProcessFile(real->m_rar, RAR_TEST, NULL, NULL);
-        if (rett != 0)
+        if (rett != ERAR_SUCCESS)
             goto _failure2;
         real->m_cur += 1;
     }
@@ -361,13 +361,13 @@ load_rar (
         retc = RARReadHeaderEx(rar, &info);
         if (retc == ERAR_END_ARCHIVE)
             break;
-        if (retc != 0)
+        if (retc != ERAR_SUCCESS)
             goto _failure1;
 
         /* 目录文件不加入列表 */
         if (info.Flags & RHDF_DIRECTORY) {
             retc = RARProcessFile(rar, RAR_SKIP, NULL, NULL);
-            if (retc != 0)
+            if (retc != ERAR_SUCCESS)
                 goto _failure1;
             continue;
         }
@@ -418,7 +418,7 @@ load_rar (
 
         /* 跳过当前已读文件 */
         retc = RARProcessFile(rar, RAR_SKIP, NULL, NULL);
-        if (retc != 0 && retc != ERAR_BAD_DATA)
+        if (retc != ERAR_SUCCESS && retc != ERAR_BAD_DATA)
             goto _failure1;
     }
 
