@@ -365,7 +365,7 @@ load_rar (
             goto _failure1;
 
         /* 目录文件不加入列表 */
-        if ((info.Flags & 0xE0) == 0xE0) {
+        if (info.Flags & RHDF_DIRECTORY) {
             retc = RARProcessFile(rar, RAR_SKIP, NULL, NULL);
             if (retc != 0)
                 goto _failure1;
@@ -386,6 +386,10 @@ load_rar (
         temp.base.size = mk_size(info.UnpSizeHigh, info.UnpSize);
         if (info.Method != 0x30)
             temp.base.attr |= PAK_FILE_CMP;
+        if (info.Flags & RHDF_ENCRYPTED)
+            temp.base.attr |=  PAK_FILE_ENC;
+        else
+            temp.base.attr &= ~PAK_FILE_ENC;
         switch (info.Method)
         {
             case 0x30: temp.base.memo = "Storing";             break;
