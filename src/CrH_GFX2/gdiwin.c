@@ -39,6 +39,12 @@
     WINGDIAPI BOOL  WINAPI GdiFlush(VOID);
 #endif
 
+/* 64位下会报 int 到 HANDLE 的警告 */
+#if defined(_CR_OS_WIN64_)
+    #undef  HGDI_ERROR
+    #define HGDI_ERROR  (LongToHandle(0xFFFFFFFFL))
+#endif
+
 /*****************************************************************************/
 /*                                 绘制接口                                  */
 /*****************************************************************************/

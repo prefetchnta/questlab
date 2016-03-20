@@ -134,7 +134,7 @@ iFONT_BIT_draw_tran (
             /* 中文字符 */
             if (hzk == NULL)
                 goto _invalid_hzk;
-            offs *= hzk_size;
+            offs *= (int32u)hzk_size;
             if (!CR_VCALL(hzk)->seek(hzk, offs, SEEK_SET))
                 goto _invalid_hzk;
             if (CR_VCALL(hzk)->read(hzk, dat, hzk_size) != hzk_size)
@@ -179,7 +179,7 @@ _invalid_hzk:
                (uint_t)(*memo) < asc_start)
                 goto _invalid_asc;
             offs = *memo - asc_start;
-            offs *= asc_size;
+            offs *= (int32u)asc_size;
             if (!CR_VCALL(asc)->seek(asc, offs, SEEK_SET))
                 goto _invalid_asc;
             if (CR_VCALL(asc)->read(asc, dat, asc_size) != asc_size)
@@ -287,7 +287,7 @@ iFONT_BIT_draw_text (
             /* 中文字符 */
             if (hzk == NULL)
                 goto _invalid_hzk;
-            offs *= hzk_size;
+            offs *= (int32u)hzk_size;
             if (!CR_VCALL(hzk)->seek(hzk, offs, SEEK_SET))
                 goto _invalid_hzk;
             if (CR_VCALL(hzk)->read(hzk, dat, hzk_size) != hzk_size)
@@ -335,7 +335,7 @@ _invalid_hzk:
                (uint_t)(*memo) < asc_start)
                 goto _invalid_asc;
             offs = *memo - asc_start;
-            offs *= asc_size;
+            offs *= (int32u)asc_size;
             if (!CR_VCALL(asc)->seek(asc, offs, SEEK_SET))
                 goto _invalid_asc;
             if (CR_VCALL(asc)->read(asc, dat, asc_size) != asc_size)

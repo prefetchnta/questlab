@@ -1460,12 +1460,12 @@ d3d9_create_vs_text (
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
-        retc = D3DXAssembleShader(text, str_sizeA(text), NULL, NULL,
-                                  flags, &code, NULL);
+        retc = D3DXAssembleShader(text, (UINT)str_sizeA(text), NULL,
+                                  NULL, flags, &code, NULL);
     }
     else {
-        retc = D3DXCompileShader(text, str_sizeA(text), NULL, NULL, entry,
-                                 profile, flags, &code, NULL, NULL);
+        retc = D3DXCompileShader(text, (UINT)str_sizeA(text), NULL, NULL,
+                                 entry, profile, flags, &code, NULL, NULL);
     }
     if (FAILED(retc))
         return (NULL);
@@ -1635,12 +1635,12 @@ d3d9_create_ps_text (
 
     /* 不指定入口点使用汇编 */
     if (entry == NULL) {
-        retc = D3DXAssembleShader(text, str_sizeA(text), NULL, NULL,
-                                  flags, &code, NULL);
+        retc = D3DXAssembleShader(text, (UINT)str_sizeA(text), NULL,
+                                  NULL, flags, &code, NULL);
     }
     else {
-        retc = D3DXCompileShader(text, str_sizeA(text), NULL, NULL, entry,
-                                 profile, flags, &code, NULL, NULL);
+        retc = D3DXCompileShader(text, (UINT)str_sizeA(text), NULL, NULL,
+                                 entry, profile, flags, &code, NULL, NULL);
     }
     if (FAILED(retc))
         return (NULL);

@@ -521,8 +521,8 @@ typedef struct
 
 /* 建立位流输入结构 */
 CR_API void_t   bitin_init (sBITIN *bitin, iDATIN *datin,
-                            leng_t max_size);
-CR_API void_t   bitin_reset (sBITIN *bitin, leng_t max_size);
+                            uint_t max_size);
+CR_API void_t   bitin_reset (sBITIN *bitin, uint_t max_size);
 
 /* 高位先读调用 (推挤方式/层叠方式) */
 CR_API bool_t   bitin_hi_push (sBITIN *bitin, uint_t *value, ufast_t count);

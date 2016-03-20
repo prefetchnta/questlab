@@ -917,7 +917,7 @@ bigint_from (
                 data = (byte_t*)data + 1;
                 bi->val[idx >> 2] |= (cha << ((idx & 3) * 8));
             }
-            bi->len = ((size + 3) >> 2);
+            bi->len = (sint_t)((size + 3) >> 2);
             bigint_adj(bi);
             break;
     }
