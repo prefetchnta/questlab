@@ -31,7 +31,7 @@
 /*****************************************************************************/
 
 /* 分配释放函数类型 */
-typedef void_t* (*cr_alloc_t) (leng_t);
+typedef void_t* (*cr_alloc_t) (size_t);
 typedef void_t  (*cr_mfree_t) (void_t*);
 
 CR_API void_t   mem_reset (void_t);
