@@ -76,7 +76,11 @@
 /* ARM
   (32bit/64bit Bi-Endian) */
 #elif   defined(_CR_AR_ARM_)
-    #if defined(_CR_AR_THUMB_)
+    #if     defined(_CR_AR_ARM64_)
+        #define _CR_AR_STR_ "[ARM64]"
+    #elif   defined(_CR_AR_ARM7S_)
+        #define _CR_AR_STR_ "[ARMv7S]"
+    #elif   defined(_CR_AR_THUMB_)
         #define _CR_AR_STR_ "[THUMB]"
     #else
         #define _CR_AR_STR_ "[ARM]"

@@ -96,9 +96,15 @@
             defined(__i386__) || defined(_X86_)
         #define _CR_AR_X86_     /* Intel X86 */
 
-    #elif   defined(__arm) || defined(__arm__)
+    #elif   defined(__arm) || defined(__arm__) || \
+            defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7S__) || \
+            defined(__ARM_ARCH_ISA_A64)
         #define _CR_AR_ARM_     /* ARM */
-        #if defined(__thumb) || defined(__thumb__)
+        #if     defined(__ARM_ARCH_ISA_A64)
+            #define _CR_AR_ARM64_
+        #elif   defined(__ARM_ARCH_7S__)
+            #define _CR_AR_ARM7S_
+        #elif   defined(__thumb) || defined(__thumb__)
             #define _CR_AR_THUMB_   /* THUMB */
         #endif
     #elif   defined(mips) || defined(__mips__)
@@ -158,6 +164,7 @@
         #define _CR_OS_DOS32_
 
     #elif   defined(__APPLE__)
+        #define _CR_OS_UNIX_
         #define _CR_OS_MACOSX_
 
     /* *NIX 操作系统必须放在最后 */
