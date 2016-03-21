@@ -48,6 +48,7 @@
             #define _CR_CC_VER_ (__GNUC__ * 10000 + \
                                  __GNUC_MINOR__ * 100 + \
                                  __GNUC_PATCHLEVEL__)
+        #endif
     #endif
     /*------------------------------------------------*/
 
@@ -141,6 +142,11 @@
     #if     defined(_WIN32_WCE)
         #define _CR_OS_MSWIN_
         #define _CR_OS_WINCE_
+
+    #elif   defined(WIN64) || defined(_WIN64) || \
+            defined(__WIN64) || defined(__WIN64__)
+        #define _CR_OS_MSWIN_
+        #define _CR_OS_WIN64_
 
     #elif   defined(WIN32) || defined(_WIN32) || \
             defined(__WIN32) || defined(__WIN32__)
