@@ -45,8 +45,8 @@ public:
         ::CloseHandle(m_evts[1]);
         ::CloseHandle(m_evts[0]);
 #else
-        ::pthread_cond_destroy(m_thrd_cd);
-        ::pthread_mutex_destroy(m_thrd_mt);
+        ::pthread_cond_destroy(&m_thrd_cd);
+        ::pthread_mutex_destroy(&m_thrd_mt);
 #endif
     }
 
