@@ -32,7 +32,11 @@ public:
         pthread_mutexattr_t attr;
 
         ::pthread_mutexattr_init(&attr);
+#if !defined(PTHREAD_MUTEX_RECURSIVE_NP)
+        ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+#else
         ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
+#endif
         ::pthread_mutex_init(&m_csec, &attr);
         ::pthread_mutexattr_destroy(&attr);
 #endif
