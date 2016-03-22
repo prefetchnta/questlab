@@ -447,8 +447,7 @@
 /* 文本的换行字符 */
 #if     defined(_CR_OS_UNIX_)
     #define CR_NL   "\n"        /* UNX 风格 */
-#elif   defined(_CR_OS_MACOSH_) || \
-        defined(_CR_OS_MACOSX_)
+#elif   defined(_CR_OS_MACOSH_)
     #define CR_NL   "\r"        /* MAC 风格 */
 #else
     #define CR_NL   "\r\n"      /* DOS 风格 */
