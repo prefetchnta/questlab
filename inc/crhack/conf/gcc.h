@@ -97,10 +97,12 @@
         #define _CR_AR_X86_     /* Intel X86 */
 
     #elif   defined(__arm) || defined(__arm__) || \
+            defined(__aarch64) || defined(__aarch64__) || \
             defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7S__) || \
             defined(__ARM_ARCH_ISA_A64)
         #define _CR_AR_ARM_     /* ARM */
-        #if     defined(__ARM_ARCH_ISA_A64)
+        #if     defined(__ARM_ARCH_ISA_A64) || \
+                defined(__aarch64) || defined(__aarch64__)
             #define _CR_AR_ARM64_
         #elif   defined(__ARM_ARCH_7S__)
             #define _CR_AR_ARM7S_

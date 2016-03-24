@@ -77,13 +77,22 @@
   (32bit/64bit Bi-Endian) */
 #elif   defined(_CR_AR_ARM_)
     #if     defined(_CR_AR_ARM64_)
+        #define _CR_SYS64_
         #define _CR_AR_STR_ "[ARM64]"
     #elif   defined(_CR_AR_ARM7S_)
+        #define _CR_SYS32_
         #define _CR_AR_STR_ "[ARMv7S]"
     #elif   defined(_CR_AR_THUMB_)
+        #define _CR_SYS32_
         #define _CR_AR_STR_ "[THUMB]"
     #else
+        #define _CR_SYS32_
         #define _CR_AR_STR_ "[ARM]"
+    #endif
+    #if     defined(__AARCH64EL__)
+        #define _CR_ORDER_LE_
+    #elif   defined(__AARCH64EB__)
+        #define _CR_ORDER_BE_
     #endif
 
 /* MIPS
