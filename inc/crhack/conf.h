@@ -98,20 +98,20 @@
 /* MIPS
   (32bit/64bit Bi-Endian) */
 #elif   defined(_CR_AR_MIPS_)
-    #if defined(__mips64)
+    #if     defined(_CR_AR_MIPS64_)
         #define _CR_SYS64_
+        #define _CR_AR_STR_ "[MIPS64]"
+    #elif   defined(_CR_AR_MIPS16_)
+        #define _CR_SYS32_
+        #define _CR_AR_STR_ "[MIPS16]"
     #else
         #define _CR_SYS32_
+        #define _CR_AR_STR_ "[MIPS]"
     #endif
     #if     defined(__MIPSEL__)
         #define _CR_ORDER_LE_
     #elif   defined(__MIPSEB__)
         #define _CR_ORDER_BE_
-    #endif
-    #if defined(_CR_AR_MIPS16_)
-        #define _CR_AR_STR_ "[MIPS16]"
-    #else
-        #define _CR_AR_STR_ "[MIPS]"
     #endif
 
 /* PowerPC

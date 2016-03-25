@@ -111,7 +111,9 @@
         #endif
     #elif   defined(mips) || defined(__mips__)
         #define _CR_AR_MIPS_    /* MIPS */
-        #if defined(__mips16)
+        #if     defined(__mips64)
+            #define _CR_AR_MIPS64_  /* MIPS64 */
+        #elif   defined(__mips16)
             #define _CR_AR_MIPS16_  /* MIPS16e */
         #endif
     #elif   defined(__ppc__) || defined(__powerpc) || \
