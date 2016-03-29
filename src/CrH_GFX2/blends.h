@@ -20,7 +20,7 @@
 #ifndef __CR_BLENDS_H__
 #define __CR_BLENDS_H__
 
-#include "endian.h"
+#include "morder.h"
 
 /*****************************************************************************/
 /*                                08位色混合                                 */

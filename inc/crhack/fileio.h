@@ -20,7 +20,7 @@
 #ifndef __CR_FILEIO_H__
 #define __CR_FILEIO_H__
 
-#include "endian.h"
+#include "morder.h"
 
 /*****************************************************************************/
 /*                               有用的宏映射                                */
