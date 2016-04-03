@@ -20,8 +20,8 @@
 #include "defs.h"
 
 /* DLL 自定义入口点 */
-#if defined(_CR_OS_MSWIN_)
 #if defined(_CR_BUILD_DLL_)
+#if defined(_CR_OS_MSWIN_)
 
 #include <windows.h>
 
@@ -58,9 +58,17 @@ DllMain (
     CR_NOUSE(reserved);
     return (TRUE);
 }
-
-#endif  /* _CR_BUILD_DLL_ */
+#elif   defined(_CR_CC_GCC_)
+void_t  so_fmtz_init (void_t) __attribute__((constructor));
+void_t  so_fmtz_init (void_t)
+{
+}
+void_t  so_fmtz_fini (void_t) __attribute__((destructor));
+void_t  so_fmtz_fini (void_t)
+{
+}
 #endif  /* _CR_OS_MSWIN_ */
+#endif  /* _CR_BUILD_DLL_ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

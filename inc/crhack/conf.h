@@ -353,6 +353,14 @@
 #elif   defined(_CR_OS_MACOSH_)
     #define _CR_OS_STR_ "@MACOS"
 
+/* iOS */
+#elif   defined(_CR_OS_IOS_)
+    #define _CR_OS_STR_ "@IOS"
+
+/* WatchOS */
+#elif   defined(_CR_OS_WATCHOS_)
+    #define _CR_OS_STR_ "@WATCHOS"
+
 /* MacOS X */
 #elif   defined(_CR_OS_MACOSX_)
     #define _CR_OS_STR_ "@MACOSX"

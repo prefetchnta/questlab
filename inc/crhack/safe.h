@@ -37,7 +37,7 @@ cut_size (
     uint_t  tmp = (uint_t)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 }
 
@@ -55,7 +55,7 @@ cut_int32u (
     leng_t  tmp = (leng_t)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 }
 
@@ -73,7 +73,7 @@ cut_int32s (
     dist_t  tmp = (dist_t)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 }
 
@@ -92,13 +92,13 @@ cut_int64u (
     leng_t  tmp = (leng_t)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 #else
     leng_t  tmp = (leng_t)val.lo32;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((val.lo32 == tmp &&
              val.hi32 == 0L) ? FALSE : TRUE);
 #endif
@@ -119,13 +119,13 @@ cut_int64s (
     dist_t  tmp = (dist_t)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 #else
     dist_t  tmp = (dist_t)val.lo32;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
 
     if (val.lo32 == tmp) {
         if (val.hi32 ==  0L)
@@ -151,7 +151,7 @@ cut_int32_u (
     uint_t  tmp = (uint_t)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 }
 
@@ -169,7 +169,7 @@ cut_int32_s (
     sint_t  tmp = (sint_t)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 }
 
@@ -188,13 +188,13 @@ cut_int64_32s (
     int32s  tmp = (int32s)val;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp == val) ? FALSE : TRUE);
 #else
     int32s  tmp = (int32s)val.lo32;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
 
     if (val.lo32 == tmp) {
         if (val.hi32 ==  0L)
@@ -221,7 +221,7 @@ cut_addu (
     leng_t  tmp = val1 + val2;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return ((tmp >= val1) ? FALSE : TRUE);
 }
 
@@ -240,7 +240,7 @@ cut_adds (
     dist_t  tmp = val1 + val2;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return (((tmp ^ val1) >= 0 ||
              (tmp ^ val2) >= 0) ? FALSE : TRUE);
 }
@@ -260,7 +260,7 @@ cut_addfs (
     fdist_t tmp = val1 + val2;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     return (((tmp ^ val1) >= 0 ||
              (tmp ^ val2) >= 0) ? FALSE : TRUE);
 }
@@ -280,7 +280,7 @@ cut_mul (
     leng_t  tmp = val1 * val2;
 
     if (dst != NULL)
-       *dst  = tmp;
+        *dst = tmp;
     if (val1 <= 1 || val2 <= 1)
         return (FALSE);
     return ((tmp / val2 == val1) ? FALSE : TRUE);
@@ -346,7 +346,7 @@ cut_image (
     /* 保守到 DXT5 计算 */
     if (bpc <= 1) {
         if (size != NULL)
-           *size  = tmp;
+            *size = tmp;
         return (FALSE);
     }
     return (cut_mul(size, tmp, bpc));

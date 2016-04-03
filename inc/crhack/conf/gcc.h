@@ -170,6 +170,12 @@
     #elif   defined(__APPLE__)
         #define _CR_OS_UNIX_
         #define _CR_OS_MACOSX_
+        #if     (defined(TARGET_OS_IOS) && TARGET_OS_IOS) || \
+                (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
+            #define _CR_OS_IOS_
+        #elif   (defined(TARGET_OS_WATCH) && TARGET_OS_WATCH)
+            #define _CR_OS_WATCHOS_
+        #endif
 
     /* *NIX 操作系统必须放在最后 */
     #elif   defined(unix) || defined(__unix) || \
