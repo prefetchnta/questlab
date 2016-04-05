@@ -20,7 +20,7 @@
 #ifndef __CR_KIRIKIRI_H__
 #define __CR_KIRIKIRI_H__
 
-#include "fmtz.h"
+#include "../fmtz.h"
 
 /* XP3 文件分段结构 (LE) */
 #ifndef _CR_NO_PRAGMA_PACK_

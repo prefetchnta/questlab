@@ -20,7 +20,7 @@
 #ifndef __CR_KS0108_H__
 #define __CR_KS0108_H__
 
-#include "defs.h"
+#include "../defs.h"
 
 /* KS0108 LCD 一些参数值 */
 #define KS0108_X_MAX    64      /* X 宽度 */

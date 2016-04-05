@@ -20,7 +20,7 @@
 #ifndef __CR_MAX124X_H__
 #define __CR_MAX124X_H__
 
-#include "defs.h"
+#include "../defs.h"
 
 /* 模拟通道编号 */
 #define MAX124X_CH0_COM     1   /* 单端 */

@@ -20,7 +20,7 @@
 #ifndef __CR_FALCOM_H__
 #define __CR_FALCOM_H__
 
-#include "fmtz.h"
+#include "../fmtz.h"
 
 /* NNK 文件信息结构 */
 typedef struct

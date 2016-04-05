@@ -20,7 +20,7 @@
 #ifndef __CR_GDIWIN_H__
 #define __CR_GDIWIN_H__
 
-#include "gfx2.h"
+#include "../gfx2.h"
 
 #include <windows.h>
 

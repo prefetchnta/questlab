@@ -427,7 +427,7 @@ CR_API void_t   meshml_free (const sMESHML *msh);
 
 #endif  /* GFX3 API predefines */
 
-#endif  /* _CR_CC_MSC_ && _CR_CC_VER_ */
+#endif  /* _CR_CC_MSC_ && _CR_CC_VER_ && !_CR_OS_WINCE_ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

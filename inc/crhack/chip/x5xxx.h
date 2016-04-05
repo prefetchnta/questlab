@@ -20,7 +20,7 @@
 #ifndef __CR_X5XXX_H__
 #define __CR_X5XXX_H__
 
-#include "defs.h"
+#include "../defs.h"
 
 /* X5XXX 状态寄存器位值 */
 #define X5XXX_WIP       0x01    /* 是否正在写数据 */

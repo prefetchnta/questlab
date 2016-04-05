@@ -20,7 +20,7 @@
 #ifndef __CR_PCF8583_H__
 #define __CR_PCF8583_H__
 
-#include "defs.h"
+#include "../defs.h"
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (push, 1)

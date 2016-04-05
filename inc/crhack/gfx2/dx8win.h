@@ -21,7 +21,7 @@
 #define __CR_DX8WIN_H__
 
 #define _CR_USE_D3D8_
-#include "gfx3.h"
+#include "../gfx3.h"
 
 #if defined(_CR_HAVE_D3D8_)
 

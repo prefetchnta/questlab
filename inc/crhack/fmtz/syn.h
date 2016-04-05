@@ -20,7 +20,7 @@
 #ifndef __CR_SYN_H__
 #define __CR_SYN_H__
 
-#include "fmtz.h"
+#include "../fmtz.h"
 
 /* GCA 只支持 VC6 和 VC7 */
 #if defined(_CR_CC_MSC_) && \

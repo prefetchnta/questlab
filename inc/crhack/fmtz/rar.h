@@ -20,7 +20,7 @@
 #ifndef __CR_RAR_H__
 #define __CR_RAR_H__
 
-#include "fmtz.h"
+#include "../fmtz.h"
 
 /* RAR 文件校验类型 */
 #define FMTZ_RAR_HASH_NONE      0

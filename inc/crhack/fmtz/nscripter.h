@@ -20,7 +20,7 @@
 #ifndef __CR_NSCRIPTER_H__
 #define __CR_NSCRIPTER_H__
 
-#include "fmtz.h"
+#include "../fmtz.h"
 
 /* NSA 文件信息结构 */
 typedef struct

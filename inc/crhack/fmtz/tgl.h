@@ -20,7 +20,7 @@
 #ifndef __CR_TGL_H__
 #define __CR_TGL_H__
 
-#include "fmtz.h"
+#include "../fmtz.h"
 
 /* PAC 文件信息结构 */
 typedef struct

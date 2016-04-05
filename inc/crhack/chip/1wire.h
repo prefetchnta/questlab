@@ -20,7 +20,7 @@
 #ifndef __CR_1WIRE_H__
 #define __CR_1WIRE_H__
 
-#include "defs.h"
+#include "../defs.h"
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (push, 1)
