@@ -167,6 +167,9 @@ CR_API bool_t       disp_mode_set (dispmode_t mode, uint_t width,
                                    uint_t height, uint_t bpp);
 CR_API void_t       disp_mode_del (dispmode_t mode);
 
+/* 调用 Shell 命令 */
+CR_API bool_t   shell_cmd (const ansi_t *cmd, sint_t *retc);
+
 #endif  /* !__CR_EXTZ_H__ */
 
 /*****************************************************************************/
