@@ -1,6 +1,6 @@
 1 VERSIONINFO
-    FILEVERSION 1,1,0,505
-    PRODUCTVERSION 1,1,0,505
+    FILEVERSION 1,1,0,596
+    PRODUCTVERSION 1,1,0,596
     FILEFLAGSMASK 0x17L
 #ifdef  _DEBUG
     FILEFLAGS 0x1L
@@ -16,11 +16,11 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "ProductName"     , "CrHack GFX2 Library\0"
-            VALUE "ProductVersion"  , "1.1.0.505\0"
-            VALUE "FileVersion"     , "1.1.0.505\0"
+            VALUE "ProductVersion"  , "1.1.0.596\0"
+            VALUE "FileVersion"     , "1.1.0.596\0"
             VALUE "FileDescription" , "CrHack GFX2 Library\0"
             VALUE "LegalCopyright"  , "Copyright 2009+ by CrHackOS\0"
-            VALUE "Comments"        , "Release Date: 2016-03-25\0"
+            VALUE "Comments"        , "Release Date: 2016-04-10\0"
         END
     END
     BLOCK "VarFileInfo"
