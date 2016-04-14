@@ -297,6 +297,12 @@ fmj_xzz (
 #define CR_K2B(n)   ((n) * (1024UL))
 #define CR_B2M(n)   ((n) / (1024UL * 1024UL))
 #define CR_M2B(n)   ((n) * (1024UL * 1024UL))
+#define CR_M2S(x)   ((x) * (60UL))
+#define CR_S2M(x)   ((x) / (60UL))
+#define CR_H2S(x)   ((x) * (60UL * 60UL))
+#define CR_S2H(x)   ((x) / (60UL * 60UL))
+#define CR_D2S(x)   ((x) * (24UL * 60UL * 60UL))
+#define CR_S2D(x)   ((x) / (24UL * 60UL * 60UL))
 
 /* 类型的位数宏 */
 #define bitsof(t)   (sizeof(t) * 8)
