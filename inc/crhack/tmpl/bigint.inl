@@ -397,6 +397,8 @@ bigint_divI (
     sint_t  idx;
     int32u  carry;
 
+    if (val == 0UL)
+        return;
     if (biA->len == 1) {
         if (biX != (sBIGINT*)biA)
             bigint_cpy(biX, biA);
@@ -482,6 +484,8 @@ bigint_modI (
     sint_t  idx;
     int32u  carry = 0UL;
 
+    if (val == 0UL)
+        return (val);
     if (bi->len == 1)
         return (bi->val[0] % val);
     for (idx = bi->len - 1; idx >= 0; idx--) {
