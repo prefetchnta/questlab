@@ -274,7 +274,7 @@ qst_refresh_resx (
         {
             sQstResNode*    info;
 
-            info = list_get_dataT(node, sQstResNode);
+            info = slist_get_dataT(node, sQstResNode);
             if (info->objs != NULL) {
                 cui_set_color(s_color_head);
                 printf("[%s] ", info->name);
@@ -314,7 +314,7 @@ qst_refresh_mount (
             sQstMntNode*    info;
 
             cui_set_color(s_color_text);
-            info = list_get_dataT(node, sQstMntNode);
+            info = slist_get_dataT(node, sQstMntNode);
             if (info->data != NULL) {
                 if (info->type == QST_MOUNT_DISK)
                     printf("[Memory Disk File] ");
