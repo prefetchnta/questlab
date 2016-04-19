@@ -240,59 +240,59 @@ typedef struct
 } sLIST;
 
 /***** 泛型映射 *****/
-#define list_initT(that, type) \
-         list_init(that)
+#define slist_initT(that, type) \
+         slist_init(that)
 
-#define list_freeT(that, type) \
-         list_free(that)
+#define slist_freeT(that, type) \
+         slist_free(that)
 
-#define list_swapT(that, type, node) \
-         list_swap(that, node)
+#define slist_swapT(that, type, node) \
+         slist_swap(that, node)
 
-#define list_deleteT(that, type, node) \
-         list_delete(that, node)
+#define slist_deleteT(that, type, node) \
+         slist_delete(that, node)
 
-#define list_appendT(that, type, data) \
-         list_append(that, sizeof(type), data)
+#define slist_appendT(that, type, data) \
+         slist_append(that, sizeof(type), data)
 
-#define list_stheadT(that, type, data) \
-         list_sthead(that, sizeof(type), data)
+#define slist_stheadT(that, type, data) \
+         slist_sthead(that, sizeof(type), data)
 
-#define list_insertT(that, type, node, data) \
-         list_insert(that, sizeof(type), node, data)
+#define slist_insertT(that, type, node, data) \
+         slist_insert(that, sizeof(type), node, data)
 
-#define list_get_dataT(node, type) \
- ((type*)list_get_data(node))
+#define slist_get_dataT(node, type) \
+ ((type*)slist_get_data(node))
 
-#define list_get_sizeT(that, type) \
-         list_get_size(that)
+#define slist_get_sizeT(that, type) \
+         slist_get_size(that)
 
-#define list_get_headT(that, type) \
-         list_get_head(that)
+#define slist_get_headT(that, type) \
+         slist_get_head(that)
 
-#define list_get_tailT(that, type) \
-         list_get_tail(that)
+#define slist_get_tailT(that, type) \
+         slist_get_tail(that)
 
-#define list_go_nextT(node, type) \
-         list_go_next(node)
+#define slist_go_nextT(node, type) \
+         slist_go_next(node)
 
-#define list_go_prevT(node, type) \
-         list_go_prev(node)
+#define slist_go_prevT(node, type) \
+         slist_go_prev(node)
 
-#define list_get_unitT(that, type, index) \
-         list_get_unit(that, index)
+#define slist_get_unitT(that, type, index) \
+         slist_get_unit(that, index)
 
-#define list_get_unit_safeT(that, type, index) \
-         list_get_unit_safe(that, index)
+#define slist_get_unit_safeT(that, type, index) \
+         slist_get_unit_safe(that, index)
 
 /***** 原生函数 *****/
-CR_API void_t       list_init (sLIST *that);
-CR_API void_t       list_free (sLIST *that);
-CR_API sLST_UNIT*   list_swap (sLIST *that, sLST_UNIT *node);
-CR_API void_t       list_delete (sLIST *that, sLST_UNIT *node);
-CR_API sLST_UNIT*   list_append (sLIST *that, leng_t unit, const void_t *data);
-CR_API sLST_UNIT*   list_sthead (sLIST *that, leng_t unit, const void_t *data);
-CR_API sLST_UNIT*   list_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
+CR_API void_t       slist_init (sLIST *that);
+CR_API void_t       slist_free (sLIST *that);
+CR_API sLST_UNIT*   slist_swap (sLIST *that, sLST_UNIT *node);
+CR_API void_t       slist_delete (sLIST *that, sLST_UNIT *node);
+CR_API sLST_UNIT*   slist_append (sLIST *that, leng_t unit,const void_t *data);
+CR_API sLST_UNIT*   slist_sthead (sLIST *that, leng_t unit,const void_t *data);
+CR_API sLST_UNIT*   slist_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
                                         const void_t *data);
 #if !defined(_CR_SICK_INLINE_)
 /*
@@ -301,7 +301,7 @@ CR_API sLST_UNIT*   list_insert (sLIST *that, leng_t unit, sLST_UNIT *node,
 =======================================
 */
 cr_inline void_t*
-list_get_data (
+slist_get_data (
   __CR_IN__ sLST_UNIT*  node
     )
 {
@@ -314,7 +314,7 @@ list_get_data (
 =======================================
 */
 cr_inline leng_t
-list_get_size (
+slist_get_size (
   __CR_IN__ const sLIST*    that
     )
 {
@@ -327,7 +327,7 @@ list_get_size (
 =======================================
 */
 cr_inline sLST_UNIT*
-list_get_head (
+slist_get_head (
   __CR_IN__ const sLIST*    that
     )
 {
@@ -340,7 +340,7 @@ list_get_head (
 =======================================
 */
 cr_inline sLST_UNIT*
-list_get_tail (
+slist_get_tail (
   __CR_IN__ const sLIST*    that
     )
 {
@@ -353,7 +353,7 @@ list_get_tail (
 =======================================
 */
 cr_inline sLST_UNIT*
-list_go_next (
+slist_go_next (
   __CR_IN__ const sLST_UNIT*    node
     )
 {
@@ -366,7 +366,7 @@ list_go_next (
 =======================================
 */
 cr_inline sLST_UNIT*
-list_go_prev (
+slist_go_prev (
   __CR_IN__ const sLST_UNIT*    node
     )
 {
@@ -379,7 +379,7 @@ list_go_prev (
 =======================================
 */
 cr_inline sLST_UNIT*
-list_get_unit (
+slist_get_unit (
   __CR_IN__ const sLIST*    that,
   __CR_IN__ leng_t          index
     )
@@ -398,7 +398,7 @@ list_get_unit (
 =======================================
 */
 cr_inline sLST_UNIT*
-list_get_unit_safe (
+slist_get_unit_safe (
   __CR_IN__ const sLIST*    that,
   __CR_IN__ leng_t          index
     )

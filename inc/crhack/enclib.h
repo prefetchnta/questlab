@@ -62,26 +62,6 @@ CR_API leng_t   compr_lzhuf (void_t *dst, leng_t dstlen,
 CR_API leng_t   uncompr_lzhuf (void_t *dst, leng_t dstlen,
                                const void_t *src, leng_t srclen,
                                uint_t fill CR_DEFAULT(0));
-/* LZMA */
-typedef struct
-{
-        uint_t  level;      /* [ 0, 1   -   9  ], default =  5   */
-        uint_t  dictlen;    /* [ 0, 4KB - 128MB], default = 16MB */
-        sint_t  lc;         /* [-1, 0   -   8  ], default =  3   */
-        sint_t  lp;         /* [-1, 0   -   4  ], default =  0   */
-        sint_t  pb;         /* [-1, 0   -   4  ], default =  2   */
-        sint_t  fb;         /* [-1, 5   - 273  ], default = 32   */
-        sint_t  threads;    /* [-1, 1   -   2  ], default =  2   */
-        byte_t  props[5];   /*         压缩输出的额外参数        */
-} sLZMA;
-
-CR_API leng_t   compr_lzma (void_t *dst, leng_t dstlen,
-                            const void_t *src, leng_t srclen,
-                            sLZMA *param);
-
-CR_API leng_t   uncompr_lzma (void_t *dst, leng_t dstlen,
-                              const void_t *src, leng_t srclen,
-                              const byte_t props[5]);
 /* LZSS */
 CR_API leng_t   compr_lzss (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen,
