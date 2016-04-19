@@ -443,13 +443,13 @@ xchg_int32u (
     return (val);
 
 #else
-    int16u  hi, lo, *pt;
+    int16u  hi, lo;
 
-    pt = (int16u*)(&val);
-    lo = pt[0];
-    hi = pt[1];
-    pt[1] = xchg_int16u(lo);
-    pt[0] = xchg_int16u(hi);
+    lo = (int16u)(val);
+    hi = (int16u)(val >> 16);
+    val  = xchg_int16u(lo);
+    val <<= 16;
+    val |= xchg_int16u(hi);
     return (val);
 
 #endif  /* AR & CP TYPE predefines */
@@ -490,13 +490,13 @@ xchg_int64u (
     return (val);
 
 #else
-    int32u  hi, lo, *pt;
+    int32u  hi, lo;
 
-    pt = (int32u*)(&val);
-    lo = pt[0];
-    hi = pt[1];
-    pt[1] = xchg_int32u(lo);
-    pt[0] = xchg_int32u(hi);
+    lo = (int32u)(val);
+    hi = (int32u)(val >> 32);
+    val  = xchg_int32u(lo);
+    val <<= 32;
+    val |= xchg_int32u(hi);
     return (val);
 
 #endif  /* AR & CP TYPE predefines */

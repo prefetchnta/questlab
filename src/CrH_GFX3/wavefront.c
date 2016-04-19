@@ -1279,7 +1279,7 @@ wfront_bobj_load_m (
             goto _failure2;
 
         /* 一堆浮点数 */
-        ptr = (int32u*)(&obj->p_m[idx].d);
+        ptr = (int32u*)((void_t*)(&obj->p_m[idx].d));
         for (kk = 0; kk < 4 + 5 * 3; kk++, ptr++) {
             if (!CR_VCALL(datin)->getd_le(datin, ptr))
                 goto _failure2;
