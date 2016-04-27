@@ -91,6 +91,15 @@ public:
         return (true);
     }
 
+    /* ================== */
+    bool see (T* data) const
+    {
+        if (m_head == m_tail)
+            return (false);
+        mem_cpy(data, &m_list[m_head], sizeof(T));
+        return (true);
+    }
+
     /* ==================================== */
     bool put (const T* data, bool grow = true)
     {
@@ -196,6 +205,15 @@ public:
         mem_cpy(data, &m_list[m_head++], sizeof(T));
         if (m_head >= N + 1)
             m_head = 0;
+        return (true);
+    }
+
+    /* ================== */
+    bool see (T* data) const
+    {
+        if (m_head == m_tail)
+            return (false);
+        mem_cpy(data, &m_list[m_head], sizeof(T));
         return (true);
     }
 
