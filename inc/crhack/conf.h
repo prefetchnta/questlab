@@ -89,9 +89,11 @@
         #define _CR_SYS32_
         #define _CR_AR_STR_ "[ARM]"
     #endif
-    #if     defined(__AARCH64EL__)
+    #if     defined(__ARMEL__) || \
+            defined(__AARCH64EL__)
         #define _CR_ORDER_LE_
-    #elif   defined(__AARCH64EB__)
+    #elif   defined(__ARMEB__) || \
+            defined(__AARCH64EB__)
         #define _CR_ORDER_BE_
     #endif
 
@@ -532,6 +534,7 @@
    默认: 使用编译器的 */
     /*
 #undef  _CR_NO_FAST_ATOM_
+#undef  _CR_USE_SYNC_LOCK_RELEASE_
     */
 
 /* 文件操作映射到直接系统调用
