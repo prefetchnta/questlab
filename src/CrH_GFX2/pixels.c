@@ -785,10 +785,11 @@ dot_wu_set08 (
     )
 {
     bool_t  over;
-    byte_t  lrp[4];
     sint_t  bx, by;
     fp32_t  ax1, ay1;
     fp32_t  ax2, ay2;
+    byte_t  lrp0, lrp1;
+    byte_t  lrp2, lrp3;
 
     /* 计算插值参数 */
     bx = (sint_t)x;
@@ -797,55 +798,55 @@ dot_wu_set08 (
     ay1 = y - by;
     ax2 = 1.0f - ax1;
     ay2 = 1.0f - ay1;
-    lrp[0] = (byte_t)(255.0f * ax2 * ay2 + 0.5f);
-    lrp[1] = (byte_t)(255.0f * ax1 * ay2 + 0.5f);
-    lrp[2] = (byte_t)(255.0f * ax2 * ay1 + 0.5f);
-    lrp[3] = (byte_t)(255.0f * ax1 * ay1 + 0.5f);
+    lrp0 = (byte_t)(255.0f * ax2 * ay2 + 0.5f);
+    lrp1 = (byte_t)(255.0f * ax1 * ay2 + 0.5f);
+    lrp2 = (byte_t)(255.0f * ax2 * ay1 + 0.5f);
+    lrp3 = (byte_t)(255.0f * ax1 * ay1 + 0.5f);
 
     /* 输出四个点值 */
     if (!dst->gdi) {
-        color.c08.lrp = lrp[0];
+        color.c08.lrp = lrp0;
         pixel_lrp08z(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c08.lrp = lrp[1];
+            color.c08.lrp = lrp1;
             pixel_lrp08z(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c08.lrp = lrp[2];
+            color.c08.lrp = lrp2;
             pixel_lrp08z(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c08.lrp = lrp[3];
+            color.c08.lrp = lrp3;
             pixel_lrp08z(dst, bx + 1, by + 1, color);
         }
     }
     else {
-        color.c08.lrp = lrp[0];
+        color.c08.lrp = lrp0;
         pixel_lrp08n(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c08.lrp = lrp[1];
+            color.c08.lrp = lrp1;
             pixel_lrp08n(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c08.lrp = lrp[2];
+            color.c08.lrp = lrp2;
             pixel_lrp08n(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c08.lrp = lrp[3];
+            color.c08.lrp = lrp3;
             pixel_lrp08n(dst, bx + 1, by + 1, color);
         }
     }
@@ -865,10 +866,11 @@ dot_wu_set12 (
     )
 {
     bool_t  over;
-    byte_t  lrp[4];
     sint_t  bx, by;
     fp32_t  ax1, ay1;
     fp32_t  ax2, ay2;
+    byte_t  lrp0, lrp1;
+    byte_t  lrp2, lrp3;
 
     /* 计算插值参数 */
     bx = (sint_t)x;
@@ -877,55 +879,55 @@ dot_wu_set12 (
     ay1 = y - by;
     ax2 = 1.0f - ax1;
     ay2 = 1.0f - ay1;
-    lrp[0] = (byte_t)(15.0f * ax2 * ay2 + 0.5f);
-    lrp[1] = (byte_t)(15.0f * ax1 * ay2 + 0.5f);
-    lrp[2] = (byte_t)(15.0f * ax2 * ay1 + 0.5f);
-    lrp[3] = (byte_t)(15.0f * ax1 * ay1 + 0.5f);
+    lrp0 = (byte_t)(15.0f * ax2 * ay2 + 0.5f);
+    lrp1 = (byte_t)(15.0f * ax1 * ay2 + 0.5f);
+    lrp2 = (byte_t)(15.0f * ax2 * ay1 + 0.5f);
+    lrp3 = (byte_t)(15.0f * ax1 * ay1 + 0.5f);
 
     /* 输出四个点值 */
     if (!dst->gdi) {
-        color.c16.lrp = lrp[0];
+        color.c16.lrp = lrp0;
         pixel_lrp12z(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c16.lrp = lrp[1];
+            color.c16.lrp = lrp1;
             pixel_lrp12z(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c16.lrp = lrp[2];
+            color.c16.lrp = lrp2;
             pixel_lrp12z(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c16.lrp = lrp[3];
+            color.c16.lrp = lrp3;
             pixel_lrp12z(dst, bx + 1, by + 1, color);
         }
     }
     else {
-        color.c16.lrp = lrp[0];
+        color.c16.lrp = lrp0;
         pixel_lrp12n(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c16.lrp = lrp[1];
+            color.c16.lrp = lrp1;
             pixel_lrp12n(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c16.lrp = lrp[2];
+            color.c16.lrp = lrp2;
             pixel_lrp12n(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c16.lrp = lrp[3];
+            color.c16.lrp = lrp3;
             pixel_lrp12n(dst, bx + 1, by + 1, color);
         }
     }
@@ -945,10 +947,11 @@ dot_wu_set15 (
     )
 {
     bool_t  over;
-    byte_t  lrp[4];
     sint_t  bx, by;
     fp32_t  ax1, ay1;
     fp32_t  ax2, ay2;
+    byte_t  lrp0, lrp1;
+    byte_t  lrp2, lrp3;
 
     /* 计算插值参数 */
     bx = (sint_t)x;
@@ -957,55 +960,55 @@ dot_wu_set15 (
     ay1 = y - by;
     ax2 = 1.0f - ax1;
     ay2 = 1.0f - ay1;
-    lrp[0] = (byte_t)(31.0f * ax2 * ay2 + 0.5f);
-    lrp[1] = (byte_t)(31.0f * ax1 * ay2 + 0.5f);
-    lrp[2] = (byte_t)(31.0f * ax2 * ay1 + 0.5f);
-    lrp[3] = (byte_t)(31.0f * ax1 * ay1 + 0.5f);
+    lrp0 = (byte_t)(31.0f * ax2 * ay2 + 0.5f);
+    lrp1 = (byte_t)(31.0f * ax1 * ay2 + 0.5f);
+    lrp2 = (byte_t)(31.0f * ax2 * ay1 + 0.5f);
+    lrp3 = (byte_t)(31.0f * ax1 * ay1 + 0.5f);
 
     /* 输出四个点值 */
     if (!dst->gdi) {
-        color.c16.lrp = lrp[0];
+        color.c16.lrp = lrp0;
         pixel_lrp15z(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c16.lrp = lrp[1];
+            color.c16.lrp = lrp1;
             pixel_lrp15z(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c16.lrp = lrp[2];
+            color.c16.lrp = lrp2;
             pixel_lrp15z(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c16.lrp = lrp[3];
+            color.c16.lrp = lrp3;
             pixel_lrp15z(dst, bx + 1, by + 1, color);
         }
     }
     else {
-        color.c16.lrp = lrp[0];
+        color.c16.lrp = lrp0;
         pixel_lrp15n(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c16.lrp = lrp[1];
+            color.c16.lrp = lrp1;
             pixel_lrp15n(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c16.lrp = lrp[2];
+            color.c16.lrp = lrp2;
             pixel_lrp15n(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c16.lrp = lrp[3];
+            color.c16.lrp = lrp3;
             pixel_lrp15n(dst, bx + 1, by + 1, color);
         }
     }
@@ -1025,10 +1028,11 @@ dot_wu_set16 (
     )
 {
     bool_t  over;
-    byte_t  lrp[4];
     sint_t  bx, by;
     fp32_t  ax1, ay1;
     fp32_t  ax2, ay2;
+    byte_t  lrp0, lrp1;
+    byte_t  lrp2, lrp3;
 
     /* 计算插值参数 */
     bx = (sint_t)x;
@@ -1037,55 +1041,55 @@ dot_wu_set16 (
     ay1 = y - by;
     ax2 = 1.0f - ax1;
     ay2 = 1.0f - ay1;
-    lrp[0] = (byte_t)(63.0f * ax2 * ay2 + 0.5f);
-    lrp[1] = (byte_t)(63.0f * ax1 * ay2 + 0.5f);
-    lrp[2] = (byte_t)(63.0f * ax2 * ay1 + 0.5f);
-    lrp[3] = (byte_t)(63.0f * ax1 * ay1 + 0.5f);
+    lrp0 = (byte_t)(63.0f * ax2 * ay2 + 0.5f);
+    lrp1 = (byte_t)(63.0f * ax1 * ay2 + 0.5f);
+    lrp2 = (byte_t)(63.0f * ax2 * ay1 + 0.5f);
+    lrp3 = (byte_t)(63.0f * ax1 * ay1 + 0.5f);
 
     /* 输出四个点值 */
     if (!dst->gdi) {
-        color.c16.lrp = lrp[0];
+        color.c16.lrp = lrp0;
         pixel_lrp16z(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c16.lrp = lrp[1];
+            color.c16.lrp = lrp1;
             pixel_lrp16z(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c16.lrp = lrp[2];
+            color.c16.lrp = lrp2;
             pixel_lrp16z(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c16.lrp = lrp[3];
+            color.c16.lrp = lrp3;
             pixel_lrp16z(dst, bx + 1, by + 1, color);
         }
     }
     else {
-        color.c16.lrp = lrp[0];
+        color.c16.lrp = lrp0;
         pixel_lrp16n(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c16.lrp = lrp[1];
+            color.c16.lrp = lrp1;
             pixel_lrp16n(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c16.lrp = lrp[2];
+            color.c16.lrp = lrp2;
             pixel_lrp16n(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c16.lrp = lrp[3];
+            color.c16.lrp = lrp3;
             pixel_lrp16n(dst, bx + 1, by + 1, color);
         }
     }
@@ -1105,10 +1109,11 @@ dot_wu_set24 (
     )
 {
     bool_t  over;
-    byte_t  lrp[4];
     sint_t  bx, by;
     fp32_t  ax1, ay1;
     fp32_t  ax2, ay2;
+    byte_t  lrp0, lrp1;
+    byte_t  lrp2, lrp3;
 
     /* 计算插值参数 */
     bx = (sint_t)x;
@@ -1117,55 +1122,55 @@ dot_wu_set24 (
     ay1 = y - by;
     ax2 = 1.0f - ax1;
     ay2 = 1.0f - ay1;
-    lrp[0] = (byte_t)(255.0f * ax2 * ay2 + 0.5f);
-    lrp[1] = (byte_t)(255.0f * ax1 * ay2 + 0.5f);
-    lrp[2] = (byte_t)(255.0f * ax2 * ay1 + 0.5f);
-    lrp[3] = (byte_t)(255.0f * ax1 * ay1 + 0.5f);
+    lrp0 = (byte_t)(255.0f * ax2 * ay2 + 0.5f);
+    lrp1 = (byte_t)(255.0f * ax1 * ay2 + 0.5f);
+    lrp2 = (byte_t)(255.0f * ax2 * ay1 + 0.5f);
+    lrp3 = (byte_t)(255.0f * ax1 * ay1 + 0.5f);
 
     /* 输出四个点值 */
     if (!dst->gdi) {
-        color.c32.lrp = lrp[0];
+        color.c32.lrp = lrp0;
         pixel_lrp24z(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c32.lrp = lrp[1];
+            color.c32.lrp = lrp1;
             pixel_lrp24z(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c32.lrp = lrp[2];
+            color.c32.lrp = lrp2;
             pixel_lrp24z(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c32.lrp = lrp[3];
+            color.c32.lrp = lrp3;
             pixel_lrp24z(dst, bx + 1, by + 1, color);
         }
     }
     else {
-        color.c32.lrp = lrp[0];
+        color.c32.lrp = lrp0;
         pixel_lrp24n(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c32.lrp = lrp[1];
+            color.c32.lrp = lrp1;
             pixel_lrp24n(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c32.lrp = lrp[2];
+            color.c32.lrp = lrp2;
             pixel_lrp24n(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c32.lrp = lrp[3];
+            color.c32.lrp = lrp3;
             pixel_lrp24n(dst, bx + 1, by + 1, color);
         }
     }
@@ -1185,10 +1190,11 @@ dot_wu_set32 (
     )
 {
     bool_t  over;
-    byte_t  lrp[4];
     sint_t  bx, by;
     fp32_t  ax1, ay1;
     fp32_t  ax2, ay2;
+    byte_t  lrp0, lrp1;
+    byte_t  lrp2, lrp3;
 
     /* 计算插值参数 */
     bx = (sint_t)x;
@@ -1197,55 +1203,55 @@ dot_wu_set32 (
     ay1 = y - by;
     ax2 = 1.0f - ax1;
     ay2 = 1.0f - ay1;
-    lrp[0] = (byte_t)(255.0f * ax2 * ay2 + 0.5f);
-    lrp[1] = (byte_t)(255.0f * ax1 * ay2 + 0.5f);
-    lrp[2] = (byte_t)(255.0f * ax2 * ay1 + 0.5f);
-    lrp[3] = (byte_t)(255.0f * ax1 * ay1 + 0.5f);
+    lrp0 = (byte_t)(255.0f * ax2 * ay2 + 0.5f);
+    lrp1 = (byte_t)(255.0f * ax1 * ay2 + 0.5f);
+    lrp2 = (byte_t)(255.0f * ax2 * ay1 + 0.5f);
+    lrp3 = (byte_t)(255.0f * ax1 * ay1 + 0.5f);
 
     /* 输出四个点值 */
     if (!dst->gdi) {
-        color.c32.lrp = lrp[0];
+        color.c32.lrp = lrp0;
         pixel_lrp32z(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c32.lrp = lrp[1];
+            color.c32.lrp = lrp1;
             pixel_lrp32z(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c32.lrp = lrp[2];
+            color.c32.lrp = lrp2;
             pixel_lrp32z(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c32.lrp = lrp[3];
+            color.c32.lrp = lrp3;
             pixel_lrp32z(dst, bx + 1, by + 1, color);
         }
     }
     else {
-        color.c32.lrp = lrp[0];
+        color.c32.lrp = lrp0;
         pixel_lrp32n(dst, bx + 0, by + 0, color);
         if (bx < dst->clip_win.x2) {
             over = FALSE;
-            color.c32.lrp = lrp[1];
+            color.c32.lrp = lrp1;
             pixel_lrp32n(dst, bx + 1, by + 0, color);
         }
         else {
             over = TRUE;
         }
         if (by < dst->clip_win.y2) {
-            color.c32.lrp = lrp[2];
+            color.c32.lrp = lrp2;
             pixel_lrp32n(dst, bx + 0, by + 1, color);
         }
         else {
             over = TRUE;
         }
         if (!over) {
-            color.c32.lrp = lrp[3];
+            color.c32.lrp = lrp3;
             pixel_lrp32n(dst, bx + 1, by + 1, color);
         }
     }
