@@ -21,6 +21,9 @@
 #define __CR_HASH_H__
 
 #include "defs.h"
+#if defined(_CR_OS_MACOSX_)
+    #include <CommonCrypto/CommonDigest.h>
+#endif
 
 /*****************************************************************************/
 /*                                数据块哈希                                 */
@@ -152,6 +155,9 @@ CR_API void_t   hash_bzz5_finish (int32u hash[5], sBZZ5 *ctx);
 CR_API void_t   hash_bzz5_total (int32u hash[5], const void_t *data,
                                  leng_t size);
 /* MD2 */
+#if defined(_CR_OS_MACOSX_)
+    typedef CC_MD2_CTX  sMD2;
+#else
 typedef struct
 {
         leng_t  left;
@@ -159,7 +165,7 @@ typedef struct
         byte_t  state[48];
         byte_t  buffer[16];
 } sMD2;
-
+#endif
 CR_API void_t   hash_md2_init (sMD2 *ctx);
 CR_API void_t   hash_md2_update (sMD2 *ctx, const void_t *data,
                                  leng_t size);
@@ -167,6 +173,10 @@ CR_API void_t   hash_md2_finish (byte_t hash[16], sMD2 *ctx);
 CR_API void_t   hash_md2_total (byte_t hash[16], const void_t *data,
                                 leng_t size);
 /* MD4, MD5 */
+#if defined(_CR_OS_MACOSX_)
+    typedef CC_MD4_CTX  sMD4;
+    typedef CC_MD5_CTX  sMD5;
+#else
 typedef struct
 {
         int32u  count[2];
@@ -174,7 +184,7 @@ typedef struct
         byte_t  buffer[64];
 
 } sMD4, sMD5;
-
+#endif
 /* MD4 */
 CR_API void_t   hash_md4_init (sMD4 *ctx);
 CR_API void_t   hash_md4_update (sMD4 *ctx, const void_t *data,
@@ -190,13 +200,16 @@ CR_API void_t   hash_md5_finish (byte_t hash[16], sMD5 *ctx);
 CR_API void_t   hash_md5_total (byte_t hash[16], const void_t *data,
                                 leng_t size);
 /* SHA-1 */
+#if defined(_CR_OS_MACOSX_)
+    typedef CC_SHA1_CTX     sSHA1;
+#else
 typedef struct
 {
         int32u  count[2];
         int32u  state[5];
         byte_t  buffer[64];
 } sSHA1;
-
+#endif
 CR_API void_t   hash_sha1_init (sSHA1 *ctx);
 CR_API void_t   hash_sha1_update (sSHA1 *ctx, const void_t *data,
                                   leng_t size);
@@ -204,6 +217,10 @@ CR_API void_t   hash_sha1_finish (byte_t hash[20], sSHA1 *ctx);
 CR_API void_t   hash_sha1_total (byte_t hash[20], const void_t *data,
                                  leng_t size);
 /* SHA-224, SHA-256 */
+#if defined(_CR_OS_MACOSX_)
+    typedef CC_SHA256_CTX   sSHA224;
+    typedef CC_SHA256_CTX   sSHA256;
+#else
 typedef struct
 {
         int32u  count[2];
@@ -211,7 +228,7 @@ typedef struct
         byte_t  buffer[64];
 
 } sSHA224, sSHA256;
-
+#endif
 /* SHA-224 */
 CR_API void_t   hash_sha224_init (sSHA224 *ctx);
 CR_API void_t   hash_sha224_update (sSHA224 *ctx, const void_t *data,
@@ -227,6 +244,10 @@ CR_API void_t   hash_sha256_finish (byte_t hash[32], sSHA256 *ctx);
 CR_API void_t   hash_sha256_total (byte_t hash[32], const void_t *data,
                                    leng_t size);
 /* SHA-384, SHA-512 */
+#if defined(_CR_OS_MACOSX_)
+    typedef CC_SHA512_CTX   sSHA384;
+    typedef CC_SHA512_CTX   sSHA512;
+#else
 typedef struct
 {
         int64u  count[2];
@@ -234,7 +255,7 @@ typedef struct
         byte_t  buffer[128];
 
 } sSHA384, sSHA512;
-
+#endif
 /* SHA-384 */
 CR_API void_t   hash_sha384_init (sSHA384 *ctx);
 CR_API void_t   hash_sha384_update (sSHA384 *ctx, const void_t *data,
@@ -269,7 +290,13 @@ CR_API void_t   hash_ed2k_total1 (byte_t hash[16], const void_t *data,
 CR_API void_t   hash_ed2k_total2 (byte_t hash[16], const void_t *data,
                                   leng_t size);
 /* RMD-128 */
-typedef sMD5    sRMD128;
+typedef struct
+{
+        int32u  count[2];
+        int32u  state[4];
+        byte_t  buffer[64];
+
+} sRMD128;
 
 CR_API void_t   hash_rmd128_init (sRMD128 *ctx);
 CR_API void_t   hash_rmd128_update (sRMD128 *ctx, const void_t *data,
@@ -278,7 +305,13 @@ CR_API void_t   hash_rmd128_finish (byte_t hash[16], sRMD128 *ctx);
 CR_API void_t   hash_rmd128_total (byte_t hash[16], const void_t *data,
                                    leng_t size);
 /* RMD-160 */
-typedef sSHA1   sRMD160;
+typedef struct
+{
+        int32u  count[2];
+        int32u  state[5];
+        byte_t  buffer[64];
+
+} sRMD160;
 
 CR_API void_t   hash_rmd160_init (sRMD160 *ctx);
 CR_API void_t   hash_rmd160_update (sRMD160 *ctx, const void_t *data,
@@ -287,7 +320,13 @@ CR_API void_t   hash_rmd160_finish (byte_t hash[20], sRMD160 *ctx);
 CR_API void_t   hash_rmd160_total (byte_t hash[20], const void_t *data,
                                    leng_t size);
 /* RMD-256 */
-typedef sSHA256 sRMD256;
+typedef struct
+{
+        int32u  count[2];
+        int32u  state[8];
+        byte_t  buffer[64];
+
+} sRMD256;
 
 CR_API void_t   hash_rmd256_init (sRMD256 *ctx);
 CR_API void_t   hash_rmd256_update (sRMD256 *ctx, const void_t *data,

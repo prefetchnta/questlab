@@ -44,6 +44,14 @@ CR_API uint_t   get_sys_codepage (void_t);
 /* 设置系统本地编码值 (部分支持) */
 CR_API void_t   set_sys_codepage (uint_t cpage);
 
+/* 编码转换函数类型 */
+typedef void_t* (*cr_acp2uni_t) (uint_t, const ansi_t*, leng_t*, bool_t);
+typedef ansi_t* (*cr_uni2acp_t) (uint_t, const void_t*, leng_t*, bool_t);
+
+/* 设置外挂编码转换函数 */
+CR_API void_t   set_str_acp2uni (cr_acp2uni_t func);
+CR_API void_t   set_str_uni2acp (cr_uni2acp_t func);
+
 /*****************************************************************************/
 /*                                系统定时器                                 */
 /*****************************************************************************/
