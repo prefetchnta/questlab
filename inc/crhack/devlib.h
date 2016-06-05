@@ -123,6 +123,8 @@ CR_API bool_t   socket_tcp_set_alive (socket_t netw, uint_t idle,
 CR_API bool_t   socket_mcast_enter (socket_t netw, const ansi_t *maddr,
                                 const ansi_t *laddr, byte_t ttl, byte_t loop);
 CR_API bool_t   socket_mcast_leave (socket_t netw);
+CR_API bool_t   netcard_get_info (const ansi_t *name, ansi_t ip[16],
+                            ansi_t gw[16], ansi_t msk[16], byte_t mac[6]);
 
 /*****************************************************************************/
 /*                                块设备接口                                 */

@@ -241,7 +241,7 @@ iGFX2_GDI_setPal (
 
     real = (iGFX2_GDI*)that;
     if (SetDIBColorTable(real->m_back, start, count,
-            (RGBQUAD*)(&real->__back__.pal)) != count)
+            (RGBQUAD*)(&real->__back__.pal[start])) != count)
         return (FALSE);
     return (TRUE);
 }

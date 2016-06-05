@@ -75,7 +75,7 @@ typedef struct
         leng_t  bpc;        /* 图片的像素大小 */
         uint_t  fmt;        /* 图片的像素格式 */
         bool_t  gdi;        /* 图片的垂直颠倒 */
-        uint_t  align;      /* 每行字节填充数 */
+        uint_t  align;      /* 每行字节对齐数 */
         sRECT   clip_win;   /* 图片剪裁用方框 */
         sRECT   position;   /* 图片的位置信息 */
         cl32_t  keycolor;   /* 图片的透明颜色 */

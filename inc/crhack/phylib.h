@@ -344,6 +344,24 @@ CR_API void_t   tex_patt_free (sTEX_PATTERN *patt);
 CR_API sIMAGE*  tex_compress (const sIMAGE *img, uint_t tile_w,
                               uint_t tile_h, byte_t gate);
 
+/*****************************************************************************/
+/*                                   空间                                    */
+/*****************************************************************************/
+
+/* 点的空间划分 */
+CR_API uint_t   space_divide (byte_t *bits, double min, double max,
+                              double value, uint_t times);
+CR_API uint_t   space_genbit (byte_t *bits, uint_t size, byte_t **list,
+                              uint_t count);
+/* 空间坐标哈希 */
+CR_API ansi_t*  space_hash2d (double min_x, double max_x,
+                              double min_y, double max_y,
+                              double x, double y, uint_t times);
+CR_API ansi_t*  space_hash3d (double min_x, double max_x,
+                              double min_y, double max_y,
+                              double min_z, double max_z,
+                              double x, double y, double z, uint_t times);
+
 #endif  /* !__CR_PHYLIB_H__ */
 
 /*****************************************************************************/
