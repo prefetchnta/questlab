@@ -96,6 +96,7 @@ CR_API void_t   socket_free (void_t);
 CR_API void_t   socket_close (socket_t netw);
 CR_API bool_t   socket_shutdown (socket_t netw, uint_t flags);
 CR_API bool_t   socket_input_size (socket_t netw, uint_t *size);
+CR_API bool_t   socket_input_size2 (socket_t netw, uint_t *size);
 CR_API socket_t server_tcp_accept (socket_t netw);
 CR_API socket_t server_tcp_open (const ansi_t *addr, int16u port);
 CR_API socket_t client_tcp_open (const ansi_t *addr, int16u port, int32s time);
@@ -113,7 +114,6 @@ CR_API uint_t   socket_tcp_recv (socket_t netw, void_t *data, uint_t size);
 CR_API uint_t   socket_tcp_peek (socket_t netw, void_t *data, uint_t size);
 CR_API uint_t   socket_udp_recv (socket_t netw, void_t *data, uint_t size);
 CR_API uint_t   socket_udp_peek (socket_t netw, void_t *data, uint_t size);
-CR_API bool_t   socket_udp_size (socket_t netw, uint_t *size);
 CR_API void_t   socket_set_timeout (socket_t netw, int32s wr_time,
                                     int32s rd_time);
 CR_API int16u   socket_remote_ip (socket_t netw, int32u *ip);

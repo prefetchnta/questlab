@@ -145,17 +145,17 @@ typedef int16s  fp16_t;
     #undef  _LARGE_FILE
     #undef  _LARGEFILE_SOURCE
     #undef  _LARGEFILE64_SOURCE
-    #define _FILE_OFFSET_BITS 32
+    #define _FILE_OFFSET_BITS   32
 
 #else   /* (_CR_FILE64_) */
     typedef int64s  fdist_t;
     typedef int64u  fsize_t;
 
     /* 打开 GCC 64位文件开关 */
-    #define _LARGE_FILE
-    #define _LARGEFILE_SOURCE
-    #define _LARGEFILE64_SOURCE
-    #define _FILE_OFFSET_BITS 64
+    #define _LARGE_FILE         1
+    #define _LARGEFILE_SOURCE   1
+    #define _LARGEFILE64_SOURCE 1
+    #define _FILE_OFFSET_BITS   64
 #endif
 
 /* 内存容量大小 */

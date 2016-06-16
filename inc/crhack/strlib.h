@@ -266,6 +266,14 @@ CR_API ansi_t** str_splitA (ansi_t *str, ansi_t sep, leng_t *count);
 CR_API wide_t** str_splitW (wide_t *str, wide_t sep, leng_t *count);
 CR_API ansi_t** str_cmd_splitA (ansi_t *str, uint_t *count);
 CR_API wide_t** str_cmd_splitW (wide_t *str, uint_t *count);
+CR_API ansi_t*  str_url_splitA (const ansi_t *url, ansi_t **scheme,
+                                ansi_t **username, ansi_t **password,
+                                ansi_t **host, uint_t *port, ansi_t **path,
+                                ansi_t **params, ansi_t **flags);
+CR_API wide_t*  str_url_splitW (const wide_t *url, wide_t **scheme,
+                                wide_t **username, wide_t **password,
+                                wide_t **host, uint_t *port, wide_t **path,
+                                wide_t **params, wide_t **flags);
 CR_API leng_t   str_get_lineA (const ansi_t *pos, const ansi_t *str,
                                leng_t *cols CR_DEFAULT(NULL));
 CR_API leng_t   str_get_lineW (const wide_t *pos, const wide_t *str,
