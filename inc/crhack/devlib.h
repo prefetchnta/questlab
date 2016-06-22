@@ -127,6 +127,33 @@ CR_API bool_t   netcard_get_info (const ansi_t *name, ansi_t ip[16],
                             ansi_t gw[16], ansi_t msk[16], byte_t mac[6]);
 
 /*****************************************************************************/
+/*                                 其他外设                                  */
+/*****************************************************************************/
+
+/* 看门狗 */
+CR_API sint_t   wdg_open (const ansi_t *dev);
+CR_API void_t   wdg_close (sint_t wdg);
+CR_API void_t   wdg_timeout (sint_t wdg, uint_t time_ms);
+CR_API void_t   wdg_feed (sint_t wdg);
+
+/* SPI */
+#define SPI_CPHA        0x01
+#define SPI_CPOL        0x02
+#define SPI_CS_HIGH     0x04
+#define SPI_LSB_FIRST   0x08
+#define SPI_3WIRE       0x10
+#define SPI_LOOP        0x20
+#define SPI_NO_CS       0x40
+#define SPI_READY       0x80
+CR_API sint_t   spi_open (const ansi_t *dev, uint_t mode,
+                          uint_t bits, uint_t speed);
+CR_API void_t   spi_close (sint_t spi);
+CR_API bool_t   spi_read (sint_t spi, void_t *data, uint_t size);
+CR_API bool_t   spi_write (sint_t spi, const void_t *data, uint_t size);
+CR_API bool_t   spi_iorw (sint_t spi, void_t *recv, const void_t *send,
+                          uint_t size, bool_t cs_flip);
+
+/*****************************************************************************/
 /*                                块设备接口                                 */
 /*****************************************************************************/
 
