@@ -362,6 +362,84 @@ CR_API ansi_t*  space_hash3d (double min_x, double max_x,
                               double min_z, double max_z,
                               double x, double y, double z, uint_t times);
 
+/*****************************************************************************/
+/*                                   寻路                                    */
+/*****************************************************************************/
+
+/* astar pathfinding */
+#define ASNL_ADDOPEN        0
+#define ASNL_STARTOPEN      1
+#define ASNL_DELETEOPEN     2
+#define ASNL_ADDCLOSED      3
+
+#define ASNC_INITIALADD     0
+#define ASNC_OPENADD_UP     1
+#define ASNC_OPENADD        2
+#define ASNC_CLOSEDADD_UP   3
+#define ASNC_CLOSEDADD      4
+#define ASNC_NEWADD         5
+
+/* 路径节点 */
+typedef struct  _asNode
+{
+        sint_t  f, g, h, x, y;
+        sint_t  number, numchildren;
+        struct _asNode* parent;
+        struct _asNode* next;
+        struct _asNode* children[8];
+
+} asNode;
+
+/* 节点栈对象 */
+typedef struct  _asStack
+{
+        asNode*             data;
+        struct _asStack*    next;
+
+} asStack;
+
+/* 用到的回调类型 */
+typedef sint_t  (*asFunc) (asNode*, asNode*, sint_t, void_t*);
+
+/* AStar 寻路对象 */
+typedef struct
+{
+        /* 公用成员 */
+        asFunc  udCost;         /* 代价计算回调 */
+        asFunc  udValid;        /* 坐标有效性检查回调 */
+        asFunc  udHeuristic;    /* 预估值计算回调 */
+        asFunc  udNotifyChild;  /* 子节点增加/检查时调用 */
+        asFunc  udNotifyList;   /* 节点加入 Open/Closed 列表时调用 */
+        void_t* cbData;         /* 回调函数的用户数据 */
+        void_t* ncData;         /* 回调函数的用户数据 */
+
+        /* 私有成员 */
+        sint_t      iSX, iSY, iDX, iDY, iCols, iRows, iDNum;
+        asNode*     pOpen;      /* Open 列表 */
+        asNode*     pClosed;    /* Closed 列表 */
+        asNode*     pBest;      /* 最佳节点 */
+        asStack*    pStack;     /* 用到的栈对象 */
+
+} sASTAR;
+
+CR_API void_t   astar_init (sASTAR *as, sint_t cols, sint_t rows);
+CR_API void_t   astar_free (sASTAR *as);
+CR_API void_t   astar_reset (sASTAR *as);
+CR_API bool_t   astar_step_init (sASTAR *as, sint_t sx, sint_t sy,
+                                             sint_t dx, sint_t dy);
+CR_API sint_t   astar_step_next (sASTAR *as);
+CR_API bool_t   astar_find_path (sASTAR *as, sint_t sx, sint_t sy,
+                                             sint_t dx, sint_t dy);
+CR_API sPNT2*   astar_get_path (const sASTAR *as, leng_t *count);
+
+/*****************************************************************************/
+/*                                   医学                                    */
+/*****************************************************************************/
+
+/* HCG 指标 */
+CR_API void_t   hcg_min_max (double base, sint_t days,
+                             double *vmin, double *vmax);
+
 #endif  /* !__CR_PHYLIB_H__ */
 
 /*****************************************************************************/
