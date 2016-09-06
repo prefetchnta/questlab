@@ -131,7 +131,16 @@ WinMain (
     misc_call_exe("cmd.exe /c copy /b " QST_PATH_EXT3RD "wscite\\"
             "SciTEGlobal.properties+" QST_PATH_WINDOW "wscite.ini "
                 QST_PATH_EXT3RD "wscite\\SciTEGlobal.properties",
-                                FALSE, TRUE);
+                                TRUE, TRUE);
+    FILE*   fp;
+
+    /* 添加 SciTE 的默认编码 */
+    fp = fopen(QST_PATH_EXT3RD "wscite\\SciTEGlobal.properties", "a+");
+    if (fp != NULL) {
+        fprintf(fp, "code.page=%u\n", get_sys_codepage());
+        fclose(fp);
+    }
+
     sINIu*  ini;
     ansi_t* str;
 
