@@ -146,6 +146,25 @@
     #else
         #error "gcc.h: AR TYPE not supported yet!"
     #endif
+
+    /* ARM 架构版本 */
+    #if defined(_CR_AR_ARM_)
+        #if     defined(_CR_AR_ARM64_)
+            #define _CR_ARM_V16_    4
+            #define _CR_ARM_V32_    8
+        #elif   defined(__ARM_ARCH_7A__) || \
+                defined(__ARM_ARCH_7S__)
+            #define _CR_ARM_V16_    4
+            #define _CR_ARM_V32_    7
+        #elif   defined(__ARM_ARCH)
+            #define _CR_ARM_V32_    __ARM_ARCH
+            #if (_CR_ARM_V32_ >= 7)
+                #define _CR_ARM_V16_    4
+            #else
+                #define _CR_ARM_V16_    0
+            #endif
+        #endif
+    #endif
     /*------------------------------------------------*/
 
     /* 编译器操作系统 */

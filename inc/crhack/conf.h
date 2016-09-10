@@ -314,10 +314,10 @@
         /* ARMv7 以下必须要对齐访问 */
         #if defined(_CR_ARM_V32_) && \
             defined(_CR_ARM_V16_)
-            #if (_CR_ARM_V32_ < 7) && (_CR_ARM_V16_ < 4)
+            #if (_CR_ARM_V32_ < 7) && (_CR_ARM_V16_ <= 4)
                 #define _CR_ALIGN_NEEDED_
             #endif
-        #else
+        #elif   !defined(__ARM_FEATURE_UNALIGNED)
             #define _CR_ALIGN_NEEDED_
         #endif
     /* 除此以外默认需要对齐访问 */
