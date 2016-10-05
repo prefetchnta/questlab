@@ -16,11 +16,17 @@
  *             ##       CREATE: 2016-10-05
  *              #
  ================================================
-        日期计算小工具
+        日期时间计算小工具
  ================================================
  */
 
 #include "../QstLibs/QstLibs.h"
+
+/* 星期字符串查表 */
+static const ansi_t* s_weeks[] =
+{
+    " Sun.", " Mon.", "Tues.", " Wed.", "Thur.", " Fri.", " Sat.",
+};
 
 /*
 ---------------------------------------
@@ -29,6 +35,16 @@
 */
 static void_t dlt_print (int64u delta)
 {
+    int64u  days, secs;
+
+    days = delta / 86400;
+    secs = delta % 86400;
+    printf("delta: %I64u(s)\n", delta);
+    printf("delta: %I64u(d) %I64u(s)\n", days, secs);
+    printf("delta: %I64u(d) %I64u(h) %I64u(s)\n", days,
+                    secs / 3600, secs % 3600);
+    printf("delta: %I64u(d) %I64u(h) %I64u(m) %I64u(s)\n", days,
+                    secs / 3600, (secs % 3600) / 60, (secs % 3600) % 60);
 }
 
 /*
@@ -38,6 +54,14 @@ static void_t dlt_print (int64u delta)
 */
 static void_t dtm_print (const sDATETIME *dtm)
 {
+    sDATEATTR   attr;
+
+    datetime_attr(&attr, dtm);
+    printf("[%04u-%02u-%02u %02u:%02u:%02u %s]\n", dtm->year, dtm->month,
+            dtm->day, dtm->hour, dtm->minute, dtm->second, s_weeks[dtm->week]);
+    printf("     {y_leap=%u,y_count=%u,y_index=%u,d_seconds=%u,m_count=%u}\n",
+            attr.year_leap, attr.year_days, attr.days_year, attr.days_secs,
+            attr.month_day);
 }
 
 /*
@@ -89,12 +113,12 @@ int main (int argc, char *argv[])
             usage();
             return (QST_ERROR);
 
-        case '0':
+        case '0':   /* 计算时间差 */
             if (!str2datetimeA(&end, argv[2], '@'))
                 datetime_get(&end);
             printf("end: ");
             dtm_print(&end);
-            delta = date_sub(&end, &beg);
+            delta = datetime_sub(&end, &beg);
             if (delta < 0) {
                 delta = -delta;
                 printf("[-]\n");
@@ -105,7 +129,7 @@ int main (int argc, char *argv[])
             dlt_print(delta);
             break;
 
-        case '1':
+        case '1':   /* 计算目标时间 */
             seconds = str2int32A(argv[2]);
             struct_cpy(&end, &beg, sDATETIME);
             if (seconds < 0) {
