@@ -293,6 +293,7 @@ fmj_xzz (
 /* 数据单位转换宏 */
 #define CR_PI       3.1415926535898f
 #define CR_DTOR     (CR_PI / 180.0f)
+#define CR_RTOD     (180.0f / CR_PI)
 #define CR_B2K(n)   ((n) / (1024UL))
 #define CR_K2B(n)   ((n) * (1024UL))
 #define CR_B2M(n)   ((n) / (1024UL * 1024UL))
