@@ -1294,6 +1294,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_to_yuv", image_cto_yuv },
     { "crhack_face_frontal", image_facedetect },
     { "crhack_face_multiview", image_facedetect },
-    { "crhack_face_reinforce", image_facedetect },
+    { "crhack_face_multiview_reinforce", image_facedetect },
+    { "crhack_face_frontal_surveillance", image_facedetect },
     { NULL, NULL },
 };
