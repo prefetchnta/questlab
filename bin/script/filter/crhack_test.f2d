@@ -33,7 +33,7 @@
                                                   min_neighbors="5" />
     <!-- 人脸识别 (正面) -->
     <?crhack_face_frontal_surveillance scale="1.2" min_width="24" max_width="0"
-                                                   min_neighbors="5" />
+                                                   min_neighbors="3" />
     <!-- 垂直翻转滤镜 -->
     <?crhack_flip_vv />
 
