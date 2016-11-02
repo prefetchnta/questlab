@@ -1210,8 +1210,8 @@ image_facedetect (
 
     scale = xml_attr_fp32U("scale", 1.2f, param);
     neighbors = xml_attr_intxU("min_neighbors", 2, param);
-    min_size = xml_attr_intxU("min_size", 24, param);
-    max_size = xml_attr_intxU("max_size", 0, param);
+    min_size = xml_attr_intxU("min_width", 24, param);
+    max_size = xml_attr_intxU("max_width", 0, param);
     if (str_cmpA(param->name, "crhack_face_frontal") == 0) {
         result = facedetect_frontal(gray->data, gray->position.ww,
                                     gray->position.hh, gray->bpl, scale,
@@ -1223,11 +1223,22 @@ image_facedetect (
                                     gray->position.hh, gray->bpl, scale,
                                         neighbors, min_size, max_size);
     }
-    else {
+    else
+    if (str_cmpA(param->name, "crhack_face_multiview_reinforce") == 0) {
         result = facedetect_multiview_reinforce(gray->data,
                                     gray->position.ww, gray->position.hh,
                                         gray->bpl, scale, neighbors,
                                             min_size, max_size);
+    }
+    else
+    if (str_cmpA(param->name, "crhack_face_frontal_surveillance") == 0) {
+        result = facedetect_frontal_surveillance(gray->data,
+                                    gray->position.ww, gray->position.hh,
+                                        gray->bpl, scale, neighbors,
+                                            min_size, max_size);
+    }
+    else {
+        result = NULL;
     }
     if (result != NULL) {
         color.val = 0xFF00FF00;

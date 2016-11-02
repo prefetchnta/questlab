@@ -23,14 +23,17 @@
     <?crhack_diffuse min_x="-10" max_x="10" min_y="-10" max_y="10" />
 
     <!-- 人脸识别 (正面) -->
-    <?crhack_face_frontal scale="1.2" min_size="24" max_size="0"
+    <?crhack_face_frontal scale="1.2" min_width="24" max_width="0"
                                       min_neighbors="3" />
     <!-- 人脸识别 (多角度) -->
-    <?crhack_face_multiview scale="1.2" min_size="24" max_size="0"
+    <?crhack_face_multiview scale="1.2" min_width="24" max_width="0"
                                         min_neighbors="5" />
     <!-- 人脸识别 (多角度) -->
-    <?crhack_face_reinforce scale="1.2" min_size="24" max_size="0"
-                                        min_neighbors="5" />
+    <?crhack_face_multiview_reinforce scale="1.2" min_width="24" max_width="0"
+                                                  min_neighbors="5" />
+    <!-- 人脸识别 (正面) -->
+    <?crhack_face_frontal_surveillance scale="1.2" min_width="24" max_width="0"
+                                                   min_neighbors="5" />
     <!-- 垂直翻转滤镜 -->
     <?crhack_flip_vv />
 
