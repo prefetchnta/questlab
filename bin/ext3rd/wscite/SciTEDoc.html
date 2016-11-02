@@ -1600,6 +1600,14 @@ NameError: mistake
           Set whether all carets blink. 0 means only the main caret blinks. Default is 1.
         </td>
       </tr>
+      <tr class="windowsonly" id='property-selection.always.visible'>
+        <td>
+          selection.always.visible
+        </td>
+        <td>
+          Set to 1 to show the selection coloured even when SciTE is not the active application. Default is 0.
+        </td>
+      </tr>
       <tr id='property-caret.line.back'>
         <td>
           <a name='property-caret.line.back.alpha'></a>
@@ -2098,6 +2106,14 @@ NameError: mistake
 	<td>asp.default.language</td>
 	<td>Script in ASP code is initially assumed to be in JavaScript. To change this to VBScript set asp.default.language to 2. Python is 3.</td>
 	</tr>
+	<tr id='property-fold.abl.comment.multiline'>
+	<td>fold.abl.comment.multiline</td>
+	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+	</tr>
+	<tr id='property-fold.abl.syntax.based'>
+	<td>fold.abl.syntax.based</td>
+	<td>Set this property to 0 to disable syntax based folding.</td>
+	</tr>
 	<tr id='property-fold.asm.comment.explicit'>
 	<td>fold.asm.comment.explicit</td>
 	<td>This option enables folding explicit fold points when using the Asm lexer. Explicit fold points allows adding extra folding by placing a ;{ comment at the start and a ;} at the end of a section that should fold.</td>
@@ -2125,6 +2141,14 @@ NameError: mistake
 	<tr id='property-fold.at.else'>
 	<td>fold.at.else</td>
 	<td>This option enables C++ folding on a "} else {" line of an if statement.</td>
+	</tr>
+	<tr id='property-fold.baan.keywords.based'>
+	<td>fold.baan.keywords.based</td>
+	<td>Set this property to 0 to disable keywords based folding, which is folding based on for, if, on (case), repeat, select, while and fold ends based on endfor, endif, endcase, until, endselect, endwhile respectively.</td>
+	</tr>
+	<tr id='property-fold.baan.syntax.based'>
+	<td>fold.baan.syntax.based</td>
+	<td>Set this property to 0 to disable syntax based folding, which is folding based on '{' & '('.</td>
 	</tr>
 	<tr id='property-fold.basic.comment.explicit'>
 	<td>fold.basic.comment.explicit</td>
@@ -2285,6 +2309,10 @@ NameError: mistake
 	<tr id='property-lexer.asm.comment.delimiter'>
 	<td>lexer.asm.comment.delimiter</td>
 	<td>Character used for COMMENT directive's delimiter, replacing the standard "~".</td>
+	</tr>
+	<tr id='property-lexer.baan.styling.within.preprocessor'>
+	<td>lexer.baan.styling.within.preprocessor</td>
+	<td>For Baan code, determines whether all preprocessor code is styled in the preprocessor style (0, the default) or only from the initial # to the end of the command word(1).</td>
 	</tr>
 	<tr id='property-lexer.cpp.allow.dollars'>
 	<td>lexer.cpp.allow.dollars</td>
@@ -2826,7 +2854,11 @@ Prev File|IDM_PREVFILE|<br/>
           find.close.on.find
         </td>
         <td>
-          Set to 0 to prevent the Find dialog from closing when "Find" pressed.
+          Set find.close.on.find to 0, 1 or 2 to prevent (0) or allow (1) closing the
+          the find strip automatically when the Find button is pressed.
+          The value 2 causes the strip to close automatically only when the search finds a match
+          which enables the user to change options or search string if a mistake was made.
+          The default value is 1.
         </td>
       </tr>
       <tr id='property-find.replace.matchcase'>
