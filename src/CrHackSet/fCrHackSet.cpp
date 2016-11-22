@@ -1207,32 +1207,33 @@ image_facedetect (
     int max_size;
     int neighbors;
     short* points;
+    byte_t buf[0xC004];
 
     scale = xml_attr_fp32U("scale", 1.2f, param);
     neighbors = xml_attr_intxU("min_neighbors", 2, param);
     min_size = xml_attr_intxU("min_width", 24, param);
     max_size = xml_attr_intxU("max_width", 0, param);
     if (str_cmpA(param->name, "crhack_face_frontal") == 0) {
-        result = facedetect_frontal(gray->data, gray->position.ww,
+        result = facedetect_frontal(buf, gray->data, gray->position.ww,
                                     gray->position.hh, gray->bpl, scale,
                                         neighbors, min_size, max_size);
     }
     else
     if (str_cmpA(param->name, "crhack_face_multiview") == 0) {
-        result = facedetect_multiview(gray->data, gray->position.ww,
+        result = facedetect_multiview(buf, gray->data, gray->position.ww,
                                     gray->position.hh, gray->bpl, scale,
                                         neighbors, min_size, max_size);
     }
     else
     if (str_cmpA(param->name, "crhack_face_multiview_reinforce") == 0) {
-        result = facedetect_multiview_reinforce(gray->data,
+        result = facedetect_multiview_reinforce(buf, gray->data,
                                     gray->position.ww, gray->position.hh,
                                         gray->bpl, scale, neighbors,
                                             min_size, max_size);
     }
     else
     if (str_cmpA(param->name, "crhack_face_frontal_surveillance") == 0) {
-        result = facedetect_frontal_surveillance(gray->data,
+        result = facedetect_frontal_surveillance(buf, gray->data,
                                     gray->position.ww, gray->position.hh,
                                         gray->bpl, scale, neighbors,
                                             min_size, max_size);
