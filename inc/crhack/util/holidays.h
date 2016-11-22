@@ -55,10 +55,11 @@ CR_TYPEDEF struct
 #define HOLI_TYPE_TC    5   /* 天长收费 */
 #define HOLI_TYPE_MAX   5   /* 最大取值 */
 /* ------------------------------------ */
-#define HOLI_FL_MASK  0x1F  /* 类型掩码 */
+#define HOLI_FL_MASK  0x0F  /* 类型掩码 */
 #define HOLI_FL_ZERO  0x80  /* 过零即天 */
 #define HOLI_FL_CRSS  0x40  /* 跨段合并 */
 #define HOLI_FL_STUP  0x20  /* 向上进位 */
+#define HOLI_FL_FREE  0x10  /* 内部免费 */
 /* ------------------------------------ */
 
 /* Holidays 收费规则 */
