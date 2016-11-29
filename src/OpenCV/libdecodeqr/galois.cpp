@@ -377,7 +377,7 @@ namespace Galois{
             count=buf->rows;
 
         for(j=0;j<count;j++){
-            Nomial *l;
+            Nomial *l=NULL;
             //
             // pivot
             //

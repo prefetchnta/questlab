@@ -5,4 +5,7 @@
 #pragma warning (disable: 4238)
 #pragma warning (disable: 4244)
 #define _CRT_SECURE_NO_WARNINGS
+#define __BEGIN__ {
+#define __END__ goto exit; exit: ; }
+#define cvWarpPerspectiveQMatrix cvGetPerspectiveTransform
 #endif
