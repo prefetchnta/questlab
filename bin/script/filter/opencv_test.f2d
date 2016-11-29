@@ -25,4 +25,7 @@
     <!-- 中值模糊滤镜 -->
     <?opencv_median_blur ksize="5" />
 
+    <!-- QrCode 识别滤镜 -->
+    <?opencv_qrcode_decode size="25" delta="10" />
+
 </filters>

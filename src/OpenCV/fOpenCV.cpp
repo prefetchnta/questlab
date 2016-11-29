@@ -2,6 +2,7 @@
 #include "xOpenCV.h"
 #include "../QstLibs/QstLibs.h"
 #include "opencv2/opencv.hpp"
+#include "libdecodeqr/decodeqr.h"
 using namespace cv;
 
 /*
@@ -310,6 +311,90 @@ hough_lines (
 }
 
 /*
+---------------------------------------
+    QrCode 查找识别
+---------------------------------------
+*/
+static bool_t
+qrcode_decode (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE*     dest;
+    IplImage    draw;
+    /* ----------- */
+    sint_t  size, delta;
+
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    if (!ilab_img2ipl_set(&draw, dest))
+        return (TRUE);
+    size  = xml_attr_intxU("size", DEFAULT_ADAPTIVE_TH_SIZE, param);
+    delta = xml_attr_intxU("delta", DEFAULT_ADAPTIVE_TH_DELTA, param);
+
+    int16u          state = 0;
+    QrDecoderHandle qrcode = qr_decoder_open();
+
+    /* 两种方式二值化图片并识别二维码 */
+    qr_decoder_set_image_buffer(qrcode, &draw);
+    if (size <= 0) {
+        state = qr_decoder_decode(qrcode, size, delta);
+    }
+    else {
+        if (size < 3)
+            size = 3;
+        for (size |= 1; size >= 3; size -= 2) {
+            state = qr_decoder_decode(qrcode, size, delta);
+            if (state & QR_IMAGEREADER_DECODED)
+                break;
+        }
+    }
+
+    ansi_t*         text;
+    CvPoint         point;
+    QrCodeHeader    header;
+
+    /* 无法识别直接返回 */
+    if (!qr_decoder_get_header(qrcode, &header))
+        goto _func_out;
+
+    /* 获取得到的文本字符串 */
+    if (netw != NULL) {
+        size = header.byte_size + 1;
+        text = str_allocA(size);
+        if (text == NULL)
+            goto _func_out;
+        qr_decoder_get_body(qrcode, (byte_t*)text, size);
+        netw_cmd_send((socket_t)netw, text);
+        mem_free(text);
+    }
+
+    CvBox2D*    boxes;
+    CvPoint*    vertexes;
+
+    /* 绘制定位到的二维码 */
+    vertexes = qr_decoder_get_coderegion_vertexes(qrcode);
+    point = vertexes[3];
+    for (uint_t idx = 0; idx < 4; idx++) {
+        cvLine(&draw, point, vertexes[idx], cvScalar(0, 255, 0, 255), 3, 8);
+        point = vertexes[idx];
+    }
+    boxes = qr_decoder_get_finderpattern_boxes(qrcode);
+    for (uint_t idx = 0; idx < 3; idx++) {
+        CvSize  sz = cvSize((int)boxes[idx].size.width / 2,
+                            (int)boxes[idx].size.height / 2);
+        cvEllipse(&draw, cvPointFrom32f(boxes[idx].center), sz,
+                  boxes[idx].angle, 0, 360, cvScalar(0, 255, 0, 255), 2, 8);
+    }
+_func_out:
+    qr_decoder_close(qrcode);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -323,5 +408,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "opencv_hough_circles", hough_circles },
     { "opencv_hough_lines", hough_lines },
     { "opencv_hough_linesp", hough_lines },
+    { "opencv_qrcode_decode", qrcode_decode },
     { NULL, NULL },
 };
