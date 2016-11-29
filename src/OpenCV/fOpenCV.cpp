@@ -368,6 +368,7 @@ qrcode_decode (
         if (text == NULL)
             goto _func_out;
         qr_decoder_get_body(qrcode, (byte_t*)text, size);
+        text[size - 1] = 0x00;
         netw_cmd_send((socket_t)netw, text);
         mem_free(text);
     }
