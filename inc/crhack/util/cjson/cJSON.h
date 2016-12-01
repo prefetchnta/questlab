@@ -83,6 +83,8 @@ extern char  *cJSON_Print(const cJSON *item);
 extern char  *cJSON_PrintUnformatted(const cJSON *item);
 /* Render a cJSON entity to text using a buffered strategy. prebuffer is a guess at the final size. guessing well reduces reallocation. fmt=0 gives unformatted, =1 gives formatted */
 extern char *cJSON_PrintBuffered(const cJSON *item, int prebuffer, int fmt);
+/* Render a cJSON entity to text using a buffer already allocated in memory with length buf_len */
+extern int cJSON_PrintPreallocated(cJSON *item, char *buf, const int len, const int fmt);
 /* Delete a cJSON entity and all subentities. */
 extern void   cJSON_Delete(cJSON *c);
 
@@ -115,7 +117,10 @@ extern cJSON *cJSON_CreateStringArray(const char **strings, int count);
 /* Append item to the specified array/object. */
 extern void cJSON_AddItemToArray(cJSON *array, cJSON *item);
 extern void	cJSON_AddItemToObject(cJSON *object, const char *string, cJSON *item);
-extern void	cJSON_AddItemToObjectCS(cJSON *object, const char *string, cJSON *item);	/* Use this when string is definitely const (i.e. a literal, or as good as), and will definitely survive the cJSON object */
+/* Use this when string is definitely const (i.e. a literal, or as good as), and will definitely survive the cJSON object.
+ * WARNING: When this function was used, make sure to always check that (item->type & cJSON_StringIsConst) is zero before
+ * writing to `item->string` */
+extern void	cJSON_AddItemToObjectCS(cJSON *object, const char *string, cJSON *item);
 /* Append reference to item to the specified array/object. Use this when you want to add an existing cJSON to a new cJSON, but don't want to corrupt your existing cJSON. */
 extern void cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item);
 extern void	cJSON_AddItemReferenceToObject(cJSON *object, const char *string, cJSON *item);
