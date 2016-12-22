@@ -106,6 +106,84 @@ static bool_t tester (void_t *param, sSEARCHa *info)
 }
 
 /*
+---------------------------------------
+    加载压缩接口
+---------------------------------------
+*/
+static sbin_t load_plugin (sCOMP *param)
+{
+    sINIu*  ini;
+    uint_t  vals;
+    sbin_t  sbin;
+    ansi_t* text;
+
+    /* 加载配置文件 */
+    struct_zero(param, sCOMP);
+    text = file_load_as_strA("comptest.ini");
+    if (text == NULL)
+        return (NULL);
+    ini = ini_parseU(text);
+    mem_free(text);
+    if (ini == NULL)
+        return (NULL);
+
+    /* 根据配置加载插件 */
+    text = ini_key_stringU("DLL", ini);
+    if (text == NULL)
+        goto _failure1;
+    sbin = sbin_loadA(text);
+    mem_free(text);
+    if (sbin == NULL)
+        goto _failure1;
+
+    /* 获取压缩接口 */
+    text = ini_key_stringU("ENC", ini);
+    if (text == NULL)
+        goto _failure2;
+    vals = ini_key_intxU("ENC_PARM", 0, ini);
+    if (ini->found) {
+        param->e_param = (void_t*)vals;
+        param->encode5 = sbin_exportT(sbin, text, enc_parm_t);
+        mem_free(text);
+        if (param->encode5 == NULL)
+            goto _failure2;
+    }
+    else {
+        param->encode4 = sbin_exportT(sbin, text, enc_copy_t);
+        mem_free(text);
+        if (param->encode4 == NULL)
+            goto _failure2;
+    }
+
+    /* 获取解压接口 */
+    text = ini_key_stringU("DEC", ini);
+    if (text == NULL)
+        goto _failure2;
+    vals = ini_key_intxU("DEC_PARM", 0, ini);
+    if (ini->found) {
+        param->d_param = (void_t*)vals;
+        param->decode5 = sbin_exportT(sbin, text, enc_parm_t);
+        mem_free(text);
+        if (param->decode5 == NULL)
+            goto _failure2;
+    }
+    else {
+        param->decode4 = sbin_exportT(sbin, text, enc_copy_t);
+        mem_free(text);
+        if (param->decode4 == NULL)
+            goto _failure2;
+    }
+    ini_closeU(ini);
+    return (sbin);
+
+_failure2:
+    sbin_unload(sbin);
+_failure1:
+    ini_closeU(ini);
+    return (NULL);
+}
+
+/*
 =======================================
     主程序
 =======================================
@@ -113,6 +191,7 @@ static bool_t tester (void_t *param, sSEARCHa *info)
 int main (int argc, char *argv[])
 {
     sCOMP param;
+    sbin_t plugin;
     const ansi_t *root;
 
     /* 建立 CrHack 系统 */
@@ -126,7 +205,11 @@ int main (int argc, char *argv[])
     }
 
     /* 根据配置文件加载压缩接口 */
-
+    plugin = load_plugin(&param);
+    if (plugin == NULL) {
+        printf("can't open compress plugin\n");
+        return (QST_ERROR);
+    }
 
     /* 生成性能测试对象 */
     s_profile = timer_new();
@@ -139,6 +222,7 @@ int main (int argc, char *argv[])
     file_searchA(root, TRUE, FALSE, FALSE, "*.*", tester, &param);
 
     /* 释放内存 */
+    sbin_unload(plugin);
     timer_del(s_profile);
     return (QST_OKAY);
 }
