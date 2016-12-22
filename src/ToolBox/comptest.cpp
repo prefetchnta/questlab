@@ -37,6 +37,12 @@ typedef struct
 
 } sCOMP;
 
+/* 文字颜色属性 */
+static int16u   s_clr_file;
+static int16u   s_clr_info;
+static int16u   s_clr_okay;
+static int16u   s_clr_fail;
+
 /*
 ---------------------------------------
     文件处理回调
@@ -54,7 +60,7 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     byte_t  shash[20];
 
     /* 跳过空文件和大文件 */
-    if (info->size == 0 || info->size > CR_M2B(32))
+    if (info->size == 0 || info->size > CR_M2B(64))
         return (TRUE);
     comp = (sCOMP*)param;
 
@@ -73,7 +79,8 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     hash_sha1_total(shash, sdata, ssize);
 
     /* 显示文件名和大小字节数 */
-    printf("%s (%" CR_FSZ "u Bytes) ", info->name, info->size);
+    cui_set_color(s_clr_file);
+    printf("%s (%" CR_FSZ "u) ", info->name, info->size);
 
     /* 压缩文件数据并显示速度 */
     timer_set_base(s_profile);
@@ -82,7 +89,8 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     else
         dsize = comp->encode5(ddata, dsize, sdata, ssize, comp->e_param);
     time = timer_get_delta(s_profile) * 1.024f;
-    printf("E: %.2f KB/S, %.2f%%", info->size / time, (fp32_t)dsize * 100.0f
+    cui_set_color(s_clr_info);
+    printf("ENC %.2f KB/S, %.2f%%", info->size / time, (fp32_t)dsize * 100.0f
                                                         / info->size);
     /* 解压文件数据并显示速度 */
     mem_zero(sdata, ssize);
@@ -92,14 +100,18 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     else
         dsize = comp->decode5(sdata, ssize, ddata, dsize, comp->d_param);
     time = timer_get_delta(s_profile) * 1.024f;
-    printf(" | D: %.2f KB/S", info->size / time);
+    printf(" | DEC %.2f KB/S", info->size / time);
 
     /* 计算解压后的哈希并比较 */
     hash_sha1_total(dhash, sdata, dsize);
-    if (mem_cmp(shash, dhash, sizeof(dhash)) != 0)
+    if (mem_cmp(shash, dhash, sizeof(dhash)) != 0) {
+        cui_set_color(s_clr_fail);
         printf(" [FAIL]\n");
-    else
+    }
+    else {
+        cui_set_color(s_clr_okay);
         printf(" [OKAY]\n");
+    }
     mem_free(ddata);
     mem_free(sdata);
     return (TRUE);
@@ -211,6 +223,14 @@ int main (int argc, char *argv[])
         return (QST_ERROR);
     }
 
+    /* 颜色属性合成 */
+    s_clr_file = cui_make_attr(0, CR_CUI_TEXT_LIGHT | CR_CUI_TEXT_GREEN |
+                                  CR_CUI_TEXT_RED);
+    s_clr_info = cui_make_attr(0, CR_CUI_TEXT_LIGHT | CR_CUI_TEXT_GREEN |
+                                  CR_CUI_TEXT_BLUE  | CR_CUI_TEXT_RED);
+    s_clr_okay = cui_make_attr(0, CR_CUI_TEXT_LIGHT | CR_CUI_TEXT_GREEN);
+    s_clr_fail = cui_make_attr(0, CR_CUI_TEXT_LIGHT | CR_CUI_TEXT_RED);
+
     /* 生成性能测试对象 */
     s_profile = timer_new();
 
@@ -220,6 +240,9 @@ int main (int argc, char *argv[])
     else
         root = argv[1];
     file_searchA(root, TRUE, FALSE, FALSE, "*.*", tester, &param);
+    s_clr_file = cui_make_attr(0, CR_CUI_TEXT_GREEN | CR_CUI_TEXT_BLUE |
+                                  CR_CUI_TEXT_RED);
+    cui_set_color(s_clr_file);
 
     /* 释放内存 */
     sbin_unload(plugin);
