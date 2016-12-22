@@ -131,12 +131,11 @@ static bool_t hasher (void_t *param, sSEARCHa *info)
         str_cmpA(info->name, "__hash__.txt") == 0)
         return (TRUE);
 
-    timer_set_base(s_profile);
-
     /* 显示文件名和大小字节数 */
     printf("%s (%" CR_FSZ "u Bytes) ", info->name, info->size);
 
     /* 根据内存大小选择读取方式 */
+    timer_set_base(s_profile);
     if (info->size == 0)
     {
         /* 空文件 */
