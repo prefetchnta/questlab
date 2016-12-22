@@ -73,7 +73,7 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     hash_sha1_total(shash, sdata, ssize);
 
     /* 显示文件名和大小字节数 */
-    printf("%s (%" CR_FSZ "u Bytes) EN: ", info->name, info->size);
+    printf("%s (%" CR_FSZ "u Bytes) ", info->name, info->size);
 
     /* 压缩文件数据并显示速度 */
     timer_set_base(s_profile);
@@ -82,8 +82,8 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     else
         dsize = comp->encode5(ddata, dsize, sdata, ssize, comp->e_param);
     time = timer_get_delta(s_profile) * 1.024f;
-    printf("%.2f KB/S, %.2f%%", info->size / time, (fp32_t)dsize / info->size);
-
+    printf("E: %.2f KB/S, %.2f%%", info->size / time, (fp32_t)dsize * 100.0f
+                                                        / info->size);
     /* 解压文件数据并显示速度 */
     mem_zero(sdata, ssize);
     timer_set_base(s_profile);
@@ -92,7 +92,7 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     else
         dsize = comp->decode5(sdata, ssize, ddata, dsize, comp->d_param);
     time = timer_get_delta(s_profile) * 1.024f;
-    printf(", DE: %.2f KB/S", info->size / time);
+    printf(" | D: %.2f KB/S", info->size / time);
 
     /* 计算解压后的哈希并比较 */
     hash_sha1_total(dhash, sdata, dsize);
