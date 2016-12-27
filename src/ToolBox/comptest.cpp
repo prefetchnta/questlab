@@ -43,6 +43,10 @@ static int16u   s_clr_info;
 static int16u   s_clr_okay;
 static int16u   s_clr_fail;
 
+/* 附加的数组参数 */
+static ansi_t*  s_param1 = NULL;
+static ansi_t*  s_param2 = NULL;
+
 /*
 ---------------------------------------
     文件处理回调
@@ -152,9 +156,21 @@ static sbin_t load_plugin (sCOMP *param)
     text = ini_key_stringU("ENC", ini);
     if (text == NULL)
         goto _failure2;
-    vals = ini_key_intxU("ENC_PARM", 0, ini);
-    if (ini->found) {
-        param->e_param = (void_t*)vals;
+    s_param1 = ini_key_bufferU("ENC_PARM", ini);
+    if (s_param1 != NULL && ini->found) {
+        s_param1 = skip_spaceA(s_param1);
+        if (*s_param1 == '\"') {
+            s_param1 = ini_key_stringU("ENC_PARM", ini);
+            if (s_param1 == NULL) {
+                mem_free(text);
+                goto _failure2;
+            }
+            param->e_param = (void_t*)s_param1;
+        }
+        else {
+            vals = ini_key_intxU("ENC_PARM", 0, ini);
+            param->e_param = (void_t*)vals;
+        }
         param->encode5 = sbin_exportT(sbin, text, enc_parm_t);
         mem_free(text);
         if (param->encode5 == NULL)
@@ -171,9 +187,26 @@ static sbin_t load_plugin (sCOMP *param)
     text = ini_key_stringU("DEC", ini);
     if (text == NULL)
         goto _failure2;
-    vals = ini_key_intxU("DEC_PARM", 0, ini);
-    if (ini->found) {
-        param->d_param = (void_t*)vals;
+    s_param2 = ini_key_bufferU("DEC_PARM", ini);
+    if (s_param2 != NULL && ini->found) {
+        s_param2 = skip_spaceA(s_param2);
+        if (*s_param2 == '\"') {
+            s_param2 = ini_key_stringU("DEC_PARM", ini);
+            if (s_param2 == NULL) {
+                mem_free(text);
+                goto _failure2;
+            }
+            param->d_param = (void_t*)s_param2;
+        }
+        else
+        if (*s_param2 == '@') {
+            s_param2 = s_param1;
+            param->d_param = (void_t*)s_param2;
+        }
+        else {
+            vals = ini_key_intxU("DEC_PARM", 0, ini);
+            param->d_param = (void_t*)vals;
+        }
         param->decode5 = sbin_exportT(sbin, text, enc_parm_t);
         mem_free(text);
         if (param->decode5 == NULL)
