@@ -2142,9 +2142,17 @@ NameError: mistake
 	<td>fold.at.else</td>
 	<td>This option enables C++ folding on a "} else {" line of an if statement.</td>
 	</tr>
+	<tr id='property-fold.baan.inner.level'>
+	<td>fold.baan.inner.level</td>
+	<td>Set this property to 1 to enable folding of inner levels of select statements.Disabled by default. case and if statements are also eligible</td>
+	</tr>
 	<tr id='property-fold.baan.keywords.based'>
 	<td>fold.baan.keywords.based</td>
-	<td>Set this property to 0 to disable keywords based folding, which is folding based on for, if, on (case), repeat, select, while and fold ends based on endfor, endif, endcase, until, endselect, endwhile respectively.</td>
+	<td>Set this property to 0 to disable keywords based folding, which is folding based on for, if, on (case), repeat, select, while and fold ends based on endfor, endif, endcase, until, endselect, endwhile respectively.Also folds declarations which are grouped together.</td>
+	</tr>
+	<tr id='property-fold.baan.sections'>
+	<td>fold.baan.sections</td>
+	<td>Set this property to 0 to disable folding of Main Sections as well as Sub Sections.</td>
 	</tr>
 	<tr id='property-fold.baan.syntax.based'>
 	<td>fold.baan.syntax.based</td>
@@ -4399,7 +4407,8 @@ groupundo - yes or no
      <tr>
       <td>style</td>
       <td>one of plain, squiggle, tt, diagonal, strike, hidden, box, roundbox, straightbox, fullbox, dash,
-      dots, squigglelow, dotbox, squigglepixmap, compositionthick, or compositionthin.<br />
+      dots, squigglelow, dotbox, squigglepixmap, compositionthick, compositionthin,
+      textfore, point, or pointcharacter.<br />
       </td>
       <td>plain</td>
      </tr>
