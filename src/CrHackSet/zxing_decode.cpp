@@ -3,6 +3,9 @@
 
 #include <string>
 #include <exception>
+#pragma warning (disable: 4245)
+#pragma warning (disable: 4512)
+
 #include "zxing/common/Counted.h"
 #include "zxing/Binarizer.h"
 #include "zxing/MultiFormatReader.h"
@@ -98,11 +101,10 @@ read_image (
         else
             binarizer = new GlobalHistogramBinarizer (source);
 
-        if (type == 0)
-            type = DecodeHints::DEFAULT_HINT;
-
         DecodeHints hints(type);
 
+        if (type == 0)
+            hints = DecodeHints::DEFAULT_HINT;
         hints.setTryHarder(true);
 
         Ref<BinaryBitmap>   binary(new BinaryBitmap (binarizer));
@@ -172,7 +174,7 @@ read_image (
             mem_free(tmp);
         }
 
-        uint_t  jj = 0;
+        sint_t  jj = 0;
 
         for (; jj < results[ii]->getResultPoints()->size(); jj++) {
             pt.x = (sint_t)(results[ii]->getResultPoints()[jj]->getX());
