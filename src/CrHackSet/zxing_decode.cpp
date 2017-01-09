@@ -219,7 +219,8 @@ zxing_do_decode (
         dst += ww;
         src += gray->bpl;
     }
-    cnt = read_image(netw, source, !!hybrid, type, cpage, pnts, count);
+    cnt = read_image(netw, source, !!hybrid,
+                type, cpage, pnts, count);
     mem_free(dat);
     return (cnt);
 }
