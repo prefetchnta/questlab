@@ -28,6 +28,7 @@ using namespace zxing;
 using namespace zxing::multi;
 using namespace zxing::qrcode;
 
+#if 0
 /*
 ---------------------------------------
     ZXing 识别单个码
@@ -43,6 +44,7 @@ decode (
 
     return (vector<Ref<Result> >(1, reader->decode(image, hints)));
 }
+#endif
 
 /*
 ---------------------------------------
@@ -71,7 +73,6 @@ read_image (
   __CR_IN__ socket_t                netw,
   __CR_IN__ Ref<LuminanceSource>    source,
   __CR_IN__ bool                    hybrid,
-  __CR_IN__ bool                    multi,
   __CR_IN__ DecodeHintType          type,
   __CR_IN__ uint_t                  cpage,
   __CR_OT__ sPNT2**                 pnts,
@@ -109,11 +110,8 @@ read_image (
 
         Ref<BinaryBitmap>   binary(new BinaryBitmap (binarizer));
 
-        /* 搜索多个码或单个码 */
-        if (multi)
-            results = decode_multi(binary, hints);
-        else
-            results = decode(binary, hints);
+        /* 搜索多个码 */
+        results = decode_multi(binary, hints);
         res = 0;
     }
     catch (const ReaderException& e) {
@@ -197,7 +195,6 @@ zxing_do_decode (
   __CR_IN__ socket_t        netw,
   __CR_IN__ const sIMAGE*   gray,
   __CR_IN__ bool_t          hybrid,
-  __CR_IN__ bool_t          multi,
   __CR_IN__ uint_t          type,
   __CR_IN__ uint_t          cpage,
   __CR_OT__ sPNT2**         pnts,
@@ -222,8 +219,7 @@ zxing_do_decode (
         dst += ww;
         src += gray->bpl;
     }
-    cnt = read_image(netw, source, !!hybrid, !!multi,
-                     type, cpage, pnts, count);
+    cnt = read_image(netw, source, !!hybrid, type, cpage, pnts, count);
     mem_free(dat);
     return (cnt);
 }

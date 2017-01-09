@@ -9,6 +9,11 @@ CR_C_FUNC uint_t
 zbar_do_decode (socket_t netw, const sIMAGE *gray,
             uint_t cpage, sPNT2 **pnts, leng_t *count);
 
+extern uint_t
+zxing_do_decode (socket_t netw, const sIMAGE *gray,
+            bool_t hybrid, uint_t type, uint_t cpage,
+                sPNT2 **pnts, leng_t *count);
+
 /*****************************************************************************/
 /*                                 公用函数                                  */
 /*****************************************************************************/
@@ -1109,6 +1114,47 @@ zbar_decode (
 
 /*
 ---------------------------------------
+    ZXing 查找识别
+---------------------------------------
+*/
+static bool_t
+zxing_decode (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sPNT2*  pnts;
+    leng_t  cnts;
+    uint_t  brid;
+    uint_t  type;
+    uint_t  page;
+    sIMAGE* dest;
+    sIMAGE* gray;
+
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    gray = image_graying(dest);
+    if (gray == NULL)
+        return (TRUE);
+    brid = xml_attr_intxU("hybrid", TRUE, param);
+    type = xml_attr_intxU("bar_type", 0, param);
+    page = xml_attr_intxU("codepage", CR_LOCAL, param);
+    if (zxing_do_decode((socket_t)netw, gray, brid, type,
+                            page, &pnts, &cnts) != 0) {
+        if (pnts != NULL) {
+            for (leng_t idx = 0; idx < cnts; idx++)
+                draw_circle_ex(dest, pnts[idx].x, pnts[idx].y, 7, 3);
+            mem_free(pnts);
+        }
+    }
+    image_del(gray);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     图片转换到 HSL
 ---------------------------------------
 */
@@ -1290,6 +1336,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_contrast", image_contrast },
     { "crhack_saturation", image_saturation },
     { "crhack_zbar_decode", zbar_decode },
+    { "crhack_zxing_decode", zxing_decode },
     { "crhack_to_hsl", image_cto_hsl },
     { "crhack_to_hsv", image_cto_hsv },
     { "crhack_to_yuv", image_cto_yuv },
