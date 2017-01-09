@@ -27,6 +27,7 @@
 #pragma comment (lib, "CrH_GFX2.lib")
 #pragma comment (lib, "CrH_MATH.lib")
 #pragma comment (lib, "libzbar-0.lib")
+#pragma comment (lib, "libzxing.lib")
 #pragma comment (lib, "libfacedetect.lib")
 
 #if defined(_CR_BUILD_DLL_)
