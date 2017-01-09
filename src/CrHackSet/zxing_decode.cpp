@@ -68,7 +68,7 @@ decode_multi (
     ZXing 识别图片
 ---------------------------------------
 */
-static sint_t
+static uint_t
 read_image (
   __CR_IN__ socket_t                netw,
   __CR_IN__ Ref<LuminanceSource>    source,
@@ -143,7 +143,7 @@ read_image (
                 }
             }
         }
-        return (res);
+        return (0);
     }
     for (size_t ii = 0; ii < results.size(); ii++) {
         cnt += 1;
