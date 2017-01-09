@@ -9,7 +9,7 @@
     ZBar 识别部分代码
 =======================================
 */
-extern uint_t
+CR_API uint_t
 zbar_do_decode (
   __CR_IN__ socket_t        netw,
   __CR_IN__ const sIMAGE*   gray,

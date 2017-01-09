@@ -81,16 +81,13 @@ read_image (
 {
     sPNT2                   pt;
     sARRAY                  loc;
-    ansi_t*                 str;
-    ansi_t*                 tmp;
-    uint_t                  cnt = 0;
+    uint_t                  cnt =  0;
     sint_t                  res = -1;
     vector<Ref<Result> >    results;
+    ansi_t                  *str, *tmp;
     string                  cell_result;
 
     /* 创建对象 */
-    *pnts = NULL;
-    *count = 0;
     array_initT(&loc, sPNT2);
 
     try {
@@ -190,7 +187,7 @@ read_image (
     ZXing 识别部分代码
 =======================================
 */
-extern uint_t
+CR_API uint_t
 zxing_do_decode (
   __CR_IN__ socket_t        netw,
   __CR_IN__ const sIMAGE*   gray,
@@ -204,6 +201,9 @@ zxing_do_decode (
     size_t  sz;
     byte_t  *dst, *src, *dat;
     uint_t  ww, hh, yy, cnt;
+
+    *pnts = NULL;
+    *count = 0;
 
     /* 图像数据不需要行对齐 */
     ww = gray->position.ww;

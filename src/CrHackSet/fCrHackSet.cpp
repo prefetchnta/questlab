@@ -5,11 +5,11 @@
 #include <math.h>
 
 /* 内部函数声明 */
-CR_C_FUNC uint_t
+CR_API uint_t
 zbar_do_decode (socket_t netw, const sIMAGE *gray,
             uint_t cpage, sPNT2 **pnts, leng_t *count);
 
-extern uint_t
+CR_API uint_t
 zxing_do_decode (socket_t netw, const sIMAGE *gray,
             bool_t hybrid, uint_t type, uint_t cpage,
                 sPNT2 **pnts, leng_t *count);
