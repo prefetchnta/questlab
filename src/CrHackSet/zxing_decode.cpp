@@ -143,15 +143,15 @@ read_image (
         return (0);
     }
     for (size_t ii = 0; ii < results.size(); ii++) {
+        cnt += 1;
         for (int jj = 0; jj < results[ii]->getResultPoints()->size(); jj++) {
             pt.x = (sint_t)(results[ii]->getResultPoints()[jj]->getX());
             pt.y = (sint_t)(results[ii]->getResultPoints()[jj]->getY());
             array_push_growT(&loc, sPNT2, &pt);
         }
-        cnt += 1;
 
         /* 打印结果 */
-        str = str_fmtA("%s:%s", BarcodeFormat::barcodeFormatNames[
+        str = str_fmtA("%s: %s", BarcodeFormat::barcodeFormatNames[
                                 results[ii]->getBarcodeFormat()],
                                 results[ii]->getText()->getText());
         if (str == NULL)

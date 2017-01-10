@@ -1,7 +1,10 @@
 
 #include "../QstLibs/QstLibs.h"
+#pragma warning (disable: 4100)
 
 #include "zbar/zbar.h"
+
+using namespace zbar;
 
 /*
 =======================================
@@ -74,13 +77,13 @@ zbar_do_decode (
         typ = zbar_symbol_get_type(sym);
         if (typ == ZBAR_PARTIAL)
             continue;
+        cnt += 1;
         hh = zbar_symbol_get_loc_size(sym);
         for (yy = 0; yy < hh; yy++) {
             pt.x = zbar_symbol_get_loc_x(sym, yy);
             pt.y = zbar_symbol_get_loc_y(sym, yy);
             array_push_growT(&loc, sPNT2, &pt);
         }
-        cnt += 1;
 
         /* 打印结果 */
         sz = zbar_symbol_get_data_length(sym);
@@ -89,7 +92,7 @@ zbar_do_decode (
             continue;
         mem_cpy(tmp, zbar_symbol_get_data(sym), sz);
         tmp[sz] = NIL;
-        str = str_fmtA("%s%s:%s", zbar_get_symbol_name(typ),
+        str = str_fmtA("%s%s: %s", zbar_get_symbol_name(typ),
                         zbar_get_addon_name(typ), tmp);
         mem_free(tmp);
         if (str == NULL)
