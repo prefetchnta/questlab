@@ -195,7 +195,7 @@ read_image (
         /* 打印结果 */
         str = str_fmtA("%s: %s", BarcodeFormat::barcodeFormatNames[
                                 results[ii]->getBarcodeFormat()],
-                                results[ii]->getText()->getText());
+                                results[ii]->getText()->getText().c_str());
         if (str == NULL)
             continue;
         tmp = utf8_to_local(cpage, str);
