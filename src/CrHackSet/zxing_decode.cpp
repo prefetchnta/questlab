@@ -28,6 +28,48 @@ using namespace zxing;
 using namespace zxing::multi;
 using namespace zxing::qrcode;
 
+/********************/
+/* 灰度图片接口实现 */
+/********************/
+class GrayImage : public LuminanceSource
+{
+private:
+    const char* m_image;
+
+public:
+    /* ==================================================== */
+    GrayImage (const char *image, uint_t width, uint_t height)
+        : LuminanceSource(width, height)
+    {
+        m_image = image;
+    }
+
+    /* ================================================= */
+    ArrayRef<char> getRow (int y, ArrayRef<char> row) const
+    {
+        const char* line = m_image + y * this->getWidth();
+
+        if (!row)
+            row = ArrayRef<char>(this->getWidth());
+        for (int x = 0; x < this->getWidth(); x++)
+            row[x] = line[x];
+        return (row);
+    }
+
+    /* =========================== */
+    ArrayRef<char> getMatrix () const
+    {
+        const char*     p = m_image;
+        ArrayRef<char>  matrix(this->getWidth() * this->getHeight());
+        char*           m = &matrix[0];
+
+        for (int y = 0; y < this->getHeight(); y++)
+        for (int x = 0; x < this->getWidth();  x++)
+            *m++ = *p++;
+        return (matrix);
+    }
+};
+
 #if 0
 /*
 ---------------------------------------
@@ -213,6 +255,10 @@ zxing_do_decode (
         dst += ww;
         src += gray->bpl;
     }
+
+    Ref<LuminanceSource> source = Ref<LuminanceSource>(
+            new GrayImage ((char*)dat, ww, hh));
+
     cnt = read_image(netw, source, !!hybrid,
                 type, cpage, pnts, count);
     mem_free(dat);

@@ -99,4 +99,7 @@
     <!-- ZBar 查找识别 -->
     <?crhack_zbar_decode codepage="0" />
 
+    <!-- ZXing 查找识别 -->
+    <?crhack_zxing_decode hybrid="1" bar_type="0" codepage="0" />
+
 </filters>
