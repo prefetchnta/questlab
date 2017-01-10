@@ -12,7 +12,7 @@ OBJ_LIST=.$(L)xCrHackSet.$(O) \
 SRC_LIST=.$(L)xCrHackSet.$(P) \
          .$(L)cCrHackSet.$(P) \
          .$(L)fCrHackSet.$(P) \
-         .$(L)zbar_decode.$(C) \
+         .$(L)zbar_decode.$(P) \
          .$(L)zxing_decode.$(P)
 
 build_all:

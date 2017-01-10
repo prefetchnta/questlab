@@ -129,53 +129,47 @@ read_image (
     }
 
     /* 输出结果 */
-    if (netw != NULL)
-        cmd_shl_send(netw, "txt:clear 0 0");
+    cmd_shl_send(netw, "txt:clear 0 0");
     if (res != 0) {
-        if (netw != NULL) {
-            str = str_esc_makeU(cell_result.c_str());
-            if (str != NULL) {
-                tmp = str_fmtA("info::main=\"0> %s\"", str);
-                mem_free(str);
-                if (tmp != NULL) {
-                    cmd_ini_send(netw, tmp);
-                    mem_free(tmp);
-                }
+        str = str_esc_makeU(cell_result.c_str());
+        if (str != NULL) {
+            tmp = str_fmtA("info::main=\"0> %s\"", str);
+            mem_free(str);
+            if (tmp != NULL) {
+                cmd_ini_send(netw, tmp);
+                mem_free(tmp);
             }
         }
         return (0);
     }
     for (size_t ii = 0; ii < results.size(); ii++) {
-        cnt += 1;
-        if (netw != NULL) {
-            str = str_fmtA("%s:%s", BarcodeFormat::barcodeFormatNames[
-                                    results[ii]->getBarcodeFormat()],
-                                    results[ii]->getText()->getText());
-            if (str == NULL)
-                continue;
-            tmp = utf8_to_local(cpage, str);
-            mem_free(str);
-            if (tmp == NULL)
-                continue;
-            str = str_esc_makeU(tmp);
-            mem_free(tmp);
-            if (str == NULL)
-                continue;
-            tmp = str_fmtA("info::main=\"0> %s\"", str);
-            mem_free(str);
-            if (tmp == NULL)
-                continue;
-            cmd_ini_send(netw, tmp);
-            mem_free(tmp);
-        }
-
-        sint_t  jj = 0;
-
-        for (; jj < results[ii]->getResultPoints()->size(); jj++) {
+        for (int jj = 0; jj < results[ii]->getResultPoints()->size(); jj++) {
             pt.x = (sint_t)(results[ii]->getResultPoints()[jj]->getX());
             pt.y = (sint_t)(results[ii]->getResultPoints()[jj]->getY());
             array_push_growT(&loc, sPNT2, &pt);
         }
+        cnt += 1;
+
+        /* 打印结果 */
+        str = str_fmtA("%s:%s", BarcodeFormat::barcodeFormatNames[
+                                results[ii]->getBarcodeFormat()],
+                                results[ii]->getText()->getText());
+        if (str == NULL)
+            continue;
+        tmp = utf8_to_local(cpage, str);
+        mem_free(str);
+        if (tmp == NULL)
+            continue;
+        str = str_esc_makeU(tmp);
+        mem_free(tmp);
+        if (str == NULL)
+            continue;
+        tmp = str_fmtA("info::main=\"0> %s\"", str);
+        mem_free(str);
+        if (tmp == NULL)
+            continue;
+        cmd_ini_send(netw, tmp);
+        mem_free(tmp);
     }
     *pnts  = array_get_dataT(&loc, sPNT2);
     *count = array_get_sizeT(&loc, sPNT2);
@@ -187,7 +181,7 @@ read_image (
     ZXing 识别部分代码
 =======================================
 */
-CR_API uint_t
+extern uint_t
 zxing_do_decode (
   __CR_IN__ socket_t        netw,
   __CR_IN__ const sIMAGE*   gray,
