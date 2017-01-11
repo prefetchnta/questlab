@@ -88,14 +88,36 @@ public:
 
         if (x1 >= this->getWidth() || y1 >= this->getHeight() ||
             x1 + ww > this->getWidth() || y1 + hh > this->getHeight())
-            throw IllegalArgumentException("invalid param!");
+            throw IllegalArgumentException("crop: invalid param!");
         dat = (char*)mem_malloc((size_t)ww * hh);
         if (dat == NULL)
-            throw IllegalArgumentException("mem_malloc() failure!");
+            throw IllegalArgumentException("crop: mem_malloc() failure!");
         for (int yy = 0; yy < hh; yy++)
         for (int xx = 0; xx < ww; xx++) {
             dat[yy * ww + xx] = m_image[(y1 + yy) * this->getWidth() +
                                         (x1 + xx)];
+        }
+        return (Ref<LuminanceSource>(new GrayImage (dat, ww, hh)));
+    }
+
+    /* ========================= */
+    bool isRotateSupported () const
+    {
+        return (true);
+    }
+
+    /* ============================================== */
+    Ref<LuminanceSource> rotateCounterClockwise () const
+    {
+        int     ww = this->getHeight();
+        int     hh = this->getWidth();
+        char*   dat = (char*)mem_malloc((size_t)ww * hh);
+
+        if (dat == NULL)
+            throw IllegalArgumentException("rotate: mem_malloc() failure!");
+        for (int yy = 0; yy < hh; yy++)
+        for (int xx = 0; xx < ww; xx++) {
+            dat[yy * ww + xx] = m_image[xx * hh + (hh - yy - 1)];
         }
         return (Ref<LuminanceSource>(new GrayImage (dat, ww, hh)));
     }
