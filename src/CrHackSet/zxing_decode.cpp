@@ -44,6 +44,12 @@ public:
         m_image = image;
     }
 
+    /* =============== */
+    virtual ~GrayImage ()
+    {
+        mem_free(m_image);
+    }
+
     /* ================================================= */
     ArrayRef<char> getRow (int y, ArrayRef<char> row) const
     {
@@ -67,6 +73,31 @@ public:
         for (int x = 0; x < this->getWidth();  x++)
             *m++ = *p++;
         return (matrix);
+    }
+
+    /* ======================= */
+    bool isCropSupported () const
+    {
+        return (true);
+    }
+
+    /* ========================================================== */
+    Ref<LuminanceSource> crop (int x1, int y1, int ww, int hh) const
+    {
+        char*   dat;
+
+        if (x1 >= this->getWidth() || y1 >= this->getHeight() ||
+            x1 + ww > this->getWidth() || y1 + hh > this->getHeight())
+            throw IllegalArgumentException("invalid param!");
+        dat = (char*)mem_malloc((size_t)ww * hh);
+        if (dat == NULL)
+            throw IllegalArgumentException("mem_malloc() failure!");
+        for (int yy = 0; yy < hh; yy++)
+        for (int xx = 0; xx < ww; xx++) {
+            dat[yy * ww + xx] = m_image[(y1 + yy) * this->getWidth() +
+                                        (x1 + xx)];
+        }
+        return (Ref<LuminanceSource>(new GrayImage (dat, ww, hh)));
     }
 };
 
@@ -116,7 +147,6 @@ read_image (
   __CR_IN__ Ref<LuminanceSource>    source,
   __CR_IN__ bool                    hybrid,
   __CR_IN__ DecodeHintType          type,
-  __CR_IN__ uint_t                  cpage,
   __CR_OT__ sPNT2**                 pnts,
   __CR_OT__ leng_t*                 count
     )
@@ -193,13 +223,9 @@ read_image (
         }
 
         /* 打印结果 */
-        str = str_fmtA("%s: %s", BarcodeFormat::barcodeFormatNames[
+        tmp = str_fmtA("%s: %s", BarcodeFormat::barcodeFormatNames[
                                 results[ii]->getBarcodeFormat()],
                                 results[ii]->getText()->getText().c_str());
-        if (str == NULL)
-            continue;
-        tmp = utf8_to_local(cpage, str);
-        mem_free(str);
         if (tmp == NULL)
             continue;
         str = str_esc_makeU(tmp);
@@ -229,14 +255,12 @@ zxing_do_decode (
   __CR_IN__ const sIMAGE*   gray,
   __CR_IN__ bool_t          hybrid,
   __CR_IN__ uint_t          type,
-  __CR_IN__ uint_t          cpage,
   __CR_OT__ sPNT2**         pnts,
   __CR_OT__ leng_t*         count
     )
 {
-    size_t  sz;
+    uint_t  ww, hh, yy;
     byte_t  *dst, *src, *dat;
-    uint_t  ww, hh, yy, cnt;
 
     *pnts = NULL;
     *count = 0;
@@ -244,8 +268,7 @@ zxing_do_decode (
     /* 图像数据不需要行对齐 */
     ww = gray->position.ww;
     hh = gray->position.hh;
-    sz = ww * hh;
-    dat = (byte_t*)mem_malloc(sz);
+    dat = (byte_t*)mem_malloc((size_t)ww * hh);
     if (dat == NULL)
         return (0);
     dst = dat;
@@ -259,8 +282,5 @@ zxing_do_decode (
     Ref<LuminanceSource> source = Ref<LuminanceSource>(
             new GrayImage ((char*)dat, ww, hh));
 
-    cnt = read_image(netw, source, !!hybrid,
-                type, cpage, pnts, count);
-    mem_free(dat);
-    return (cnt);
+    return (read_image(netw, source, !!hybrid, type, pnts, count));
 }
