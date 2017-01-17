@@ -1,0 +1,12 @@
+EXPORTS
+    EnableDebugPriv
+    RemoteInject
+    RemoteInjectEx
+    FreeDllModule
+    ExeLoader
+    ProcessList
+    ThreadList
+    ModuleList
+    ProcessCtrl
+    HWndList
+    HWndFind

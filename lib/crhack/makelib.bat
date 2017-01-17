@@ -64,10 +64,17 @@ coff2omf CrH_MATH.lib omf\CrH_MATH.lib
 move CrH_MATH.lib coff\CrH_MATH.lib
 rem ========================================
 :gfx2_gdi
-if not exist GFX2_GDI.lib goto bat_exit
+if not exist GFX2_GDI.lib goto hacklib
 del coff\GFX2_GDI.lib
 del omf\GFX2_GDI.lib
 coff2omf GFX2_GDI.lib omf\GFX2_GDI.lib
 move GFX2_GDI.lib coff\GFX2_GDI.lib
+rem ========================================
+:hacklib
+if not exist HackLib.lib goto bat_exit
+del coff\HackLib.lib
+del omf\HackLib.lib
+coff2omf HackLib.lib omf\HackLib.lib
+move HackLib.lib coff\HackLib.lib
 rem ========================================
 :bat_exit
