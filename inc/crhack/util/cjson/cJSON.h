@@ -28,6 +28,14 @@ extern "C"
 {
 #endif
 
+/* project version */
+#define CJSON_VERSION_MAJOR 1
+#define CJSON_VERSION_MINOR 2
+#define CJSON_VERSION_PATCH 0
+
+/* returns the version of cJSON as a string */
+extern const char* cJSON_Version(void);
+
 #include <stddef.h>
 
 /* cJSON Types: */
