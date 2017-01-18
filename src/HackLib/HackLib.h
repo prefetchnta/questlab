@@ -98,6 +98,9 @@ struct  sHookFunc
 #endif
 };
 
+/* 常数定义简化宏 */
+#define MAKE_HOOK(name, vals)   { (name), (LPVOID)(vals) }
+
 /* 函数哈希表对象 */
 typedef LPVOID  hookfunc_t;
 
