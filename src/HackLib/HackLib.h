@@ -93,8 +93,9 @@ struct  sHookFunc
                 LPVOID  addr;   /* 普通函数的地址 */
                 SIZE_T  index;  /* COM 方法的索引 */
         } func;
-
+#if defined(_HLB_BUILD_)
         void free () {}
+#endif
 };
 
 /* 函数哈希表对象 */

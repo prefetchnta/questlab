@@ -1,4 +1,5 @@
 
+#define _HLB_BUILD_
 #include "HackLib.h"
 #include "../Asylum/asylum.hpp"
 using namespace asy;
@@ -16,6 +17,7 @@ HookFuncNew (
 {
     map_acs<sHookFunc>* tbl;
 
+    /* COM HOOK 里存的是函数在虚表里的索引号 */
     tbl = new map_acs<sHookFunc> ();
     if (tbl == NULL)
         return (NULL);
@@ -92,14 +94,13 @@ HookVTable (
     if (!VirtualProtect(vptr, 4096, PAGE_READWRITE, &old1))
         return (HLB_ERROR);
 
-    map_acs<sHookFunc>* tbl;
+    map_acs<sHookFunc>* tbl = (map_acs<sHookFunc>*)table;
 
     /* 根据函数名修改函数指针 */
-    tbl = (map_acs<sHookFunc>*)table;
     for (UINT idx = 0; idx < count; idx++) {
         func = tbl->get(hooks[idx].name);
         if (func != NULL)
-            vptr[func->func.index] = hooks[idx].func.index;
+            vptr[func->func.index] = (SIZE_T)hooks[idx].func.addr;
     }
     VirtualProtect(vptr, 4096, old1, &old2);
     return (HLB_OKAY);
