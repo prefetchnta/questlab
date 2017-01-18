@@ -56,7 +56,8 @@ cr_inline void async_call (mt_main_t func, const T* user, uint_t stacksize = 0)
     thrd = thread_new(stacksize, func, &parm, FALSE);
     if (thrd != NULL) {
         thread_del(thrd);
-        while (!parm.copy);
+        while (!parm.copy)
+            thread_sleep(0);
     }
 }
 
