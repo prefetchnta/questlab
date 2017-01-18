@@ -106,7 +106,7 @@ CR_API VOID WINAPI HookFuncDel (hookfunc_t table);
 CR_API LPVOID WINAPI HookFuncGet (LPCSTR name, hookfunc_t table);
 
 /* COM 方法钩子设置 */
-CR_API UINT WINAPI HookVTable (LPVOID object, const sHookFunc *func,
+CR_API UINT WINAPI HookVTable (LPVOID object, const sHookFunc *hooks,
                                UINT count, hookfunc_t table);
 
 #endif  /* !__QL_HACKLIB_H__ */

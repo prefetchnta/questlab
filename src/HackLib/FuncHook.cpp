@@ -65,7 +65,7 @@ HookFuncGet (
     map_acs<sHookFunc>* tbl;
 
     tbl = (map_acs<sHookFunc>*)table;
-    return (tbl->get(name));
+    return (tbl->get(name)->func.addr);
 }
 
 /*
@@ -76,10 +76,31 @@ HookFuncGet (
 CR_API UINT WINAPI
 HookVTable (
   __CR_IO__ LPVOID              object,
-  __CR_IN__ const sHookFunc*    func,
+  __CR_IN__ const sHookFunc*    hooks,
   __CR_IN__ UINT                count,
   __CR_IN__ hookfunc_t          table
     )
 {
+    DWORD       old1;
+    DWORD       old2;
+    SIZE_T*     vptr;
+    sHookFunc*  func;
+
+    vptr = (SIZE_T*)(*(SIZE_T*)object);
+
+    /* 解除页面保护 (假设虚函数表不大于1页) */
+    if (!VirtualProtect(vptr, 4096, PAGE_READWRITE, &old1))
+        return (HLB_ERROR);
+
+    map_acs<sHookFunc>* tbl;
+
+    /* 根据函数名修改函数指针 */
+    tbl = (map_acs<sHookFunc>*)table;
+    for (UINT idx = 0; idx < count; idx++) {
+        func = tbl->get(hooks[idx].name);
+        if (func != NULL)
+            vptr[func->func.index] = hooks[idx].func.index;
+    }
+    VirtualProtect(vptr, 4096, old1, &old2);
     return (HLB_OKAY);
 }
