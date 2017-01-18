@@ -45,7 +45,7 @@ HWndList (
     if (size == 0)
         return (0);
     size *= sizeof(HWND);
-    *list = (HWND*)malloc(size);
+    *list = (HWND*)mem_malloc(size);
     if (*list == NULL)
         return (0);
     memcpy(*list, &vlist[0], size);

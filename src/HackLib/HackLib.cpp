@@ -1,5 +1,6 @@
 
 #include "HackLib.h"
+#pragma comment (lib, "CrH_CORE.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*
@@ -28,3 +29,16 @@ DllMain (
 }
 
 #endif  /* _CR_BUILD_DLL_ */
+
+/*
+=======================================
+    释放内存
+=======================================
+*/
+CR_API VOID WINAPI
+HLMemPtrFree (
+  __CR_IN__ LPVOID  ptr
+    )
+{
+    mem_free(ptr);
+}

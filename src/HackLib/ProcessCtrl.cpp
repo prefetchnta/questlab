@@ -41,7 +41,7 @@ ProcessList (
     if (size == 0)
         return (0);
     size *= sizeof(PROCESSENTRY32W);
-    *list = (PROCESSENTRY32W*)malloc(size);
+    *list = (PROCESSENTRY32W*)mem_malloc(size);
     if (*list == NULL)
         return (0);
     memcpy(*list, &vlist[0], size);
@@ -87,7 +87,7 @@ ThreadList (
     if (size == 0)
         return (0);
     size *= sizeof(THREADENTRY32);
-    *list = (THREADENTRY32*)malloc(size);
+    *list = (THREADENTRY32*)mem_malloc(size);
     if (*list == NULL)
         return (0);
     memcpy(*list, &vlist[0], size);
@@ -132,7 +132,7 @@ ModuleList (
     if (size == 0)
         return (0);
     size *= sizeof(MODULEENTRY32W);
-    *list = (MODULEENTRY32W*)malloc(size);
+    *list = (MODULEENTRY32W*)mem_malloc(size);
     if (*list == NULL)
         return (0);
     memcpy(*list, &vlist[0], size);

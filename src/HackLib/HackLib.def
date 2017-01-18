@@ -1,4 +1,5 @@
 EXPORTS
+    HLMemPtrFree
     EnableDebugPriv
     RemoteInject
     RemoteInjectEx
