@@ -36,7 +36,7 @@ DllMain (
 =======================================
 */
 CR_API VOID WINAPI
-HLMemPtrFree (
+HLMemFree (
   __CR_IN__ LPVOID  ptr
     )
 {

@@ -32,10 +32,10 @@
 #define HLB_ERROR   (__LINE__)
 
 /* 释放返回的内存指针 */
-CR_API VOID WINAPI HLMemPtrFree (LPVOID ptr);
+CR_API VOID WINAPI HLMemFree (LPVOID ptr);
 
 /*****************************************************************************/
-/*                                   代码注入                                */
+/*                                 代码注入                                  */
 /*****************************************************************************/
 
 /* 进程加载结构体 */
@@ -65,7 +65,7 @@ CR_API UINT WINAPI FreeDllModule (DWORD prcss_id, LPCWSTR dll_name);
 CR_API UINT WINAPI ExeLoader (sLoaderParam *param);
 
 /*****************************************************************************/
-/*                                   进程控制                                */
+/*                                 进程控制                                  */
 /*****************************************************************************/
 
 CR_API UINT WINAPI ProcessList (PROCESSENTRY32W **list);
@@ -74,10 +74,39 @@ CR_API UINT WINAPI ModuleList (DWORD prcss_id, MODULEENTRY32W **list);
 CR_API BOOL WINAPI ProcessCtrl (DWORD prcss_id, BOOL suspend);
 
 /*****************************************************************************/
-/*                                   窗口控制                                */
+/*                                 窗口控制                                  */
 /*****************************************************************************/
 
 CR_API UINT WINAPI HWndList (HWND parent, HWND **list);
 CR_API HWND WINAPI HWndFind (HWND parent, LPCWSTR wclass, LPCWSTR wtitle);
+
+/*****************************************************************************/
+/*                                 函数钩子                                  */
+/*****************************************************************************/
+
+/* 函数哈希查找表单元结构 */
+struct  sHookFunc
+{
+        LPCSTR  name;   /* 函数名称字符串 */
+
+        union {
+                LPVOID  addr;   /* 普通函数的地址 */
+                SIZE_T  index;  /* COM 方法的索引 */
+        } func;
+
+        void free () {}
+};
+
+/* 函数哈希表对象 */
+typedef LPVOID  hookfunc_t;
+
+/* 普通函数钩子查找 */
+CR_API hookfunc_t WINAPI HookFuncNew (const sHookFunc *func, UINT count);
+CR_API VOID WINAPI HookFuncDel (hookfunc_t table);
+CR_API LPVOID WINAPI HookFuncGet (LPCSTR name, hookfunc_t table);
+
+/* COM 方法钩子设置 */
+CR_API UINT WINAPI HookVTable (LPVOID object, const sHookFunc *func,
+                               UINT count, hookfunc_t table);
 
 #endif  /* !__QL_HACKLIB_H__ */

@@ -1,5 +1,5 @@
 EXPORTS
-    HLMemPtrFree
+    HLMemFree
     EnableDebugPriv
     RemoteInject
     RemoteInjectEx
@@ -11,3 +11,7 @@ EXPORTS
     ProcessCtrl
     HWndList
     HWndFind
+    HookFuncNew
+    HookFuncDel
+    HookFuncGet
+    HookVTable

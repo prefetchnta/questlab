@@ -4,11 +4,13 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)HackLib.$(O) \
+         .$(L)FuncHook.$(O) \
          .$(L)WindowCtrl.$(O) \
          .$(L)ProcessCtrl.$(O) \
          .$(L)RemoteInject.$(O)
 
 SRC_LIST=.$(L)HackLib.$(P) \
+         .$(L)FuncHook.$(P) \
          .$(L)WindowCtrl.$(P) \
          .$(L)ProcessCtrl.$(P) \
          .$(L)RemoteInject.$(P)
