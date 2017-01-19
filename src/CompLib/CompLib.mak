@@ -4,6 +4,10 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)CompLib.$(O) \
+         .$(L)comp_ap.$(O) \
+         .$(L)aplib$(L)aplib.lib \
+         .$(L)comp_jc1.$(O) \
+         .$(L)jcalg1$(L)jcalg1.lib \
          .$(L)comp_7z.$(O) \
          .$(L)LzFind.$(O) \
          .$(L)LzFindMt.$(O) \
@@ -13,6 +17,8 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)Threads.$(O)
 
 SRC_LIST=.$(L)CompLib.$(P) \
+         .$(L)comp_ap.$(C) \
+         .$(L)comp_jc1.$(C) \
          .$(L)comp_7z.$(C) \
          .$(L)lzma$(L)LzFind.$(C) \
          .$(L)lzma$(L)LzFindMt.$(C) \

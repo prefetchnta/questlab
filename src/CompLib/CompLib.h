@@ -25,6 +25,19 @@
 
 #include "crhack.h"
 
+/* aPLib */
+CR_API leng_t   compr_aplib (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen);
+
+CR_API leng_t   uncompr_aplib (void_t *dst, leng_t dstlen,
+                               const void_t *src, leng_t srclen);
+/* JCALG1 */
+CR_API leng_t   compr_jcalg1 (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen,
+                              uint_t winlen CR_DEFAULT(8192));
+
+CR_API leng_t   uncompr_jcalg1 (void_t *dst, leng_t dstlen,
+                                const void_t *src, leng_t srclen);
 /* LZMA */
 typedef struct
 {
