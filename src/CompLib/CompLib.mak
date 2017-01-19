@@ -3,9 +3,23 @@ SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
-OBJ_LIST=.$(L)CompLib.$(O)
+OBJ_LIST=.$(L)CompLib.$(O) \
+         .$(L)comp_7z.$(O) \
+         .$(L)LzFind.$(O) \
+         .$(L)LzFindMt.$(O) \
+         .$(L)LzmaDec.$(O) \
+         .$(L)LzmaEnc.$(O) \
+         .$(L)LzmaLib.$(O) \
+         .$(L)Threads.$(O)
 
-SRC_LIST=.$(L)CompLib.$(P)
+SRC_LIST=.$(L)CompLib.$(P) \
+         .$(L)comp_7z.$(C) \
+         .$(L)lzma$(L)LzFind.$(C) \
+         .$(L)lzma$(L)LzFindMt.$(C) \
+         .$(L)lzma$(L)LzmaDec.$(C) \
+         .$(L)lzma$(L)LzmaEnc.$(C) \
+         .$(L)lzma$(L)LzmaLib.$(C) \
+         .$(L)lzma$(L)Threads.$(C)
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" $(SRC_LIST)
