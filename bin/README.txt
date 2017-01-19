@@ -1,6 +1,6 @@
 【更新日志】
 ===============================================================================
-　2017-01-19　子项目 CompLib 正式开始（引入 aPLib SDK & JCALG1 SDK & lzma SDK）
+　2017-01-19　子项目 CompLib 正式开始（引入 aPLib SDK & JCALG1 SDK & LZMA SDK）
 　2017-01-17　子项目 HackLib 正式开始
 　2017-01-11　实验证明 zxing 的 QrCode 识别效果不如 zbar
 　2017-01-04　准备开始 zxing 的条码识别评估（引入 zxing-cpp SDK）
