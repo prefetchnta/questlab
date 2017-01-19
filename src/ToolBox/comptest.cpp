@@ -98,13 +98,18 @@ static bool_t tester (void_t *param, sSEARCHa *info)
                                                         / info->size);
     /* 解压文件数据并显示速度 */
     mem_zero(sdata, ssize);
-    timer_set_base(s_profile);
-    if (comp->decode4 != NULL)
-        dsize = comp->decode4(sdata, ssize, ddata, dsize);
-    else
-        dsize = comp->decode5(sdata, ssize, ddata, dsize, comp->d_param);
-    time = timer_get_delta(s_profile) * 1.024f;
-    printf(" | DEC %.2f KB/S", info->size / time);
+    if (dsize != 0) {
+        timer_set_base(s_profile);
+        if (comp->decode4 != NULL)
+            dsize = comp->decode4(sdata, ssize, ddata, dsize);
+        else
+            dsize = comp->decode5(sdata, ssize, ddata, dsize, comp->d_param);
+        time = timer_get_delta(s_profile) * 1.024f;
+        printf(" | DEC %.2f KB/S", info->size / time);
+    }
+    else {
+        printf(" | DEC ???? KB/S");
+    }
 
     /* 计算解压后的哈希并比较 */
     hash_sha1_total(dhash, sdata, dsize);
