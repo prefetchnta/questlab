@@ -97,7 +97,9 @@ uncompr_jcalg1 (
   __CR_IN__ leng_t          srclen
     )
 {
-    CR_NOUSE(dstlen); CR_NOUSE(srclen);
+    srclen = JCALG1_GetUncompressedSizeOfCompressedBlock((void_t*)src);
+    if (srclen == 0 || srclen > dstlen)
+        return (0);
     return (JCALG1_Decompress_Fast(src, dst));
 }
 
