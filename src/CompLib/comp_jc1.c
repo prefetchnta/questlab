@@ -77,14 +77,10 @@ compr_jcalg1 (
   __CR_IN__ uint_t          winlen
     )
 {
-    uint_t  ssize;
-
-    if (cut_size(&ssize, srclen))
-        return (0);
     if (dst == NULL)
-        return (JCALG1_GetNeededBufferSize(ssize));
+        return (JCALG1_GetNeededBufferSize(srclen));
     CR_NOUSE(dstlen);
-    return (JCALG1_Compress(src, ssize, dst, winlen, jcalg1_alloc,
+    return (JCALG1_Compress(src, srclen, dst, winlen, jcalg1_alloc,
                             jcalg1_free, jcalg1_callback, FALSE));
 }
 

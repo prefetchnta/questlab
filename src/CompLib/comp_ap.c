@@ -34,21 +34,17 @@ compr_aplib (
     )
 {
     void_t* wrkmem;
-    uint_t  ssize, dsize;
 
-    if (cut_size(&ssize, srclen))
-        return (0);
     if (dst == NULL)
-        return (aP_max_packed_size(ssize));
-    wrkmem = mem_malloc(aP_workmem_size(ssize));
+        return (aP_max_packed_size(srclen));
+    wrkmem = mem_malloc(aP_workmem_size(srclen));
     if (wrkmem == NULL)
         return (0);
-    dsize = aP_pack(src, dst, ssize, wrkmem, NULL, NULL);
+    dstlen = aP_pack(src, dst, srclen, wrkmem, NULL, NULL);
     mem_free(wrkmem);
-    if (dsize == (uint_t)APLIB_ERROR)
+    if (dstlen == (leng_t)APLIB_ERROR)
         return (0);
-    CR_NOUSE(dstlen);
-    return (dsize);
+    return (dstlen);
 }
 
 /*
@@ -64,16 +60,10 @@ uncompr_aplib (
   __CR_IN__ leng_t          srclen
     )
 {
-    uint_t  ssize, dsize;
-
-    if (cut_size(&ssize, srclen))
+    dstlen = aP_depack_asm_safe(src, srclen, dst, dstlen);
+    if (dstlen == (leng_t)APLIB_ERROR)
         return (0);
-    if (cut_size(&dsize, dstlen))
-        return (0);
-    dsize = aP_depack_asm_safe(src, ssize, dst, dsize);
-    if (dsize == (uint_t)APLIB_ERROR)
-        return (0);
-    return (dsize);
+    return (dstlen);
 }
 
 /*****************************************************************************/
