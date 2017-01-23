@@ -1249,7 +1249,7 @@ image_facedetect (
     int max_size;
     int neighbors;
     short* points;
-    byte_t buf[0xC004];
+    byte_t buf[0x20000];
 
     scale = xml_attr_fp32U("scale", 1.2f, param);
     neighbors = xml_attr_intxU("min_neighbors", 2, param);
