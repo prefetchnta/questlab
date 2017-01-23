@@ -1244,6 +1244,7 @@ image_facedetect (
     float scale;
     int* result;
     cpix_t color;
+    int landmark;
     int min_size;
     int max_size;
     int neighbors;
@@ -1254,30 +1255,29 @@ image_facedetect (
     neighbors = xml_attr_intxU("min_neighbors", 2, param);
     min_size = xml_attr_intxU("min_width", 24, param);
     max_size = xml_attr_intxU("max_width", 0, param);
+    landmark = xml_attr_intxU("landmark", 0, param);
     if (str_cmpA(param->name, "crhack_face_frontal") == 0) {
         result = facedetect_frontal(buf, gray->data, gray->position.ww,
-                                    gray->position.hh, gray->bpl, scale,
-                                        neighbors, min_size, max_size);
+                            gray->position.hh, gray->bpl, scale, neighbors,
+                                    min_size, max_size, landmark);
     }
     else
     if (str_cmpA(param->name, "crhack_face_multiview") == 0) {
         result = facedetect_multiview(buf, gray->data, gray->position.ww,
-                                    gray->position.hh, gray->bpl, scale,
-                                        neighbors, min_size, max_size);
+                            gray->position.hh, gray->bpl, scale, neighbors,
+                                    min_size, max_size, landmark);
     }
     else
     if (str_cmpA(param->name, "crhack_face_multiview_reinforce") == 0) {
         result = facedetect_multiview_reinforce(buf, gray->data,
-                                    gray->position.ww, gray->position.hh,
-                                        gray->bpl, scale, neighbors,
-                                            min_size, max_size);
+                            gray->position.ww, gray->position.hh, gray->bpl,
+                            scale, neighbors, min_size, max_size, landmark);
     }
     else
     if (str_cmpA(param->name, "crhack_face_frontal_surveillance") == 0) {
         result = facedetect_frontal_surveillance(buf, gray->data,
-                                    gray->position.ww, gray->position.hh,
-                                        gray->bpl, scale, neighbors,
-                                            min_size, max_size);
+                            gray->position.ww, gray->position.hh, gray->bpl,
+                            scale, neighbors, min_size, max_size, landmark);
     }
     else {
         result = NULL;
@@ -1285,13 +1285,19 @@ image_facedetect (
     if (result != NULL) {
         color.val = 0xFF00FF00;
         points = (short*)(result + 1);
-        for (int idx = 0; idx < *result; idx++, points += 6) {
+        for (int idx = 0; idx < *result; idx++, points += 6 + 68 * 2) {
             rect_set_wh(&rect, points[0], points[1], points[2], points[3]);
             for (int kk = 0; kk < 3; kk++) {
                 draw_rect(dest, &rect, color, pixel_set32z);
                 rect.x1 += 1;   rect.y1 += 1;
                 rect.x2 -= 1;   rect.y2 -= 1;
                 rect.ww -= 2;   rect.hh -= 2;
+            }
+            if (landmark) {
+                for (int jj = 0; jj < 68; jj++) {
+                    draw_circle_ex(dest, points[6 + 2 * jj + 0],
+                                         points[6 + 2 * jj + 1], 7, 3);
+                }
             }
         }
     }
