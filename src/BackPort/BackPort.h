@@ -48,16 +48,15 @@ void_t  func_free (void_t *handle);
 __declspec(dllexport) \
 __declspec(naked) void __name (void) \
 { \
-    __asm mov eax, __index; \
-    __asm mov ebx, __remap; \
-    __asm lea ecx, [ebx + eax * 8]; \
-    __asm lea edx, [ecx + eax * 4]; \
-    __asm mov eax, [edx]; \
-    __asm test eax, eax; \
-    __asm jz _replace; \
-    __asm jmp dword ptr [eax]; \
-_replace: \
-    __asm jmp dword ptr [edx + 4]; \
+    __asm mov eax, __index \
+    __asm mov ebx, __remap \
+    __asm lea ecx, [ebx + eax * 8] \
+    __asm lea edx, [ecx + eax * 4] \
+    __asm mov eax, dword ptr [edx] \
+    __asm test eax, eax \
+    __asm jz $+8 \
+    __asm jmp dword ptr [eax] \
+    __asm jmp dword ptr [edx + 4] \
 }
 
 #endif  /* !__QL_BACKPORT_H__ */
