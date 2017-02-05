@@ -77,8 +77,16 @@ CR_API BOOL WINAPI ProcessCtrl (DWORD prcss_id, BOOL suspend);
 /*                                 窗口控制                                  */
 /*****************************************************************************/
 
+/* 窗口递归查找结构 */
+struct  sWindowParam
+{
+    LPCWSTR wclass;
+    LPCWSTR wtitle;
+};
+
 CR_API UINT WINAPI HWndList (HWND parent, HWND **list);
-CR_API HWND WINAPI HWndFind (HWND parent, LPCWSTR wclass, LPCWSTR wtitle);
+CR_API HWND WINAPI HWndFind (HWND parent, const sWindowParam *wlist,
+                             UINT count);
 
 /*****************************************************************************/
 /*                                 函数钩子                                  */

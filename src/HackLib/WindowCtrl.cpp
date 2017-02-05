@@ -59,10 +59,18 @@ HWndList (
 */
 CR_API HWND WINAPI
 HWndFind (
-  __CR_IN__ HWND    parent,
-  __CR_IN__ LPCWSTR wclass,
-  __CR_IN__ LPCWSTR wtitle
+  __CR_IN__ HWND                parent,
+  __CR_IN__ const sWindowParam* wlist,
+  __CR_IN__ UINT                count
     )
 {
-    return (FindWindowExW(parent, NULL, wclass, wtitle));
+    for (UINT idx = 0; idx < count; idx++) {
+        parent = FindWindowExW(parent, NULL, wlist[idx].wclass,
+                               wlist[idx].wtitle);
+        if (parent == NULL)
+            return (NULL);
+    }
+    if (parent == NULL)
+        parent = GetDesktopWindow();
+    return (parent);
 }
