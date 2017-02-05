@@ -38,7 +38,7 @@ typedef struct
 
 } sBP_FUNC;
 
-void_t* func_load (sBP_FUNC *func, const ansi_t *dll);
+void_t* func_load (sBP_FUNC *func, const ansi_t *name);
 void_t  func_free (void_t *handle);
 
 /* 简化函数定义 */

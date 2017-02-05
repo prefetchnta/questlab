@@ -69,6 +69,7 @@ static sBP_FUNC s_remap[] =
     { NULL, "WideCharToMultiByte" },
     { NULL, "WriteConsoleW" },
     { NULL, "WriteFile" },
+    { NULL, NULL },
 };
 
 /* DLL 句柄 */

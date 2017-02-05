@@ -3,9 +3,11 @@ SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
-OBJ_LIST=.$(L)kernel33.$(O)
+OBJ_LIST=.$(L)BackPort.$(O) \
+         .$(L)kernel33.$(O)
 
-SRC_LIST=.$(L)kernel33.$(C)
+SRC_LIST=.$(L)BackPort.$(C) \
+         .$(L)kernel33.$(C)
 
 build_all:
     $(CC) $(CFLAGS) /GS- /D "_CR_BUILD_DLL_" $(SRC_LIST)
