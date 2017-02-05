@@ -34,11 +34,13 @@
 typedef struct
 {
         void_t*         addr;
+        void_t*         rplc;
         const ansi_t*   name;
 
 } sBP_FUNC;
 
-void_t* func_load (sBP_FUNC *func, const ansi_t *name);
+void_t* func_load (const ansi_t *name);
+void_t  func_setup (void_t *handle, sBP_FUNC *func);
 void_t  func_free (void_t *handle);
 
 /* 简化函数定义 */

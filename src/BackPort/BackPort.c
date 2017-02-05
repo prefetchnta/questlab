@@ -10,19 +10,27 @@
 */
 extern void_t*
 func_load (
-  __CR_IO__ sBP_FUNC*       func,
   __CR_IN__ const ansi_t*   name
     )
 {
-    uint_t  idx;
-    HANDLE  hdl;
+    return ((void_t*)LoadLibraryA(name));
+}
 
-    hdl = LoadLibraryA(name);
-    if (hdl == NULL)
-        return (NULL);
+/*
+=======================================
+    加载映射表里的函数
+=======================================
+*/
+extern void_t
+func_setup (
+  __CR_IN__ void_t*     handle,
+  __CR_IO__ sBP_FUNC*   func
+    )
+{
+    uint_t  idx;
+
     for (idx = 0; func[idx].name != NULL; idx++)
-        func[idx].addr = (void_t*)GetProcAddress(hdl, func[idx].name);
-    return ((void_t*)hdl);
+        func[idx].addr = (void_t*)GetProcAddress(handle, func[idx].name);
 }
 
 /*
