@@ -104,3 +104,5 @@ DllMain (
     CR_NOUSE(reserved);
     return (TRUE);
 }
+
+BACKPORT_FUNC(test, s_remap1, 11223344)

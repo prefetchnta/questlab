@@ -10,8 +10,8 @@ SRC_LIST=.$(L)BackPort.$(C) \
          .$(L)kernel33.$(C)
 
 build_all:
-    $(CC) $(CFLAGS) /GS- /D "_CR_BUILD_DLL_" $(SRC_LIST)
-    $(LD) $(LFLAGS) /DLL /ENTRY:DllMain /DEF:.$(L)$(PROJECT).def $(OBJ_LIST)
+    $(CC) $(CFLAGS) /GS- $(SRC_LIST)
+    $(LD) $(LFLAGS) /DLL /ENTRY:DllMain $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)
     move $(PROJECT).lib ..$(L)..$(L)tmp$(L)

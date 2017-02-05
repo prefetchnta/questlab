@@ -44,5 +44,20 @@ void_t  func_setup (void_t *handle, sBP_FUNC *func);
 void_t  func_free (void_t *handle);
 
 /* 简化函数定义 */
+#define BACKPORT_FUNC(__name, __remap, __index) \
+__declspec(dllexport) \
+__declspec(naked) void __name (void) \
+{ \
+    __asm mov eax, __index; \
+    __asm mov ebx, __remap; \
+    __asm lea ecx, [ebx + eax * 8]; \
+    __asm lea edx, [ecx + eax * 4]; \
+    __asm mov eax, [edx]; \
+    __asm test eax, eax; \
+    __asm jz _replace; \
+    __asm jmp dword ptr [eax]; \
+_replace: \
+    __asm jmp dword ptr [edx + 4]; \
+}
 
 #endif  /* !__QL_BACKPORT_H__ */
