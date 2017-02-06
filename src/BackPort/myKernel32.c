@@ -11,6 +11,8 @@ myFlsAlloc (
   __CR_IN__ void*   lpCallback
     )
 {
+    CR_NOUSE(lpCallback);
+    return (TlsAlloc());
 }
 
 /*
@@ -23,6 +25,7 @@ myFlsFree (
   __CR_IN__ unsigned long   dwFlsIndex
     )
 {
+    return (TlsFree(dwFlsIndex));
 }
 
 /*
@@ -35,6 +38,7 @@ myFlsGetValue (
   __CR_IN__ unsigned long   dwFlsIndex
     )
 {
+    return (TlsGetValue(dwFlsIndex));
 }
 
 /*
@@ -48,7 +52,11 @@ myFlsSetValue (
   __CR_IN__ void*           lpFlsData
     )
 {
+    return (TlsSetValue(dwFlsIndex, lpFlsData));
 }
+
+/* 回调函数类型 */
+typedef BOOL CALLBACK (*init_once_t) (void*, void*, void**);
 
 /*
 =======================================
@@ -63,6 +71,10 @@ myInitOnceExecuteOnce (
   __CR_IN__ void**  Context
     )
 {
+    init_once_t func = (init_once_t)InitFn;
+
+    if (!_InterlockedCompareExchange(InitOnce, TRUE, FALSE))
+        func(InitOnce, Parameter, Context);
 }
 
 /*
