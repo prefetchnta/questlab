@@ -44,7 +44,7 @@ void_t  func_setup (void_t *handle, sBP_FUNC *func);
 void_t  func_free (void_t *handle);
 
 /* 简化函数定义 */
-#define BACKPORT_FUNC(__name, __remap, __index) \
+#define BACKPORT_FUNC(__remap, __index, __name) \
 __declspec(dllexport) \
 __declspec(naked) void __name (void) \
 { \
@@ -58,5 +58,10 @@ __declspec(naked) void __name (void) \
     __asm jmp dword ptr [eax] \
     __asm jmp dword ptr [edx + 4] \
 }
+
+/* 简化定义的宏 */
+#define BACKPORT_FINISH         { NULL, NULL, NULL }
+#define BACKPORT_JUMP(__name)   { NULL, NULL, #__name }
+#define BACKPORT_RPLC(__name)   { NULL, my##__name, #__name }
 
 #endif  /* !__QL_BACKPORT_H__ */

@@ -4,72 +4,72 @@
 /* 函数重映射表 */
 static sBP_FUNC s_remap1[] =
 {
-    { NULL, NULL, "CloseHandle" },
-    { NULL, NULL, "CreateFileW" },
-    { NULL, NULL, "DecodePointer" },
-    { NULL, NULL, "DeleteCriticalSection" },
-    { NULL, NULL, "EncodePointer" },
-    { NULL, NULL, "EnterCriticalSection" },
-    { NULL, NULL, "ExitProcess" },
-    { NULL, NULL, "FlsAlloc" },
-    { NULL, NULL, "FlsFree" },
-    { NULL, NULL, "FlsGetValue" },
-    { NULL, NULL, "FlsSetValue" },
-    { NULL, NULL, "FlushFileBuffers" },
-    { NULL, NULL, "FreeEnvironmentStringsW" },
-    { NULL, NULL, "GetACP" },
-    { NULL, NULL, "GetCommandLineA" },
-    { NULL, NULL, "GetConsoleCP" },
-    { NULL, NULL, "GetConsoleMode" },
-    { NULL, NULL, "GetCPInfo" },
-    { NULL, NULL, "GetCurrentProcess" },
-    { NULL, NULL, "GetCurrentThreadId" },
-    { NULL, NULL, "GetEnvironmentStringsW" },
-    { NULL, NULL, "GetFileType" },
-    { NULL, NULL, "GetLastError" },
-    { NULL, NULL, "GetModuleFileNameA" },
-    { NULL, NULL, "GetModuleFileNameW" },
-    { NULL, NULL, "GetModuleHandleExW" },
-    { NULL, NULL, "GetModuleHandleW" },
-    { NULL, NULL, "GetOEMCP" },
-    { NULL, NULL, "GetProcAddress" },
-    { NULL, NULL, "GetProcessHeap" },
-    { NULL, NULL, "GetStartupInfoW" },
-    { NULL, NULL, "GetStdHandle" },
-    { NULL, NULL, "GetStringTypeW" },
-    { NULL, NULL, "GetSystemTimeAsFileTime" },
-    { NULL, NULL, "GetTickCount64" },
-    { NULL, NULL, "HeapAlloc" },
-    { NULL, NULL, "HeapFree" },
-    { NULL, NULL, "HeapReAlloc" },
-    { NULL, NULL, "HeapSize" },
-    { NULL, NULL, "InitializeCriticalSectionAndSpinCount" },
-    { NULL, NULL, "InitOnceExecuteOnce" },
-    { NULL, NULL, "InterlockedDecrement" },
-    { NULL, NULL, "InterlockedIncrement" },
-    { NULL, NULL, "IsDebuggerPresent" },
-    { NULL, NULL, "IsProcessorFeaturePresent" },
-    { NULL, NULL, "IsValidCodePage" },
-    { NULL, NULL, "LCMapStringEx" },
-    { NULL, NULL, "LeaveCriticalSection" },
-    { NULL, NULL, "LoadLibraryExW" },
-    { NULL, NULL, "LoadLibraryW" },
-    { NULL, NULL, "MultiByteToWideChar" },
-    { NULL, NULL, "OutputDebugStringW" },
-    { NULL, NULL, "QueryPerformanceCounter" },
-    { NULL, NULL, "RaiseException" },
-    { NULL, NULL, "RtlUnwind" },
-    { NULL, NULL, "SetFilePointerEx" },
-    { NULL, NULL, "SetLastError" },
-    { NULL, NULL, "SetStdHandle" },
-    { NULL, NULL, "SetUnhandledExceptionFilter" },
-    { NULL, NULL, "Sleep" },
-    { NULL, NULL, "TerminateProcess" },
-    { NULL, NULL, "UnhandledExceptionFilter" },
-    { NULL, NULL, "WideCharToMultiByte" },
-    { NULL, NULL, "WriteConsoleW" },
-    { NULL, NULL, "WriteFile" },
-    { NULL, NULL, NULL },
+    BACKPORT_JUMP(CloseHandle),
+    BACKPORT_JUMP(CreateFileW),
+    BACKPORT_JUMP(DecodePointer),
+    BACKPORT_JUMP(DeleteCriticalSection),
+    BACKPORT_JUMP(EncodePointer),
+    BACKPORT_JUMP(EnterCriticalSection),
+    BACKPORT_JUMP(ExitProcess),
+    BACKPORT_JUMP(FlsAlloc),
+    BACKPORT_JUMP(FlsFree),
+    BACKPORT_JUMP(FlsGetValue),
+    BACKPORT_JUMP(FlsSetValue),
+    BACKPORT_JUMP(FlushFileBuffers),
+    BACKPORT_JUMP(FreeEnvironmentStringsW),
+    BACKPORT_JUMP(GetACP),
+    BACKPORT_JUMP(GetCommandLineA),
+    BACKPORT_JUMP(GetConsoleCP),
+    BACKPORT_JUMP(GetConsoleMode),
+    BACKPORT_JUMP(GetCPInfo),
+    BACKPORT_JUMP(GetCurrentProcess),
+    BACKPORT_JUMP(GetCurrentThreadId),
+    BACKPORT_JUMP(GetEnvironmentStringsW),
+    BACKPORT_JUMP(GetFileType),
+    BACKPORT_JUMP(GetLastError),
+    BACKPORT_JUMP(GetModuleFileNameA),
+    BACKPORT_JUMP(GetModuleFileNameW),
+    BACKPORT_JUMP(GetModuleHandleExW),
+    BACKPORT_JUMP(GetModuleHandleW),
+    BACKPORT_JUMP(GetOEMCP),
+    BACKPORT_JUMP(GetProcAddress),
+    BACKPORT_JUMP(GetProcessHeap),
+    BACKPORT_JUMP(GetStartupInfoW),
+    BACKPORT_JUMP(GetStdHandle),
+    BACKPORT_JUMP(GetStringTypeW),
+    BACKPORT_JUMP(GetSystemTimeAsFileTime),
+    BACKPORT_JUMP(GetTickCount64),
+    BACKPORT_JUMP(HeapAlloc),
+    BACKPORT_JUMP(HeapFree),
+    BACKPORT_JUMP(HeapReAlloc),
+    BACKPORT_JUMP(HeapSize),
+    BACKPORT_JUMP(InitializeCriticalSectionAndSpinCount),
+    BACKPORT_JUMP(InitOnceExecuteOnce),
+    BACKPORT_JUMP(InterlockedDecrement),
+    BACKPORT_JUMP(InterlockedIncrement),
+    BACKPORT_JUMP(IsDebuggerPresent),
+    BACKPORT_JUMP(IsProcessorFeaturePresent),
+    BACKPORT_JUMP(IsValidCodePage),
+    BACKPORT_JUMP(LCMapStringEx),
+    BACKPORT_JUMP(LeaveCriticalSection),
+    BACKPORT_JUMP(LoadLibraryExW),
+    BACKPORT_JUMP(LoadLibraryW),
+    BACKPORT_JUMP(MultiByteToWideChar),
+    BACKPORT_JUMP(OutputDebugStringW),
+    BACKPORT_JUMP(QueryPerformanceCounter),
+    BACKPORT_JUMP(RaiseException),
+    BACKPORT_JUMP(RtlUnwind),
+    BACKPORT_JUMP(SetFilePointerEx),
+    BACKPORT_JUMP(SetLastError),
+    BACKPORT_JUMP(SetStdHandle),
+    BACKPORT_JUMP(SetUnhandledExceptionFilter),
+    BACKPORT_JUMP(Sleep),
+    BACKPORT_JUMP(TerminateProcess),
+    BACKPORT_JUMP(UnhandledExceptionFilter),
+    BACKPORT_JUMP(WideCharToMultiByte),
+    BACKPORT_JUMP(WriteConsoleW),
+    BACKPORT_JUMP(WriteFile),
+    BACKPORT_FINISH
 };
 
 /* DLL 句柄 */
@@ -105,4 +105,71 @@ DllMain (
     return (TRUE);
 }
 
-BACKPORT_FUNC(test, s_remap1, 11223344)
+/************/
+/* s_remap1 */
+/************/
+BACKPORT_FUNC(s_remap1,  0, CloseHandle)
+BACKPORT_FUNC(s_remap1,  1, CreateFileW)
+BACKPORT_FUNC(s_remap1,  2, DecodePointer)
+BACKPORT_FUNC(s_remap1,  3, DeleteCriticalSection)
+BACKPORT_FUNC(s_remap1,  4, EncodePointer)
+BACKPORT_FUNC(s_remap1,  5, EnterCriticalSection)
+BACKPORT_FUNC(s_remap1,  6, ExitProcess)
+BACKPORT_FUNC(s_remap1,  7, FlsAlloc)
+BACKPORT_FUNC(s_remap1,  8, FlsFree)
+BACKPORT_FUNC(s_remap1,  9, FlsGetValue)
+BACKPORT_FUNC(s_remap1, 10, FlsSetValue)
+BACKPORT_FUNC(s_remap1, 11, FlushFileBuffers)
+BACKPORT_FUNC(s_remap1, 12, FreeEnvironmentStringsW)
+BACKPORT_FUNC(s_remap1, 13, GetACP)
+BACKPORT_FUNC(s_remap1, 14, GetCommandLineA)
+BACKPORT_FUNC(s_remap1, 15, GetConsoleCP)
+BACKPORT_FUNC(s_remap1, 16, GetConsoleMode)
+BACKPORT_FUNC(s_remap1, 17, GetCPInfo)
+BACKPORT_FUNC(s_remap1, 18, GetCurrentProcess)
+BACKPORT_FUNC(s_remap1, 19, GetCurrentThreadId)
+BACKPORT_FUNC(s_remap1, 20, GetEnvironmentStringsW)
+BACKPORT_FUNC(s_remap1, 21, GetFileType)
+BACKPORT_FUNC(s_remap1, 22, GetLastError)
+BACKPORT_FUNC(s_remap1, 23, GetModuleFileNameA)
+BACKPORT_FUNC(s_remap1, 24, GetModuleFileNameW)
+BACKPORT_FUNC(s_remap1, 25, GetModuleHandleExW)
+BACKPORT_FUNC(s_remap1, 26, GetModuleHandleW)
+BACKPORT_FUNC(s_remap1, 27, GetOEMCP)
+BACKPORT_FUNC(s_remap1, 28, GetProcAddress)
+BACKPORT_FUNC(s_remap1, 29, GetProcessHeap)
+BACKPORT_FUNC(s_remap1, 30, GetStartupInfoW)
+BACKPORT_FUNC(s_remap1, 31, GetStdHandle)
+BACKPORT_FUNC(s_remap1, 32, GetStringTypeW)
+BACKPORT_FUNC(s_remap1, 33, GetSystemTimeAsFileTime)
+BACKPORT_FUNC(s_remap1, 34, GetTickCount64)
+BACKPORT_FUNC(s_remap1, 35, HeapAlloc)
+BACKPORT_FUNC(s_remap1, 36, HeapFree)
+BACKPORT_FUNC(s_remap1, 37, HeapReAlloc)
+BACKPORT_FUNC(s_remap1, 38, HeapSize)
+BACKPORT_FUNC(s_remap1, 39, InitializeCriticalSectionAndSpinCount)
+BACKPORT_FUNC(s_remap1, 40, InitOnceExecuteOnce)
+BACKPORT_FUNC(s_remap1, 41, InterlockedDecrement)
+BACKPORT_FUNC(s_remap1, 42, InterlockedIncrement)
+BACKPORT_FUNC(s_remap1, 43, IsDebuggerPresent)
+BACKPORT_FUNC(s_remap1, 44, IsProcessorFeaturePresent)
+BACKPORT_FUNC(s_remap1, 45, IsValidCodePage)
+BACKPORT_FUNC(s_remap1, 46, LCMapStringEx)
+BACKPORT_FUNC(s_remap1, 47, LeaveCriticalSection)
+BACKPORT_FUNC(s_remap1, 48, LoadLibraryExW)
+BACKPORT_FUNC(s_remap1, 49, LoadLibraryW)
+BACKPORT_FUNC(s_remap1, 50, MultiByteToWideChar)
+BACKPORT_FUNC(s_remap1, 51, OutputDebugStringW)
+BACKPORT_FUNC(s_remap1, 52, QueryPerformanceCounter)
+BACKPORT_FUNC(s_remap1, 53, RaiseException)
+BACKPORT_FUNC(s_remap1, 54, RtlUnwind)
+BACKPORT_FUNC(s_remap1, 55, SetFilePointerEx)
+BACKPORT_FUNC(s_remap1, 56, SetLastError)
+BACKPORT_FUNC(s_remap1, 57, SetStdHandle)
+BACKPORT_FUNC(s_remap1, 58, SetUnhandledExceptionFilter)
+BACKPORT_FUNC(s_remap1, 59, Sleep)
+BACKPORT_FUNC(s_remap1, 60, TerminateProcess)
+BACKPORT_FUNC(s_remap1, 61, UnhandledExceptionFilter)
+BACKPORT_FUNC(s_remap1, 62, WideCharToMultiByte)
+BACKPORT_FUNC(s_remap1, 63, WriteConsoleW)
+BACKPORT_FUNC(s_remap1, 64, WriteFile)
