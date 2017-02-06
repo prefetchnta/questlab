@@ -55,7 +55,7 @@ __declspec(naked) void __name (void) \
     __asm mov eax, dword ptr [edx] \
     __asm test eax, eax \
     __asm jz $+8 \
-    __asm jmp dword ptr [eax] \
+    __asm jmp dword ptr [edx] \
     __asm jmp dword ptr [edx + 4] \
 }
 

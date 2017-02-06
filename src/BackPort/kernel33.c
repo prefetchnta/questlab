@@ -3,7 +3,7 @@
 #include "myKernel32.h"
 
 /* 函数重映射表 */
-static sBP_FUNC s_remap1[] =
+static sBP_FUNC s_remap1_tbl[] =
 {
     BACKPORT_JUMP(CloseHandle),
     BACKPORT_JUMP(CreateFileW),
@@ -72,6 +72,7 @@ static sBP_FUNC s_remap1[] =
     BACKPORT_JUMP(WriteFile),
     BACKPORT_FINISH
 };
+static sBP_FUNC *s_remap1 = s_remap1_tbl;
 
 /* DLL 句柄 */
 static void_t*  s_kernel32 = NULL;
