@@ -4,10 +4,12 @@ BIN_NAME=$(PROJECT).dll
 !INCLUDE "../vc2010_x86.mak"
 
 OBJ_LIST=.$(L)BackPort.$(O) \
-         .$(L)kernel33.$(O)
+         .$(L)kernel33.$(O) \
+         .$(L)myKernel32.$(O)
 
 SRC_LIST=.$(L)BackPort.$(C) \
-         .$(L)kernel33.$(C)
+         .$(L)kernel33.$(C) \
+         .$(L)myKernel32.$(C)
 
 build_all:
     $(CC) $(CFLAGS) /GS- $(SRC_LIST)

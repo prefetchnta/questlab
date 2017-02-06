@@ -1,5 +1,6 @@
 
 #include "BackPort.h"
+#include "myKernel32.h"
 
 /* 函数重映射表 */
 static sBP_FUNC s_remap1[] =
@@ -11,10 +12,10 @@ static sBP_FUNC s_remap1[] =
     BACKPORT_JUMP(EncodePointer),
     BACKPORT_JUMP(EnterCriticalSection),
     BACKPORT_JUMP(ExitProcess),
-    BACKPORT_JUMP(FlsAlloc),
-    BACKPORT_JUMP(FlsFree),
-    BACKPORT_JUMP(FlsGetValue),
-    BACKPORT_JUMP(FlsSetValue),
+    BACKPORT_RPLC(FlsAlloc),
+    BACKPORT_RPLC(FlsFree),
+    BACKPORT_RPLC(FlsGetValue),
+    BACKPORT_RPLC(FlsSetValue),
     BACKPORT_JUMP(FlushFileBuffers),
     BACKPORT_JUMP(FreeEnvironmentStringsW),
     BACKPORT_JUMP(GetACP),
@@ -38,19 +39,19 @@ static sBP_FUNC s_remap1[] =
     BACKPORT_JUMP(GetStdHandle),
     BACKPORT_JUMP(GetStringTypeW),
     BACKPORT_JUMP(GetSystemTimeAsFileTime),
-    BACKPORT_JUMP(GetTickCount64),
+    BACKPORT_RPLC(GetTickCount64),
     BACKPORT_JUMP(HeapAlloc),
     BACKPORT_JUMP(HeapFree),
     BACKPORT_JUMP(HeapReAlloc),
     BACKPORT_JUMP(HeapSize),
     BACKPORT_JUMP(InitializeCriticalSectionAndSpinCount),
-    BACKPORT_JUMP(InitOnceExecuteOnce),
+    BACKPORT_RPLC(InitOnceExecuteOnce),
     BACKPORT_JUMP(InterlockedDecrement),
     BACKPORT_JUMP(InterlockedIncrement),
     BACKPORT_JUMP(IsDebuggerPresent),
     BACKPORT_JUMP(IsProcessorFeaturePresent),
     BACKPORT_JUMP(IsValidCodePage),
-    BACKPORT_JUMP(LCMapStringEx),
+    BACKPORT_RPLC(LCMapStringEx),
     BACKPORT_JUMP(LeaveCriticalSection),
     BACKPORT_JUMP(LoadLibraryExW),
     BACKPORT_JUMP(LoadLibraryW),

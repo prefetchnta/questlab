@@ -62,6 +62,6 @@ __declspec(naked) void __name (void) \
 /* 简化定义的宏 */
 #define BACKPORT_FINISH         { NULL, NULL, NULL }
 #define BACKPORT_JUMP(__name)   { NULL, NULL, #__name }
-#define BACKPORT_RPLC(__name)   { NULL, my##__name, #__name }
+#define BACKPORT_RPLC(__name)   { NULL, (void_t*)(my##__name), #__name }
 
 #endif  /* !__QL_BACKPORT_H__ */
