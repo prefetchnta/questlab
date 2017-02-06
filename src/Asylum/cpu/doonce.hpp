@@ -13,41 +13,32 @@ namespace asy {
 /*************/
 /* Call Once */
 /*************/
-template<class TLCK = mtlock>
 class doonce : public asylum
 {
 private:
-    TLCK            m_lock;
-    volatile bool   m_done;
+    volatile int    m_done;
 
 public:
     /* ====== */
     void init ()
     {
-        m_lock.init();
-        m_done = false;
+        m_done = 0;
     }
 
     /* ====== */
     void free ()
     {
-        m_lock.free();
     }
 
 public:
     /* ========================== */
     template<class TSUB>void call ()
     {
-        if (!m_done) {
-            m_lock.acquire();
-            if (!m_done)
-            {
-                TSUB    sub;
+        if (!atom_cmp_and_swap32v(&m_done, 1, 0))
+        {
+            TSUB    sub;
 
-                sub.gosub();
-                m_done = true;
-            }
-            m_lock.release();
+            sub.gosub();
         }
     }
 };
