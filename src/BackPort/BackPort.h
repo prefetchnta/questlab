@@ -49,9 +49,9 @@ __declspec(dllexport) \
 __declspec(naked) void __name (void) \
 { \
     __asm mov eax, __index \
-    __asm mov ebx, __remap \
-    __asm lea ecx, [ebx + eax * 8] \
-    __asm lea edx, [ecx + eax * 4] \
+    __asm mov edx, __remap \
+    __asm lea edx, [edx + eax * 8] \
+    __asm lea edx, [edx + eax * 4] \
     __asm mov eax, dword ptr [edx] \
     __asm test eax, eax \
     __asm jz $+8 \
