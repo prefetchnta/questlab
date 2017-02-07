@@ -48,10 +48,8 @@ void_t  func_free (void_t *handle);
 __declspec(dllexport) \
 __declspec(naked) void __name (void) \
 { \
-    __asm mov eax, __index \
     __asm mov edx, __remap \
-    __asm lea edx, [edx + eax * 8] \
-    __asm lea edx, [edx + eax * 4] \
+    __asm add edx, __index * 12 \
     __asm mov eax, dword ptr [edx] \
     __asm test eax, eax \
     __asm jz $+8 \
