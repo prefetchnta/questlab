@@ -137,14 +137,15 @@ typedef int16s  fp16_t;
 #define CR_ABIT32   (1.0E-06f)
 
 /* 文件系统大小 */
+#undef  _LARGE_FILE
+#undef  _LARGEFILE_SOURCE
+#undef  _LARGEFILE64_SOURCE
+#undef  _FILE_OFFSET_BITS
 #if defined(_CR_FILE32_)
     typedef int32s  fdist_t;
     typedef int32u  fsize_t;
 
     /* 关闭 GCC 64位文件开关 */
-    #undef  _LARGE_FILE
-    #undef  _LARGEFILE_SOURCE
-    #undef  _LARGEFILE64_SOURCE
     #define _FILE_OFFSET_BITS   32
 
 #else   /* (_CR_FILE64_) */
