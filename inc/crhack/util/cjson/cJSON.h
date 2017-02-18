@@ -30,8 +30,8 @@ extern "C"
 
 /* project version */
 #define CJSON_VERSION_MAJOR 1
-#define CJSON_VERSION_MINOR 2
-#define CJSON_VERSION_PATCH 1
+#define CJSON_VERSION_MINOR 3
+#define CJSON_VERSION_PATCH 0
 
 /* returns the version of cJSON as a string */
 extern const char* cJSON_Version(void);
@@ -39,6 +39,7 @@ extern const char* cJSON_Version(void);
 #include <stddef.h>
 
 /* cJSON Types: */
+#define cJSON_Invalid (0)
 #define cJSON_False  (1 << 0)
 #define cJSON_True   (1 << 1)
 #define cJSON_NULL   (1 << 2)
