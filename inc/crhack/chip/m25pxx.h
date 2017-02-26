@@ -38,6 +38,8 @@ CR_TYPEDEF struct
                                         0x14 = M25P80
                                         0x15 = M25P16
                                         0x16 = M25P32
+                                        0x17 = M25P64
+                                        0x18 = M25P128
                             */
 } CR_PACKED sM25PXX;
 
@@ -56,8 +58,9 @@ CR_TYPEDEF struct
 /* M25PXX 参数值 */
 #define M25PXX_SPGE_SIZE        128     /* 小数据页大小 */
 #define M25PXX_BPGE_SIZE        256     /* 大数据页大小 */
-#define M25PXX_SSEC_SIZE    CR_K2B(32)  /* 小扇区的大小 */
-#define M25PXX_BSEC_SIZE    CR_K2B(64)  /* 大扇区的大小 */
+#define M25PXX_SBLK_SIZE    CR_K2B(32)  /* 小区块的大小 */
+#define M25PXX_BBLK_SIZE    CR_K2B(64)  /* 大区块的大小 */
+#define M25PXX_LBLK_SIZE    CR_K2B(256) /* 巨区块的大小 */
 #define M25P05_CHIP_SIZE    CR_K2B(64)  /*  M25P05 大小 */
 #define M25P10_CHIP_SIZE    CR_K2B(128) /*  M25P10 大小 */
 #define M25P20_CHIP_SIZE    CR_K2B(256) /*  M25P20 大小 */
@@ -65,6 +68,8 @@ CR_TYPEDEF struct
 #define M25P80_CHIP_SIZE    CR_M2B(1)   /*  M25P80 大小 */
 #define M25P16_CHIP_SIZE    CR_M2B(2)   /*  M25P16 大小 */
 #define M25P32_CHIP_SIZE    CR_M2B(4)   /*  M25P32 大小 */
+#define M25P64_CHIP_SIZE    CR_M2B(8)   /*  M25P64 大小 */
+#define M25P128_CHIP_SIZE   CR_M2B(16)  /*  M25P128 大小 */
 
 #endif  /* !__CR_M25PXX_H__ */
 

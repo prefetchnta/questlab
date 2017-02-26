@@ -58,7 +58,7 @@ CR_TYPEDEF struct
 /* M25PEXX 参数值 */
 #define M25PEXX_PAGE_SIZE       256     /* 数据页的大小 */
 #define M25PEXX_SSEC_SIZE   CR_K2B(4)   /* 小扇区的大小 */
-#define M25PEXX_BSEC_SIZE   CR_K2B(64)  /* 大扇区的大小 */
+#define M25PEXX_BBLK_SIZE   CR_K2B(64)  /* 大区块的大小 */
 #define M25PE10_CHIP_SIZE   CR_K2B(128) /* M25PE10 大小 */
 #define M25PE20_CHIP_SIZE   CR_K2B(256) /* M25PE20 大小 */
 #define M25PE40_CHIP_SIZE   CR_K2B(512) /* M25PE40 大小 */
