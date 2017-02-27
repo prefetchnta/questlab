@@ -37,7 +37,7 @@ CR_TYPEDEF struct
                                         0x14 = MX25L80
                                         0x15 = MX25L16
                             */
-} CR_PACKED sMX25LXX;
+} CR_PACKED sMX25LXX3;
 
 /* MX25LXX 制造 ID */
 CR_TYPEDEF struct
@@ -49,7 +49,7 @@ CR_TYPEDEF struct
                                         0x13 = MX25L80
                                         0x14 = MX25L16
                             */
-} CR_PACKED sMX25LXX_M;
+} CR_PACKED sMX25LXX2;
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (pop)

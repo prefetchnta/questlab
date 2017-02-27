@@ -39,7 +39,7 @@ CR_TYPEDEF struct
                                         0x16 = W25X32
                                         0x17 = W25X64
                             */
-} CR_PACKED sW25XXX;
+} CR_PACKED sW25XXX3;
 
 /* W25XXX 制造 ID */
 CR_TYPEDEF struct
@@ -53,7 +53,7 @@ CR_TYPEDEF struct
                                         0x15 = W25X32
                                         0x16 = W25X64
                             */
-} CR_PACKED sW25XXX_M;
+} CR_PACKED sW25XXX2;
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (pop)

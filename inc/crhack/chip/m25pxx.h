@@ -41,7 +41,7 @@ CR_TYPEDEF struct
                                         0x17 = M25P64
                                         0x18 = M25P128
                             */
-} CR_PACKED sM25PXX;
+} CR_PACKED sM25PXX3;
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (pop)
