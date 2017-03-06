@@ -64,6 +64,7 @@ CR_API xtime_t  timer_new (void_t);
 CR_API void_t   timer_del (xtime_t timer);
 CR_API int32u   timer_get32 (void_t);
 CR_API int64u   timer_get64 (void_t);
+CR_API int32u   timer_delta32 (int32u base);
 
 /* 定时器获取时差 */
 CR_API void_t   timer_set_base  (xtime_t timer);

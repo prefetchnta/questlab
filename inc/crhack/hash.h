@@ -85,6 +85,13 @@ CR_API int16u   hash_crc16c_update (int16u hash, const void_t *data,
 CR_API int16u   hash_crc16c_finish (int16u hash);
 CR_API int16u   hash_crc16c_total (const void_t *data, leng_t size);
 
+/* CRC-16/CCITT (小表) */
+CR_API int16u   hash_crc16h_init (void_t);
+CR_API int16u   hash_crc16h_update (int16u hash, const void_t *data,
+                                    leng_t size);
+CR_API int16u   hash_crc16h_finish (int16u hash);
+CR_API int16u   hash_crc16h_total (const void_t *data, leng_t size);
+
 /* CRC-16/IBM */
 CR_API int16u   hash_crc16i_init (void_t);
 CR_API int16u   hash_crc16i_update (int16u hash, const void_t *data,

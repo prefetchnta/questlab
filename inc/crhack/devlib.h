@@ -130,6 +130,9 @@ CR_API bool_t   netcard_get_info (const ansi_t *name, ansi_t ip[16],
 /*                                 其他外设                                  */
 /*****************************************************************************/
 
+/* RTC */
+CR_API void_t   rtc_init (void_t);
+
 /* 看门狗 */
 CR_API sint_t   wdg_open (const ansi_t *dev);
 CR_API void_t   wdg_close (sint_t wdg);
@@ -137,14 +140,14 @@ CR_API void_t   wdg_timeout (sint_t wdg, uint_t time_ms);
 CR_API void_t   wdg_feed (sint_t wdg);
 
 /* SPI */
-#define SPI_CPHA        0x01
-#define SPI_CPOL        0x02
-#define SPI_CS_HIGH     0x04
-#define SPI_LSB_FIRST   0x08
-#define SPI_3WIRE       0x10
-#define SPI_LOOP        0x20
-#define SPI_NO_CS       0x40
-#define SPI_READY       0x80
+#define CR_SPI_CPHA         0x01
+#define CR_SPI_CPOL         0x02
+#define CR_SPI_CS_HIGH      0x04
+#define CR_SPI_LSB_FIRST    0x08
+#define CR_SPI_3WIRE        0x10
+#define CR_SPI_LOOP         0x20
+#define CR_SPI_NO_CS        0x40
+#define CR_SPI_READY        0x80
 CR_API sint_t   spi_open (const ansi_t *dev, uint_t mode,
                           uint_t bits, uint_t speed);
 CR_API void_t   spi_close (sint_t spi);
