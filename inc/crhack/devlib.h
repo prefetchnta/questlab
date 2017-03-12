@@ -133,7 +133,7 @@ CR_API bool_t   netcard_get_info (const ansi_t *name, ansi_t ip[16],
 /* RTC */
 CR_API void_t   rtc_init (void_t);
 
-/* 看门狗 */
+/* WDG */
 CR_API sint_t   wdg_open (const ansi_t *dev);
 CR_API void_t   wdg_close (sint_t wdg);
 CR_API void_t   wdg_timeout (sint_t wdg, uint_t time_ms);
@@ -155,6 +155,9 @@ CR_API bool_t   spi_read (sint_t spi, void_t *data, uint_t size);
 CR_API bool_t   spi_write (sint_t spi, const void_t *data, uint_t size);
 CR_API bool_t   spi_iorw (sint_t spi, void_t *recv, const void_t *send,
                           uint_t size, bool_t cs_flip);
+/* FLASH */
+CR_API void_t   flash_read (int32u addr, void_t *data, uint_t size);
+CR_API bool_t   flash_prog (int32u addr, const void_t *data, uint_t size);
 
 /*****************************************************************************/
 /*                                块设备接口                                 */
