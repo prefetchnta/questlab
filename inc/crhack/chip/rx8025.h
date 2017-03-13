@@ -1,6 +1,6 @@
 /*****************************************************************************/
 /*                                                  ###                      */
-/*       #####          ###    ###                  ###  CREATE: 2011-10-27  */
+/*       #####          ###    ###                  ###  CREATE: 2017-03-13  */
 /*     #######          ###    ###      [KRNL]      ###  ~~~~~~~~~~~~~~~~~~  */
 /*    ########          ###    ###                  ###  MODIFY: XXXX-XX-XX  */
 /*    ####  ##          ###    ###                  ###  ~~~~~~~~~~~~~~~~~~  */
@@ -13,12 +13,12 @@
 /*   #######   ###      ###    ### ########  ###### ###  ###  | COMPILERS |  */
 /*    #####    ###      ###    ###  #### ##   ####  ###   ##  +-----------+  */
 /*  =======================================================================  */
-/*  >>>>>>>>>>>>>>>>>> CrHack ST M25PEXX 器件定义头文件 <<<<<<<<<<<<<<<<<<<  */
+/*  >>>>>>>>>>>>>>>>> CrHack EPSON RX-8025 器件定义头文件 <<<<<<<<<<<<<<<<<  */
 /*  =======================================================================  */
 /*****************************************************************************/
 
-#ifndef __CR_M25PEXX_H__
-#define __CR_M25PEXX_H__
+#ifndef __CR_RX8025_H__
+#define __CR_RX8025_H__
 
 #include "../defs.h"
 
@@ -26,46 +26,33 @@
     #pragma pack (push, 1)
 #endif
 
-/* M25PEXX 器件 ID */
+/* RX-8025 内存结构图 */
 CR_TYPEDEF struct
 {
-        byte_t  mak_id;     /* 厂家代码 0x20 */
-        byte_t  mem_id;     /* 内存类型 0x80 */
-        byte_t  cap_sz;     /* 器件容量 0x11 = M25PE10
-                                        0x12 = M25PE20
-                                        0x13 = M25PE40
-                                        0x14 = M25PE80
-                                        0x15 = M25PE16
-                            */
-} CR_PACKED sM25PEXX3;
+/*000*/ byte_t  d_second;   /* Seconds */
+/*001*/ byte_t  d_minute;   /* Minutes */
+/*002*/ byte_t  d_hour;     /* Hours */
+/*003*/ byte_t  d_week;     /* Weekdays */
+/*004*/ byte_t  d_day;      /* Days */
+/*005*/ byte_t  d_month;    /* Months */
+/*006*/ byte_t  d_year;     /* Years */
+/*007*/ byte_t  offset;     /* Digital Offset */
+/*008*/ byte_t  aw_minute;  /* Alarm_W ; Minute */
+/*009*/ byte_t  aw_hour;    /* Alarm_W ; Hour */
+/*00A*/ byte_t  aw_week;    /* Alarm_W ; Weekday */
+/*00B*/ byte_t  ad_minute;  /* Alarm_D ; Minute */
+/*00C*/ byte_t  ad_hour;    /* Alarm_D ; Hour */
+/*00D*/ byte_t  reserved;   /* Reserved */
+/*00E*/ byte_t  control1;   /* Control1 */
+/*00F*/ byte_t  control2;   /* Control2 */
+/*010*/
+} CR_PACKED sRX8025;
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (pop)
 #endif
 
-/* M25PEXX 状态寄存器位值 */
-#define M25PEXX_WIP     0x01    /*  是否正在写数据  */
-#define M25PEXX_WEL     0x02    /*  是否可以写数据  */
-#define M25PEXX_BP0     0x04    /*  芯片数据保护位  */
-#define M25PEXX_BP1     0x08    /*  芯片数据保护位  */
-#define M25PEXX_BP2     0x10    /*  芯片数据保护位  */
-#define M25PEXX_SRWD    0x80    /* 状态寄存器写保护 */
-
-/* M25PEXX 锁定寄存器位置 (软件写保护) */
-#define M25PEXX_SWL     0x01    /* 大扇区写保护位 */
-#define M25PEXX_SLD     0x02    /* 锁定位写保护位 */
-
-/* M25PEXX 参数值 */
-#define M25PEXX_PAGE_SIZE       256     /* 数据页的大小 */
-#define M25PEXX_SSEC_SIZE   CR_K2B(4)   /* 小扇区的大小 */
-#define M25PEXX_BBLK_SIZE   CR_K2B(64)  /* 大区块的大小 */
-#define M25PE10_CHIP_SIZE   CR_K2B(128) /* M25PE10 大小 */
-#define M25PE20_CHIP_SIZE   CR_K2B(256) /* M25PE20 大小 */
-#define M25PE40_CHIP_SIZE   CR_K2B(512) /* M25PE40 大小 */
-#define M25PE80_CHIP_SIZE   CR_M2B(1)   /* M25PE80 大小 */
-#define M25PE16_CHIP_SIZE   CR_M2B(2)   /* M25PE16 大小 */
-
-#endif  /* !__CR_M25PEXX_H__ */
+#endif  /* !__CR_RX8025_H__ */
 
 /*****************************************************************************/
 /* _________________________________________________________________________ */

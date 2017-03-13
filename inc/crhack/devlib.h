@@ -159,6 +159,11 @@ CR_API bool_t   spi_iorw (sint_t spi, void_t *recv, const void_t *send,
 CR_API void_t   flash_read (int32u addr, void_t *data, uint_t size);
 CR_API bool_t   flash_prog (int32u addr, const void_t *data, uint_t size);
 
+/* BOOT */
+CR_API void_t   boot_jump (int32u addr);
+CR_API void_t   boot_goon (int32u addr);
+CR_API void_t   boot_reset (void_t);
+
 /*****************************************************************************/
 /*                                块设备接口                                 */
 /*****************************************************************************/
