@@ -30,6 +30,7 @@
 CR_API void_t   delay08 (byte_t num);
 CR_API void_t   delay16 (int16u num);
 CR_API void_t   delay32 (int32u num);
+CR_API void_t   delayms (byte_t num);
 
 /* 伪随机数生成 */
 CR_API void_t   rand_seed (uint_t seed);
