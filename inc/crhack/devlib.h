@@ -126,6 +126,40 @@ CR_API bool_t   socket_mcast_leave (socket_t netw);
 CR_API bool_t   netcard_get_info (const ansi_t *name, ansi_t ip[16],
                             ansi_t gw[16], ansi_t msk[16], byte_t mac[6]);
 
+/* SOCKET 抽象类结构 */
+typedef struct
+{
+    void_t      (*socket_close) (socket_t);
+    bool_t      (*socket_shutdown) (socket_t, uint_t);
+    bool_t      (*socket_input_size) (socket_t, uint_t*);
+    bool_t      (*socket_input_size2) (socket_t, uint_t*);
+    socket_t    (*server_tcp_accept) (socket_t);
+    socket_t    (*server_tcp_open) (const ansi_t*, int16u);
+    socket_t    (*client_tcp_open) (const ansi_t*, int16u, int32s);
+    socket_t    (*client_tcp_open2) (const ansi_t*, int16u, int32s,
+                                     const ansi_t*, int16u);
+    socket_t    (*server_udp_open) (const ansi_t*, int16u);
+    socket_t    (*client_udp_open) (const ansi_t*, int16u);
+    socket_t    (*client_udp_open2) (const ansi_t*, int16u,
+                                     const ansi_t*, int16u);
+    uint_t      (*socket_tcp_send) (socket_t, const void_t*, uint_t);
+    uint_t      (*socket_udp_send) (socket_t, const ansi_t*, int16u,
+                                    const void_t*, uint_t);
+    uint_t      (*socket_tcp_recv) (socket_t, void_t*, uint_t);
+    uint_t      (*socket_tcp_peek) (socket_t, void_t*, uint_t);
+    uint_t      (*socket_udp_recv) (socket_t, void_t*, uint_t);
+    uint_t      (*socket_udp_peek) (socket_t, void_t*, uint_t);
+    void_t      (*socket_set_timeout) (socket_t, int32s, int32s);
+    int16u      (*socket_remote_ip) (socket_t, int32u*);
+    int16u      (*socket_remote_ipA) (socket_t, ansi_t[]);
+    bool_t      (*socket_tcp_set_alive) (socket_t, uint_t, uint_t, uint_t);
+    bool_t      (*socket_mcast_enter) (socket_t, const ansi_t*,
+                                       const ansi_t*, byte_t, byte_t);
+    bool_t      (*socket_mcast_leave) (socket_t);
+    bool_t      (*netcard_get_info) (const ansi_t*, ansi_t[], ansi_t[],
+                                     ansi_t[], byte_t[]);
+} iSOCKET;
+
 /*****************************************************************************/
 /*                                 其他外设                                  */
 /*****************************************************************************/
@@ -163,6 +197,76 @@ CR_API bool_t   flash_prog (int32u addr, const void_t *data, uint_t size);
 CR_API void_t   boot_jump (int32u addr);
 CR_API void_t   boot_goon (int32u addr);
 CR_API void_t   boot_reset (void_t);
+
+/* AT CMD */
+CR_API void_t   at_flush (void_t);
+CR_API void_t   at_send (const void_t *data, uint_t size);
+#define at_send_str(str) at_send(str, str_lenA(str))
+CR_API ansi_t*  at_wait (ansi_t *out, uint_t size, uint_t tout);
+CR_API ansi_t*  at_iorw (ansi_t *out, uint_t size,
+                         const ansi_t *inp, uint_t tout);
+CR_API bool_t   at_check (uint_t tout);
+CR_API bool_t   at_cgmm (ansi_t *out, uint_t size, uint_t tout);
+CR_API bool_t   at_csq (uint_t *rssi, uint_t tout);
+
+/* BRIDGE 通讯命令字 */
+#define CR_BRIDGE_CMD_SEND  0x00    /* 数据的转发：端口(1B) + 数据(NB)
+                                                0x00 - CAN
+                                                0x01 - 485
+                                                0x02 - 桥接
+                                                0x03 - 主板
+                                    */
+#define CR_BRIDGE_CMD_BAUD  0x01    /* 设置波特率：端口(1B) + 波特率(4B) */
+#define CR_BRIDGE_CMD_RESET 0x02    /* 复位 */
+#define CR_BRIDGE_CMD_GPIO  0x03    /* CTRL 管脚控制：电平(1B) */
+
+/* BRIDGE 端口的类型 */
+#define CR_BRIDGE_PORT_CAN  0x00
+#define CR_BRIDGE_PORT_485  0x01
+#define CR_BRIDGE_PORT_PSS  0x02
+#define CR_BRIDGE_PORT_BRD  0x03
+
+/* BRIDGE 命令返回值 */
+#define CR_BRIDGE_ERR_OKAY  0x00
+
+/* BRIDGE */
+CR_API bool_t   bridge_baud (byte_t port, int32u baud);
+CR_API bool_t   bridge_reset (void_t);
+CR_API bool_t   bridge_gpio (byte_t level);
+CR_API void_t   bridge_commit (byte_t port, const void_t *data, uint_t size);
+
+/* SIMCOM */
+CR_API bool_t   simcom_socket_init (void_t);
+CR_API void_t   simcom_socket_free (void_t);
+CR_API socket_t simcom_client_tcp_open (const ansi_t *addr, int16u port,
+                                        int32s time);
+CR_API socket_t simcom_client_tcp_open2 (const ansi_t *addr, int16u port,
+                                         int32s time, const ansi_t *laddr,
+                                         int16u lport);
+CR_API socket_t simcom_client_udp_open (const ansi_t *addr, int16u port);
+CR_API socket_t simcom_client_udp_open2 (const ansi_t *addr, int16u port,
+                                         const ansi_t *laddr, int16u lport);
+CR_API void_t   simcom_socket_close (socket_t netw);
+CR_API uint_t   simcom_socket_tcp_send (socket_t netw, const void_t *data,
+                                        uint_t size);
+CR_API uint_t   simcom_socket_udp_send (socket_t netw, const ansi_t *addr,
+                                        int16u port, const void_t *data,
+                                        uint_t size);
+CR_API uint_t   simcom_socket_tcp_recv (socket_t netw, void_t *data,
+                                        uint_t size);
+CR_API uint_t   simcom_socket_tcp_peek (socket_t netw, void_t *data,
+                                        uint_t size);
+CR_API uint_t   simcom_socket_udp_recv (socket_t netw, void_t *data,
+                                        uint_t size);
+CR_API uint_t   simcom_socket_udp_peek (socket_t netw, void_t *data,
+                                        uint_t size);
+CR_API void_t   simcom_socket_set_timeout (socket_t netw, int32s wr_time,
+                                           int32s rd_time);
+CR_API bool_t   simcom_socket_input_size (socket_t netw, uint_t *size);
+CR_API bool_t   simcom_socket_input_size2 (socket_t netw, uint_t *size);
+CR_API bool_t   sim7100_online (const ansi_t *apn, int32u timeout);
+CR_API bool_t   sim6320_online (const ansi_t *user, const ansi_t *password,
+                                int32u timeout);
 
 /*****************************************************************************/
 /*                                块设备接口                                 */
