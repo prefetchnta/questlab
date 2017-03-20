@@ -34,6 +34,9 @@
 /* HTTPLIB 连接对象 */
 typedef void_t*     chttp_t;
 
+/* HTTPLIB 接收回调 */
+typedef void_t  (*chttp_recv_t) (void_t*, const void_t*, uint_t, uint_t);
+
 /* HTTPLIB API 函数 */
 CR_API chttp_t  chttp_open (const ansi_t *host, int16u port,
                             uint_t vers, int32s timeout);
@@ -42,6 +45,9 @@ CR_API void_t   chttp_timeout (chttp_t conn, int32s wr_time,
                                int32s rd_time);
 CR_API void_t   chttp_disconn (chttp_t conn);
 CR_API void_t   chttp_restart (chttp_t conn);
+CR_API void_t   chttp_safe_size (chttp_t conn, sint_t size);
+CR_API bool_t   chttp_callback (chttp_t conn, chttp_recv_t func,
+                                void_t *param, uint_t cache);
 CR_API bool_t   chttp_head_add (chttp_t conn, const ansi_t *lines);
 CR_API bool_t   chttp_head_fin (chttp_t conn);
 CR_API void_t   chttp_head_rst (chttp_t conn);
