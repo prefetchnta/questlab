@@ -202,6 +202,7 @@ CR_API void_t   boot_reset (void_t);
 CR_API void_t   at_flush (void_t);
 CR_API void_t   at_send (const void_t *data, uint_t size);
 #define at_send_str(str) at_send(str, str_lenA(str))
+CR_API void_t   at_throw (uint_t size, uint_t tout);
 CR_API ansi_t*  at_wait (ansi_t *out, uint_t size, uint_t tout);
 CR_API ansi_t*  at_iorw (ansi_t *out, uint_t size,
                          const ansi_t *inp, uint_t tout);
