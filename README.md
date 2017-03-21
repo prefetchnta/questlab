@@ -1,5 +1,5 @@
 
-##【基本概述】
+## 【基本概述】
 
 　　一个试验性质的程序集。各个程序使用进程通讯的方式组合起来，实现一些有用的功能。作为项目 **GameViewer** 的后续版本，实现了一些游戏引擎。一个通用的数据分析逆向工具集。各种技术的大杂烩（评估的平台）。
 
@@ -7,11 +7,11 @@
 
 　　程序间协作的基本手段：(1) 使用网络通讯实现相互消息的通知。目前可以使用 **CMD / INI / XML** 形式的消息数据；(2) 使用磁盘文件实现非实时数据的交互；(3) 使用内存共享文件实现大量数据的交换。
 
-##【一些截图】
+## 【一些截图】
 
 　　[SCREENSHOTS](https://github.com/prefetchnta/questlab/blob/master/pic/IMAGES.md "SCREENSHOTS")
 
-##【如何编译】
+## 【如何编译】
 
 　　本系统内的项目全部使用 **Makefile** 作为工程的主要组织方式，没有必要不会使用 **IDE** 提供的工程文件。单个部件的编译可以执行项目目录下的批处理文件来实现。每个项目的编译环境要求见下面的说明。目前用到的开发环境有：
 
@@ -20,7 +20,7 @@
 - **Microsoft Visual Studio 2010 SP1**
 - **Microsoft Visual Studio 2013 Update5**
 
-##【部件简介】
+## 【部件简介】
 
 - **QuestLAB (VS2010 SP1)**
 <p>系统启动程序 (离线)。在启动所有程序之前执行一些批处理命令很难实现的初始化操作。</p>
@@ -91,23 +91,23 @@
 - **ImportLib (XHTML + CSS)**
 <p>导入脚本仓库 (离线)。基于网页的导入脚本列表，<b>GameViewer</b> 游戏导入列表的加强版。</p>
 
-##【插件介绍】
+## 【插件介绍】
 
 　　所有插件位于目录 **bin/plugin** 下。字母 **c** 开头的插件为命令扩展插件，用于扩展应用程序的消息命令；**f** 开头的插件为图片滤镜插件，用于实现二维图片的变换功能；**z** 开头的插件为 **CrHack/FMTz** 引擎插件，专门负责解析各类输入数据；**x** 开头的为复合插件，可以集中包含所有类型的插件功能模块。
 
-##zKiriKiri (VS2010 SP1)
+## zKiriKiri (VS2010 SP1)
 
 <p>支持加载 <b>KrKr</b> (吉里吉里) 游戏引擎里的几种文件格式：</p>
  - KiriKiri2 XP3 Archive (XP3)
 
-##zFALCOM (VS2010 SP1)
+## zFALCOM (VS2010 SP1)
 
 <p>支持加载 <b>FALCOM</b> 公司开发的游戏里的几种专用的文件格式：</p>
  - FALCOM YS AIA Image File (\*.AIA)
  - FALCOM YS NNK Archive (\*.NI + \*.NA)
  - FALCOM ZLib Compressed file (\*.Z)
 
-##zTGL (VS2010 SP1)
+## zTGL (VS2010 SP1)
 
 <p>支持加载 <b>TGL</b> 公司开发的游戏里的几种专用的文件格式：</p>
  - TGL IPAC Archive (IPAC)
@@ -120,20 +120,20 @@
  - TGL BMR Image File (BMR)
  - TGL CGR Image File (CGR)
 
-##zEGO (VS2010 SP1)
+## zEGO (VS2010 SP1)
 
 <p>支持加载 <b>Studio e.go!</b> 公司开发的游戏里的几种文件格式：</p>
  - Studio e.go! Game Data Archive (32)
  - Studio e.go! Game Data Archive (64)
 
-##zNScripter (VS2010 SP1)
+## zNScripter (VS2010 SP1)
 
 <p>支持加载 <b>NScripter</b> 游戏引擎里的几种文件格式：</p>
  - Scripter3 ARchive (SAR)
  - NScripter Archive (NSA)
  - NScripter script file (nscript.dat)
 
-##xOpenCV (VS2013 UPD5)
+## xOpenCV (VS2013 UPD5)
 
 <p>基于 <b>OpenCV</b> 库的复合扩展插件，为 <b>QstView2D</b> 提供一些图像处理识别相关的图片滤镜和图形绘制命令扩展，并支持摄像头与视频文件的图片输入以及支持加载以下几种图片格式：</p>
  - Windows bitmaps - \*.bmp, \*.dib
@@ -144,27 +144,27 @@
  - Sun rasters - \*.sr, \*.ras
  - TIFF files - \*.tiff, \*.tif
 
-##xCrHackSet (VS2010 SP1)
+## xCrHackSet (VS2010 SP1)
 
 <p>使用 <b>CrHack SDK</b> 的复合扩展插件，为 <b>QstView2D</b> 提供一些基本的图片滤镜和图形绘制命令扩展。</p>
 
-##zExpand (VS2010 SP1)
+## zExpand (VS2010 SP1)
 
 <p>支持加载微软 <b>COMPRESS.EXE & EXPAND.EXE</b> 工具相关的几种文件格式：</p>
  - Microsoft Compressed (SZDD) file
  - Microsoft Compressed (SZ20) file
 
-##zRAR (VS2010 SP1)
+## zRAR (VS2010 SP1)
 
 <p>基于 <b>UnRAR</b> 库的 <b>RAR</b> 封包文件读取插件，只支持一种文件格式：</p>
  - Roshal ARchive (RAR)
 
-##zDShow (VS2010 SP1)
+## zDShow (VS2010 SP1)
 
 <p>基于 <b>DirectShow</b> 组件的音频视频播放插件，支持的文件格式取决于系统安装的解码器数量。</p>
  - Media file supported by DirectShow
 
-##zFMOD (VS2010 SP1)
+## zFMOD (VS2010 SP1)
 
 <p>基于 <b>FMOD Ex</b> 库的音频文件播放插件，支持的音频格式如下：</p>
  - AIFF - (Audio Interchange File Format)
@@ -192,7 +192,7 @@
  - XWMA - (Xbox 360 only)
  - AudioQueue - (Apple iOS devices only, supports AAC, ALAC and MP3 decoding in software and hardware)
 
-##zDevIL (VS2010 SP1)
+## zDevIL (VS2010 SP1)
 
 <p>基于 <b>DevIL / ResIL</b> 库的图片文件加载插件，支持的图片格式如下：</p>
  - Microsoft Windows Bitmap - .bmp extension
@@ -245,13 +245,13 @@
  - Unreal (and Unreal Tournament) Texture - .utx extension
  - MPEG-1 Audio Layer 3 - .mp3 extension
 
-##zSYN (VS2003 SP1)
+## zSYN (VS2003 SP1)
 
 <p>支持加载 <b>Shin-ichi TSURUTA (SYN)</b> 设计的几种文件格式：</p>
  - G Compression Archive (GCA)
  - ARGB Image File (by Shin-ichi TSURUTA)
 
-##zFreeImage (VS2010 SP1)
+## zFreeImage (VS2010 SP1)
 
 <p>基于 <b>FreeImage</b> 库的图片文件加载插件，支持的图片格式如下：</p>
  - Windows or OS/2 Bitmap File (\*.BMP)
@@ -292,7 +292,7 @@
  - X11 Bitmap Format (\*.XBM)
  - X11 Pixmap Format (\*.XPM)
 
-##CrH_FMTZ (VS2010 SP1)
+## CrH_FMTZ (VS2010 SP1)
 
 <p>属于 <b>CrHack SDK</b> 本体的跨平台引擎插件，支持的文件格式如下 (只支持文件的常见模式)：</p>
  - Windows Bitmap File (BMP)
@@ -303,7 +303,7 @@
  - Truevision Targa (TGA)
  - Phil Katz's ZIP Archive (PKZIP)
 
-##【其他组件】
+## 【其他组件】
 
 - **CrH_CORE (VS2010 SP1)**
 <p>属于 <b>CrHack SDK</b> 本体的跨平台核心基础库。</p>
