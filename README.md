@@ -98,11 +98,13 @@
 ## zKiriKiri (VS2010 SP1)
 
 <p>支持加载 <b>KrKr</b> (吉里吉里) 游戏引擎里的几种文件格式：</p>
+
  - KiriKiri2 XP3 Archive (XP3)
 
 ## zFALCOM (VS2010 SP1)
 
 <p>支持加载 <b>FALCOM</b> 公司开发的游戏里的几种专用的文件格式：</p>
+
  - FALCOM YS AIA Image File (\*.AIA)
  - FALCOM YS NNK Archive (\*.NI + \*.NA)
  - FALCOM ZLib Compressed file (\*.Z)
@@ -110,6 +112,7 @@
 ## zTGL (VS2010 SP1)
 
 <p>支持加载 <b>TGL</b> 公司开发的游戏里的几种专用的文件格式：</p>
+
  - TGL IPAC Archive (IPAC)
  - TGL PAC_FILE Archive (PACF)
  - TGL LZSS Compressed file (IEL1)
@@ -123,12 +126,14 @@
 ## zEGO (VS2010 SP1)
 
 <p>支持加载 <b>Studio e.go!</b> 公司开发的游戏里的几种文件格式：</p>
+
  - Studio e.go! Game Data Archive (32)
  - Studio e.go! Game Data Archive (64)
 
 ## zNScripter (VS2010 SP1)
 
 <p>支持加载 <b>NScripter</b> 游戏引擎里的几种文件格式：</p>
+
  - Scripter3 ARchive (SAR)
  - NScripter Archive (NSA)
  - NScripter script file (nscript.dat)
@@ -136,6 +141,7 @@
 ## xOpenCV (VS2013 UPD5)
 
 <p>基于 <b>OpenCV</b> 库的复合扩展插件，为 <b>QstView2D</b> 提供一些图像处理识别相关的图片滤镜和图形绘制命令扩展，并支持摄像头与视频文件的图片输入以及支持加载以下几种图片格式：</p>
+
  - Windows bitmaps - \*.bmp, \*.dib
  - JPEG files - \*.jpeg, \*.jpg, \*.jpe
  - JPEG 2000 files - \*.jp2
@@ -151,22 +157,26 @@
 ## zExpand (VS2010 SP1)
 
 <p>支持加载微软 <b>COMPRESS.EXE & EXPAND.EXE</b> 工具相关的几种文件格式：</p>
+
  - Microsoft Compressed (SZDD) file
  - Microsoft Compressed (SZ20) file
 
 ## zRAR (VS2010 SP1)
 
 <p>基于 <b>UnRAR</b> 库的 <b>RAR</b> 封包文件读取插件，只支持一种文件格式：</p>
+
  - Roshal ARchive (RAR)
 
 ## zDShow (VS2010 SP1)
 
 <p>基于 <b>DirectShow</b> 组件的音频视频播放插件，支持的文件格式取决于系统安装的解码器数量。</p>
+
  - Media file supported by DirectShow
 
 ## zFMOD (VS2010 SP1)
 
 <p>基于 <b>FMOD Ex</b> 库的音频文件播放插件，支持的音频格式如下：</p>
+
  - AIFF - (Audio Interchange File Format)
  - ASF - (Advanced Streaming format, includes support for the audio tracks in video streams)
  - ASX - (playlist format - contains links to other audio files)
@@ -195,6 +205,7 @@
 ## zDevIL (VS2010 SP1)
 
 <p>基于 <b>DevIL / ResIL</b> 库的图片文件加载插件，支持的图片格式如下：</p>
+
  - Microsoft Windows Bitmap - .bmp extension
  - Dr. Halo - .cut extension
  - DooM walls - no specific extension
@@ -248,12 +259,14 @@
 ## zSYN (VS2003 SP1)
 
 <p>支持加载 <b>Shin-ichi TSURUTA (SYN)</b> 设计的几种文件格式：</p>
+
  - G Compression Archive (GCA)
  - ARGB Image File (by Shin-ichi TSURUTA)
 
 ## zFreeImage (VS2010 SP1)
 
 <p>基于 <b>FreeImage</b> 库的图片文件加载插件，支持的图片格式如下：</p>
+
  - Windows or OS/2 Bitmap File (\*.BMP)
  - Dr. Halo (\*.CUT)
  - DirectDraw Surface (\*.DDS)
@@ -295,6 +308,7 @@
 ## CrH_FMTZ (VS2010 SP1)
 
 <p>属于 <b>CrHack SDK</b> 本体的跨平台引擎插件，支持的文件格式如下 (只支持文件的常见模式)：</p>
+
  - Windows Bitmap File (BMP)
  - DirectDraw Surface (DDS)
  - Independent JPEG Group (JPG)
