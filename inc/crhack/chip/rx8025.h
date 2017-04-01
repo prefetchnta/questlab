@@ -30,22 +30,22 @@
 CR_TYPEDEF struct
 {
 /*000*/ byte_t  d_second;   /* Seconds */
-/*001*/ byte_t  d_minute;   /* Minutes */
-/*002*/ byte_t  d_hour;     /* Hours */
-/*003*/ byte_t  d_week;     /* Weekdays */
-/*004*/ byte_t  d_day;      /* Days */
-/*005*/ byte_t  d_month;    /* Months */
-/*006*/ byte_t  d_year;     /* Years */
-/*007*/ byte_t  offset;     /* Digital Offset */
-/*008*/ byte_t  aw_minute;  /* Alarm_W ; Minute */
-/*009*/ byte_t  aw_hour;    /* Alarm_W ; Hour */
-/*00A*/ byte_t  aw_week;    /* Alarm_W ; Weekday */
-/*00B*/ byte_t  ad_minute;  /* Alarm_D ; Minute */
-/*00C*/ byte_t  ad_hour;    /* Alarm_D ; Hour */
-/*00D*/ byte_t  reserved;   /* Reserved */
-/*00E*/ byte_t  control1;   /* Control1 */
-/*00F*/ byte_t  control2;   /* Control2 */
-/*010*/
+/*010*/ byte_t  d_minute;   /* Minutes */
+/*020*/ byte_t  d_hour;     /* Hours */
+/*030*/ byte_t  d_week;     /* Weekdays */
+/*040*/ byte_t  d_day;      /* Days */
+/*050*/ byte_t  d_month;    /* Months */
+/*060*/ byte_t  d_year;     /* Years */
+/*070*/ byte_t  offset;     /* Digital Offset */
+/*080*/ byte_t  aw_minute;  /* Alarm_W ; Minute */
+/*090*/ byte_t  aw_hour;    /* Alarm_W ; Hour */
+/*0A0*/ byte_t  aw_week;    /* Alarm_W ; Weekday */
+/*0B0*/ byte_t  ad_minute;  /* Alarm_D ; Minute */
+/*0C0*/ byte_t  ad_hour;    /* Alarm_D ; Hour */
+/*0D0*/ byte_t  reserved;   /* Reserved */
+/*0E0*/ byte_t  control1;   /* Control1 */
+/*0F0*/ byte_t  control2;   /* Control2 */
+/*100*/
 } CR_PACKED sRX8025;
 
 #ifndef _CR_NO_PRAGMA_PACK_
