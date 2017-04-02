@@ -267,6 +267,8 @@ CR_API bool_t   simcom_socket_input_size (socket_t netw, uint_t *size);
 CR_API bool_t   simcom_socket_input_size2 (socket_t netw, uint_t *size);
 CR_API bool_t   simcom_socket_tcp_set_alive (socket_t netw, uint_t idle,
                                              uint_t interval, uint_t count);
+CR_API void_t   sim7100_setup (iSOCKET *vtbl);
+CR_API void_t   sim6320_setup (iSOCKET *vtbl);
 CR_API bool_t   sim7100_online (const ansi_t *apn, int32u timeout);
 CR_API bool_t   sim6320_online (const ansi_t *user, const ansi_t *password,
                                 int32u timeout);
