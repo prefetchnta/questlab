@@ -477,6 +477,21 @@
     #define _CR_NET_NO_PEEK_
 #endif
 
+/* 安卓低版本 NDK C 库的一些缺失 */
+#if defined(_CR_OS_ANDROID_)
+    #if (ANDROID_API <= 17)
+        #define _CR_NO_LOG2_
+    #endif
+    #if (ANDROID_API <= 19)
+        #if defined(__pure2)
+            #undef  __pure2
+            #define __pure2
+        #endif
+        #define _CR_NDK_LOW_
+        #define _CR_NO_LOCALE_
+    #endif
+#endif
+
 /*****************************************************************************/
 /*                               依赖开关配置                                */
 /*****************************************************************************/

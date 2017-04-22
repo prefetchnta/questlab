@@ -24,11 +24,6 @@
 #include "strlib.h"
 
 #ifndef _CR_NO_STDC_
-    #if defined(_CR_OS_ANDROID_) && (ANDROID_API <= 19)
-        #if defined(__pure2)
-            #undef  __pure2
-        #endif
-    #endif
     #include <math.h>
 #endif
 
