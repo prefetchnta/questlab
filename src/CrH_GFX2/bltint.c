@@ -50,6 +50,33 @@ pixel_cnvt01 (
 
 /*
 ---------------------------------------
+    标准32位色转IDX2
+---------------------------------------
+*/
+extern cpix_t
+pixel_cnvt02 (
+  __CR_IN__ const int32u*   pal,
+  __CR_IN__ cl32_t          color
+    )
+{
+    uint_t  idx;
+    cpix_t  cnvt;
+    byte_t* lerp;
+
+    cnvt.val = 0UL;
+    lerp = (byte_t*)(&color);
+    for (idx = 0; idx < 4; idx++) {
+        if (color == pal[idx]) {
+            cnvt.c08.idx = (byte_t)idx;
+            cnvt.c08.lrp = lerp[3];
+            break;
+        }
+    }
+    return (cnvt);
+}
+
+/*
+---------------------------------------
     标准32位色转IDX4
 ---------------------------------------
 */
@@ -238,10 +265,11 @@ pixel_cnvt32 (
 static const pixcnvt_t _rom_ s_pixel_cnvt[] =
 {
     NULL, NULL, NULL, NULL, NULL, NULL, pixel_cnvt01,
-    pixel_cnvt04, pixel_cnvt08, NULL, NULL, NULL, pixel_cnvt12,
-    NULL, NULL, pixel_cnvt15, pixel_cnvt16, pixel_cnvt17, NULL,
-    NULL, NULL, NULL, NULL, NULL, pixel_cnvt24, NULL, NULL, NULL,
-    NULL, NULL, NULL, NULL, pixel_cnvt32,
+    pixel_cnvt04, pixel_cnvt08, pixel_cnvt02, NULL, NULL,
+    pixel_cnvt12, NULL, NULL, pixel_cnvt15, pixel_cnvt16,
+    pixel_cnvt17, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_cnvt24, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_cnvt32,
 };
 
 /*

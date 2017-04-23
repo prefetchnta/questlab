@@ -533,7 +533,7 @@ create_gdi_bitmap (
         goto _failure5;
 
     /* 获取调色板数据 (如果需要的话) */
-    if (crh_fmt <= CR_INDEX8) {
+    if (isCrTypeIndex(crh_fmt)) {
         if (GetDIBColorTable(surface->m_back, 0, pal_num, (RGBQUAD*)
                                 (&surface->__back__.pal)) != pal_num)
             goto _failure5;

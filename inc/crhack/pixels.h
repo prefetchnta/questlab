@@ -580,6 +580,8 @@ CR_API sIMAGE*  img_888_to_32  (sIMAGE *dst, uint_t dx, uint_t dy,
                                 const sIMAGE *src);
 CR_API sIMAGE*  img_idx1_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
                                 const sIMAGE *src);
+CR_API sIMAGE*  img_idx2_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
+                                const sIMAGE *src);
 CR_API sIMAGE*  img_idx4_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,
                                 const sIMAGE *src);
 CR_API sIMAGE*  img_idx8_to_32 (sIMAGE *dst, uint_t dx, uint_t dy,

@@ -42,6 +42,38 @@ _image_clear01 (
 }
 #endif  /* _image_clear01 */
 
+#if defined(_image_clear02)
+/*
+---------------------------------------
+    清除缓冲 (IDX2)
+---------------------------------------
+*/
+static bool_t
+_image_clear02 (
+  __CR_IN__ iGFX2*  that,
+  __CR_IN__ cl32_t  color,
+  __CR_IN__ int32u  param
+    )
+{
+    uint_t  idx = 0;
+    byte_t  val = 0;
+    int32u* pal = that->__back__.pal;
+
+    for (; idx < 4; idx++) {
+        if (color == pal[idx]) {
+            idx = (idx << 2) | idx;
+            idx = (idx << 4) | idx;
+            val = (byte_t)idx;
+            break;
+        }
+    }
+    mem_set(that->__back__.data, val,
+            that->__back__.size);
+    CR_NOUSE(param);
+    return (TRUE);
+}
+#endif  /* _image_clear02 */
+
 #if defined(_image_clear04)
 /*
 ---------------------------------------

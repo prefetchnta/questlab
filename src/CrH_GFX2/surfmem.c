@@ -119,6 +119,7 @@ iGFX2_MEM_flip (
 ---------------------------------------
 */
 #define _image_clear01  iGFX2_MEM_clear01
+#define _image_clear02  iGFX2_MEM_clear02
 #define _image_clear04  iGFX2_MEM_clear04
 #define _image_clear08  iGFX2_MEM_clear08
 #define _image_clear12  iGFX2_MEM_clear12
@@ -154,6 +155,13 @@ static const iGFX2_vtbl _rom_ s_bmp01_vtbl =
     iGFX2_MEM_release, iGFX2_MEM_getMore,
     iGFX2_MEM_reset, iGFX2_MEM_lock, iGFX2_MEM_unlock,
     iGFX2_MEM_flip, iGFX2_MEM_clear01, iGFX2_MEM_setPal,
+};
+
+static const iGFX2_vtbl _rom_ s_bmp02_vtbl =
+{
+    iGFX2_MEM_release, iGFX2_MEM_getMore,
+    iGFX2_MEM_reset, iGFX2_MEM_lock, iGFX2_MEM_unlock,
+    iGFX2_MEM_flip, iGFX2_MEM_clear02, iGFX2_MEM_setPal,
 };
 
 static const iGFX2_vtbl _rom_ s_bmp04_vtbl =
@@ -235,6 +243,7 @@ create_mem_bitmap (
     switch (crh_fmt)
     {
         case CR_INDEX1:   gfx2->__vptr__ = &s_bmp01_vtbl; break;
+        case CR_INDEX2:   gfx2->__vptr__ = &s_bmp02_vtbl; break;
         case CR_INDEX4:   gfx2->__vptr__ = &s_bmp04_vtbl; break;
         case CR_INDEX8:   gfx2->__vptr__ = &s_bmp08_vtbl; break;
         case CR_ARGB4444: gfx2->__vptr__ = &s_bmp12_vtbl; break;

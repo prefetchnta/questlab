@@ -271,7 +271,8 @@ draw_circle (
   __CR_IN__ pixdraw_t       pixel_draw
     )
 {
-    sint_t      xx, yy, dd;
+    sint_t  xx, yy, dd;
+    /* ------------- */
     const sRECT*    clip;
 
     if (radius <= 0)
@@ -370,6 +371,7 @@ draw_ellipse (
     )
 {
     const sRECT*    clip;
+    /* --------------- */
     sint_t  cx, cy, r1, r2, rr;
     sint_t  xx, yy, tn, r12, r22, xmax;
 

@@ -852,7 +852,7 @@ d3d8_create_tex2_crh (
     }
 
     /* DXTC 格式直接复制, 否则逐行复制 */
-    if (image->fmt <= CR_DXT5) {
+    if (isCrTypeCompr(image->fmt)) {
         mem_cpy(info.pBits, image->data, image->size);
     }
     else {
@@ -910,7 +910,7 @@ d3d8_tex2_image_set (
         return (FALSE);
 
     /* DXTC 格式直接复制, 否则逐行复制 */
-    if (image->fmt <= CR_DXT5) {
+    if (isCrTypeCompr(image->fmt)) {
         mem_cpy(info.pBits, image->data, image->size);
     }
     else {

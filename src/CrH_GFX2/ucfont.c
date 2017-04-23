@@ -133,7 +133,7 @@ iFONT_UC_bind (
 
     /* 根据目标表面设置颜色转换函数 (不支持低位索引格式) */
     cnvt = pixel_find_cnvt(dest->fmt);
-    if (dest->fmt < CR_INDEX8 || cnvt == NULL) {
+    if (isCrTypePBits(dest->fmt) || cnvt == NULL) {
         CR_VCALL(gfx2)->unlock(gfx2);
         return (FALSE);
     }

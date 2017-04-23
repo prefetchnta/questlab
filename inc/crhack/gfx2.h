@@ -92,6 +92,7 @@ typedef struct
 #define CR_INDEX1       6       /* D3DFMT_P1 ??? */
 #define CR_INDEX4       7       /* D3DFMT_P4 ??? */
 #define CR_INDEX8       8       /* D3DFMT_P8     */
+#define CR_INDEX2       9       /* ------------- */
 #define CR_UNKNOWN      0       /* 未知/外部类型 */
 #define CR_ARGB565      16      /* D3DFMT_R5G6B5 */
 #define CR_ARGB888      24      /* D3DFMT_R8G8B8 */
@@ -100,6 +101,12 @@ typedef struct
 #define CR_ARGB1555     17      /* D3DFMT_A1R5G5B5 */
 #define CR_ARGB8888     32      /* D3DFMT_A8R8G8B8 */
 
+/* CrHack 像素格式判断宏 */
+#define isCrTypeDXTC(t)     (((t) >= CR_DXT1) && ((t) <= CR_DXT5))
+#define isCrTypeCompr(t)    (((t) < CR_INDEX1) || ((t) > CR_ARGB8888))
+#define isCrTypeIndex(t)    (((t) >= CR_INDEX1) && ((t) <= CR_INDEX2))
+#define isCrTypePBits(t)    (((t) == CR_INDEX1) || ((t) == CR_INDEX2) || \
+                             ((t) == CR_INDEX4))
 /* 位图类型格式转换 */
 CR_API int32u   image_crh_to_d3d (uint_t crh_fmt);
 CR_API uint_t   image_d3d_to_crh (int32u d3d_fmt);
