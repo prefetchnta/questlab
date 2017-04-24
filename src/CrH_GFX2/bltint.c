@@ -342,13 +342,13 @@ static const pixdraw_t _rom_ s_pixel_draw2[] =
     /*----------------------------------------------*/
     /* 正/反向透明混合 */
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, NULL, NULL, pixel_lrp12z,
+    pixel_lrp08z, NULL, NULL, NULL, pixel_lrp12z,
     NULL, NULL, pixel_lrp15z, pixel_lrp16z, pixel_lrp15z,
     NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp24z, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp32z,
     /*----------------------------------------------*/
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, NULL, NULL, pixel_lrp12n,
+    pixel_lrp08n, NULL, NULL, NULL, pixel_lrp12n,
     NULL, NULL, pixel_lrp15n, pixel_lrp16n, pixel_lrp15n,
     NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp24n, NULL,
     NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp32n,
@@ -368,24 +368,63 @@ pixel_find_draw (
     )
 
 {
-    uint_t  find = fcrh / 8;
-
-    if (find <= 4)
+    if (mode <= CR_BLT_XOR)
     {
-        if (mode <= CR_BLT_XOR)
+        switch (fcrh)
         {
-            if (flip)
-                find += 5;
-            find += mode * 10;
-            return (s_pixel_draw1[find]);
+            default:
+            case CR_INDEX1:
+            case CR_INDEX2:
+            case CR_INDEX4:
+                return (NULL);
+
+            case CR_INDEX8:
+                fcrh = 1;
+                break;
+
+            case CR_ARGB4444:
+            case CR_ARGBX555:
+            case CR_ARGB565:
+            case CR_ARGB1555:
+                fcrh = 2;
+                break;
+
+            case CR_ARGB888:
+                fcrh = 3;
+                break;
+
+            case CR_ARGB8888:
+                fcrh = 4;
+                break;
         }
-        if (mode <= CR_BLT_MAX)
+        if (flip)
+            fcrh += 5;
+        fcrh += mode * 10;
+        return (s_pixel_draw1[fcrh]);
+    }
+    if (mode <= CR_BLT_MAX)
+    {
+        switch (fcrh)
         {
-            if (flip)
-                fcrh += 33;
-            fcrh += (mode - CR_BLT_ADD) * 66;
-            return (s_pixel_draw2[fcrh]);
+            default:
+            case CR_INDEX1:
+            case CR_INDEX2:
+            case CR_INDEX4:
+                return (NULL);
+
+            case CR_INDEX8:
+            case CR_ARGB4444:
+            case CR_ARGBX555:
+            case CR_ARGB565:
+            case CR_ARGB1555:
+            case CR_ARGB888:
+            case CR_ARGB8888:
+                break;
         }
+        if (flip)
+            fcrh += 33;
+        fcrh += (mode - CR_BLT_ADD) * 66;
+        return (s_pixel_draw2[fcrh]);
     }
     return (NULL);
 }

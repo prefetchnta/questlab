@@ -24,6 +24,7 @@
 
 /* 标准颜色转换函数 */
 cpix_t  pixel_cnvt01 (const int32u *pal, cl32_t color);
+cpix_t  pixel_cnvt02 (const int32u *pal, cl32_t color);
 cpix_t  pixel_cnvt04 (const int32u *pal, cl32_t color);
 cpix_t  pixel_cnvt08 (const int32u *pal, cl32_t color);
 cpix_t  pixel_cnvt12 (const int32u *pal, cl32_t color);
