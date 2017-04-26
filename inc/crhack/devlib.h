@@ -189,6 +189,12 @@ CR_API bool_t   spi_read (sint_t spi, void_t *data, uint_t size);
 CR_API bool_t   spi_write (sint_t spi, const void_t *data, uint_t size);
 CR_API bool_t   spi_iorw (sint_t spi, void_t *recv, const void_t *send,
                           uint_t size, bool_t cs_flip);
+/* GPIO */
+CR_API sint_t   gpio_open (uint_t port, bool_t dir_out);
+CR_API void_t   gpio_close (sint_t gpio);
+CR_API bool_t   gpio_set (sint_t gpio, bool_t value);
+CR_API bool_t   gpio_get (sint_t gpio, bool_t *value);
+
 /* FLASH */
 CR_API void_t   flash_read (int32u addr, void_t *data, uint_t size);
 CR_API bool_t   flash_prog (int32u addr, const void_t *data, uint_t size);
