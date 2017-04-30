@@ -141,7 +141,7 @@ class UNICHARSET {
   // Custom list of characters and their ligature forms (UTF8)
   // These map to unicode values in the private use area (PUC) and are supported
   // by only few font families (eg. Wyld, Adobe Caslon Pro).
-  static const char* kCustomLigatures[][2];
+  static TESS_API const char* kCustomLigatures[][2];
 
   // List of strings for the SpecialUnicharCodes. Keep in sync with the enum.
   static const char* kSpecialUnicharCodes[SPECIAL_UNICHAR_CODES_COUNT];
@@ -181,8 +181,7 @@ class UNICHARSET {
 
   // Return the UNICHAR_ID of a given unichar representation within the
   // UNICHARSET. Only the first length characters from unichar_repr are used.
-  UNICHAR_ID unichar_to_id(const char* const unichar_repr,
-                                 int length) const;
+  UNICHAR_ID unichar_to_id(const char* const unichar_repr, int length) const;
 
   // Return the minimum number of bytes that matches a legal UNICHAR_ID,
   // while leaving the rest of the string encodable. Returns 0 if the
