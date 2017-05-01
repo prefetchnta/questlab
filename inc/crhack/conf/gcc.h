@@ -55,7 +55,7 @@
     /* 编译器名称定义 */
     #if     defined(__clang__)
         #define _CR_CC_CLANG_
-        #define _CR_CC_STR_     "CLANG"
+        #define _CR_CC_STR_     "GCC (Clang)"
 
     #elif   defined(__MINGW64__)
         #define _CR_CC_MINGW_

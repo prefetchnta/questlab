@@ -131,9 +131,9 @@ iFONT_UC_bind (
     if (dest == NULL)
         return (FALSE);
 
-    /* 根据目标表面设置颜色转换函数 (不支持低位索引格式) */
+    /* 根据目标表面设置颜色转换函数 */
     cnvt = pixel_find_cnvt(dest->fmt);
-    if (isCrTypePBits(dest->fmt) || cnvt == NULL) {
+    if (cnvt == NULL) {
         CR_VCALL(gfx2)->unlock(gfx2);
         return (FALSE);
     }
@@ -141,7 +141,7 @@ iFONT_UC_bind (
     real->m_flip = dest->gdi;
     real->m_fcrh = dest->fmt;
     real->pixel_cnvt = cnvt;
-    if (dest->fmt == CR_INDEX8)
+    if (isCrTypePBits(dest->fmt))
         mem_cpy(real->m_pal, dest->pal, 1024);
     struct_cpy(&real->m_rect, &dest->clip_win, sRECT);
     CR_VCALL(gfx2)->unlock(gfx2);
