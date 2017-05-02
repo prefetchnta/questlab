@@ -1,11 +1,6 @@
 
 [build]
 
-CrH_CORE.dll
-CrH_GFX2.dll
-GFX2_GDI.dll
-GFX3_D3D8.dll
-GFX3_D3D9.dll
 
 [fixme]
 
