@@ -141,7 +141,7 @@ iFONT_UC_bind (
     real->m_flip = dest->gdi;
     real->m_fcrh = dest->fmt;
     real->pixel_cnvt = cnvt;
-    if (isCrTypePBits(dest->fmt))
+    if (isCrTypeIndex(dest->fmt))
         mem_cpy(real->m_pal, dest->pal, 1024);
     struct_cpy(&real->m_rect, &dest->clip_win, sRECT);
     CR_VCALL(gfx2)->unlock(gfx2);
