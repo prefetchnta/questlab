@@ -308,6 +308,13 @@ typedef struct
         /* 精灵 */
         LPD3DXSPRITE    (*util_create_sprite) (sD3D8_MAIN *main);
 
+        /* 包围 */
+        void_t  (*util_bound_aabb) (sAABB *aabb, int32u fvf,
+                                    const vec3d_t *pos, uint_t count);
+
+        void_t  (*util_bound_ball) (sSPHERE *ball, int32u fvf,
+                                    const vec3d_t *pos, uint_t count);
+
 /* ========================================================================= */
 
 } sD3D8_CALL;

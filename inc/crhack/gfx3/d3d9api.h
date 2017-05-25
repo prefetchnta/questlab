@@ -340,6 +340,12 @@ typedef struct
                                     const D3DXFONT_DESCA *desc);
         LPD3DXFONT  (*util_create_fontW) (sD3D9_MAIN *main,
                                     const D3DXFONT_DESCW *desc);
+        /* 包围 */
+        void_t  (*util_bound_aabb) (sAABB *aabb, const vec3d_t *pos,
+                                    uint_t count, uint_t bpv);
+
+        void_t  (*util_bound_ball) (sSPHERE *ball, const vec3d_t *pos,
+                                    uint_t count, uint_t bpv);
 
 /* ========================================================================= */
 
