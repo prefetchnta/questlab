@@ -30,8 +30,8 @@
     逻辑与填充
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_AND
+#define CR_NAME_FILLZ(n) fill_and##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -41,8 +41,8 @@
     逻辑或填充
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_ORR
+#define CR_NAME_FILLZ(n) fill_orr##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -52,8 +52,8 @@
     逻辑非填充
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_NOT
+#define CR_NAME_FILLZ(n) fill_not##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -63,8 +63,8 @@
     逻辑异或填充
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_XOR
+#define CR_NAME_FILLZ(n) fill_xor##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -74,8 +74,8 @@
     直接绘制填充 (高彩)
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_SET
+#define CR_NAME_FILLZ(n) fill_set##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -111,8 +111,8 @@ fill_set08_c (
     饱和加法填充
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_ADD
+#define CR_NAME_FILLZ(n) fill_add##n
 #include "blends.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -122,8 +122,8 @@ fill_set08_c (
     饱和减法填充
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_SUB
+#define CR_NAME_FILLZ(n) fill_sub##n
 #include "blends.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -133,8 +133,8 @@ fill_set08_c (
     插值混合填充
 =======================================
 */
-#define CR_NAME_FILLZ
 #define CR_BLT_MODE CR_BLT_ALP
+#define CR_NAME_FILLZ(n) fill_lrp##n
 #include "blends.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_FILLZ
@@ -148,8 +148,8 @@ fill_set08_c (
     逻辑与 BLIT
 =======================================
 */
-#define CR_NAME_BLITZ
 #define CR_BLT_MODE CR_BLT_AND
+#define CR_NAME_BLITZ(n) blit_and##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_BLITZ
@@ -159,8 +159,8 @@ fill_set08_c (
     逻辑或 BLIT
 =======================================
 */
-#define CR_NAME_BLITZ
 #define CR_BLT_MODE CR_BLT_ORR
+#define CR_NAME_BLITZ(n) blit_orr##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_BLITZ
@@ -170,8 +170,8 @@ fill_set08_c (
     逻辑异或 BLIT
 =======================================
 */
-#define CR_NAME_BLITZ
 #define CR_BLT_MODE CR_BLT_XOR
+#define CR_NAME_BLITZ(n) blit_xor##n
 #include "pixels.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_BLITZ
@@ -595,8 +595,8 @@ blit_dtr32_c (
     饱和加法 BLIT
 =======================================
 */
-#define CR_NAME_BLITZ
 #define CR_BLT_MODE CR_BLT_ADD
+#define CR_NAME_BLITZ(n) blit_add##n
 #include "blends.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_BLITZ
@@ -606,8 +606,8 @@ blit_dtr32_c (
     饱和减法 BLIT
 =======================================
 */
-#define CR_NAME_BLITZ
 #define CR_BLT_MODE CR_BLT_SUB
+#define CR_NAME_BLITZ(n) blit_sub##n
 #include "blends.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_BLITZ
@@ -617,8 +617,8 @@ blit_dtr32_c (
     插值混合 BLIT
 =======================================
 */
-#define CR_NAME_BLITZ
 #define CR_BLT_MODE CR_BLT_ALP
+#define CR_NAME_BLITZ(n) blit_lrp##n
 #include "blends.inl"
 #undef  CR_BLT_MODE
 #undef  CR_NAME_BLITZ

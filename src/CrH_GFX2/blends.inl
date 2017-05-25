@@ -283,13 +283,7 @@ CR_NAME_PIXEL(32n) (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-fill_add08_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-fill_sub08_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-fill_lrp08_c (
-#endif
+CR_NAME_FILLZ(08_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -334,13 +328,7 @@ fill_lrp08_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-fill_add12_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-fill_sub12_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-fill_lrp12_c (
-#endif
+CR_NAME_FILLZ(12_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -385,13 +373,7 @@ fill_lrp12_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-fill_add15_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-fill_sub15_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-fill_lrp15_c (
-#endif
+CR_NAME_FILLZ(15_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -436,13 +418,7 @@ fill_lrp15_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-fill_add16_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-fill_sub16_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-fill_lrp16_c (
-#endif
+CR_NAME_FILLZ(16_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -487,13 +463,7 @@ fill_lrp16_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-fill_add24_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-fill_sub24_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-fill_lrp24_c (
-#endif
+CR_NAME_FILLZ(24_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -541,13 +511,7 @@ fill_lrp24_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-fill_add32_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-fill_sub32_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-fill_lrp32_c (
-#endif
+CR_NAME_FILLZ(32_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -606,13 +570,7 @@ fill_lrp32_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-blit_add08_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-blit_sub08_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-blit_lrp08_c (
-#endif
+CR_NAME_BLITZ(08_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -680,13 +638,7 @@ blit_lrp08_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-blit_add12_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-blit_sub12_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-blit_lrp12_c (
-#endif
+CR_NAME_BLITZ(12_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -758,13 +710,7 @@ blit_lrp12_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-blit_add15_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-blit_sub15_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-blit_lrp15_c (
-#endif
+CR_NAME_BLITZ(15_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -836,13 +782,7 @@ blit_lrp15_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-blit_add16_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-blit_sub16_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-blit_lrp16_c (
-#endif
+CR_NAME_BLITZ(16_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -914,13 +854,7 @@ blit_lrp16_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-blit_add24_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-blit_sub24_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-blit_lrp24_c (
-#endif
+CR_NAME_BLITZ(24_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -998,13 +932,7 @@ blit_lrp24_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_ADD)
-blit_add32_c (
-#elif   (CR_BLT_MODE == CR_BLT_SUB)
-blit_sub32_c (
-#elif   (CR_BLT_MODE == CR_BLT_ALP)
-blit_lrp32_c (
-#endif
+CR_NAME_BLITZ(32_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,

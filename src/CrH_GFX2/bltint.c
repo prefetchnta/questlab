@@ -291,68 +291,84 @@ pixel_find_cnvt (
 static const pixdraw_t _rom_ s_pixel_draw1[] =
 {
     /* 正/反向绘制 */
-    NULL, pixel_set08z, pixel_set16z, pixel_set24z, pixel_set32z,
-    NULL, pixel_set08n, pixel_set16n, pixel_set24n, pixel_set32n,
-    /*-----------------------------------------------------------*/
+    pixel_set01z, pixel_set02z, pixel_set04z,
+    pixel_set08z, pixel_set16z, pixel_set24z, pixel_set32z,
+    pixel_set01n, pixel_set02n, pixel_set04n,
+    pixel_set08n, pixel_set16n, pixel_set24n, pixel_set32n,
+    /*---------------------------------------------------*/
     /* 正/反向与绘制 */
-    NULL, pixel_and08z, pixel_and16z, pixel_and24z, pixel_and32z,
-    NULL, pixel_and08n, pixel_and16n, pixel_and24n, pixel_and32n,
-    /*-----------------------------------------------------------*/
+    pixel_set01z, pixel_set02z, pixel_set04z,
+    pixel_and08z, pixel_and16z, pixel_and24z, pixel_and32z,
+    pixel_set01n, pixel_set02n, pixel_set04n,
+    pixel_and08n, pixel_and16n, pixel_and24n, pixel_and32n,
+    /*---------------------------------------------------*/
     /* 正/反向或绘制 */
-    NULL, pixel_orr08z, pixel_orr16z, pixel_orr24z, pixel_orr32z,
-    NULL, pixel_orr08n, pixel_orr16n, pixel_orr24n, pixel_orr32n,
-    /*-----------------------------------------------------------*/
+    pixel_set01z, pixel_set02z, pixel_set04z,
+    pixel_orr08z, pixel_orr16z, pixel_orr24z, pixel_orr32z,
+    pixel_set01n, pixel_set02n, pixel_set04n,
+    pixel_orr08n, pixel_orr16n, pixel_orr24n, pixel_orr32n,
+    /*---------------------------------------------------*/
     /* 正/反向非绘制 */
-    NULL, pixel_not08z, pixel_not16z, pixel_not24z, pixel_not32z,
-    NULL, pixel_not08n, pixel_not16n, pixel_not24n, pixel_not32n,
-    /*-----------------------------------------------------------*/
+    pixel_set01z, pixel_set02z, pixel_set04z,
+    pixel_not08z, pixel_not16z, pixel_not24z, pixel_not32z,
+    pixel_set01n, pixel_set02n, pixel_set04n,
+    pixel_not08n, pixel_not16n, pixel_not24n, pixel_not32n,
+    /*---------------------------------------------------*/
     /* 正/反向异或绘制 */
-    NULL, pixel_xor08z, pixel_xor16z, pixel_xor24z, pixel_xor32z,
-    NULL, pixel_xor08n, pixel_xor16n, pixel_xor24n, pixel_xor32n,
-    /*-----------------------------------------------------------*/
+    pixel_set01z, pixel_set02z, pixel_set04z,
+    pixel_xor08z, pixel_xor16z, pixel_xor24z, pixel_xor32z,
+    pixel_set01n, pixel_set02n, pixel_set04n,
+    pixel_xor08n, pixel_xor16n, pixel_xor24n, pixel_xor32n,
+    /*---------------------------------------------------*/
 };
 
 static const pixdraw_t _rom_ s_pixel_draw2[] =
 {
     /* 正/反向饱和加法 */
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    pixel_add08z, NULL, NULL, NULL, pixel_add12z,
-    NULL, NULL, pixel_add15z, pixel_add16z, pixel_add15z,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_add24z, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_add32z,
-    /*----------------------------------------------*/
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    pixel_add08n, NULL, NULL, NULL, pixel_add12n,
-    NULL, NULL, pixel_add15n, pixel_add16n, pixel_add15n,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_add24n, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_add32n,
-    /*----------------------------------------------*/
+    NULL, NULL, NULL, NULL, NULL, NULL, pixel_set01z,
+    pixel_set04z, pixel_add08z, pixel_set02z, NULL, NULL,
+    pixel_add12z, NULL, NULL, pixel_add15z, pixel_add16z,
+    pixel_add15z, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_add24z, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, pixel_add32z,
+    /*---------------------------------------------*/
+    NULL, NULL, NULL, NULL, NULL, NULL, pixel_set01n,
+    pixel_set04n, pixel_add08n, pixel_set02n, NULL, NULL,
+    pixel_add12n, NULL, NULL, pixel_add15n, pixel_add16n,
+    pixel_add15n, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_add24n, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, pixel_add32n,
+    /*---------------------------------------------*/
     /* 正/反向饱和减法 */
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    pixel_sub08z, NULL, NULL, NULL, pixel_sub12z,
-    NULL, NULL, pixel_sub15z, pixel_sub16z, pixel_sub15z,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_sub24z, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_sub32z,
-    /*----------------------------------------------*/
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    pixel_sub08n, NULL, NULL, NULL, pixel_sub12n,
-    NULL, NULL, pixel_sub15n, pixel_sub16n, pixel_sub15n,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_sub24n, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_sub32n,
-    /*----------------------------------------------*/
+    NULL, NULL, NULL, NULL, NULL, NULL, pixel_set01z,
+    pixel_set04z, pixel_sub08z, pixel_set02z, NULL, NULL,
+    pixel_sub12z, NULL, NULL, pixel_sub15z, pixel_sub16z,
+    pixel_sub15z, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_sub24z, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, pixel_sub32z,
+    /*---------------------------------------------*/
+    NULL, NULL, NULL, NULL, NULL, NULL, pixel_set01n,
+    pixel_set04n, pixel_sub08n, pixel_set02n, NULL, NULL,
+    pixel_sub12n, NULL, NULL, pixel_sub15n, pixel_sub16n,
+    pixel_sub15n, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_sub24n, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, pixel_sub32n,
+    /*---------------------------------------------*/
     /* 正/反向透明混合 */
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    pixel_lrp08z, NULL, NULL, NULL, pixel_lrp12z,
-    NULL, NULL, pixel_lrp15z, pixel_lrp16z, pixel_lrp15z,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp24z, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp32z,
-    /*----------------------------------------------*/
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    pixel_lrp08n, NULL, NULL, NULL, pixel_lrp12n,
-    NULL, NULL, pixel_lrp15n, pixel_lrp16n, pixel_lrp15n,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp24n, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, pixel_lrp32n,
-    /*----------------------------------------------*/
+    NULL, NULL, NULL, NULL, NULL, NULL, pixel_set01z,
+    pixel_set04z, pixel_lrp08z, pixel_set02z, NULL, NULL,
+    pixel_lrp12z, NULL, NULL, pixel_lrp15z, pixel_lrp16z,
+    pixel_lrp15z, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_lrp24z, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, pixel_lrp32z,
+    /*---------------------------------------------*/
+    NULL, NULL, NULL, NULL, NULL, NULL, pixel_set01n,
+    pixel_set04n, pixel_lrp08n, pixel_set02n, NULL, NULL,
+    pixel_lrp12n, NULL, NULL, pixel_lrp15n, pixel_lrp16n,
+    pixel_lrp15n, NULL, NULL, NULL, NULL, NULL, NULL,
+    pixel_lrp24n, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, pixel_lrp32n,
+    /*---------------------------------------------*/
 };
 
 /*
@@ -373,33 +389,23 @@ pixel_find_draw (
         switch (fcrh)
         {
             default:
-            case CR_INDEX1:
-            case CR_INDEX2:
-            case CR_INDEX4:
                 return (NULL);
 
-            case CR_INDEX8:
-                fcrh = 1;
-                break;
+            case CR_INDEX1: fcrh = 0; break;
+            case CR_INDEX2: fcrh = 1; break;
+            case CR_INDEX4: fcrh = 2; break;
+            case CR_INDEX8: fcrh = 3; break;
 
             case CR_ARGB4444:
             case CR_ARGBX555:
             case CR_ARGB565:
-            case CR_ARGB1555:
-                fcrh = 2;
-                break;
-
-            case CR_ARGB888:
-                fcrh = 3;
-                break;
-
-            case CR_ARGB8888:
-                fcrh = 4;
-                break;
+            case CR_ARGB1555: fcrh = 4; break;
+            case CR_ARGB888:  fcrh = 5; break;
+            case CR_ARGB8888: fcrh = 6; break;
         }
         if (flip)
-            fcrh += 5;
-        fcrh += mode * 10;
+            fcrh += 7;
+        fcrh += mode * 14;
         return (s_pixel_draw1[fcrh]);
     }
     if (mode <= CR_BLT_MAX)
@@ -407,11 +413,11 @@ pixel_find_draw (
         switch (fcrh)
         {
             default:
+                return (NULL);
+
             case CR_INDEX1:
             case CR_INDEX2:
             case CR_INDEX4:
-                return (NULL);
-
             case CR_INDEX8:
             case CR_ARGB4444:
             case CR_ARGBX555:

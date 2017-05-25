@@ -171,17 +171,7 @@ CR_NAME_PIXEL(32n) (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_SET)
-fill_set08_c (
-#elif   (CR_BLT_MODE == CR_BLT_AND)
-fill_and08_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-fill_orr08_c (
-#elif   (CR_BLT_MODE == CR_BLT_NOT)
-fill_not08_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-fill_xor08_c (
-#endif
+CR_NAME_FILLZ(08_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -215,17 +205,7 @@ fill_xor08_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_SET)
-fill_set16_c (
-#elif   (CR_BLT_MODE == CR_BLT_AND)
-fill_and16_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-fill_orr16_c (
-#elif   (CR_BLT_MODE == CR_BLT_NOT)
-fill_not16_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-fill_xor16_c (
-#endif
+CR_NAME_FILLZ(16_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -258,17 +238,7 @@ fill_xor16_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_SET)
-fill_set24_c (
-#elif   (CR_BLT_MODE == CR_BLT_AND)
-fill_and24_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-fill_orr24_c (
-#elif   (CR_BLT_MODE == CR_BLT_NOT)
-fill_not24_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-fill_xor24_c (
-#endif
+CR_NAME_FILLZ(24_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -303,17 +273,7 @@ fill_xor24_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_SET)
-fill_set32_c (
-#elif   (CR_BLT_MODE == CR_BLT_AND)
-fill_and32_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-fill_orr32_c (
-#elif   (CR_BLT_MODE == CR_BLT_NOT)
-fill_not32_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-fill_xor32_c (
-#endif
+CR_NAME_FILLZ(32_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sFILL*    fill,
   __CR_IN__ cpix_t          color,
@@ -355,13 +315,7 @@ fill_xor32_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_AND)
-blit_and08_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-blit_orr08_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-blit_xor08_c (
-#endif
+CR_NAME_BLITZ(08_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -395,13 +349,7 @@ blit_xor08_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_AND)
-blit_and16_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-blit_orr16_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-blit_xor16_c (
-#endif
+CR_NAME_BLITZ(16_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -435,13 +383,7 @@ blit_xor16_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_AND)
-blit_and24_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-blit_orr24_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-blit_xor24_c (
-#endif
+CR_NAME_BLITZ(24_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,
@@ -477,13 +419,7 @@ blit_xor24_c (
 =======================================
 */
 CR_API void_t
-#if     (CR_BLT_MODE == CR_BLT_AND)
-blit_and32_c (
-#elif   (CR_BLT_MODE == CR_BLT_ORR)
-blit_orr32_c (
-#elif   (CR_BLT_MODE == CR_BLT_XOR)
-blit_xor32_c (
-#endif
+CR_NAME_BLITZ(32_c) (
   __CR_IN__ const sIMAGE*   dst,
   __CR_IN__ const sIMAGE*   src,
   __CR_IN__ const sBLIT*    blit,

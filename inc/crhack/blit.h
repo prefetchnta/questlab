@@ -222,6 +222,8 @@ CR_COLOR32 (
     #define pixel_notn      pixel_not16n
     #define pixel_xorz      pixel_xor16z
     #define pixel_xorn      pixel_xor16n
+    #define pixel_getz      pixel_get16z
+    #define pixel_getn      pixel_get16n
     #define pixel_setz      pixel_set16z
     #define pixel_setn      pixel_set16n
     #define pixel_addz      pixel_add15z
@@ -260,6 +262,8 @@ CR_COLOR32 (
     #define pixel_notn      pixel_not16n
     #define pixel_xorz      pixel_xor16z
     #define pixel_xorn      pixel_xor16n
+    #define pixel_getz      pixel_get16z
+    #define pixel_getn      pixel_get16n
     #define pixel_setz      pixel_set16z
     #define pixel_setn      pixel_set16n
     #define pixel_addz      pixel_add16z
@@ -298,6 +302,8 @@ CR_COLOR32 (
     #define pixel_notn      pixel_not24n
     #define pixel_xorz      pixel_xor24z
     #define pixel_xorn      pixel_xor24n
+    #define pixel_getz      pixel_get24z
+    #define pixel_getn      pixel_get24n
     #define pixel_setz      pixel_set24z
     #define pixel_setn      pixel_set24n
     #define pixel_addz      pixel_add24z
@@ -336,6 +342,8 @@ CR_COLOR32 (
     #define pixel_notn      pixel_not32n
     #define pixel_xorz      pixel_xor32z
     #define pixel_xorn      pixel_xor32n
+    #define pixel_getz      pixel_get32z
+    #define pixel_getn      pixel_get32n
     #define pixel_setz      pixel_set32z
     #define pixel_setn      pixel_set32n
     #define pixel_addz      pixel_add32z
@@ -388,8 +396,24 @@ CR_API iFONT*   create_ucdos_font (iDATIN *asc, iDATIN *hzk, iDATIN *chr,
                                    uint_t size, uint_t xspc, uint_t yspc);
 
 /*****************************************************************************/
-/*                                 像素绘制                                  */
+/*                                 像素操作                                  */
 /*****************************************************************************/
+
+/* 像素-读 */
+CR_API byte_t   pixel_get01z (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API byte_t   pixel_get01n (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API byte_t   pixel_get02z (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API byte_t   pixel_get02n (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API byte_t   pixel_get04z (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API byte_t   pixel_get04n (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API byte_t   pixel_get08z (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API byte_t   pixel_get08n (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API int16u   pixel_get16z (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API int16u   pixel_get16n (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API int32u   pixel_get24z (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API int32u   pixel_get24n (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API int32u   pixel_get32z (const sIMAGE *dst, sint_t x, sint_t y);
+CR_API int32u   pixel_get32n (const sIMAGE *dst, sint_t x, sint_t y);
 
 /* 逻辑-与 */
 CR_API void_t   pixel_and08z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
@@ -432,6 +456,12 @@ CR_API void_t   pixel_xor32z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 CR_API void_t   pixel_xor32n (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 
 /* 直接绘制 */
+CR_API void_t   pixel_set01z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
+CR_API void_t   pixel_set01n (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
+CR_API void_t   pixel_set02z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
+CR_API void_t   pixel_set02n (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
+CR_API void_t   pixel_set04z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
+CR_API void_t   pixel_set04n (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 CR_API void_t   pixel_set08z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 CR_API void_t   pixel_set08n (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
 CR_API void_t   pixel_set16z (const sIMAGE *dst, sint_t x, sint_t y, cpix_t);
