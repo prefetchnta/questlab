@@ -492,6 +492,13 @@
     #endif
 #endif
 
+/* 一些系统缺失的函数 */
+#if defined(_CR_OS_MACOSX_)
+    #define _CR_NO_API_SYSTEM_
+    #define _CR_NO_API_CLOCK_GETTIME_
+    #define _CR_NO_API_GETHOSTBYNAME_R_
+#endif
+
 /*****************************************************************************/
 /*                               依赖开关配置                                */
 /*****************************************************************************/

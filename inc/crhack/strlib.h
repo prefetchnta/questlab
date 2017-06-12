@@ -278,6 +278,8 @@ CR_API leng_t   str_get_lineA (const ansi_t *pos, const ansi_t *str,
                                leng_t *cols CR_DEFAULT(NULL));
 CR_API leng_t   str_get_lineW (const wide_t *pos, const wide_t *str,
                                leng_t *cols CR_DEFAULT(NULL));
+CR_API bool_t   str2ip4addrA (const ansi_t *str, byte_t *val CR_DEFAULT(NULL));
+CR_API bool_t   str2ip4addrW (const wide_t *str, byte_t *val CR_DEFAULT(NULL));
 
 /*****************************************************************************/
 /*                              多字节编码工具                               */
