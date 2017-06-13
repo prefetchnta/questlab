@@ -1,7 +1,7 @@
 /*  zint.h - definitions for libzint
 
     libzint - the open source barcode library
-    Copyright (C) 2009-2016 Robin Stuart <rstuart114@gmail.com>
+    Copyright (C) 2009-2017 Robin Stuart <rstuart114@gmail.com>
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
@@ -96,11 +96,12 @@ extern "C" {
         unsigned int bitmap_byte_length;
         float dot_size;
         struct zint_render *rendered;
+        int debug;
     };
 
 #define ZINT_VERSION_MAJOR      2
-#define ZINT_VERSION_MINOR      5
-#define ZINT_VERSION_RELEASE    1
+#define ZINT_VERSION_MINOR      6
+#define ZINT_VERSION_RELEASE    0
     
     /* Tbarcode 7 codes */
 #define BARCODE_CODE11		1
@@ -240,6 +241,8 @@ extern "C" {
 #define	OUT_BMP_FILE        120
 #define OUT_GIF_FILE        140
 #define OUT_PCX_FILE        160
+#define OUT_JPG_FILE        180
+#define OUT_TIF_FILE        200
 
 #if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(_MSC_VER)
 #if defined (DLL_EXPORT) || defined(PIC) || defined(_USRDLL)
