@@ -311,13 +311,7 @@
 /* CPU 架构对齐访问设置 */
 #if !defined(_CR_ARCH8_)
     #if     defined(_CR_AR_ARM_)
-        /* ARMv7 以下必须要对齐访问 */
-        #if defined(_CR_ARM_V32_) && \
-            defined(_CR_ARM_V16_)
-            #if (_CR_ARM_V32_ < 7) && (_CR_ARM_V16_ <= 4)
-                #define _CR_ALIGN_NEEDED_
-            #endif
-        #elif   !defined(__ARM_FEATURE_UNALIGNED)
+        #if !defined(__ARM_FEATURE_UNALIGNED)
             #define _CR_ALIGN_NEEDED_
         #endif
     /* 除此以外默认需要对齐访问 */
