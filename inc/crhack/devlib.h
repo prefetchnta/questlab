@@ -93,6 +93,7 @@ typedef void_t*     socket_t;
 
 CR_API bool_t   socket_init (void_t);
 CR_API void_t   socket_free (void_t);
+CR_API leng_t   socket_get (socket_t netw);
 CR_API void_t   socket_close (socket_t netw);
 CR_API bool_t   socket_shutdown (socket_t netw, uint_t flags);
 CR_API bool_t   socket_input_size (socket_t netw, uint_t *size);
