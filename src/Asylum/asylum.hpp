@@ -140,20 +140,4 @@
 #include "yaw/tree_l.hpp"
 #include "yaw/map_acs.hpp"
 
-/* Asylum3D */
-#include "draw3d/asylum3d.hpp"
-#if defined(ASY_USE_DX9)
-    #include "draw3d/crh3d9/crh3d9_main.hpp"
-    #include "draw3d/crh3d9/crh3d9_shader.hpp"
-    #include "draw3d/crh3d9/crh3d9_texture.hpp"
-    #include "draw3d/crh3d9/crhack3d9.hpp"
-    #ifndef _CR_NO_PRAGMA_LIB_
-        #ifndef ASY_USE_STATIC
-            #pragma comment (lib, "CrH_GFX3.lib")
-        #else
-            #pragma comment (lib, "GFX3s.lib")
-        #endif
-    #endif
-#endif
-
 #endif  /* __ASYLUM_HPP__ */
