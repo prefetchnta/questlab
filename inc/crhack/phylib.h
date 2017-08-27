@@ -33,6 +33,7 @@
 #define CR_PHY_SQR2     (1.4142135623730950488016887242097) /* sqrt(2) */
 #define CR_PHY_PI       (3.1415926535897932384626433832795) /* 圆周率 */
 #define CR_PHY_DTOR     (CR_PHY_PI / 180.0) /* 角度转弧度 */
+#define CR_PHY_RTOD     (180.0 / CR_PHY_PI) /* 弧度转角度 */
 #define CR_PHY_OSAP     (101325.0) /* 标准大气压 (Pa) */
 #define CR_PHY_UGCR     (8.31441) /* 理想气体常数 (J / (mol * K)) */
 #define CR_PHY_WUGCR    (0.461526) /* 水的理想气体常数 (kJ / (kg * K)) */
