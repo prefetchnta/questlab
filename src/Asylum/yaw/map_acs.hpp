@@ -178,10 +178,29 @@ public:
         return (NULL);
     }
 
+    /* ==================== */
+    bool reserve (size_t size)
+    {
+        return (m_lst.reserve(size));
+    }
+
+    /* ========= */
+    bool no_grow ()
+    {
+        return (m_lst.no_grow());
+    }
+
     /* ============================== */
     T* insert (const char* name, T* obj)
     {
         T*  ret;
+
+        ret = this->get(name);
+        if (ret != NULL) {
+            ret->free();
+            mem_cpy(ret, obj, sizeof(T));
+            return (ret);
+        }
 
         ret = m_lst.append(obj);
         if (ret == NULL)
