@@ -21,6 +21,7 @@
 #define __CR_PHYLIB_H__
 
 #include "gfx2.h"
+#include "datlib.h"
 
 /*****************************************************************************/
 /*                                 重要常数                                  */
@@ -268,6 +269,12 @@ CR_API bool_t   shape_match_wet (const byte_t *left_top, leng_t img_bpl,
 /*                                   几何                                    */
 /*****************************************************************************/
 
+/* 线段方向倒转 */
+CR_API void_t   line_swap (sPNT2 *pnts, leng_t count);
+
+/* 线段点集压缩 */
+CR_API leng_t   line_compress (sPNT2 *pnts, leng_t count);
+
 /* Hough 变换结果结构 */
 typedef struct
 {
@@ -388,18 +395,21 @@ CR_API ansi_t*  space_hash3d (double min_x, double max_x,
 /*                                   寻路                                    */
 /*****************************************************************************/
 
-/* astar pathfinding */
+/*********************/
+/* AStar pathfinding */
+/*********************/
 #define ASNL_ADDOPEN        0
 #define ASNL_STARTOPEN      1
 #define ASNL_DELETEOPEN     2
 #define ASNL_ADDCLOSED      3
-
+/* ----------------------- */
 #define ASNC_INITIALADD     0
 #define ASNC_OPENADD_UP     1
 #define ASNC_OPENADD        2
 #define ASNC_CLOSEDADD_UP   3
 #define ASNC_CLOSEDADD      4
 #define ASNC_NEWADD         5
+/* ----------------------- */
 
 /* 路径节点 */
 typedef struct  _asNode
@@ -453,6 +463,72 @@ CR_API sint_t   astar_step_next (sASTAR *as);
 CR_API bool_t   astar_find_path (sASTAR *as, sint_t sx, sint_t sy,
                                              sint_t dx, sint_t dy);
 CR_API sPNT2*   astar_get_path (const sASTAR *as, leng_t *count);
+
+/************************/
+/* Dijkstra pathfinding */
+/************************/
+#define DJNL_ADDOPEN        0
+#define DJNL_STARTOPEN      1
+#define DJNL_DELETEOPEN     2
+#define DJNL_ADDCLOSED      3
+/* ----------------------- */
+#define DJNC_INITIALADD     0
+#define DJNC_OPENADD_UP     1
+#define DJNC_OPENADD        2
+#define DJNC_CLOSEDADD_UP   3
+#define DJNC_CLOSEDADD      4
+#define DJNC_NEWADD         5
+/* ----------------------- */
+
+/* 路径节点 */
+typedef struct  _djNode
+{
+        sARRAY  children;
+        sint_t  g, number;
+        sint_t  numchildren;
+        struct _djNode* parent;
+        struct _djNode* next;
+
+} djNode;
+
+/* 节点栈对象 */
+typedef struct  _djStack
+{
+        djNode*             data;
+        struct _djStack*    next;
+
+} djStack;
+
+/* 用到的回调类型 */
+typedef sint_t  (*djFunc) (djNode*, djNode*, sint_t, void_t*);
+
+/* Dijkstra 寻路对象 */
+typedef struct
+{
+        /* 公用成员 */
+        djFunc  udCost;         /* 代价计算回调 */
+        djFunc  udValid;        /* 节点有效性检查回调 */
+        djFunc  udNotifyChild;  /* 子节点增加/检查时调用 */
+        djFunc  udNotifyList;   /* 节点加入 Open/Closed 列表时调用 */
+        void_t* cbData;         /* 回调函数的用户数据 */
+        void_t* ncData;         /* 回调函数的用户数据 */
+
+        /* 私有成员 */
+        sint_t      iDNum;
+        djNode*     pOpen;      /* Open 列表 */
+        djNode*     pClosed;    /* Closed 列表 */
+        djNode*     pBest;      /* 最佳节点 */
+        djStack*    pStack;     /* 用到的栈对象 */
+
+} sDIJKSTRA;
+
+CR_API void_t   dijkstra_init (sDIJKSTRA *dj);
+CR_API void_t   dijkstra_free (sDIJKSTRA *dj);
+CR_API void_t   dijkstra_reset (sDIJKSTRA *dj);
+CR_API bool_t   dijkstra_step_init (sDIJKSTRA *dj, sint_t beg, sint_t end);
+CR_API sint_t   dijkstra_step_next (sDIJKSTRA *dj);
+CR_API bool_t   dijkstra_find_path (sDIJKSTRA *dj, sint_t beg, sint_t end);
+CR_API sint_t*  dijkstra_get_path (const sDIJKSTRA *dj, leng_t *count);
 
 /*****************************************************************************/
 /*                                   医学                                    */

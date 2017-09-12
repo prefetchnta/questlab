@@ -620,6 +620,12 @@
 #undef  _CR_ASTAR_SXS_
     */
 
+/* 开启 Dijkstra 事件通知回调
+   默认: 关闭 */
+    /*
+#undef  _CR_DIJKSTRA_SXS_
+    */
+
 /* 取消 RTC 函数的字符串调用
     默认: 不取消 */
     /*
