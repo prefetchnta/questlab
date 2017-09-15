@@ -4,6 +4,7 @@
 
 /* 外部库引用 */
 #pragma comment (lib, "CrH_GFX2.lib")
+#pragma comment (lib, "GFX2_GDI.lib")
 
 /* 显示画面索引 */
 static uint_t   s_img_idx;
@@ -226,20 +227,6 @@ WinMain (
         ilab_inpt.ilab_img2ipl_dup == NULL)
         return (QST_ERROR);
 
-    create_gfx2_t       gfx2_func;
-    const sGDI_CALL*    gdi_calls;
-
-    /* 加载 GDI 绘制插件 (限制到 GDI) */
-    sbin = sbin_loadA("GFX2_GDI.dll");
-    if (sbin == NULL)
-        return (QST_ERROR);
-    gfx2_func = sbin_exportT(sbin, "create_canvas", create_gfx2_t);
-    if (gfx2_func == NULL)
-        return (QST_ERROR);
-    gdi_calls = sbin_callgetT(sbin, "gdi_call_get", sGDI_CALL);
-    if (gdi_calls == NULL)
-        return (QST_ERROR);
-
     HWND    hwnd;
 
     /* 生成一个固定大小的窗口 */
@@ -316,7 +303,7 @@ WinMain (
     sIMAGE* imgs;
 
     /* 创建 GDI 绘制对象 (只支持32位色屏幕) */
-    draw = gfx2_func(hwnd, 0, 0, CR_UNKNOWN, FALSE, NULL, 0);
+    draw = (iGFX2*)create_gdi_canvas(hwnd, 0, 0, FALSE);
     if (draw == NULL) {
         fmtz_free(fmtz);
         window_kill(hwnd, curt_app, WIN_CLASS);
@@ -340,7 +327,7 @@ WinMain (
     fnta.lfQuality = ANTIALIASED_QUALITY;
     fnta.lfHeight = 12;
     str_cpyA(fnta.lfFaceName, "Fixedsys");
-    font = gdi_calls->create_fontA(&fnta);
+    font = create_gdi_fontA(&fnta);
     if (font == NULL || !CR_VCALL(font)->bind(font, draw)) {
         fmtz_free(fmtz);
         window_kill(hwnd, curt_app, WIN_CLASS);
