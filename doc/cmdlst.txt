@@ -271,7 +271,7 @@
 （三）CrHackSet 绘图命令列表
 
     crh:init
-        加载 GDI 字体输出的外部模块
+        目前没用干任何事情
 
     crh:color <Red> <Green> <Blue> [Alpha]
         设置当前绘制前景色，Alpha 默认为255，缺省为黑色
