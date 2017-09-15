@@ -26,6 +26,7 @@
 #pragma comment (lib, "QstLibs.lib")
 #pragma comment (lib, "CrH_GFX2.lib")
 #pragma comment (lib, "CrH_MATH.lib")
+#pragma comment (lib, "GFX2_GDI.lib")
 #pragma comment (lib, "libzbar-0.lib")
 #pragma comment (lib, "libzxing.lib")
 #pragma comment (lib, "libfacedetect.lib")

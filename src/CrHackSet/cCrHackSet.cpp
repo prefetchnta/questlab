@@ -16,9 +16,6 @@ static cpix_t       s_bkcolor = { 0xFFFFFFFF };     /* 背景颜色 */
 static pixdraw_t    s_pixdraw = pixel_set32z;       /* 绘制模式 */
 static flldraw_t    s_flldraw = fill_set32_c;       /* 填充模式 */
 
-/* 用到的 GFX2_GDI.dll 里的函数 */
-static const sGDI_CALL* s_gdi_calls = NULL;
-
 /*
 ---------------------------------------
     是否为 GDI 文字输出对象
@@ -44,19 +41,9 @@ qst_crh_init (
   __CR_IN__ ansi_t**    argv
     )
 {
-    sbin_t  sbin;
-
     CR_NOUSE(parm);
     CR_NOUSE(argc);
     CR_NOUSE(argv);
-
-    /* 用到的外部函数 */
-    s_gdi_calls = NULL;
-    sbin = sbin_testA("GFX2_GDI.dll");
-    if (sbin == NULL)
-        sbin = sbin_loadA("GFX2_GDI.dll");
-    if (sbin != NULL)
-        s_gdi_calls = sbin_callgetT(sbin, "gdi_call_get", sGDI_CALL);
     return (TRUE);
 }
 
@@ -709,8 +696,8 @@ qst_crh_text_int (
     if (is_gdi_text_out())
     {
         /* 创建一个临时 GDI 表面然后复制输出的结果到目标画布 */
-        gfx2 = (iGFX2*)s_gdi_calls->create_bitmap(draw->position.ww,
-                        draw->position.hh, CR_ARGB8888);
+        gfx2 = (iGFX2*)create_gdi_bitmap(draw->position.ww,
+                                draw->position.hh, CR_ARGB8888);
         if (gfx2 == NULL)
             return (FALSE);
 
@@ -884,8 +871,6 @@ qst_crh_winfont (
                 [StrikeOut] [Escapement] [Orientation] */
     if (argc < 3)
         return (FALSE);
-    if (s_gdi_calls == NULL)
-        return (FALSE);
 
     /* 填充字体生成结构 */
     struct_zero(&font, LOGFONTA);
@@ -917,7 +902,7 @@ qst_crh_winfont (
     /* 生成文字输出对象 */
     if (s_font != NULL)
         CR_VCALL(s_font)->release(s_font);
-    s_font = s_gdi_calls->create_fontA(&font);
+    s_font = create_gdi_fontA(&font);
     if (s_font == NULL)
         return (FALSE);
     return (TRUE);
