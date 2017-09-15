@@ -4,6 +4,7 @@
 /* 外部库引用 */
 #pragma comment (lib, "CrH_GFX2.lib")
 #pragma comment (lib, "CrH_MATH.lib")
+#pragma comment (lib, "GFX2_GDI.lib")
 #pragma comment (lib, "ResLoader.lib")
 
 /* 缺省的窗口大小 */
@@ -117,17 +118,6 @@ WinMain (
         return (QST_ERROR);
     mem_zero(&s_wrk_ctx, sizeof(s_wrk_ctx));
 
-    sbin_t          sbin;
-    create_gfx2_t   func;
-
-    /* 加载 GDI 绘制插件 (限制到 GDI) */
-    sbin = sbin_loadA("GFX2_GDI.dll");
-    if (sbin == NULL)
-        return (QST_ERROR);
-    func = sbin_exportT(sbin, "create_canvas", create_gfx2_t);
-    if (func == NULL)
-        return (QST_ERROR);
-
     sint_t  x1, y1;
     uint_t  ww, hh;
 
@@ -150,7 +140,7 @@ WinMain (
     sIMAGE* imgs;
 
     /* 创建 GDI 绘制对象 (只支持32位色屏幕) */
-    draw = func(s_wrk_ctx.hwnd, 0, 0, CR_UNKNOWN, FALSE, NULL, 0);
+    draw = (iGFX2*)create_gdi_canvas(s_wrk_ctx.hwnd, 0, 0, FALSE);
     if (draw == NULL) {
         window_kill(s_wrk_ctx.hwnd, curt_app, WIN_CLASS);
         return (QST_ERROR);
