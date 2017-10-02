@@ -114,12 +114,33 @@ CR_API ansi_t*  str_esc_chr2U (const ansi_t *str, ansi_t ch1, ansi_t ch2);
 CR_API wide_t*  str_esc_chr2W (const wide_t *str, wide_t ch1, wide_t ch2);
 
 /***** 转换组 *****/
-CR_API ansi_t*  int2strA   (ansi_t name[32], uint_t value);
-CR_API wide_t*  int2strW   (wide_t name[32], uint_t value);
-CR_API ansi_t*  int2str32A (ansi_t name[32], int32u value);
-CR_API wide_t*  int2str32W (wide_t name[32], int32u value);
-CR_API ansi_t*  int2str64A (ansi_t name[32], int64u value);
-CR_API wide_t*  int2str64W (wide_t name[32], int64u value);
+CR_API ansi_t*  int2bstrA   (ansi_t name[65], uint_t value);
+CR_API wide_t*  int2bstrW   (wide_t name[65], uint_t value);
+CR_API ansi_t*  int2bstr32A (ansi_t name[65], int32u value);
+CR_API wide_t*  int2bstr32W (wide_t name[65], int32u value);
+CR_API ansi_t*  int2bstr64A (ansi_t name[65], int64u value);
+CR_API wide_t*  int2bstr64W (wide_t name[65], int64u value);
+
+CR_API ansi_t*  int2ostrA   (ansi_t name[23], uint_t value);
+CR_API wide_t*  int2ostrW   (wide_t name[23], uint_t value);
+CR_API ansi_t*  int2ostr32A (ansi_t name[23], int32u value);
+CR_API wide_t*  int2ostr32W (wide_t name[23], int32u value);
+CR_API ansi_t*  int2ostr64A (ansi_t name[23], int64u value);
+CR_API wide_t*  int2ostr64W (wide_t name[23], int64u value);
+
+CR_API ansi_t*  int2dstrA   (ansi_t name[21], uint_t value, bool_t sign);
+CR_API wide_t*  int2dstrW   (wide_t name[21], uint_t value, bool_t sign);
+CR_API ansi_t*  int2dstr32A (ansi_t name[21], int32u value, bool_t sign);
+CR_API wide_t*  int2dstr32W (wide_t name[21], int32u value, bool_t sign);
+CR_API ansi_t*  int2dstr64A (ansi_t name[21], int64u value, bool_t sign);
+CR_API wide_t*  int2dstr64W (wide_t name[21], int64u value, bool_t sign);
+
+CR_API ansi_t*  int2hstrA   (ansi_t name[17], uint_t value);
+CR_API wide_t*  int2hstrW   (wide_t name[17], uint_t value);
+CR_API ansi_t*  int2hstr32A (ansi_t name[17], int32u value);
+CR_API wide_t*  int2hstr32W (wide_t name[17], int32u value);
+CR_API ansi_t*  int2hstr64A (ansi_t name[17], int64u value);
+CR_API wide_t*  int2hstr64W (wide_t name[17], int64u value);
 
 CR_API ansi_t*  hex2strA (ansi_t *str, const void_t *data, leng_t size);
 CR_API wide_t*  hex2strW (wide_t *str, const void_t *data, leng_t size);
