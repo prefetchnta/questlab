@@ -275,6 +275,15 @@ CR_API void_t   line_swap (sPNT2 *pnts, leng_t count);
 /* 线段点集压缩 */
 CR_API leng_t   line_compress (sPNT2 *pnts, leng_t count);
 
+/* 删除无效的点 */
+CR_API leng_t   line_clean (sPNT2 *pnts, leng_t count);
+
+/* 线段点集分割 */
+CR_API leng_t   line_split (sPNT2 *pnts, leng_t count, fp32_t gate);
+
+/* 直线直角修补 */
+CR_API leng_t   line_corner (sPNT2 *pnts, leng_t count,
+                             sint_t gmin, sint_t gmax);
 /* Hough 变换结果结构 */
 typedef struct
 {

@@ -2,6 +2,7 @@
 [build]
 
 CrH_CORE.dll
+CrH_MATH.dll
 
 [fixme]
 
