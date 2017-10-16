@@ -258,6 +258,7 @@ typedef struct
 #define WAVEFRONT_KA    1   /* 存在 Ka */
 #define WAVEFRONT_KD    2   /* 存在 Kd */
 #define WAVEFRONT_KS    4   /* 存在 Ks */
+#define WAVEFRONT_KE    8   /* 存在 Ke */
 
 /* OBJ 模型结构 */
 typedef struct
@@ -344,6 +345,7 @@ typedef struct
 #define MESHML_KA   1   /* 存在 Ka */
 #define MESHML_KD   2   /* 存在 Kd */
 #define MESHML_KS   4   /* 存在 Ks */
+#define MESHML_KE   8   /* 存在 Ke */
 
 /* MeshML 骨骼结构 */
 typedef struct
