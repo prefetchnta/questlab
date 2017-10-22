@@ -65,17 +65,26 @@ WinMain (
     leng_t  size;
     ansi_t* root;
     ansi_t* exec;
+    ansi_t  path[MAX_PATHA];
 
     /* 合成 PYTHONHOME 目录 */
     exec = file_load_as_strA(QST_ROOT_START);
     if (exec == NULL) {
-        if (argc < 2)
-            return (QST_ERROR);
-        root = str_fmtA("%s\\" QST_ROOT_START, argv[1]);
-        if (root == NULL)
-            return (QST_ERROR);
-        exec = file_load_as_strA(root);
-        mem_free(root);
+        if (argc < 2) {
+            size = GetCurrentDirectoryA(sizeof(path), path);
+            if (size == 0 || size > sizeof(path))
+                return (QST_ERROR);
+            if (path[size - 1] == '\\')
+                path[size - 1] = 0x00;
+            exec = str_dupA(path);
+        }
+        else {
+            root = str_fmtA("%s\\" QST_ROOT_START, argv[1]);
+            if (root == NULL)
+                return (QST_ERROR);
+            exec = file_load_as_strA(root);
+            mem_free(root);
+        }
         if (exec == NULL)
             return (QST_ERROR);
     }
