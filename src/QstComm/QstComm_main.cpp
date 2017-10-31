@@ -1,6 +1,11 @@
 
 #include "QstCommInt.h"
 
+/* 一些超时参数 */
+#define QCOM_CUTDOWN    50      /* 断流超时 */
+#define QCOM_SNDTOUT    1000    /* 发送超时 */
+#define QCOM_CNNTOUT    5000    /* 连接超时 */
+
 /* 内部函数的声明 */
 CR_API void_t   qst_csi_clear (void_t);
 
@@ -22,8 +27,9 @@ CR_API void_t*  qst_hex_tran (const ansi_t *string, uint_t *ot_size);
 CR_API void_t*  qst_esc_tran (const ansi_t *string, uint_t *ot_size);
 
 /* 数据渲染的声明 */
-CR_API void_t   qst_hex_show (void_t *parm, ansi_t cha);
-CR_API void_t   qst_csi_show (void_t *parm, ansi_t cha);
+CR_API void_t   qst_htm_show (void_t *parm, const void_t *data, uint_t size);
+CR_API void_t   qst_hex_show (void_t *parm, const void_t *data, uint_t size);
+CR_API void_t   qst_csi_show (void_t *parm, const void_t *data, uint_t size);
 
 /*****************************************************************************/
 /*                                 内部函数                                  */
@@ -126,6 +132,34 @@ qst_update_title (
         SetWindowTextA(parm->hwnd, wntt);
         mem_free(wntt);
     }
+}
+
+/*
+=======================================
+    文本模式去除多余换行符
+=======================================
+*/
+CR_API uint_t
+qst_txt_mode (
+  __CR_IO__ ansi_t* text,
+  __CR_IN__ uint_t  size
+    )
+{
+    ansi_t  *ptr;
+    uint_t  ii, jj;
+
+    if (size < 2)
+        return (size);
+    size -= 1;
+    ptr = text;
+    for (jj = ii = 0; ii < size; ii++) {
+        ptr[jj++] = text[ii];
+        if (text[ii] == CR_AC('\r') && text[ii + 1] == CR_AC('\n'))
+            ii++;
+    }
+    if (ii == size)
+        ptr[jj++] = text[ii];
+    return (jj);
 }
 
 /*****************************************************************************/
@@ -322,6 +356,8 @@ qst_com_close (
     ctx->comm.quit = FALSE;
     SAFE_FREE(ctx->comm.title);
     qst_update_title(ctx);
+    CR_VCALL(ctx->bufs)->reput(ctx->bufs, 0);
+    ctx->size = 0;
     return (TRUE);
 }
 
@@ -399,9 +435,9 @@ qst_com_rs232 (
     if (!sio_open(port))
         return (FALSE);
     sio_setup(port, baud, bits, parity, stop);
-    sio_set_buffer(port, 1024, 0);
-    sio_set_rd_timeout(port, 0xFFFFFFFF, 0, 0);
-    sio_set_wr_timeout(port, 0, 0);
+    sio_set_buffer(port, 1024, 1024);
+    sio_set_rd_timeout(port, 0, 0, QCOM_CUTDOWN);
+    sio_set_wr_timeout(port, 0, QCOM_SNDTOUT);
     sio_clear_error(port);
     sio_flush(port, CR_SIO_FLU_RT);
 
@@ -448,10 +484,10 @@ qst_com_tcpv4 (
     sQstComm*   ctx = (sQstComm*)parm;
 
     /* 关闭当前接口并打开 TCPv4 连接 */
-    netw = client_tcp_open(argv[1], (int16u)port, 5000);
+    netw = client_tcp_open(argv[1], (int16u)port, QCOM_CNNTOUT);
     if (netw == NULL)
         return (FALSE);
-    socket_set_timeout(netw, -1, 20);
+    socket_set_timeout(netw, QCOM_SNDTOUT, QCOM_CUTDOWN);
 
     /* 设置工作参数 */
     qst_com_close(parm, argc, argv);
@@ -498,7 +534,7 @@ qst_com_udpv4 (
     netw = client_udp_open(argv[1], (int16u)port);
     if (netw == NULL)
         return (FALSE);
-    socket_set_timeout(netw, -1, 20);
+    socket_set_timeout(netw, QCOM_SNDTOUT, QCOM_CUTDOWN);
 
     /* 设置工作参数 */
     qst_com_close(parm, argc, argv);
@@ -592,6 +628,12 @@ qst_com_rtype (
         ctx->comm.text = TRUE;
         ctx->comm.render = qst_txt_show;
         ctx->comm.rtype = "text";
+    }
+    else
+    if (str_cmpA(argv[1], "html") == 0) {
+        ctx->comm.text = TRUE;
+        ctx->comm.render = qst_htm_show;
+        ctx->comm.rtype = "html";
     }
     else
     if (str_cmpA(argv[1], "hex") == 0) {

@@ -6,28 +6,74 @@
 /*****************************************************************************/
 
 /*
+---------------------------------------
+    文本数据显示 (内部)
+---------------------------------------
+*/
+static void_t
+qst_txt_show_int (
+  __CR_IN__ void_t*         parm,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ uint_t          size,
+  __CR_IN__ bool_t          html
+    )
+{
+    ansi_t      *txt, *str;
+    sQstComm    *ctx = (sQstComm*)parm;
+    CTextOper   *opr = (CTextOper*)ctx->oper;
+
+    /* 复制成字符串 */
+    txt = str_allocA(size + 1);
+    if (txt == NULL)
+        return;
+    mem_cpy(txt, data, size);
+    txt[size] = NIL;
+
+    /* 转换编码 */
+    if (ctx->page != CR_UTF8) {
+        str = local_to_utf8(ctx->page, txt);
+        mem_free(txt);
+        if (str == NULL)
+            return;
+        txt = str;
+    }
+
+    /* 显示结果 */
+    if (html)
+        opr->html(txt);
+    else
+        opr->text(txt);
+    mem_free(txt);
+}
+
+/*
 =======================================
-    文本数据显示
+    文本数据显示 (TEXT)
 =======================================
 */
 CR_API void_t
 qst_txt_show (
-  __CR_IN__ void_t* parm,
-  __CR_IN__ ansi_t  cha
+  __CR_IN__ void_t*         parm,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ uint_t          size
     )
 {
-    ansi_t      show[2];
-    sQstComm*   ctx = (sQstComm*)parm;
-    CTextOper*  opr = (CTextOper*)ctx->oper;
+    qst_txt_show_int(parm, data, size, FALSE);
+}
 
-    /* 过滤无法显示的字符 */
-    if (cha != CR_AC('\n') &&
-        cha != CR_AC('\r') && !is_printA(cha))
-        show[0] = CR_AC('?');
-    else
-        show[0] = cha;
-    show[1] = NIL;
-    opr->text(show);
+/*
+=======================================
+    文本数据显示 (HTML)
+=======================================
+*/
+CR_API void_t
+qst_htm_show (
+  __CR_IN__ void_t*         parm,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ uint_t          size
+    )
+{
+    qst_txt_show_int(parm, data, size, TRUE);
 }
 
 /*
@@ -37,18 +83,25 @@ qst_txt_show (
 */
 CR_API void_t
 qst_hex_show (
-  __CR_IN__ void_t* parm,
-  __CR_IN__ ansi_t  cha
+  __CR_IN__ void_t*         parm,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ uint_t          size
     )
 {
-    ansi_t      show[4];
-    uint_t      tmp = (uint_t)cha;
-    sQstComm*   ctx = (sQstComm*)parm;
-    CTextOper*  opr = (CTextOper*)ctx->oper;
+    ansi_t      *txt;
+    sQstComm    *ctx = (sQstComm*)parm;
+    CTextOper   *opr = (CTextOper*)ctx->oper;
 
     /* 转换成16进制数显示 */
-    sprintf(show, "%02X ", tmp & 0xFF);
-    opr->text(show);
+    txt = str_allocA(size * 3 + 1);
+    if (txt == NULL)
+        return;
+    for (uint_t idx = 0; idx < size; idx++)
+        sprintf(&txt[idx * 3], "%02X ", ((byte_t*)data)[idx]);
+
+    /* 显示结果 */
+    opr->text(txt);
+    mem_free(txt);
 }
 
 /*****************************************************************************/
@@ -56,12 +109,28 @@ qst_hex_show (
 /*****************************************************************************/
 
 /* ANSI 转义处理上下文 */
-static iDATOT*  s_html;
+static iDATOT*  s_html;     /* HTML 输出缓存对象 */
+static bool_t   s_prev;     /* 之前的解析是否为控制符 */
+static bool_t   s_have;     /* 之前的 <SPAN> 标签是否封闭 */
+static uint_t   s_state;    /* 查找转义的状态机 */
 static bool_t   s_type[6];  /* 高亮 + 下划线 + 上划线 + 中划线 + 反色 + 闪烁 */
 static sint_t   s_color[2];     /* 前景色 + 背景色 */
-static ansi_t   s_attr[33];
-static uint_t   s_state, s_at_idx;
-static bool_t   s_have, s_buffer, s_first;
+static ansi_t   s_attr[33];     /* 用于保存属性字符串 */
+static uint_t   s_at_idx;       /* 保存属性字符串的索引 */
+
+/*
+=======================================
+    清除 ANSI 上下文
+=======================================
+*/
+CR_API void_t
+qst_csi_clear (void_t)
+{
+    s_state = s_at_idx = 0;
+    s_have = s_prev = FALSE;
+    s_color[0] = s_color[1] = -1;
+    mem_zero(s_type, sizeof(s_type));
+}
 
 /*
 =======================================
@@ -71,10 +140,7 @@ static bool_t   s_have, s_buffer, s_first;
 CR_API bool_t
 qst_csi_init (void_t)
 {
-    s_state = 0;
-    s_color[0] = s_color[1] = -1;
-    mem_zero(s_type, sizeof(s_type));
-    s_have = s_buffer = s_first = FALSE;
+    qst_csi_clear();
     s_html = create_buff_out(512);
     if (s_html == NULL)
         return (FALSE);
@@ -90,21 +156,6 @@ CR_API void_t
 qst_csi_free (void_t)
 {
     CR_VCALL(s_html)->release(s_html);
-}
-
-/*
-=======================================
-    清除 ANSI 上下文
-=======================================
-*/
-CR_API void_t
-qst_csi_clear (void_t)
-{
-    s_state = 0;
-    s_color[0] = s_color[1] = -1;
-    mem_zero(s_type, sizeof(s_type));
-    s_have = s_buffer = s_first = FALSE;
-    CR_VCALL(s_html)->reput(s_html, 0);
 }
 
 /* 颜色常数表 */
@@ -126,17 +177,14 @@ static const ansi_t*    s_hi_color[] =
 */
 static void_t
 qst_csi_render (
-  __CR_IN__ const sQstComm* parm,
-  __CR_IN__ const ansi_t*   tail
+  __CR_IN__ const sQstComm* ctx
     )
 {
-    ansi_t*         str;
-    ansi_t*         send;
     ansi_t*         span;
     const ansi_t*   fg = "color:";
     const ansi_t*   bk = "background-color:";
-    const ansi_t*   fc = parm->cfgs.fg;
-    const ansi_t*   bc = parm->cfgs.bg;
+    const ansi_t*   fc = ctx->cfgs.fg;
+    const ansi_t*   bc = ctx->cfgs.bg;
     const ansi_t*   tx = "text-decoration:none;";
 
     /* 颜色风格 */
@@ -171,32 +219,18 @@ qst_csi_render (
 
     /* 闪烁风格 - 未实现 */
     /*********************/
+
+    /* 之前的标签未封闭, 封闭之 */
+    if (s_have) {
+        s_have = FALSE;
+        CR_VCALL(s_html)->write(s_html, "</span>", 7);
+    }
+
+    /* 输出新的属性标签 */
     span = str_fmtA("<span style=\"%s%s%s%s%s\">", tx, fg, fc, bk, bc);
     if (span != NULL) {
-        if (tail != NULL) {
-            CR_VCALL(s_html)->write(s_html, "</span>", 7);
-            CR_VCALL(s_html)->write(s_html, tail, str_sizeA(tail));
-        }
-        else {
-            CR_VCALL(s_html)->write(s_html, "</span>", 8);
-        }
-        str = (ansi_t*)(CR_VCALL(s_html)->flush(s_html));
-        str = str_fmtA("%s%s", span, str);
-        if (str != NULL) {
-            if (parm->page != CR_UTF8) {
-                send = local_to_utf8(parm->page, str);
-                mem_free(str);
-            }
-            else {
-                send = str;
-            }
-            if (send != NULL) {
-                ((CTextOper*)(parm->oper))->html(send);
-                mem_free(send);
-            }
-        }
-        CR_VCALL(s_html)->reput(s_html, 0);
-        s_have = FALSE;
+        s_have = TRUE;
+        CR_VCALL(s_html)->putsA(s_html, span, 0);
         mem_free(span);
     }
 }
@@ -206,30 +240,23 @@ qst_csi_render (
     处理 ANSI 转义属性
 ---------------------------------------
 */
-static void_t
-qst_csi_attrib (
-  __CR_IN__ const sQstComm* parm
-    )
+static bool_t
+qst_csi_attrib (void_t)
 {
     leng_t      idx;
     uint_t      at[8];
     leng_t      count;
     ansi_t**    attrs;
 
-    /* 发送上次结果 */
-    if (s_buffer && s_have)
-        qst_csi_render(parm, NULL);
-
     /* 解析转义属性 */
     attrs = str_splitA(s_attr, ';', &count);
     if (attrs == NULL)
-        return;
+        return (FALSE);
     if (count > cntsof(at))
         count = cntsof(at);
     for (idx = 0; idx < count; idx++)
         at[idx] = str2intA(attrs[idx]);
     mem_free(attrs);
-    s_buffer = TRUE;
     for (idx = 0; idx < count; idx++) {
         switch (at[idx])
         {
@@ -242,11 +269,9 @@ qst_csi_attrib (
                 break;
 
             case 0:     /* 复位 */
-                s_first = TRUE;
-                s_buffer = FALSE;
-                s_color[0] = s_color[1] = -1;
-                mem_zero(s_type, sizeof(s_type));
-                return;
+                qst_csi_clear();
+                CR_VCALL(s_html)->write(s_html, "</span>", 7);
+                return (TRUE);
 
             case 1:     /* 高亮 */
                 s_type[0] = TRUE;
@@ -288,6 +313,7 @@ qst_csi_attrib (
                 break;
         }
     }
+    return (TRUE);
 }
 
 /*
@@ -297,113 +323,112 @@ qst_csi_attrib (
 */
 static void_t
 qst_csi_output (
-  __CR_IN__ const sQstComm* parm,
+  __CR_IN__ ansi_t  cha
+    )
+{
+    switch (cha)
+    {
+        /* Qt 里 &nbsp; 在有些字体下为两倍字符宽度 */
+        default: CR_VCALL(s_html)->putb_no(s_html, cha); break;
+        case '<': CR_VCALL(s_html)->write(s_html, "&lt;", 4); break;
+        case '>': CR_VCALL(s_html)->write(s_html, "&gt;", 4); break;
+        case '&': CR_VCALL(s_html)->write(s_html, "&amp;", 5); break;
+        case ' ': CR_VCALL(s_html)->write(s_html, "&nbsp;", 6); break;
+        case '\"': CR_VCALL(s_html)->write(s_html, "&quot;", 6); break;
+        case '\'': CR_VCALL(s_html)->write(s_html, "&apos;", 6); break;
+        case '\r': /* <SPAN></SPAN> 里可以嵌 <BR> 换行标签 */
+        case '\n': CR_VCALL(s_html)->write(s_html, "<br>", 4); break;
+    }
+}
+
+/*
+---------------------------------------
+    ANSI 转义文本显示
+---------------------------------------
+*/
+static bool_t
+qst_csi_parse (
+  __CR_IN__ const sQstComm* ctx,
   __CR_IN__ ansi_t          cha
     )
 {
-    ansi_t      show[2];
-    CTextOper*  oper = (CTextOper*)parm->oper;
+    switch (s_state)
+    {
+        case 0:     /* 查找 ESC 阶段 */
+            if (cha != 0x1B) {
+                if (s_prev) {
+                    s_prev = FALSE;
+                    qst_csi_render(ctx);
+                }
+                qst_csi_output(cha);
+            }
+            else {
+                s_state += 1;
+            }
+            break;
 
-    /* 效果复位后的第一个字符用
-       HTML 方式输出用来断开前面的属性设置 */
-    if (!s_buffer) {
-        if (!s_first || cha == CR_AC('\t')) {
-            show[0] = cha;
-            show[1] = NIL;
-            oper->text(show);
-            return;
-        }
-    }
+        case 1:     /* 查找 '[' 阶段 */
+            if (cha != '[') {
+                s_state = 0;
+                return (FALSE);
+            }
+            s_state += 1;
+            s_at_idx = 0;
+            break;
 
-    /* 用 HTML 方式输出要转义处理
-       在一个连续的属性串里要缓存字符一次性输出 */
-    if (cha == CR_AC('\"')) {
-        if (s_buffer) {
-            s_have = TRUE;
-            CR_VCALL(s_html)->write(s_html, "&quot;", 6);
-        }
-        else {
-            oper->html("&quot;");
-            s_first = FALSE;
-        }
+        default:    /* 查找 'm' 阶段 */
+            if (s_at_idx >= sizeof(s_attr)) {
+                s_state = 0;
+                return (FALSE);
+            }
+            if (cha == 'm') {   /* 格式 */
+                s_state = 0;
+                s_attr[s_at_idx] = NIL;
+                if (!qst_csi_attrib())
+                    return (FALSE);
+                s_prev = TRUE;
+            }
+            else
+            if (cha == 'J') {   /* 清屏 */
+                qst_csi_clear();
+                CR_VCALL(s_html)->reput(s_html, 0);
+                ((CTextOper*)(ctx->oper))->clear();
+            }
+            else
+            if (cha == 'G') {   /* 响铃 */
+                s_state = 0;
+                MessageBeep(MB_OK);
+            }
+            else {
+                switch (cha)
+                {
+                    default:    /* 复制参数 */
+                        if (!is_digitA(cha) &&
+                            cha != ';' && cha != '?') {
+                            s_state = 0;
+                            return (FALSE);
+                        }
+                        s_attr[s_at_idx++] = cha;
+                        break;
+
+                    case 'A':   /* 光标上移n个位置 */
+                    case 'B':   /* 光标下移n个位置 */
+                    case 'C':   /* 光标左移n个位置 */
+                    case 'D':   /* 光标右移n个位置 */
+                    case 's':   /* 保存光标位置 */
+                    case 'u':   /* 恢复光标位置 */
+                    case 'H':   /* 光标移动到绝对坐标(m,n)处 */
+                    case 'K':   /* 删除从光标处开始到行末的所以字符 */
+                    case 'M':   /* 延迟n毫秒 */
+                    case 'l':   /* 隐藏光标 */
+                    case 'h':   /* 显示光标 */
+                        s_state = 0;
+                        break;
+                }
+            }
+            break;
     }
-    else
-    if (cha == CR_AC('&')) {
-        if (s_buffer) {
-            s_have = TRUE;
-            CR_VCALL(s_html)->write(s_html, "&amp;", 5);
-        }
-        else {
-            oper->html("&amp;");
-            s_first = FALSE;
-        }
-    }
-    else
-    if (cha == CR_AC('\'')) {
-        if (s_buffer) {
-            s_have = TRUE;
-            CR_VCALL(s_html)->write(s_html, "&apos;", 6);
-        }
-        else {
-            oper->html("&apos;");
-            s_first = FALSE;
-        }
-    }
-    else
-    if (cha == CR_AC('<')) {
-        if (s_buffer) {
-            s_have = TRUE;
-            CR_VCALL(s_html)->write(s_html, "&lt;", 4);
-        }
-        else {
-            oper->html("&lt;");
-            s_first = FALSE;
-        }
-    }
-    else
-    if (cha == CR_AC('>')) {
-        if (s_buffer) {
-            s_have = TRUE;
-            CR_VCALL(s_html)->write(s_html, "&gt;", 4);
-        }
-        else {
-            oper->html("&gt;");
-            s_first = FALSE;
-        }
-    }
-    else    /* Qt 里 &nbsp; 在有些字体下为两倍字符宽度 */
-    if (cha == CR_AC(' ')) {
-        if (s_buffer) {
-            s_have = TRUE;
-            CR_VCALL(s_html)->write(s_html, "&nbsp;", 6);
-        }
-        else {
-            oper->html("&nbsp;");
-            s_first = FALSE;
-        }
-    }
-    else    /* 遇到换行要先输出缓冲里的字符再换行 */
-    if (cha == CR_AC('\r') || cha == CR_AC('\n')) {
-        if (s_buffer) {
-            qst_csi_render(parm, "<br>");
-        }
-        else {
-            oper->html("<br>");
-            s_first = FALSE;
-        }
-    }
-    else {
-        if (s_buffer) {
-            s_have = TRUE;
-            CR_VCALL(s_html)->putb_no(s_html, cha);
-        }
-        else {
-            show[0] = cha;
-            show[1] = NIL;
-            oper->html(show);
-            s_first = FALSE;
-        }
-    }
+    return (TRUE);
 }
 
 /*
@@ -413,54 +438,51 @@ qst_csi_output (
 */
 CR_API void_t
 qst_csi_show (
-  __CR_IN__ void_t* parm,
-  __CR_IN__ ansi_t  cha
+  __CR_IN__ void_t*         parm,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ uint_t          size
     )
 {
-    sQstComm*   ctx = (sQstComm*)parm;
+    ansi_t      *txt, *str;
+    sQstComm    *ctx = (sQstComm*)parm;
+    CTextOper   *opr = (CTextOper*)ctx->oper;
 
-    switch (s_state)
-    {
-        case 0:     /* 查找 ESC 阶段 */
-            if (cha != 0x1B) {
-                if (!s_buffer) {
-                    if (cha != CR_AC('\n') &&
-                        cha != CR_AC('\r') && !is_printA(cha))
-                        cha = CR_AC('?');
-                }
-                qst_csi_output(ctx, cha);
-            }
-            else {
-                s_state += 1;
-            }
-            break;
+    /* 复制成字符串 */
+    txt = str_allocA(size + 1);
+    if (txt == NULL)
+        return;
+    mem_cpy(txt, data, size);
+    txt[size] = NIL;
 
-        case 1:     /* 查找 '[' 阶段 */
-            if (cha != CR_AC('[')) {
-                if (cha != CR_AC('\n') &&
-                    cha != CR_AC('\r') && !is_printA(cha))
-                    cha = CR_AC('?');
-                qst_csi_output(ctx, '?');
-                qst_csi_output(ctx, cha);
-                s_state = 0;
-            }
-            else {
-                s_state += 1;
-                s_at_idx = 0;
-            }
-            break;
-
-        default:
-     /* case 2: */  /* 查找 'm' 阶段 */
-            if (cha == CR_AC('m') ||
-                s_at_idx >= sizeof(s_attr) - 1) {
-                s_attr[s_at_idx] = NIL;
-                qst_csi_attrib(ctx);
-                s_state = 0;
-            }
-            else {
-                s_attr[s_at_idx++] = cha;
-            }
-            break;
+    /* 转换编码 */
+    if (ctx->page != CR_UTF8) {
+        str = local_to_utf8(ctx->page, txt);
+        mem_free(txt);
+        if (str == NULL)
+            return;
+        txt = str;
+        size = str_lenA(txt);
     }
+
+    /* Qt 每次输出 HTML 效果是不连续的 */
+    CR_VCALL(s_html)->reput(s_html, 0);
+    if (s_have) {
+        s_have = FALSE;
+        qst_csi_render(ctx);
+    }
+
+    /* 逐字符解析 */
+    for (uint_t idx = 0; idx < size; idx++) {
+        if (!qst_csi_parse(ctx, txt[idx])) {
+            qst_csi_clear();
+            mem_free(txt);
+            return;
+        }
+    }
+    mem_free(txt);
+
+    /* 显示结果 */
+    CR_VCALL(s_html)->putb_no(s_html, NIL);
+    txt = (ansi_t*)(CR_VCALL(s_html)->flush(s_html));
+    opr->html(txt);
 }

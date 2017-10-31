@@ -12,29 +12,41 @@ qst_tcpv4_main (
     )
 {
     void_t*     parm = param;
-    ansi_t      cha[2] = { 0, 0 };
     sQstComm*   ctx = (sQstComm*)param;
 
     /* 工作循环 */
     while (!ctx->comm.quit)
     {
+        uint_t  back;
+        ansi_t  cha, *data;
+
         /* 一个个字节读 */
-        if (socket_tcp_recv(ctx->comm.obj.netw, cha, 1) != 1) {
+        back = socket_tcp_recv(ctx->comm.obj.netw, &cha, 1);
+        if (back == 1) {
+            if (CR_VCALL(ctx->bufs)->putb_no(ctx->bufs, cha))
+                ctx->size += 1;
+            continue;
+        }
+        if (back != CR_SOCKET_TIMEOUT) {
             thread_sleep(20);
             continue;
         }
 
+        /* 文本模式处理 */
+        if (ctx->size == 0)
+            continue;
+        data = (ansi_t*)(CR_VCALL(ctx->bufs)->flush(ctx->bufs));
+        if (ctx->comm.text)
+            ctx->size = qst_txt_mode(data, ctx->size);
+
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
-        if (ctx->comm.text) {
-            if (cha[0] != CR_AC('\n') || cha[1] != CR_AC('\r'))
-                ctx->comm.render(parm, cha[0]);
-            cha[1] = cha[0];
-        }
-        else {
-            ctx->comm.render(parm, cha[0]);
-        }
+        ctx->comm.render(parm, data, ctx->size);
         _LEAVE_COM_SINGLE_
+
+        /* 缓存指针复位 */
+        CR_VCALL(ctx->bufs)->reput(ctx->bufs, 0);
+        ctx->size = 0;
     }
 
     /* 退出时关闭套接字 */

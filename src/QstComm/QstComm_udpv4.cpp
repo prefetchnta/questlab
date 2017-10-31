@@ -11,41 +11,28 @@ qst_udpv4_main (
   __CR_IN__ void_t* param
     )
 {
-    ansi_t      cha[16384];
     void_t*     parm = param;
     sQstComm*   ctx = (sQstComm*)param;
 
     /* 工作循环 */
     while (!ctx->comm.quit)
     {
-        uint_t  idx, rett;
+        ansi_t  data[65536];
 
         /* 一个个封包读 */
-        rett = socket_udp_recv(ctx->comm.obj.netw, cha, sizeof(cha));
-        if (rett == 0 || rett > sizeof(cha)) {
+        ctx->size = socket_udp_recv(ctx->comm.obj.netw, data, sizeof(data));
+        if (ctx->size == 0 || ctx->size > sizeof(data)) {
             thread_sleep(20);
             continue;
         }
 
+        /* 文本模式处理 */
+        if (ctx->comm.text)
+            ctx->size = qst_txt_mode(data, ctx->size);
+
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
-        if (ctx->comm.text)
-        {
-            uint_t  size = 0;
-            ansi_t* ptr = cha;
-
-            /* 文本模式过滤换行符 */
-            for (idx = 0; idx < rett - 1; idx++) {
-                ptr[size++] = cha[idx];
-                if (cha[idx] == CR_AC('\r') && cha[idx + 1] == CR_AC('\n'))
-                    idx++;
-            }
-            if (idx == rett - 1)
-                ptr[size++] = cha[idx];
-            rett = size;
-        }
-        for (idx = 0; idx < rett; idx++)
-            ctx->comm.render(parm, cha[idx]);
+        ctx->comm.render(parm, data, ctx->size);
         _LEAVE_COM_SINGLE_
     }
 

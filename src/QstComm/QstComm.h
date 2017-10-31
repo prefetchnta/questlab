@@ -71,7 +71,7 @@ typedef struct
         void_t  (*send) (void_t *obj, const void_t *data, uint_t size);
 
         /* 接收数据的渲染 (默认直接显示) */
-        void_t  (*render) (void_t *parm, ansi_t cha);
+        void_t  (*render) (void_t *parm, const void_t *data, uint_t size);
 
 } sQCOM_ctx;
 
@@ -84,6 +84,8 @@ typedef struct
         lock_t      lock;       /* 同步的锁 */
         uint_t      page;       /* 显示编码 */
         void_t*     oper;       /* 操作对象 */
+        uint_t      size;       /* 数据大小 */
+        iDATOT*     bufs;       /* 临时缓存 */
         socket_t    netw;       /* 网络连接 */
         sQCOM_ctx   comm;       /* 通讯结构 */
         sQCOM_conf  cfgs;       /* 配置参数 */
@@ -96,7 +98,10 @@ typedef struct
 #define _LEAVE_COM_SINGLE_  \
     mtlock_release(&(((sQstComm*)parm)->lock));
 
+/* 公用的数据处理声明 */
+CR_API uint_t   qst_txt_mode (ansi_t *text, uint_t size);
+
 /* 公用的数据渲染声明 */
-CR_API void_t   qst_txt_show (void_t *parm, ansi_t cha);
+CR_API void_t   qst_txt_show (void_t *parm, const void_t *data, uint_t size);
 
 #endif  /* !__QL_QSTCOMM_H__ */

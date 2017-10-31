@@ -108,6 +108,12 @@ WinMain (
     SetClassLongPtr(s_wrk_ctx.hwnd, GCLP_HICON, (LONG_PTR)
                     LoadIconA(curt_app, (ansi_t*)101));
 
+    /* 创建临时缓存 */
+    s_wrk_ctx.bufs = create_buff_out(512);
+    if (s_wrk_ctx.bufs == NULL)
+        return (QST_ERROR);
+    s_wrk_ctx.size = 0;
+
     /* 初始化 ANSI 上下文 */
     if (!qst_csi_init())
         return (QST_ERROR);
@@ -149,6 +155,7 @@ WinMain (
         s_wrk_ctx.quit = TRUE;
     thread_wait(thrd);
     thread_del(thrd);
+    CR_VCALL(s_wrk_ctx.bufs)->release(s_wrk_ctx.bufs);
     netw_cli_close(s_wrk_ctx.netw);
     sio_free();
     qst_csi_free();
