@@ -10,9 +10,9 @@
 CR_API void_t   qst_csi_clear (void_t);
 
 /* 接收线程的声明 */
-CR_API uint_t STDCALL qst_rs232_main (void_t *param);
-CR_API uint_t STDCALL qst_tcpv4_main (void_t *param);
-CR_API uint_t STDCALL qst_udpv4_main (void_t *param);
+CR_API uint_t STDCALL qst_rs232_main (void_t *parm);
+CR_API uint_t STDCALL qst_tcpv4_main (void_t *parm);
+CR_API uint_t STDCALL qst_udpv4_main (void_t *parm);
 
 /* 发送函数的声明 */
 CR_API void_t   qst_rs232_send (void_t *obj, const void_t *data, uint_t size);
@@ -565,7 +565,9 @@ qst_com_stype (
   __CR_IN__ ansi_t**    argv
     )
 {
-    /* 参数解析 <发送模式> */
+    static ansi_t*  name = NULL;
+
+    /* 参数解析 <发送模式/插件名称> [函数名称] */
     if (argc < 2)
         return (FALSE);
 
@@ -600,6 +602,27 @@ qst_com_stype (
         ctx->comm.tran = qst_mac_tran;
         ctx->comm.stype = "mac";
     }
+    else
+    {
+        sbin_t          sbin;
+        plugin_tran_t   func;
+
+        /* 使用外部插件 */
+        if (argc < 3)
+            return (FALSE);
+        sbin = sbin_loadA(argv[1]);
+        if (sbin == NULL)
+            return (FALSE);
+        func = sbin_exportT(sbin, argv[2], plugin_tran_t);
+        if (func == NULL) {
+            sbin_unload(sbin);
+            return (FALSE);
+        }
+        ctx->comm.tran = func;
+        TRY_FREE(name);
+        name = str_fmtA("%s|%s", argv[1], argv[2]);
+        ctx->comm.stype = (name == NULL) ? "null" : name;
+    }
     qst_update_title(ctx);
     return (TRUE);
 }
@@ -616,7 +639,9 @@ qst_com_rtype (
   __CR_IN__ ansi_t**    argv
     )
 {
-    /* 参数解析 <接收模式> */
+    static ansi_t*  name = NULL;
+
+    /* 参数解析 <接收模式/插件名称> [函数名称] */
     if (argc < 2)
         return (FALSE);
 
@@ -648,10 +673,36 @@ qst_com_rtype (
         ctx->comm.render = qst_csi_show;
         ctx->comm.rtype = "ansi";
     }
+    else
+    {
+        sbin_t          sbin;
+        plugin_render_t func;
+
+        /* 使用外部插件 */
+        if (argc < 3)
+            goto _failure;
+        sbin = sbin_loadA(argv[1]);
+        if (sbin == NULL)
+            goto _failure;
+        func = sbin_exportT(sbin, argv[2], plugin_render_t);
+        if (func == NULL) {
+            sbin_unload(sbin);
+            goto _failure;
+        }
+        ctx->comm.text = FALSE;
+        ctx->comm.render = func;
+        TRY_FREE(name);
+        name = str_fmtA("%s|%s", argv[1], argv[2]);
+        ctx->comm.rtype = (name == NULL) ? "null" : name;
+    }
     opr->clear();
     _LEAVE_COM_SINGLE_
     qst_update_title(ctx);
     return (TRUE);
+
+_failure:
+    _LEAVE_COM_SINGLE_
+    return (FALSE);
 }
 
 /*
@@ -744,22 +795,27 @@ qst_com_main (
         }
 
         /* 非命令直接交由发送函数处理 */
-        if (!cmd_type_okay(string) && ctx->comm.thrd != NULL) {
-            if (ctx->comm.tran == NULL)
+        if (!cmd_type_okay(string) && ctx->comm.thrd != NULL)
+        {
+            if (ctx->comm.send != NULL)
             {
-                /* 直接发送 */
-                ctx->comm.send(ctx->comm.obj.parm, string, str_lenA(string));
-            }
-            else
-            {
-                uint_t  size;
-                void_t* send;
+                if (ctx->comm.tran == NULL)
+                {
+                    /* 直接发送 */
+                    ctx->comm.send(ctx->comm.obj.parm, string,
+                                   str_lenA(string));
+                }
+                else
+                {
+                    uint_t  size;
+                    void_t* send;
 
-                /* 变换后发送 */
-                send = ctx->comm.tran(string, &size);
-                if (send != NULL) {
-                    ctx->comm.send(ctx->comm.obj.parm, send, size);
-                    mem_free(send);
+                    /* 变换后发送 */
+                    send = ctx->comm.tran(string, &size);
+                    if (send != NULL) {
+                        ctx->comm.send(ctx->comm.obj.parm, send, size);
+                        mem_free(send);
+                    }
                 }
             }
             mem_free(string);

@@ -24,6 +24,43 @@ CR_API void_t   qst_set_viewer (sQstComm *parm);
 CR_API void_t   qst_update_title (sQstComm *parm);
 
 /*
+---------------------------------------
+    插件用清除显示
+---------------------------------------
+*/
+static void_t
+plugin_clear (void_t)
+{
+    ((CTextOper*)(s_wrk_ctx.oper))->clear();
+}
+
+/*
+---------------------------------------
+    插件用显示文本
+---------------------------------------
+*/
+static void_t
+plugin_set_text (
+  __CR_IN__ const ansi_t*   str
+    )
+{
+    ((CTextOper*)(s_wrk_ctx.oper))->text(str);
+}
+
+/*
+---------------------------------------
+    插件用显示 HTML
+---------------------------------------
+*/
+static void_t
+plugin_set_html (
+  __CR_IN__ const ansi_t*   str
+    )
+{
+    ((CTextOper*)(s_wrk_ctx.oper))->html(str);
+}
+
+/*
 =======================================
     WinMain 程序入口
 =======================================
@@ -140,6 +177,10 @@ WinMain (
     s_wrk_ctx.comm.title = NULL;
     s_wrk_ctx.comm.render = qst_txt_show;
     s_wrk_ctx.page = get_sys_codepage();
+    s_wrk_ctx.clear = plugin_clear;
+    s_wrk_ctx.setText = plugin_set_text;
+    s_wrk_ctx.setHtml = plugin_set_html;
+    s_wrk_ctx.txtMode = qst_txt_mode;
     qst_update_title(&s_wrk_ctx);
     thrd = thread_new(0, qst_com_main, &s_wrk_ctx, FALSE);
     if (thrd == NULL)

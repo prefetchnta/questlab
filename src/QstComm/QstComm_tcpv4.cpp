@@ -8,11 +8,10 @@
 */
 CR_API uint_t STDCALL
 qst_tcpv4_main (
-  __CR_IN__ void_t* param
+  __CR_IN__ void_t* parm
     )
 {
-    void_t*     parm = param;
-    sQstComm*   ctx = (sQstComm*)param;
+    sQstComm*   ctx = (sQstComm*)parm;
 
     /* 工作循环 */
     while (!ctx->comm.quit)

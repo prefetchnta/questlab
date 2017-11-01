@@ -90,6 +90,12 @@ typedef struct
         sQCOM_ctx   comm;       /* 通讯结构 */
         sQCOM_conf  cfgs;       /* 配置参数 */
 
+        /* 给插件的回调 */
+        void_t  (*clear) (void_t);
+        void_t  (*setText) (const ansi_t *str);
+        void_t  (*setHtml) (const ansi_t *str);
+        uint_t  (*txtMode) (ansi_t *text, uint_t size);
+
 } sQstComm;
 
 /* 多线程锁简化宏 */
@@ -97,6 +103,10 @@ typedef struct
     mtlock_acquire(&(((sQstComm*)parm)->lock));
 #define _LEAVE_COM_SINGLE_  \
     mtlock_release(&(((sQstComm*)parm)->lock));
+
+/* 两个插件函数类型 */
+typedef void_t* (*plugin_tran_t) (const ansi_t*, uint_t*);
+typedef void_t  (*plugin_render_t) (void_t*, const void_t*, uint_t);
 
 /* 公用的数据处理声明 */
 CR_API uint_t   qst_txt_mode (ansi_t *text, uint_t size);
