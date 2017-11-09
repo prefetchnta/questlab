@@ -74,6 +74,18 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         rett = TRUE;
     }
     else
+    if (chr_cmpA(urla, "lua://", 6) == 0)
+    {
+        /* RunLua 执行脚本 */
+        *Cancel = TRUE;
+        file = urla + 6;
+        line = str_fmtA("RunLua.exe \"%s\"", file);
+        mem_free(urla);
+        if (line == NULL)
+            return;
+        rett = TRUE;
+    }
+    else
     {
         /* 普通网页跳转 */
         *Cancel = FALSE;

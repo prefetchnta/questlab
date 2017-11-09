@@ -13,10 +13,10 @@
  *    ##########  ####### ####### ######   ##
  *      #### ##    ######   ####   ####    ##
  *            ##
- *             ##       CREATE: 2015-07-20
+ *             ##       CREATE: 2017-11-09
  *              #
  ================================================
-        QuestLAB Python 脚本启动器
+        QuestLAB Lua 脚本启动器
  ================================================
  */
 
@@ -24,11 +24,11 @@
 
 /* 应用的名称 */
 #ifndef EXE_XNAME
-    #define EXE_XNAME   "RunPython"
-    #define WIN_TITLE   "RunPython"
-    #define WIN_CLASS   "RunPythonCLSS"
-    #define WIN_ICONF   "RunPython.ini"
-    #define WIN_XCONF   "RunPython.xml"
+    #define EXE_XNAME   "RunLua"
+    #define WIN_TITLE   "RunLua"
+    #define WIN_CLASS   "RunLuaCLSS"
+    #define WIN_ICONF   "RunLua.ini"
+    #define WIN_XCONF   "RunLua.xml"
 #endif
 
 /*
@@ -64,10 +64,11 @@ WinMain (
 
     leng_t  size;
     ansi_t* root;
+    ansi_t* temp;
     ansi_t* exec;
     ansi_t  path[MAX_PATHA];
 
-    /* 合成 PYTHONHOME 目录 */
+    /* 合成 LUA_PATH & LUA_CPATH 目录 */
     exec = file_load_as_strA(QST_ROOT_START);
     if (exec == NULL) {
         size = GetCurrentDirectoryA(sizeof(path), path);
@@ -79,26 +80,34 @@ WinMain (
         if (exec == NULL)
             return (QST_ERROR);
     }
-    root = str_fmtA("%s\\python", exec);
-    mem_free(exec);
-    if (root == NULL)
+    temp = str_dupA(exec);
+    if (temp == NULL) {
+        mem_free(exec);
         return (QST_ERROR);
+    }
+    root = str_fmtA("%s\\lualib", exec);
+    mem_free(exec);
+    if (root == NULL) {
+        mem_free(temp);
+        return (QST_ERROR);
+    }
 
     DWORD   cf = 0;
 
     /* 根据扩展名选择用哪个启动 */
-    if (filext_checkA(argv[0], ".py")) {
-        exec = str_fmtA("%s.exe \"%s\"", root, argv[0]);
+    if (filext_checkA(argv[0], ".lua")) {
+        exec = str_fmtA("%s\\lua.exe \"%s\"", temp, argv[0]);
         cf = CREATE_NEW_CONSOLE;
     }
     else
-    if (filext_checkA(argv[0], ".pyw")) {
-        exec = str_fmtA("%sw.exe \"%s\"", root, argv[0]);
+    if (filext_checkA(argv[0], ".wlua")) {
+        exec = str_fmtA("%s\\wlua.exe \"%s\"", temp, argv[0]);
         cf = CREATE_NO_WINDOW;
     }
     else {
         exec = NULL;
     }
+    mem_free(temp);
     if (exec == NULL) {
         mem_free(root);
         return (QST_ERROR);
@@ -110,9 +119,10 @@ WinMain (
     /* 启动脚本 */
     mem_zero(&si, sizeof(si));
     si.cb = sizeof(STARTUPINFOA);
-    SetEnvironmentVariableA("PYTHONHOME", root);
+    SetEnvironmentVariableA("LUA_PATH", root);
+    SetEnvironmentVariableA("LUA_CPATH", root);
     size  = str_lenA(root);
-    size -= str_lenA("\\python");
+    size -= str_lenA("\\lualib");
     root[size] = 0x00;
     if (CreateProcessA(NULL, exec, NULL, NULL, FALSE,
                        cf, NULL, root, &si, &pi)) {
