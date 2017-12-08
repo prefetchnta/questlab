@@ -100,7 +100,7 @@ typedef struct
 /* Holidays 清除类型 */
 #define HOLI_CLEAR_WEEK     0x01    /* 清除周计划 */
 #define HOLI_CLEAR_HDAY     0x02    /* 清除节假日 */
-#define HOLI_CLEAR_RULE     0x03    /* 清除收费规则 */
+#define HOLI_CLEAR_RULE     0x04    /* 清除收费规则 */
 
 /* Holidays 基础 API */
 CR_API holidays_t   holidays_init (void_t);

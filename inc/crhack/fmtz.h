@@ -430,7 +430,8 @@ typedef struct
 } sPAK_ZIP_FILE;
 
 /***** 文件加载 API 组 *****/
-CR_API sFMT_PRT*    load_cr_zip (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PRT*    load_cr_zip  (iDATIN *datin, const sLOADER *param);
+CR_API sFMT_PRT*    load_cr_spak (iDATIN *datin, const sLOADER *param);
 
 /*****************************************************************************/
 /*                               媒体播放接口                                */
