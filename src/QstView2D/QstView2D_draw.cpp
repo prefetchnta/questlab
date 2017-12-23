@@ -940,7 +940,7 @@ qst_save_show (
     )
 {
     leng_t  size;
-    bool_t  rett;
+    bool_t  retc;
     ansi_t* path;
     ansi_t* fext;
     ansi_t* full;
@@ -966,13 +966,13 @@ qst_save_show (
         return (FALSE);
     }
     sprintf(full, "%s_rgb%s", path, fext);
-    rett  = qst_save_img(parm->image, parm, full, argc, argv);
+    retc  = qst_save_img(parm->image, parm, full, argc, argv);
     sprintf(full, "%s_alp%s", path, fext);
-    rett &= qst_save_img(parm->alpha, parm, full, argc, argv);
+    retc &= qst_save_img(parm->alpha, parm, full, argc, argv);
     mem_free(full);
     mem_free(fext);
     mem_free(path);
-    return (rett);
+    return (retc);
 }
 
 /*
