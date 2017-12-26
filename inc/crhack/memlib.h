@@ -474,64 +474,13 @@ typedef struct
 
 } sBUFFER;
 
-#if !defined(_CR_SICK_INLINE_)
-/*
-=======================================
-    设置数据缓冲
-=======================================
-*/
-cr_inline bool_t
-buffer_init (
-  __CR_OT__ sBUFFER*        buff,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size,
-  __CR_IN__ bool_t          is_free
-    )
-{
-    if (data == NULL) {
-        data = mem_malloc(size);
-        if (data == NULL)
-            return (FALSE);
-        is_free = TRUE;
-    }
-    if (!is_free)
-        buff->size = (dist_t)(size - 0);
-    else
-        buff->size = (dist_t)(0 - size);
-    buff->data = (void_t*)data;
-    return (TRUE);
-}
-
-/*
-=======================================
-    释放数据缓冲
-=======================================
-*/
-cr_inline void_t
-buffer_free (
-  __CR_IN__ const sBUFFER*  buff
-    )
-{
-    if (buff->size < 0)
-        mem_free(buff->data);
-}
-
-/*
-=======================================
-    获取数据大小
-=======================================
-*/
-cr_inline leng_t
-buffer_size (
-  __CR_IN__ const sBUFFER*  buff
-    )
-{
-    if (buff->size < 0)
-        return ((leng_t)(-buff->size));
-    return ((leng_t)buff->size);
-}
-
-#endif  /* !_CR_SICK_INLINE_ */
+/* 数据包操作 */
+CR_API bool_t   buffer_init (sBUFFER *buff, const void_t *data,
+                             leng_t size, bool_t is_free);
+CR_API void_t   buffer_free (const sBUFFER *buff);
+CR_API leng_t   buffer_size (const sBUFFER *buff);
+CR_API ansi_t*  buffer_load_as_str (const sBUFFER *buff);
+CR_API void_t*  buffer_load_as_bin (const sBUFFER *buff, leng_t *size);
 
 /*****************************************************************************/
 /*                               字符基本操作                                */
