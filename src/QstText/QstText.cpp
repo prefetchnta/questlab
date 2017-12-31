@@ -245,16 +245,21 @@ typedef struct
 #define QST_ACT_FILTER2D    0x01    /* Filter2D */
 #define QST_ACT_C_PY_CUI    0x02    /* Python CUI */
 #define QST_ACT_C_PY_GUI    0x03    /* Python GUI */
+#define QST_ACT_CLUA_CUI    0x04    /* Lua CUI */
+#define QST_ACT_CLUA_GUI    0x05    /* Lua GUI */
 
 /* 扩展名匹配类型列表 */
 static const sQST_MATCH s_fmatch[] =
 {
-    { QST_ACT_QSTBATCH, ".qst" },
-    /* ----------------------- */
-    { QST_ACT_FILTER2D, ".f2d" },
-    /* ----------------------- */
-    { QST_ACT_C_PY_CUI, ".py"  },
-    { QST_ACT_C_PY_GUI, ".pyw" },
+    { QST_ACT_QSTBATCH, ".qst"  },
+    /* ------------------------ */
+    { QST_ACT_FILTER2D, ".f2d"  },
+    /* ------------------------ */
+    { QST_ACT_C_PY_CUI, ".py"   },
+    { QST_ACT_C_PY_GUI, ".pyw"  },
+    /* ------------------------ */
+    { QST_ACT_CLUA_CUI, ".lua"  },
+    { QST_ACT_CLUA_GUI, ".wlua" },
 };
 
 /*
@@ -792,6 +797,18 @@ qst_file_action (
             if (!qst_save_file(QST_TMP_SCRIPT ".pyw", CR_UTF8))
                 return;
             misc_call_exe("RunPython.exe " QST_TMP_SCRIPT ".pyw", FALSE, TRUE);
+            break;
+
+        case QST_ACT_CLUA_CUI:  /* Lua CUI */
+            if (!qst_save_file(QST_TMP_SCRIPT ".lua", CR_UTF8))
+                return;
+            misc_call_exe("RunLua.exe " QST_TMP_SCRIPT ".lua", FALSE, TRUE);
+            break;
+
+        case QST_ACT_CLUA_GUI:  /* Lua GUI */
+            if (!qst_save_file(QST_TMP_SCRIPT ".wlua", CR_UTF8))
+                return;
+            misc_call_exe("RunLua.exe " QST_TMP_SCRIPT ".wlua", FALSE, TRUE);
             break;
     }
 }

@@ -55,7 +55,9 @@ object frmMain: TfrmMain
         ' QstBatch'
         ' Filter2D'
         ' Python CUI'
-        ' Python GUI')
+        ' Python GUI'
+        ' Lua CUI'
+        ' Lua GUI')
     end
     object btnRefresh: TButton
       Left = 298
