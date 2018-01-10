@@ -433,7 +433,7 @@ const LCIDTOLOCALENAME LcidToLocaleNameTable[] =
     { 0x0057, L"kok"        },
     { 0x005A, L"syr"        },
     { 0x0065, L"div"        },
-    { 0x007f, L""           },
+    { 0x007F, L""           },
     { 0x0401, L"ar-SA"      },
     { 0x0402, L"bg-BG"      },
     { 0x0403, L"ca-ES"      },
@@ -628,12 +628,12 @@ GetTableIndexFromLocaleName (
 }
 
 /*
----------------------------------------
+=======================================
     LocaleName 转 LCID
----------------------------------------
+=======================================
 */
-static LCID
-LocaleNameToLCID (
+LCID __stdcall
+myLocaleNameToLCID (
   __CR_IN__ LPCWSTR localeName
     )
 {
@@ -667,6 +667,6 @@ myLCMapStringEx (
 {
     CR_NOUSE(lpVersionInformation);
     CR_NOUSE(lpReserved); CR_NOUSE(sortHandle);
-    return (LCMapStringW(LocaleNameToLCID(lpLocaleName), dwMapFlags,
+    return (LCMapStringW(myLocaleNameToLCID(lpLocaleName), dwMapFlags,
                          lpSrcStr, cchSrc, lpDestStr, cchDest));
 }

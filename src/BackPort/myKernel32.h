@@ -9,6 +9,7 @@ int __stdcall myFlsSetValue (unsigned long dwFlsIndex, void *lpFlsData);
 int __stdcall myInitOnceExecuteOnce (void *InitOnce, void *InitFn,
                                      void *Parameter, void **Context);
 unsigned __int64 __stdcall myGetTickCount64 (void);
+unsigned long __stdcall myLocaleNameToLCID (void *localeName);
 int __stdcall myLCMapStringEx (void *lpLocaleName, unsigned long dwMapFlags,
                                void *lpSrcStr, int cchSrc, void *lpDestStr,
                                int cchDest, void *lpVersionInformation,

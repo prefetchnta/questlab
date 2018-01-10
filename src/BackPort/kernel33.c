@@ -938,7 +938,13 @@ static sBP_FUNC s_remap1_tbl[] =
     BACKPORT_JUMP(_lwrite),
     BACKPORT_FINISH
 };
+static sBP_FUNC s_remap2_tbl[] =
+{
+    BACKPORT_RPLC(LocaleNameToLCID),
+    BACKPORT_FINISH
+};
 static sBP_FUNC *s_remap1 = s_remap1_tbl;
+static sBP_FUNC *s_remap2 = s_remap2_tbl;
 
 /* DLL 句柄 */
 static void_t*  s_kernel32 = NULL;
@@ -959,8 +965,10 @@ DllMain (
     {
         case DLL_PROCESS_ATTACH:
             s_kernel32 = func_load("KERNEL32.dll");
-            if (s_kernel32 != NULL)
+            if (s_kernel32 != NULL) {
                 func_setup(s_kernel32, s_remap1);
+                func_setup(s_kernel32, s_remap2);
+            }
             break;
 
         case DLL_PROCESS_DETACH:
@@ -1907,3 +1915,8 @@ BACKPORT_FUNC(s_remap1, 927, _llseek)
 BACKPORT_FUNC(s_remap1, 928, _lopen)
 BACKPORT_FUNC(s_remap1, 929, _lread)
 BACKPORT_FUNC(s_remap1, 930, _lwrite)
+
+/************/
+/* s_remap2 */
+/************/
+BACKPORT_FUNC(s_remap2, 0, LocaleNameToLCID)
