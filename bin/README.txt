@@ -1,5 +1,8 @@
 【更新日志】
 ===============================================================================
+　2018-01-12　加入 PCRE & TinyCC SDK 所有文件
+　2018-01-12　加入 six & websocket-client Python 库
+　2018-01-12　加入 ImageMagick Q16 HDR 工具套件（引入 MFC）
 　2018-01-11　加入 libzip V1.4.0 SDK 所有文件（引入 bzip2）
 　2018-01-09　加入 cairo & freetype SDK 所有文件
 　2018-01-02　加入完整 leptonica SDK（引入 openjpeg）
