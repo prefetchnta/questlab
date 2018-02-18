@@ -1,6 +1,6 @@
 
 #include "xOpenCV.h"
-#include "../CrHack/fmtint.h"
+#include "fmtz/fmtint.h"
 
 /*
 ---------------------------------------
