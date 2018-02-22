@@ -34,6 +34,7 @@ from ._handshake import *
 from ._http import *
 from ._logging import *
 from ._socket import *
+from ._ssl_compat import *
 from ._utils import *
 
 __all__ = ['WebSocket', 'create_connection']
@@ -175,6 +176,9 @@ class WebSocket(object):
             return self.handshake_response.headers
         else:
             return None
+
+    def is_ssl(self):
+        return isinstance(self.sock, ssl.SSLSocket)
 
     headers = property(getheaders)
 
