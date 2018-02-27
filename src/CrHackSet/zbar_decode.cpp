@@ -71,7 +71,8 @@ zbar_do_decode (
     zbar_process_image(bar, img);
 
     /* 输出结果 */
-    cmd_shl_send(netw, "txt:clear 0 0");
+    if (netw != NULL)
+        cmd_shl_send(netw, "txt:clear 0 0");
     sym = zbar_image_first_symbol(img);
     for (; sym != NULL; sym = zbar_symbol_next(sym)) {
         typ = zbar_symbol_get_type(sym);
@@ -109,7 +110,8 @@ zbar_do_decode (
         mem_free(str);
         if (tmp == NULL)
             continue;
-        cmd_ini_send(netw, tmp);
+        if (netw != NULL)
+            cmd_ini_send(netw, tmp);
         mem_free(tmp);
     }
     *pnts  = array_get_dataT(&loc, sPNT2);

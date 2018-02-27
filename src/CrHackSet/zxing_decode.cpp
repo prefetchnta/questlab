@@ -223,14 +223,16 @@ read_image (
     }
 
     /* 输出结果 */
-    cmd_shl_send(netw, "txt:clear 0 0");
+    if (netw != NULL)
+        cmd_shl_send(netw, "txt:clear 0 0");
     if (res != 0) {
         str = str_esc_makeU(cell_result.c_str());
         if (str != NULL) {
             tmp = str_fmtA("info::main=\"0> %s\"", str);
             mem_free(str);
             if (tmp != NULL) {
-                cmd_ini_send(netw, tmp);
+                if (netw != NULL)
+                    cmd_ini_send(netw, tmp);
                 mem_free(tmp);
             }
         }
@@ -258,7 +260,8 @@ read_image (
         mem_free(str);
         if (tmp == NULL)
             continue;
-        cmd_ini_send(netw, tmp);
+        if (netw != NULL)
+            cmd_ini_send(netw, tmp);
         mem_free(tmp);
     }
     *pnts  = array_get_dataT(&loc, sPNT2);
