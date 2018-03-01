@@ -30,8 +30,10 @@ SRC_LIST=.$(L)xOpenCV.$(P) \
          .$(L)libdecodeqr$(L)libdecodeqr.$(P)
 
 build_all:
-    $(CC) $(CFLAGS) /I "..\..\inc\opencv" /EHsc /D "_CR_BUILD_DLL_" $(SRC_LIST)
-    $(LD) $(LFLAGS) /DLL /LIBPATH:..$(L)..$(L)lib$(L)opencv $(OBJ_LIST)
+    $(CC) $(CFLAGS) /I "..\..\inc\opencv" /I "..\EasyPR\include" \
+                    /EHsc /D "_CR_BUILD_DLL_" $(SRC_LIST)
+    $(LD) $(LFLAGS) /DLL /LIBPATH:..$(L)..$(L)lib$(L)opencv \
+                    /LIBPATH:..$(L)..$(L)lib$(L)easypr $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)plugin$(L)
     move $(PROJECT).lib ..$(L)..$(L)tmp$(L)

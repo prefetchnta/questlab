@@ -28,4 +28,7 @@
     <!-- QrCode 识别滤镜 -->
     <?opencv_qrcode_decode size="25" delta="10" />
 
+    <!-- 中文车牌识别滤镜 -->
+    <?opencv_carplate_find count="1" type="4" />
+
 </filters>

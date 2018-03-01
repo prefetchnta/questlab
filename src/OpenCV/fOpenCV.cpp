@@ -4,6 +4,12 @@
 #include "opencv2/opencv.hpp"
 #include "libdecodeqr/decodeqr.h"
 using namespace cv;
+#pragma warning (disable: 4127)
+#pragma warning (disable: 4505)
+#pragma warning (disable: 4512)
+
+#include "easypr.h"
+using namespace easypr;
 
 /*
 ---------------------------------------
@@ -396,6 +402,86 @@ _func_out:
 }
 
 /*
+---------------------------------------
+    中文车牌查找识别
+---------------------------------------
+*/
+static bool_t
+carplate_find (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE*     dest;
+    IplImage    draw;
+
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    if (!ilab_img2ipl_set(&draw, dest))
+        return (TRUE);
+
+    CPlateRecognize pr;
+    uint_t count, type, result;
+    std::vector<CPlate> plate_list;
+
+    pr.LoadSVM("easypr/model/svm_hist.xml");
+    pr.LoadANN("easypr/model/ann.xml");
+    pr.LoadChineseANN("easypr/model/ann_chinese.xml");
+    pr.LoadGrayChANN("easypr/model/annCh.xml");
+    pr.LoadChineseMapping("easypr/model/province_mapping");
+
+    count = xml_attr_intxU("count", 1, param);
+    type = xml_attr_intxU("type", PR_DETECT_CMSER, param);
+
+    pr.setDebug(false);
+    pr.setLifemode(true);
+    pr.setResultShow(false);
+    pr.setMaxPlates(count);
+    pr.setDetectType(type);
+
+    Mat dst = cvarrToMat(&draw, true);
+    Mat src = cvarrToMat(&draw, false);
+
+    /* 防止程序爆掉 */
+    try {
+        result = pr.plateRecognize(dst, plate_list);
+    }
+    catch (...) {
+        return (TRUE);
+    }
+
+    if (result == 0)
+    {
+        size_t  num;
+        ansi_t  str[64];
+        Point2f pnts[4];
+
+        num = plate_list.size();
+        for (size_t idx = 0; idx < num; idx++)
+        {
+            CPlate      plate = plate_list.at(idx);
+            Color       rclrs = plate.getPlateColor();
+            RotatedRect rrect = plate.getPlatePos();
+            std::string rtext = plate.getPlateStr();
+
+            rrect.points(pnts);
+            for (int ii = 0; ii < 4; ii++) {
+                line(src, pnts[ii], pnts[(ii + 1) % 4],
+                     cvScalar(0, 255, 0, 255), 2, 8);
+            }
+            if (netw != NULL) {
+                sprintf(str, "info::main=\"0> %s\"", rtext.c_str());
+                cmd_shl_send((socket_t)netw, "txt:clear 0 0");
+                cmd_ini_send((socket_t)netw, str);
+            }
+        }
+    }
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -410,5 +496,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "opencv_hough_lines", hough_lines },
     { "opencv_hough_linesp", hough_lines },
     { "opencv_qrcode_decode", qrcode_decode },
+    { "opencv_carplate_find", carplate_find },
     { NULL, NULL },
 };

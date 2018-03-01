@@ -5,6 +5,7 @@ using namespace cv;
 
 /* 外部库引用 */
 #pragma comment (lib, "QstLibs.lib")
+#pragma comment (lib, "libeasypr.lib")
 #pragma comment (lib, "opencv_world300.lib")
 
 #if defined(_CR_BUILD_DLL_)
