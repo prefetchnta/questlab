@@ -281,6 +281,8 @@ ilab_camera_new2 (
     if (num == 0)
         return (NULL);
     for (id = 0; id < num; id++) {
+        if (clist[id] == NULL)
+            continue;
         if (strcmp(clist[id], name) == 0)
             break;
     }
