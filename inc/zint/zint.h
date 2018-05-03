@@ -81,6 +81,7 @@ extern "C" {
         int option_2;
         int option_3;
         int show_hrt;
+        int fontsize;
         int input_mode;
         int eci;
         unsigned char text[128];
@@ -101,7 +102,7 @@ extern "C" {
 
 #define ZINT_VERSION_MAJOR      2
 #define ZINT_VERSION_MINOR      6
-#define ZINT_VERSION_RELEASE    2
+#define ZINT_VERSION_RELEASE    3
 
     /* Tbarcode 7 codes */
 #define BARCODE_CODE11		1
@@ -151,6 +152,7 @@ extern "C" {
 #define BARCODE_RM4SCC		70
 #define BARCODE_DATAMATRIX	71
 #define BARCODE_EAN14		72
+#define BARCODE_VIN             73
 #define BARCODE_CODABLOCKF	74
 #define BARCODE_NVE18		75
 #define BARCODE_JAPANPOST	76
@@ -184,6 +186,9 @@ extern "C" {
     /* Tbarcode 10 codes */
 #define BARCODE_DOTCODE         115
 #define BARCODE_HANXIN          116
+
+    /*Tbarcode 11 codes*/
+#define BARCODE_MAILMARK        121
 
     /* Zint specific */
 #define BARCODE_AZRUNE		128
