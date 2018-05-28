@@ -31,11 +31,14 @@ CR_TYPEDEF struct
 {
         byte_t  mak_id;     /* 厂家代码 0xC2 */
         byte_t  mem_id;     /* 内存类型 0x20 */
-        byte_t  cap_sz;     /* 器件容量 0x11 = MX25L10
-                                        0x12 = MX25L20
-                                        0x13 = MX25L40
-                                        0x14 = MX25L80
-                                        0x15 = MX25L16
+        byte_t  cap_sz;     /* 器件容量 0x11 = MX25L1005
+                                        0x12 = MX25L2005
+                                        0x13 = MX25L4005
+                                        0x14 = MX25L8005
+                                        0x15 = MX25L1606
+                                        0x16 = MX25L3206
+                                        0x17 = MX25L6406
+                                        0x18 = MX25L12805
                             */
 } CR_PACKED sMX25LXX3;
 
@@ -43,11 +46,14 @@ CR_TYPEDEF struct
 CR_TYPEDEF struct
 {
         byte_t  mak_id;     /* 厂家代码 0xC2 */
-        byte_t  mem_id;     /* 器件类型 0x10 = MX25L10
-                                        0x11 = MX25L20
-                                        0x12 = MX25L40
-                                        0x13 = MX25L80
-                                        0x14 = MX25L16
+        byte_t  mem_id;     /* 器件类型 0x10 = MX25L1005
+                                        0x11 = MX25L2005
+                                        0x12 = MX25L4005
+                                        0x13 = MX25L8005
+                                        0x14 = MX25L1606
+                                        0x15 = MX25L3206
+                                        0x16 = MX25L6406
+                                        0x17 = MX25L12805
                             */
 } CR_PACKED sMX25LXX2;
 
@@ -62,7 +68,6 @@ CR_TYPEDEF struct
 #define MX25LXX_BP1     0x08    /*  芯片数据保护位  */
 #define MX25LXX_BP2     0x10    /*  芯片数据保护位  */
 #define MX25LXX_BP3     0x20    /*  芯片数据保护位  */
-#define MX25LXX_QE      0x40    /*  是否开启四通道  */
 #define MX25LXX_SRWD    0x80    /* 状态寄存器写保护 */
 
 /* MX25LXX 安全寄存器位值 */
@@ -78,6 +83,9 @@ CR_TYPEDEF struct
 #define MX25L40_CHIP_SIZE   CR_K2B(512) /* MX25L40 大小 */
 #define MX25L80_CHIP_SIZE   CR_M2B(1)   /* MX25L80 大小 */
 #define MX25L16_CHIP_SIZE   CR_M2B(2)   /* MX25L16 大小 */
+#define MX25L32_CHIP_SIZE   CR_M2B(4)   /* MX25L32 大小 */
+#define MX25L64_CHIP_SIZE   CR_M2B(8)   /* MX25L64 大小 */
+#define MX25L128_CHIP_SIZE  CR_M2B(16)  /* MX25L128大小 */
 
 #endif  /* !__CR_MX25LXX_H__ */
 
