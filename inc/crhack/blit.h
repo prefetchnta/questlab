@@ -252,6 +252,7 @@ CR_COLOR32 (
     #define blit_sub_c      blit_sub15_c
     #define blit_lrp_c      blit_lrp15_c
     #define blit_alp_c      blit_alp15_c
+    #define blit_msk_c      blit_msk16_c
 
 #elif   defined(_CR_USE_PIXEL16_)
     #define pixel_andz      pixel_and16z
@@ -292,6 +293,7 @@ CR_COLOR32 (
     #define blit_sub_c      blit_sub16_c
     #define blit_lrp_c      blit_lrp16_c
     #define blit_alp_c      blit_alp16_c
+    #define blit_msk_c      blit_msk16_c
 
 #elif   defined(_CR_USE_PIXEL24_)
     #define pixel_andz      pixel_and24z
@@ -332,6 +334,7 @@ CR_COLOR32 (
     #define blit_sub_c      blit_sub24_c
     #define blit_lrp_c      blit_lrp24_c
     #define blit_alp_c      blit_alp24_c
+    #define blit_msk_c      blit_msk24_c
 
 #else       /* (_CR_USE_PIXEL32_) */
     #define pixel_andz      pixel_and32z
@@ -372,6 +375,7 @@ CR_COLOR32 (
     #define blit_sub_c      blit_sub32_c
     #define blit_lrp_c      blit_lrp32_c
     #define blit_alp_c      blit_alp32_c
+    #define blit_msk_c      blit_msk32_c
 
 #endif  /* SCREEN TYPE predefines */
 
@@ -771,6 +775,19 @@ CR_API void_t   blit_alp24_c (const sIMAGE *dst, const sIMAGE *src,
 CR_API void_t   blit_alp32_c (const sIMAGE *dst, const sIMAGE *src,
                               const sIMAGE *chn, const sBLIT *blit,
                               const sRECT *rect);
+/* 掩码绘制 */
+CR_API void_t   blit_msk08_c (const sIMAGE *dst, const sIMAGE *src,
+                              const sIMAGE *msk, const sBLIT *blit,
+                              const sRECT *rect, byte_t index);
+CR_API void_t   blit_msk16_c (const sIMAGE *dst, const sIMAGE *src,
+                              const sIMAGE *msk, const sBLIT *blit,
+                              const sRECT *rect, byte_t index);
+CR_API void_t   blit_msk24_c (const sIMAGE *dst, const sIMAGE *src,
+                              const sIMAGE *msk, const sBLIT *blit,
+                              const sRECT *rect, byte_t index);
+CR_API void_t   blit_msk32_c (const sIMAGE *dst, const sIMAGE *src,
+                              const sIMAGE *msk, const sBLIT *blit,
+                              const sRECT *rect, byte_t index);
 
 #endif  /* !__CR_BLIT_H__ */
 

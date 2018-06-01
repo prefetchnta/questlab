@@ -153,6 +153,10 @@ CR_API sIMAGE*  image_get_alpha (const sIMAGE *img);
 /* 合并图片透明通道 */
 CR_API void_t   image_set_alpha (const sIMAGE *img, const sIMAGE *alp);
 
+/* 拆分合并图片通道 */
+CR_API sIMAGE*  image_get_chn32 (const sIMAGE *img, uint_t offset);
+CR_API void_t   image_set_chn32 (const sIMAGE *img, const sIMAGE *chn,
+                                 uint_t offset);
 /* 分块/线性图片互换 */
 CR_API bool_t   img_tile2line (sIMAGE *img, uint_t tile_w, uint_t tile_h);
 CR_API bool_t   img_line2tile (sIMAGE *img, uint_t tile_w, uint_t tile_h);
