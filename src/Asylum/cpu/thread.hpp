@@ -21,7 +21,7 @@ typedef void* (STDCALL *thrd_main_t) (void*);
 cr_inline asy_thrd_t thread_run (thrd_main_t start, void* param, size_t stacksize = 0)
 {
 #if defined(_CR_OS_MSWIN_)
-    return ((asy_thrd_t)::_beginthreadex(NULL, stacksize, (w32_main_t)start, param, 0, NULL));
+    return ((asy_thrd_t)::_beginthreadex(NULL, (int)stacksize, (w32_main_t)start, param, 0, NULL));
 #else
     int         retc;
     pthread_t   thrd;

@@ -130,6 +130,7 @@
 /* Yet Another Wheel */
 #include "yaw/array.hpp"
 #include "yaw/bring.hpp"
+#include "yaw/compr.hpp"
 #include "yaw/list2.hpp"
 #include "yaw/map2d.hpp"
 #include "yaw/map_a.hpp"
