@@ -547,6 +547,48 @@ CR_API sint_t*  dijkstra_get_path (const sDIJKSTRA *dj, leng_t *count);
 CR_API void_t   hcg_min_max (double base, sint_t days,
                              double *vmin, double *vmax);
 
+/*****************************************************************************/
+/*                                   控制                                    */
+/*****************************************************************************/
+
+/* PID 参数 */
+typedef struct
+{
+        double  I, O, E[3];
+        double  Kp, Ki, Kd;
+        double  umax, umin;
+        double  gate, tots;
+
+} sCTL_PID;
+
+CR_API void_t   pid_init (sCTL_PID *pid, double start);
+CR_API double   pid_delta (sCTL_PID *pid, double input);
+CR_API double   pid_full (sCTL_PID *pid, double input);
+CR_API double   pid_custom (sCTL_PID *pid, double input,
+                            double (*ki_func)(sCTL_PID*, double));
+
+/*****************************************************************************/
+/*                                  滤波器                                   */
+/*****************************************************************************/
+
+/* 低通滤波器 */
+CR_API void_t   fir_lp_clear (sint_t ntaps, double z[]);
+CR_API double   fir_lp_basic (double input, sint_t ntaps, const double h[],
+                              double z[]);
+CR_API double   fir_lp_circular (double input, sint_t ntaps, const double h[],
+                                 double z[], sint_t *p_state);
+CR_API double   fir_lp_shuffle (double input, sint_t ntaps, const double h[],
+                                double z[]);
+CR_API double   fir_lp_split (double input, sint_t ntaps, const double h[],
+                              double z[], sint_t *p_state);
+CR_API double   fir_lp_double_z (double input, sint_t ntaps, const double h[],
+                                 double z[], sint_t *p_state);
+CR_API double   fir_lp_double_h (double input, sint_t ntaps, const double h[],
+                                 double z[], sint_t *p_state);
+/* 非线性滤波器 */
+CR_API double   fir_nl_median (double input, sint_t ntaps, double z[],
+                               double t[]);
+
 #endif  /* !__CR_PHYLIB_H__ */
 
 /*****************************************************************************/

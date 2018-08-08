@@ -82,6 +82,13 @@ CR_API leng_t   compr_lzo (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_lzo (void_t *dst, leng_t dstlen,
                              const void_t *src, leng_t srclen);
+/* PKWARE */
+CR_API leng_t   compr_pkware (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen,
+                              uint_t dsize CR_DEFAULT(4096));
+
+CR_API leng_t   uncompr_pkware (void_t *dst, leng_t dstlen,
+                                const void_t *src, leng_t srclen);
 /* ZLib */
 CR_API leng_t   compr_zlib (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen,
