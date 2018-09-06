@@ -188,6 +188,7 @@ CR_API bool_t   image_histo (leng_t tab[256], const sIMAGE *gray);
 CR_API bool_t   image_histo3 (leng_t t_r[256], leng_t t_g[256],
                               leng_t t_b[256], const sIMAGE *img);
 /* 灰度图二值化 */
+CR_API bool_t   image_binaryv (const sIMAGE *gray, byte_t value);
 CR_API bool_t   image_binary0 (const sIMAGE *gray, bool_t is_he);
 CR_API bool_t   image_binary1 (const sIMAGE *gray, byte_t gate);
 CR_API bool_t   image_binary2 (const sIMAGE *gray, const sIMAGE *gate,
@@ -264,6 +265,8 @@ CR_API bool_t   shape_match_cnt (const byte_t *left_top, leng_t img_bpl,
                                  const sSHAPE_MAT *shape_mat, uint_t gate);
 CR_API bool_t   shape_match_wet (const byte_t *left_top, leng_t img_bpl,
                     const sSHAPE_MAT *shape_mat, const sCONVO_MAT *weight);
+/* 骨架抽取 */
+CR_API sIMAGE*  skeleton_zhang (const sIMAGE *img);
 
 /*****************************************************************************/
 /*                                   几何                                    */

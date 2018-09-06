@@ -603,6 +603,13 @@ typedef leng_t  (*enc_self_t) (void_t*, leng_t);
 typedef leng_t  (*enc_copy_t) (void_t*, leng_t, const void_t*, leng_t);
 typedef leng_t  (*enc_parm_t) (void_t*, leng_t, const void_t*, leng_t,
                                void_t*);
+/* 配置检查函数 */
+CR_API int conf_check_asmx (void);
+CR_API int conf_check_bits (void);
+CR_API int conf_check_file (void);
+CR_API int conf_check_mems (void);
+CR_API int conf_check_order (void);
+CR_API int conf_check_type (void);
 
 #endif  /* !__CR_DEFS_H__ */
 
