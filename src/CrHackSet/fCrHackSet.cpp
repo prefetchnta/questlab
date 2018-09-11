@@ -1317,12 +1317,12 @@ image_skeleton_zhang (
   __CR_IN__ sXNODEu*    param
     )
 {
+    uint_t  flip;
     sIMAGE* binz;
     sIMAGE* dest;
     sIMAGE* gray;
 
     CR_NOUSE(netw);
-    CR_NOUSE(param);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -1330,6 +1330,11 @@ image_skeleton_zhang (
     if (gray == NULL)
         return (TRUE);
     image_binary0(gray, FALSE);
+    flip = xml_attr_intxU("flip", FALSE, param);
+    if (flip) {
+        for (leng_t idx = 0; idx < gray->size; idx++)
+            gray->data[idx] = (byte_t)(~gray->data[idx]);
+    }
     binz = skeleton_zhang(gray);
     image_del(gray);
     if (binz == NULL)
