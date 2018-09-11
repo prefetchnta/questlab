@@ -1306,6 +1306,40 @@ image_facedetect (
 }
 
 /*
+---------------------------------------
+    图片骨架提取
+---------------------------------------
+*/
+static bool_t
+image_skeleton_zhang (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE* binz;
+    sIMAGE* dest;
+    sIMAGE* gray;
+
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    gray = image_graying(dest);
+    if (gray == NULL)
+        return (TRUE);
+    image_binary0(gray, FALSE);
+    binz = skeleton_zhang(gray);
+    image_del(gray);
+    if (binz == NULL)
+        return (TRUE);
+    img_idx8_to_32(dest, 0, 0, binz);
+    image_del(binz);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1345,5 +1379,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_face_multiview", image_facedetect },
     { "crhack_face_multiview_reinforce", image_facedetect },
     { "crhack_face_frontal_surveillance", image_facedetect },
+    { "crhack_skeleton_zhang", image_skeleton_zhang },
     { NULL, NULL },
 };
