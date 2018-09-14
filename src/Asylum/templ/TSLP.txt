@@ -1,8 +1,0 @@
-class TSLP
-{
-public:
-    /* ========================== */
-    void yield (unsigned int repeat)
-    {
-    }
-};

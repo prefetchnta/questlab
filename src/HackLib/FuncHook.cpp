@@ -1,7 +1,7 @@
 
 #define _HLB_BUILD_
 #include "HackLib.h"
-#include "../Asylum/asylum.hpp"
+#include "../../../Asylum/asylum.hpp"
 using namespace asy;
 
 /*

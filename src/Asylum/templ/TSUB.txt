@@ -1,8 +1,0 @@
-class TSUB
-{
-public:
-    /* ======= */
-    void gosub ()
-    {
-    }
-};
