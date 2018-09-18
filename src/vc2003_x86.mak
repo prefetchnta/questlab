@@ -39,8 +39,8 @@ RFLAGS=/d "UNICODE" /d "_UNICODE" /fo.\$(PROJECT).res .\$(PROJECT).rc
 ##=====================================
 ##
 CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /MT /W4 /Wp64 /arch:SSE \
-       /Zc:forScope /I "..\..\inc\crhack" /D "NDEBUG" /D "WIN32" /D "_WIN32" \
-       /D "UNICODE" /D "_UNICODE" /D "_CR_NO_ERROR_SET_"
+       /Zc:forScope /I "..\..\..\CrHack\inc" /D "NDEBUG" /D "WIN32" \
+       /D "_WIN32" /D "UNICODE" /D "_UNICODE" /D "_CR_NO_ERROR_SET_"
 
 ##
 ##=====================================

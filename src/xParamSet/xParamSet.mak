@@ -37,7 +37,7 @@ DEBUGLIBPATH = $(BCB)\lib\debug
 RELEASELIBPATH = $(BCB)\lib\release
 USERDEFINES = _CR_NO_ERROR_SET_
 SYSDEFINES = NO_STRICT;_RTLDLL;USEPACKAGES
-INCLUDEPATH = .;..\..\inc\crhack;$(BCB)\include;$(BCB)\include\vcl
+INCLUDEPATH = .;..\..\..\CrHack\inc;$(BCB)\include;$(BCB)\include\vcl
 LIBPATH = .;..\..\lib\crhack\omf;$(BCB)\lib\obj;$(BCB)\lib\psdk;$(BCB)\lib
 WARNINGS= -w-par
 PATHCPP = .;
@@ -48,7 +48,7 @@ PATHOBJ = .;$(LIBPATH)
 # ---------------------------------------------------------------------------
 CFLAG1 = -O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -RT- -X- -a8 -6 -b- -d -k- -vi -c \
     -tW -tWM -dc
-IDLCFLAGS = -I. -I..\..\inc\crhack -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp \
+IDLCFLAGS = -I. -I..\..\..\CrHack\inc -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp \
     -D_CR_NO_ERROR_SET_ -boa
 PFLAGS = -N2..\..\tmp -N0..\..\tmp -$Y- -$L- -$D- -$A8 -v -JPHNE -M
 RFLAGS = 

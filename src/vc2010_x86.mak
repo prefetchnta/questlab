@@ -46,10 +46,11 @@ MFLAGS=/outputresource:$(BIN_NAME)^;^#2 /manifest ".\\2.manifest"
 ##      编译命令行公用参数
 ##=====================================
 ##
-CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /Oy- /WX- /Gm- /MD /W4 /wd4819 \
-       /Zc:wchar_t- /arch:SSE /errorReport:prompt /I "..\..\inc\crhack" \
-       /I "..\..\inc\crhack\l3rd\dxsdk" /D "NDEBUG" /D "WIN32" /D "_WIN32" \
-       /D "UNICODE" /D "_UNICODE" /D "_CR_NO_ERROR_SET_"
+CFLAGS=/c /O2 /Oi /Ot /GF /GL /GR- /GS /Gy /Oy- /WX- /Gm- /MD \
+       /W4 /wd4819 /Zc:wchar_t- /arch:SSE /I "..\..\..\CrHack\inc" \
+       /I "..\..\..\CrHack\inc\l3rd\dxsdk" /D "NDEBUG" /D "WIN32" \
+       /D "_WIN32" /D "UNICODE" /D "_UNICODE" /D "_CR_NO_ERROR_SET_" \
+       /errorReport:prompt
 
 ##
 ##=====================================
