@@ -1,5 +1,5 @@
 
-import sys
+import os, sys
 
 print(sys.path)
-input()
+os.system("pause")
