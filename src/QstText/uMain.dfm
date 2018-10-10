@@ -57,7 +57,9 @@ object frmMain: TfrmMain
         ' Python CUI'
         ' Python GUI'
         ' Lua CUI'
-        ' Lua GUI')
+        ' Lua GUI'
+        ' Tcl CUI'
+        ' Tcl GUI')
     end
     object btnRefresh: TButton
       Left = 298

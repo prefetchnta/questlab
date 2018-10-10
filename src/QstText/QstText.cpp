@@ -247,6 +247,8 @@ typedef struct
 #define QST_ACT_C_PY_GUI    0x03    /* Python GUI */
 #define QST_ACT_CLUA_CUI    0x04    /* Lua CUI */
 #define QST_ACT_CLUA_GUI    0x05    /* Lua GUI */
+#define QST_ACT_CTCL_CUI    0x06    /* Tcl CUI */
+#define QST_ACT_CTCL_GUI    0x07    /* Tcl GUI */
 
 /* 扩展名匹配类型列表 */
 static const sQST_MATCH s_fmatch[] =
@@ -260,6 +262,9 @@ static const sQST_MATCH s_fmatch[] =
     /* ------------------------ */
     { QST_ACT_CLUA_CUI, ".lua"  },
     { QST_ACT_CLUA_GUI, ".wlua" },
+    /* ------------------------ */
+    { QST_ACT_CTCL_CUI, ".tcl"  },
+    { QST_ACT_CTCL_GUI, ".wish" },
 };
 
 /*
@@ -809,6 +814,18 @@ qst_file_action (
             if (!qst_save_file(QST_TMP_SCRIPT ".wlua", CR_UTF8))
                 return;
             misc_call_exe("RunLua.exe " QST_TMP_SCRIPT ".wlua", FALSE, TRUE);
+            break;
+
+        case QST_ACT_CTCL_CUI:  /* Tcl CUI */
+            if (!qst_save_file(QST_TMP_SCRIPT ".tcl", CR_UTF8))
+                return;
+            misc_call_exe("RunTcl.exe " QST_TMP_SCRIPT ".tcl", FALSE, TRUE);
+            break;
+
+        case QST_ACT_CTCL_GUI:  /* Tcl GUI */
+            if (!qst_save_file(QST_TMP_SCRIPT ".wish", CR_UTF8))
+                return;
+            misc_call_exe("RunTcl.exe " QST_TMP_SCRIPT ".wish", FALSE, TRUE);
             break;
     }
 }
