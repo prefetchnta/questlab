@@ -86,6 +86,18 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         rett = TRUE;
     }
     else
+    if (chr_cmpA(urla, "tcl://", 6) == 0)
+    {
+        /* RunTcl 执行脚本 */
+        *Cancel = TRUE;
+        file = urla + 6;
+        line = str_fmtA("RunTcl.exe \"%s\"", file);
+        mem_free(urla);
+        if (line == NULL)
+            return;
+        rett = TRUE;
+    }
+    else
     {
         /* 普通网页跳转 */
         *Cancel = FALSE;
