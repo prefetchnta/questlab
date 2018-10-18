@@ -126,7 +126,7 @@ def lucky_dball(zhong, ur_num):
 
 # 参数判断
 if len(sys.argv) != 4:
-    print("Usage: luck_chk.py <type> <number> <ur numbers>")
+    print("Usage: luckyman.py <type> <number> <ur numbers>")
     exit()
 luck_type = (sys.argv[1]).strip()
 luck_numb = (sys.argv[2]).strip()
