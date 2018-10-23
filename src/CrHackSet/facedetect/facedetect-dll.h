@@ -68,5 +68,4 @@ FACEDETECTDLL_API int * facedetect_multiview_reinforce(unsigned char * result_bu
                                int max_object_width = 0, //Maximum possible face size. Faces larger than that are ignored. It is the largest posible when max_object_width=0.
                                int doLandmark = 0); // landmark detection
 
-
 #endif
