@@ -123,6 +123,8 @@ TESS_API TessResultRenderer* TESS_CALL TessTextRendererCreate(const char* output
 TESS_API TessResultRenderer* TESS_CALL TessHOcrRendererCreate(const char* outputbase);
 TESS_API TessResultRenderer* TESS_CALL TessHOcrRendererCreate2(const char* outputbase, BOOL font_info);
 TESS_API TessResultRenderer* TESS_CALL TessPDFRendererCreate(const char* outputbase, const char* datadir);
+TESS_API TessResultRenderer* TESS_CALL TessPDFRendererCreateTextonly(const char* outputbase, const char* datadir,
+                                                             BOOL textonly);
 TESS_API TessResultRenderer* TESS_CALL TessUnlvRendererCreate(const char* outputbase);
 TESS_API TessResultRenderer* TESS_CALL TessBoxTextRendererCreate(const char* outputbase);
 

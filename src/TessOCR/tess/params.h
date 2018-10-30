@@ -55,7 +55,7 @@ class ParamUtils {
   // ORed or ANDed with any current values.
   // Blank lines and lines beginning # are ignored.
   // Values may have any whitespace after the name and are the rest of line.
-  static bool ReadParamsFile(
+  static bool TESS_API ReadParamsFile(
       const char *file,   // filename to read
       SetParamConstraint constraint,
       ParamsVectors *member_params);
@@ -110,7 +110,7 @@ class ParamUtils {
 };
 
 // Definition of various parameter types.
-class Param {
+class TESS_API Param {
  public:
   ~Param() {}
 
@@ -140,7 +140,7 @@ class Param {
   bool debug_;
 };
 
-class IntParam : public Param {
+class TESS_API IntParam : public Param {
   public:
    IntParam(inT32 value, const char *name, const char *comment, bool init,
             ParamsVectors *vec) : Param(name, comment, init) {
@@ -164,7 +164,7 @@ class IntParam : public Param {
   GenericVector<IntParam *> *params_vec_;
 };
 
-class BoolParam : public Param {
+class TESS_API BoolParam : public Param {
  public:
   BoolParam(bool value, const char *name, const char *comment, bool init,
             ParamsVectors *vec) : Param(name, comment, init) {
@@ -188,7 +188,7 @@ class BoolParam : public Param {
   GenericVector<BoolParam *> *params_vec_;
 };
 
-class StringParam : public Param {
+class TESS_API StringParam : public Param {
  public:
   StringParam(const char *value, const char *name,
               const char *comment, bool init,
@@ -217,7 +217,7 @@ class StringParam : public Param {
   GenericVector<StringParam *> *params_vec_;
 };
 
-class DoubleParam : public Param {
+class TESS_API DoubleParam : public Param {
  public:
   DoubleParam(double value, const char *name, const char *comment,
               bool init, ParamsVectors *vec) : Param(name, comment, init) {
@@ -252,7 +252,7 @@ class DoubleParam : public Param {
 //
 // TODO(daria): remove GlobalParams() when all global Tesseract
 // parameters are converted to members.
-tesseract::ParamsVectors *GlobalParams();
+tesseract::ParamsVectors TESS_API *GlobalParams();
 
 /*************************************************************************
  * Note on defining parameters.

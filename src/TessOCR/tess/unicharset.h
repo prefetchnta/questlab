@@ -136,12 +136,12 @@ class CHAR_FRAGMENT {
 // The UNICHARSET class is an utility class for Tesseract that holds the
 // set of characters that are used by the engine. Each character is identified
 // by a unique number, from 0 to (size - 1).
-class UNICHARSET {
+class TESS_API UNICHARSET {
  public:
   // Custom list of characters and their ligature forms (UTF8)
   // These map to unicode values in the private use area (PUC) and are supported
   // by only few font families (eg. Wyld, Adobe Caslon Pro).
-  static TESS_API const char* kCustomLigatures[][2];
+  static const char* kCustomLigatures[][2];
 
   // List of strings for the SpecialUnicharCodes. Keep in sync with the enum.
   static const char* kSpecialUnicharCodes[SPECIAL_UNICHAR_CODES_COUNT];
@@ -290,6 +290,7 @@ class UNICHARSET {
     han_sid_ = 0;
     hiragana_sid_ = 0;
     katakana_sid_ = 0;
+    default_sid_ = 0;
   }
 
   // Return the size of the set (the number of different UNICHAR it holds).
