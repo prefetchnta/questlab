@@ -51,7 +51,7 @@ except:
 class proxy_info(object):
 
     def __init__(self, **options):
-        self.type = options.get("proxy_type", "http")
+        self.type = options.get("proxy_type") or "http"
         if not(self.type in ['http', 'socks4', 'socks5', 'socks5h']):
             raise ValueError("proxy_type must be 'http', 'socks4', 'socks5' or 'socks5h'")
         self.host = options.get("http_proxy_host", None)
@@ -101,7 +101,7 @@ def _open_proxied_socket(url, options, proxy):
 
 
 def connect(url, options, proxy, socket):
-    if proxy.host and not socket and not(proxy.type == 'http'):
+    if proxy.host and not socket and not (proxy.type == 'http'):
         return _open_proxied_socket(url, options, proxy)
 
     hostname, port, resource, is_secure = parse_url(url)
