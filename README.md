@@ -152,6 +152,7 @@
  - JPEG files - \*.jpeg, \*.jpg, \*.jpe
  - JPEG 2000 files - \*.jp2
  - Portable Network Graphics - \*.png
+ - WebP - \*.webp
  - Portable image format - \*.pbm, \*.pgm, \*.ppm
  - Sun rasters - \*.sr, \*.ras
  - TIFF files - \*.tiff, \*.tif
