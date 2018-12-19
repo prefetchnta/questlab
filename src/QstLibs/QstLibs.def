@@ -10,7 +10,7 @@ EXPORTS
     misc_desk_load
     misc_desk_init
     misc_async_call
-    misc_async_okay 
+    misc_async_okay
     cmd_ini_get
     cmd_ini_send
     cmd_xml_get
@@ -39,3 +39,14 @@ EXPORTS
     netw_cli_close
     netw_rcv_shutdwn
     netw_rcv_timeout
+    QstGraph_Init
+    QstGraph_Free
+    QstGraph_Clear
+    QstGraph_SetAxisBottom
+    QstGraph_SetAxisBottom2
+    QstGraph_SetAxisLeft
+    QstGraph_SetLineColor
+    QstGraph_SetInt
+    QstGraph_SetUInt
+    QstGraph_SetFloat
+    QstGraph_SetDouble

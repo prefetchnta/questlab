@@ -158,4 +158,27 @@ typedef struct
 CR_API void_t   STDCALL misc_async_call (mt_main_t func, sQST_CTX *param);
 CR_API void_t   STDCALL misc_async_okay (sQST_CTX *param);
 
+/*****************************************************************************/
+/*                               QstGraph API                                */
+/*****************************************************************************/
+
+CR_API socket_t STDCALL QstGraph_Init (const ansi_t *addr, uint_t port);
+CR_API void_t   STDCALL QstGraph_Free (socket_t netw);
+CR_API void_t   STDCALL QstGraph_Clear (socket_t netw);
+CR_API void_t   STDCALL QstGraph_SetAxisBottom (socket_t netw, uint_t max);
+CR_API void_t   STDCALL QstGraph_SetAxisBottom2 (socket_t netw, fp32_t min,
+                                                 fp32_t max);
+CR_API void_t   STDCALL QstGraph_SetAxisLeft (socket_t netw, fp32_t min,
+                                              fp32_t max);
+CR_API void_t   STDCALL QstGraph_SetLineColor (socket_t netw, uint_t r,
+                                               uint_t g, uint_t b);
+CR_API void_t   STDCALL QstGraph_SetInt (socket_t netw, sint_t value,
+                                         bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetUInt (socket_t netw, uint_t value,
+                                          bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetFloat (socket_t netw, fp32_t value,
+                                           bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetDouble (socket_t netw, fp64_t value,
+                                            bool_t move CR_DEFAULT(TRUE));
+
 #endif  /* !__QL_QSTLIBS_H__ */
