@@ -115,7 +115,7 @@ object frmMain: TfrmMain
     object Series5: TPointSeries
       Active = False
       Marks.ArrowLength = 0
-      Marks.Visible = False
+      Marks.Visible = True
       SeriesColor = clWhite
       ShowInLegend = False
       Pointer.InflateMargins = True
@@ -149,6 +149,7 @@ object frmMain: TfrmMain
       SeriesColor = clFuchsia
       ShowInLegend = False
       LinePen.Color = clFuchsia
+      LinePen.Width = 2
       XValues.DateTime = False
       XValues.Name = 'X'
       XValues.Multiplier = 1
