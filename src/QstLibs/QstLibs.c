@@ -1285,13 +1285,7 @@ QstGraph_SetAxisBottom (
 
     cmd[0] = 0x00;
     cmd[1] = 0x01;
-    cmd[2] = (byte_t)max;
-    max >>= 8;
-    cmd[3] = (byte_t)max;
-    max >>= 8;
-    cmd[4] = (byte_t)max;
-    max >>= 8;
-    cmd[5] = (byte_t)max;
+    mem_cpy(&cmd[2], &max, sizeof(max));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
 
@@ -1311,8 +1305,8 @@ QstGraph_SetAxisBottom2 (
 
     cmd[0] = 0x00;
     cmd[1] = 0x02;
-    mem_cpy(&cmd[2], &min, sizeof(fp32_t));
-    mem_cpy(&cmd[6], &max, sizeof(fp32_t));
+    mem_cpy(&cmd[2], &min, sizeof(min));
+    mem_cpy(&cmd[6], &max, sizeof(max));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
 
@@ -1332,8 +1326,8 @@ QstGraph_SetAxisLeft (
 
     cmd[0] = 0x00;
     cmd[1] = 0x03;
-    mem_cpy(&cmd[2], &min, sizeof(fp32_t));
-    mem_cpy(&cmd[6], &max, sizeof(fp32_t));
+    mem_cpy(&cmd[2], &min, sizeof(min));
+    mem_cpy(&cmd[6], &max, sizeof(max));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
 
@@ -1363,7 +1357,95 @@ QstGraph_SetLineColor (
 
 /*
 =======================================
-    QstGraph 设置一个数值
+    QstGraph 设置一个数值 (Char)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetChar (
+  __CR_IN__ socket_t    netw,
+  __CR_IN__ ansi_t      value,
+  __CR_IN__ bool_t      move
+    )
+{
+    byte_t  cmd[2 + 1 + 1];
+
+    cmd[0] = 0x01;
+    cmd[1] = 0x00;
+    cmd[2] = 0x00;
+    if (!move) cmd[2] |= 0x80;
+    mem_cpy(&cmd[3], &value, sizeof(value));
+    socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
+}
+
+/*
+=======================================
+    QstGraph 设置一个数值 (UChar)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetUChar (
+  __CR_IN__ socket_t    netw,
+  __CR_IN__ byte_t      value,
+  __CR_IN__ bool_t      move
+    )
+{
+    byte_t  cmd[2 + 1 + 1];
+
+    cmd[0] = 0x01;
+    cmd[1] = 0x00;
+    cmd[2] = 0x01;
+    if (!move) cmd[2] |= 0x80;
+    mem_cpy(&cmd[3], &value, sizeof(value));
+    socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
+}
+
+/*
+=======================================
+    QstGraph 设置一个数值 (Short)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetShort (
+  __CR_IN__ socket_t    netw,
+  __CR_IN__ int16s      value,
+  __CR_IN__ bool_t      move
+    )
+{
+    byte_t  cmd[2 + 1 + 2];
+
+    cmd[0] = 0x01;
+    cmd[1] = 0x00;
+    cmd[2] = 0x02;
+    if (!move) cmd[2] |= 0x80;
+    mem_cpy(&cmd[3], &value, sizeof(value));
+    socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
+}
+
+/*
+=======================================
+    QstGraph 设置一个数值 (UShort)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetUShort (
+  __CR_IN__ socket_t    netw,
+  __CR_IN__ int16u      value,
+  __CR_IN__ bool_t      move
+    )
+{
+    byte_t  cmd[2 + 1 + 2];
+
+    cmd[0] = 0x01;
+    cmd[1] = 0x00;
+    cmd[2] = 0x03;
+    if (!move) cmd[2] |= 0x80;
+    mem_cpy(&cmd[3], &value, sizeof(value));
+    socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
+}
+
+/*
+=======================================
+    QstGraph 设置一个数值 (Int)
 =======================================
 */
 CR_API void_t STDCALL
@@ -1379,13 +1461,13 @@ QstGraph_SetInt (
     cmd[1] = 0x00;
     cmd[2] = 0x04;
     if (!move) cmd[2] |= 0x80;
-    mem_cpy(&cmd[3], &value, sizeof(sint_t));
+    mem_cpy(&cmd[3], &value, sizeof(value));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
 
 /*
 =======================================
-    QstGraph 设置一个数值
+    QstGraph 设置一个数值 (UInt)
 =======================================
 */
 CR_API void_t STDCALL
@@ -1401,13 +1483,13 @@ QstGraph_SetUInt (
     cmd[1] = 0x00;
     cmd[2] = 0x05;
     if (!move) cmd[2] |= 0x80;
-    mem_cpy(&cmd[3], &value, sizeof(uint_t));
+    mem_cpy(&cmd[3], &value, sizeof(value));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
 
 /*
 =======================================
-    QstGraph 设置一个数值
+    QstGraph 设置一个数值 (Float)
 =======================================
 */
 CR_API void_t STDCALL
@@ -1423,13 +1505,13 @@ QstGraph_SetFloat (
     cmd[1] = 0x00;
     cmd[2] = 0x06;
     if (!move) cmd[2] |= 0x80;
-    mem_cpy(&cmd[3], &value, sizeof(fp32_t));
+    mem_cpy(&cmd[3], &value, sizeof(value));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
 
 /*
 =======================================
-    QstGraph 设置一个数值
+    QstGraph 设置一个数值 (Double)
 =======================================
 */
 CR_API void_t STDCALL
@@ -1445,6 +1527,6 @@ QstGraph_SetDouble (
     cmd[1] = 0x00;
     cmd[2] = 0x07;
     if (!move) cmd[2] |= 0x80;
-    mem_cpy(&cmd[3], &value, sizeof(fp64_t));
+    mem_cpy(&cmd[3], &value, sizeof(value));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }

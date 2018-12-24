@@ -46,6 +46,10 @@ EXPORTS
     QstGraph_SetAxisBottom2
     QstGraph_SetAxisLeft
     QstGraph_SetLineColor
+    QstGraph_SetChar
+    QstGraph_SetUChar
+    QstGraph_SetShort
+    QstGraph_SetUShort
     QstGraph_SetInt
     QstGraph_SetUInt
     QstGraph_SetFloat

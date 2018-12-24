@@ -172,6 +172,14 @@ CR_API void_t   STDCALL QstGraph_SetAxisLeft (socket_t netw, fp32_t min,
                                               fp32_t max);
 CR_API void_t   STDCALL QstGraph_SetLineColor (socket_t netw, uint_t r,
                                                uint_t g, uint_t b);
+CR_API void_t   STDCALL QstGraph_SetChar (socket_t netw, ansi_t value,
+                                          bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetUChar (socket_t netw, byte_t value,
+                                           bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetShort (socket_t netw, int16s value,
+                                           bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetUShort (socket_t netw, int16u value,
+                                            bool_t move CR_DEFAULT(TRUE));
 CR_API void_t   STDCALL QstGraph_SetInt (socket_t netw, sint_t value,
                                          bool_t move CR_DEFAULT(TRUE));
 CR_API void_t   STDCALL QstGraph_SetUInt (socket_t netw, uint_t value,
