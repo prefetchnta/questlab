@@ -48,8 +48,8 @@ PATHOBJ = .;$(LIBPATH)
 # ---------------------------------------------------------------------------
 CFLAG1 = -O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -RT- -X- -a8 -6 -b- -d -k- -vi -c \
     -tW -tWM -dc
-IDLCFLAGS = -I. -I..\..\..\CrHack\inc -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp \
-    -D_CR_NO_ERROR_SET_ -boa
+IDLCFLAGS = -I. -I..\..\..\CrHack\inc -I$(BCB)\include -I$(BCB)\include\vcl \
+    -src_suffix cpp -D_CR_NO_ERROR_SET_ -boa
 PFLAGS = -N2..\..\tmp -N0..\..\tmp -$Y- -$L- -$D- -$A8 -v -JPHNE -M
 RFLAGS = 
 AFLAGS = /mx /w2 /zn
