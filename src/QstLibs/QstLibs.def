@@ -54,3 +54,11 @@ EXPORTS
     QstGraph_SetUInt
     QstGraph_SetFloat
     QstGraph_SetDouble
+    QstGraph_SetCharList
+    QstGraph_SetUCharList
+    QstGraph_SetShortList
+    QstGraph_SetUShortList
+    QstGraph_SetIntList
+    QstGraph_SetUIntList
+    QstGraph_SetFloatList
+    QstGraph_SetDoubleList

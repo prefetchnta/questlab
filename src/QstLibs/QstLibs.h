@@ -188,5 +188,29 @@ CR_API void_t   STDCALL QstGraph_SetFloat (socket_t netw, fp32_t value,
                                            bool_t move CR_DEFAULT(TRUE));
 CR_API void_t   STDCALL QstGraph_SetDouble (socket_t netw, fp64_t value,
                                             bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetCharList (socket_t netw,
+                                        const ansi_t *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetUCharList (socket_t netw,
+                                        const byte_t *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetShortList (socket_t netw,
+                                        const int16s *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetUShortList (socket_t netw,
+                                        const int16u *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetIntList (socket_t netw,
+                                        const sint_t *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetUIntList (socket_t netw,
+                                        const uint_t *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetFloatList (socket_t netw,
+                                        const fp32_t *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
+CR_API void_t   STDCALL QstGraph_SetDoubleList (socket_t netw,
+                                        const fp64_t *list, uint_t count,
+                                            bool_t move CR_DEFAULT(TRUE));
 
 #endif  /* !__QL_QSTLIBS_H__ */

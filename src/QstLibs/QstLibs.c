@@ -1530,3 +1530,227 @@ QstGraph_SetDouble (
     mem_cpy(&cmd[3], &value, sizeof(value));
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
+
+/*
+=======================================
+    QstGraph 设置一组数值 (Char)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetCharList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const ansi_t*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x00;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(ansi_t);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
+
+/*
+=======================================
+    QstGraph 设置一组数值 (UChar)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetUCharList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const byte_t*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x01;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(byte_t);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
+
+/*
+=======================================
+    QstGraph 设置一组数值 (Short)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetShortList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const int16s*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x02;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(int16s);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
+
+/*
+=======================================
+    QstGraph 设置一组数值 (UShort)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetUShortList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const int16u*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x03;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(int16u);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
+
+/*
+=======================================
+    QstGraph 设置一组数值 (Int)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetIntList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const sint_t*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x04;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(sint_t);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
+
+/*
+=======================================
+    QstGraph 设置一组数值 (UInt)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetUIntList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const uint_t*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x05;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(uint_t);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
+
+/*
+=======================================
+    QstGraph 设置一组数值 (Float)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetFloatList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const fp32_t*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x06;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(fp32_t);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
+
+/*
+=======================================
+    QstGraph 设置一组数值 (Double)
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetDoubleList (
+  __CR_IN__ socket_t        netw,
+  __CR_IN__ const fp64_t*   list,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ bool_t          move
+    )
+{
+    byte_t  cmd[1500];
+
+    if (count > 128)
+        count = 128;
+    cmd[0] = 0x01;
+    cmd[1] = 0x01;
+    cmd[2] = 0x07;
+    if (!move) cmd[2] |= 0x80;
+    cmd[3] = (byte_t)count;
+    count *= sizeof(fp64_t);
+    mem_cpy(&cmd[4], list, count);
+    count += sizeof(int32u);
+    socket_udp_send(netw, NULL, 0, cmd, count);
+}
