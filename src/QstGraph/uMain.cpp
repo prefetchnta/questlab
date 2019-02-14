@@ -15,6 +15,7 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 {
     /* 使用系统字体 */
     this->Font->Assign(Screen->MenuFont);
+    frmMain->DoubleBuffered = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::setup(unsigned int type, const AnsiString& title)

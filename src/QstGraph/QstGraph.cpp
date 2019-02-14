@@ -35,8 +35,11 @@ qst_grp_main (
     frm = (TfrmMain*)(ctx->form);
     while (!ctx->quit)
     {
-        uint_t  back;
-        byte_t  data[QST_UDP_MAX + 1];
+        bool    move;
+        uchar*  pntr;
+        double  vals;
+        uint_t  back, leng, idx;
+        byte_t  data[QST_UDP_MAX];
 
         /* 读取命令数据包 */
         mem_zero(data, sizeof(data));
@@ -76,80 +79,179 @@ qst_grp_main (
                 break;
 
             case QST_MK_CMD(0x01, 0x00):    /* 设置一个数值 */
-                if (back >  sizeof(int16u) + sizeof(byte_t))
+                if (back <= sizeof(int16u) + sizeof(byte_t))
+                    break;
+                back -= sizeof(int16u) + sizeof(byte_t);
+
+                /* 是否为平移模式 */
+                move = (data[2] & 0x80) ? false : true;
+                pntr = &data[3];
+
+                /* 判断数据类型 */
+                data[2] &= 0x7F;
+                switch (data[2])
                 {
-                    bool    move;
-                    double  vals;
-                    byte_t* pntr = &data[3];
+                    default:    /* none */
+                        break;
 
-                    back -= sizeof(int16u) + sizeof(byte_t);
+                    case 0x00:  /* ansi_t */
+                        if (back == sizeof(ansi_t)) {
+                            vals = (double)(*(ansi_t*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
 
-                    /* 是否为平移模式 */
-                    move = (data[2] & 0x80) ? false : true;
+                    case 0x01:  /* byte_t */
+                        if (back == sizeof(byte_t)) {
+                            vals = (double)(*(byte_t*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
 
-                    /* 判断数据类型 */
-                    data[2] &= 0x7F;
-                    switch (data[2])
-                    {
-                        default:    /* none */
-                            break;
+                    case 0x02:  /* int16s */
+                        if (back == sizeof(int16s)) {
+                            vals = (double)(*(int16s*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
 
-                        case 0x00:  /* ansi_t */
-                            if (back == sizeof(ansi_t)) {
+                    case 0x03:  /* int16u */
+                        if (back == sizeof(int16u)) {
+                            vals = (double)(*(int16u*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
+
+                    case 0x04:  /* int32s */
+                        if (back == sizeof(int32s)) {
+                            vals = (double)(*(int32s*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
+
+                    case 0x05:  /* int32u */
+                        if (back == sizeof(int32u)) {
+                            vals = (double)(*(int32u*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
+
+                    case 0x06:  /* fp32_t */
+                        if (back == sizeof(fp32_t)) {
+                            vals = (double)(*(fp32_t*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
+
+                    case 0x07:  /* fp64_t */
+                        if (back == sizeof(fp64_t)) {
+                            vals = (double)(*(fp64_t*)pntr);
+                            frm->setValue(vals, move);
+                        }
+                        break;
+                }
+                break;
+
+            case QST_MK_CMD(0x01, 0x01):    /* 设置一组数值 */
+                if (back <= sizeof(int16u) + sizeof(int16u))
+                    break;
+                back -= sizeof(int16u) + sizeof(int16u);
+
+                /* 数据长度最大128 */
+                leng = (uint_t)data[3];
+                if (leng == 0 || leng > 128)
+                    break;
+
+                /* 是否为平移模式 */
+                move = (data[2] & 0x80) ? false : true;
+                pntr = &data[4];
+
+                /* 判断数据类型 */
+                data[2] &= 0x7F;
+                switch (data[2])
+                {
+                    default:    /* none */
+                        break;
+
+                    case 0x00:  /* ansi_t */
+                        if (back == leng * sizeof(ansi_t)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(ansi_t*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(ansi_t);
                             }
-                            break;
+                        }
+                        break;
 
-                        case 0x01:  /* byte_t */
-                            if (back == sizeof(byte_t)) {
+                    case 0x01:  /* byte_t */
+                        if (back == leng * sizeof(byte_t)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(byte_t*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(byte_t);
                             }
-                            break;
+                        }
+                        break;
 
-                        case 0x02:  /* int16s */
-                            if (back == sizeof(int16s)) {
+                    case 0x02:  /* int16s */
+                        if (back == leng * sizeof(int16s)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(int16s*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(int16s);
                             }
-                            break;
+                        }
+                        break;
 
-                        case 0x03:  /* int16u */
-                            if (back == sizeof(int16u)) {
+                    case 0x03:  /* int16u */
+                        if (back == leng * sizeof(int16u)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(int16u*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(int16u);
                             }
-                            break;
+                        }
+                        break;
 
-                        case 0x04:  /* int32s */
-                            if (back == sizeof(int32s)) {
+                    case 0x04:  /* int32s */
+                        if (back == leng * sizeof(int32s)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(int32s*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(int32s);
                             }
-                            break;
+                        }
+                        break;
 
-                        case 0x05:  /* int32u */
-                            if (back == sizeof(int32u)) {
+                    case 0x05:  /* int32u */
+                        if (back == leng * sizeof(int32u)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(int32u*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(int32u);
                             }
-                            break;
+                        }
+                        break;
 
-                        case 0x06:  /* fp32_t */
-                            if (back == sizeof(fp32_t)) {
+                    case 0x06:  /* fp32_t */
+                        if (back == leng * sizeof(fp32_t)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(fp32_t*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(fp32_t);
                             }
-                            break;
+                        }
+                        break;
 
-                        case 0x07:  /* fp64_t */
-                            if (back == sizeof(fp64_t)) {
+                    case 0x07:  /* fp64_t */
+                        if (back == leng * sizeof(fp64_t)) {
+                            for (idx = 0; idx < leng; idx++) {
                                 vals = (double)(*(fp64_t*)pntr);
                                 frm->setValue(vals, move);
+                                pntr += sizeof(fp64_t);
                             }
-                            break;
-                    }
+                        }
+                        break;
                 }
                 break;
         }
