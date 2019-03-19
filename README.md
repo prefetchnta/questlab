@@ -368,7 +368,7 @@
 <p>　　一些常用的数据压缩、解压缩函数封装库。</p>
 
 - **HackLib (VS2010 SP1)**
-<p>　　一些老旧但常用的系统操作的函数封装库。</p>
+<p>　　一些老旧的但常用的系统操作函数封装库。</p>
 
 - **TessOCR (VS2010 SP1)**
-<p>　　<b>Google Tesseract-OCR</b> 引擎封装库。</p>
+<p>　　<b>Google Tesseract-OCR</b> 识别引擎封装库。</p>
