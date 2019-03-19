@@ -201,7 +201,7 @@ qst_csi_render (
             bc = s_lo_color[s_color[1]];
     }
 
-    /* 下划线|划线风格 */
+    /* 下划线|划线|闪烁风格 */
     if (s_type[1])
         tx = "text-decoration:underline;";
     else
@@ -210,15 +210,15 @@ qst_csi_render (
     else
     if (s_type[3])
         tx = "text-decoration:line-through;";
+    else
+    if (s_type[5])
+        tx = "text-decoration:blink;";
 
     /* 反色风格 */
     if (s_type[4]) {
         fg = "background-color:";
         bk = "color:";
     }
-
-    /* 闪烁风格 - 未实现 */
-    /*********************/
 
     /* 之前的标签未封闭, 封闭之 */
     if (s_have) {
