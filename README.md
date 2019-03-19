@@ -356,11 +356,19 @@
 - **GFX3_D3D9 (VS2010 SP1)**
 <p>　　使用 <b>Direct3D 9</b> 作为图形接口的 <b>3D</b> 图形绘制插件。</p>
 
-- **TessOCR (VS2010 SP1)**
-<p>　　<b>Google Tesseract-OCR</b> 开源 <b>OCR</b> 识别引擎封装库。</p>
-
 - **ResLoader (VS2010 SP1)**
 <p>　　使用 <b>QuestLAB</b> 内部网络系统的外部资源文件加载执行插件。</p>
 
 - **ResRouter (VS2010 SP1)**
 <p>　　外部资源文件全局搜索路由插件。所有加载的封包文件都将被搜索。</p>
+
+## 【附加组件】
+
+- **CompLib (VS2010 SP1)**
+<p>　　一些常用的数据压缩、解压缩函数封装库。</p>
+
+- **HackLib (VS2010 SP1)**
+<p>　　一些老旧但常用的系统操作的函数封装库。</p>
+
+- **TessOCR (VS2010 SP1)**
+<p>　　<b>Google Tesseract-OCR</b> 引擎封装库。</p>
