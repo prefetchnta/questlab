@@ -327,7 +327,7 @@
  - Truevision Targa (TGA)
  - Phil Katz's ZIP Archive (PKZIP)
 
-## 【其他组件】
+## 【基础组件】
 
 - **CrH_CORE (VS2010 SP1)**
 <p>　　属于 <b>CrHack SDK</b> 本体的跨平台核心基础库。</p>
