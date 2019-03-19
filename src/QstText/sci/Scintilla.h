@@ -697,6 +697,8 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_RELEASEDOCUMENT 2377
 #define SCI_GETDOCUMENTOPTIONS 2379
 #define SCI_GETMODEVENTMASK 2378
+#define SCI_SETCOMMANDEVENTS 2717
+#define SCI_GETCOMMANDEVENTS 2718
 #define SCI_SETFOCUS 2380
 #define SCI_GETFOCUS 2381
 #define SC_STATUS_OK 0
@@ -825,6 +827,8 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define CARETSTYLE_INVISIBLE 0
 #define CARETSTYLE_LINE 1
 #define CARETSTYLE_BLOCK 2
+#define CARETSTYLE_OVERSTRIKE_BAR 0
+#define CARETSTYLE_OVERSTRIKE_BLOCK 16
 #define SCI_SETCARETSTYLE 2512
 #define SCI_GETCARETSTYLE 2513
 #define SCI_SETINDICATORCURRENT 2500

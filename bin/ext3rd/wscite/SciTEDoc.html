@@ -1653,6 +1653,14 @@ NameError: name 'mistake' is not defined
           period before appearing again. A value of 0 stops the caret from blinking.
         </td>
       </tr>
+      <tr id='property-caret.style'>
+        <td>
+          caret.style
+        </td>
+        <td>
+          Sets the style of the caret. see <a href="https://www.scintilla.org/ScintillaDoc.html#SCI_SETCARETSTYLE">SCI_SETCARETSTYLE</a> for possible values.
+        </td>
+      </tr>
       <tr id='property-caret.width'>
         <td>
           caret.width
@@ -2210,6 +2218,10 @@ NameError: name 'mistake' is not defined
 	<td>fold.basic.syntax.based</td>
 	<td>Set this property to 0 to disable syntax based folding.</td>
 	</tr>
+	<tr id='property-fold.cil.comment.multiline'>
+	<td>fold.cil.comment.multiline</td>
+	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+	</tr>
 	<tr id='property-fold.comment'>
 	<td>fold.comment</td>
 	<td>This option enables folding multi-line comments and explicit fold points when using the C++ lexer. Explicit fold points allows adding extra folding by placing a //{ comment at the start and a //} at the end of a section that should fold.</td>
@@ -2453,6 +2465,10 @@ NameError: name 'mistake' is not defined
 	<tr id='property-lexer.json.escape.sequence'>
 	<td>lexer.json.escape.sequence</td>
 	<td>Set to 1 to enable highlighting of escape sequences in strings</td>
+	</tr>
+	<tr id='property-lexer.nim.raw.strings.highlight.ident'>
+	<td>lexer.nim.raw.strings.highlight.ident</td>
+	<td>Set to 1 to enable highlighting generalized raw string identifiers. Generalized raw string identifiers are anything other than r (or R).</td>
 	</tr>
 	<tr id='property-lexer.props.allow.initial.spaces'>
 	<td>lexer.props.allow.initial.spaces</td>
@@ -3052,6 +3068,10 @@ Prev File|IDM_PREVFILE|<br/>
       <tr id='property-find.command'>
         <td>
           find.command<br />
+	  find.option.wholeword.0<br />
+	  find.option.wholeword.1<br />
+	  find.option.matchcase.0<br />
+	  find.option.matchcase.1<br />
           <span class="windowsonly">find.input</span>
         </td>
         <td>
@@ -3078,6 +3098,24 @@ c:\cygwin\bin\xargs -0 fgrep -G -n "$(find.what)"
           <br />
           If find.command is empty then SciTE's own search code is used. This only does a
 	simple search without regular expressions and is faster than running an external program.
+	<br />
+	  When defining find.command, to specify the value of the option for the "match case" use
+	  $(find.matchcase), and to specify the value of the option "whole word" use
+	  $(find.wholeword). Additionally, you should define the properties find.option.matchcase.0,
+	  find.option.matchcase.1, find.option.wholeword.0 and find.option.wholeword.1 to
+	  match the expected parameters of the command you use for find.
+	  <br />
+        <div class="example">
+find.option.wholeword.0=<br />
+find.option.wholeword.1=-w<br />
+find.option.matchcase.0=-i<br />
+find.option.matchcase.1=<br />
+<br />
+find.command=cmd /c c:\cygwin\bin\find "$(find.directory)"
+-name "*" -print0 |
+c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.what)"
+          </div>
+
         </td>
       </tr>
       <tr id='property-find.files'>
