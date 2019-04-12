@@ -324,14 +324,14 @@
           <message name="UnrecognizedAlphaChannelOption">
             unrecognized alpha channel option
           </message>
-          <message name="UnrecognizedBitsPerPixel">
-            unrecognized bits per pixel
-          </message>
           <message name="UnrecognizedImageCompression">
             unrecognized compression
           </message>
           <message name="UnrecognizedNumberOfColors">
             unrecognized number of colors
+          </message>
+          <message name="UnsupportedBitsPerPixel">
+            unsupported bits per pixel
           </message>
         </error>
         <fatalerror>
@@ -463,6 +463,9 @@
         <message name="URLNotFound">
           URL not found
         </message>
+        <message name="VectorGraphicsNestedTooDeeply">
+          vector graphics nested too deeply
+        </message>
       </error>
     </draw>
     <file>
@@ -538,6 +541,9 @@
         <message name="AssociateProfile">
           associate profile with image, a source and destination color profile required for transform
         </message>
+        <message name="UnableToTransformColorspace">
+          unable to transform colorspace
+        </message>
       </warning>
     </image>
     <filter>
@@ -610,7 +616,7 @@
         <message name="CompositeImageRequired">
           composite image required
         </message>
-        <message name="CurlyBrasesNestedTooDeeply">
+        <message name="CurlyBracesNestedTooDeeply">
           curly braces nested too deeply
         </message>
         <message name="DeprecatedOptionNoCode">
@@ -998,7 +1004,7 @@
     <policy>
       <error>
         <message name="NotAuthorized">
-          not authorized
+          attempt to perform an operation not allowed by the security policy
         </message>
       </error>
     </policy>
