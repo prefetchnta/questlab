@@ -1,3 +1,3 @@
 @echo off
 set PYTHONHOME=%~dp0python
-%~dp0python.exe %*
+%~dp0python34.exe %*

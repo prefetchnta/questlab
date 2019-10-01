@@ -88,12 +88,12 @@ WinMain (
 
     /* 根据扩展名选择用哪个启动 */
     if (filext_checkA(argv[0], ".py")) {
-        exec = str_fmtA("%s.exe \"%s\"", root, argv[0]);
+        exec = str_fmtA("%s34.exe \"%s\"", root, argv[0]);
         cf = CREATE_NEW_CONSOLE;
     }
     else
     if (filext_checkA(argv[0], ".pyw")) {
-        exec = str_fmtA("%sw.exe \"%s\"", root, argv[0]);
+        exec = str_fmtA("%sw34.exe \"%s\"", root, argv[0]);
         cf = CREATE_NO_WINDOW;
     }
     else {
