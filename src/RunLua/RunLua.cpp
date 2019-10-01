@@ -96,12 +96,12 @@ WinMain (
 
     /* 根据扩展名选择用哪个启动 */
     if (filext_checkA(argv[0], ".lua")) {
-        exec = str_fmtA("%s\\lua.exe \"%s\"", temp, argv[0]);
+        exec = str_fmtA("%s\\lua53.exe \"%s\"", temp, argv[0]);
         cf = CREATE_NEW_CONSOLE;
     }
     else
     if (filext_checkA(argv[0], ".wlua")) {
-        exec = str_fmtA("%s\\wlua.exe \"%s\"", temp, argv[0]);
+        exec = str_fmtA("%s\\wlua53.exe \"%s\"", temp, argv[0]);
         cf = CREATE_NO_WINDOW;
     }
     else {
