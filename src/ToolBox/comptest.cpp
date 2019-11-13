@@ -25,6 +25,13 @@
 /* 性能测试对象 */
 static xtime_t  s_profile;
 
+/* 全局性能统计 */
+static fp64_t   s_enc_speed;
+static fp64_t   s_enc_ratio;
+static fp64_t   s_dec_speed;
+static int64u   s_file_okay;
+static int64u   s_file_fail;
+
 /* 压缩的上下文 */
 typedef struct
 {
@@ -60,6 +67,9 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     leng_t  ssize;
     void_t* ddata;
     void_t* sdata;
+    fp32_t  ratio_e = 0;
+    fp32_t  speed_e = 0;
+    fp32_t  speed_d = 0;
     byte_t  dhash[20];
     byte_t  shash[20];
 
@@ -94,21 +104,26 @@ static bool_t tester (void_t *param, sSEARCHa *info)
         dsize = comp->encode5(ddata, dsize, sdata, ssize, comp->e_param);
     time = timer_get_delta(s_profile) * 1.024f;
     cui_set_color(s_clr_info);
-    printf("ENC %.2f KB/S, %.2f%%", info->size / time, (fp32_t)dsize * 100.0f
-                                                        / info->size);
+
     /* 解压文件数据并显示速度 */
     mem_zero(sdata, ssize);
     if (dsize != 0) {
+        speed_e = (fp32_t)info->size / time;
+        ratio_e = (fp32_t)dsize * 100.0f / info->size;
+        printf("ENC %.2f KB/S, %.2f%%", speed_e, ratio_e);
         timer_set_base(s_profile);
         if (comp->decode4 != NULL)
             dsize = comp->decode4(sdata, ssize, ddata, dsize);
         else
             dsize = comp->decode5(sdata, ssize, ddata, dsize, comp->d_param);
         time = timer_get_delta(s_profile) * 1.024f;
-        printf(" | DEC %.2f KB/S", info->size / time);
-    }
-    else {
-        printf(" | DEC ???? KB/S");
+        if (dsize != 0) {
+            speed_d = (fp32_t)info->size / time;
+            printf(" | DEC %.2f KB/S", speed_d);
+        }
+        else {
+            printf(" | DEC ???? KB/S");
+        }
     }
 
     /* 计算解压后的哈希并比较 */
@@ -116,10 +131,15 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     if (mem_cmp(shash, dhash, sizeof(dhash)) != 0) {
         cui_set_color(s_clr_fail);
         printf(" [FAIL]\n");
+        s_file_fail += 1;
     }
     else {
         cui_set_color(s_clr_okay);
         printf(" [OKAY]\n");
+        s_enc_speed += speed_e;
+        s_enc_ratio += ratio_e;
+        s_dec_speed += speed_d;
+        s_file_okay += 1;
     }
     mem_free(ddata);
     mem_free(sdata);
@@ -271,6 +291,11 @@ int main (int argc, char *argv[])
 
     /* 生成性能测试对象 */
     s_profile = timer_new();
+    s_enc_speed = 0;
+    s_enc_ratio = 0;
+    s_dec_speed = 0;
+    s_file_okay = 0;
+    s_file_fail = 0;
 
     /* 枚举所有文件 */
     if (argc == 1)
@@ -281,6 +306,16 @@ int main (int argc, char *argv[])
     s_clr_file = cui_make_attr(0, CR_CUI_TEXT_GREEN | CR_CUI_TEXT_BLUE |
                                   CR_CUI_TEXT_RED);
     cui_set_color(s_clr_file);
+
+    /* 打印平均性能指标 */
+    s_enc_speed /= (fp64_t)s_file_okay;
+    s_enc_ratio /= (fp64_t)s_file_okay;
+    s_dec_speed /= (fp64_t)s_file_okay;
+    printf("==============================================================\n");
+    printf("ENC %.2f KB/S, %.2f%%", s_enc_speed, s_enc_ratio);
+    printf(" | DEC %.2f KB/S | ", s_dec_speed);
+    printf("%" CR_I64 "u OKAY, %" CR_I64 "u FAIL\n", s_file_okay, s_file_fail);
+    printf("==============================================================\n");
 
     /* 释放内存 */
     sbin_unload(plugin);
