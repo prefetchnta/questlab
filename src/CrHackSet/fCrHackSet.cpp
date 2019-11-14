@@ -370,6 +370,24 @@ flip_vertical (
 
 /*
 ---------------------------------------
+    图片水平翻转
+---------------------------------------
+*/
+static bool_t
+flip_horizontal (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    CR_NOUSE(netw);
+    CR_NOUSE(param);
+    image_mirror((sIMAGE*)image);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     图片 RB 互换
 ---------------------------------------
 */
@@ -1359,6 +1377,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_sub_x86", fill_sub_x86 },
     { "crhack_lrp_x86", fill_lrp_x86 },
     { "crhack_flip_vv", flip_vertical },
+    { "crhack_flip_hh", flip_horizontal },
     { "crhack_swap_rb", swap_red_blue },
     { "crhack_diffuse", image_diffuse },
     { "crhack_graying", image_graying },
