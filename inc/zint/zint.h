@@ -1,7 +1,7 @@
 /*  zint.h - definitions for libzint
 
     libzint - the open source barcode library
-    Copyright (C) 2009-2017 Robin Stuart <rstuart114@gmail.com>
+    Copyright (C) 2009-2018 Robin Stuart <rstuart114@gmail.com>
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
@@ -40,6 +40,12 @@ extern "C" {
         float x, y, length, width;
         struct zint_render_line *next; /* Pointer to next line */
     };
+    
+    struct zint_vector_rect {
+        float x, y, height, width;
+        int colour;
+        struct zint_vector_rect *next;
+    };
 
     struct zint_render_string {
         float x, y, fsize;
@@ -48,23 +54,50 @@ extern "C" {
         unsigned char *text;
         struct zint_render_string *next; /* Pointer to next character */
     };
+    
+    struct zint_vector_string {
+        float x, y, fsize;
+        float width; /* Suggested string width, may be 0 if none recommended */
+        int length;
+        unsigned char *text;
+        struct zint_vector_string *next; /* Pointer to next character */
+    };
 
     struct zint_render_ring {
         float x, y, radius, line_width;
         struct zint_render_ring *next; /* Pointer to next ring */
     };
 
+    struct zint_vector_circle {
+        float x, y, diameter;
+        int colour;
+        struct zint_vector_circle *next; /* Pointer to next circle */
+    };
+    
     struct zint_render_hexagon {
         float x, y, height;
         struct zint_render_hexagon *next; /* Pointer to next hexagon */
     };
 
+    struct zint_vector_hexagon {
+        float x, y, diameter;
+        struct zint_vector_hexagon *next; /* Pointer to next hexagon */
+    };
+    
     struct zint_render {
         float width, height;
         struct zint_render_line *lines; /* Pointer to first line */
         struct zint_render_string *strings; /* Pointer to first string */
         struct zint_render_ring *rings; /* Pointer to first ring */
         struct zint_render_hexagon *hexagons; /* Pointer to first hexagon */
+    };
+    
+    struct zint_vector {
+        float width, height;
+        struct zint_vector_rect *rectangles; /* Pointer to first rectangle */
+        struct zint_vector_hexagon *hexagons; /* Pointer to first hexagon */
+        struct zint_vector_string *strings; /* Points to first string */
+        struct zint_vector_circle *circles; /* Points to first circle */
     };
 
     struct zint_symbol {
@@ -96,13 +129,14 @@ extern "C" {
         int bitmap_height;
         unsigned int bitmap_byte_length;
         float dot_size;
+        struct zint_vector *vector;
         struct zint_render *rendered;
         int debug;
     };
 
 #define ZINT_VERSION_MAJOR      2
 #define ZINT_VERSION_MINOR      6
-#define ZINT_VERSION_RELEASE    3
+#define ZINT_VERSION_RELEASE    7
 
     /* Tbarcode 7 codes */
 #define BARCODE_CODE11		1
@@ -186,7 +220,7 @@ extern "C" {
     /* Tbarcode 10 codes */
 #define BARCODE_DOTCODE         115
 #define BARCODE_HANXIN          116
-
+    
     /*Tbarcode 11 codes*/
 #define BARCODE_MAILMARK        121
 
@@ -207,6 +241,7 @@ extern "C" {
 #define BARCODE_CODEONE		141
 #define BARCODE_GRIDMATRIX	142
 #define BARCODE_UPNQR           143
+#define BARCODE_ULTRA       144
 
 // Output options
 #define BARCODE_NO_ASCII	1
@@ -218,13 +253,12 @@ extern "C" {
 #define BOLD_TEXT               64
 #define CMYK_COLOUR             128
 #define BARCODE_DOTTY_MODE      256
+#define GS1_GS_SEPARATOR        512
 
 // Input data types
 #define DATA_MODE	0
 #define UNICODE_MODE	1
 #define GS1_MODE	2
-#define KANJI_MODE	3
-#define SJIS_MODE	4
 #define ESCAPE_MODE     8
 
 // Data Matrix specific options
@@ -244,6 +278,9 @@ extern "C" {
 
 // Raster file types
 #define OUT_BUFFER          0
+#define OUT_SVG_FILE        10
+#define OUT_EPS_FILE        20
+#define OUT_EMF_FILE        30
 #define	OUT_PNG_FILE        100
 #define	OUT_BMP_FILE        120
 #define OUT_GIF_FILE        140
@@ -276,8 +313,11 @@ extern "C" {
     ZINT_EXTERN int ZBarcode_Render(struct zint_symbol *symbol, const float width, const float height);
 
     ZINT_EXTERN int ZBarcode_Buffer(struct zint_symbol *symbol, int rotate_angle);
+    ZINT_EXTERN int ZBarcode_Buffer_Vector(struct zint_symbol *symbol, int rotate_angle);
     ZINT_EXTERN int ZBarcode_Encode_and_Buffer(struct zint_symbol *symbol, unsigned char *input, int length, int rotate_angle);
+    ZINT_EXTERN int ZBarcode_Encode_and_Buffer_Vector(struct zint_symbol *symbol, unsigned char *input, int length, int rotate_angle);
     ZINT_EXTERN int ZBarcode_Encode_File_and_Buffer(struct zint_symbol *symbol, char *filename, int rotate_angle);
+    ZINT_EXTERN int ZBarcode_Encode_File_and_Buffer_Vector(struct zint_symbol *symbol, char *filename, int rotate_angle);
 
     ZINT_EXTERN int ZBarcode_ValidID(int symbol_id);
     ZINT_EXTERN int ZBarcode_Version();
