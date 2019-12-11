@@ -6,6 +6,10 @@ BIN_NAME=$(PROJECT).dll
 OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)comp_ap.$(O) \
          .$(L)aplib$(L)aplib.lib \
+         .$(L)comp_blz.$(O) \
+         .$(L)brieflz.$(O) \
+         .$(L)blz_depack.$(O) \
+         .$(L)blz_depacks.$(O) \
          .$(L)comp_jc1.$(O) \
          .$(L)jcalg1$(L)jcalg1.lib \
          .$(L)comp_7z.$(O) \
@@ -18,6 +22,10 @@ OBJ_LIST=.$(L)CompLib.$(O) \
 
 SRC_LIST=.$(L)CompLib.$(P) \
          .$(L)comp_ap.$(C) \
+         .$(L)comp_blz.$(C) \
+         /Tp .$(L)brieflz$(L)brieflz.$(C) \
+         /Tp .$(L)brieflz$(L)blz_depack.$(C) \
+         /Tp .$(L)brieflz$(L)blz_depacks.$(C) \
          .$(L)comp_jc1.$(C) \
          .$(L)comp_7z.$(C) \
          .$(L)lzma$(L)LzFind.$(C) \
