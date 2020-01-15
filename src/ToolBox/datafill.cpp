@@ -167,37 +167,51 @@ static int64u str2size (const ansi_t *str)
 static bool_t write_data (int64u size)
 {
     sMD5    ctx;
-    FILE*   fpp;
+    fraw_t  fpp;
+    int64u  blk;
+    fp32_t  time;
+    byte_t  md5[16];
+    uint_t  tmp, rst;
     ansi_t  name[33];
-    byte_t  cha, md5[16];
 
     /* 写入临时文件 */
-    fpp = fopen("DATAFILL.TMP", "wb");
+    fpp = file_raw_openA("DATAFILL.TMP", CR_FO_WO | CR_FO_SEQ);
     if (fpp == NULL)
         return (FALSE);
     if (s_rdata == NULL)
         s_rdata = mem_malloc(FREAD_BLOCK);
-    if (setvbuf(fpp, (char*)s_rdata, _IOFBF, FREAD_BLOCK) != 0) {
-        fclose(fpp);
-        return (FALSE);
-    }
+    time = 0.0f;
     hash_md5_init(&ctx);
-    timer_set_base(s_profile);
-    for (int64u idx = 0; idx < size; idx++) {
-        cha = (byte_t)rand_get();
-        hash_md5_update(&ctx, &cha, sizeof(cha));
-        if (fwrite(&cha, 1, 1, fpp) != 1) {
-            fclose(fpp);
+
+    /* 分块生成写入 */
+    blk = (int64u)(size / FREAD_BLOCK);
+    rst = (uint_t)(size % FREAD_BLOCK);
+    for (; blk != 0; blk--) {
+        for (tmp = 0; tmp < FREAD_BLOCK; tmp++)
+            ((byte_t*)s_rdata)[tmp] = (byte_t)rand_get();
+        hash_md5_update(&ctx, s_rdata, FREAD_BLOCK);
+        timer_set_base(s_profile);
+        if (file_raw_write(s_rdata, FREAD_BLOCK, fpp) != FREAD_BLOCK) {
+            file_raw_close(fpp);
             return (FALSE);
         }
+        time += timer_get_delta(s_profile);
+    }
+    if (rst != 0) {
+        for (tmp = 0; tmp < rst; tmp++)
+            ((byte_t*)s_rdata)[tmp] = (byte_t)rand_get();
+        hash_md5_update(&ctx, s_rdata, rst);
+        timer_set_base(s_profile);
+        if (file_raw_write(s_rdata, rst, fpp) != rst) {
+            file_raw_close(fpp);
+            return (FALSE);
+        }
+        time += timer_get_delta(s_profile);
     }
     hash_md5_finish(md5, &ctx);
-    fclose(fpp);
-
-    fp32_t  time;
+    file_raw_close(fpp);
 
     /* 计算写入耗时 */
-    time = timer_get_delta(s_profile);
     time *= 1.024f;
     time = size / time;
 
