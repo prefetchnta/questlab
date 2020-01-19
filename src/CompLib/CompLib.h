@@ -45,6 +45,17 @@ CR_API leng_t   compr_jcalg1 (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_jcalg1 (void_t *dst, leng_t dstlen,
                                 const void_t *src, leng_t srclen);
+/* LZ4 */
+CR_API leng_t   compr_lz4 (void_t *dst, leng_t dstlen,
+                           const void_t *src, leng_t srclen,
+                           uint_t accel CR_DEFAULT(1));
+
+CR_API leng_t   compr_lz4hc (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen,
+                             uint_t level CR_DEFAULT(12));
+
+CR_API leng_t   uncompr_lz4 (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen);
 /* LZMA */
 typedef struct
 {
