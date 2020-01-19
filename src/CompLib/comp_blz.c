@@ -36,6 +36,7 @@ compr_blz (
 {
     void_t*         wrkmm;
     unsigned long   ssize;
+    unsigned long   stemp;
 
     ssize = (unsigned long)srclen;
     if (ssize != srclen)
@@ -44,7 +45,10 @@ compr_blz (
     if (dst == NULL)
         return (blz_max_packed_size(ssize));
 
-    wrkmm = mem_malloc(blz_workmem_size_level(ssize, level));
+    stemp = blz_workmem_size_level(ssize, level);
+    if (stemp == BLZ_ERROR)
+        return (0);
+    wrkmm = mem_malloc(stemp);
     if (wrkmm == NULL)
         return (0);
 
