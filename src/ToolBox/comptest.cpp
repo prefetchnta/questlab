@@ -53,6 +53,8 @@ static int16u   s_clr_fail;
 /* 附加的数组参数 */
 static ansi_t*  s_param1 = NULL;
 static ansi_t*  s_param2 = NULL;
+static bool_t   s_param1_free = FALSE;
+static bool_t   s_param2_free = FALSE;
 
 /*
 ---------------------------------------
@@ -193,10 +195,12 @@ static sbin_t load_plugin (sCOMP *param)
                 goto _failure2;
             }
             param->e_param = (void_t*)s_param1;
+            s_param1_free = TRUE;
         }
         else {
             vals = ini_key_intxU("ENC_PARM", 0, ini);
             param->e_param = (void_t*)vals;
+            s_param1_free = FALSE;
         }
         param->encode5 = sbin_exportT(sbin, text, enc_parm_t);
         mem_free(text);
@@ -224,15 +228,18 @@ static sbin_t load_plugin (sCOMP *param)
                 goto _failure2;
             }
             param->d_param = (void_t*)s_param2;
+            s_param2_free = TRUE;
         }
         else
         if (*s_param2 == '@') {
             s_param2 = s_param1;
             param->d_param = (void_t*)s_param2;
+            s_param2_free = FALSE;
         }
         else {
             vals = ini_key_intxU("DEC_PARM", 0, ini);
             param->d_param = (void_t*)vals;
+            s_param2_free = FALSE;
         }
         param->decode5 = sbin_exportT(sbin, text, enc_parm_t);
         mem_free(text);
@@ -318,6 +325,10 @@ int main (int argc, char *argv[])
     printf("==============================================================\n");
 
     /* 释放内存 */
+    if (s_param2_free)
+        mem_free(s_param2);
+    if (s_param1_free)
+        mem_free(s_param1);
     sbin_unload(plugin);
     timer_del(s_profile);
 
