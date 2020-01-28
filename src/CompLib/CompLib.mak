@@ -13,15 +13,17 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)comp_jc1.$(O) \
          .$(L)jcalg1$(L)jcalg1.lib \
          .$(L)comp_lz4.$(O) \
-         ..$(L)..$(L)lib$(L)libgcc.a \
          .$(L)lz4$(L)liblz4_static.lib \
+         .$(L)comp_zstd.$(O) \
+         .$(L)zstd$(L)libzstd_static.lib \
          .$(L)comp_7z.$(O) \
          .$(L)LzFind.$(O) \
          .$(L)LzFindMt.$(O) \
          .$(L)LzmaDec.$(O) \
          .$(L)LzmaEnc.$(O) \
          .$(L)LzmaLib.$(O) \
-         .$(L)Threads.$(O)
+         .$(L)Threads.$(O) \
+         ..$(L)..$(L)lib$(L)libgcc.a
 
 SRC_LIST=.$(L)CompLib.$(P) \
          .$(L)comp_ap.$(C) \
@@ -31,6 +33,7 @@ SRC_LIST=.$(L)CompLib.$(P) \
          /Tp .$(L)brieflz$(L)blz_depacks.$(C) \
          .$(L)comp_jc1.$(C) \
          .$(L)comp_lz4.$(C) \
+         .$(L)comp_zstd.$(C) \
          .$(L)comp_7z.$(C) \
          .$(L)lzma$(L)LzFind.$(C) \
          .$(L)lzma$(L)LzFindMt.$(C) \
