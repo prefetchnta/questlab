@@ -76,6 +76,32 @@ CR_API leng_t   compr_lzma (void_t *dst, leng_t dstlen,
 CR_API leng_t   uncompr_lzma (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen,
                               const byte_t props[8]);
+/* QuickLZ */
+CR_API leng_t   compr_qlz (void_t *dst, leng_t dstlen,
+                           const void_t *src, leng_t srclen,
+                           uint_t level CR_DEFAULT(1));
+
+CR_API leng_t   uncompr_qlz (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen,
+                             uint_t level CR_DEFAULT(1));
+
+CR_API leng_t   compr_qlz1 (void_t *dst, leng_t dstlen,
+                            const void_t *src, leng_t srclen);
+
+CR_API leng_t   uncompr_qlz1 (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen);
+
+CR_API leng_t   compr_qlz2 (void_t *dst, leng_t dstlen,
+                            const void_t *src, leng_t srclen);
+
+CR_API leng_t   uncompr_qlz2 (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen);
+
+CR_API leng_t   compr_qlz3 (void_t *dst, leng_t dstlen,
+                            const void_t *src, leng_t srclen);
+
+CR_API leng_t   uncompr_qlz3 (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen);
 /* ZSTD */
 CR_API leng_t   compr_zstd (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen,

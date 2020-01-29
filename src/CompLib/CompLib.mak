@@ -14,6 +14,10 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)jcalg1$(L)jcalg1.lib \
          .$(L)comp_lz4.$(O) \
          .$(L)lz4$(L)liblz4_static.lib \
+         .$(L)comp_qlz.$(O) \
+         .$(L)comp_qlz1.$(O) \
+         .$(L)comp_qlz2.$(O) \
+         .$(L)comp_qlz3.$(O) \
          .$(L)comp_zstd.$(O) \
          .$(L)zstd$(L)libzstd_static.lib \
          .$(L)comp_7z.$(O) \
@@ -33,6 +37,10 @@ SRC_LIST=.$(L)CompLib.$(P) \
          /Tp .$(L)brieflz$(L)blz_depacks.$(C) \
          .$(L)comp_jc1.$(C) \
          .$(L)comp_lz4.$(C) \
+         .$(L)comp_qlz.$(C) \
+         .$(L)comp_qlz1.$(C) \
+         .$(L)comp_qlz2.$(C) \
+         .$(L)comp_qlz3.$(C) \
          .$(L)comp_zstd.$(C) \
          .$(L)comp_7z.$(C) \
          .$(L)lzma$(L)LzFind.$(C) \
