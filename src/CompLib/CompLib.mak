@@ -20,7 +20,7 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)comp_qlz3.$(O) \
          .$(L)comp_zstd.$(O) \
          .$(L)zstd$(L)libzstd_static.lib \
-         .$(L)comp_7z.$(O) \
+         .$(L)comp_lzma.$(O) \
          .$(L)LzFind.$(O) \
          .$(L)LzFindMt.$(O) \
          .$(L)LzmaDec.$(O) \
@@ -42,7 +42,7 @@ SRC_LIST=.$(L)CompLib.$(P) \
          .$(L)comp_qlz2.$(C) \
          .$(L)comp_qlz3.$(C) \
          .$(L)comp_zstd.$(C) \
-         .$(L)comp_7z.$(C) \
+         .$(L)comp_lzma.$(C) \
          .$(L)lzma$(L)LzFind.$(C) \
          .$(L)lzma$(L)LzFindMt.$(C) \
          .$(L)lzma$(L)LzmaDec.$(C) \
