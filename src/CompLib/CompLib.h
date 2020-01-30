@@ -102,6 +102,12 @@ CR_API leng_t   compr_qlz3 (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_qlz3 (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen);
+/* SNAPPY */
+CR_API leng_t   compr_snappy (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen);
+
+CR_API leng_t   uncompr_snappy (void_t *dst, leng_t dstlen,
+                                const void_t *src, leng_t srclen);
 /* ZSTD */
 CR_API leng_t   compr_zstd (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen,

@@ -18,6 +18,8 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)comp_qlz1.$(O) \
          .$(L)comp_qlz2.$(O) \
          .$(L)comp_qlz3.$(O) \
+         .$(L)comp_snappy.$(O) \
+         .$(L)snappy$(L)snappy.lib \
          .$(L)comp_zstd.$(O) \
          .$(L)zstd$(L)libzstd_static.lib \
          .$(L)comp_lzma.$(O) \
@@ -27,7 +29,10 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)LzmaEnc.$(O) \
          .$(L)LzmaLib.$(O) \
          .$(L)Threads.$(O) \
-         ..$(L)..$(L)lib$(L)libgcc.a
+         ..$(L)..$(L)lib$(L)gcc$(L)libgcc.a \
+         ..$(L)..$(L)lib$(L)gcc$(L)libstdc++.a \
+         ..$(L)..$(L)lib$(L)gcc$(L)libpthread.a \
+         ..$(L)..$(L)lib$(L)gcc$(L)libmingwex.a
 
 SRC_LIST=.$(L)CompLib.$(P) \
          .$(L)comp_ap.$(C) \
@@ -41,6 +46,7 @@ SRC_LIST=.$(L)CompLib.$(P) \
          .$(L)comp_qlz1.$(C) \
          .$(L)comp_qlz2.$(C) \
          .$(L)comp_qlz3.$(C) \
+         .$(L)comp_snappy.$(C) \
          .$(L)comp_zstd.$(C) \
          .$(L)comp_lzma.$(C) \
          .$(L)lzma$(L)LzFind.$(C) \
