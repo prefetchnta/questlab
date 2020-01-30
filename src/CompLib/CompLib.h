@@ -84,19 +84,19 @@ CR_API leng_t   compr_qlz (void_t *dst, leng_t dstlen,
 CR_API leng_t   uncompr_qlz (void_t *dst, leng_t dstlen,
                              const void_t *src, leng_t srclen,
                              uint_t level CR_DEFAULT(1));
-
+/* QuickLZ (Level1) */
 CR_API leng_t   compr_qlz1 (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen);
 
 CR_API leng_t   uncompr_qlz1 (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen);
-
+/* QuickLZ (Level2) */
 CR_API leng_t   compr_qlz2 (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen);
 
 CR_API leng_t   uncompr_qlz2 (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen);
-
+/* QuickLZ (Level3) */
 CR_API leng_t   compr_qlz3 (void_t *dst, leng_t dstlen,
                             const void_t *src, leng_t srclen);
 
