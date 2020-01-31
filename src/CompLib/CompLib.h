@@ -38,6 +38,21 @@ CR_API leng_t   compr_blz (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_blz (void_t *dst, leng_t dstlen,
                              const void_t *src, leng_t srclen);
+/* BROTLI */
+typedef struct
+{
+        int32s  mode;   /*  0 - GENERIC, 1 - UTF8 TEXT, 2 - FONT WOFF 2.0 */
+        int32s  lgwin;          /* [10 - 30], default = 22 */
+        int32s  quality;        /* [ 0 - 11], default = 11 */
+
+} sBROTLI;
+
+CR_API leng_t   compr_brotli (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen,
+                              const sBROTLI *param);
+
+CR_API leng_t   uncompr_brotli (void_t *dst, leng_t dstlen,
+                                const void_t *src, leng_t srclen);
 /* JCALG1 */
 CR_API leng_t   compr_jcalg1 (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen,
