@@ -1,0 +1,19 @@
+/*
+    制作单独的运行文件
+*/
+
+data = io.readFileA ["Run.exe", @size1];
+text = io.readFileA ["Run.txt", @size2];
+if [size2 >= 16384]
+[
+    io.print ["out of size", type.string];
+    return;
+]
+mem.copy [data + 93416, text, size2];
+
+fp = io.fopenA ["new.exe", "wb"];
+io.fwrite [data, size1, 1, fp];
+io.fclose [fp];
+
+mem.free [text];
+mem.free [data];
