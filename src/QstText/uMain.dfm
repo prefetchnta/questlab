@@ -59,7 +59,8 @@ object frmMain: TfrmMain
         ' Lua CUI'
         ' Lua GUI'
         ' Tcl CUI'
-        ' Tcl GUI')
+        ' Tcl GUI'
+        ' Pandora')
     end
     object btnRefresh: TButton
       Left = 298

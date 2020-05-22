@@ -249,6 +249,7 @@ typedef struct
 #define QST_ACT_CLUA_GUI    0x05    /* Lua GUI */
 #define QST_ACT_CTCL_CUI    0x06    /* Tcl CUI */
 #define QST_ACT_CTCL_GUI    0x07    /* Tcl GUI */
+#define QST_ACT_PNDR_CUI    0x08    /* Pandora */
 
 /* 扩展名匹配类型列表 */
 static const sQST_MATCH s_fmatch[] =
@@ -265,6 +266,8 @@ static const sQST_MATCH s_fmatch[] =
     /* ------------------------ */
     { QST_ACT_CTCL_CUI, ".tcl"  },
     { QST_ACT_CTCL_GUI, ".wish" },
+    /* ------------------------ */
+    { QST_ACT_PNDR_CUI, ".pndr" },
 };
 
 /*
@@ -826,6 +829,12 @@ qst_file_action (
             if (!qst_save_file(QST_TMP_SCRIPT ".wish", CR_UTF8))
                 return;
             misc_call_exe("RunTcl.exe " QST_TMP_SCRIPT ".wish", FALSE, TRUE);
+            break;
+
+        case QST_ACT_PNDR_CUI:  /* Pandora */
+            if (!qst_save_file(QST_TMP_SCRIPT ".pndr", CR_UTF8))
+                return;
+            misc_call_exe("Pandora.exe " QST_TMP_SCRIPT ".pndr", FALSE, FALSE);
             break;
     }
 }
