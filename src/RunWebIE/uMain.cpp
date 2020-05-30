@@ -35,6 +35,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
       VARIANT_BOOL *Cancel)
 {
     leng_t      size;
+    bool_t      hide;
     bool_t      rett;
     ansi_t*     line;
     ansi_t*     file;
@@ -59,6 +60,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         mem_free(urla);
         if (line == NULL)
             return;
+        hide = TRUE;
         rett = TRUE;
     }
     else
@@ -71,6 +73,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         mem_free(urla);
         if (line == NULL)
             return;
+        hide = TRUE;
         rett = TRUE;
     }
     else
@@ -83,6 +86,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         mem_free(urla);
         if (line == NULL)
             return;
+        hide = TRUE;
         rett = TRUE;
     }
     else
@@ -95,6 +99,20 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         mem_free(urla);
         if (line == NULL)
             return;
+        hide = TRUE;
+        rett = TRUE;
+    }
+    else
+    if (chr_cmpA(urla, "pandora://", 10) == 0)
+    {
+        /* Pandora 执行脚本 */
+        *Cancel = TRUE;
+        file = urla + 10;
+        line = str_fmtA("Pandora.exe \"%s\"", file);
+        mem_free(urla);
+        if (line == NULL)
+            return;
+        hide = FALSE;
         rett = TRUE;
     }
     else
@@ -112,7 +130,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
             line[size - 2] = '\"';
             line[size - 1] = 0x00;
         }
-        rett = misc_call_exe(line, FALSE, TRUE);
+        rett = misc_call_exe(line, FALSE, hide);
         mem_free(line);
         if (rett)
             this->Close();

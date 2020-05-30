@@ -1,0 +1,5 @@
+/*
+    测试程序
+*/
+
+io.print ["Hello World!\n", type.string];
