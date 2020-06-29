@@ -776,6 +776,9 @@
         <message name="UnbalancedParenthesis">
           unbalanced parenthesis
         </message>
+        <message name="UndefinedVariable">
+          undefined variable
+        </message>
         <message name="UnrecognizedAttribute">
           unrecognized attribute
         </message>
@@ -995,6 +998,9 @@
         </message>
         <message name="NoSuchElement">
           no such element in list
+        </message>
+        <message name="SetReadOnlyProperty">
+          attempt to set read-only property
         </message>
         <message name="UnknownImageProperty">
           unknown image property
