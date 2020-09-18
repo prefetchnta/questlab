@@ -3,7 +3,7 @@
 //
 // Backwards dynamic programming parse
 //
-// Copyright (c) 2016-2018 Joergen Ibsen
+// Copyright (c) 2016-2020 Joergen Ibsen
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,11 +28,11 @@
 #ifndef BRIEFLZ_SSPARSE_H_INCLUDED
 #define BRIEFLZ_SSPARSE_H_INCLUDED
 
-static unsigned long
-blz_ssparse_workmem_size(unsigned long src_size)
+static size_t
+blz_ssparse_workmem_size(size_t src_size)
 {
 	return (LOOKUP_SIZE < 2 * src_size ? 3 * src_size : src_size + LOOKUP_SIZE)
-	     * sizeof(unsigned long);
+	     * sizeof(blz_word);
 }
 
 // Backwards dynamic programming parse like Storer–Szymanski, but checking all
@@ -56,6 +56,8 @@ blz_pack_ssparse(const void *src, void *dst, unsigned long src_size, void *workm
 	struct blz_state bs;
 	const unsigned char *const in = (const unsigned char *) src;
 	const unsigned long last_match_pos = src_size > 4 ? src_size - 4 : 0;
+
+	assert(src_size < BLZ_WORD_MAX);
 
 	// Check for empty input
 	if (src_size == 0) {
@@ -86,7 +88,9 @@ blz_pack_ssparse(const void *src, void *dst, unsigned long src_size, void *workm
 			// Copy literal
 			*bs.next_out++ = in[i];
 		}
-		goto finalize;
+
+		// Return compressed size
+		return (unsigned long) (blz_finalize(&bs) - (unsigned char *) dst);
 	}
 
 	// With a bit of careful ordering we can fit in 3 * src_size words.
@@ -99,11 +103,11 @@ blz_pack_ssparse(const void *src, void *dst, unsigned long src_size, void *workm
 	// One detail is that we actually use src_size + 1 elements of cost,
 	// but we put mpos after it, where we do not need the first element.
 	//
-	unsigned long *const prev = (unsigned long *) workmem;
-	unsigned long *const mpos = prev + src_size;
-	unsigned long *const mlen = mpos + src_size;
-	unsigned long *const cost = prev;
-	unsigned long *const lookup = mpos;
+	blz_word *const prev = (blz_word *) workmem;
+	blz_word *const mpos = prev + src_size;
+	blz_word *const mlen = mpos + src_size;
+	blz_word *const cost = prev;
+	blz_word *const lookup = mpos;
 
 	// Phase 1: Build hash chains
 	const int bits = 2 * src_size < LOOKUP_SIZE ? BLZ_HASH_BITS : blz_log2(src_size);
@@ -176,7 +180,7 @@ blz_pack_ssparse(const void *src, void *dst, unsigned long src_size, void *workm
 				// Find lowest cost match length
 				for (unsigned long i = max_len + 1; i <= len; ++i) {
 					unsigned long match_cost = blz_match_cost(cur - pos - 1, i);
-					assert(match_cost < ULONG_MAX - cost[cur + i]);
+					assert(match_cost < BLZ_WORD_MAX - cost[cur + i]);
 					unsigned long cost_here = match_cost + cost[cur + i];
 
 					if (cost_here < min_cost) {
@@ -195,7 +199,7 @@ blz_pack_ssparse(const void *src, void *dst, unsigned long src_size, void *workm
 				}
 			}
 
-			if (len >= accept_len) {
+			if (len >= accept_len || len == len_limit) {
 				break;
 			}
 		}
@@ -228,17 +232,8 @@ blz_pack_ssparse(const void *src, void *dst, unsigned long src_size, void *workm
 		}
 	}
 
-finalize:
-	// Trailing one bit to delimit any literal tags
-	blz_putbit(&bs, 1);
-
-	// Shift last tag into position and store
-	bs.tag <<= bs.bits_left;
-	bs.tag_out[0] = bs.tag & 0x00FF;
-	bs.tag_out[1] = (bs.tag >> 8) & 0x00FF;
-
 	// Return compressed size
-	return (unsigned long) (bs.next_out - (unsigned char *) dst);
+	return (unsigned long) (blz_finalize(&bs) - (unsigned char *) dst);
 }
 
 #endif /* BRIEFLZ_SSPARSE_H_INCLUDED */

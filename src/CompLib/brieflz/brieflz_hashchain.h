@@ -3,7 +3,7 @@
 //
 // Lazy parsing with chains of previous positions
 //
-// Copyright (c) 2016-2018 Joergen Ibsen
+// Copyright (c) 2016-2020 Joergen Ibsen
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -28,10 +28,10 @@
 #ifndef BRIEFLZ_HASHCHAIN_H_INCLUDED
 #define BRIEFLZ_HASHCHAIN_H_INCLUDED
 
-static unsigned long
-blz_hashchain_workmem_size(unsigned long src_size)
+static size_t
+blz_hashchain_workmem_size(size_t src_size)
 {
-	return (LOOKUP_SIZE + src_size) * sizeof(unsigned long);
+	return (LOOKUP_SIZE + src_size) * sizeof(blz_word);
 }
 
 // Lazy parsing with chains of previous positions.
@@ -49,11 +49,13 @@ blz_pack_hashchain(const void *src, void *dst, unsigned long src_size, void *wor
                    const unsigned long max_depth, const unsigned long accept_len)
 {
 	struct blz_state bs;
-	unsigned long *const lookup = (unsigned long *) workmem;
-	unsigned long *const prev = (unsigned long *) workmem + LOOKUP_SIZE;
+	blz_word *const lookup = (blz_word *) workmem;
+	blz_word *const prev = lookup + LOOKUP_SIZE;
 	const unsigned char *const in = (const unsigned char *) src;
 	const unsigned long last_match_pos = src_size > 4 ? src_size - 4 : 0;
 	unsigned long cur = 0;
+
+	assert(src_size < BLZ_WORD_MAX);
 
 	// Check for empty input
 	if (src_size == 0) {
