@@ -68,6 +68,13 @@ CR_API leng_t   compr_jcalg1 (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_jcalg1 (void_t *dst, leng_t dstlen,
                                 const void_t *src, leng_t srclen);
+/* LIZARD */
+CR_API leng_t   compr_lizard (void_t *dst, leng_t dstlen,
+                              const void_t *src, leng_t srclen,
+                              uint_t level CR_DEFAULT(17));
+
+CR_API leng_t   uncompr_lizard (void_t *dst, leng_t dstlen,
+                                const void_t *src, leng_t srclen);
 /* LZ4 */
 CR_API leng_t   compr_lz4 (void_t *dst, leng_t dstlen,
                            const void_t *src, leng_t srclen,
@@ -78,6 +85,13 @@ CR_API leng_t   compr_lz4hc (void_t *dst, leng_t dstlen,
                              uint_t level CR_DEFAULT(12));
 
 CR_API leng_t   uncompr_lz4 (void_t *dst, leng_t dstlen,
+                             const void_t *src, leng_t srclen);
+/* LZ5 */
+CR_API leng_t   compr_lz5 (void_t *dst, leng_t dstlen,
+                           const void_t *src, leng_t srclen,
+                           uint_t level CR_DEFAULT(17));
+
+CR_API leng_t   uncompr_lz5 (void_t *dst, leng_t dstlen,
                              const void_t *src, leng_t srclen);
 /* LZMA */
 typedef struct

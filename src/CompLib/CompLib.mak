@@ -14,8 +14,12 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)brotli$(L)libbrotli.a \
          .$(L)comp_jc1.$(O) \
          .$(L)jcalg1$(L)jcalg1.lib \
+         .$(L)comp_lizard.$(O) \
+         .$(L)lizard$(L)liblizard_static.lib \
          .$(L)comp_lz4.$(O) \
          .$(L)lz4$(L)liblz4_static.lib \
+         .$(L)comp_lz5.$(O) \
+         .$(L)lz5$(L)liblz5_static.lib \
          .$(L)comp_qlz.$(O) \
          .$(L)comp_qlz1.$(O) \
          .$(L)comp_qlz2.$(O) \
@@ -57,7 +61,9 @@ SRC_LIST=.$(L)CompLib.$(P) \
          /Tp .$(L)brieflz$(L)blz_depacks.$(C) \
          .$(L)comp_brotli.$(C) \
          .$(L)comp_jc1.$(C) \
+         .$(L)comp_lizard.$(C) \
          .$(L)comp_lz4.$(C) \
+         .$(L)comp_lz5.$(C) \
          .$(L)comp_qlz.$(C) \
          .$(L)comp_qlz1.$(C) \
          .$(L)comp_qlz2.$(C) \
