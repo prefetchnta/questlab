@@ -31,6 +31,19 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)LzmaEnc.$(O) \
          .$(L)LzmaLib.$(O) \
          .$(L)Threads.$(O) \
+         .$(L)comp_density.$(O) \
+         .$(L)globals.$(O) \
+         .$(L)algorithms.$(O) \
+         .$(L)dictionaries.$(O) \
+         .$(L)chameleon_decode.$(O) \
+         .$(L)chameleon_encode.$(O) \
+         .$(L)cheetah_decode.$(O) \
+         .$(L)cheetah_encode.$(O) \
+         .$(L)lion_decode.$(O) \
+         .$(L)lion_encode.$(O) \
+         .$(L)lion_form_model.$(O) \
+         .$(L)buffer.$(O) \
+         .$(L)header.$(O) \
          ..$(L)..$(L)lib$(L)gcc$(L)libgcc.a \
          ..$(L)..$(L)lib$(L)gcc$(L)libstdc++.a \
          ..$(L)..$(L)lib$(L)gcc$(L)libpthread.a \
@@ -57,7 +70,20 @@ SRC_LIST=.$(L)CompLib.$(P) \
          .$(L)lzma$(L)LzmaDec.$(C) \
          .$(L)lzma$(L)LzmaEnc.$(C) \
          .$(L)lzma$(L)LzmaLib.$(C) \
-         .$(L)lzma$(L)Threads.$(C)
+         .$(L)lzma$(L)Threads.$(C) \
+         /Tp .$(L)comp_density.$(C) \
+         /Tp .$(L)density$(L)globals.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)algorithms.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)dictionaries.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)chameleon$(L)core$(L)chameleon_decode.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)chameleon$(L)core$(L)chameleon_encode.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)cheetah$(L)core$(L)cheetah_decode.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)cheetah$(L)core$(L)cheetah_encode.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)lion$(L)core$(L)lion_decode.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)lion$(L)core$(L)lion_encode.$(C) \
+         /Tp .$(L)density$(L)algorithms$(L)lion$(L)forms$(L)lion_form_model.$(C) \
+         /Tp .$(L)density$(L)buffers$(L)buffer.$(C) \
+         /Tp .$(L)density$(L)structure$(L)header.$(C)
 
 build_all:
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /I. $(SRC_LIST)

@@ -53,6 +53,14 @@ CR_API leng_t   compr_brotli (void_t *dst, leng_t dstlen,
 
 CR_API leng_t   uncompr_brotli (void_t *dst, leng_t dstlen,
                                 const void_t *src, leng_t srclen);
+/* DENSITY */
+/* CHAMELEON = 1, CHEETAH = 2, LION = 3 */
+CR_API leng_t   compr_density (void_t *dst, leng_t dstlen,
+                               const void_t *src, leng_t srclen,
+                               uint_t type CR_DEFAULT(1));
+
+CR_API leng_t   uncompr_density (void_t *dst, leng_t dstlen,
+                                 const void_t *src, leng_t srclen);
 /* JCALG1 */
 CR_API leng_t   compr_jcalg1 (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen,
