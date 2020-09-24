@@ -572,7 +572,6 @@ blz_pack(const void *src, void *dst, unsigned long src_size, void *workmem)
 #include "brieflz_hashbucket.h"
 #include "brieflz_lazy.h"
 #include "brieflz_leparse.h"
-#include "brieflz_ssparse.h"
 
 size_t
 blz_workmem_size_level(size_t src_size, int level)
@@ -592,9 +591,8 @@ blz_workmem_size_level(size_t src_size, int level)
 		return blz_leparse_workmem_size(src_size);
 	case 8:
 	case 9:
-		return blz_btparse_workmem_size(src_size);
 	case 10:
-		return blz_ssparse_workmem_size(src_size);
+		return blz_btparse_workmem_size(src_size);
 	default:
 		return (size_t) -1;
 	}
@@ -624,7 +622,7 @@ blz_pack_level(const void *src, void *dst, unsigned long src_size,
 	case 9:
 		return blz_pack_btparse(src, dst, src_size, workmem, 32, 224);
 	case 10:
-		return blz_pack_ssparse(src, dst, src_size, workmem, ULONG_MAX, ULONG_MAX);
+		return blz_pack_btparse(src, dst, src_size, workmem, ULONG_MAX, ULONG_MAX);
 	default:
 		return BLZ_ERROR;
 	}
