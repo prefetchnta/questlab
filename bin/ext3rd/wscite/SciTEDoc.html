@@ -289,6 +289,8 @@ NameError: name 'mistake' is not defined
         <tr><td>\&lt;ooo&gt;</td><td>octal number specified by 1, 2, or 3 digits</td></tr>
         <tr><td>\x&lt;hh&gt;</td><td>hexadecimal number specified by 2 digits</td></tr>
        </table>
+       Windows paths normally use "\" to separate directories and these should be doubled in commands.
+       "/" may be used instead to separate directories on Windows.<br />
        The following opens /big/icon.txt:<br />
        <div class="example">
        SciTE -open:/big/icon.txt
@@ -829,6 +831,11 @@ NameError: name 'mistake' is not defined
        Values may include the values of other variables by using $(variablename).
       </p>
       <p>
+      The "=" function compares strings (separated by ";") and if they are the same yields "1" else "0".
+      To test if the value of "Status" is "2":
+      <span class="example">$(= $(Status);2)</span>
+      </p>
+      <p>
       The "star" function may be used to collect the values of all variables that start with a particular prefix.
       <span class="example">all.languages=$(star&nbsp;language.)</span> finds every variable
       that starts with "language." and assigns that to all.languages.
@@ -876,6 +883,8 @@ NameError: name 'mistake' is not defined
                <tr id='property-APIPath'><td>APIPath</td><td>list of full paths of API files from api.<i>filepattern</i></td></tr>
                <tr id='property-AbbrevPath'><td>AbbrevPath</td><td>full path of abbreviations file</td></tr>
                <tr id='property-ScaleFactor'><td>ScaleFactor</td><td>the screen's scaling factor with a default value of 100</td></tr>
+               <tr id='property-Appearance'><td>Appearance</td><td>whether the system is using a light (0) or dark (1) theme</td></tr>
+               <tr id='property-Contrast'><td>Contrast</td><td>1 when the system is in high-contrast mode else 0</td></tr>
         </table>
     <p>
        Some features use file name patterns to see which variable to use. For example, the lexer
@@ -935,16 +944,26 @@ NameError: name 'mistake' is not defined
     <p>
       <a name="property-if"></a>
       The 'if' statement takes one argument which is a
-      symbol that may be defined earlier in this property set file or in a base
-      property set. If the symbol evaluates to '0' then the test fails. An empty
-      string or not present symbol evaluates to 0. Into the very top property set
+      symbol or expression that may be defined earlier in this property set file or in a base
+      property set. If the symbol evaluates to '0' then the test fails.
+      An empty string or not present symbol evaluates to 0.
+      An expression that evaluates to 0 or empty fails.
+      Into the very top property set
       is inserted one of 'PLAT_GTK' with value '1',
       'PLAT_WIN' with value '1', or 'PLAT_MAC' with value '1'.
       For both PLAT_GTK and PLAT_MAC, 'PLAT_UNIX' is inserted with value '1'.
+      The system properties Appearance and Contrast are also available for use in expressions.
       If the test succeeds then following indented statements are executed. When a
       non-indented statement is found the if clause is finished. Only simple set
       statements are allowed in if clauses. The evaluation of if statements occurs
       at read time, not at evaluation time.
+      A reread is forced if either of the system properties changes.
+     <div class="example">
+     if PLAT_WIN<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;caret.fore=#00FF00<br />
+     if $(= $(Appearance);1)<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;caret.fore=#FFFFFF<br />
+     </div>
     </p>
     <p>
       <a name="property-module"></a>
@@ -2356,6 +2375,14 @@ NameError: name 'mistake' is not defined
 	<td>fold.quotes.python</td>
 	<td>This option enables folding multi-line quoted strings when using the Python lexer.</td>
 	</tr>
+	<tr id='property-fold.raku.comment.multiline'>
+	<td>fold.raku.comment.multiline</td>
+	<td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
+	</tr>
+	<tr id='property-fold.raku.comment.pod'>
+	<td>fold.raku.comment.pod</td>
+	<td>Set this property to 0 to disable folding POD comments when fold.comment=1.</td>
+	</tr>
 	<tr id='property-fold.rust.comment.explicit'>
 	<td>fold.rust.comment.explicit</td>
 	<td>Set this property to 0 to disable folding explicit fold points when fold.comment=1.</td>
@@ -2388,9 +2415,17 @@ NameError: name 'mistake' is not defined
 	<td>fold.verilog.flags</td>
 	<td>This option enables folding module definitions. Typically source files contain only one module definition so this option is somewhat useless.</td>
 	</tr>
+	<tr id='property-fold.xml.at.tag.open'>
+	<td>fold.xml.at.tag.open</td>
+	<td>Enable folding for XML at the start of open tag. The default is off.</td>
+	</tr>
 	<tr id='property-html.tags.case.sensitive'>
 	<td>html.tags.case.sensitive</td>
 	<td>For XML and HTML, setting this property to 1 will make tags match in a case sensitive way which is the expected behaviour for XML and XHTML.</td>
+	</tr>
+	<tr id='property-lexer.as.comment.character'>
+	<td>lexer.as.comment.character</td>
+	<td>Overrides the default comment character (which is ';' for asm and '#' for as).</td>
 	</tr>
 	<tr id='property-lexer.asm.comment.delimiter'>
 	<td>lexer.asm.comment.delimiter</td>
@@ -2534,7 +2569,7 @@ NameError: name 'mistake' is not defined
 	</tr>
 	<tr id='property-lexer.python.unicode.identifiers'>
 	<td>lexer.python.unicode.identifiers</td>
-	<td>Set to 0 to not recognise Python 3 unicode identifiers.</td>
+	<td>Set to 0 to not recognise Python 3 Unicode identifiers.</td>
 	</tr>
 	<tr id='property-lexer.rust.fold.at.else'>
 	<td>lexer.rust.fold.at.else</td>
@@ -2595,11 +2630,13 @@ NameError: name 'mistake' is not defined
         This is a '|' delimited list of keys and the commands they produce.
         The commands are either <a href="CommandValues.html">string or numeric IDs</a>.
         Numeric IDs above 2000 are Scintilla commands and are sent to the focussed pane.
-        Named IDs and numeric IDs below 2000 are SciTE menu commands.
-        The modifiers are Ctrl, Shift, Alt, and Super and the named keys are Left,
-        Right, Up, Down, Insert, End, Home, Enter, Space, Tab, KeypadPlus, KeypadMinus,
-        KeypadMultiply, KeypadDivide, Escape, Delete, PageUp, PageDown, Slash,
-        Question, Equal, Win.
+        Named IDs and numeric IDs below 2000 are SciTE menu commands.<br/>
+        The modifiers are Ctrl, Shift, Alt, <span class="gtkonly">Super</span>, and <span class="osxonly">Control</span>.<br/>
+        The named keys are Left, Right, Up, Down, Insert, End, Home, Enter, Space, Tab,
+        KeypadPlus, KeypadMinus, KeypadMultiply, KeypadDivide, <span class="windowsonly">KeypadDecimal</span>,
+        Escape, Delete, PageUp, PageDown,
+        <span class="gtkonly">Slash</span>, <span class="gtkonly">Question</span>, <span class="gtkonly">Equal</span>,
+        Win, Menu.
         <br/>
         On macOS the command key uses the modifier Ctrl+ as this eases using one setting between platforms and
         the control key uses the modifier Control+.
@@ -3428,6 +3465,31 @@ imports.include=fortran lisp
 			 triggered by an initial line <span class="example">#!/usr/bin/env python</span> so the file will be treated as Python.
         </td>
       </tr>
+      <tr id='property-lexillapath'>
+      	<td>
+      	lexilla.path
+      	</td>
+      	<td>
+          Specifies a ';' separated list of dynamic lexer libraries.
+          Each entry is a path to a dynamic library that implements the Lexilla protocol.
+          If there is no extension then the platform standard extension '.so', '.dll', or '.dylib' is appended.
+          The special entry '.' which is the default refers to the 'Lexilla' dynamic library distributed with SciTE.
+      	</td>
+      </tr>
+      <tr id='property-lexillacontext'>
+      	<td>
+      	lexilla.context.<i>contextspecific</i>
+      	</td>
+      	<td>
+          Lexer libraries may require initialisation parameters and these can be specified by prefixing the
+          library-specific names with 'lexilla.context.'.
+          For example, a lexer library that needs to read in XML files containing lexer definitions may require a
+          xmllexer.directory property which is provided with lexilla.context.xmllexer.directory.
+          <div class="example">
+                lexilla.context.xmllexer.directory=/home/example/xmllexer/definitions
+          </div>
+      	</td>
+      </tr>
       <tr id='property-lexerpath'>
       	<td>
       	lexerpath.<i>filepattern</i>
@@ -3684,7 +3746,7 @@ imports.include=fortran lisp
           command.save.before.<i>number</i>.<i>filepattern</i><br />
           <span class="windowsonly">command.input.<i>number</i>.<i>filepattern</i></span><br />
           command.replace.selection.<i>number</i>.<i>filepattern</i><br />
-          <span class="windowsonly">command.quiet.<i>number</i>.<i>filepattern</i></span><br />
+          command.quiet.<i>number</i>.<i>filepattern</i><br />
           command.mode.<i>number</i>.<i>filepattern</i><br />
           command.shortcut.<i>number</i>.<i>filepattern</i>
         </td>
@@ -3722,7 +3784,7 @@ imports.include=fortran lisp
         command.replace.selection will send the output to whatever window is active <i>when
         the command completes</i>.<br />
 
-        A final command property that is currently supported only on windows is command.quiet.
+        A final command property is command.quiet.
         A value of 1 indicates that the command I/O should not be echoed to the output pane.
         This may be useful in combination with command.input and command.replace.selection.<br />
 	<br />
@@ -4409,6 +4471,15 @@ groupundo - yes or no
           property, SciTE looks for the file in the standard property file locations,
           starting with the local directory.  This can be very useful in combination
           with a local SciTE.properties file.
+        </td>
+      </tr>
+      <tr class="windowsonly" id='property-create.hidden.console'>
+        <td>
+          create.hidden.console
+        </td>
+        <td>
+          On Windows, to prevent a console window appearing momentarily whenever the Lua
+          os.execute or io.popen functions are called to execute programs, set create.hidden.console to 1.
         </td>
       </tr>
       <tr id='property-caret.sticky'>

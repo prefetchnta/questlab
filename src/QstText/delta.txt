@@ -28,11 +28,10 @@ are.you.sure.on.reload=1
 reload.preserves.undo=1
 check.if.already.open=1
 =============================================
-file.size.no.styles=1000000
-=============================================
 #code.page=0
 =============================================
 	font.monospace=font:Consolas,size:11
+	font.monospace.small=$(font.monospace)
 	font.base=$(font.monospace)
 	font.small=$(font.monospace)
 	font.comment=$(font.monospace)
