@@ -6,22 +6,21 @@
 ##################################
 
 import os
-from ctypes import *
 
 dirs = {}
 dlls = []
 okays = 0
 count = 0
 max_len = 0
-sbin = WinDLL("KERNEL32.dll")
-sbin.GetLastError.restype = c_ulong
-sbin.LoadLibraryA.restype = c_void_p
-sbin.LoadLibraryA.argtypes = [c_char_p]
 ext_list = [".dll", ".bpl", ".pyd"]
+nop_list = []
 for dirpath, dirnames, filenames in os.walk("."):
     if len(filenames) == 0:
         continue
     for filename in filenames:
+        pth, fnm = os.path.split(filename)
+        if fnm.lower() in nop_list:
+            continue
         ext = os.path.splitext(filename)[1].lower()
         if ext not in ext_list:
             continue
@@ -33,18 +32,17 @@ for dirpath, dirnames, filenames in os.walk("."):
         if max_len < leng:
             max_len = leng
         dlls.append(full_path)
+path_base = os.environ["PATH"]
 for full_path in dlls:
     leng = len(full_path)
     if leng >= max_len:
         leng = 1
     else:
         leng = max_len - leng + 1
-    sdll = sbin.LoadLibraryA(full_path.encode(encoding="gb2312"))
-    if sdll == None:
-        print(full_path, "-" * leng, "[FAIL] %u" % sbin.GetLastError())
-    else:
+    os.environ["PATH"] = os.path.dirname(full_path) + ";" + path_base
+    cmd_str = "sbinload.exe %u %s" % (leng, full_path)
+    if os.system(cmd_str) == 0:
         okays += 1
-        print(full_path, "#" * leng, "[OKAY]")
     count += 1
 print("TOTAL:", count, "OKAY:", okays, "FAIL:", count - okays)
 input()
