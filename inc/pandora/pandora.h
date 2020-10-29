@@ -1,10 +1,10 @@
 /*
 ===============================================================================
-*   ÅË¶àÀ­½Å±¾
+*   æ½˜å¤šæ‹‰è„šæœ¬
 *               by prefetchnta
 *
-*   2007-12-25  ÐÞ¸Ä·ç¸ñ
-*   2008-09-05  ÒÆ³ö°æ±¾ÐÅÏ¢
+*   2007-12-25  ä¿®æ”¹é£Žæ ¼
+*   2008-09-05  ç§»å‡ºç‰ˆæœ¬ä¿¡æ¯
 ===============================================================================
 */
 
@@ -15,18 +15,18 @@
 
 /*
 ===============================================================================
-*   ±äÁ¿ÀàÐÍ
+*   å˜é‡ç±»åž‹
 ===============================================================================
 */
-#define PNDR_INT        0   /* ÕûÊý     */
-#define PNDR_REAL       4   /* ÊµÊý     */
-#define PNDR_FUNC       1   /* ½Å±¾º¯Êý */
-#define PNDR_CALL_C     2   /* C   µ÷ÓÃ */
-#define PNDR_CALL_CPP   3   /* C++ µ÷ÓÃ */
+#define PNDR_INT        0   /* æ•´æ•°     */
+#define PNDR_REAL       4   /* å®žæ•°     */
+#define PNDR_FUNC       1   /* è„šæœ¬å‡½æ•° */
+#define PNDR_CALL_C     2   /* C   è°ƒç”¨ */
+#define PNDR_CALL_CPP   3   /* C++ è°ƒç”¨ */
 
 /*
 ===============================================================================
-*   ±äÁ¿½á¹¹
+*   å˜é‡ç»“æž„
 ===============================================================================
 */
 #pragma pack(push)
@@ -34,7 +34,7 @@
 
 typedef struct  _pndr_var
 {
-        /* ±äÁ¿Êý¾Ý */
+        /* å˜é‡æ•°æ® */
         union
         {
 #ifdef  PNDR_SUPPORT_REAL
@@ -45,7 +45,7 @@ typedef struct  _pndr_var
                 void*       pointer;
         };
 
-        /* ±äÁ¿ÐÅÏ¢ */
+        /* å˜é‡ä¿¡æ¯ */
         uint_t      type;
         uint_t      param;
         uint_t      clear;
@@ -56,7 +56,7 @@ typedef struct  _pndr_var
 
 /*
 ===============================================================================
-*   ±í´ïÊ½½á¹¹
+*   è¡¨è¾¾å¼ç»“æž„
 ===============================================================================
 */
 typedef struct  _pndr_exp
@@ -67,7 +67,7 @@ typedef struct  _pndr_exp
 
 /*
 ===============================================================================
-*   ±äÁ¿±í½á¹¹
+*   å˜é‡è¡¨ç»“æž„
 ===============================================================================
 */
 typedef struct  _pndr_table
@@ -85,7 +85,7 @@ typedef struct  _pndr_table
 
 /*
 ===============================================================================
-*   ×Ö·û´®³£Á¿½á¹¹
+*   å­—ç¬¦ä¸²å¸¸é‡ç»“æž„
 ===============================================================================
 */
 typedef struct  _pndr_string
@@ -99,59 +99,59 @@ typedef struct  _pndr_string
 
 /*
 ===============================================================================
-*   ×´Ì¬»ú½á¹¹
+*   çŠ¶æ€æœºç»“æž„
 ===============================================================================
 */
 typedef struct  _pndr_state
 {
-        /* ¹Ø¼ü×Ö±êÖ¾ */
+        /* å…³é”®å­—æ ‡å¿— */
         uint_t          flag_if;
         uint_t          flag_loop;
         uint_t          flag_time;
 
-        /* ´úÂë¶Ñ */
+        /* ä»£ç å † */
         uint_t          exe_ptr;
         byte_t*         exe_heap;
 
-        /* ×Ö·û´®ÁÐ±í */
+        /* å­—ç¬¦ä¸²åˆ—è¡¨ */
         uint_t          str_num;
         uint_t          str_size;
         pndr_string*    str_list;
 
-        /* ¼Ä´æÆ÷Õ» */
+        /* å¯„å­˜å™¨æ ˆ */
         uint_t          reg_sp;
         uint_t          reg_size;
         pndr_var*       reg_stack;
 
-        /* ±í´ïÊ½Õ» */
+        /* è¡¨è¾¾å¼æ ˆ */
         uint_t          exp_sp;
         uint_t          exp_size;
         pndr_exp*       exp_stack;
 
-        /* Ñ­»·½áÎ²Õ» */
+        /* å¾ªçŽ¯ç»“å°¾æ ˆ */
         uint_t          loop_sp;
         uint_t          loop_size;
         byte_t**        loop_stack;
 
-        /* È«¾Ö±äÁ¿¶Ñ */
+        /* å…¨å±€å˜é‡å † */
         pndr_table      global[PNDR_VAR_HEAP];
 
-        /* ´íÎóÐÅÏ¢ */
+        /* é”™è¯¯ä¿¡æ¯ */
         const char*     error;
 
-        /* ¾Ö²¿×´Ì¬»úÕ» */
+        /* å±€éƒ¨çŠ¶æ€æœºæ ˆ */
         uint_t                  local_sp;
         uint_t                  local_size;
         struct _pndr_state*     local_state;
 
-        /* ÄÚ´æ·ÖÅäº¯Êý */
+        /* å†…å­˜åˆ†é…å‡½æ•° */
         void*   (*pndr_alloc) (uint_t size);
         void    (*pndr_free ) (void *buffer);
 } pndr_state;
 
 /*
 ===============================================================================
-*   API º¯Êý
+*   API å‡½æ•°
 ===============================================================================
 */
 #ifdef  __cplusplus
@@ -159,7 +159,7 @@ extern "C"  {
 #endif
 
 /*************
-    ÏµÍ³×é
+    ç³»ç»Ÿç»„
 **************/
 PNDR_API void   pndr_newState   (pndr_state *P, void *alloc, void *free);
 PNDR_API void   pndr_delState   (pndr_state *P);
@@ -167,7 +167,7 @@ PNDR_API void   pndr_clearAll   (pndr_state *P);
 PNDR_API void   pndr_regLibrary (pndr_state *P);
 
 /*************
-    ÔËÐÐ×é
+    è¿è¡Œç»„
 **************/
 PNDR_API       byte_t*  pndr_compile   (pndr_state *P,
                                         const char *src, uint_t *size);
@@ -176,13 +176,13 @@ PNDR_API const byte_t*  pndr_doScript  (pndr_state *P, const byte_t *src);
 PNDR_API const byte_t*  pndr_doScriptF (pndr_state *P, const byte_t *src);
 
 /*************
-    ±äÁ¿×é
+    å˜é‡ç»„
 **************/
 PNDR_API pndr_var*  pndr_getVar (pndr_state *P, const char *name);
 PNDR_API pndr_var*  pndr_newVar (pndr_state *P, const char *name);
 
 /*************
-    ×ª»»×é
+    è½¬æ¢ç»„
 **************/
 PNDR_API sint_t     pndr_toInt     (const pndr_var *var);
 PNDR_API void*      pndr_toPointer (const pndr_var *var);
@@ -194,7 +194,7 @@ PNDR_API real_t     pndr_toReal    (const pndr_var *var);
 #define pndr_toString(v)    (char*)pndr_toPointer(v)
 
 /*************
-    ÉèÖÃ×é
+    è®¾ç½®ç»„
 **************/
 PNDR_API void   pndr_setInt     (pndr_state *P,
                                  const char *name, sint_t value);
@@ -228,7 +228,7 @@ PNDR_API void   pndr_changeCall (pndr_state *P,
                                  const char *name, uint_t param);
 
 /*************
-    ¿âº¯Êý
+    åº“å‡½æ•°
 **************/
 PNDR_API uint_t     pndrL_doFile (pndr_state *P,
                                      const char *fileName, uint_t unsafe);
@@ -237,7 +237,7 @@ PNDR_API uint_t     pndrL_importBin (pndr_state *P, const char *str);
 PNDR_API uint_t     pndrL_importXml (pndr_state *P, const char *fileName);
 
 /*************
-    ÀàÐÍ×é
+    ç±»åž‹ç»„
 **************/
 #define pndr_isInt(v)       ((v)->type == PNDR_INT)
 #define pndr_isReal(v)      ((v)->type == PNDR_REAL)
