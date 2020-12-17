@@ -73,6 +73,7 @@ void __fastcall subBeaMasmClick(TObject *Sender);
 void __fastcall subBeaGoAsmClick(TObject *Sender);
 void __fastcall subBeaNasmClick(TObject *Sender);
 void __fastcall subBeaATTClick(TObject *Sender);
+void __fastcall subBeaIntrinClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
@@ -618,6 +619,13 @@ void __fastcall TfrmMain::subBeaATTClick(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subBeaIntrinClick(TObject *Sender)
+{
+    /* BeaEngine IntrinsicMem */
+    qst_send_cmdz("hex:mode Bea:IntrinMem");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subParamClick(TObject *Sender)
 {
     /* 参数菜单项 */
@@ -802,6 +810,7 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subBeaGoAsm);
     QST_MENU_EVENT(subBeaNasm);
     QST_MENU_EVENT(subBeaATT);
+    QST_MENU_EVENT(subBeaIntrin);
     QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subAbout);
 

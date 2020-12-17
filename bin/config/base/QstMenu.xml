@@ -85,6 +85,7 @@
                 <MenuItem name="subBeaGoAsm" text="Style - GoAsm (&5)" radio="1" group="2" />
                 <MenuItem name="subBeaNasm" text="Style - Nasm (&6)" radio="1" group="2" />
                 <MenuItem name="subBeaATT" text="Style - AT&&T (&7)" radio="1" group="2" />
+                <MenuItem name="subBeaIntrin" text="Style - IntrinMem (&8)" radio="1" group="2" />
             </MenuItem>
         </MenuItem>
     </MenuItem>
