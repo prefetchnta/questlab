@@ -572,8 +572,8 @@ string_show (
 /* BeaEngine 模式值 */
 static const ansi_t*    s_bea_archi = "X86";
 #define BEA_DEF_OPT (NoTabulation | SuffixedNumeral | \
-                            ShowSegmentRegs)
-static UInt32   s_BeaArchi = 0;
+                     ShowSegmentRegs | ShowEVEXMasking)
+static UInt32   s_BeaArchi = 32;
 static UInt64   s_BeaOptions = (BEA_DEF_OPT | MasmSyntax);
 
 /*
@@ -649,7 +649,7 @@ data_type (
     if (chr_cmpA(type, "Bea:", 4) == 0) {
         type += 4;
         if (strcmp(type, "X86") == 0) {
-            s_BeaArchi = 0;
+            s_BeaArchi = 32;
             s_bea_archi = "X86";
         }
         else
@@ -691,6 +691,9 @@ data_mode (
         else
         if (strcmp(mode, "AT&T") == 0)
             s_BeaOptions |= ATSyntax;
+        else
+        if (strcmp(mode, "IntrinMem") == 0)
+            s_BeaOptions |= IntrinsicMemSyntax;
         return;
     }
 }

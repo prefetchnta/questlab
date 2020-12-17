@@ -69,37 +69,57 @@ typedef struct {
 
 #pragma pack(4)
 typedef struct {
-   Int32 BaseRegister;
-   Int32 IndexRegister;
+   Int64 BaseRegister;
+   Int64 IndexRegister;
    Int32 Scale;
    Int64 Displacement;
 } MEMORYTYPE ;
 #pragma pack()
 
+#pragma pack(4)
+typedef struct {
+   Int64 type;
+   Int64 gpr;
+   Int64 mmx;
+   Int64 xmm;
+   Int64 ymm;
+   Int64 zmm;
+   Int64 special;
+   Int64 cr;
+   Int64 dr;
+   Int64 mem_management;
+   Int64 mpx;
+   Int64 opmask;
+   Int64 segment;
+   Int64 fpu;
+   Int64 tmm;
+} REGISTERTYPE ;
+#pragma pack()
 
 #pragma pack(1)
 typedef struct  {
    Int32 Category;
    Int32 Opcode;
-   char Mnemonic[16];
+   char Mnemonic[24];
    Int32 BranchType;
    EFLStruct Flags;
    UInt64 AddrValue;
    Int64 Immediat;
-   UInt32 ImplicitModifiedRegs;
+   REGISTERTYPE ImplicitModifiedRegs;
 } INSTRTYPE;
 #pragma pack()
 
 #pragma pack(1)
 typedef struct  {
-   char ArgMnemonic[64];
-   Int32 ArgType;
-   Int32 ArgSize;
-   Int32 ArgPosition;
+   char OpMnemonic[24];
+   UInt64 OpType;
+   Int32 OpSize;
+   Int32 OpPosition;
    UInt32 AccessMode;
    MEMORYTYPE Memory;
+   REGISTERTYPE Registers;
    UInt32 SegmentReg;
-} ARGTYPE;
+} OPTYPE;
 #pragma pack()
 
 
@@ -113,11 +133,18 @@ typedef struct _Disasm {
    UInt32 Archi;
    UInt64 Options;
    INSTRTYPE Instruction;
-   ARGTYPE Argument1;
-   ARGTYPE Argument2;
-   ARGTYPE Argument3;
+   OPTYPE Operand1;
+   OPTYPE Operand2;
+   OPTYPE Operand3;
+   OPTYPE Operand4;
+   OPTYPE Operand5;
+   OPTYPE Operand6;
+   OPTYPE Operand7;
+   OPTYPE Operand8;
+   OPTYPE Operand9;
    PREFIXINFO Prefix;
-   UInt32 Reserved_[40];
+   Int32 Error;
+   UInt32 Reserved_[48];
 } DISASM, *PDISASM, *LPDISASM;
 #pragma pack()
 
@@ -139,23 +166,41 @@ typedef struct _Disasm {
 
 enum INSTRUCTION_TYPE
 {
-  GENERAL_PURPOSE_INSTRUCTION   =    0x10000,
-  FPU_INSTRUCTION               =    0x20000,
-  MMX_INSTRUCTION               =    0x40000,
-  SSE_INSTRUCTION               =    0x80000,
-  SSE2_INSTRUCTION              =   0x100000,
-  SSE3_INSTRUCTION              =   0x200000,
-  SSSE3_INSTRUCTION             =   0x400000,
-  SSE41_INSTRUCTION             =   0x800000,
-  SSE42_INSTRUCTION             =  0x1000000,
-  SYSTEM_INSTRUCTION            =  0x2000000,
-  VM_INSTRUCTION                =  0x4000000,
-  UNDOCUMENTED_INSTRUCTION      =  0x8000000,
-  AMD_INSTRUCTION               = 0x10000000,
-  ILLEGAL_INSTRUCTION           = 0x20000000,
-  AES_INSTRUCTION               = 0x40000000,
-  CLMUL_INSTRUCTION             = (int)0x80000000,
-
+  GENERAL_PURPOSE_INSTRUCTION   =           0x10000,
+  FPU_INSTRUCTION               =           0x20000,
+  MMX_INSTRUCTION               =           0x30000,
+  SSE_INSTRUCTION               =           0x40000,
+  SSE2_INSTRUCTION              =           0x50000,
+  SSE3_INSTRUCTION              =           0x60000,
+  SSSE3_INSTRUCTION             =           0x70000,
+  SSE41_INSTRUCTION             =           0x80000,
+  SSE42_INSTRUCTION             =           0x90000,
+  SYSTEM_INSTRUCTION            =           0xa0000,
+  VM_INSTRUCTION                =           0xb0000,
+  UNDOCUMENTED_INSTRUCTION      =           0xc0000,
+  AMD_INSTRUCTION               =           0xd0000,
+  ILLEGAL_INSTRUCTION           =           0xe0000,
+  AES_INSTRUCTION               =           0xf0000,
+  CLMUL_INSTRUCTION             =          0x100000,
+  AVX_INSTRUCTION               =          0x110000,
+  AVX2_INSTRUCTION              =          0x120000,
+  MPX_INSTRUCTION               =          0x130000,
+  AVX512_INSTRUCTION            =          0x140000,
+  SHA_INSTRUCTION               =          0x150000,
+  BMI2_INSTRUCTION              =          0x160000,
+  CET_INSTRUCTION               =          0x170000,
+  BMI1_INSTRUCTION              =          0x180000,
+  XSAVEOPT_INSTRUCTION          =          0x190000,
+  FSGSBASE_INSTRUCTION          =          0x1a0000,
+  CLWB_INSTRUCTION              =          0x1b0000,
+  CLFLUSHOPT_INSTRUCTION        =          0x1c0000,
+  FXSR_INSTRUCTION              =          0x1d0000,
+  XSAVE_INSTRUCTION             =          0x1e0000,
+  SGX_INSTRUCTION               =          0x1f0000,
+  PCONFIG_INSTRUCTION           =          0x200000,
+  UINTR_INSTRUCTION             =          0x210000,
+  KL_INSTRUCTION                =          0x220000,
+  AMX_INSTRUCTION               =          0x230000,
 
     DATA_TRANSFER = 0x1,
     ARITHMETIC_INSTRUCTION,
@@ -241,20 +286,25 @@ enum BRANCH_TYPE
 
 enum ARGUMENTS_TYPE
 {
-  NO_ARGUMENT = 0x10000000,
-  REGISTER_TYPE = 0x20000000,
-  MEMORY_TYPE = 0x40000000,
-  CONSTANT_TYPE = (int)0x80000000,
+  NO_ARGUMENT =          0x10000,
+  REGISTER_TYPE =        0x20000,
+  MEMORY_TYPE =          0x30000,
+  CONSTANT_TYPE =        0x40000,
 
-  MMX_REG = 0x10000,
-  GENERAL_REG = 0x20000,
-  FPU_REG = 0x40000,
-  SSE_REG = 0x80000,
-  CR_REG = 0x100000,
-  DR_REG = 0x200000,
-  SPECIAL_REG = 0x400000,
-  MEMORY_MANAGEMENT_REG = 0x800000,
-  SEGMENT_REG = 0x1000000,
+  GENERAL_REG =               0x1,
+  MMX_REG =                   0x2,
+  SSE_REG =                   0x4,
+  AVX_REG =                   0x8,
+  AVX512_REG =                0x10,
+  SPECIAL_REG =               0x20,
+  CR_REG =                    0x40,
+  DR_REG =                    0x80,
+  MEMORY_MANAGEMENT_REG =     0x100,
+  MPX_REG =                   0x200,
+  OPMASK_REG =                0x400,
+  SEGMENT_REG =               0x800,
+  FPU_REG =                   0x1000,
+  TMM_REG =                   0x2000,
 
   RELATIVE_ = 0x4000000,
   ABSOLUTE_ = 0x8000000,
@@ -262,28 +312,45 @@ enum ARGUMENTS_TYPE
   READ = 0x1,
   WRITE = 0x2,
 
-  REG0 = 0x1,
-  REG1 = 0x2,
-  REG2 = 0x4,
-  REG3 = 0x8,
-  REG4 = 0x10,
-  REG5 = 0x20,
-  REG6 = 0x40,
-  REG7 = 0x80,
-  REG8 = 0x100,
-  REG9 = 0x200,
+  REG0 =  0x1,
+  REG1 =  0x2,
+  REG2 =  0x4,
+  REG3 =  0x8,
+  REG4 =  0x10,
+  REG5 =  0x20,
+  REG6 =  0x40,
+  REG7 =  0x80,
+  REG8 =  0x100,
+  REG9 =  0x200,
   REG10 = 0x400,
   REG11 = 0x800,
   REG12 = 0x1000,
   REG13 = 0x2000,
   REG14 = 0x4000,
-  REG15 = 0x8000
+  REG15 = 0x8000,
+  REG16 = 0x10000,
+  REG17 = 0x20000,
+  REG18 = 0x40000,
+  REG19 = 0x80000,
+  REG20 = 0x100000,
+  REG21 = 0x200000,
+  REG22 = 0x400000,
+  REG23 = 0x800000,
+  REG24 = 0x1000000,
+  REG25 = 0x2000000,
+  REG26 = 0x4000000,
+  REG27 = 0x8000000,
+  REG28 = 0x10000000,
+  REG29 = 0x20000000,
+  REG30 = 0x40000000,
+  REG31 = 0x80000000
+
 };
 
 enum SPECIAL_INFO
 {
   UNKNOWN_OPCODE = -1,
-  OUT_OF_BLOCK = 0,
+  OUT_OF_BLOCK = -2,
 
   /* === mask = 0xff */
   NoTabulation      = 0x00000000,
@@ -294,21 +361,30 @@ enum SPECIAL_INFO
   GoAsmSyntax       = 0x00000100,
   NasmSyntax        = 0x00000200,
   ATSyntax          = 0x00000400,
+  IntrinsicMemSyntax= 0x00000800,
 
   /* === mask = 0xff0000 */
   PrefixedNumeral   = 0x00010000,
   SuffixedNumeral   = 0x00000000,
 
   /* === mask = 0xff000000 */
-  ShowSegmentRegs   = 0x01000000
+  ShowSegmentRegs   = 0x01000000,
+  ShowEVEXMasking   = 0x02000000
 };
 
+#define UD_   2
+#define DE__  3
 
 #ifdef __cplusplus
-extern "C"
+extern "C" {
 #endif
 
 BEA_API int __bea_callspec__ Disasm (LPDISASM pDisAsm);
 BEA_API const__ char* __bea_callspec__ BeaEngineVersion (void);
 BEA_API const__ char* __bea_callspec__ BeaEngineRevision (void);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
