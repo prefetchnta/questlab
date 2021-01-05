@@ -212,6 +212,12 @@ exec_one_line (
         (cmd[0] == '-' && cmd[1] == '-'))
         return (TRUE);
 
+    /* 快速切换模式 */
+    if (str_cmpA(cmd, "\x60") == 0) {
+        s_diro = !s_diro;
+        return (TRUE);
+    }
+
     /* 输出命令行 */
     if (show) {
         if (s_diro)
@@ -277,6 +283,7 @@ exec_one_line (
         /* 本地命令 - 显示帮助 */
         if (chr_cmpA(&cmd[1], "help", 5) == 0) {
             cui_set_color(s_color_help);
+            printf("\t` ---------------- toggle output mode on/off\n");
             printf("\t$call <...> ------ make an external call\n");
             printf("\t$continue? ------- continue or quit running\n");
             printf("\t$del <file> ------ delete a disk file\n");
