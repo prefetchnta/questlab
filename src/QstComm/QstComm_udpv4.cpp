@@ -28,6 +28,7 @@ qst_udpv4_main (
         /* 文本模式处理 */
         if (ctx->comm.text)
             ctx->size = qst_txt_mode(data, ctx->size);
+        thread_sleep(1);
 
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_

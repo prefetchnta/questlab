@@ -23,6 +23,7 @@ class CTextEdit : public QTextEdit
 public:
     CTextEdit (QWidget* parent = 0) : QTextEdit(parent)
     {
+        this->setReadOnly(true);
     }
 
 public slots:
@@ -77,11 +78,13 @@ public:
     {
         emit gotoEnd();
         emit setText(text);
+        emit gotoEnd();
     }
     void html (const QString& html)
     {
         emit gotoEnd();
         emit setHtml(html);
+        emit gotoEnd();
     }
     void setup (const QFont& font, const QString& style)
     {

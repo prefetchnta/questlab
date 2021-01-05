@@ -2,9 +2,11 @@
 #include "QstCommInt.h"
 
 /* 一些超时参数 */
-#define QCOM_CUTDOWN    50      /* 断流超时 */
+#define QCOM_CUTDOWN    10      /* 断流超时 */
 #define QCOM_SNDTOUT    1000    /* 发送超时 */
 #define QCOM_CNNTOUT    5000    /* 连接超时 */
+static uint_t   s_tout_cutdown = QCOM_CUTDOWN;
+static uint_t   s_tout_connect = QCOM_CNNTOUT;
 
 /* 内部函数的声明 */
 CR_API void_t   qst_csi_clear (void_t);
@@ -435,8 +437,8 @@ qst_com_rs232 (
     if (!sio_open(port))
         return (FALSE);
     sio_setup(port, baud, bits, parity, stop);
-    sio_set_buffer(port, 1024, 1024);
-    sio_set_rd_timeout(port, 0, 0, QCOM_CUTDOWN);
+    sio_set_buffer(port, CR_M2B(1), CR_K2B(1));
+    sio_set_rd_timeout(port, 0, 0, s_tout_cutdown);
     sio_set_wr_timeout(port, 0, QCOM_SNDTOUT);
     sio_clear_error(port);
     sio_flush(port, CR_SIO_FLU_RT);
@@ -484,10 +486,10 @@ qst_com_tcpv4 (
     sQstComm*   ctx = (sQstComm*)parm;
 
     /* 关闭当前接口并打开 TCPv4 连接 */
-    netw = client_tcp_open(argv[1], (int16u)port, QCOM_CNNTOUT);
+    netw = client_tcp_open(argv[1], (int16u)port, s_tout_connect);
     if (netw == NULL)
         return (FALSE);
-    socket_set_timeout(netw, QCOM_SNDTOUT, QCOM_CUTDOWN);
+    socket_set_timeout(netw, QCOM_SNDTOUT, s_tout_cutdown);
 
     /* 设置工作参数 */
     qst_com_close(parm, argc, argv);
@@ -534,7 +536,7 @@ qst_com_udpv4 (
     netw = client_udp_open(argv[1], (int16u)port);
     if (netw == NULL)
         return (FALSE);
-    socket_set_timeout(netw, QCOM_SNDTOUT, QCOM_CUTDOWN);
+    socket_set_timeout(netw, QCOM_SNDTOUT, s_tout_cutdown);
 
     /* 设置工作参数 */
     qst_com_close(parm, argc, argv);
@@ -620,7 +622,7 @@ qst_com_stype (
         }
         ctx->comm.tran = func;
         TRY_FREE(name);
-        name = str_fmtA("%s|%s", argv[1], argv[2]);
+        name = str_fmtA("%s->%s", argv[1], argv[2]);
         ctx->comm.stype = (name == NULL) ? "null" : name;
     }
     qst_update_title(ctx);
@@ -692,7 +694,7 @@ qst_com_rtype (
         ctx->comm.text = FALSE;
         ctx->comm.render = func;
         TRY_FREE(name);
-        name = str_fmtA("%s|%s", argv[1], argv[2]);
+        name = str_fmtA("%s->%s", argv[1], argv[2]);
         ctx->comm.rtype = (name == NULL) ? "null" : name;
     }
     opr->clear();
@@ -732,6 +734,35 @@ qst_com_cpage (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    设置两个超时时间
+---------------------------------------
+*/
+static bool_t
+qst_com_tmout (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sint_t  ctdwn, cnntt;
+
+    /* 参数解析 <断流超时> [连接超时] */
+    if (argc < 2)
+        return (FALSE);
+    ctdwn = str2intxA(argv[1]);
+    if (ctdwn >= 0)
+        s_tout_cutdown = ctdwn;
+    if (argc > 2) {
+        cnntt = str2intxA(argv[2]);
+        if (cnntt >= 0)
+            s_tout_connect = cnntt;
+    }
+    CR_NOUSE(parm);
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -754,6 +785,7 @@ static const sQST_CMD   s_cmdz[] =
     { "com:stype", qst_com_stype },
     { "com:rtype", qst_com_rtype },
     { "com:cpage", qst_com_cpage },
+    { "com:tmout", qst_com_tmout },
 
     /***** 私有命令映射 *****/
     { "qcom:app:exit", qst_com_app_exit },

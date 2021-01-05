@@ -88,20 +88,26 @@ qst_hex_show (
   __CR_IN__ uint_t          size
     )
 {
-    ansi_t      *txt;
+    ansi_t      *txt, cha[4];
     sQstComm    *ctx = (sQstComm*)parm;
     CTextOper   *opr = (CTextOper*)ctx->oper;
 
     /* 转换成16进制数显示 */
-    txt = str_allocA(size * 3 + 1);
-    if (txt == NULL)
-        return;
-    for (uint_t idx = 0; idx < size; idx++)
-        sprintf(&txt[idx * 3], "%02X ", ((byte_t*)data)[idx]);
+    if (size == 1) {
+        sprintf(cha, "%02X ", *(byte_t*)data);
+        opr->text(cha);
+    }
+    else {
+        txt = str_allocA(size * 3 + 1);
+        if (txt == NULL)
+            return;
+        for (uint_t idx = 0; idx < size; idx++)
+            sprintf(&txt[idx * 3], "%02X ", ((byte_t*)data)[idx]);
 
-    /* 显示结果 */
-    opr->text(txt);
-    mem_free(txt);
+        /* 显示结果 */
+        opr->text(txt);
+        mem_free(txt);
+    }
 }
 
 /*****************************************************************************/

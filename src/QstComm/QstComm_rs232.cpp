@@ -37,6 +37,7 @@ qst_rs232_main (
         data = (ansi_t*)(CR_VCALL(ctx->bufs)->flush(ctx->bufs));
         if (ctx->comm.text)
             ctx->size = qst_txt_mode(data, ctx->size);
+        thread_sleep(1);
 
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
