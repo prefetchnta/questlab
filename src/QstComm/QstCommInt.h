@@ -23,7 +23,6 @@ class CTextEdit : public QTextEdit
 public:
     CTextEdit (QWidget* parent = 0) : QTextEdit(parent)
     {
-        this->setReadOnly(true);
     }
 
 public slots:

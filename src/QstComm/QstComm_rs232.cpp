@@ -24,7 +24,9 @@ qst_rs232_main (
         if (back == 1) {
             if (CR_VCALL(ctx->bufs)->putb_no(ctx->bufs, cha))
                 ctx->size += 1;
-            continue;
+            if (ctx->size < ctx->sbyt)
+                continue;
+            back = 0;
         }
         if (back != 0) {
             thread_sleep(20);
@@ -37,7 +39,6 @@ qst_rs232_main (
         data = (ansi_t*)(CR_VCALL(ctx->bufs)->flush(ctx->bufs));
         if (ctx->comm.text)
             ctx->size = qst_txt_mode(data, ctx->size);
-        thread_sleep(1);
 
         /* 渲染读到的内容 */
         _ENTER_COM_SINGLE_
@@ -47,6 +48,7 @@ qst_rs232_main (
         /* 缓存指针复位 */
         CR_VCALL(ctx->bufs)->reput(ctx->bufs, 0);
         ctx->size = 0;
+        thread_sleep(16);
     }
 
     /* 退出时关闭串口 */

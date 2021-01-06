@@ -83,6 +83,7 @@ typedef struct
         bool_t      quit;       /* 是否退出 */
         lock_t      lock;       /* 同步的锁 */
         uint_t      page;       /* 显示编码 */
+        uint_t      sbyt;       /* 字节断流 */
         void_t*     oper;       /* 操作对象 */
         uint_t      size;       /* 数据大小 */
         iDATOT*     bufs;       /* 临时缓存 */

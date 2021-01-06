@@ -177,6 +177,7 @@ WinMain (
     s_wrk_ctx.comm.title = NULL;
     s_wrk_ctx.comm.render = qst_txt_show;
     s_wrk_ctx.page = get_sys_codepage();
+    s_wrk_ctx.sbyt = 0xFFFFFFFFUL;
     s_wrk_ctx.clear = plugin_clear;
     s_wrk_ctx.setText = plugin_set_text;
     s_wrk_ctx.setHtml = plugin_set_html;

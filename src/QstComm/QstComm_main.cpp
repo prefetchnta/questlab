@@ -763,6 +763,25 @@ qst_com_tmout (
     return (TRUE);
 }
 
+/*
+---------------------------------------
+    设置通讯断流大小
+---------------------------------------
+*/
+static bool_t
+qst_com_flush (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    /* 参数解析 <断流大小> */
+    if (argc < 2)
+        return (FALSE);
+    ((sQstComm*)parm)->sbyt = str2intxA(argv[1]);
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               命令行功能表                                */
 /*****************************************************************************/
@@ -786,6 +805,7 @@ static const sQST_CMD   s_cmdz[] =
     { "com:rtype", qst_com_rtype },
     { "com:cpage", qst_com_cpage },
     { "com:tmout", qst_com_tmout },
+    { "com:flush", qst_com_flush },
 
     /***** 私有命令映射 *****/
     { "qcom:app:exit", qst_com_app_exit },
