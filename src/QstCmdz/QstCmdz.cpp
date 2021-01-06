@@ -189,6 +189,30 @@ call_exe_file (
 
 /*
 ---------------------------------------
+    打印帮助信息
+---------------------------------------
+*/
+static bool_t
+print_help_message (void_t)
+{
+    cui_set_color(s_color_help);
+    printf("\t? ------------------ print this help message\n");
+    printf("\t` ------------------ toggle output mode on/off\n");
+    printf("\t$call <...> -------- make an external call\n");
+    printf("\t$continue? --------- continue or quit running\n");
+    printf("\t$del <file> -------- delete a disk file\n");
+    printf("\t$direct <on/off> --- direct output mode on/off\n");
+    printf("\t$exec <file> ------- execute a batch file\n");
+    printf("\t$exit -------------- exit current program\n");
+    printf("\t$fclose ------------ close current opened file\n");
+    printf("\t$fopen <file> ------ create an output file\n");
+    printf("\t$help -------------- print this help message\n");
+    cui_set_color(s_color_text);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     执行一条命令
 ---------------------------------------
 */
@@ -211,6 +235,12 @@ exec_one_line (
         (cmd[0] == '/' && cmd[1] == '/') ||
         (cmd[0] == '-' && cmd[1] == '-'))
         return (TRUE);
+
+    /* 打印帮助信息 */
+    if (!s_diro) {
+        if (str_cmpA(cmd, "?") == 0)
+            return (print_help_message());
+    }
 
     /* 快速切换模式 */
     if (str_cmpA(cmd, "\x60") == 0) {
@@ -281,23 +311,8 @@ exec_one_line (
         }
 
         /* 本地命令 - 显示帮助 */
-        if (chr_cmpA(&cmd[1], "help", 5) == 0) {
-            cui_set_color(s_color_help);
-            printf("\t#================================================#\n");
-            printf("\t# ` __________________ toggle output mode on/off #\n");
-            printf("\t# $call <...> ________ make an external call     #\n");
-            printf("\t# $continue? _________ continue or quit running  #\n");
-            printf("\t# $del <file> ________ delete a disk file        #\n");
-            printf("\t# $direct <on/off> ___ direct output mode on/off #\n");
-            printf("\t# $exec <file> _______ execute a batch file      #\n");
-            printf("\t# $exit ______________ exit current program      #\n");
-            printf("\t# $fopen <file> ______ create an output file     #\n");
-            printf("\t# $fclose ____________ close current file        #\n");
-            printf("\t# $help ______________ print this help message!! #\n");
-            printf("\t#================================================#\n");
-            cui_set_color(s_color_text);
-            return (TRUE);
-        }
+        if (chr_cmpA(&cmd[1], "help", 5) == 0)
+            return (print_help_message());
 
         /* 直接发送输入内容 */
         if (s_diro)
