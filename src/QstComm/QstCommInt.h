@@ -75,15 +75,31 @@ public:
     }
     void text (const QString& text)
     {
+        FILE*   fp;
+
         emit gotoEnd();
         emit setText(text);
         emit gotoEnd();
+
+        fp = fopen(EXE_XNAME ".txt", "a+b");
+        if (fp != NULL) {
+            fwrite(text.data(), text.size(), 1, fp);
+            fclose(fp);
+        }
     }
     void html (const QString& html)
     {
+        FILE*   fp;
+
         emit gotoEnd();
         emit setHtml(html);
         emit gotoEnd();
+
+        fp = fopen(EXE_XNAME ".htm", "a+b");
+        if (fp != NULL) {
+            fwrite(html.data(), html.size(), 1, fp);
+            fclose(fp);
+        }
     }
     void setup (const QFont& font, const QString& style)
     {
