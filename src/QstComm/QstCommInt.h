@@ -82,8 +82,11 @@ public:
         emit gotoEnd();
 
         fp = fopen(EXE_XNAME ".txt", "a+b");
-        if (fp != NULL) {
-            fwrite(text.data(), text.size(), 1, fp);
+        if (fp != NULL)
+        {
+            QByteArray  str = text.toUtf8();
+
+            fwrite(str.constData(), str.size(), 1, fp);
             fclose(fp);
         }
     }
@@ -96,8 +99,11 @@ public:
         emit gotoEnd();
 
         fp = fopen(EXE_XNAME ".htm", "a+b");
-        if (fp != NULL) {
-            fwrite(html.data(), html.size(), 1, fp);
+        if (fp != NULL)
+        {
+            QByteArray  str = html.toUtf8();
+
+            fwrite(str.constData(), str.size(), 1, fp);
             fclose(fp);
         }
     }
