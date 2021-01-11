@@ -838,6 +838,10 @@ qst_com_main (
     {
         ansi_t* string;
 
+        /* 主动清屏 */
+        if (key_input_test(VK_ESCAPE))
+            qst_com_clear(param, 0, NULL);
+
         /* 接收一条命令 */
         /* 即使是出错也要继续运行 */
         string = netw_cmd_recv(ctx->netw);
