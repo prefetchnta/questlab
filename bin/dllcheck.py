@@ -17,7 +17,7 @@ nop_list = []
 for dirpath, dirnames, filenames in os.walk("."):
     if len(filenames) == 0:
         continue
-    if dirpath == ".\\x64bin":
+    if dirpath.find(".\\x64bin") >= 0:
         continue
     for filename in filenames:
         pth, fnm = os.path.split(filename)
