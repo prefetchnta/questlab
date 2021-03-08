@@ -26,3 +26,4 @@ else:
     print("count lo: %f" % F2)
     C3 = (C1 * F1 + C2 * F2) / (F1 + F2)
     print("value mm: %f" % C3)
+input()
