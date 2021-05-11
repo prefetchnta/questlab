@@ -128,7 +128,7 @@
 /* #undef HAVE_QT_OPENGL */
 
 /* Intel Threading Building Blocks */
-/* #undef HAVE_TBB */
+#define HAVE_TBB
 
 /* Ste||ar Group High Performance ParallelX */
 /* #undef HAVE_HPX */
