@@ -88,6 +88,20 @@ CR_API bool_t   STDCALL share_file_fill (share_t sfile, const void_t *data,
 CR_API void_t*  STDCALL share_file_get (const ansi_t *name, leng_t size);
 CR_API bool_t   STDCALL share_file_set (const ansi_t *name, const void_t *data,
                                         leng_t size);
+/* UDP 网络通讯 */
+CR_API bool_t   STDCALL message_pipe_init (void_t);
+CR_API socket_t STDCALL message_recv_open (int16u sport);
+CR_API socket_t STDCALL message_send_open (int16u dport);
+CR_API void_t   STDCALL message_pipe_close (socket_t mess);
+CR_API void_t   STDCALL message_pipe_timeout (socket_t mess, int32s time);
+CR_API bool_t   STDCALL message_send_buffer (socket_t mess, const void_t *data,
+                                             uint_t size);
+CR_API bool_t   STDCALL message_send_string (socket_t mess,
+                                             const ansi_t *string);
+CR_API uint_t   STDCALL message_recv_buffer (socket_t mess, void_t *data,
+                                             uint_t size);
+CR_API bool_t   STDCALL message_recv_string (socket_t mess, ansi_t *buff,
+                                             uint_t size);
 /* TCP 网络通讯 */
 CR_API bool_t   STDCALL netw_cmd_send (socket_t netw, const ansi_t *string);
 CR_API ansi_t*  STDCALL netw_cmd_recv (socket_t netw);
@@ -132,6 +146,9 @@ CR_API bool_t   STDCALL cmd_exec_main (exec_t objs, void_t *param,
 /* 杂项功能函数 */
 CR_API bool_t   STDCALL misc_dir_exist (const ansi_t *path);
 CR_API void_t   STDCALL misc_bring2top (hwnd_t hwnd, hwnd_t parent);
+CR_API void_t*  STDCALL misc_mem_malloc (uint_t size);
+CR_API void_t*  STDCALL misc_mem_calloc (uint_t num, uint_t size);
+CR_API void_t*  STDCALL misc_mem_realloc (void_t *ptr, uint_t new_size);
 CR_API void_t   STDCALL misc_mem_free (const void_t *data);
 CR_API bool_t   STDCALL misc_cui_setwin (hwnd_t hwnd, hcui_t hcui,
                                 sint_t x, sint_t y, uint_t w, uint_t h);

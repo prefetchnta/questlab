@@ -1,6 +1,9 @@
 EXPORTS
     misc_dir_exist
     misc_bring2top
+    misc_mem_malloc
+    misc_mem_calloc
+    misc_mem_realloc
     misc_mem_free
     misc_cui_setwin
     misc_is_running
@@ -39,6 +42,15 @@ EXPORTS
     netw_cli_close
     netw_rcv_shutdwn
     netw_rcv_timeout
+    message_pipe_init
+    message_recv_open
+    message_send_open
+    message_pipe_close
+    message_pipe_timeout
+    message_send_buffer
+    message_send_string
+    message_recv_buffer
+    message_recv_string
     QstGraph_Init
     QstGraph_Free
     QstGraph_Clear

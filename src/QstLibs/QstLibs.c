@@ -67,152 +67,12 @@ unit_find (
 }
 
 /*****************************************************************************/
-/*                               内存共享文件                                */
+/*                               桥接通讯接口                                */
 /*****************************************************************************/
 
-/*
-=======================================
-    创建内存共享文件
-=======================================
-*/
-CR_API share_t STDCALL
-share_file_open (
-  __CR_IN__ const ansi_t*   name,
-  __CR_OT__ ansi_t          strn[50],
-  __CR_IN__ leng_t          size
-    )
-{
-    int32u  crc32;
-    leng_t  length;
-    byte_t  hash[24];
-
-    /* 文件大小过滤 */
-    if (size < CR_K2B(4))
-        size = CR_K2B(4);
-    else
-    if (size >= ((leng_t)-1) / 8)
-        return (NULL);
-
-    /* 直接使用名称 */
-    if (strn == NULL) {
-        return ((share_t)CreateFileMappingA(INVALID_HANDLE_VALUE, NULL,
-            PAGE_READWRITE, (DWORD)size_hi(size), (DWORD)size, name));
-    }
-
-    /* 使用哈希过的名称 */
-    length = str_lenA(name);
-    crc32 = hash_crc32i_total(name, length);
-    *(int32u*)(&hash[0]) = DWORD_BE(crc32);
-    *(int32u*)(&hash[4]) = DWORD_BE(timer_get32());
-    hash_md5_total(&hash[8], name, length);
-    hex2strA(strn, hash, sizeof(hash));
-    return ((share_t)CreateFileMappingA(INVALID_HANDLE_VALUE, NULL,
-        PAGE_READWRITE, (DWORD)size_hi(size), (DWORD)size, strn));
-}
-
-/*
-=======================================
-    关闭内存共享文件
-=======================================
-*/
-CR_API void_t STDCALL
-share_file_close (
-  __CR_IN__ share_t sfile
-    )
-{
-    CloseHandle((HANDLE)sfile);
-}
-
-/*
-=======================================
-    填充内存共享文件
-=======================================
-*/
-CR_API bool_t STDCALL
-share_file_fill (
-  __CR_IN__ share_t         sfile,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
-    )
-{
-    LPVOID  buff;
-    HANDLE  fmap = (HANDLE)sfile;
-
-    /* 将本地文件复制到共享内存 */
-    buff = MapViewOfFile(fmap, FILE_MAP_WRITE, 0, 0, size);
-    if (buff == NULL)
-        return (FALSE);
-    mem_cpy(buff, data, size);
-    UnmapViewOfFile(buff);
-    return (TRUE);
-}
-
-/*
-=======================================
-    获取内存共享文件
-=======================================
-*/
-CR_API void_t* STDCALL
-share_file_get (
-  __CR_IN__ const ansi_t*   name,
-  __CR_IN__ leng_t          size
-    )
-{
-    LPVOID  buff;
-    HANDLE  fmap;
-    void_t* data;
-
-    /* 将共享文件复制到本地内存 */
-    fmap = OpenFileMappingA(FILE_MAP_READ, FALSE, name);
-    if (fmap == NULL)
-        return (NULL);
-    buff = MapViewOfFile(fmap, FILE_MAP_READ, 0, 0, size);
-    if (buff == NULL)
-        goto _failure1;
-    data = mem_malloc(size);
-    if (data == NULL)
-        goto _failure2;
-    mem_cpy(data, buff, size);
-    UnmapViewOfFile(buff);
-    CloseHandle(fmap);
-    return (data);
-
-_failure2:
-    UnmapViewOfFile(buff);
-_failure1:
-    CloseHandle(fmap);
-    return (NULL);
-}
-
-/*
-=======================================
-    设置内存共享文件
-=======================================
-*/
-CR_API bool_t STDCALL
-share_file_set (
-  __CR_IN__ const ansi_t*   name,
-  __CR_IN__ const void_t*   data,
-  __CR_IN__ leng_t          size
-    )
-{
-    LPVOID  buff;
-    HANDLE  fmap;
-
-    /* 将本地文件复制到共享内存 */
-    fmap = OpenFileMappingA(FILE_MAP_WRITE, FALSE, name);
-    if (fmap == NULL)
-        return (FALSE);
-    buff = MapViewOfFile(fmap, FILE_MAP_WRITE, 0, 0, size);
-    if (buff == NULL) {
-        CloseHandle(fmap);
-        return (FALSE);
-    }
-    mem_cpy(buff, data, size);
-    UnmapViewOfFile(buff);
-    CloseHandle(fmap);
-    return (TRUE);
-}
+#define static  CR_API
+#include "../bridge.inl"
+#undef  static
 
 /*****************************************************************************/
 /*                               TCP 网络通讯                                */
@@ -798,6 +658,47 @@ cmd_exec_main (
 /*****************************************************************************/
 /*                               杂项功能函数                                */
 /*****************************************************************************/
+
+/*
+=======================================
+    分配内存包装
+=======================================
+*/
+CR_API void_t* STDCALL
+misc_mem_malloc (
+  __CR_IN__ uint_t  size
+    )
+{
+    return (mem_malloc(size));
+}
+
+/*
+=======================================
+    分配内存包装
+=======================================
+*/
+CR_API void_t* STDCALL
+misc_mem_calloc (
+  __CR_IN__ uint_t  num,
+  __CR_IN__ uint_t  size
+    )
+{
+    return (mem_calloc(num, size));
+}
+
+/*
+=======================================
+    重分配内存包装
+=======================================
+*/
+CR_API void_t* STDCALL
+misc_mem_realloc (
+  __CR_IN__ void_t* ptr,
+  __CR_IN__ uint_t  new_size
+    )
+{
+    return (mem_realloc(ptr, new_size));
+}
 
 /*
 =======================================
