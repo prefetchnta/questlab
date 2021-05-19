@@ -6,12 +6,14 @@ BIN_NAME=$(PROJECT).dll
 OBJ_LIST=.$(L)xCrHackSet.$(O) \
          .$(L)cCrHackSet.$(O) \
          .$(L)fCrHackSet.$(O) \
+         .$(L)zCrHackSet.$(O) \
          .$(L)zbar_decode.$(O) \
          .$(L)zxing_decode.$(O)
 
 SRC_LIST=.$(L)xCrHackSet.$(P) \
          .$(L)cCrHackSet.$(P) \
          .$(L)fCrHackSet.$(P) \
+         .$(L)zCrHackSet.$(P) \
          .$(L)zbar_decode.$(P) \
          .$(L)zxing_decode.$(P)
 
@@ -22,7 +24,7 @@ build_all:
         /LIBPATH:..$(L)..$(L)lib$(L)facedetect $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)plugin$(L)
+    move $(PROJECT).lib ..$(L)..$(L)tmp$(L)
     del /Q *.obj
     del /Q 2.manifest
     del /Q $(PROJECT).exp
-    del /Q $(PROJECT).lib

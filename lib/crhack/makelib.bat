@@ -8,11 +8,18 @@ coff2omf QstLibs.lib omf\QstLibs.lib
 move QstLibs.lib coff\QstLibs.lib
 rem ========================================
 :tessocr
-if not exist TessOCR.lib goto xopencv
+if not exist TessOCR.lib goto xcrhackset
 del coff\TessOCR.lib
 del omf\TessOCR.lib
 coff2omf TessOCR.lib omf\TessOCR.lib
 move TessOCR.lib coff\TessOCR.lib
+rem ========================================
+:xcrhackset
+if not exist xCrHackSet.lib goto xopencv
+del coff\xCrHackSet.lib
+del omf\xCrHackSet.lib
+coff2omf xCrHackSet.lib omf\xCrHackSet.lib
+move xCrHackSet.lib coff\xCrHackSet.lib
 rem ========================================
 :xopencv
 if not exist xOpenCV.lib goto resloader

@@ -23,12 +23,15 @@ uint_t  zxing_do_decode (socket_t netw, const sIMAGE *gray,
 static sint_t
 grad_length (
   __CR_IN__ byte_t  p1,
-  __CR_IN__ byte_t  p2
+  __CR_IN__ byte_t  p2,
+  __CR_IN__ void_t* param
     )
 {
     fp32_t  len;
     sint_t  tx = p1;
     sint_t  ty = p2;
+
+    CR_NOUSE(param);
 
     tx *= tx;
     ty *= ty;
@@ -628,7 +631,7 @@ image_edge_sobel (
         return (TRUE);
     conv3x3_main(dest, s_sobel_matx);
     conv3x3_main(temp, s_sobel_maty);
-    image_oper(dest, temp, grad_length);
+    image_oper(dest, temp, grad_length, NULL);
     image_del(temp);
     return (TRUE);
 }
