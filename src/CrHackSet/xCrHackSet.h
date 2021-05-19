@@ -47,7 +47,7 @@ CR_TYPEDEF struct
 /*000*/ int32u  count;      /* 图片帧数 */
 /*004*/ ansi_t  info[256];  /* 信息说明 */
 /*260*/
-}  CR_PACKED sPIC_RMT_HEAD;
+} CR_PACKED sPIC_RMT_HEAD;
 
 /* 图片信息结构 */
 CR_TYPEDEF struct
@@ -60,7 +60,7 @@ CR_TYPEDEF struct
 /*120*/ int32u  img_hh;     /* 图片高度 */
 /*124*/ int32u  dat_sz;     /* 数据大小 */
 /*128*/
-}  CR_PACKED sPIC_RMT_INFO;
+} CR_PACKED sPIC_RMT_INFO;
 
 #ifndef _CR_NO_PRAGMA_PACK_
     #pragma pack (pop)
@@ -70,7 +70,10 @@ CR_TYPEDEF struct
 /*                                格式库部分                                 */
 /*****************************************************************************/
 
+/* 引擎接口 */
 CR_API sENGINE* engine_remote (void_t);
+
+/* 图片文件格式 */
 CR_API sFMTZ*   load_remote_pic (iDATIN *datin, const sLOADER *param);
 
 #endif  /* !__QL_XCRHACKSET_H__ */
