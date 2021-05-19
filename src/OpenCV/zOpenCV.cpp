@@ -324,7 +324,6 @@ iPIC_AVI_get (
         mem_free(rett);
         return (NULL);
     }
-    CR_NOUSE(index);
     rett->type = CR_FMTZ_PIC;
     rett->count = 1;
     rett->infor = "Video file supported by OpenCV";
