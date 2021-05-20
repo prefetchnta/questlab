@@ -31,6 +31,7 @@
 
 /* 远程通讯端口 */
 #define CRH_REMOTE_IMG_PORT     12345   /* 图片 */
+#define CRH_REMOTE_FLT_PORT     12350   /* 滤镜 */
 
 /* 内存通讯文件 */
 #define CRH_LCL_IMG_FILE    "share_mem_img_file"
