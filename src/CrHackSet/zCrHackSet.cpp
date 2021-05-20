@@ -204,7 +204,7 @@ load_remote_pic (
             if (!share_file_fill(smem, param->buff.data, param->buff.size))
                 goto _failure1;
             mem_zero(name, sizeof(name));
-            str_cpyA(name, ":" CRH_LCL_IMG_FILE);
+            sprintf(name, ":" CRH_LCL_IMG_FILE "%u", param->buff.size);
             break;
 
         default:
