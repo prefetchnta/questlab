@@ -31,8 +31,10 @@
 
 /* 外部库引用 */
 #pragma comment (lib, "CrH_CORE.lib")
-#ifndef _CR_BUILD_DLL_
-    #pragma comment (lib, "QstLibs.lib")
+#if !defined(_QUEST64_)
+    #ifndef _CR_BUILD_DLL_
+        #pragma comment (lib, "QstLibs.lib")
+    #endif
 #endif
 
 /*****************************************************************************/
@@ -79,6 +81,8 @@
 
 /* 内存共享文件 */
 typedef void_t* share_t;
+
+#if !defined(_QUEST64_)
 
 CR_API share_t  STDCALL share_file_open (const ansi_t *name,
                                          ansi_t strn[50], leng_t size);
@@ -229,5 +233,6 @@ CR_API void_t   STDCALL QstGraph_SetFloatList (socket_t netw,
 CR_API void_t   STDCALL QstGraph_SetDoubleList (socket_t netw,
                                         const fp64_t *list, uint_t count,
                                             bool_t move CR_DEFAULT(TRUE));
+#endif  /* !_QUEST64_ */
 
 #endif  /* !__QL_QSTLIBS_H__ */

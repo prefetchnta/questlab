@@ -713,24 +713,6 @@ misc_mem_free (
     mem_free(data);
 }
 
-/*
-=======================================
-    检测程序是否运行
-=======================================
-*/
-CR_API bool_t STDCALL
-misc_is_running (
-  __CR_IN__ const ansi_t*   name
-    )
-{
-    HANDLE  mutex;
-
-    mutex = CreateMutexA(NULL, FALSE, name);
-    if (mutex != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
-        return (TRUE);
-    return (FALSE);
-}
-
 /* 空命令参数时使用 */
 static ansi_t*  s_temp;
 

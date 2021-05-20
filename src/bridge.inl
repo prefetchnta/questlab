@@ -1,4 +1,10 @@
 
+/* 关闭没用函数的警告 */
+#if defined(_QUEST64_)
+    #pragma warning (push)
+    #pragma warning (disable: 4505)
+#endif
+
 /*****************************************************************************/
 /*                               内存共享文件                                */
 /*****************************************************************************/
@@ -254,7 +260,7 @@ message_send_string (
   __CR_IN__ const ansi_t*   string
     )
 {
-    return (message_send_buffer(mess, string, str_lenA(string)));
+    return (message_send_buffer(mess, string, (uint_t)str_lenA(string)));
 }
 
 /*
@@ -299,3 +305,30 @@ message_recv_string (
     buff[back] = 0;
     return (TRUE);
 }
+
+/*****************************************************************************/
+/*                               杂项功能函数                                */
+/*****************************************************************************/
+
+/*
+=======================================
+    检测程序是否运行
+=======================================
+*/
+static bool_t STDCALL
+misc_is_running (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    HANDLE  mutex;
+
+    mutex = CreateMutexA(NULL, FALSE, name);
+    if (mutex != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+        return (TRUE);
+    return (FALSE);
+}
+
+/* 恢复警告设置 */
+#if defined(_QUEST64_)
+    #pragma warning (pop)
+#endif
