@@ -30,6 +30,8 @@ EXPORTS
     share_file_open
     share_file_close
     share_file_fill
+    share_file_map
+    share_file_unmap
     share_file_get
     share_file_set
     netw_cmd_send

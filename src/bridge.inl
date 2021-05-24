@@ -88,6 +88,36 @@ share_file_fill (
 
 /*
 =======================================
+    映射内存共享文件
+=======================================
+*/
+static void_t* STDCALL
+share_file_map (
+  __CR_IN__ share_t sfile,
+  __CR_IN__ leng_t  size
+    )
+{
+    /* 共享内存映射到当前进程 */
+    return (MapViewOfFile((HANDLE)sfile, FILE_MAP_READ | FILE_MAP_WRITE,
+                                  0, 0, size));
+}
+
+/*
+=======================================
+    解除映射内存共享文件
+=======================================
+*/
+static bool_t STDCALL
+share_file_unmap (
+  __CR_IN__ share_t sfile
+    )
+{
+    /* 解除映射共享内存到当前进程 */
+    return (UnmapViewOfFile((HANDLE)sfile));
+}
+
+/*
+=======================================
     获取内存共享文件
 =======================================
 */

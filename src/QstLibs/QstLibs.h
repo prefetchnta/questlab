@@ -89,6 +89,8 @@ CR_API share_t  STDCALL share_file_open (const ansi_t *name,
 CR_API void_t   STDCALL share_file_close (share_t sfile);
 CR_API bool_t   STDCALL share_file_fill (share_t sfile, const void_t *data,
                                          leng_t size);
+CR_API void_t*  STDCALL share_file_map (share_t sfile, leng_t size);
+CR_API bool_t   STDCALL share_file_unmap (share_t sfile);
 CR_API void_t*  STDCALL share_file_get (const ansi_t *name, leng_t size);
 CR_API bool_t   STDCALL share_file_set (const ansi_t *name, const void_t *data,
                                         leng_t size);
