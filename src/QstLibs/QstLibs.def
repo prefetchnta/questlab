@@ -5,6 +5,7 @@ EXPORTS
     misc_mem_calloc
     misc_mem_realloc
     misc_mem_free
+    misc_is_win64
     misc_cui_setwin
     misc_is_running
     misc_call_exe

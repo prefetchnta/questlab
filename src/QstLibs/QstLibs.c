@@ -1105,6 +1105,21 @@ misc_dir_exist (
     return (rett);
 }
 
+/*
+=======================================
+    判断是否是64位系统
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_is_win64 (void_t)
+{
+    ansi_t  tmp[MAX_PATH];
+
+    if (GetEnvironmentVariableA("ProgramFiles(x86)", tmp, sizeof(tmp)) == 0)
+        return (FALSE);
+    return (TRUE);
+}
+
 /*****************************************************************************/
 /*                               QstGraph API                                */
 /*****************************************************************************/
