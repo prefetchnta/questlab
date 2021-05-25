@@ -46,6 +46,7 @@ void __fastcall TfrmMain::FormClose(TObject *Sender, TCloseAction &Action)
     /* 关闭时全部退出 */
     qst_quit_all_3rd();
     qst_send_cmdz("app:exit");
+    misc_call_exe("RunPython script/python/kill_x64.pyw", TRUE, TRUE);
 }
 //---------------------------------------------------------------------------
 #define QST_MENU_SOURCE
