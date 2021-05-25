@@ -281,6 +281,12 @@ opencv_loader (
                     frames->set(cv::CAP_PROP_CONVERT_RGB, 1.0);
                     str_cpyA(imghdr.info, CFCBOCV64);
                     imghdr.count = 256;
+
+                    cv::Mat tmp;
+
+                    /* 需要提前抓一下图？ */
+                    frames->grab();
+                    frames->retrieve(tmp);
                 }
                 else
                 {
