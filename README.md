@@ -16,9 +16,9 @@
 　　本系统内的项目全部使用 **Makefile** 作为工程的主要组织方式，没有必要不会使用 **IDE** 提供的工程文件。单个部件的编译可以执行项目目录下的批处理文件来实现。每个项目的编译环境要求见下面的说明。目前用到的开发环境有：
 
 - **Borland C++Builder 6.0 Update4**
-- **Microsoft Visual Studio 2003 SP1**
 - **Microsoft Visual Studio 2010 SP1**
 - **Microsoft Visual Studio 2013 Update5**
+- **Microsoft Visual Studio 2019 Lastest**
 
 ## 【部件简介】
 
