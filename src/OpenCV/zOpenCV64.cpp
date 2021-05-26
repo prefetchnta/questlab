@@ -16,7 +16,7 @@
  *             ##       CREATE: 2021-05-20
  *              #
  ================================================
-    【64】基于 OpenCV 的 QV2D fz 扩展服务
+    【64】基于 OpenCV 的 QV2D z 扩展服务
  ================================================
  */
 
@@ -24,10 +24,9 @@
 #include "opencv2/opencv.hpp"
 #include "../QstLibs/QstLibs.h"
 #include "../CrHackSet/xCrHackSet.h"
-#include "../../../Asylum/asylum.hpp"
 
 /* 一些公用宏 */
-#define EXE_XNAME   "xOpenCV64"
+#define EXE_XNAME   "zOpenCV64"
 
 /* 外部库引用 */
 #pragma comment (lib, "opencv_core452.lib")
@@ -35,96 +34,20 @@
 #pragma comment (lib, "opencv_imgproc452.lib")
 #pragma comment (lib, "opencv_videoio452.lib")
 
-/* 桥接函数引入 */
+/* 桥接函数 */
 #include "../bridge.inl"
 
-/* 工作线程 */
-static int32u           s_size[2];
-static bool_t           s_quit[2];
-static share_t          s_smem[2];
-static asy::asy_thrd_t  s_thrd[2];
-static void_t*  STDCALL opencv_loader (void_t*);
-static void_t*  STDCALL opencv_filter (void_t*);
+/* 工作变量 */
+static int32u   s_size;
+static share_t  s_smem;
 
 /* 简化代码 */
 #define IFSBOCV64   "Image file supported by OpenCV64"
 #define VFSBOCV64   "Video file supported by OpenCV64"
 #define CFCBOCV64   "Image captured from camera by OpenCV64"
 
-#define OCV_REMOTE_CAMERA       ":computer/remote_cam"
+#define OCV_REMOTE_CAMERA       ":computer/x64camera"
 #define opencv_return_false()   message_send_buffer(mess, "", 1)
-
-/*****************************************************************************/
-/*                                 公共部分                                  */
-/*****************************************************************************/
-
-/*
-=======================================
-    WinMain 程序入口
-=======================================
-*/
-int WINAPI
-WinMain (
-  __CR_IN__ HINSTANCE   curt_app,
-  __CR_IN__ HINSTANCE   prev_app,
-  __CR_IN__ LPSTR       cmd_line,
-  __CR_IN__ int         cmd_show
-    )
-{
-    socket_t    mess;
-
-    CR_NOUSE(curt_app);
-    CR_NOUSE(prev_app);
-    CR_NOUSE(cmd_line);
-    CR_NOUSE(cmd_show);
-
-    /* 只允许一个例程 */
-    if (misc_is_running(EXE_XNAME))
-        return (QST_ERROR);
-
-    /* 建立 CrHack 系统 */
-    if (!set_app_type(CR_APP_GUI))
-        return (QST_ERROR);
-    message_pipe_init();
-    s_size[0] = s_size[1] = 0;
-    s_smem[0] = s_smem[1] = NULL;
-    s_thrd[0] = s_thrd[1] = NULL;
-    s_quit[0] = s_quit[1] = FALSE;
-
-    /* 创建工作线程 */
-    mess = message_recv_open(CRH_REMOTE_IMG_PORT);
-    if (mess == NULL)
-        return (QST_ERROR);
-    message_pipe_timeout(mess, QST_TCP_TOUT);
-    s_thrd[0] = asy::thread_run(opencv_loader, mess);
-    if (s_thrd[0] == NULL) {
-        message_pipe_close(mess);
-        return (QST_ERROR);
-    }
-    mess = message_recv_open(CRH_REMOTE_FLT_PORT);
-    if (mess == NULL) {
-        s_quit[0] = TRUE;
-        asy::thread_end(s_thrd[0]);
-        return (QST_ERROR);
-    }
-    message_pipe_timeout(mess, QST_TCP_TOUT);
-    s_thrd[1] = asy::thread_run(opencv_filter, mess);
-    if (s_thrd[1] == NULL) {
-        message_pipe_close(mess);
-        s_quit[0] = TRUE;
-        asy::thread_end(s_thrd[0]);
-        return (QST_ERROR);
-    }
-
-    /* 等待线程结束 */
-    asy::thread_end(s_thrd[1]);
-    asy::thread_end(s_thrd[0]);
-    return (QST_OKAY);
-}
-
-/*****************************************************************************/
-/*                                 图片部分                                  */
-/*****************************************************************************/
 
 /*
 ---------------------------------------
@@ -154,23 +77,23 @@ opencv_send_image (
     info.dat_sz *= sizeof(int32u);
 
     /* 填充图片数据 */
-    if (s_size[0] < info.dat_sz) {
-        if (s_smem[0] != NULL)
-            share_file_close(s_smem[0]);
-        s_smem[0] = share_file_open(CRH_RMT_IMG_DATA, NULL, info.dat_sz);
-        if (s_smem[0] == NULL) {
+    if (s_size < info.dat_sz) {
+        if (s_smem != NULL)
+            share_file_close(s_smem);
+        s_smem = share_file_open(CRH_RMT_IMG_DATA, NULL, info.dat_sz);
+        if (s_smem == NULL) {
             opencv_return_false();
-            s_size[0] = 0;
+            s_size = 0;
             return;
         }
-        s_size[0] = info.dat_sz;
+        s_size = info.dat_sz;
     }
-    data = (byte_t*)share_file_map(s_smem[0], info.dat_sz);
+    data = (byte_t*)share_file_map(s_smem, info.dat_sz);
     if (data == NULL) {
         opencv_return_false();
-        share_file_close(s_smem[0]);
-        s_smem[0] = NULL;
-        s_size[0] = 0;
+        share_file_close(s_smem);
+        s_smem = NULL;
+        s_size = 0;
         return;
     }
     nbpl = info.img_ww * sizeof(int32u);
@@ -178,33 +101,58 @@ opencv_send_image (
         mem_cpy(data, image.ptr(yy), nbpl);
         data += nbpl;
     }
-    share_file_unmap(s_smem[0]);
+    share_file_unmap(s_smem);
 
     /* 发送图片信息 */
     message_send_buffer(mess, &info, sizeof(info));
 }
 
 /*
----------------------------------------
-    图片解析工作函数
----------------------------------------
+=======================================
+    WinMain 程序入口
+=======================================
 */
-static void_t* STDCALL
-opencv_loader (
-  __CR_IN__ void_t* arg
+int WINAPI
+WinMain (
+  __CR_IN__ HINSTANCE   curt_app,
+  __CR_IN__ HINSTANCE   prev_app,
+  __CR_IN__ LPSTR       cmd_line,
+  __CR_IN__ int         cmd_show
     )
 {
     uint_t      back;
-    int32u      crrt;
     leng_t      leng;
+    int32u      crrt;
     void_t*     data;
-    ansi_t      name[260];
-    socket_t    mess = (socket_t)arg;
-    /* --------------------------- */
-    cv::Mat*                single;
-    sPIC_RMT_HEAD           imghdr;
-    cv::VideoCapture*       frames;
-    std::vector<cv::Mat>    images;
+    socket_t    mess;
+
+    CR_NOUSE(curt_app);
+    CR_NOUSE(prev_app);
+    CR_NOUSE(cmd_line);
+    CR_NOUSE(cmd_show);
+
+    /* 只允许一个例程 */
+    if (misc_is_running(EXE_XNAME))
+        return (QST_ERROR);
+
+    /* 建立 CrHack 系统 */
+    if (!set_app_type(CR_APP_GUI))
+        return (QST_ERROR);
+    message_pipe_init();
+    s_size = 0;
+    s_smem = NULL;
+
+    /* 创建工作线程 */
+    mess = message_recv_open(CRH_REMOTE_IMG_PORT);
+    if (mess == NULL)
+        return (QST_ERROR);
+    message_pipe_timeout(mess, QST_TCP_TOUT);
+
+    ansi_t name[260];
+    cv::Mat* single;
+    sPIC_RMT_HEAD imghdr;
+    cv::VideoCapture* frames;
+    std::vector<cv::Mat> images;
 
     crrt = 0;
     single = NULL;
@@ -213,7 +161,7 @@ opencv_loader (
     struct_zero(&imghdr, sPIC_RMT_HEAD);
 
     /* 开始工作 */
-    while (!s_quit[0])
+    for (;;)
     {
         /* 接收数据包 */
         back = message_recv_buffer(mess, name, sizeof(name));
@@ -418,7 +366,7 @@ opencv_loader (
         {
             /* 退出工作线程 */
             if (*(int16u*)name == 0x55AA)
-                s_quit[0] = TRUE;
+                break;
         }
         else
         {
@@ -431,35 +379,8 @@ opencv_loader (
     images.clear();
     TRY_PDEL(single);
     TRY_PDEL(frames);
-    if (s_smem[0] != NULL)
-        share_file_close(s_smem[0]);
+    if (s_smem != NULL)
+        share_file_close(s_smem);
     message_pipe_close(mess);
-    return (NULL);
-}
-
-/*****************************************************************************/
-/*                                 滤镜部分                                  */
-/*****************************************************************************/
-
-/*
----------------------------------------
-    滤镜实现工作函数
----------------------------------------
-*/
-static void_t* STDCALL
-opencv_filter (
-  __CR_IN__ void_t* arg
-    )
-{
-    socket_t    mess = (socket_t)arg;
-#if 0
-    while (!s_quit[1]) {
-        asy::thread_yield(1);
-    }
-#endif
-    /* 释放资源 */
-    if (s_smem[1] != NULL)
-        share_file_close(s_smem[1]);
-    message_pipe_close(mess);
-    return (NULL);
+    return (QST_OKAY);
 }

@@ -1,12 +1,12 @@
-PROJECT=xOpenCV64
+PROJECT=zOpenCV64
 SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).exe
 !INCLUDE "../vc2019_x64.mak"
 
-OBJ_LIST=.$(L)xOpenCV64.$(O) \
+OBJ_LIST=.$(L)zOpenCV64.$(O) \
          .$(L)$(PROJECT).res
 
-SRC_LIST=.$(L)xOpenCV64.$(P)
+SRC_LIST=.$(L)zOpenCV64.$(P)
 
 build_all:
     $(RC) $(RFLAGS)
