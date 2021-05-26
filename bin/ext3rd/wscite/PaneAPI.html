@@ -319,6 +319,13 @@
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETVISIBLE'>StyleVisible</a>[int style]<span class="comment"> -- Set a style to be visible or not.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETCHANGEABLE'>StyleChangeable</a>[int style]<span class="comment"> -- Set a style to be changeable or not (read only). Experimental feature, currently buggy.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETHOTSPOT'>StyleHotSpot</a>[int style]<span class="comment"> -- Set a style to be a hotspot or not.</span></p>
+	<h2>Element colours</h2>
+	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETELEMENTCOLOUR'>SetElementColour</a>(int element, colouralpha colourElement)<span class="comment"> -- Set the colour of an element. Translucency (alpha) may or may not be significant and this may depend on the platform. The alpha byte should commonly be 0xff for opaque.</span></p>
+	<p>colouralpha editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETELEMENTCOLOUR'>GetElementColour</a>(int element)<span class="comment"> -- Get the colour of an element.</span></p>
+	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_RESETELEMENTCOLOUR'>ResetElementColour</a>(int element)<span class="comment"> -- Use the default or platform-defined colour for an element.</span></p>
+	<p>bool editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETELEMENTISSET'>GetElementIsSet</a>(int element)<span class="comment"> -- Get whether an element has been set by SetElementColour. When false, a platform-defined or default colour is used.</span></p>
+	<p>bool editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETELEMENTALLOWSTRANSLUCENT'>GetElementAllowsTranslucent</a>(int element)<span class="comment"> -- Get whether an element supports translucency.</span></p>
+	<p>string editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETFONTLOCALE'>FontLocale</a><span class="comment"> -- Set the locale for displaying text.</span></p>
 	<h2>Caret, selection, and hotspot styles</h2>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETSELFORE'>SetSelFore</a>(bool useSetting, colour fore)<span class="comment"> -- Set the foreground colour of the main and additional selections and whether to use this setting.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETSELBACK'>SetSelBack</a>(bool useSetting, colour back)<span class="comment"> -- Set the background colour of the main and additional selections and whether to use this setting.</span></p>
@@ -387,6 +394,7 @@
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETBIDIRECTIONAL'>Bidirectional</a><span class="comment"> -- Set bidirectional text display state.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GRABFOCUS'>GrabFocus</a>()<span class="comment"> -- Set the focus to this Scintilla widget.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETFOCUS'>Focus</a><span class="comment"> -- Change internal focus flag.</span></p>
+	<p>bool editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SUPPORTSFEATURE'>SupportsFeature</a>(int feature)<span class="comment"> -- Get whether a feature is supported</span></p>
 	<h2>Brace highlighting</h2>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_BRACEHIGHLIGHT'>BraceHighlight</a>(position posA, position posB)<span class="comment"> -- Highlight the characters at two positions.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_BRACEBADLIGHT'>BraceBadLight</a>(position pos)<span class="comment"> -- Highlight the character at a position indicating there is no matching brace.</span></p>
@@ -417,8 +425,12 @@
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERDEFINERGBAIMAGE'>MarkerDefineRGBAImage</a>(int markerNumber, string pixels)<span class="comment"> -- Define a marker from RGBA data. It has the width and height from RGBAImageSetWidth/Height</span></p>
 	<p>int editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSYMBOLDEFINED'>MarkerSymbolDefined</a>(int markerNumber)<span class="comment"> -- Which symbol was defined for markerNumber with MarkerDefine</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETFORE'>MarkerFore</a>[int markerNumber] write-only<span class="comment"> -- Set the foreground colour used for a particular marker number.</span></p>
+	<p>colouralpha editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETFORETRANSLUCENT'>MarkerForeTranslucent</a>[int markerNumber] write-only<span class="comment"> -- Set the foreground colour used for a particular marker number.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETBACK'>MarkerBack</a>[int markerNumber] write-only<span class="comment"> -- Set the background colour used for a particular marker number.</span></p>
+	<p>colouralpha editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETBACKTRANSLUCENT'>MarkerBackTranslucent</a>[int markerNumber] write-only<span class="comment"> -- Set the background colour used for a particular marker number.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETBACKSELECTED'>MarkerBackSelected</a>[int markerNumber] write-only<span class="comment"> -- Set the background colour used for a particular marker number when its folding block is selected.</span></p>
+	<p>colouralpha editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETBACKSELECTEDTRANSLUCENT'>MarkerBackSelectedTranslucent</a>[int markerNumber] write-only<span class="comment"> -- Set the background colour used for a particular marker number when its folding block is selected.</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETSTROKEWIDTH'>MarkerStrokeWidth</a>[int markerNumber] write-only<span class="comment"> -- Set the width of strokes used in .01 pixels so 50  = 1/2 pixel width.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERENABLEHIGHLIGHT'>MarkerEnableHighlight</a>(bool enabled)<span class="comment"> -- Enable/disable highlight for current folding block (smallest one that contains the caret)</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERSETALPHA'>MarkerAlpha</a>[int markerNumber] write-only<span class="comment"> -- Set the alpha used for a marker that is drawn in the text area, not the margin.</span></p>
 	<p>int editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERADD'>MarkerAdd</a>(line line, int markerNumber)<span class="comment"> -- Add a marker to a line, returning an ID which can be used to find or delete the marker.</span></p>
@@ -435,6 +447,7 @@
 	<h2>Indicators</h2>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETSTYLE'>IndicStyle</a>[int indicator]<span class="comment"> -- Set an indicator to plain, squiggle or TT.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETFORE'>IndicFore</a>[int indicator]<span class="comment"> -- Set the foreground colour of an indicator.</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETSTROKEWIDTH'>IndicStrokeWidth</a>[int indicator]<span class="comment"> -- Set the stroke width of an indicator in hundredths of a pixel.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETALPHA'>IndicAlpha</a>[int indicator]<span class="comment"> -- Set the alpha fill colour of the given indicator.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETOUTLINEALPHA'>IndicOutlineAlpha</a>[int indicator]<span class="comment"> -- Set the alpha outline colour of the given indicator.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETUNDER'>IndicUnder</a>[int indicator]<span class="comment"> -- Set an indicator to draw under text or over(default).</span></p>
@@ -570,9 +583,9 @@
 	<h2>Accessibility</h2>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETACCESSIBILITY'>Accessibility</a><span class="comment"> -- Enable or disable accessibility.</span></p>
 	<h2>Lexer</h2>
-	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETLEXER'>Lexer</a><span class="comment"> -- Set the lexing language of the document.</span></p>
-	<p>string editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETLEXERLANGUAGE'>LexerLanguage</a><span class="comment"> -- Set the lexing language of the document based on string name.</span></p>
-	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_LOADLEXERLIBRARY'>LoadLexerLibrary</a>(string path)<span class="comment"> -- Load a lexer library (dll / so).</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETLEXER'>Lexer</a> read-only</p>
+	<p>string editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETLEXERLANGUAGE'>LexerLanguage</a> read-only</p>
+	<p>pointer editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETILEXER'>ILexer</a> write-only<span class="comment"> -- Set the lexer from an ILexer*.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_COLOURISE'>Colourise</a>(position start, position end)<span class="comment"> -- Colourise a segment of the document using the current lexing language.</span></p>
 	<p>int editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CHANGELEXERSTATE'>ChangeLexerState</a>(position start, position end)<span class="comment"> -- Indicate that the internal state of a lexer has changed over a range and therefore there may be a need to redraw.</span></p>
 	<p>string editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_PROPERTYNAMES'>PropertyNames</a>()<span class="comment"> -- Retrieve a '\n' separated list of properties understood by the current lexer. Result is NUL-terminated.</span></p>

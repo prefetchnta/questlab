@@ -849,6 +849,13 @@ NameError: name 'mistake' is not defined
       These prefixes are discussed in the <a href="#DefinedVariables">"Defined variables"</a> section.
       </p>
       <p>
+      Colours are defined like HTML with '#' followed by 6 or 8 hexadecimal digits #RRGGBB or #RRGGBBAA
+      defining the red, green, blue, and alpha values of the colour.
+      Alpha is the degree of translucency with 00 completely transparent and FF completely opaque.
+      A 6 digit colour is assumed to be completely opaque.
+      Only a few settings can currently be set translucent with an 8-digit value.
+      </p>
+      <p>
       On Windows, values may be scaled using the current screen dots-per-inch so that they use more
       pixels on high resolution screens and appear a reasonable size.
       <span class="example">margin.width=$(scale&nbsp;16)</span> makes the margin 16 pixels wide
@@ -1118,6 +1125,15 @@ NameError: name 'mistake' is not defined
         <td>
         Sets the colours used for displaying all visible whitespace, overriding any styling
         applied by the lexer.
+        </td>
+      </tr>
+      <tr id='property-whitespace.size'>
+        <td>
+          whitespace.size<br />
+        </td>
+        <td>
+        Sets the size used for displaying all visible spaces, especially for when whitespace.fore
+        is set to be subtle.
         </td>
       </tr>
       <tr id='property-view.indentation.guides'>
@@ -1864,12 +1880,15 @@ NameError: name 'mistake' is not defined
           <a name='property-bookmark.back'></a><a name='property-bookmark.alpha'></a>
           bookmark.fore<br />
           bookmark.back<br />
-          bookmark.alpha
+          bookmark.alpha<br />
+          bookmark.stroke.width
         </td>
         <td>
           The colours used to display bookmarks in the margin. If bookmark.fore is empty then
           a blue sphere is used. When the margin is turned off, bookmarks are shown by a
-          change in the background colour of the line with the translucency set with bookmark.alpha.
+          change in the background colour of the line with the translucency set with bookmark.alpha.<br />
+          The stroke width of the symbol can be set in hundredths of a pixel with bookmark.stroke.width.
+          When using a high DPI display or large fonts it can be worthwhile setting bookmark.stroke.width to 200.
         </td>
        </tr>
       <tr id='property-bookmark.symbol'>
@@ -2085,6 +2104,19 @@ NameError: name 'mistake' is not defined
         contains "string.replace" then typing "string.r(" will
         cause "string.replace(" to be inserted.
         The * form is used if there is no lexer specific setting.
+        </td>
+      </tr>
+      <tr class="windowsonly" id='property-autocomplete.fore'>
+        <td>
+          autocomplete.fore<br />
+          autocomplete.back<br />
+          autocomplete.selected.fore<br />
+          autocomplete.selected.back
+        </td>
+        <td>
+        If these settings are not empty, they specify colours to use in
+        autocompletion lists.
+        The default values depend on the platform and system settings.
         </td>
       </tr>
       <tr id='property-autocomplete.*.typesep'>
@@ -2330,6 +2362,22 @@ NameError: name 'mistake' is not defined
 	<tr id='property-fold.dataflex.compilerlist'>
 	<td>fold.dataflex.compilerlist</td>
 	<td>Set to 1 for enabling the code folding feature in *.prn files</td>
+	</tr>
+	<tr id='property-fold.fsharp.comment.multiline'>
+	<td>fold.fsharp.comment.multiline</td>
+	<td>Setting this option to 0 disables folding of grouped line comments in F# files when fold.comment=1.</td>
+	</tr>
+	<tr id='property-fold.fsharp.comment.stream'>
+	<td>fold.fsharp.comment.stream</td>
+	<td>Setting this option to 0 disables folding of ML-style comments in F# files when fold.comment=1.</td>
+	</tr>
+	<tr id='property-fold.fsharp.imports'>
+	<td>fold.fsharp.imports</td>
+	<td>Setting this option to 0 disables folding of F# import declarations.</td>
+	</tr>
+	<tr id='property-fold.fsharp.preprocessor'>
+	<td>fold.fsharp.preprocessor</td>
+	<td>Setting this option to 1 enables folding of F# compiler directives.</td>
 	</tr>
 	<tr id='property-fold.haskell.imports'>
 	<td>fold.haskell.imports</td>
@@ -3490,14 +3538,6 @@ imports.include=fortran lisp
           </div>
       	</td>
       </tr>
-      <tr id='property-lexerpath'>
-      	<td>
-      	lexerpath.<i>filepattern</i>
-      	</td>
-      	<td>
-      	Specifies the path to an external lexer module that will be loaded into Scintilla.
-      	</td>
-      </tr>
       <tr id='property-keywords'>
         <td>
           <a name='property-keywords2'></a><a name='property-keywords3'></a><a name='property-keywords4'></a><a name='property-keywords5'></a><a name='property-keywords6'></a><a name='property-keywords7'></a><a name='property-keywords8'></a><a name='property-keywords9'></a><a name='property-keywordclass'></a>
@@ -3664,6 +3704,17 @@ imports.include=fortran lisp
 	  <tr><td>2</td><td>Antialiased</td></tr>
 	  <tr><td>3</td><td>LCD Optimized</td></tr>
 	  </table>
+        </td>
+      </tr>
+      <tr class="windowsonly" id='property-font.locale'>
+        <td>
+          font.locale
+        </td>
+        <td>
+        This setting allows choosing character shapes that match languages by specifying a language locale.
+        Some values are "ja" for Japanese, "ko" for Korean, "zh-Hans" for Simplified Chinese and "zh-Hant" for Traditional Chinese.
+        The default setting is "en-us" for US English.
+        The setting only works on Windows with DirectWrite (technology=1).
         </td>
       </tr>
        <tr id='property-braces.check'>
@@ -4056,7 +4107,18 @@ groupundo - yes or no
         </td>
         <td>
         Sets the colours used for folds. fold.fore sets the outline colour, fold.back sets the fill.
+        An 8-digit value sets the translucency as well: #FF00007F is half-transparent red.
         </td>
+      </tr>
+      <tr id='property-fold.stroke.width'>
+        <td>
+          fold.stroke.width
+        </td>
+        <td>
+          Sets the stroke width of the fold symbols in hundredths of a pixel.
+          The default value, 100 is good for standard displays but 200 may be better for high DPI displays,
+        </td>
+      </tr>
       </tr>
       <tr id='property-fold.margin.width'>
         <td>
@@ -4127,6 +4189,7 @@ groupundo - yes or no
         </td>
         <td>
         Define the colour of highlight. The colour by default is red (#FF0000).
+        An 8-digit value sets the translucency as well.
         </td>
       </tr>
       <tr id='property-title.full.path'>
@@ -4710,12 +4773,10 @@ groupundo - yes or no
     </p>
     <p>
        For languages that can not be lexed with the existing lexers, a new lexer can be coded in
-      C++.&nbsp; These can either be built into Scintilla, or put into an
-		external module and loaded when SciTE runs (See lexerpath).</p>
-       <a href="SciTELexer.html">Installing a lexer into SciTE</a>
-    <br />
-		<a href="SciTEExternalLexer.html">Creating and installing an external
-		lexer</a><br />
+       C++.&nbsp; These can either be built into Lexilla, or put into an
+       external module and loaded when SciTE runs.
+       See Lexilla and the <a href="#property-lexillapath">lexilla.path</a> property.
+    </p>
     <p>
        The open.filter should be modified to include the file extensions used for the new language
       and entries added for command.compile, command.build, command.go and command.go.needs for the
