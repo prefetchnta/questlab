@@ -77,7 +77,7 @@ static bool_t tester (void_t *param, sSEARCHa *info)
     byte_t  shash[20];
 
     /* 跳过空文件和大文件 */
-    if (info->size == 0 || info->size > CR_M2B(64))
+    if (info->size == 0 || info->size > CR_M2B(127))
         return (TRUE);
     comp = (sCOMP*)param;
 
@@ -122,7 +122,7 @@ static bool_t tester (void_t *param, sSEARCHa *info)
         dtime = timer_get_delta(s_profile) * 1.024f;
         if (dsize != 0) {
             speed_d = (fp32_t)info->size / dtime;
-            printf(" | DEC %.2f KB/S", speed_d);
+            printf(" | DEC %.2f KB/S <%u>", speed_d, dsize);
         }
         else {
             printf(" | DEC ???? KB/S");
