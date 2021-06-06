@@ -36,6 +36,7 @@
 /* 内存通讯文件 */
 #define CRH_LCL_IMG_FILE    "share_mem_img_file"
 #define CRH_RMT_IMG_DATA    "share_mem_img_data"
+#define CRH_FLT_RGB_DATA    "share_mem_rgb_data"
 
 /* 通讯结构 (LE) */
 #ifndef _CR_NO_PRAGMA_PACK_

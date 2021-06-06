@@ -1,4 +1,5 @@
 
+#include "xCrHackSet.h"
 #include "../QstLibs/QstLibs.h"
 #include "facedetect/facedetect-dll.h"
 
@@ -1366,6 +1367,122 @@ image_skeleton_zhang (
 }
 
 /*
+---------------------------------------
+    64位滤镜接口
+---------------------------------------
+*/
+static bool_t
+image_quest64_bridge (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    uint_t      back;
+    leng_t      size;
+    leng_t      nbpl;
+    byte_t*     line;
+    byte_t*     pntr;
+    byte_t*     data;
+    sIMAGE*     dest;
+    share_t     smem;
+    socket_t    mess;
+
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    if (param->closed || param->node == NULL)
+        return (TRUE);
+
+    int32u  info[2];
+
+    /* 发送图片信息, 创建远程 RGB 数据缓冲 */
+    mess = message_send_open(CRH_REMOTE_FLT_PORT);
+    if (mess == NULL)
+        return (TRUE);
+    message_pipe_timeout(mess, QST_TCP_TOUT);
+    info[0] = dest->position.ww;
+    info[1] = dest->position.hh;
+    size  = info[0];
+    size *= sizeof(int32u);
+    nbpl  = size;
+    size *= info[1];
+    if (!message_send_buffer(mess, info, sizeof(info)))
+        goto _failure1;
+    back = message_recv_buffer(mess, info, sizeof(info) / 2);
+    if (back != sizeof(info) / 2 || info[0] != mk_tag4("OKAY"))
+        goto _failure1;
+
+    /* 尝试打开远程 RGB 数据缓冲 */
+    smem = share_file_open(CRH_FLT_RGB_DATA, NULL, (leng_t)-1);
+    if (smem == NULL)
+        goto _failure1;
+    data = (byte_t*)share_file_map(smem, size);
+    if (data == NULL)
+        goto _failure2;
+    pntr = data;
+    line = dest->data;
+
+    /* 复制图像数据 */
+    for (; info[1] != 0; info[1]--) {
+        mem_cpy(pntr, line, nbpl);
+        line += dest->bpl;
+        pntr += nbpl;
+    }
+
+    ansi_t  *dsrc, *ssrc = skip_spaceA(param->node);
+
+    /* 发送调用参数信息 */
+    size = str_sizeA(ssrc);
+    dsrc = str_allocA(size);
+    if (dsrc == NULL)
+        goto _failure3;
+    mem_cpy(dsrc, ssrc, size);
+    message_pipe_timeout(mess, QST_TCP_TOUT * 10);
+    if (!message_send_buffer(mess, remove_xml_cmtA(dsrc), size)) {
+        mem_free(dsrc);
+        goto _failure3;
+    }
+    mem_free(dsrc);
+
+    /* 接收返回信息大小 */
+    back = message_recv_buffer(mess, info, sizeof(info) / 2);
+    if (back != sizeof(info) / 2)
+        goto _failure3;
+    if (info[0] != 0)
+    {
+        /* 发送返回命令字符串 */
+        dsrc = str_allocA(info[0]);
+        if (dsrc != NULL) {
+            message_pipe_timeout(mess, QST_TCP_TOUT);
+            if (message_recv_buffer(mess, dsrc, info[0]) == info[0]) {
+                if (netw != NULL)
+                    netw_cmd_send((socket_t)netw, dsrc);
+            }
+            mem_free(dsrc);
+        }
+    }
+
+    /* 更新当前图像内容 */
+    line = dest->data;
+    info[1] = dest->position.hh;
+    for (; info[1] != 0; info[1]--) {
+        mem_cpy(line, data, nbpl);
+        line += dest->bpl;
+        data += nbpl;
+    }
+
+    /* 释放资源 */
+_failure3:
+    share_file_unmap(smem);
+_failure2:
+    share_file_close(smem);
+_failure1:
+    message_pipe_close(mess);
+    return (TRUE);
+}
+
+/*
 =======================================
     滤镜接口导出表
 =======================================
@@ -1407,5 +1524,6 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_face_multiview_reinforce", image_facedetect },
     { "crhack_face_frontal_surveillance", image_facedetect },
     { "crhack_skeleton_zhang", image_skeleton_zhang },
+    { "quest64_bridge", image_quest64_bridge },
     { NULL, NULL },
 };
