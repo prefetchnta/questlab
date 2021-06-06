@@ -25,6 +25,10 @@ share_file_open (
     leng_t  length;
     byte_t  hash[24];
 
+    /* 大小为-1表示打开已有 */
+    if (size == ((leng_t)-1))
+        return ((share_t)OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, name));
+
     /* 文件大小过滤 */
     if (size < CR_K2B(4))
         size = CR_K2B(4);
