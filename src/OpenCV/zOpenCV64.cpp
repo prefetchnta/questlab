@@ -142,7 +142,7 @@ WinMain (
     s_size = 0;
     s_smem = NULL;
 
-    /* 创建工作线程 */
+    /* 创建工作端口 */
     mess = message_recv_open(CRH_REMOTE_IMG_PORT);
     if (mess == NULL)
         return (QST_ERROR);
