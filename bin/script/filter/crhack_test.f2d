@@ -108,4 +108,14 @@
     <!-- ZXing 查找识别 -->
     <?crhack_zxing_decode hybrid="1" bar_type="0" />
 
+    <!-- X64 滤镜桥接 -->
+    <?quest64_bridge><![CDATA[
+        <filters>
+
+            <!-- HelloX64 -->
+            <?quest64_helloworld message="HelloWorld X64!!!" />
+
+        </filters>
+    ]]></quest64_bridge>
+
 </filters>
