@@ -11,7 +11,7 @@ SRC_LIST=.$(L)zOpenCV64.$(P)
 build_all:
     $(RC) $(RFLAGS)
     $(CC) $(CFLAGS) /EHsc /I "..\..\inc\x64inc\opencv4" $(SRC_LIST)
-    $(LD) $(LFLAGS) /LIBPATH:..$(L)..$(L)lib$(L)x64lib $(OBJ_LIST)
+    $(LD) $(LFLAGS) $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)x64bin$(L)
     del /Q *.obj
