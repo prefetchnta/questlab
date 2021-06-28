@@ -1286,6 +1286,8 @@ static const sQST_CMD   s_cmdz[] =
     /***** 私有命令映射 *****/
     { "qedt:app:exit", qst_edt_app_exit },
     { "qedt:win:show", qst_edt_win_show },
+    { "qedt:ldr:file", qst_edt_ldr_file },
+    { "qedt:ldr:smem", qst_edt_ldr_smem },
 };
 
 /*
