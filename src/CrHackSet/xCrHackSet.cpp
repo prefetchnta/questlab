@@ -8,6 +8,7 @@
 #pragma comment (lib, "GFX2_GDI.lib")
 #pragma comment (lib, "libzbar-0.lib")
 #pragma comment (lib, "libzxing.lib")
+#pragma comment (lib, "TessOCR.lib")
 #pragma comment (lib, "libfacedetect.lib")
 
 #if defined(_CR_BUILD_DLL_)

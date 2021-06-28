@@ -1,6 +1,7 @@
 
 #include "xCrHackSet.h"
 #include "../QstLibs/QstLibs.h"
+#include "../TessOCR/TessOCR.h"
 #include "facedetect/facedetect-dll.h"
 
 #include <math.h>
@@ -1368,6 +1369,66 @@ image_skeleton_zhang (
 
 /*
 ---------------------------------------
+    图片 TESS-OCR 识别
+---------------------------------------
+*/
+static bool_t
+image_tesseract_ocr (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sRECT       rct;
+    sint_t      ppi;
+    sint_t      v[4];
+    ansi_t*     lang;
+    ansi_t*     rett;
+    sIMAGE*     dest;
+    tessocr_t   tess;
+
+    dest = (sIMAGE*)image;
+    if (dest->fmt != CR_ARGB8888)
+        return (TRUE);
+    lang = xml_attr_stringU("lang", param);
+    ppi = xml_attr_intxU("ppi", (uint_t)-1, param);
+    v[0] = xml_attr_intxU("x", (uint_t)-1, param);
+    v[1] = xml_attr_intxU("y", (uint_t)-1, param);
+    v[2] = xml_attr_intxU("width", (uint_t)-1, param);
+    v[3] = xml_attr_intxU("height", (uint_t)-1, param);
+    tess = tessocr_init(QST_PATH_SOURCE "tessdata", lang);
+    TRY_FREE(lang);
+    if (tess == NULL)
+        return (TRUE);
+    if (!tessocr_set_image(tess, dest))
+        goto _func_out;
+    if (v[0] >= 0 && v[1] >= 0 && v[2] > 0 && v[3] > 0) {
+        rect_set_wh(&rct, v[0], v[1], v[2], v[3]);
+        tessocr_set_rect(tess, &rct);
+    }
+    if (ppi > 0)
+        tessocr_set_ppi(tess, ppi);
+    rett = tessocr_get_utf8(tess);
+    if (rett != NULL)
+    {
+        /* 保存到临时文件并加载 */
+        file_saveA(QST_PATH_OUTPUT "tesseract.txt", rett, str_lenA(rett));
+        tessocr_str_free(rett);
+        lang = str_fmtA("qedt:ldr:file " QST_PATH_OUTPUT
+                        "tesseract.txt 0 0 65001");
+        if (lang != NULL) {
+            if (netw != NULL)
+                cmd_shl_send((socket_t)netw, lang);
+            mem_free(lang);
+        }
+    }
+_func_out:
+    tessocr_kill(tess);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     64位滤镜接口
 ---------------------------------------
 */
@@ -1524,6 +1585,7 @@ CR_API const sXC_PORT   qst_v2d_filter[] =
     { "crhack_face_multiview_reinforce", image_facedetect },
     { "crhack_face_frontal_surveillance", image_facedetect },
     { "crhack_skeleton_zhang", image_skeleton_zhang },
+    { "crhack_tesseract_ocr", image_tesseract_ocr },
     { "quest64_bridge", image_quest64_bridge },
     { NULL, NULL },
 };
