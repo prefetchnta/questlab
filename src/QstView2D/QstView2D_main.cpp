@@ -1390,6 +1390,8 @@ static const sQST_CMD   s_cmdz[] =
     /***** 私有命令映射 *****/
     { "qv2d:app:exit", qst_v2d_app_exit },
     { "qv2d:win:show", qst_v2d_win_show },
+    { "qv2d:ldr:file", qst_v2d_ldr_file },
+    { "qv2d:ldr:smem", qst_v2d_ldr_smem },
     { "qv2d:cmd:load", qst_v2d_cmd_load },
     { "qv2d:flt:load", qst_v2d_flt_load },
 };
