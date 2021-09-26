@@ -50,7 +50,9 @@
 #define QST_DEF_PORT        2012        /* 登录缺省端口 */
 #define QST_DEF_ADDR    "127.0.0.1"     /* 登录缺省地址 */
 
-/* 缺省目录路径 (X86) */
+/* 缺省目录路径 */
+/* 由于 X64 的应用都是从 X86 目录下调用的
+   所以 X64 的当前目录与 X86 当前目录一致 */
 #define QST_PATH_CONFIG ".\\config\\"   /* 应用程序配置 */
 #define QST_PATH_EXT3RD ".\\ext3rd\\"   /* 外部应用程序 */
 #define QST_PATH_OUTPUT ".\\output\\"   /* 临时文件目录 */
