@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE delegatemap [
-<!ELEMENT delegatemap (delegate)+>
-<!ELEMENT delegate (#PCDATA)>
-<!ATTLIST delegate decode CDATA #IMPLIED>
-<!ATTLIST delegate encode CDATA #IMPLIED>
-<!ATTLIST delegate mode CDATA #IMPLIED>
-<!ATTLIST delegate spawn CDATA #IMPLIED>
-<!ATTLIST delegate stealth CDATA #IMPLIED>
-<!ATTLIST delegate thread-support CDATA #IMPLIED>
-<!ATTLIST delegate command CDATA #REQUIRED>
+  <!ELEMENT delegatemap (delegate)+>
+  <!ELEMENT delegate (#PCDATA)>
+  <!ATTLIST delegate decode CDATA #IMPLIED>
+  <!ATTLIST delegate encode CDATA #IMPLIED>
+  <!ATTLIST delegate mode CDATA #IMPLIED>
+  <!ATTLIST delegate spawn CDATA #IMPLIED>
+  <!ATTLIST delegate stealth CDATA #IMPLIED>
+  <!ATTLIST delegate thread-support CDATA #IMPLIED>
+  <!ATTLIST delegate command CDATA #REQUIRED>
 ]>
 <!--
   Delegate command file.
@@ -91,12 +91,12 @@
   <delegate decode="ps:mono" stealth="True" command="&quot;@PSDelegate@&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pnmraw&quot; -dTextAlphaBits=%u -dGraphicsAlphaBits=%u &quot;-r%s&quot; %s &quot;-sOutputFile=%s&quot; &quot;-f%s&quot; &quot;-f%s&quot;"/>
   <delegate decode="shtml" command="html2ps -U -o &quot;%o&quot; &quot;%i&quot;"/>
   <delegate decode="svg" command="&quot;rsvg-convert&quot; -o &quot;%o&quot; &quot;%i&quot;"/>
-  <!-- Remove the extra space in - -export in the line below when you want to use inkscape -->
-  <!--<delegate decode="svg:decode" stealth="True" command="&quot;inkscape&quot; &quot;%s&quot; - -export-eps=&quot;%s&quot; - -export-dpi=&quot;%s&quot; - -export-background=&quot;%s&quot; - -export-background-opacity=&quot;%s&quot; &gt; &quot;%s&quot; 2&gt;&amp;1"/>-->
+  <!-- Remove the extra space in - -export in the line below when you want to use inkscape and change export-filename to export-png for inkscape < 1.0 -->
+  <!--<delegate decode="svg:decode" stealth="True" command="&quot;inkscape&quot; &quot;%s&quot; - -export-filename=&quot;%s&quot; - -export-dpi=&quot;%s&quot; - -export-background=&quot;%s&quot; - -export-background-opacity=&quot;%s&quot; &gt; &quot;%s&quot; 2&gt;&amp;1"/>-->
   <delegate decode="wdp" command="cmd.exe /c (move &quot;%i&quot; &quot;%i.jxr&quot; >nul) &amp; (&quot;JXRDecApp.exe&quot; -i &quot;%i.jxr&quot; -o &quot;%o.pnm&quot;) &amp; (move &quot;%i.jxr&quot; &quot;%i&quot; >nul) &amp; (move &quot;%o.pnm&quot; &quot;%o&quot; >nul)"/>
   <delegate decode="xps:cmyk" stealth="True" command="&quot;gxps.exe&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pamcmyk32&quot; -dTextAlphaBits=%u -dGraphicsAlphaBits=%u &quot;-r%s&quot; %s &quot;-sOutputFile=%s&quot; &quot;%s&quot;"/>
   <delegate decode="xps:color" stealth="True" command="&quot;gxps.exe&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pnmraw&quot; -dTextAlphaBits=%u -dGraphicsAlphaBits=%u &quot;-r%s&quot; %s &quot;-sOutputFile=%s&quot; &quot;%s&quot;"/>
   <delegate decode="xps:mono" stealth="True" command="&quot;gxps.exe&quot; -q -dQUIET -dSAFER -dBATCH -dNOPAUSE -dNOPROMPT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 &quot;-sDEVICE=pbmraw&quot; -dTextAlphaBits=%u -dGraphicsAlphaBits=%u &quot;-r%s&quot; %s &quot;-sOutputFile=%s&quot; &quot;%s&quot;"/>
-  <delegate decode="video:decode" command="&quot;ffmpeg.exe&quot; -nostdin -v -1 -i &quot;%i&quot; -vframes %S -vcodec pam -an -f rawvideo -y &quot;%u.pam&quot;"/>
-  <delegate encode="video:encode" stealth="True" command="&quot;ffmpeg.exe&quot; -nostdin -v -1 -i &quot;%M%%d.pam&quot; -plays %I &quot;%u.%m&quot;"/>
+  <delegate decode="video:decode" command="&quot;ffmpeg.exe&quot; -nostdin -loglevel error -i &quot;%s&quot; -vcodec pam -an -f rawvideo -y %s &quot;%s&quot;"/>
+  <delegate encode="video:encode" stealth="True" command="&quot;ffmpeg.exe&quot; -nostdin -loglevel error -i &quot;%s%%d.pam&quot; %s &quot;%s.%s&quot;"/>
 </delegatemap>
