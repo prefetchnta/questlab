@@ -29,6 +29,10 @@
  */
 
 namespace cv { namespace gapi {
+/**
+ * @brief This namespace contains G-API Operation Types for OpenCV
+ * Core module functionality.
+ */
 namespace core {
     using GMat2 = std::tuple<GMat,GMat>;
     using GMat3 = std::tuple<GMat,GMat,GMat>; // FIXME: how to avoid this?
@@ -53,6 +57,7 @@ namespace core {
 
     G_TYPED_KERNEL(GAddC, <GMat(GMat, GScalar, int)>, "org.opencv.core.math.addC") {
         static GMatDesc outMeta(GMatDesc a, GScalarDesc, int ddepth) {
+            GAPI_Assert(a.chan <= 4);
             return a.withDepth(ddepth);
         }
     };
@@ -394,7 +399,7 @@ namespace core {
     };
 
     G_TYPED_KERNEL(GResize, <GMat(GMat,Size,double,double,int)>, "org.opencv.core.transform.resize") {
-        static GMatDesc outMeta(GMatDesc in, Size sz, double fx, double fy, int) {
+        static GMatDesc outMeta(GMatDesc in, Size sz, double fx, double fy, int /*interp*/) {
             if (sz.width != 0 && sz.height != 0)
             {
                 return in.withSize(sz);
@@ -575,6 +580,12 @@ namespace core {
             return std::make_tuple(empty_gopaque_desc(), empty_array_desc(), empty_array_desc());
         }
     };
+
+    G_TYPED_KERNEL(GTranspose, <GMat(GMat)>, "org.opencv.core.transpose") {
+        static GMatDesc outMeta(GMatDesc in) {
+            return in.withSize({in.size.height, in.size.width});
+        }
+    };
 } // namespace core
 
 namespace streaming {
@@ -696,7 +707,7 @@ GAPI_EXPORTS GMat subC(const GMat& src, const GScalar& c, int ddepth = -1);
 /** @brief Calculates the per-element difference between given scalar and the matrix.
 
 The function can be replaced with matrix expressions:
-    \f[\texttt{dst} =  \texttt{val} - \texttt{src}\f]
+    \f[\texttt{dst} =  \texttt{c} - \texttt{src}\f]
 
 Depth of the output matrix is determined by the ddepth parameter.
 If ddepth is set to default -1, the depth of output matrix will be the same as the depth of input matrix.
@@ -760,7 +771,10 @@ GAPI_EXPORTS GMat mulC(const GScalar& multiplier, const GMat& src, int ddepth = 
 The function divides one matrix by another:
 \f[\texttt{dst(I) = saturate(src1(I)*scale/src2(I))}\f]
 
-When src2(I) is zero, dst(I) will also be zero. Different channels of
+For integer types when src2(I) is zero, dst(I) will also be zero.
+Floating point case returns Inf/NaN (according to IEEE).
+
+Different channels of
 multi-channel matrices are processed independently.
 The matrices can be single or multi channel. Output matrix must have the same size and depth as src.
 
@@ -1490,7 +1504,7 @@ enlarge an image, it will generally look best with cv::INTER_CUBIC (slow) or cv:
 
 @sa  warpAffine, warpPerspective, remap, resizeP
  */
-GAPI_EXPORTS GMat resize(const GMat& src, const Size& dsize, double fx = 0, double fy = 0, int interpolation = INTER_LINEAR);
+GAPI_EXPORTS_W GMat resize(const GMat& src, const Size& dsize, double fx = 0, double fy = 0, int interpolation = INTER_LINEAR);
 
 /** @brief Resizes a planar image.
 
@@ -1926,6 +1940,21 @@ kmeans(const GArray<Point2f>& data, const int K, const GArray<int>& bestLabels,
 GAPI_EXPORTS std::tuple<GOpaque<double>,GArray<int>,GArray<Point3f>>
 kmeans(const GArray<Point3f>& data, const int K, const GArray<int>& bestLabels,
        const TermCriteria& criteria, const int attempts, const KmeansFlags flags);
+
+
+/** @brief Transposes a matrix.
+
+The function transposes the matrix:
+\f[\texttt{dst} (i,j) =  \texttt{src} (j,i)\f]
+
+@note
+ - Function textual ID is "org.opencv.core.transpose"
+ - No complex conjugation is done in case of a complex matrix. It should be done separately if needed.
+
+@param src input array.
+*/
+GAPI_EXPORTS GMat transpose(const GMat& src);
+
 
 namespace streaming {
 /** @brief Gets dimensions from Mat.

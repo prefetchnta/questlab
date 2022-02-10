@@ -372,6 +372,7 @@ namespace gapi
 {
     // Prework: model "Device" API before it gets to G-API headers.
     // FIXME: Don't mix with internal Backends class!
+    /// @private
     class GAPI_EXPORTS GBackend
     {
     public:
@@ -412,6 +413,7 @@ namespace std
 
 namespace cv {
 namespace gapi {
+    /// @private
     class GFunctor
     {
     public:
@@ -657,7 +659,7 @@ namespace gapi {
      * Use this function to pass kernel implementations (defined in
      * either way) and transformations to the system. Example:
      *
-     * @snippet modules/gapi/samples/api_ref_snippets.cpp kernels_snippet
+     * @snippet samples/cpp/tutorial_code/gapi/doc_snippets/api_ref_snippets.cpp kernels_snippet
      *
      * Note that kernels() itself is a function returning object, not
      * a type, so having `()` at the end is important -- it must be a
@@ -717,7 +719,7 @@ namespace gapi {
      * @{
      */
     /**
-     * @brief cv::use_only() is a special combinator which hints G-API to use only
+     * @brief cv::gapi::use_only() is a special combinator which hints G-API to use only
      * kernels specified in cv::GComputation::compile() (and not to extend kernels available by
      * default with that package).
      */
