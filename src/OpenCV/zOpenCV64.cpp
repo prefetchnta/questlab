@@ -29,10 +29,10 @@
 #define EXE_XNAME   "zOpenCV64"
 
 /* 外部库引用 */
-#pragma comment (lib, "opencv_core452.lib")
-#pragma comment (lib, "opencv_imgcodecs452.lib")
-#pragma comment (lib, "opencv_imgproc452.lib")
-#pragma comment (lib, "opencv_videoio452.lib")
+#pragma comment (lib, "opencv_core455.lib")
+#pragma comment (lib, "opencv_imgcodecs455.lib")
+#pragma comment (lib, "opencv_imgproc455.lib")
+#pragma comment (lib, "opencv_videoio455.lib")
 
 /* 桥接函数 */
 #include "../bridge.inl"
