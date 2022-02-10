@@ -144,37 +144,10 @@ luck_flt (
 {
     uint_t  cnts[10], sum;
     uint_t  idx, sum2, sum3;
-    int32u  numb = luck / 10;
 
     /* 统计各个数字的个数 */
     mem_zero(cnts, sizeof(cnts));
-    for (idx = 0; idx < 6; idx++) {
-        sum2 = numb % 10;
-        cnts[sum2] += 1;
-        numb /= 10;
-    }
-
-    /* 统计两个或三个数字重复的个数 */
-    sum2 = sum3 = 0;
-    for (idx = 0; idx < 10; idx++) {
-        if (cnts[idx] == 2)
-            sum2 += 1;
-        else
-        if (cnts[idx] == 3)
-            sum3 += 1;
-    }
-
-    /* 根据经验得：
-       一组三个重复和两组两个重复
-       出现频率最高，后者多 */
-    if (!((sum3 == 1 && sum2 == 0) ||
-          (sum3 == 0 && sum2 == 2)))
-        return (FALSE);
-    sum = 0;
-
-    /* 统计各个数字的个数 */
-    mem_zero(cnts, sizeof(cnts));
-    for (idx = 0; idx < 6+1; idx++) {
+    for (sum = 0, idx = 0; idx < 6+1; idx++) {
         sum2 = luck % 10;
         cnts[sum2] += 1;
         sum += sum2;
@@ -195,13 +168,17 @@ luck_flt (
             sum3 += 1;
     }
 
-    /* 再过滤一遍号码 */
-    if (sum3 == 1 || sum2 == 2) {
-        if (osum != NULL)
-            *osum = sum;
-        return (TRUE);
-    }
-    return (FALSE);
+    /* 根据数据分析得：
+       A02 > A22 >> A03 > A23 */
+    if (!((sum3 == 0 && sum2 == 1) ||
+          (sum3 == 0 && sum2 == 2) ||
+          (sum3 == 1 && sum2 == 0) ||
+          (sum3 == 1 && sum2 == 1)))
+        return (FALSE);
+
+    if (osum != NULL)
+        *osum = sum;
+    return (TRUE);
 }
 
 /*
