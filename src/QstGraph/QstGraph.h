@@ -40,6 +40,10 @@ typedef struct
         /* 应用程序参数 */
         bool_t      quit;   /* 是否退出 */
         uint_t      type;   /* 图表类型 */
+        sint_t      winx;   /* 窗口坐标 */
+        sint_t      winy;   /* 窗口坐标 */
+        uint_t      winw;   /* 窗口宽度 */
+        uint_t      winh;   /* 窗口高度 */
         void_t*     form;   /* 窗口对象 */
         socket_t    netw;   /* 网络连接 */
 

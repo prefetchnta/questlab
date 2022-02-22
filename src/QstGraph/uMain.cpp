@@ -18,7 +18,8 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     frmMain->DoubleBuffered = true;
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMain::setup(unsigned int type, const AnsiString& title)
+void __fastcall TfrmMain::setup(unsigned int type, const AnsiString& title,
+      int left, int top, unsigned int width, unsigned int height)
 {
     int ww, hh;
 
@@ -49,6 +50,15 @@ void __fastcall TfrmMain::setup(unsigned int type, const AnsiString& title)
     for (int xx = 0; xx <= ww; xx++)
         m_line->AddXY(xx, random(hh) - hh / 2, "", m_line->SeriesColor);
     m_xx = 0;
+
+    /* 设置窗口位置 */
+    if (left >= 0 && top >= 0) {
+        this->Position = poDesigned;
+        this->Left = left;
+        this->Top  = top;
+        if (width  > 1) this->Width  = width;
+        if (height > 1) this->Height = height;
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::clear()

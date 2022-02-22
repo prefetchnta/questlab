@@ -287,7 +287,7 @@ WinMain (
     /* 获取命令行参数, 不包括进程文件名 */
     argv = misc_get_param(cmd_line, &argc);
 
-    /* 参数解析 <监听地址> <监听端口> <标题> [图表类型=1] */
+    /* 参数解析 <监听地址> <监听端口> <标题> [图表类型=1] [窗口配置文件] */
     if (argc < 3)
         return (QST_ERROR);
     port = str2intxA(argv[1]);
@@ -298,6 +298,11 @@ WinMain (
         s_wrk_ctx.type = str2intxA(argv[3]);
         if (s_wrk_ctx.type < 1 || s_wrk_ctx.type > 11)
             return (QST_ERROR);
+        if (argc > 4) {
+            if (!misc_desk_load(argv[4], &s_wrk_ctx.winx, &s_wrk_ctx.winy,
+                                         &s_wrk_ctx.winw, &s_wrk_ctx.winh))
+                s_wrk_ctx.winx = s_wrk_ctx.winy = -1;
+        }
     }
     else {
         s_wrk_ctx.type = 1;
@@ -325,7 +330,8 @@ WinMain (
         Application->Initialize();
         Application->Title = WIN_TITLE;
         Application->CreateForm(__classid(TfrmMain), &frmMain);
-        frmMain->setup(s_wrk_ctx.type, AnsiString(argv[2]));
+        frmMain->setup(s_wrk_ctx.type, AnsiString(argv[2]), s_wrk_ctx.winx,
+                        s_wrk_ctx.winy, s_wrk_ctx.winw, s_wrk_ctx.winh);
         s_wrk_ctx.form = (void_t*)frmMain;
         if (!thread_goon(thrd))
             return (QST_ERROR);

@@ -42,7 +42,8 @@ private:        // User declarations
         TChartSeries *m_line;
 public:         // User declarations
         __fastcall TfrmMain(TComponent* Owner);
-        void __fastcall setup(unsigned int type, const AnsiString& title);
+        void __fastcall setup(unsigned int type, const AnsiString& title,
+          int left, int top, unsigned int width, unsigned int height);
         void __fastcall clear();
         void __fastcall setBottom(unsigned int max);
         void __fastcall setBottom(double min, double max);
