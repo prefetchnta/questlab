@@ -46,7 +46,7 @@ def lucky_sixa1(zhong, ur_num):
             if sub1 == sub2:
                 print(ur_num + ": <" + money[idx] + " YUAN ^_^>")
                 return True
-    print(ur_num + ":")
+    # print(ur_num + ":")
     return False
 
 #######################################
@@ -121,7 +121,7 @@ def lucky_dball(zhong, ur_num):
     if (rr == 1) or (ll == 1 and rr == 1) or (ll == 2 and rr == 1):
         print(ur_num + ": <5 YUAN ^_^>")
         return True
-    print(ur_num + ":")
+    # print(ur_num + ":")
     return False
 
 # 参数判断
