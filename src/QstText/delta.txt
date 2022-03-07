@@ -9,9 +9,6 @@ line.margin.width=4+
 view.whitespace=1
 =============================================
 caret.line.back=#FFFF00
-caret.line.back.alpha=256
-=============================================
-	selection.alpha=64
 =============================================
 highlight.current.word=1
 highlight.current.word.by.style=1
