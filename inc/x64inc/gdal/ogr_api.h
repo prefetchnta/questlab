@@ -49,6 +49,8 @@
 
 CPL_C_START
 
+bool CPL_DLL OGRGetGEOSVersion(int *pnMajor, int *pnMinor, int *pnPatch);
+
 /* -------------------------------------------------------------------- */
 /*      Geometry related functions (ogr_geometry.h)                     */
 /* -------------------------------------------------------------------- */
@@ -209,6 +211,7 @@ int    CPL_DLL OGR_G_IsEmpty( OGRGeometryH );
 int    CPL_DLL OGR_G_IsValid( OGRGeometryH );
 /*char    CPL_DLL *OGR_G_IsValidReason( OGRGeometryH );*/
 OGRGeometryH CPL_DLL OGR_G_MakeValid( OGRGeometryH ) CPL_WARN_UNUSED_RESULT;
+OGRGeometryH CPL_DLL OGR_G_MakeValidEx( OGRGeometryH, CSLConstList ) CPL_WARN_UNUSED_RESULT;
 OGRGeometryH CPL_DLL OGR_G_Normalize( OGRGeometryH ) CPL_WARN_UNUSED_RESULT;
 int    CPL_DLL OGR_G_IsSimple( OGRGeometryH );
 int    CPL_DLL OGR_G_IsRing( OGRGeometryH );
@@ -410,7 +413,7 @@ OGRFieldDefnH CPL_DLL OGR_FD_GetFieldDefn( OGRFeatureDefnH, int );
 int    CPL_DLL OGR_FD_GetFieldIndex( OGRFeatureDefnH, const char * );
 void   CPL_DLL OGR_FD_AddFieldDefn( OGRFeatureDefnH, OGRFieldDefnH );
 OGRErr CPL_DLL OGR_FD_DeleteFieldDefn( OGRFeatureDefnH hDefn, int iField );
-OGRErr CPL_DLL OGR_FD_ReorderFieldDefns( OGRFeatureDefnH hDefn, int* panMap );
+OGRErr CPL_DLL OGR_FD_ReorderFieldDefns( OGRFeatureDefnH hDefn, const int* panMap );
 OGRwkbGeometryType CPL_DLL OGR_FD_GetGeomType( OGRFeatureDefnH );
 void   CPL_DLL OGR_FD_SetGeomType( OGRFeatureDefnH, OGRwkbGeometryType );
 int    CPL_DLL OGR_FD_IsGeometryIgnored( OGRFeatureDefnH );

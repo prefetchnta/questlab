@@ -69,7 +69,7 @@ class CPL_DLL GDALProxyDataset : public GDALDataset
                             const char * pszValue,
                             const char * pszDomain ) override;
 
-    void FlushCache() override;
+    void FlushCache(bool bAtClosing) override;
 
     const OGRSpatialReference* GetSpatialRef() const override;
     CPLErr SetSpatialRef(const OGRSpatialReference* poSRS) override;
@@ -134,7 +134,7 @@ class CPL_DLL GDALProxyRasterBand : public GDALRasterBand
     CPLErr SetMetadataItem( const char * pszName,
                             const char * pszValue,
                             const char * pszDomain ) override;
-    CPLErr FlushCache() override;
+    CPLErr FlushCache(bool bAtClosing) override;
     char **GetCategoryNames() override;
     double GetNoDataValue( int *pbSuccess = nullptr ) override;
     double GetMinimum( int *pbSuccess = nullptr ) override;
@@ -235,6 +235,11 @@ class CPL_DLL GDALProxyPoolDataset : public GDALProxyDataset
 
         GDALDataset *RefUnderlyingDataset(bool bForceOpen) const;
 
+        GDALProxyPoolDataset( const char* pszSourceDatasetDescription,
+                              GDALAccess eAccess,
+                              int bShared,
+                              const char* pszOwner );
+
   protected:
     GDALDataset *RefUnderlyingDataset() const override;
     void UnrefUnderlyingDataset(GDALDataset* poUnderlyingDataset) const override;
@@ -249,9 +254,17 @@ class CPL_DLL GDALProxyPoolDataset : public GDALProxyDataset
                           const char * pszProjectionRef = nullptr,
                           double * padfGeoTransform = nullptr,
                           const char* pszOwner = nullptr );
+
+
+    static GDALProxyPoolDataset* Create( const char* pszSourceDatasetDescription,
+                                         CSLConstList papszOpenOptions = nullptr,
+                                         GDALAccess eAccess = GA_ReadOnly,
+                                         int bShared = FALSE,
+                                         const char* pszOwner = nullptr );
+
     ~GDALProxyPoolDataset() override;
 
-    void SetOpenOptions( char** papszOpenOptions );
+    void SetOpenOptions( CSLConstList papszOpenOptions );
 
     // If size (nBlockXSize&nBlockYSize) parameters is zero
     // they will be loaded when RefUnderlyingRasterBand function is called.
@@ -265,7 +278,7 @@ class CPL_DLL GDALProxyPoolDataset : public GDALProxyDataset
     // VRT SimpleSource will not have to access any other bands than the one added.
     void AddSrcBand(int nBand, GDALDataType eDataType, int nBlockXSize,
                                 int nBlockYSize );
-    void FlushCache() override;
+    void FlushCache(bool bAtClosing) override;
 
     const OGRSpatialReference* GetSpatialRef() const override;
     CPLErr SetSpatialRef(const OGRSpatialReference* poSRS) override;
@@ -334,6 +347,8 @@ class CPL_DLL GDALProxyPoolRasterBand : public GDALProxyRasterBand
     void AddSrcMaskBandDescription( GDALDataType eDataType, int nBlockXSize,
                                     int nBlockYSize );
 
+    void AddSrcMaskBandDescriptionFromUnderlying();
+
     // Special behavior for the following methods : they return a pointer
     // data type, that must be cached by the proxy, so it doesn't become invalid
     // when the underlying object get closed.
@@ -347,7 +362,7 @@ class CPL_DLL GDALProxyPoolRasterBand : public GDALProxyRasterBand
     GDALRasterBand *GetRasterSampleOverview( GUIntBig nDesiredSamples ) override; // TODO
     GDALRasterBand *GetMaskBand() override;
 
-    CPLErr FlushCache() override;
+    CPLErr FlushCache(bool bAtClosing) override;
 
   private:
     CPL_DISALLOW_COPY_ASSIGN(GDALProxyPoolRasterBand)

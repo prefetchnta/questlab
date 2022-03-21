@@ -398,7 +398,7 @@ class CPL_DLL OGRGeometry
     int CoordinateDimension() const;
     virtual OGRBoolean  IsEmpty() const = 0;
     virtual OGRBoolean  IsValid() const;
-    virtual OGRGeometry* MakeValid() const;
+    virtual OGRGeometry* MakeValid(CSLConstList papszOptions = nullptr) const;
     virtual OGRGeometry* Normalize() const;
     virtual OGRBoolean  IsSimple() const;
     /*! Returns whether the geometry has a Z component. */
@@ -3253,7 +3253,7 @@ class CPL_DLL OGRGeometryFactory
     static OGRGeometry *createFromGML( const char * );
     static OGRGeometry *createFromGEOS( GEOSContextHandle_t hGEOSCtxt,
                                         GEOSGeom );
-    static OGRGeometry *createFromGeoJson( const char *);
+    static OGRGeometry *createFromGeoJson( const char *, int = -1 );
     static OGRGeometry *createFromGeoJson( const CPLJSONObject &oJSONObject );
 
     static void   destroyGeometry( OGRGeometry * );

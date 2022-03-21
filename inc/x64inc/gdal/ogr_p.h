@@ -93,9 +93,9 @@ std::string CPL_DLL OGRMakeWktCoordinateM( double, double, double, double, OGRBo
 
 #endif
 
-void OGRFormatDouble( char *pszBuffer, int nBufferLen, double dfVal,
+void CPL_DLL OGRFormatDouble( char *pszBuffer, int nBufferLen, double dfVal,
                       char chDecimalSep, int nPrecision = 15, char chConversionSpecifier = 'f' );
-std::string OGRFormatDouble(double val, const OGRWktOptions& opts);
+std::string CPL_DLL OGRFormatDouble(double val, const OGRWktOptions& opts);
 
 int OGRFormatFloat(char *pszBuffer, int nBufferLen, float fVal,
                    int nPrecision, char chConversionSpecifier);
@@ -147,7 +147,7 @@ OGRErr CPL_DLL OSRGetEllipsoidInfo( int, char **, double *, double *);
 /* Fast atof function */
 double OGRFastAtof(const char* pszStr);
 
-OGRErr CPL_DLL OGRCheckPermutation(int* panPermutation, int nSize);
+OGRErr CPL_DLL OGRCheckPermutation(const int* panPermutation, int nSize);
 
 /* GML related */
 
