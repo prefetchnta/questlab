@@ -1,0 +1,14 @@
+template<class T, class K>
+class TCMP
+{
+public:
+    /* ============== */
+    size_t hash (K* key)
+    {
+    }
+
+    /* ===================== */
+    bool match (K* key, T* obj)
+    {
+    }
+};
