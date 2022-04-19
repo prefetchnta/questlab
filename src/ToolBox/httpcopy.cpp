@@ -59,13 +59,18 @@ for (leng_t ii = 0; ii < len; ii++) { \
     if (_path[ii] == '\\') \
         _path[ii] = '/'; \
 } \
-url = url_encode(_path, FALSE); \
-if (url == NULL) { \
-    printf("url_encode() failure\n"); \
-    return (QST_ERROR); \
+if (http) { \
+    url = url_encode(_path, FALSE); \
+    if (url == NULL) { \
+        printf("url_encode() failure\n"); \
+        return (QST_ERROR); \
+    } \
+} \
+else { \
+    url = _path; \
 } \
 str = str_fmtA("%s%s", _root, url); \
-mem_free(url); \
+if (http) mem_free(url); \
 if (str == NULL) { \
     printf("str_fmtA() failure\n"); \
     return (QST_ERROR); \
@@ -83,7 +88,8 @@ static int
 do_xml_file (
   __CR_IN__ ansi_t*         str,
   __CR_IN__ const ansi_t*   name,
-  __CR_IN__ const ansi_t*   root
+  __CR_IN__ const ansi_t*   root,
+  __CR_IN__ bool_t          http
     )
 {
     FILE*   fpb;
@@ -226,9 +232,9 @@ int main (int argc, char *argv[])
     if (!set_app_type(CR_APP_CUI))
         return (QST_ERROR);
 
-    /* 参数解析 <列表文件> <URL 根目录> */
+    /* 参数解析 <列表文件> <URL 根目录> [是否 URL 转义] */
     if (argc < 3) {
-        printf("httpcopy <list.txt> <url_root>\n");
+        printf("httpcopy <list.txt> <url_root> [http=1]\n");
         return (QST_ERROR);
     }
 
@@ -239,6 +245,12 @@ int main (int argc, char *argv[])
         return (QST_ERROR);
     }
 
+    bool_t  http = TRUE;
+
+    /* 是否实行 URL 转义 */
+    if (argc > 3)
+        http = str2intxA(argv[3]);
+
     /* 读入列表文件 */
     str = file_load_as_strA(argv[1]);
     if (str == NULL) {
@@ -248,7 +260,7 @@ int main (int argc, char *argv[])
 
     /* XML 文件另外处理 */
     if (filext_checkA(argv[1], ".xml"))
-        return (do_xml_file(str, argv[1], argv[2]));
+        return (do_xml_file(str, argv[1], argv[2], http));
 
     /* INI 行解析 */
     ini = ini_parseU(str);
