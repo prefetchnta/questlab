@@ -69,8 +69,9 @@ while idx < cnt:
         print("\n%s\n" % cmd_str)
         # 判断文件是否下载完毕
         spath = urls.split("/")
-        sfile = root_dir + spath[len(spath) - 1] + ".aria2"
-        if os.path.exists(sfile):
+        fname = root_dir + spath[len(spath) - 1]
+        sfile = fname + ".aria2"
+        if (os.path.exists(sfile)) or (not os.path.exists(fname)):
             time.sleep(10 + delays)
             delays += 5
             continue
