@@ -21,6 +21,19 @@
  */
 
 #include "../QstLibs/QstLibs.h"
+#include "../Asylum/asylum.hpp"
+using namespace asy;
+
+/* 节点结构 */
+struct fileNode
+{
+    int32u  count;
+
+    void free () {}
+};
+
+/* 防重名的哈希表 */
+static map_acs<fileNode>    s_fileTbl;
 
 /* 简化代码宏 */
 #define DO_FILE_NODE(_path, _root) \
@@ -34,23 +47,45 @@ if (str == NULL) { \
 path_extractA(str, _path); \
 len = str_lenA(str); \
 if (len != 0 && _path[len] != 0) { \
-    url = str_fmtA("@move /y \"%s\" \"%s\"\r\n", &_path[len], str); \
-    if (url == NULL) { \
-        fprintf(fpb, "@move /y \"%s\" \"%s\"\r\n", &_path[len], str); \
+    fileNode node, *ptr; \
+    ansi_t tname[MAX_PATHA * 2]; \
+    ansi_t *fname = &_path[len]; \
+    str_cpyA(tname, fname); \
+    str_lwrA(tname); \
+    ptr = s_fileTbl.get(tname); \
+    if (ptr == NULL) { \
+        node.count = 0; \
+        if (s_fileTbl.insert(tname, &node) == NULL) { \
+            printf("asy::map_acs::insert() failure\n"); \
+            return (QST_ERROR); \
+        } \
+        url = str_fmtA("@move /y \"%s\" \"%s\"\r\n", fname, str); \
     } \
     else { \
-        len = str_lenA(url); \
-        for (leng_t jj = 0; jj < len; jj++) { \
-            if (url[jj] == '%') { \
-                fputc('%', fpb); \
-                fputc('%', fpb); \
-            } \
-            else { \
-                fputc(url[jj], fpb); \
-            } \
-        } \
-        mem_free(url); \
+        ptr->count += 1; \
+        str_cpyA(tname, fname); \
+        filext_removeA(tname); \
+        len = str_lenA(tname); \
+        sprintf(&tname[len], ".%u", ptr->count); \
+        len = str_lenA(tname); \
+        filext_extractA(&tname[len], fname); \
+        url = str_fmtA("@move /y \"%s\" \"%s%s\"\r\n", tname, str, fname); \
     } \
+    if (url == NULL) { \
+        printf("str_fmtA() failure\n"); \
+        return (QST_ERROR); \
+    } \
+    len = str_lenA(url); \
+    for (leng_t jj = 0; jj < len; jj++) { \
+        if (url[jj] == '%') { \
+            fputc('%', fpb); \
+            fputc('%', fpb); \
+        } \
+        else { \
+            fputc(url[jj], fpb); \
+        } \
+    } \
+    mem_free(url); \
     fflush(fpb); \
 } \
 mem_free(str); \
@@ -210,6 +245,7 @@ do_xml_file (
     fclose(fph);
     fclose(fpb);
     fclose(fpu);
+    s_fileTbl.free();
     return (QST_OKAY);
 }
 
@@ -258,6 +294,12 @@ int main (int argc, char *argv[])
         return (QST_ERROR);
     }
 
+    /* 初始化哈希表 */
+    if (!s_fileTbl.init()) {
+        printf("asy::map_acs::init() failure\n");
+        return (QST_ERROR);
+    }
+
     /* XML 文件另外处理 */
     if (filext_checkA(argv[1], ".xml"))
         return (do_xml_file(str, argv[1], argv[2], http));
@@ -303,5 +345,6 @@ int main (int argc, char *argv[])
     ini_closeU(ini);
     fclose(fpb);
     fclose(fpu);
+    s_fileTbl.free();
     return (QST_OKAY);
 }
