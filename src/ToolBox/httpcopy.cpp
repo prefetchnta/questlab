@@ -187,6 +187,14 @@ do_xml_file (
                 printf("xml_attr_stringU() failure\n");
                 return (QST_ERROR);
             }
+            /* 转义处理 */
+            url = html_to_stringU(pth);
+            mem_free(pth);
+            if (url == NULL) {
+                printf("html_to_stringU() failure\n");
+                return (QST_ERROR);
+            }
+            pth = url;
         }
         else {
             if (str_cmpIA(node->name, "size") == 0)
