@@ -65,8 +65,8 @@ while idx < cnt:
         cmd_str += "\""
         cmd_str += urls
         cmd_str += "\""
-        os.system(cmd_str)
         print("\n%s\n" % cmd_str)
+        os.system(cmd_str)
         # 判断文件是否下载完毕
         spath = urls.split("/")
         fname = root_dir + spath[len(spath) - 1]
