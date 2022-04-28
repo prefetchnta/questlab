@@ -22,12 +22,19 @@ __published:    // IDE-managed Components
         TTabSheet *tabAudio;
         TTabSheet *tabData;
         TMemo *txtValue;
+        TStaticText *txtClr332;
+        TStaticText *txtClr444;
+        TStaticText *txtClr555;
+        TStaticText *txtClr565;
+        TStaticText *txtClr888;
+        TStaticText *txtClrA32;
         void __fastcall btnLEClick(TObject *Sender);
         void __fastcall btnBEClick(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
 private:        // User declarations
 public:         // User declarations
         __fastcall TfrmMain(TComponent* Owner);
+        void __fastcall colorReset();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMain *frmMain;

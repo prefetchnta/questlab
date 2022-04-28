@@ -43,6 +43,7 @@ void __fastcall TfrmMain::btnLEClick(TObject *Sender)
 
     /* 显示16进制数值 (LE) */
     txtValue->Clear();
+    this->colorReset();
     len = str.Length();
     if (len == 0)
         return;
@@ -64,6 +65,7 @@ void __fastcall TfrmMain::btnBEClick(TObject *Sender)
 
     /* 显示16进制数值 (BE) */
     txtValue->Clear();
+    this->colorReset();
     len = str.Length();
     if (len == 0)
         return;
@@ -99,5 +101,32 @@ void __fastcall TfrmMain::FormResize(TObject *Sender)
     btnBE->Left    = btnBE->Left    + sx;
     edtInput->Left = edtInput->Left + sx;
     pgeMain->Left  = pgeMain->Left  + sx;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::colorReset()
+{
+    txtClr332->Color = clWhite;
+    txtClr332->Font->Color = clWhite;
+    txtClr332->Caption = "";
+
+    txtClr444->Color = clWhite;
+    txtClr444->Font->Color = clWhite;
+    txtClr444->Caption = "";
+
+    txtClr555->Color = clWhite;
+    txtClr555->Font->Color = clWhite;
+    txtClr555->Caption = "";
+
+    txtClr565->Color = clWhite;
+    txtClr565->Font->Color = clWhite;
+    txtClr565->Caption = "";
+
+    txtClr888->Color = clWhite;
+    txtClr888->Font->Color = clWhite;
+    txtClr888->Caption = "";
+
+    txtClrA32->Color = clWhite;
+    txtClrA32->Font->Color = clWhite;
+    txtClrA32->Caption = "";
 }
 //---------------------------------------------------------------------------

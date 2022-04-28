@@ -66,6 +66,120 @@ object frmMain: TfrmMain
         ScrollBars = ssBoth
         TabOrder = 0
       end
+      object txtClr332: TStaticText
+        Left = 464
+        Top = 24
+        Width = 137
+        Height = 17
+        Alignment = taCenter
+        AutoSize = False
+        BorderStyle = sbsSingle
+        Caption = '332'
+        Color = clWhite
+        Font.Charset = GB2312_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 1
+      end
+      object txtClr444: TStaticText
+        Left = 464
+        Top = 48
+        Width = 137
+        Height = 17
+        Alignment = taCenter
+        AutoSize = False
+        BorderStyle = sbsSingle
+        Caption = '444'
+        Color = clWhite
+        Font.Charset = GB2312_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 2
+      end
+      object txtClr555: TStaticText
+        Left = 464
+        Top = 72
+        Width = 137
+        Height = 17
+        Alignment = taCenter
+        AutoSize = False
+        BorderStyle = sbsSingle
+        Caption = '555'
+        Color = clWhite
+        Font.Charset = GB2312_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 3
+      end
+      object txtClr565: TStaticText
+        Left = 464
+        Top = 96
+        Width = 137
+        Height = 17
+        Alignment = taCenter
+        AutoSize = False
+        BorderStyle = sbsSingle
+        Caption = '565'
+        Color = clWhite
+        Font.Charset = GB2312_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 4
+      end
+      object txtClr888: TStaticText
+        Left = 464
+        Top = 120
+        Width = 137
+        Height = 17
+        Alignment = taCenter
+        AutoSize = False
+        BorderStyle = sbsSingle
+        Caption = '888'
+        Color = clWhite
+        Font.Charset = GB2312_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 5
+      end
+      object txtClrA32: TStaticText
+        Left = 464
+        Top = 144
+        Width = 137
+        Height = 17
+        Alignment = taCenter
+        AutoSize = False
+        BorderStyle = sbsSingle
+        Caption = 'A32'
+        Color = clWhite
+        Font.Charset = GB2312_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 6
+      end
     end
     object tabImage: TTabSheet
       Caption = 'Image'

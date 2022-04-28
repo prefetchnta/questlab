@@ -2,6 +2,7 @@
 
 #include <vcl.h>
 #include "uMain.h"
+#define _CR_USE_PIXELCVT_
 #include "QstData.h"
 #pragma hdrstop
 //---------------------------------------------------------------------------
@@ -44,6 +45,8 @@ qst_data_view_int (
     const sQDAT_UNIT*   list;
 
     _ENTER_DAT_SINGLE_
+
+    /* 使用插件解析 */
     form = (TfrmMain*)(ctx->form);
     form->txtValue->Clear();
     form->pgeMain->ActivePageIndex = 0;
@@ -60,6 +63,71 @@ qst_data_view_int (
         }
     }
     form->txtValue->Lines->EndUpdate();
+
+    byte_t  bt08;
+    int16u  bt16;
+    int32u  c888;
+
+    /* 内置解析功能 */
+    form->colorReset();
+    if (size >= 1)
+    {
+        /* 单字节颜色 */
+        bt08 = *(byte_t*)data;
+
+        pixel332to32(&c888, bt08);
+        c888 &= 0xFFFFFF;
+        form->txtClr332->Color = (TColor)swap_rb32(&c888);
+        form->txtClr332->Font->Color = (TColor)((~c888) & 0xFFFFFF);
+        form->txtClr332->Caption = "332";
+    }
+    if (size >= 2)
+    {
+        /* 双字节颜色 */
+        bt16 = *(int16u*)data;
+        if (is_be) bt16 = xchg_int16u(bt16);
+
+        pixel4444to32(&c888, bt16);
+        c888 &= 0xFFFFFF;
+        form->txtClr444->Color = (TColor)swap_rb32(&c888);
+        form->txtClr444->Font->Color = (TColor)((~c888) & 0xFFFFFF);
+        form->txtClr444->Caption = "444";
+
+        pixel1555to32(&c888, bt16);
+        c888 &= 0xFFFFFF;
+        form->txtClr555->Color = (TColor)swap_rb32(&c888);
+        form->txtClr555->Font->Color = (TColor)((~c888) & 0xFFFFFF);
+        form->txtClr555->Caption = "555";
+
+        pixel565to32(&c888, bt16);
+        c888 &= 0xFFFFFF;
+        form->txtClr565->Color = (TColor)swap_rb32(&c888);
+        form->txtClr565->Font->Color = (TColor)((~c888) & 0xFFFFFF);
+        form->txtClr565->Caption = "565";
+    }
+    if (size >= 3)
+    {
+        /* 三字节颜色 */
+        c888  = ((byte_t*)data)[0];
+        c888 <<= 8;
+        c888 |= ((byte_t*)data)[1];
+        c888 <<= 8;
+        c888 |= ((byte_t*)data)[2];
+        form->txtClr888->Color = (TColor)(c888);
+        form->txtClr888->Font->Color = (TColor)((~c888) & 0xFFFFFF);
+        form->txtClr888->Caption = "888";
+    }
+    if (size >= 4)
+    {
+        /* 四字节颜色 */
+        c888 = *(int32u*)data;
+        if (is_be) c888 = xchg_int32u(c888);
+
+        c888 &= 0xFFFFFF;
+        form->txtClrA32->Color = (TColor)swap_rb32(&c888);
+        form->txtClrA32->Font->Color = (TColor)((~c888) & 0xFFFFFF);
+        form->txtClrA32->Caption = "A32";
+    }
     _LEAVE_DAT_SINGLE_
 }
 
