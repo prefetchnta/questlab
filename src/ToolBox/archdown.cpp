@@ -594,6 +594,7 @@ _retry:
             print_file_size(left.QuadPart);
             cui_set_color(s_clr_file);
             printf("]\n");
+            cui_set_color(s_clr_back);
 
             /* 失败的重试 */
             if (upd <= 0)
@@ -612,9 +613,9 @@ _retry:
                 /* 删除文件重新开始 */
                 file_deleteA(dir);
                 tim = 0;
+                printf("-----------------------------\n");
                 goto _retry;
             }
-            cui_set_color(s_clr_back);
             printf("======================================================\n");
 
             /* 释放内存 */
