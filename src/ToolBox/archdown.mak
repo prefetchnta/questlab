@@ -1,12 +1,12 @@
-PROJECT=httpcopy
+PROJECT=archdown
 SUBSYSTEM=CONSOLE
 BIN_NAME=$(PROJECT).exe
 !INCLUDE "../vc2010_x86.mak"
 
-OBJ_LIST=.$(L)httpcopy.$(O) \
+OBJ_LIST=.$(L)archdown.$(O) \
          .$(L)toolbox.res
 
-SRC_LIST=.$(L)httpcopy.$(P)
+SRC_LIST=.$(L)archdown.$(P)
 
 build_all:
     $(CC) $(CFLAGS) $(SRC_LIST)
