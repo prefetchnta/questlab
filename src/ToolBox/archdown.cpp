@@ -275,6 +275,7 @@ do_file_download (
 */
 int main (int argc, char *argv[])
 {
+    FILE*   fp;
     sXMLu*  xml;
     leng_t  len;
     leng_t  tot;
@@ -597,12 +598,17 @@ _retry:
             /* 失败的重试 */
             if (upd <= 0)
             {
-                FILE*   fp;
-
                 /* 输出下载成功列表 */
                 fp = fopen("__succ__.txt", "ab+");
                 if (fp != NULL) {
                     fprintf(fp, "%s\r\n", pth);
+                    fclose(fp);
+                }
+
+                /* 输出删除文件脚本 */
+                fp = fopen("__kill__.bat", "ab+");
+                if (fp != NULL) {
+                    fprintf(fp, "attrib +R \"%s\"\r\n", pth);
                     fclose(fp);
                 }
 
@@ -671,6 +677,15 @@ _next:
             mem_free(pth);
             pth = NULL;
         }
+    }
+
+    /* 输出删除文件脚本 */
+    fp = fopen("__kill__.bat", "ab+");
+    if (fp != NULL) {
+        fprintf(fp, "attrib +R __kill__.bat\r\n");
+        fprintf(fp, "del /Q /S *.*\r\n");
+        fprintf(fp, "attrib -R *.* /S\r\n");
+        fclose(fp);
     }
 
     /* 打印文件数量 */
