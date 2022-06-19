@@ -30,9 +30,6 @@ void_t* s_buffer = NULL;
 /* 分块大小 */
 #define BLOCK_SIZE  CR_M2B(128)
 
-/* 成功列表 */
-#define SUCCESS_NAME    "__succ__.txt"
-
 /* 文字颜色属性 */
 static int16u   s_clr_back;
 static int16u   s_clr_file;
@@ -281,6 +278,7 @@ int main (int argc, char *argv[])
     sXMLu*  xml;
     leng_t  len;
     leng_t  tot;
+    int64u  dsk;
     ansi_t* str;
     ansi_t* proxy;
     ansi_t* web_root;
@@ -363,9 +361,8 @@ int main (int argc, char *argv[])
     mem_zero(md5, sizeof(md5));
     mem_zero(sha, sizeof(sha));
     have_crc = have_md5 = have_sha = FALSE;
-    file_deleteA(SUCCESS_NAME);
     printf("======================================================\n");
-    tot = 0;
+    dsk = tot = 0;
 
     /* 逐个标签处理 */
     for (leng_t idx = 0; idx < xml->count; idx++)
@@ -450,6 +447,7 @@ int main (int argc, char *argv[])
             if (fsize == 0 || filext_checkA(pth, ".torrent"))
                 goto _next;
             tot += 1;
+            dsk += fsize;
 
             /* 拼装远程和本地路径 */
             dir = str_fmtA("%s%s", dsk_root, pth);
@@ -602,8 +600,42 @@ _retry:
                 FILE*   fp;
 
                 /* 输出下载成功列表 */
-                fp = fopen(SUCCESS_NAME, "ab+");
+                fp = fopen("__succ__.txt", "ab+");
                 if (fp != NULL) {
+                    fprintf(fp, "%s\r\n", pth);
+                    fclose(fp);
+                }
+
+                ansi_t  show[64];
+
+                /* 输出 HaSHer 文件 */
+                fp = fopen("HaSHer-SHA.txt", "ab+");
+                if (fp != NULL) {
+                    mem_zero(show, sizeof(show));
+                    if (have_sha)
+                        hex2strA(show, sha, sizeof(sha));
+                    else
+                        mem_set(show, '?', sizeof(sha) * 2);
+                    fprintf(fp, "%s + ", show);
+                    if (have_crc)
+                        fprintf(fp, "%08X: ", crc);
+                    else
+                        fprintf(fp, "????????: ");
+                    fprintf(fp, "%s\r\n", pth);
+                    fclose(fp);
+                }
+                fp = fopen("HaSHer-MD5.txt", "ab+");
+                if (fp != NULL) {
+                    mem_zero(show, sizeof(show));
+                    if (have_md5)
+                        hex2strA(show, md5, sizeof(md5));
+                    else
+                        mem_set(show, '?', sizeof(md5) * 2);
+                    fprintf(fp, "%s + ", show);
+                    if (have_crc)
+                        fprintf(fp, "%08X: ", crc);
+                    else
+                        fprintf(fp, "????????: ");
                     fprintf(fp, "%s\r\n", pth);
                     fclose(fp);
                 }
@@ -642,7 +674,9 @@ _next:
     }
 
     /* 打印文件数量 */
-    printf("Total file count: %u\n", tot);
+    printf("Total file count: %u, file size: ", tot);
+    print_file_size(dsk);
+    printf("\n");
 
     /* 释放内存 */
     xml_closeU(xml);
