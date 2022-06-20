@@ -500,8 +500,8 @@ _retry:
                 /* 判断是否下完, 否则需要重试 */
                 if (!file_existA(dir) || file_existA(str)) {
                     mem_free(str);
-                    thread_sleep(8 + tim);
-                    tim += 1;
+                    thread_sleep(6666 + tim);
+                    tim += 1111;
                     goto _retry;
                 }
             }
