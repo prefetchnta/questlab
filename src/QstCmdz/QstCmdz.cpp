@@ -203,8 +203,10 @@ call_exe_file64 (
     if (!misc_is_win64())
         return;
 
+    ansi_t  fn[] = EXE_XNAME "__x64__.bat";
+
     /* 写入 BAT 文件再调用 */
-    fp = fopen("__x64__.bat", "w");
+    fp = fopen(fn, "w");
     if (fp == NULL) {
         cui_set_color(s_color_errs);
         printf("write bat file failure\n");
@@ -214,7 +216,7 @@ call_exe_file64 (
     fclose(fp);
 
     /* 运行完删除批处理 */
-    if (!misc_call_exe("__x64__.bat", TRUE, TRUE)) {
+    if (!misc_call_exe(fn, TRUE, TRUE)) {
         cui_set_color(s_color_errs);
         printf("call process failure\n");
     }
@@ -222,7 +224,7 @@ call_exe_file64 (
         cui_set_color(s_color_help);
         printf("the process is finished\n");
     }
-    file_deleteA("__x64__.bat");
+    file_deleteA(fn);
 _func_out:
     cui_set_color(s_color_text);
 }
