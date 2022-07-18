@@ -366,14 +366,17 @@ qst_load_filter (
     /* 32位系统不执行 */
     if (!misc_is_win64())
         return;
-    fp = fopen("__x64__.bat", "w");
+
+    ansi_t  fn[] = EXE_XNAME "__x64__.bat";
+
+    fp = fopen(fn, "w");
     if (fp != NULL)
     {
         /* 运行完删除批处理 */
         fprintf(fp, "@echo off\nstart x64bin\\fQUEST64.exe\n");
         fclose(fp);
-        misc_call_exe("__x64__.bat", TRUE, TRUE);
-        file_deleteA("__x64__.bat");
+        misc_call_exe(fn, TRUE, TRUE);
+        file_deleteA(fn);
     }
 }
 
