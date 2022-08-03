@@ -39,7 +39,7 @@ for dirpath, dirnames, filenames in os.walk("."):
             cmd_str = zip_cmd_str
         elif ext == ".001":
             find_part = filename.lower()
-            if find_part.count(".7z.001") != 1:
+            if find_part.count(".7z.001") != 1 and find_part.count(".zip.001") != 1:
                 continue
             cmd_str = zip_cmd_str
         else:
@@ -53,4 +53,3 @@ for dirpath, dirnames, filenames in os.walk("."):
             fp.close()
         count += 1
 print("\nTOTAL:", count, "OKAY:", okays, "FAIL:", count - okays)
-input()
