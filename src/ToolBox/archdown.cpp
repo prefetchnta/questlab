@@ -441,8 +441,9 @@ int main (int argc, char *argv[])
             ansi_t* dir;
             ansi_t* url;
             sint_t  upd;
-            uint_t  tim = 0;
             byte_t  tmp[20];
+            uint_t  tim = 0;
+            bool_t  dwn = FALSE;
 
             /* 没有文件大小直接跳过 */
             if (fsize == 0 || filext_checkA(pth, ".torrent"))
@@ -500,10 +501,11 @@ _retry:
                 /* 判断是否下完, 否则需要重试 */
                 if (!file_existA(dir) || file_existA(str)) {
                     mem_free(str);
-                    thread_sleep(6666 + tim);
-                    tim += 1111;
+                    thread_sleep(8888 + tim);
+                    tim += 2222;
                     goto _retry;
                 }
+                dwn = TRUE;
             }
             else
             {
@@ -649,10 +651,19 @@ _retry:
             else
             {
                 /* 删除文件重新开始 */
-                file_deleteA(dir);
-                tim = 0;
-                printf("-----------------------------\n");
-                goto _retry;
+                if (!dwn) {
+                    file_deleteA(dir);
+                    tim = 0;
+                    printf("-----------------------------\n");
+                    goto _retry;
+                }
+
+                /* 下载完成但文件内容不对 */
+                fp = fopen("__fail__.txt", "ab+");
+                if (fp != NULL) {
+                    fprintf(fp, "%s\r\n", pth);
+                    fclose(fp);
+                }
             }
             printf("======================================================\n");
 
