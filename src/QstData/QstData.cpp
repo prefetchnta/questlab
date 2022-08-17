@@ -113,6 +113,7 @@ qst_data_view_int (
         c888 |= ((byte_t*)data)[1];
         c888 <<= 8;
         c888 |= ((byte_t*)data)[2];
+        if (is_be) swap_rb32(&c888);
         form->txtClr888->Color = (TColor)(c888);
         form->txtClr888->Font->Color = (TColor)((~c888) & 0xFFFFFF);
         form->txtClr888->Caption = "888";

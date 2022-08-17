@@ -175,6 +175,74 @@ int16u_show (
 
 /*
 ---------------------------------------
+    INT24S
+---------------------------------------
+*/
+static ansi_t*
+int24s_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    int32u  val;
+
+    if (size < sizeof(byte_t) * 3)
+        return (NULL);
+    if (is_be) {
+        val  = ((byte_t*)data)[0];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[2];
+    }
+    else {
+        val  = ((byte_t*)data)[2];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[0];
+    }
+    if (val & 0x800000)
+        val |= 0xFF000000;
+    return (str_fmtA(": %d", val));
+}
+
+/*
+---------------------------------------
+    INT24U
+---------------------------------------
+*/
+static ansi_t*
+int24u_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    int32u  val;
+
+    if (size < sizeof(byte_t) * 3)
+        return (NULL);
+    if (is_be) {
+        val  = ((byte_t*)data)[0];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[2];
+    }
+    else {
+        val  = ((byte_t*)data)[2];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[0];
+    }
+    return (str_fmtA(": %u", val));
+}
+
+/*
+---------------------------------------
     INT32S
 ---------------------------------------
 */
@@ -217,6 +285,98 @@ int32u_show (
 
 /*
 ---------------------------------------
+    INT48S
+---------------------------------------
+*/
+static ansi_t*
+int48s_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    int64u  val;
+
+    if (size < sizeof(int16u) * 3)
+        return (NULL);
+    if (is_be) {
+        val  = ((byte_t*)data)[0];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[2];
+        val <<= 8;
+        val |= ((byte_t*)data)[3];
+        val <<= 8;
+        val |= ((byte_t*)data)[4];
+        val <<= 8;
+        val |= ((byte_t*)data)[5];
+    }
+    else {
+        val  = ((byte_t*)data)[5];
+        val <<= 8;
+        val |= ((byte_t*)data)[4];
+        val <<= 8;
+        val |= ((byte_t*)data)[3];
+        val <<= 8;
+        val |= ((byte_t*)data)[2];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[0];
+    }
+    if (val & 0x800000000000ULL)
+        val |= 0xFFFF000000000000ULL;
+    return (str_fmtA(": %I64d", val));
+}
+
+/*
+---------------------------------------
+    INT48U
+---------------------------------------
+*/
+static ansi_t*
+int48u_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    int64u  val;
+
+    if (size < sizeof(int16u) * 3)
+        return (NULL);
+    if (is_be) {
+        val  = ((byte_t*)data)[0];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[2];
+        val <<= 8;
+        val |= ((byte_t*)data)[3];
+        val <<= 8;
+        val |= ((byte_t*)data)[4];
+        val <<= 8;
+        val |= ((byte_t*)data)[5];
+    }
+    else {
+        val  = ((byte_t*)data)[5];
+        val <<= 8;
+        val |= ((byte_t*)data)[4];
+        val <<= 8;
+        val |= ((byte_t*)data)[3];
+        val <<= 8;
+        val |= ((byte_t*)data)[2];
+        val <<= 8;
+        val |= ((byte_t*)data)[1];
+        val <<= 8;
+        val |= ((byte_t*)data)[0];
+    }
+    return (str_fmtA(": %I64u", val));
+}
+
+/*
+---------------------------------------
     INT64S
 ---------------------------------------
 */
@@ -254,6 +414,72 @@ int64u_show (
         return (NULL);
     val = *(int64u*)data;
     if (is_be) val = xchg_int64u(val);
+    return (str_fmtA(": %I64u", val));
+}
+
+/*
+---------------------------------------
+    SLEB128
+---------------------------------------
+*/
+static ansi_t*
+sleb128_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    byte_t  cur;
+    uint_t  mov = 0;
+    int64s  val = 0;
+
+    while (size != 0) {
+        cur = *(byte_t*)data;
+        data = (byte_t*)data + 1;
+        val |= (int64s)(cur & 0x7F) << mov;
+        mov += 7;
+        if (!(cur & 0x80)) {
+            mov = 64 - mov;
+            val <<= mov;
+            val >>= mov;
+            break;
+        }
+        size--;
+    }
+    if (size == 0)
+        return (NULL);
+    CR_NOUSE(is_be);
+    return (str_fmtA(": %I64d", val));
+}
+
+/*
+---------------------------------------
+    ULEB128
+---------------------------------------
+*/
+static ansi_t*
+uleb128_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    byte_t  cur;
+    uint_t  mov = 0;
+    int64u  val = 0;
+
+    while (size != 0) {
+        cur = *(byte_t*)data;
+        data = (byte_t*)data + 1;
+        val |= (int64s)(cur & 0x7F) << mov;
+        mov += 7;
+        if (!(cur & 0x80))
+            break;
+        size--;
+    }
+    if (size == 0)
+        return (NULL);
+    CR_NOUSE(is_be);
     return (str_fmtA(": %I64u", val));
 }
 
@@ -615,10 +841,16 @@ CR_API const sQDAT_UNIT viewer[] =
     { "INT8U", int08u_show },
     { "INT16S", int16s_show },
     { "INT16U", int16u_show },
+    { "INT24S", int24s_show },
+    { "INT24U", int24u_show },
     { "INT32S", int32s_show },
     { "INT32U", int32u_show },
+    { "INT48S", int48s_show },
+    { "INT48U", int48u_show },
     { "INT64S", int64s_show },
     { "INT64U", int64u_show },
+    { "SLEB128", sleb128_show },
+    { "ULEB128", uleb128_show },
     { "HALF", fp16_t_show },
     { "FLOAT", fp32_t_show },
     { "DOUBLE", fp64_t_show },
