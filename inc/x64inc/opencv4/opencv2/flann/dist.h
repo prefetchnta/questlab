@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
  * Software License Agreement (BSD License)
  *
  * Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
@@ -375,7 +375,7 @@ struct MinkowskiDistance
     MinkowskiDistance(int order_) : order(order_) {}
 
     /**
-     *  Compute the Minkowsky (L_p) distance between two vectors.
+     *  Compute the Minkowski (L_p) distance between two vectors.
      *
      *	This is highly optimised, with loop unrolling, as it is one
      *	of the most expensive inner loops.
