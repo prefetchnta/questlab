@@ -40,5 +40,7 @@ echo @="%CD%\\HaSHer.exe \"%%1\" -2">> QuestLAB.reg
 echo.>> QuestLAB.reg
 QuestLAB.reg
 del /Q QuestLAB.reg
-copy /Y source\fonts\*.* "%SystemRoot%\Fonts"
+if exist "%SystemRoot%\Fonts\FSEX300.ttf" goto exit
+copy /Y source\fonts\FSEX300.ttf "%SystemRoot%\Fonts"
 FontReg.exe
+:exit
