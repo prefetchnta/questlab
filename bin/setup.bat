@@ -1,4 +1,5 @@
 @echo off
+cd /D %~dp0
 set "CD=%CD:\=\\%"
 echo Windows Registry Editor Version 5.00> QuestLAB.reg
 echo.>> QuestLAB.reg
