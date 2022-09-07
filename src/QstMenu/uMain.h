@@ -31,6 +31,7 @@ private:        // User declarations
         bool    m_use_scite;    /* 使用 SciTE 的标志 */
 public:         // User declarations
         __fastcall TfrmMain(TComponent* Owner);
+        int     m_code_page;    /* 文本编辑器的编码 */
         inline bool is_use_scite () const { return (m_use_scite); }
 };
 #undef  QST_MENU_HEADER

@@ -36,6 +36,7 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 
     /* 外部程序初始状态 */
     m_use_scite = false;
+    m_code_page = get_sys_codepage();
 
     /* 加载主菜单 */
     this->SetupMenu();

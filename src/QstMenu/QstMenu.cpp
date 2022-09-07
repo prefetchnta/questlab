@@ -217,35 +217,92 @@ qst_quit_all_3rd (void_t)
     判断是否是文本文件
 ---------------------------------------
 */
-static bool_t
+static uint_t
 qst_is_text_file (
   __CR_IN__ const ansi_t*   name
     )
 {
-    FILE*   fp;
-    byte_t  cha;
-    leng_t  idx, len;
-    fsize_t fsz = file_sizeA(name);
+    uint_t  ret;
+    leng_t  idx;
+    leng_t  len;
+    ansi_t* txt;
+    fsize_t fsz;
 
     /* 只支持编辑 4MB 以下的文本文件 */
-    if (fsz > CR_M2B(4))
+    if ((fsz = file_sizeA(name)) > CR_M2B(4))
         return (FALSE);
-    fp = fopen(name, "rb");
-    if (fp == NULL)
+    txt = file_load_as_strA(name);
+    if (txt == NULL)
         return (FALSE);
+    ret = FALSE;
     len = (leng_t)fsz;
-    for (idx = 0; idx < len; idx++) {
-        cha = 0xFF;
-        fread(&cha, 1, 1, fp);
-        if ((cha == 0xFF) || (cha < 0x20 &&
-                cha != 0x09 && cha != 0x0A &&
-                cha != 0x0C && cha != 0x0D))
-            break;
+
+    ansi_t* show = NULL;
+    wide_t* pntr = (wide_t*)txt;
+
+    /* 识别 UTF-16 文本文件 */
+    if (len >= 2 && len % 2 == 0 && str_lenW(pntr) * 2 == len)
+    {
+        wide_t* ucs2;
+
+        /* UTF-16 编码校验过滤 */
+        if (mem_cmp(txt, BOM_UTF16LE, 2) == 0) {
+            ucs2 = (wide_t*)(&txt[2]);
+            show = utf16_to_utf8(ucs2);
+            if (show != NULL) {
+                mem_free(show);
+                ret = CR_UTF16X;
+            }
+        }
+        else
+        if (mem_cmp(txt, BOM_UTF16BE, 2) == 0) {
+            ucs2 = (wide_t*)(&txt[2]);
+            for (pntr = ucs2; *pntr != NIL; pntr++)
+                *pntr = xchg_int16u(*pntr);
+            show = utf16_to_utf8(ucs2);
+            if (show != NULL) {
+                mem_free(show);
+                ret = CR_UTF16X;
+            }
+        }
     }
-    fclose(fp);
-    if (idx != len)
-        return (FALSE);
-    return (TRUE);
+
+    /* 非 UTF-16 文本文件 */
+    if (show == NULL && str_lenA(txt) == len)
+    {
+        byte_t  cha;
+
+        /* 过滤掉可能的二进制文件 */
+        for (idx = 0; idx < len; idx++) {
+            cha = txt[idx];
+            if ((cha == 0xFF) || (cha < 0x20 &&
+                   cha != 0x09 && cha != 0x0A &&
+                   cha != 0x0C && cha != 0x0D))
+                break;
+        }
+        if (idx == len)
+        {
+            leng_t  temp;
+            int32u  ucs4;
+
+            /* 识别 UTF-8 文本文件 */
+            if (len >= 3 && mem_cmp(txt, BOM_UTF8, 3) == 0)
+                show = txt + 3;
+            else
+                show = txt;
+            while (*show != NIL) {
+                temp = utf8_to_ucs4(&ucs4, show);
+                if (temp == 0)
+                    break;
+                show += temp;
+            }
+            ret = (*show == NIL) ? CR_UTF8 : TRUE;
+        }
+    }
+
+    /* 返回判断结果 */
+    mem_free(txt);
+    return (ret);
 }
 
 /*****************************************************************************/
@@ -415,7 +472,7 @@ qst_mnu_ldr_file (
     ctx = (sQstMenu*)parm;
     frm = (TfrmMain*)(ctx->form);
 
-    bool_t  is_text = FALSE;
+    uint_t  is_text = FALSE;
     bool_t  checked = FALSE;
 
     /* 根据设置调用外部程序 */
@@ -427,7 +484,16 @@ qst_mnu_ldr_file (
             AnsiString  line;
 
             line = QST_PATH_EXT3RD;
-            line += "wscite\\SciTE.exe \"";
+            line += "wscite\\SciTE.exe -close:";
+            if (is_text == CR_UTF8) {
+                line += " -code.page=65001";
+            }
+            else
+            if (is_text != CR_UTF16X) {
+                line += " -code.page=";
+                line += IntToStr(frm->m_code_page);
+            }
+            line += " \"";
             line += AnsiString(argv[1]);
             line += "\"";
             misc_call_exe(line.c_str(), FALSE, FALSE);

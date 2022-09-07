@@ -459,6 +459,7 @@ void __fastcall TfrmMain::subCPgameClick(TObject *Sender)
     /* Game Code Page */
     qst_send_cmdz("edt:cpage 0");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = get_sys_codepage();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCPsystemClick(TObject *Sender)
@@ -467,7 +468,8 @@ void __fastcall TfrmMain::subCPsystemClick(TObject *Sender)
 
     /* System Code Page */
     line = "edt:cpage ";
-    line += IntToStr(get_sys_codepage());
+    m_code_page = get_sys_codepage();
+    line += IntToStr(m_code_page);
     qst_send_cmdz(line.c_str());
     ((TMenuItem*)Sender)->Checked = true;
 }
@@ -477,6 +479,7 @@ void __fastcall TfrmMain::subCP1256Click(TObject *Sender)
     /* Arabic [1256] */
     qst_send_cmdz("edt:cpage 1256");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1256;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1257Click(TObject *Sender)
@@ -484,6 +487,7 @@ void __fastcall TfrmMain::subCP1257Click(TObject *Sender)
     /* Baltic [1257] */
     qst_send_cmdz("edt:cpage 1257");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1257;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1250Click(TObject *Sender)
@@ -491,6 +495,7 @@ void __fastcall TfrmMain::subCP1250Click(TObject *Sender)
     /* Central European [1250] */
     qst_send_cmdz("edt:cpage 1250");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1250;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP936Click(TObject *Sender)
@@ -498,6 +503,7 @@ void __fastcall TfrmMain::subCP936Click(TObject *Sender)
     /* Chinese (Simplified) [936] */
     qst_send_cmdz("edt:cpage 936");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 936;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP950Click(TObject *Sender)
@@ -505,6 +511,7 @@ void __fastcall TfrmMain::subCP950Click(TObject *Sender)
     /* Chinese (Traditional) [950] */
     qst_send_cmdz("edt:cpage 950");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 950;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1251Click(TObject *Sender)
@@ -512,6 +519,7 @@ void __fastcall TfrmMain::subCP1251Click(TObject *Sender)
     /* Cyrillic [1251] */
     qst_send_cmdz("edt:cpage 1251");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1251;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1253Click(TObject *Sender)
@@ -519,6 +527,7 @@ void __fastcall TfrmMain::subCP1253Click(TObject *Sender)
     /* Greek [1253] */
     qst_send_cmdz("edt:cpage 1253");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1253;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1255Click(TObject *Sender)
@@ -526,6 +535,7 @@ void __fastcall TfrmMain::subCP1255Click(TObject *Sender)
     /* Hebrew [1255] */
     qst_send_cmdz("edt:cpage 1255");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1255;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP932Click(TObject *Sender)
@@ -533,6 +543,7 @@ void __fastcall TfrmMain::subCP932Click(TObject *Sender)
     /* Japanese [932] */
     qst_send_cmdz("edt:cpage 932");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 932;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP949Click(TObject *Sender)
@@ -540,6 +551,7 @@ void __fastcall TfrmMain::subCP949Click(TObject *Sender)
     /* Korean [949] */
     qst_send_cmdz("edt:cpage 949");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 949;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP874Click(TObject *Sender)
@@ -547,6 +559,7 @@ void __fastcall TfrmMain::subCP874Click(TObject *Sender)
     /* Thai [874] */
     qst_send_cmdz("edt:cpage 874");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 874;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1254Click(TObject *Sender)
@@ -554,6 +567,7 @@ void __fastcall TfrmMain::subCP1254Click(TObject *Sender)
     /* Turkish [1254] */
     qst_send_cmdz("edt:cpage 1254");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1254;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1258Click(TObject *Sender)
@@ -561,6 +575,7 @@ void __fastcall TfrmMain::subCP1258Click(TObject *Sender)
     /* Vietnamese [1258] */
     qst_send_cmdz("edt:cpage 1258");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1258;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subCP1252Click(TObject *Sender)
@@ -568,6 +583,7 @@ void __fastcall TfrmMain::subCP1252Click(TObject *Sender)
     /* Western European [1252] */
     qst_send_cmdz("edt:cpage 1252");
     ((TMenuItem*)Sender)->Checked = true;
+    m_code_page = 1252;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::subBeaX86Click(TObject *Sender)
