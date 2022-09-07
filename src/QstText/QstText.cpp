@@ -463,8 +463,10 @@ _func_out:
         used = FALSE;
     }
 
+    pntr = (wide_t*)text;
+
     /* 识别 UTF-16 文本文件 */
-    if (size >= 2 && size % 2 == 0)
+    if (size >= 2 && size % 2 == 0 && str_lenW(pntr) * 2 == size)
     {
         /* UTF-16 编码校验过滤 */
         if (mem_cmp(text, BOM_UTF16LE, 2) == 0) {
