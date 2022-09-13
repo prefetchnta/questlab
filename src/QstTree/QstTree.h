@@ -35,12 +35,40 @@
 #endif
 
 /* 图标索引值 */
-#define QST_ICON_DSK    0   /* 磁盘文件 */
-#define QST_ICON_DIR    1   /* 目录项目 */
-#define QST_ICON_PAK    2   /* 打包文件 */
-#define QST_ICON_MEM    3   /* 包内文件 */
-#define QST_ICON_CAM    4   /* 设备：摄像头 */
-#define QST_ICON_MAX    4   /* 最大编号 */
+#define QST_ICON_DSK    0       /* 磁盘文件 */
+#define QST_ICON_DIR    1       /* 目录项目 */
+#define QST_ICON_PAK    2       /* 打包文件 */
+#define QST_ICON_MEM    3       /* 包内文件 */
+#define QST_ICON_CAM    4       /* 设备：摄像头 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_ASM    5       /* 汇编文件 */
+#define QST_ICON_BAT    6       /* 批处理文件 */
+#define QST_ICON_C      7       /* C 文件 */
+#define QST_ICON_CPP    8       /* C++ 文件 */
+#define QST_ICON_CS     9       /* C# 文件 */
+#define QST_ICON_DOC    10      /* 文档文件 */
+#define QST_ICON_H      11      /* 头文件 */
+#define QST_ICON_INL    12      /* 内嵌文件 */
+#define QST_ICON_TXT    13      /* 文本文件 */
+#define QST_ICON_VB     14      /* VB 文件 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_INI    15      /* 配置文件 */
+#define QST_ICON_DLL    16      /* DLL 文件 */
+#define QST_ICON_FON    17      /* FON 文件 */
+#define QST_ICON_TTF    18      /* TTF 文件 */
+#define QST_ICON_ISO    19      /* ISO 文件 */
+#define QST_ICON_WRI    20      /* WRI 文件 */
+#define QST_ICON_EXE    21      /* EXE 文件 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_MAX    21      /* 最大编号 */
+
+/* 扩展名2图标编号 */
+typedef struct
+{
+        uint_t          idx;    /* 索引值 */
+        const wide_t*   ext;    /* 扩展名 */
+
+} sQTEE_icon;
 
 /* 文件属性值 */
 #define QST_FILE_CMP    0x00000001UL    /* 压缩 */
@@ -75,6 +103,7 @@ typedef struct
         bool_t      busy;   /* 是否忙碌 */
         void_t*     form;   /* 窗口对象 */
         sARRAY      list;   /* 文件列表 */
+        sCURBEAD    icon;   /* 图标列表 */
         socket_t    netw;   /* 网络连接 */
 
 } sQstTree;

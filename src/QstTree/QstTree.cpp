@@ -244,6 +244,21 @@ qst_do_node (
     data->name = &data->path[len];
     if (data->name[0] == 0x0000)
         return (FALSE);
+
+    wide_t* ext = str_dupW(data->name);
+
+    /* 抽出文件扩展名并查找图标编号 */
+    if (ext != NULL) {
+        filext_extractW(ext, data->name);
+        if (*ext == CR_WC('.'))
+        {
+            sQTEE_icon* icon;
+
+            icon = curbead_findT(&s_wrk_ctx.icon, sQTEE_icon, str_lwrW(ext));
+            if (icon != NULL) data->icon = icon->idx;
+        }
+        mem_free(ext);
+    }
     return (TRUE);
 }
 
@@ -448,7 +463,8 @@ qst_load_xml (
 
         /* 改变节点图标 */
         unit = (sQTEE_file*)tree->GetNodeData(node);
-        unit->icon  = QST_ICON_PAK;
+        if (unit->icon <= QST_ICON_MEM)
+            unit->icon  = QST_ICON_PAK;
         unit->attr |= QST_FILE_PAK;
     }
     else
@@ -828,6 +844,75 @@ qst_tee_main (
 }
 
 /*
+---------------------------------------
+    图标比较回调
+---------------------------------------
+*/
+static bool_t
+icon_comp (
+  __CR_IN__ const void_t*   key,
+  __CR_IN__ const void_t*   obj
+    )
+{
+    const wide_t*       ext = (wide_t*)key;
+    const sQTEE_icon*   unt = (sQTEE_icon*)obj;
+
+    if (str_cmpW(ext, unt->ext) == 0)
+        return (TRUE);
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    图标索引回调
+---------------------------------------
+*/
+static uint_t
+icon_find (
+  __CR_IN__ const void_t*   key
+    )
+{
+    leng_t  len = str_sizeW((wide_t*)key);
+
+    return (hash_crc16h_total(key, len));
+}
+
+/* 扩展名查找表 */
+static const sQTEE_icon s_ext_list[] =
+{
+    {   QST_ICON_ASM        , CR_WS(".asm")         },
+    {   QST_ICON_ASM        , CR_WS(".s")           },
+    {   QST_ICON_BAT        , CR_WS(".bat")         },
+    {   QST_ICON_BAT        , CR_WS(".cmd")         },
+    {   QST_ICON_C          , CR_WS(".c")           },
+    {   QST_ICON_CPP        , CR_WS(".cpp")         },
+    {   QST_ICON_CPP        , CR_WS(".cc")          },
+    {   QST_ICON_CPP        , CR_WS(".cxx")         },
+    {   QST_ICON_CS         , CR_WS(".cs")          },
+    {   QST_ICON_DOC        , CR_WS(".doc")         },
+    {   QST_ICON_DOC        , CR_WS(".rtf")         },
+    {   QST_ICON_H          , CR_WS(".h")           },
+    {   QST_ICON_H          , CR_WS(".hpp")         },
+    {   QST_ICON_H          , CR_WS(".hh")          },
+    {   QST_ICON_H          , CR_WS(".hxx")         },
+    {   QST_ICON_INL        , CR_WS(".inl")         },
+    {   QST_ICON_TXT        , CR_WS(".log")         },
+    {   QST_ICON_TXT        , CR_WS(".txt")         },
+    {   QST_ICON_VB         , CR_WS(".vb")          },
+    {   QST_ICON_INI        , CR_WS(".ini")         },
+    {   QST_ICON_INI        , CR_WS(".inf")         },
+    {   QST_ICON_INI        , CR_WS(".cfg")         },
+    {   QST_ICON_DLL        , CR_WS(".dll")         },
+    {   QST_ICON_FON        , CR_WS(".fon")         },
+    {   QST_ICON_TTF        , CR_WS(".ttc")         },
+    {   QST_ICON_TTF        , CR_WS(".ttf")         },
+    {   QST_ICON_ISO        , CR_WS(".iso")         },
+    {   QST_ICON_WRI        , CR_WS(".wri")         },
+    {   QST_ICON_EXE        , CR_WS(".com")         },
+    {   QST_ICON_EXE        , CR_WS(".exe")         },
+};
+
+/*
 =======================================
     WinMain 程序入口
 =======================================
@@ -853,6 +938,19 @@ WinMain (
     if (!set_app_type(CR_APP_GUI))
         return (QST_ERROR);
     mem_zero(&s_wrk_ctx, sizeof(s_wrk_ctx));
+
+    uint_t  idx, len = cntsof(s_ext_list);
+
+    /* 创建扩展名图标表 */
+    if (!curbead_initT(&s_wrk_ctx.icon, sQTEE_icon, len))
+        return (QST_ERROR);
+    s_wrk_ctx.icon.find = icon_find;
+    s_wrk_ctx.icon.comp = icon_comp;
+    for (idx = 0; idx < len; idx++) {
+        if (curbead_insertT(&s_wrk_ctx.icon, sQTEE_icon,
+                s_ext_list[idx].ext, &s_ext_list[idx]) == NULL)
+            return (QST_ERROR);
+    }
 
     /* 初始化网络 */
     if (!socket_init())
@@ -906,6 +1004,7 @@ WinMain (
     thread_wait(thrd);
     thread_del(thrd);
     netw_cli_close(s_wrk_ctx.netw);
+    curbead_freeT(&s_wrk_ctx.icon, sQTEE_icon);
     return (QST_OKAY);
 }
 //---------------------------------------------------------------------------
