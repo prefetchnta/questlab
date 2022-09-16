@@ -874,6 +874,7 @@ NameError: name 'mistake' is not defined
                <tr id='property-FileName'><td>FileName</td><td>base name of the current file</td></tr>
                <tr id='property-FileExt'><td>FileExt</td><td>extension of the current file</td></tr>
                <tr id='property-FileNameExt'><td>FileNameExt</td><td>$(FileName).$(FileExt)</td></tr>
+               <tr id='property-RelativePath'><td>RelativePath</td><td>relative path from properties file to current file</td></tr>
                <tr id='property-Language'><td>Language</td><td>name of the lexer used for the current file</td></tr>
                <tr id='property-SessionPath'><td>SessionPath</td><td>full path of the current session</td></tr>
                <tr id='property-CurrentSelection'><td>CurrentSelection</td><td>value of the currently selected text</td></tr>
@@ -964,14 +965,35 @@ NameError: name 'mistake' is not defined
       non-indented statement is found the if clause is finished. Only simple set
       statements are allowed in if clauses. The evaluation of if statements occurs
       at read time, not at evaluation time.
-      A reread is forced if either of the system properties changes.
+      A reread is forced if either of the system properties changes.</p>
      <div class="example">
      if PLAT_WIN<br />
      &nbsp;&nbsp;&nbsp;&nbsp;caret.fore=#00FF00<br />
      if $(= $(Appearance);1)<br />
      &nbsp;&nbsp;&nbsp;&nbsp;caret.fore=#FFFFFF<br />
      </div>
-    </p>
+    <p>
+      Local and directories properties files may test the value of the current file in "if" tests with
+      $(FilePath), $(FileDir), $(FileName), $(FileExt), $(FileNameExt), and $(RelativePath).</p>
+     <div class="example">
+     if $(= $(FileNameExt);HeaderEOLFill_0.md)<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;lexer.markdown.header.eolfill=0<br />
+     if $(= $(FileExt);pl)<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;edge.mode=1<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;edge.column=79<br />
+     </div>
+      <p>The "match" statement is like "if" but implicitly matches patterns against $(RelativePath), allowing wildcards *, ?;
+      sets [a-z%]; and alternates {cpp,cxx,ixx}.
+      Only Unix-style "/" directory separators may be used as "\" may be used as a quote.
+      If there is no "/" in the pattern then "**/" is prepended to allow matching in any subdirectory.
+      There should be exactly one space between "match" and the pattern and trailing whitespace is removed.</p>
+     <div class="example">
+     match *.{js,py}<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;colour.code.comment.line=fore:#70B060<br />
+     match lexilla/**/Lex*.[ci]xx<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;font.comment=Cascadia Code<br />
+     &nbsp;&nbsp;&nbsp;&nbsp;lexer.cpp.escape.sequence=1<br />
+     </div>
     <p>
       <a name="property-module"></a>
       The 'module' statement is meant for use in the single-file distribution Sc1 where all of the
@@ -1341,6 +1363,14 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         Setting pathbar.visible to 1 makes the path bar visible on GTK.
         </td>
       </tr>
+      <tr class="gtkonly" id='property-pathbar.selectable'>
+        <td>
+          pathbar.selectable
+        </td>
+        <td>
+          Setting pathbar.selectable to 1 makes the visible path bar selectable on GTK.
+        </td>
+      </tr>
       <tr id='property-undo.redo.lazy'>
         <td>
           undo.redo.lazy
@@ -1348,6 +1378,32 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>
           Setting this to 1 changes the technique used to determine when to enable or disable
           tool bar buttons to be less accurate. This may improve performance on slow machines.
+        </td>
+      </tr>
+      <tr id='property-change.history'>
+        <td>
+          change.history<br />
+          marker.reverted.to.origin<br />
+          marker.saved<br />
+          marker.modified<br />
+          marker.reverted.to.modified<br />
+          indicator.reverted.to.origin.insertion<br />
+          indicator.reverted.to.origin.deletion<br />
+          indicator.saved.insertion<br />
+          indicator.saved.deletion<br />
+          indicator.modified.insertion<br />
+          indicator.modified.deletion<br />
+          indicator.reverted.to.modified.insertion<br />
+          indicator.reverted.to.modified.deletion
+        </td>
+        <td>
+          The change.history property controls whether changes to the document (insertions, deletions, saved chanes, ...) are
+          shown as margin markers or indicators within text.<br .>
+          It is a set of bit flags (1=enable, 2=margin markers, 4=indicators in text) so the most likely settings are
+          0=disabled; 3=enabled with margin marks, or 7=enabled with margin markers and in-text indicators.<br />
+          There is a default set of visuals for this feature but they may be altered with the marker.* and indicator.* properties.<br />
+          As change history can only be enabled when the file is in its original state, this property only takes effect when
+          a file is loaded.
         </td>
       </tr>
       <tr id='property-statusbar.visible'>
@@ -2699,6 +2755,10 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>lexer.julia.highlight.typeannotation</td>
         <td>This option enables highlighting of the type identifier after `::`.</td>
         </tr>
+        <tr id='property-lexer.markdown.header.eolfill'>
+        <td>lexer.markdown.header.eolfill</td>
+        <td>Set to 1 to highlight all ATX header text.</td>
+        </tr>
         <tr id='property-lexer.nim.raw.strings.highlight.ident'>
         <td>lexer.nim.raw.strings.highlight.ident</td>
         <td>Set to 1 to enable highlighting generalized raw string identifiers. Generalized raw string identifiers are anything other than r (or R).</td>
@@ -2774,6 +2834,14 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <tr id='property-lexer.verilog.update.preprocessor'>
         <td>lexer.verilog.update.preprocessor</td>
         <td>Set to 1 to update preprocessor definitions when `define, `undef, or `undefineall found.</td>
+        </tr>
+        <tr id='property-lexer.visualprolog.backquoted.strings'>
+        <td>lexer.visualprolog.backquoted.strings</td>
+        <td>Set to 1 to enable using back quotes (``) to delimit strings.</td>
+        </tr>
+        <tr id='property-lexer.visualprolog.verbatim.strings'>
+        <td>lexer.visualprolog.verbatim.strings</td>
+        <td>Set to 0 to disable highlighting verbatim strings using '@'.</td>
         </tr>
         <tr id='property-lexer.xml.allow.scripts'>
         <td>lexer.xml.allow.scripts</td>
@@ -3454,6 +3522,18 @@ c:\cygwin\bin\xargs -0 grep $(find.wholeword) $(find.matchcase) -G -n "$(find.wh
         For Find in Files, a binary file is a file that contains a NUL byte in the first 64K block read from the file.
         </td>
       </tr>
+      <tr id='property-find.exclude'>
+        <td>
+          find.exclude
+        </td>
+        <td>
+        This is a set of file patterns to <strong>not</strong> search in with Find in Files.
+        Both file names and directory names can appear here.
+        <div class="example">
+find.exclude=*.bak *.pyc debug release<br />
+</div>
+        </td>
+      </tr>
       <tr id='property-find.in.directory'>
         <td>
           find.in.directory
@@ -3594,14 +3674,17 @@ imports.include=fortran lisp
         The imports.exclude property is examined only if imports.include is empty or missing.
         This property stops the named files from being imported.<br />
           The properties files shipped with SciTE, and which can be included or excluded with these properties, are:<br />
-          abaqus ada asl asm asn1 au3 ave avs baan blitzbasic
-          bullant caml cmake cobol coffeescript conf cpp csound css d ecl
-          eiffel erlang escript flagship forth fortran freebasic gap haskell
-          hex html inno kix latex lisp lot lout lua matlab maxima metapost
-          mmixal modula3 nimrod nncrontab nsis opal oscript others
-          pascal perl pov powerpro powershell ps purebasic python r rebol
-          registry ruby rust scriptol smalltalk sorcins specman spice sql
-          tacl tal tcl tex txt2tags vb verilog vhdl yaml.
+          abaqus ada asciidoc asl asm asn1 au3 ave avs baan
+          blitzbasic bullant caml cil cmake cobol coffeescript
+          conf cpp csound css d dataflex ecl eiffel erlang
+          escript flagship forth fortran freebasic fsharp gap
+          haskell hex html inno json kix latex lisp lot lout
+          lua markdown matlab maxima metapost mmixal modula3
+          nim nimrod nncrontab nsis opal oscript others pascal
+          perl pov powerpro powershell ps purebasic python r
+          raku rebol registry ruby rust sas scriptol smalltalk
+          sorcins specman spice sql tacl tal tcl tex txt2tags
+          vb verilog vhdl visualprolog yaml.
         </td>
       </tr>
       <tr id='property-command.discover.properties'>
@@ -3942,7 +4025,6 @@ imports.include=fortran lisp
         the font name and size to be used when the Use Monospaced Font
         command is performed.
         </td>
-      </tr>
       </tr>
       <tr id='property-font.monospaced.list'>
         <td>
@@ -4326,7 +4408,6 @@ groupundo - yes or no
           Sets the stroke width of the fold symbols in hundredths of a pixel.
           The default value, 100 is good for standard displays but 200 may be better for high DPI displays,
         </td>
-      </tr>
       </tr>
       <tr id='property-fold.margin.width'>
         <td>
@@ -4931,7 +5012,7 @@ groupundo - yes or no
      </tr>
     </table>
     <h3 id="IndicatorProperty">
-       Indicator definition
+       Indicator and marker definitions
     </h3>
     <p>Properties that define indicators look like</p>
     <div class="example">
@@ -4947,7 +5028,7 @@ groupundo - yes or no
       <td>style</td>
       <td>one of plain, squiggle, tt, diagonal, strike, hidden, box, roundbox, straightbox, fullbox, dash,
       dots, squigglelow, dotbox, squigglepixmap, compositionthick, compositionthin,
-      textfore, gradient, gradientcentre, point, or pointcharacter.<br />
+      textfore, gradient, gradientcentre, point, pointcharacter, or pointtop.<br />
       </td>
       <td>plain</td>
      </tr>
@@ -4977,9 +5058,39 @@ groupundo - yes or no
       <td>yes</td>
      </tr>
     </table>
-    </p>
     <p>Samples:<br />
     <img src="SciTEIndicators.png" alt="Indicator samples" /></p>
+    <p>Properties that define markers look like</p>
+    <div class="example">
+       marker.saved=style:leftrect,fore:#00A000,back:#A0A000</div>
+    <table cellpadding="1" cellspacing="0" border="1" summary="Caret policy">
+     <tr>
+      <th>attribute</th>
+      <th>value</th>
+      <th>default</th>
+     </tr>
+     <tr>
+      <td>style</td>
+      <td>one of circle, roundrect, arrow, smallrect, shortarrow, empty, arrowdown,
+      minus, plus, vline, lcorner, tcorner, boxplus, boxplusconnected,
+      boxminus, boxminusconnected, lcornercurve, tcornercurve,
+      circleplus, circleplusconnected, circleminus, circleminusconnected,
+      background, dotdotdot, arrows, fullrect, leftrect,
+      underline, bookmark, verticalbookmark, or bar.<br />
+      </td>
+      <td>circle</td>
+     </tr>
+     <tr>
+      <td>colour or color or fore</td>
+      <td>a hex colour value preceded by '#' such as #008020.</td>
+      <td>black</td>
+     </tr>
+     <tr>
+      <td>back</td>
+      <td>a hex colour value preceded by '#' such as #008020.</td>
+      <td>white</td>
+     </tr>
+    </table>
     <h3 id="NewLanguage">
        Supporting a new language
     </h3>

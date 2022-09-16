@@ -116,6 +116,7 @@
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CLEARDOCUMENTSTYLE'>ClearDocumentStyle</a>()<span class="comment"> -- Set all style bytes to 0, remove all folding information.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETCHARAT'>CharAt</a>[position pos] read-only</p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETSTYLEAT'>StyleAt</a>[position pos] read-only</p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETSTYLEINDEXAT'>StyleIndexAt</a>[position pos] read-only</p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_RELEASEALLEXTENDEDSTYLES'>ReleaseAllExtendedStyles</a>()<span class="comment"> -- Release all extended (>255) style numbers</span></p>
 	<p>int editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ALLOCATEEXTENDEDSTYLES'>AllocateExtendedStyles</a>(int numberStyles)<span class="comment"> -- Allocate some extended (>255) style numbers and return the start of the range</span></p>
 	<p>string editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_TARGETASUTF8'>TargetAsUTF8</a>()<span class="comment"> -- Returns the target converted to UTF8. Return the length in bytes.</span></p>
@@ -163,6 +164,8 @@
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_BEGINUNDOACTION'>BeginUndoAction</a>()<span class="comment"> -- Start a sequence of actions that is undone and redone as a unit. May be nested.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ENDUNDOACTION'>EndUndoAction</a>()<span class="comment"> -- End a sequence of actions that is undone and redone as a unit.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ADDUNDOACTION'>AddUndoAction</a>(int token, int flags)<span class="comment"> -- Add a container action to the undo stack</span></p>
+	<h2>Change history</h2>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETCHANGEHISTORY'>ChangeHistory</a><span class="comment"> -- Enable or disable change history.</span></p>
 	<h2>Selection and information</h2>
 	<p>position editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETTEXTLENGTH'>TextLength</a> read-only</p>
 	<p>position editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETLENGTH'>Length</a> read-only</p>
@@ -203,6 +206,7 @@
 	<p>int editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_POINTXFROMPOSITION'>PointXFromPosition</a>(position pos)<span class="comment"> -- Retrieve the x value of the point in the window where a position is displayed.</span></p>
 	<p>int editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_POINTYFROMPOSITION'>PointYFromPosition</a>(position pos)<span class="comment"> -- Retrieve the y value of the point in the window where a position is displayed.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_HIDESELECTION'>HideSelection</a>(bool hide)<span class="comment"> -- Draw the selection either highlighted or in normal (non-highlighted) style.</span></p>
+	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETSELECTIONHIDDEN'>SelectionHidden</a> read-only</p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CHOOSECARETX'>ChooseCaretX</a>()<span class="comment"> -- Set the last x chosen value to be the caret x position.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MOVESELECTEDLINESUP'>MoveSelectedLinesUp</a>()<span class="comment"> -- Move the selected lines up one line, shifting the line above after the selection</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_MOVESELECTEDLINESDOWN'>MoveSelectedLinesDown</a>()<span class="comment"> -- Move the selected lines down one line, shifting the line below before the selection</span></p>
