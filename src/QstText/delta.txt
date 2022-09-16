@@ -27,7 +27,7 @@ check.if.already.open=1
 =============================================
 #code.page=0
 =============================================
-	font.monospace=font:Consolas,size:11
+	font.monospace=Fixedsys Excelsior 3.01,size:12
 	font.monospace.small=$(font.monospace)
 	font.base=$(font.monospace)
 	font.small=$(font.monospace)

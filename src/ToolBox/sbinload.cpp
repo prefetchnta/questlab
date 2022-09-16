@@ -46,7 +46,6 @@ int main (int argc, char *argv[])
     printf("%s ", argv[2]);
     sbin = LoadLibraryA(argv[2]);
     if (sbin != NULL) {
-        // FreeLibrary(sbin);  // 这里有可能卡死
         for (int idx = 0; idx < cnts; idx++)
             printf("#");
         printf(" [OKAY]\n");
