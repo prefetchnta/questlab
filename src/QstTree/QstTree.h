@@ -35,32 +35,50 @@
 #endif
 
 /* 图标索引值 */
-#define QST_ICON_DSK    0       /* 磁盘文件 */
-#define QST_ICON_DIR    1       /* 目录项目 */
-#define QST_ICON_PAK    2       /* 打包文件 */
-#define QST_ICON_MEM    3       /* 包内文件 */
-#define QST_ICON_CAM    4       /* 设备：摄像头 */
+#define QST_ICON_DSK            0       /* 磁盘文件 */
+#define QST_ICON_DIR            1       /* 目录项目 */
+#define QST_ICON_PAK            2       /* 打包文件 */
+#define QST_ICON_MEM            3       /* 包内文件 */
+#define QST_ICON_CAM            4       /* 设备：摄像头 */
 /* ------------------------------------------------------------------------- */
-#define QST_ICON_ASM    5       /* 汇编文件 */
-#define QST_ICON_BAT    6       /* 批处理文件 */
-#define QST_ICON_C      7       /* C 文件 */
-#define QST_ICON_CPP    8       /* C++ 文件 */
-#define QST_ICON_CS     9       /* C# 文件 */
-#define QST_ICON_DOC    10      /* 文档文件 */
-#define QST_ICON_H      11      /* 头文件 */
-#define QST_ICON_INL    12      /* 内嵌文件 */
-#define QST_ICON_TXT    13      /* 文本文件 */
-#define QST_ICON_VB     14      /* VB 文件 */
+#define QST_ICON_ASM            5       /* 汇编文件 */
+#define QST_ICON_BAT            6       /* 批处理文件 */
+#define QST_ICON_C              7       /* C 文件 */
+#define QST_ICON_CPP            8       /* C++ 文件 */
+#define QST_ICON_CS             9       /* C# 文件 */
+#define QST_ICON_DOC            10      /* 文档文件 */
+#define QST_ICON_H              11      /* 头文件 */
+#define QST_ICON_INL            12      /* 内嵌文件 */
+#define QST_ICON_TXT            13      /* 文本文件 */
+#define QST_ICON_VB             14      /* VB 文件 */
 /* ------------------------------------------------------------------------- */
-#define QST_ICON_INI    15      /* 配置文件 */
-#define QST_ICON_DLL    16      /* DLL 文件 */
-#define QST_ICON_FON    17      /* FON 文件 */
-#define QST_ICON_TTF    18      /* TTF 文件 */
-#define QST_ICON_ISO    19      /* ISO 文件 */
-#define QST_ICON_WRI    20      /* WRI 文件 */
-#define QST_ICON_EXE    21      /* EXE 文件 */
+#define QST_ICON_INI            15      /* 配置文件 */
+#define QST_ICON_DLL            16      /* DLL 文件 */
+#define QST_ICON_FON            17      /* FON 文件 */
+#define QST_ICON_TTF            18      /* TTF 文件 */
+#define QST_ICON_ISO            19      /* ISO 文件 */
+#define QST_ICON_WRI            20      /* WRI 文件 */
+#define QST_ICON_EXE            21      /* EXE 文件 */
 /* ------------------------------------------------------------------------- */
-#define QST_ICON_MAX    21      /* 最大编号 */
+#define QST_ICON_FNT            22      /* FNT 文件 */
+#define QST_ICON_HLP            23      /* HLP 文件 */
+#define QST_ICON_ILK            24      /* ILK 文件 */
+#define QST_ICON_LIB            25      /* LIB 文件 */
+#define QST_ICON_MAK            26      /* MAK 文件 */
+#define QST_ICON_NCB            27      /* NCB 文件 */
+#define QST_ICON_OBJ            28      /* OBJ 文件 */
+#define QST_ICON_PDB            29      /* PDB 文件 */
+#define QST_ICON_SQL            30      /* SQL 文件 */
+#define QST_ICON_XDR            31      /* XDR 文件 */
+#define QST_ICON_XML            32      /* XML 文件 */
+#define QST_ICON_XSD            33      /* XSD 文件 */
+#define QST_ICON_XSL            34      /* XSL 文件 */
+#define QST_ICON_PCB            35      /* PCB 文件 */
+#define QST_ICON_SCH            36      /* SCH 文件 */
+#define QST_ICON_PCBLIB         37      /* PCBLIB 文件 */
+#define QST_ICON_SCHLIB         38      /* SCHLIB 文件 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_MAX            38      /* 最大编号 */
 
 /* 扩展名2图标编号 */
 typedef struct
