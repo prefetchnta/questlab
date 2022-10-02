@@ -78,7 +78,32 @@
 #define QST_ICON_PCBLIB         37      /* PCBLIB 文件 */
 #define QST_ICON_SCHLIB         38      /* SCHLIB 文件 */
 /* ------------------------------------------------------------------------- */
-#define QST_ICON_MAX            38      /* 最大编号 */
+#define QST_ICON_AUDIO          39      /* 音频文件 */
+#define QST_ICON_AVI            40      /* AVI 文件 */
+#define QST_ICON_CD             41      /* CD 光盘 */
+#define QST_ICON_DVD            42      /* DVD 光盘 */
+#define QST_ICON_DVDA           43      /* DVDA 光盘 */
+#define QST_ICON_FLIC           44      /* FLIC 文件 */
+#define QST_ICON_FLV            45      /* FLV 文件 */
+#define QST_ICON_LOSSLESS       46      /* 无损音频文件 */
+#define QST_ICON_MKV            47      /* MKV 文件 */
+#define QST_ICON_MP4            48      /* MP4 文件 */
+#define QST_ICON_MPG            49      /* MPG 文件 */
+#define QST_ICON_OGM            50      /* OGM 文件 */
+#define QST_ICON_PLAYLIST       51      /* 播放列表文件 */
+#define QST_ICON_QUICKTIME      52      /* QTIME 文件 */
+#define QST_ICON_REAL           53      /* REAL 文件 */
+#define QST_ICON_SWF            54      /* SWF 文件 */
+#define QST_ICON_TS             55      /* TS 文件 */
+#define QST_ICON_VIDEO          56      /* 视频文件 */
+#define QST_ICON_WEBM           57      /* WEBM 文件 */
+#define QST_ICON_WMA            58      /* WMA 文件 */
+#define QST_ICON_WMV            59      /* WMV 文件 */
+#define QST_ICON_PY             60      /* Python 源文件 */
+#define QST_ICON_PYC            61      /* Python 字节文件 */
+#define QST_ICON_PYD            62      /* Python 库文件 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_MAX            62      /* 最大编号 */
 
 /* 扩展名2图标编号 */
 typedef struct
