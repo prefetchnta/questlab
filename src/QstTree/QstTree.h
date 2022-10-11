@@ -121,10 +121,10 @@
 #define QST_ICON_DMG            78      /* DMG 文件 */
 #define QST_ICON_HFS            79      /* HFS 文件 */
 #define QST_ICON_XAR            80      /* XAR 文件 */
-#define QST_ICON_BMP            81      /* BMP 文件 (无压缩) */
+#define QST_ICON_BMP            81      /* BMP 文件 (软件画图) */
 #define QST_ICON_GIF            82      /* GIF 文件 (无损压缩) */
-#define QST_ICON_JPG            83      /* JPG 文件 (有损压缩) */
-#define QST_ICON_TIF            84      /* TIF 文件 (混合模式) */
+#define QST_ICON_JPG            83      /* JPG 文件 (有损格式) */
+#define QST_ICON_TIF            84      /* TIF 文件 (混合格式) */
 #define QST_ICON_PDF            85      /* PDF 文件 */
 #define QST_ICON_MDB            86      /* MDB 文件 */
 #define QST_ICON_ACCDB          87      /* ACCDB 文件 */
@@ -158,7 +158,7 @@
 #define QST_ICON_ASMX           114     /* ASMX 文件 */
 #define QST_ICON_ASP            115     /* ASP 文件 */
 #define QST_ICON_ASPX           116     /* ASPX 文件 */
-#define QST_ICON_BIN            117     /* BIN 文件 */
+#define QST_ICON_HEX            117     /* HEX 文件 */
 #define QST_ICON_CMD            118     /* CMD 文件 */
 #define QST_ICON_CSDPROJ        119     /* CSDPROJ 文件 */
 #define QST_ICON_CSHTML         120     /* CSHTML 文件 */
@@ -193,7 +193,7 @@
 #define QST_ICON_THEME          149     /* THEME 文件 */
 #define QST_ICON_TTC            150     /* TTC 文件 */
 #define QST_ICON_USER           151     /* USER 文件 */
-#define QST_ICON_VBA            152     /* VBA 文件 */
+#define QST_ICON_JSE            152     /* JSE 文件 */
 #define QST_ICON_VBDPROJ        153     /* VBDPROJ 文件 */
 #define QST_ICON_VBHTML         154     /* VBHTML 文件 */
 #define QST_ICON_VBPROJ         155     /* VBPROJ 文件 */
@@ -206,7 +206,81 @@
 #define QST_ICON_XAMLX          162     /* XAMLX 文件 */
 #define QST_ICON_XBAP           163     /* XBAP 文件 */
 /* ------------------------------------------------------------------------- */
-#define QST_ICON_MAX            163     /* 最大编号 */
+#define QST_ICON_BPR            164     /* BPR 文件 */
+#define QST_ICON_DCU            165     /* DCU 文件 */
+#define QST_ICON_DFM            166     /* DFM 文件 */
+#define QST_ICON_DPK            167     /* DPK 文件 */
+#define QST_ICON_DPR            168     /* DPR 文件 */
+#define QST_ICON_PAS            169     /* PAS 文件 */
+#define QST_ICON_1SC            170     /* 1SC 文件 */
+#define QST_ICON_BT             171     /* BT 文件 */
+#define QST_ICON_BDSPROJ        172     /* BDSPROJ 文件 */
+#define QST_ICON_BDSGROUP       173     /* BDSGROUP 文件 */
+#define QST_ICON_BPL            174     /* BPL 文件 */
+#define QST_ICON_CBPROJ         175     /* CBPROJ 文件 */
+#define QST_ICON_BPF            176     /* BPF 文件 */
+#define QST_ICON_BPI            177     /* BPI 文件 */
+#define QST_ICON_SYS            178     /* 驱动文件 */
+#define QST_ICON_CLP            179     /* CLP 文件 */
+#define QST_ICON_DIFF           180     /* DIFF 文件 */
+#define QST_ICON_HHP            181     /* HHP 文件 */
+#define QST_ICON_ROM            182     /* ROM 文件 */
+#define QST_ICON_HTA            183     /* HTA 文件 */
+#define QST_ICON_HTT            184     /* HTT 文件 */
+#define QST_ICON_HXA            185     /* HXA 文件 */
+#define QST_ICON_HXC            186     /* HXC 文件 */
+#define QST_ICON_HXD            187     /* HXD 文件 */
+#define QST_ICON_HXE            188     /* HXE 文件 */
+#define QST_ICON_HXK            189     /* HXK 文件 */
+#define QST_ICON_HXS            190     /* HXS 文件 */
+#define QST_ICON_HXT            191     /* HXT 文件 */
+#define QST_ICON_HXV            192     /* HXV 文件 */
+#define QST_ICON_REV            193     /* REV 文件 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_386            194     /* 386 文件 */
+#define QST_ICON_ACCESSOR       195     /* ACCESSOR 文件 */
+#define QST_ICON_ACW            196     /* ACW 文件 */
+#define QST_ICON_ADDIN          197     /* ADDIN 文件 */
+#define QST_ICON_BOM            198     /* BOM 文件 */
+#define QST_ICON_CAT            199     /* CAT 文件 */
+#define QST_ICON_CRL            200     /* CRL 文件 */
+#define QST_ICON_CSV            201     /* CSV 文件 */
+#define QST_ICON_DB             202     /* DB 文件 */
+#define QST_ICON_DDB            203     /* DDB 文件 */
+#define QST_ICON_DRC            204     /* DRC 文件 */
+#define QST_ICON_DRV            205     /* DRV 文件 */
+#define QST_ICON_EML            206     /* EML 文件 */
+#define QST_ICON_IDB            207     /* IDB 文件 */
+#define QST_ICON_ITS            208     /* ITS 文件 */
+#define QST_ICON_IVF            209     /* IVF 文件 */
+#define QST_ICON_MSI            210     /* MSI 文件 */
+#define QST_ICON_MTX            211     /* MTX 文件 */
+#define QST_ICON_PCB3D          212     /* PCB3D 文件 */
+#define QST_ICON_RDP            213     /* RDP 文件 */
+#define QST_ICON_STL            214     /* STL 文件 */
+#define QST_ICON_SVCLOG         215     /* SVCLOG 文件 */
+#define QST_ICON_SYNC           216     /* SYNC 文件 */
+#define QST_ICON_TAB            217     /* TAB 文件 */
+#define QST_ICON_VSI            218     /* VSI 文件 */
+#define QST_ICON_VSIX           219     /* VSIX 文件 */
+#define QST_ICON_MSU            220     /* MSU 文件 */
+#define QST_ICON_286            221     /* 286 文件 */
+#define QST_ICON_BIN            222     /* BIN 文件 */
+#define QST_ICON_DAT            223     /* DAT 文件 */
+#define QST_ICON_ISU            224     /* ISU 文件 */
+#define QST_ICON_OCX            225     /* OCX 文件 */
+#define QST_ICON_SCR            226     /* SCR 文件 */
+#define QST_ICON_VXD            227     /* VXD 文件 */
+#define QST_ICON_AX             228     /* AX 文件 */
+#define QST_ICON_IME            229     /* IME 文件 */
+#define QST_ICON_MO             230     /* MO 文件 */
+#define QST_ICON_PO             231     /* PO 文件 */
+#define QST_ICON_MUI            232     /* MUI 文件 */
+#define QST_ICON_NLS            233     /* NLS 文件 */
+#define QST_ICON_MSC            234     /* MSC 文件 */
+#define QST_ICON_CPL            235     /* CPL 文件 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_MAX            235     /* 最大编号 */
 
 /* 扩展名2图标编号 */
 typedef struct
