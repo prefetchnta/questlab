@@ -280,7 +280,30 @@
 #define QST_ICON_MSC            234     /* MSC 文件 */
 #define QST_ICON_CPL            235     /* CPL 文件 */
 /* ------------------------------------------------------------------------- */
-#define QST_ICON_MAX            235     /* 最大编号 */
+#define QST_ICON_CONFIG         236     /* 配置文件 */
+#define QST_ICON_DLANG          237     /* D 语言文件 */
+#define QST_ICON_JAR            238     /* JAR 文件 */
+#define QST_ICON_JMOD           239     /* JMOD 文件 */
+#define QST_ICON_JAVA           240     /* JAVA 文件 */
+#define QST_ICON_CLASS          241     /* CLASS 文件 */
+#define QST_ICON_JSON           242     /* JSON 文件 */
+#define QST_ICON_PNDR           243     /* PNDR 文件 */
+#define QST_ICON_TCL            244     /* TCL 文件 */
+#define QST_ICON_TCLM           245     /* TCL M 文件 */
+#define QST_ICON_LUA            246     /* LUA 文件 */
+#define QST_ICON_PERL           247     /* PERL 文件 */
+#define QST_ICON_PERLM          248     /* PERL M 文件 */
+#define QST_ICON_YAML           249     /* YAML 文件 */
+#define QST_ICON_CSS            250     /* CSS 文件 */
+#define QST_ICON_CMAKE          251     /* CMAKE 文件 */
+#define QST_ICON_ILAB           252     /* ILAB 文件 */
+#define QST_ICON_QST            253     /* QST 文件 */
+#define QST_ICON_SVG            254     /* SVG 文件 */
+#define QST_ICON_GOLANG         255     /* GO 语言文件 */
+#define QST_ICON_RUST           256     /* RUST 语言文件 */
+#define QST_ICON_F2D            257     /* F2D 文件 */
+/* ------------------------------------------------------------------------- */
+#define QST_ICON_MAX            257     /* 最大编号 */
 
 /* 扩展名2图标编号 */
 typedef struct
