@@ -51,7 +51,6 @@
 #define QST_ICON_INL            12      /* 内嵌文件 */
 #define QST_ICON_TXT            13      /* 文本文件 */
 #define QST_ICON_VB             14      /* VB 文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_INI            15      /* 配置文件 */
 #define QST_ICON_DLL            16      /* DLL 文件 */
 #define QST_ICON_FON            17      /* FON 文件 */
@@ -59,7 +58,6 @@
 #define QST_ICON_ISO            19      /* ISO 文件 */
 #define QST_ICON_WRI            20      /* WRI 文件 */
 #define QST_ICON_COM            21      /* COM 文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_FNT            22      /* FNT 文件 */
 #define QST_ICON_HLP            23      /* HLP 文件 */
 #define QST_ICON_ILK            24      /* ILK 文件 */
@@ -77,7 +75,6 @@
 #define QST_ICON_SCH            36      /* SCH 文件 */
 #define QST_ICON_PCBLIB         37      /* PCBLIB 文件 */
 #define QST_ICON_SCHLIB         38      /* SCHLIB 文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_AUDIO          39      /* 音频文件 */
 #define QST_ICON_AVI            40      /* AVI 文件 */
 #define QST_ICON_CD             41      /* CD 光盘 */
@@ -102,7 +99,6 @@
 #define QST_ICON_PY             60      /* Python 源文件 */
 #define QST_ICON_PYC            61      /* Python 字节文件 */
 #define QST_ICON_PYD            62      /* Python 库文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_7Z             63      /* 7ZIP 文件 */
 #define QST_ICON_ZIP            64      /* ZIP 文件 */
 #define QST_ICON_BZ2            65      /* BZ2 文件 */
@@ -143,7 +139,6 @@
 #define QST_ICON_RCT            100     /* RCT 文件 */
 #define QST_ICON_RES            101     /* RES 文件 */
 #define QST_ICON_RESX           102     /* RESX 文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_SLN60          103     /* _SLN60 文件 */
 #define QST_ICON_SLN70          104     /* _SLN70 文件 */
 #define QST_ICON_SLN71          105     /* _SLN71 文件 */
@@ -205,7 +200,6 @@
 #define QST_ICON_XAML           161     /* XAML 文件 */
 #define QST_ICON_XAMLX          162     /* XAMLX 文件 */
 #define QST_ICON_XBAP           163     /* XBAP 文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_BPR            164     /* BPR 文件 */
 #define QST_ICON_DCU            165     /* DCU 文件 */
 #define QST_ICON_DFM            166     /* DFM 文件 */
@@ -236,7 +230,6 @@
 #define QST_ICON_HXT            191     /* HXT 文件 */
 #define QST_ICON_HXV            192     /* HXV 文件 */
 #define QST_ICON_REV            193     /* REV 文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_386            194     /* 386 文件 */
 #define QST_ICON_ACCESSOR       195     /* ACCESSOR 文件 */
 #define QST_ICON_ACW            196     /* ACW 文件 */
@@ -279,7 +272,6 @@
 #define QST_ICON_NLS            233     /* NLS 文件 */
 #define QST_ICON_MSC            234     /* MSC 文件 */
 #define QST_ICON_CPL            235     /* CPL 文件 */
-/* ------------------------------------------------------------------------- */
 #define QST_ICON_CONFIG         236     /* 配置文件 */
 #define QST_ICON_DLANG          237     /* D 语言文件 */
 #define QST_ICON_JAR            238     /* JAR 文件 */
@@ -302,8 +294,21 @@
 #define QST_ICON_GOLANG         255     /* GO 语言文件 */
 #define QST_ICON_RUST           256     /* RUST 语言文件 */
 #define QST_ICON_F2D            257     /* F2D 文件 */
+#define QST_ICON_RLANG          258     /* R 语言文件 */
+#define QST_ICON_RDX            259     /* RDX 文件 */
+#define QST_ICON_RDS            260     /* RDS 文件 */
+#define QST_ICON_SAVE           261     /* SAVE 文件 */
+#define QST_ICON_SNIPPET        262     /* SNIPPET 文件 */
+#define QST_ICON_BASH           263     /* BASH 文件 */
+#define QST_ICON_PACK           264     /* 封包文件 */
+#define QST_ICON_INDEX          265     /* 索引文件 */
+#define QST_ICON_TMX            266     /* TMX 文件 */
+#define QST_ICON_VER            267     /* VER 文件 */
+#define QST_ICON_PRJ            268     /* PRJ 文件 */
+#define QST_ICON_BXRC           269     /* BXRC 文件 */
+#define QST_ICON_RUBY           270     /* RUBY 语言文件 */
 /* ------------------------------------------------------------------------- */
-#define QST_ICON_MAX            257     /* 最大编号 */
+#define QST_ICON_MAX_INDEX      270     /* 最大编号 */
 
 /* 扩展名2图标编号 */
 typedef struct
