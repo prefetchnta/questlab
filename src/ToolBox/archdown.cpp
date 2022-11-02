@@ -260,7 +260,15 @@ do_file_download (
     if (cmd == NULL)
         return (FALSE);
 
+    FILE*   fp;
     bool_t  rett;
+
+    /* 保存执行的命令到文件 */
+    fp = fopen("__cmds__.txt", "ab+");
+    if (fp != NULL) {
+        fprintf(fp, "%s\r\n", cmd);
+        fclose(fp);
+    }
 
     /* 执行下载命令直到退出 */
     rett = misc_call_exe(cmd, TRUE, FALSE);
