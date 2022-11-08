@@ -296,6 +296,156 @@ qst_crh_line (
 
 /*
 ---------------------------------------
+    绘制连续线段
+---------------------------------------
+*/
+static bool_t
+qst_crh_lines (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sPNT2*  pnts;
+    sIMAGE* draw;
+    uint_t  count;
+    uint_t  ii, jj;
+
+    /* 参数解析 <X1> <Y1> <X2> <Y2> ... */
+    if (argc < 5 || argc % 2 == 0)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+    count = (argc - 1) / 2;
+    pnts = mem_talloc(count, sPNT2);
+    if (pnts == NULL)
+        return (FALSE);
+    for (jj = ii = 0; ii < count; ii++, jj++) {
+        pnts[jj].x = (sint_t)str2intxA(argv[ii * 2 + 1]);
+        pnts[jj].y = (sint_t)str2intxA(argv[ii * 2 + 2]);
+    }
+    draw_lines(draw, pnts, count, 0, s_color, s_pixdraw);
+    mem_free(pnts);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    绘制多边形
+---------------------------------------
+*/
+static bool_t
+qst_crh_polygon (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sPNT2*  pnts;
+    sIMAGE* draw;
+    uint_t  count;
+    uint_t  ii, jj;
+
+    /* 参数解析 <X1> <Y1> <X2> <Y2> ... */
+    if (argc < 5 || argc % 2 == 0)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+    count = (argc - 1) / 2;
+    pnts = mem_talloc(count, sPNT2);
+    if (pnts == NULL)
+        return (FALSE);
+    for (jj = ii = 0; ii < count; ii++, jj++) {
+        pnts[jj].x = (sint_t)str2intxA(argv[ii * 2 + 1]);
+        pnts[jj].y = (sint_t)str2intxA(argv[ii * 2 + 2]);
+    }
+    draw_polygon(draw, pnts, count, 0, s_color, s_pixdraw);
+    mem_free(pnts);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    绘制贝塞尔曲线 (多次拟合)
+---------------------------------------
+*/
+static bool_t
+qst_crh_bezier (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sPNT2*  pnts;
+    sIMAGE* draw;
+    uint_t  step;
+    uint_t  count;
+    uint_t  ii, jj;
+
+    /* 参数解析 <Step> <X1> <Y1> <X2> <Y2> <X3> <Y3> <X4> <Y4> ... */
+    if (argc < 10 || argc % 2 != 0)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+    count = argc / 2 - 1;
+    pnts = mem_talloc(count, sPNT2);
+    if (pnts == NULL)
+        return (FALSE);
+    step = str2intxA(argv[1]);
+    for (jj = ii = 0; ii < count; ii++, jj++) {
+        pnts[jj].x = (sint_t)str2intxA(argv[ii * 2 + 2]);
+        pnts[jj].y = (sint_t)str2intxA(argv[ii * 2 + 3]);
+    }
+    draw_bezier(draw, pnts, count, step, s_color, s_pixdraw);
+    mem_free(pnts);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    绘制贝塞尔曲线 (三次插值)
+---------------------------------------
+*/
+static bool_t
+qst_crh_curve3 (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sPNT2*  pnts;
+    sIMAGE* draw;
+    uint_t  step;
+    uint_t  count;
+    uint_t  ii, jj;
+    fp32_t  tension;
+
+    /* 参数解析 <Step> <Tension> <X1> <Y1> <X2> <Y2> <X3> <Y3> <X4> <Y4> ... */
+    if (argc < 11 || argc % 2 == 0)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+    count = (argc - 3) / 2;
+    pnts = mem_talloc(count, sPNT2);
+    if (pnts == NULL)
+        return (FALSE);
+    step = str2intxA(argv[1]);
+    tension = str2fp32A(argv[2]);
+    for (jj = ii = 0; ii < count; ii++, jj++) {
+        pnts[jj].x = (sint_t)str2intxA(argv[ii * 2 + 3]);
+        pnts[jj].y = (sint_t)str2intxA(argv[ii * 2 + 4]);
+    }
+    draw_curve3(draw, pnts, count, step, tension, s_color, s_pixdraw);
+    mem_free(pnts);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     绘制方框 (坐标)
 ---------------------------------------
 */
@@ -1309,6 +1459,10 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:pixel", qst_crh_pixel },
     { "crh:dotwu", qst_crh_dotwu },
     { "crh:line", qst_crh_line },
+    { "crh:lines", qst_crh_lines },
+    { "crh:polygon", qst_crh_polygon },
+    { "crh:bezier", qst_crh_bezier },
+    { "crh:curve3", qst_crh_curve3 },
     { "crh:rect_xy", qst_crh_rect_xy },
     { "crh:rect_wh", qst_crh_rect_wh },
     { "crh:circle", qst_crh_circle },

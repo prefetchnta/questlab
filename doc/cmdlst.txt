@@ -309,6 +309,18 @@
     crh:line <X1> <Y1> <X2> <Y2>
         绘制一条指定的直线
 
+    crh:lines <X1> <Y1> <X2> <Y2> ...
+        绘制一组指定的直线
+
+    crh:polygon <X1> <Y1> <X2> <Y2> ...
+        绘制一个封闭的多边形
+
+    crh:bezier <Step> <X1> <Y1> <X2> <Y2> <X3> <Y3> <X4> <Y4> ...
+        绘制拟合的多次贝塞尔曲线
+
+    crh:curve3 <Step> <Tension> <X1> <Y1> <X2> <Y2> <X3> <Y3> <X4> <Y4> ...
+        绘制插值的三次贝塞尔曲线
+
     crh:rect_xy <X1> <Y1> <X2> <Y2>
         以坐标的方式绘制一个方框
 
