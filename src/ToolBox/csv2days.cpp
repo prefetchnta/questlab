@@ -23,6 +23,30 @@
 #include "../QstLibs/QstLibs.h"
 
 /*
+---------------------------------------
+    判断是否是有效的值
+---------------------------------------
+*/
+static bool_t
+is_value_okay (
+  __CR_OT__ double*         val,
+  __CR_IN__ const ansi_t*   str,
+  __CR_IN__ double          defv
+    )
+{
+    byte_t  ch;
+
+    str = skip_spaceA(str);
+    ch = *str;
+    if ((ch == 0x2D) || (ch >= 0x30 && ch <= 0x39)) {
+        *val = str2fp64A(str);
+        return (TRUE);
+    }
+    *val = defv;
+    return (FALSE);
+}
+
+/*
 =======================================
     主程序
 =======================================
@@ -70,7 +94,6 @@ int main (int argc, char *argv[])
     {
         leng_t      cnts;
         int64u      tick;
-        double      vals;
         ansi_t**    list;
 
         /* 跳过空行 */
@@ -103,13 +126,27 @@ int main (int argc, char *argv[])
         }
         fwrite(&tick, sizeof(tick), 1, fp);
 
+        double  vals[9];
+
         /* 1股票代码 & 2名称 - 跳过 */
         /* 3收盘价, 4最高价, 5最低价, 6开盘价 */
         /* 7前收盘, 8涨跌额, 9涨跌幅, 10成交量, 11成交额 */
-        for (leng_t jj = 3; jj < 12; jj++) {
-            vals = str2fp64A(list[jj]);
-            fwrite(&vals, sizeof(vals), 1, fp);
+        if (!is_value_okay(&vals[0], list[3], 0)) {
+            printf("invalid csv line tclose\n");
+            mem_free(list);
+            fclose(fp);
+            ini_closeU(ini);
+            return (QST_ERROR);
         }
+        is_value_okay(&vals[1], list[4], vals[0]);
+        is_value_okay(&vals[2], list[5], vals[0]);
+        is_value_okay(&vals[3], list[6], vals[0]);
+        is_value_okay(&vals[4], list[7], vals[0]);
+        is_value_okay(&vals[5], list[8], vals[0] - vals[4]);
+        is_value_okay(&vals[6], list[9], (vals[5] / vals[4]) * 100);
+        is_value_okay(&vals[7], list[10], 0);
+        is_value_okay(&vals[8], list[11], 0);
+        fwrite(vals, sizeof(vals), 1, fp);
         mem_free(list);
     }
     fclose(fp);
