@@ -36,20 +36,23 @@ struct kday_draw
         }
     }
 
-    /* ==================================== */
-    sint_t get_positive_y (double value) const
+    /* ====================================================== */
+    sint_t get_positive_y (double value, bool clip = true) const
     {
         sint_t  hhh = this->height - 1;
         double  dlt = this->max_val - this->min_val;
         double  tmp = ((value - this->min_val) / dlt) * hhh;
         sint_t  top = hhh - (sint_t)tmp;
 
-        if (top < 0) return (0);
-        return ((top >= hhh + 1) ? hhh : top);
+        if (clip) {
+            if (top < 0) return (0);
+            return ((top >= hhh + 1) ? hhh : top);
+        }
+        return (top);
     }
 
-    /* ==================================== */
-    sint_t get_complete_y (double value) const
+    /* ====================================================== */
+    sint_t get_complete_y (double value, bool clip = true) const
     {
         sint_t  hhh = this->height - 1;
         sint_t  top = this->height / 2;
@@ -60,8 +63,11 @@ struct kday_draw
         else
             top += (sint_t)bar;
 
-        if (top < 0) return (0);
-        return ((top >= hhh + 1) ? hhh : top);
+        if (clip) {
+            if (top < 0) return (0);
+            return ((top >= hhh + 1) ? hhh : top);
+        }
+        return (top);
     }
 };
 
@@ -80,8 +86,8 @@ struct kday_data
     double  VOTURNOVER;
     double  VATURNOVER;
 
-    /* ============================================================ */
-    void price_box (sRECT* box, sint_t start_x, const kday_draw* info)
+    /* ================================================================== */
+    void price_box (sRECT* box, sint_t start_x, const kday_draw* info) const
     {
         sint_t  y1 = info->get_positive_y(this->TCLOSE);
         sint_t  y2 = info->get_positive_y(this->TOPEN);
@@ -92,8 +98,8 @@ struct kday_data
             rect_set_wh(box, start_x, y1, info->width, y2 - y1 + 1);
     }
 
-    /* ========================================================================= */
-    void halo_box (sRECT* box, sint_t start_x, const kday_draw* info, uint_t wline)
+    /* =============================================================================== */
+    void halo_box (sRECT* box, sint_t start_x, const kday_draw* info, uint_t wline) const
     {
         sint_t  y1 = info->get_positive_y(this->HIGH);
         sint_t  y2 = info->get_positive_y(this->LOW);
@@ -101,8 +107,8 @@ struct kday_data
         rect_set_wh(box, start_x + (info->width - wline) / 2, y1, wline, y2 - y1 + 1);
     }
 
-    /* ======================================================================== */
-    void value_box (sRECT* box, sint_t start_x, const kday_draw* info, bool count)
+    /* ============================================================================== */
+    void value_box (sRECT* box, sint_t start_x, const kday_draw* info, bool count) const
     {
         sint_t  top;
 
@@ -126,7 +132,7 @@ struct kday_node
     // day tdata
     union {
         double      dt[9];
-        kday_data   detal;
+        kday_data   detail;
     } data;
 
     /* ========= */
@@ -308,7 +314,7 @@ public:
         if (start >= m_cnts || end >= m_cnts)
             return (false);
 
-        output->TCLOSE = m_list[start].data.detal.TCLOSE;
+        output->TCLOSE = m_list[start].data.detail.TCLOSE;
         if (start > end) {
             output->HIGH = 0;
             output->LOW = 0;
@@ -318,19 +324,19 @@ public:
             output->VATURNOVER = 0;
         }
         else {
-            output->HIGH = m_list[start].data.detal.HIGH;
-            output->LOW = m_list[start].data.detal.LOW;
-            output->TOPEN = m_list[end].data.detal.TOPEN;
-            output->LCLOSE = m_list[end].data.detal.LCLOSE;
-            output->VOTURNOVER = m_list[start].data.detal.VOTURNOVER;
-            output->VATURNOVER = m_list[start].data.detal.VATURNOVER;
+            output->HIGH = m_list[start].data.detail.HIGH;
+            output->LOW = m_list[start].data.detail.LOW;
+            output->TOPEN = m_list[end].data.detail.TOPEN;
+            output->LCLOSE = m_list[end].data.detail.LCLOSE;
+            output->VOTURNOVER = m_list[start].data.detail.VOTURNOVER;
+            output->VATURNOVER = m_list[start].data.detail.VATURNOVER;
             for (size_t idx = start + 1; idx <= end; idx++) {
-                if (output->HIGH < m_list[idx].data.detal.HIGH)
-                    output->HIGH = m_list[idx].data.detal.HIGH;
-                if (output->LOW > m_list[idx].data.detal.LOW)
-                    output->LOW = m_list[idx].data.detal.LOW;
-                output->VOTURNOVER += m_list[idx].data.detal.VOTURNOVER;
-                output->VATURNOVER += m_list[idx].data.detal.VATURNOVER;
+                if (output->HIGH < m_list[idx].data.detail.HIGH)
+                    output->HIGH = m_list[idx].data.detail.HIGH;
+                if (output->LOW > m_list[idx].data.detail.LOW)
+                    output->LOW = m_list[idx].data.detail.LOW;
+                output->VOTURNOVER += m_list[idx].data.detail.VOTURNOVER;
+                output->VATURNOVER += m_list[idx].data.detail.VATURNOVER;
             }
         }
         output->CHG = output->TCLOSE - output->LCLOSE;
@@ -464,17 +470,17 @@ private:
     double WR (size_t start, uint_t count) const
     {
         size_t  ii, end = start + count;
-        double  max = m_list[start].data.detal.HIGH;
-        double  min = m_list[start].data.detal.LOW;
-        double  now = m_list[start].data.detal.TCLOSE;
+        double  max = m_list[start].data.detail.HIGH;
+        double  min = m_list[start].data.detail.LOW;
+        double  now = m_list[start].data.detail.TCLOSE;
 
         for (ii = start + 1; ii < end; ii++) {
             if (ii >= m_cnts)
                 break;
-            if (max < m_list[ii].data.detal.HIGH)
-                max = m_list[ii].data.detal.HIGH;
-            if (min > m_list[ii].data.detal.LOW)
-                min = m_list[ii].data.detal.LOW;
+            if (max < m_list[ii].data.detail.HIGH)
+                max = m_list[ii].data.detail.HIGH;
+            if (min > m_list[ii].data.detail.LOW)
+                min = m_list[ii].data.detail.LOW;
         }
         return ((max - now) / (max - min) * 100);
     }
@@ -483,17 +489,17 @@ private:
     double RSV (size_t start, uint_t count) const
     {
         size_t  ii, end = start + count;
-        double  max = m_list[start].data.detal.HIGH;
-        double  min = m_list[start].data.detal.LOW;
-        double  now = m_list[start].data.detal.TCLOSE;
+        double  max = m_list[start].data.detail.HIGH;
+        double  min = m_list[start].data.detail.LOW;
+        double  now = m_list[start].data.detail.TCLOSE;
 
         for (ii = start + 1; ii < end; ii++) {
             if (ii >= m_cnts)
                 break;
-            if (max < m_list[ii].data.detal.HIGH)
-                max = m_list[ii].data.detal.HIGH;
-            if (min > m_list[ii].data.detal.LOW)
-                min = m_list[ii].data.detal.LOW;
+            if (max < m_list[ii].data.detail.HIGH)
+                max = m_list[ii].data.detail.HIGH;
+            if (min > m_list[ii].data.detail.LOW)
+                min = m_list[ii].data.detail.LOW;
         }
         return ((now - min) / (max - min) * 100);
     }
@@ -506,7 +512,7 @@ private:
         size_t  ii, jj, end = start + count;
 
         if (data == NULL) {
-            data = (double*)(&m_list[0].data.detal.TCLOSE);
+            data = (double*)(&m_list[0].data.detail.TCLOSE);
             step = sizeof(kday_node);
         }
         for (ii = start; ii < end; ii++) {
@@ -523,7 +529,7 @@ private:
         size_t  ii, jj, end = start + count;
 
         if (data == NULL) {
-            data = (double*)(&m_list[0].data.detal.TCLOSE);
+            data = (double*)(&m_list[0].data.detail.TCLOSE);
             step = sizeof(kday_node);
         }
         for (ii = start; ii < end; ii++) {
@@ -541,7 +547,7 @@ private:
         size_t  ii, jj, end = start + count;
 
         if (data == NULL) {
-            data = (double*)(&m_list[0].data.detal.TCLOSE);
+            data = (double*)(&m_list[0].data.detail.TCLOSE);
             step = sizeof(kday_node);
         }
         for (ii = start; ii < end; ii++) {
@@ -619,7 +625,7 @@ public:
                     return (false);
             }
             if (data == NULL) {
-                data = (double*)(&m_list[0].data.detal.TCLOSE);
+                data = (double*)(&m_list[0].data.detail.TCLOSE);
                 step = sizeof(kday_node);
             }
             strt = m_cnts - cnts - 1;
@@ -677,7 +683,7 @@ public:
                     return (false);
             }
             if (data == NULL) {
-                data = (double*)(&m_list[0].data.detal.TCLOSE);
+                data = (double*)(&m_list[0].data.detail.TCLOSE);
                 step = sizeof(kday_node);
             }
             strt = m_cnts - cnts - 1;
@@ -729,7 +735,7 @@ public:
                     return (false);
             }
             if (data == NULL) {
-                data = (double*)(&m_list[0].data.detal.TCLOSE);
+                data = (double*)(&m_list[0].data.detail.TCLOSE);
                 step = sizeof(kday_node);
             }
             strt = m_cnts - cnts - 1;
@@ -817,9 +823,9 @@ public:
             }
             strt = m_cnts - cnts;
             for (size_t idx = 0; idx < strt; idx++) {
-                line.data[idx]  = m_list[idx].data.detal.HIGH;
-                line.data[idx] += m_list[idx].data.detal.LOW;
-                line.data[idx] += m_list[idx].data.detal.TCLOSE;
+                line.data[idx]  = m_list[idx].data.detail.HIGH;
+                line.data[idx] += m_list[idx].data.detail.LOW;
+                line.data[idx] += m_list[idx].data.detail.TCLOSE;
                 line.data[idx] /= 3;
             }
 
@@ -859,12 +865,12 @@ public:
                 double  delta;
 
                 if (idx == m_cnts - 1 &&
-                    m_list[idx].data.detal.LCLOSE == 0) {
+                    m_list[idx].data.detail.LCLOSE == 0) {
                     line.data[idx] = 0;
                 }
                 else {
-                    delta  = m_list[idx].data.detal.TCLOSE;
-                    delta -= m_list[idx].data.detal.LCLOSE;
+                    delta  = m_list[idx].data.detail.TCLOSE;
+                    delta -= m_list[idx].data.detail.LCLOSE;
                     line.data[idx] = (delta > 0) ? delta : 0;
                 }
             }
@@ -905,12 +911,12 @@ public:
                 double  delta;
 
                 if (idx == m_cnts - 1 &&
-                    m_list[idx].data.detal.LCLOSE == 0) {
+                    m_list[idx].data.detail.LCLOSE == 0) {
                     line.data[idx] = 0;
                 }
                 else {
-                    delta  = m_list[idx].data.detal.TCLOSE;
-                    delta -= m_list[idx].data.detal.LCLOSE;
+                    delta  = m_list[idx].data.detail.TCLOSE;
+                    delta -= m_list[idx].data.detail.LCLOSE;
                     line.data[idx] = (delta < 0) ? -delta : 0;
                 }
             }
@@ -1407,12 +1413,12 @@ public:
 
         // VO Level1
         sprintf(name, "VO%u", level1);
-        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detal.VOTURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detail.VOTURNOVER), sizeof(kday_data)))
             return (false);
 
         // VO Level2
         sprintf(name, "VO%u", level2);
-        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detal.VOTURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detail.VOTURNOVER), sizeof(kday_data)))
             return (false);
         return (true);
     }
@@ -1424,12 +1430,12 @@ public:
 
         // VA Level1
         sprintf(name, "VA%u", level1);
-        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detal.VATURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detail.VATURNOVER), sizeof(kday_data)))
             return (false);
 
         // VA Level2
         sprintf(name, "VA%u", level2);
-        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detal.VATURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detail.VATURNOVER), sizeof(kday_data)))
             return (false);
         return (true);
     }
