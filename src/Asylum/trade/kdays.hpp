@@ -159,6 +159,18 @@ struct kday_line
     }
 };
 
+/*************/
+/* K Day Gap */
+/*************/
+struct kday_gap
+{
+    size_t  bias;
+    double  hi, lo;
+
+    /* ========= */
+    void free () {}
+};
+
 /*********/
 /* KDays */
 /*********/
@@ -1438,6 +1450,76 @@ public:
         if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detail.VATURNOVER), sizeof(kday_data)))
             return (false);
         return (true);
+    }
+
+private:
+    /* ================================================== */
+    void remove_GAP (array<kday_gap>* gap, size_t idx) const
+    {
+        size_t              cnt = gap->size();
+        kday_gap*           lst = gap->data(), tmp;
+        const kday_data*    crt = &m_list[idx].data.detail;
+
+        for (size_t ii = 0; ii < cnt; ii++) {
+            if (crt->HIGH >= lst[ii].hi) {
+                if (crt->LOW <= lst[ii].lo) {
+                    gap->del(ii);
+                    cnt = gap->size();
+                    ii -= 1;
+                }
+                else
+                if (crt->LOW < lst[ii].hi) {
+                    lst[ii].hi = crt->LOW;
+                }
+            }
+            else
+            if (crt->HIGH > lst[ii].lo) {
+                if (crt->LOW > lst[ii].lo) {
+                    mem_cpy(&tmp, &lst[ii], sizeof(kday_gap));
+                    tmp.hi = crt->LOW;
+                    gap->insert(ii + 1, &tmp);
+                    cnt = gap->size();
+                    ii += 1;
+                }
+                lst[ii].lo = crt->HIGH;
+            }
+        }
+    }
+
+public:
+    /* ============================================================ */
+    bool make_GAP (array<kday_gap>* gap, size_t beg, size_t end) const
+    {
+        if (beg >= m_cnts || end >= m_cnts || beg >= end)
+            return (true);
+        if (!gap->reserve(end - beg + 1))
+            return (false);
+
+        size_t  cc, bias = 1;
+
+        for (cc = end; cc > beg; cc--, bias++)
+        {
+            kday_gap            tmp;
+            const kday_data*    crt = &m_list[cc].data.detail;
+            const kday_data*    nxt = crt - 1;
+
+            this->remove_GAP(gap, cc);
+            if (nxt->LOW > crt->HIGH) {
+                tmp.bias = bias;
+                tmp.hi = nxt->LOW;
+                tmp.lo = crt->HIGH;
+                gap->append(&tmp);
+            }
+            else
+            if (nxt->HIGH < crt->LOW) {
+                tmp.bias = bias;
+                tmp.hi = crt->LOW;
+                tmp.lo = nxt->HIGH;
+                gap->append(&tmp);
+            }
+        }
+        this->remove_GAP(gap, cc);
+        return (gap->no_grow());
     }
 };
 
