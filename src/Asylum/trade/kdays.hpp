@@ -1425,12 +1425,12 @@ public:
 
         // VO Level1
         sprintf(name, "VO%u", level1);
-        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detail.VOTURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detail.VOTURNOVER), sizeof(kday_node)))
             return (false);
 
         // VO Level2
         sprintf(name, "VO%u", level2);
-        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detail.VOTURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detail.VOTURNOVER), sizeof(kday_node)))
             return (false);
         return (true);
     }
@@ -1442,12 +1442,12 @@ public:
 
         // VA Level1
         sprintf(name, "VA%u", level1);
-        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detail.VATURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level1, name, (double*)(&m_list[0].data.detail.VATURNOVER), sizeof(kday_node)))
             return (false);
 
         // VA Level2
         sprintf(name, "VA%u", level2);
-        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detail.VATURNOVER), sizeof(kday_data)))
+        if (!this->make_MA(level2, name, (double*)(&m_list[0].data.detail.VATURNOVER), sizeof(kday_node)))
             return (false);
         return (true);
     }
@@ -1501,7 +1501,7 @@ public:
         {
             kday_gap            tmp;
             const kday_data*    crt = &m_list[cc].data.detail;
-            const kday_data*    nxt = crt - 1;
+            const kday_data*    nxt = &m_list[cc - 1].data.detail;
 
             this->remove_GAP(gap, cc);
             if (nxt->LOW > crt->HIGH) {
