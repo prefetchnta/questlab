@@ -352,7 +352,7 @@ public:
             }
         }
         output->CHG = output->TCLOSE - output->LCLOSE;
-        output->PCHG = output->CHG / output->LCLOSE;
+        output->PCHG = output->CHG / output->LCLOSE * 100;
         return (true);
     }
 
