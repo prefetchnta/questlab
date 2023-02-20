@@ -126,6 +126,16 @@ int main (int argc, char *argv[])
         if (*txt == 0x00)
             continue;
 
+        ansi_t* str = txt;
+
+        /* 删除逗号 */
+        while (*str != 0x00) {
+            if (*str == ',')
+                str_cpyA(str, str + 1);
+            else
+                str++;
+        }
+
         asy::kday_node  node;
 
         /* 0日期 - 转换成时间戳 */
@@ -140,8 +150,7 @@ int main (int argc, char *argv[])
             return (QST_ERROR);
         }
 
-        /* 1开盘, 2最高, 3最低, 4收盘 */
-        /* 5涨跌, 6涨幅, 7振幅, 8总手, 9金额 */
+        /* 1开盘, 2最高, 3最低, 4收盘, 5总手, 6金额 */
         is_value_okay(&node.data.detail.TOPEN, txt, -1000);
         txt = find_next_value(txt);
         if (txt == NULL) {
@@ -164,6 +173,11 @@ int main (int argc, char *argv[])
             printf("invalid txt line tclose\n");
             return (QST_ERROR);
         }
+        txt = find_next_value(txt);
+        if (txt == NULL) {
+            printf("invalid txt line column5\n");
+            return (QST_ERROR);
+        }
         if (node.data.detail.TOPEN < 0)
             node.data.detail.TOPEN = node.data.detail.TCLOSE;
         if (node.data.detail.HIGH < 0)
@@ -171,20 +185,11 @@ int main (int argc, char *argv[])
         if (node.data.detail.LOW < 0)
             node.data.detail.LOW = node.data.detail.TCLOSE;
 
-        /* 跳过的值 */
-        for (uint_t jj = 0; jj < 4; jj++) {
-            txt = find_next_value(txt);
-            if (txt == NULL) {
-                printf("invalid txt line column%u\n", jj + 5);
-                return (QST_ERROR);
-            }
-        }
-
         /* 量价值 */
         is_value_okay(&node.data.detail.VOTURNOVER, txt, 0);
         txt = find_next_value(txt);
         if (txt == NULL) {
-            printf("invalid txt line column9\n");
+            printf("invalid txt line column6\n");
             return (QST_ERROR);
         }
         is_value_okay(&node.data.detail.VATURNOVER, txt, 0);
