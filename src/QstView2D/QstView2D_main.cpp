@@ -352,8 +352,6 @@ qst_load_filter (
   __CR_IO__ sQstView2D* parm
     )
 {
-    FILE*   fp;
-
     /* 创建 XMLCALL 对象 */
     parm->flt_lst = xmlcall_load(NULL, 0, parm->netw);
     if (parm->flt_lst == NULL)
@@ -363,21 +361,8 @@ qst_load_filter (
     file_searchA(QST_PATH_PLUGIN, FALSE, TRUE, FALSE,
                  "*.dll", filter_loader, parm);
 
-    /* 32位系统不执行 */
-    if (!misc_is_win64())
-        return;
-
-    ansi_t  fn[] = EXE_XNAME "__x64__.bat";
-
-    fp = fopen(fn, "w");
-    if (fp != NULL)
-    {
-        /* 运行完删除批处理 */
-        fprintf(fp, "@echo off\nstart x64bin\\fQUEST64.exe\n");
-        fclose(fp);
-        misc_call_exe(fn, TRUE, TRUE);
-        file_deleteA(fn);
-    }
+    /* 启动64位插件代理程序 */
+    misc_call_exe("x64bin\\fQUEST64.exe", FALSE, TRUE);
 }
 
 /*****************************************************************************/
