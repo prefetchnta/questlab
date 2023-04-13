@@ -133,6 +133,7 @@ WinMain (
     {
         BROWSEINFOA     bi;
         LPITEMIDLIST    pidl;
+        /* --------------- */
         ansi_t  path[MAX_PATH];
 
         /* 使用新风格的目录打开窗口 */
