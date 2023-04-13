@@ -166,7 +166,7 @@ load_bat_file (
 
 /*
 ---------------------------------------
-    调用外部程序 (X86)
+    调用外部程序
 ---------------------------------------
 */
 static void_t
@@ -189,48 +189,6 @@ call_exe_file (
 
 /*
 ---------------------------------------
-    调用外部程序 (X64)
----------------------------------------
-*/
-static void_t
-call_exe_file64 (
-  __CR_IN__ const ansi_t*   name
-    )
-{
-    FILE*   fp;
-
-    /* 32位系统不执行 */
-    if (!misc_is_win64())
-        return;
-
-    ansi_t  fn[] = EXE_XNAME "__x64__.bat";
-
-    /* 写入 BAT 文件再调用 */
-    fp = fopen(fn, "w");
-    if (fp == NULL) {
-        cui_set_color(s_color_errs);
-        printf("write bat file failure\n");
-        goto _func_out;
-    }
-    fprintf(fp, "@echo off\nstart %s\n", name);
-    fclose(fp);
-
-    /* 运行完删除批处理 */
-    if (!misc_call_exe(fn, TRUE, TRUE)) {
-        cui_set_color(s_color_errs);
-        printf("call process failure\n");
-    }
-    else {
-        cui_set_color(s_color_help);
-        printf("the process is finished\n");
-    }
-    file_deleteA(fn);
-_func_out:
-    cui_set_color(s_color_text);
-}
-
-/*
----------------------------------------
     打印帮助信息
 ---------------------------------------
 */
@@ -240,8 +198,7 @@ print_help_message (void_t)
     cui_set_color(s_color_help);
     printf("\t? ------------------ print this help message\n");
     printf("\t` ------------------ toggle output mode on/off\n");
-    printf("\t$call <...> -------- make an external call32\n");
-    printf("\t$call64 <...> ------ make an external call64\n");
+    printf("\t$call <...> -------- make an external call\n");
     printf("\t$continue? --------- continue or quit running\n");
     printf("\t$del <file> -------- delete a disk file\n");
     printf("\t$direct <on/off> --- direct output mode on/off\n");
@@ -314,13 +271,7 @@ exec_one_line (
         if (chr_cmpA(&cmd[1], "exec ", 5) == 0)
             return (load_bat_file(skip_spaceA(&cmd[6]), netw));
 
-        /* 本地命令 - 调用程序64 */
-        if (chr_cmpA(&cmd[1], "call64 ", 7) == 0) {
-            call_exe_file64(skip_spaceA(&cmd[8]));
-            return (TRUE);
-        }
-
-        /* 本地命令 - 调用程序32 */
+        /* 本地命令 - 调用程序 */
         if (chr_cmpA(&cmd[1], "call ", 5) == 0) {
             call_exe_file(skip_spaceA(&cmd[6]));
             return (TRUE);

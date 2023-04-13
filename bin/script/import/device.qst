@@ -1,7 +1,7 @@
 //==========================//
 //  导入所有支持的设备文件  //
 //==========================//
-$call64 x64bin/zOpenCV64.exe
+$call x64bin/zOpenCV64.exe
 $exec script/import/reset.qst
 g2d:ext:load plugin/xOpenCV.dll
 g2d:ext:load plugin/xCrHackSet.dll
