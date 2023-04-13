@@ -68,7 +68,7 @@ WinMain (
 
     DWORD   leng;
     ansi_t* conf_name;
-    ansi_t  exec[MAX_PATHA];
+    ansi_t  exec[MAX_PATHW];
 
     /* 输出当前的绝对目录 */
     leng = GetCurrentDirectoryA(sizeof(exec), exec);
