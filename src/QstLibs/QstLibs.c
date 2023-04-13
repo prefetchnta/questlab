@@ -736,14 +736,14 @@ misc_get_param (
     if (copy == NULL) {
         s_temp = "";
         if (count != NULL)
-           *count  = 0;
+            *count = 0;
         return (&s_temp);
     }
     argv = cmd_shl_split(copy, count);
     if (argv == NULL) {
         s_temp = "";
         if (count != NULL)
-           *count  = 0;
+            *count = 0;
         return (&s_temp);
     }
     return (argv);
@@ -943,28 +943,137 @@ misc_call_exe (
   __CR_IN__ bool_t          hide
     )
 {
+    FILE*               fp;
     DWORD               cf;
+    sint_t              ty;
+    int32u              x6;
+    ansi_t              bk;
     ansi_t*             tt;
+    ansi_t*             pt;
     STARTUPINFOA        si;
     PROCESS_INFORMATION pi;
 
+    /* 去除头尾空白 */
     tt = str_dupA(name);
     if (tt == NULL)
         return (FALSE);
+    str_trimA(tt);
+
+    /* 拆分出执行文件 */
+    for (bk = 0, pt = tt; *pt != 0; pt++) {
+        if (is_spaceA(*pt)) {
+            bk = *pt;
+            *pt = 0;
+            break;
+        }
+    }
+
+    /* 判断是否是可执行文件 */
+    if (filext_checkA(tt, ".exe"))
+    {
+        /* 判断是否是控制台程序 */
+        ty = misc_is_console(tt, &x6);
+    }
+    else
+    {
+        /* 非可执行文件 */
+        ty = -1;
+        x6 = FALSE;
+    }
+    *pt = bk;
+    pt = NULL;
+
+    /* 二进制可执行文件 */
+    if (ty >= 0)
+    {
+        ansi_t  uuid[33];
+
+        /* Windows 11 下控制台默认放到终端里运行了，导致一些
+           控制台程序窗口位置大小控制失败，所以这里要区分对待 */
+        if (!wait && ty > 0 && misc_is_terminal())
+        {
+            leng_t  len;
+            ansi_t* hex;
+
+            /* 生成执行批处理文件 */
+            misc_gen_uuid(uuid);
+            pt = str_fmtA("call_win11_%s.bat", uuid);
+            if (pt == NULL)
+                goto _failure;
+            fp = fopen(pt, "w");
+            if (fp == NULL) {
+                mem_free(pt);
+                goto _failure;
+            }
+
+            /* 转换成16进制串防传参出错 */
+            len = str_lenA(tt);
+            hex = str_allocA(len * 2 + 1);
+            if (hex == NULL) {
+                fclose(fp);
+                file_deleteA(pt);
+                mem_free(pt);
+                goto _failure;
+            }
+            hex2strA(hex, tt, len);
+            mem_free(tt);
+            tt = hex;
+
+            /* Windows 11 以后没有32位的系统 */
+            if (hide)
+                fprintf(fp, "@echo off\nstart x64bin\\jump_cui.exe 1%s\n", tt);
+            else
+                fprintf(fp, "@echo off\nstart x64bin\\jump_cui.exe 0%s\n", tt);
+            fclose(fp);
+            mem_free(tt);
+            tt = pt;
+            wait = TRUE;
+            hide = TRUE;
+        }
+        else if (x6)        /* 64位的二进制可执行文件不能等待进程结束再返回 */
+        {
+            /* 32位系统下跳过执行 */
+            if (!misc_is_win64())
+                goto _failure;
+
+            /* 生成执行批处理文件 */
+            misc_gen_uuid(uuid);
+            pt = str_fmtA("call_x64_%s.bat", uuid);
+            if (pt == NULL)
+                goto _failure;
+            fp = fopen(pt, "w");
+            if (fp == NULL) {
+                mem_free(pt);
+                goto _failure;
+            }
+            fprintf(fp, "@echo off\nstart %s\n", tt);
+            fclose(fp);
+            mem_free(tt);
+            tt = pt;
+            wait = TRUE;
+            hide = TRUE;
+        }
+    }
+
+    /* 执行命令 */
     mem_zero(&si, sizeof(si));
     si.cb = sizeof(STARTUPINFOA);
     cf = hide ? CREATE_NO_WINDOW : CREATE_NEW_CONSOLE;
     if (!CreateProcessA(NULL, tt, NULL, NULL, FALSE, cf,
-                        NULL, NULL, &si, &pi)) {
-        mem_free(tt);
-        return (FALSE);
-    }
-    mem_free(tt);
+                        NULL, NULL, &si, &pi))
+        goto _failure;
     if (wait)
         WaitForSingleObject(pi.hProcess, INFINITE);
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
+    if (pt != NULL)
+        file_deleteA(pt);
+    mem_free(tt);
     return (TRUE);
+
+_failure:
+    mem_free(tt);
+    return (FALSE);
 }
 
 /*
@@ -1058,8 +1167,7 @@ misc_async_call (
     thrd_t  thrd;
 
     param->copyed = FALSE;
-    thrd = thread_new(0, func, param, FALSE,
-                      CR_PRRT_NRM, NULL);
+    thrd = thread_new(0, func, param, FALSE, CR_PRRT_NRM, NULL);
     if (thrd != NULL) {
         thread_del(thrd);
         while (!param->copyed)
@@ -1118,6 +1226,193 @@ misc_is_win64 (void_t)
     if (GetEnvironmentVariableA("ProgramFiles(x86)", tmp, sizeof(tmp)) == 0)
         return (FALSE);
     return (TRUE);
+}
+
+/* RtlGetNtVersionNumbers() 函数类型 */
+typedef void (WINAPI *gver_t) (int32u*, int32u*, int32u*);
+
+/*
+=======================================
+    判断是否是 Windows 11 系统
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_is_win11 (
+  __CR_OT__ int32u* vers
+    )
+{
+    sbin_t  sbin;
+    gver_t  gver;
+    int32u  back[3];
+
+    if (vers != NULL) {
+        vers[0] = 0;
+        vers[1] = 0;
+        vers[2] = 0;
+    }
+    sbin = sbin_loadA("ntdll.dll");
+    if (sbin == NULL)
+        return (FALSE);
+    gver = sbin_exportT(sbin, "RtlGetNtVersionNumbers", gver_t);
+    if (gver == NULL) {
+        sbin_unload(sbin);
+        return (FALSE);
+    }
+    gver(&back[0], &back[1], &back[2]);
+    back[2] &= 0xFFFF;
+    if (vers != NULL) {
+        vers[0] = back[0];
+        vers[1] = back[1];
+        vers[2] = back[2];
+    }
+    sbin_unload(sbin);
+    if (back[0] < 10)
+        return (FALSE);
+    return ((back[2] >= 22000) ? TRUE : FALSE);
+}
+
+/*
+=======================================
+    判断是否是控制台程序
+=======================================
+*/
+CR_API sint_t STDCALL
+misc_is_console (
+  __CR_IN__ const ansi_t*   name,
+  __CR_OT__ int32u*         x64bin
+    )
+{
+    FILE*   fp;
+    int32u  pos;
+    byte_t  dat[4];
+    bool_t  is_x64;
+    bool_t  is_cui;
+
+    /* 文件打开 */
+    fp = fopen(name, "rb");
+    if (fp == NULL)
+        return (-1);
+
+    /* 检查 MZ 标志 */
+    if (fread(dat, 1, 2, fp) != 2)
+        goto _failure;
+    if (dat[0] != 0x4D || dat[1] != 0x5A)
+        goto _failure;
+
+    /* 读取 PE 头偏移 */
+    if (fseek(fp, 0x3C, SEEK_SET) != 0)
+        goto _failure;
+    if (fread(&pos, 1, 4, fp) != 4)
+        goto _failure;
+    if (fseek(fp, pos, SEEK_SET) != 0)
+        goto _failure;
+
+    /* 检查 PE 标志 */
+    if (fread(dat, 1, 4, fp) != 4)
+        goto _failure;
+    if (dat[0] != 0x50 || dat[1] != 0x45 ||
+        dat[2] != 0x00 || dat[3] != 0x00)
+        goto _failure;
+
+    /* 检查机器类型 */
+    if (fread(dat, 1, 2, fp) != 2)
+        goto _failure;
+    if (*(int16u*)dat == 0x014C)
+        is_x64 = FALSE;
+    else
+    if (*(int16u*)dat == 0x8664)
+        is_x64 = TRUE;
+    else
+        goto _failure;
+
+    /* 检查 PE 可选头标志 */
+    if (fseek(fp, 0x12, SEEK_CUR) != 0)
+        goto _failure;
+    if (fread(dat, 1, 2, fp) != 2)
+        goto _failure;
+    if (*(int16u*)dat == 0x10B) {
+        if (is_x64)
+            goto _failure;
+    }
+    else
+    if (*(int16u*)dat == 0x20B) {
+        if (!is_x64)
+            goto _failure;
+    }
+    else {
+        goto _failure;
+    }
+
+    /* 读取子系统标志 */
+    if (fseek(fp, 0x42, SEEK_CUR) != 0)
+        goto _failure;
+    if (fread(dat, 1, 2, fp) != 2)
+        goto _failure;
+    if (*(int16u*)dat == 3)
+        is_cui = TRUE;
+    else
+        is_cui = FALSE;
+    if (x64bin != NULL)
+        *x64bin = is_x64 ? TRUE : FALSE;
+    fclose(fp);
+    return (is_cui ? 1 : 0);
+
+_failure:
+    fclose(fp);
+    return (-1);
+}
+
+/*
+=======================================
+    判断是否是终端启动
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_is_terminal (void_t)
+{
+    HKEY    hkey;
+    BYTE    data[39];
+    DWORD   size, type;
+
+    /* 没有键值使用系统默认的配置 */
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, "Console\\%%Startup",
+                      0, KEY_READ, &hkey) != ERROR_SUCCESS)
+        goto _default1;
+    size = 0;
+    type = REG_NONE;
+    if (RegQueryValueExA(hkey, "DelegationConsole", NULL, &type,
+                         NULL, &size) != ERROR_SUCCESS)
+        goto _default2;
+    if (type != REG_SZ || size != sizeof(data))
+        goto _default2;
+    if (RegQueryValueExA(hkey, "DelegationConsole", NULL, &type,
+                         data, &size) != ERROR_SUCCESS)
+        goto _default2;
+    if (mem_cmp(data, "{B23D10C0-E52E-411E-9D5B-C09FDF709C7D}",
+                            sizeof(data)) != 0)
+        goto _default2;
+    RegCloseKey(hkey);
+    return (FALSE);
+
+_default2:
+    RegCloseKey(hkey);
+_default1:
+    return (misc_is_win11(NULL));
+}
+
+/*
+=======================================
+    生成 UUID 字符串
+=======================================
+*/
+CR_API void_t STDCALL
+misc_gen_uuid (
+  __CR_OT__ ansi_t  uuid[33]
+    )
+{
+    sprintf(uuid, "%08X%08X%016I64X", GetCurrentProcessId(),
+                                      GetCurrentThreadId(),
+                                      __rdtsc());
 }
 
 /*****************************************************************************/

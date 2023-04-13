@@ -159,6 +159,11 @@ CR_API void_t*  STDCALL misc_mem_calloc (uint_t num, uint_t size);
 CR_API void_t*  STDCALL misc_mem_realloc (void_t *ptr, uint_t new_size);
 CR_API void_t   STDCALL misc_mem_free (const void_t *data);
 CR_API bool_t   STDCALL misc_is_win64 (void_t);
+CR_API bool_t   STDCALL misc_is_win11 (int32u *vers CR_DEFAULT(NULL));
+CR_API sint_t   STDCALL misc_is_console (const ansi_t *name,
+                                    int32u *x64bin CR_DEFAULT(NULL));
+CR_API bool_t   STDCALL misc_is_terminal (void_t);
+CR_API void_t   STDCALL misc_gen_uuid (ansi_t uuid[33]);
 CR_API bool_t   STDCALL misc_cui_setwin (hwnd_t hwnd, hcui_t hcui,
                                 sint_t x, sint_t y, uint_t w, uint_t h);
 CR_API bool_t   STDCALL misc_is_running (const ansi_t *name);
