@@ -91,4 +91,8 @@ typedef struct
 #define QST_SET_CURSOR(hwnd, cursor) \
     SetClassLongPtr(hwnd, GCLP_HCURSOR, (LONG_PTR)(cursor))
 
+/* 自定义窗口消息 */
+#define WM_QV2D_SET_WINDOW_TITLE    (WM_USER + 100)
+#define WM_QV2D_WIN_BRING_TO_TOP    (WM_USER + 101)
+
 #endif  /* !__QL_QSTVIEW2D_H__ */

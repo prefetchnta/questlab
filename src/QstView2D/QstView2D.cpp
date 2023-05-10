@@ -11,6 +11,10 @@
 #define QV2D_DEF_WIDTH  800
 #define QV2D_DEF_HEIGHT 300
 
+/* 鼠标坐标拆分宏 */
+#define GET_X_LPARAM(lp)    ((int)(short)LOWORD(lp))
+#define GET_Y_LPARAM(lp)    ((int)(short)HIWORD(lp))
+
 /* 全局工作上下文 */
 static sQstView2D   s_wrk_ctx;
 
@@ -50,8 +54,8 @@ WindowProc (
 
         /* 鼠标移动处理 */
         case WM_MOUSEMOVE:
-            qst_do_mouse(&s_wrk_ctx, LOWORD(lparam),
-                HIWORD(lparam), wparam == MK_LBUTTON);
+            qst_do_mouse(&s_wrk_ctx, GET_X_LPARAM(lparam),
+                GET_Y_LPARAM(lparam), wparam == MK_LBUTTON);
             return (FALSE);
 
         /* 限制窗口最小尺寸 */
@@ -194,8 +198,17 @@ WinMain (
                 s_wrk_ctx.quit = TRUE;
                 break;
             }
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (msg.message == WM_QV2D_SET_WINDOW_TITLE) {
+                SetWindowTextA(s_wrk_ctx.hwnd, (ansi_t*)msg.lParam);
+            }
+            else
+            if (msg.message == WM_QV2D_WIN_BRING_TO_TOP) {
+                misc_bring2top(s_wrk_ctx.hwnd, NULL);
+            }
+            else {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
         else {
             qst_do_keyboard(&s_wrk_ctx);

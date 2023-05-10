@@ -300,7 +300,8 @@ _retry:
         array_freeT(&list, ansi_t*);
 
         /* 窗口拉到最前面 */
-        misc_bring2top(parm->hwnd, NULL);
+        /* 发送消息的方式防止线程死锁 */
+        PostMessageA(parm->hwnd, WM_QV2D_WIN_BRING_TO_TOP, 0, 0);
         return (TRUE);
     }
 

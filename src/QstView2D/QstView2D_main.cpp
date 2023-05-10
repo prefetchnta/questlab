@@ -210,19 +210,19 @@ qst_do_keyboard (
     }
     pressed = FALSE;
     delta_x = delta_y = 0;
-    if (key_input_test(VK_UP)) {
+    if (key_input_test('W')) {
         delta_y -= 1;
         pressed = TRUE;
     }
-    if (key_input_test(VK_DOWN)) {
+    if (key_input_test('S')) {
         delta_y += 1;
         pressed = TRUE;
     }
-    if (key_input_test(VK_LEFT)) {
+    if (key_input_test('A')) {
         delta_x -= 1;
         pressed = TRUE;
     }
-    if (key_input_test(VK_RIGHT)) {
+    if (key_input_test('D')) {
         delta_x += 1;
         pressed = TRUE;
     }
@@ -251,16 +251,15 @@ qst_do_keyboard (
         _LEAVE_V2D_SINGLE_
     }
     else
-    if (key_input_test('A')) {
-        if (parm->index == 0)
-            return;
+    if (key_input_test('Q')) {
         _ENTER_V2D_SINGLE_
-        qst_set_index(parm, parm->index - 1);
+        if (parm->index != 0)
+            qst_set_index(parm, parm->index - 1);
         _LEAVE_V2D_SINGLE_
         thread_sleep(50);
     }
     else
-    if (key_input_test('D')) {
+    if (key_input_test('E')) {
         _ENTER_V2D_SINGLE_
         qst_set_index(parm, parm->index + 1);
         _LEAVE_V2D_SINGLE_
@@ -1434,7 +1433,7 @@ qst_v2d_main (
             timer_set_base(log);
         rett = cmd_exec_main(obj, ctx, string);
         mem_free(string);
-        if (log != NULL && rett)
+        if (log != NULL && rett && !ctx->quit)
         {
             ansi_t  buf[128];
 
@@ -1451,7 +1450,9 @@ qst_v2d_main (
             sprintf(buf, WIN_TITLE " - last: %.3f ms / "
                         "total: %.3f ms / count: %u %s",
                             delta, tot, tim, string);
-            SetWindowTextA(ctx->hwnd, buf);
+
+            /* 发送消息的方式防止线程死锁 */
+            PostMessageA(ctx->hwnd, WM_QV2D_SET_WINDOW_TITLE, 0, (LPARAM)buf);
         }
     }
     if (log != NULL)
