@@ -118,6 +118,10 @@
             <!-- HelloX64 -->
             <?quest64_helloworld message="HelloWorld X64!!!" />
 
+            <!-- OpenCV CascadeClassifier -->
+            <?quest64_opencv_cascade model="source/opencv/haarcascades/haarcascade_licence_plate_chn.xml"
+                scale="1.1" min_neighbors="3" flags="2" min_width="24" max_width="0" min_height="24" max_height="0" />
+
         </filters>
     ]]></quest64_bridge>
 

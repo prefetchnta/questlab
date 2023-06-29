@@ -23,11 +23,13 @@
 #define _QUEST64_
 #include "../QstLibs/QstLibs.h"
 #include "../CrHackSet/xCrHackSet.h"
+#include "labai/imglab.h"
 
 /* 一些公用宏 */
 #define EXE_XNAME   "fQUEST64"
 
 /* 外部库引用 */
+#pragma comment (lib, "LabAI.lib")
 #pragma comment (lib, "CrH_GFX2.lib")
 
 /* 桥接函数 */
@@ -88,6 +90,7 @@ quest64_return_string (
 static const sXC_PORT   quest64_filter[] =
 {
     { "quest64_helloworld", quest64_helloworld },
+    { "quest64_opencv_cascade", quest64_ocv_cascade },
     { NULL, NULL },
 };
 
@@ -177,8 +180,15 @@ WinMain (
             quest64_return_true();
 
             /* 接收命令字符串 */
-            if (message_recv_string(mess, str, sizeof(str)))
-                xmlcall_exec(xmlc, data, str, NULL);
+            if (message_recv_string(mess, str, sizeof(str))) {
+                try {
+                    xmlcall_exec(xmlc, data, str, NULL);
+                }
+                catch (...) {
+                    MessageBoxA(NULL, "EXCEPTION OCCURED !!!",
+                                "STOP", MB_OK | MB_ICONSTOP);
+                }
+            }
 
             /* 用完释放之 */
             share_file_unmap(s_smem);
