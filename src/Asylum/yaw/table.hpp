@@ -18,7 +18,7 @@ class table_c : public asylum
 {
 private:
     T*      m_list;
-    bool*   m_flag;
+    char*   m_flag;
     size_t  m_cnts;
     size_t  m_size;
 
@@ -29,7 +29,7 @@ private:
         size_t  idx = m_size;
 
         while (idx-- != 0) {
-            if (m_flag[idx])
+            if (m_flag[idx] == CR_PLTABLE_HAVE)
                 m_list[idx].free();
         }
     }
@@ -41,12 +41,12 @@ public:
         m_list = mem_talloc(count, T);
         if (m_list == NULL)
             return (false);
-        m_flag = mem_talloc(count, bool);
+        m_flag = mem_talloc(count, char);
         if (m_flag == NULL) {
             mem_free(m_list);
             return (false);
         }
-        mem_set(m_flag, 0, count * sizeof(bool));
+        mem_set(m_flag, 0, count * sizeof(char));
         m_cnts = 0;
         m_size = count;
         return (true);
@@ -65,7 +65,7 @@ public:
     void clear ()
     {
         this->_clean();
-        mem_set(m_flag, 0, m_size * sizeof(bool));
+        mem_set(m_flag, 0, m_size * sizeof(char));
         m_cnts = 0;
     }
 
@@ -76,7 +76,7 @@ public:
     }
 
     /* ============= */
-    bool* flag () const
+    char* flag () const
     {
         return (m_flag);
     }
@@ -115,13 +115,15 @@ public:
 
             beg = cmp.hash(key) % m_size;
             for (size_t idx = m_size; idx != 0; idx--) {
-                if (!m_flag[beg])
+                if (m_flag[beg] == CR_PLTABLE_NONE)
                     break;
-                unt = &m_list[beg];
-                if (cmp.match(key, unt)) {
-                    if (obj != NULL)
-                        mem_cpy(obj, unt, sizeof(T));
-                    return (unt);
+                if (m_flag[beg] == CR_PLTABLE_HAVE) {
+                    unt = &m_list[beg];
+                    if (cmp.match(key, unt)) {
+                        if (obj != NULL)
+                            mem_cpy(obj, unt, sizeof(T));
+                        return (unt);
+                    }
                 }
                 if (++beg >= m_size)
                     beg = 0;
@@ -141,14 +143,16 @@ public:
 
             beg = cmp.hash(key) % m_size;
             for (size_t idx = m_size; idx != 0; idx--) {
-                if (!m_flag[beg])
+                if (m_flag[beg] == CR_PLTABLE_NONE)
                     break;
-                unt = &m_list[beg];
-                if (cmp.match(key, unt)) {
-                    unt->free();
-                    m_flag[beg] = false;
-                    m_cnts -= 1;
-                    break;
+                if (m_flag[beg] == CR_PLTABLE_HAVE) {
+                    unt = &m_list[beg];
+                    if (cmp.match(key, unt)) {
+                        unt->free();
+                        m_flag[beg] = CR_PLTABLE_SKIP;
+                        m_cnts -= 1;
+                        break;
+                    }
                 }
                 if (++beg >= m_size)
                     beg = 0;
@@ -166,8 +170,8 @@ public:
         beg = cmp.hash(key) % m_size;
         for (size_t idx = m_size; idx != 0; idx--) {
             unt = &m_list[beg];
-            if (!m_flag[beg]) {
-                m_flag[beg] = true;
+            if (m_flag[beg] != CR_PLTABLE_HAVE) {
+                m_flag[beg]  = CR_PLTABLE_HAVE;
                 mem_cpy(unt, obj, sizeof(T));
                 m_cnts += 1;
                 return (unt);
@@ -192,7 +196,7 @@ public:
             size_t  tot = m_cnts;
 
             for (size_t idx = 0; idx < m_size; idx++) {
-                if (m_flag[idx]) {
+                if (m_flag[idx] == CR_PLTABLE_HAVE) {
                     if (!run.doit(ctx, &m_list[idx]))
                         return;
                     if (--tot == 0)
@@ -212,7 +216,7 @@ class table_n : public asylum
 private:
     size_t  m_cnts;
     T       m_list[N];
-    bool    m_flag[N];
+    char    m_flag[N];
 
 private:
     /* ======== */
@@ -221,7 +225,7 @@ private:
         size_t  idx = N;
 
         while (idx-- != 0) {
-            if (m_flag[idx])
+            if (m_flag[idx] == CR_PLTABLE_HAVE)
                 m_list[idx].free();
         }
     }
@@ -231,7 +235,7 @@ public:
     void init ()
     {
         m_cnts = 0;
-        mem_set(m_flag, 0, N * sizeof(bool));
+        mem_set(m_flag, 0, N * sizeof(char));
     }
 
     /* ====== */
@@ -252,6 +256,12 @@ public:
     T* data () const
     {
         return (m_list);
+    }
+
+    /* ============= */
+    char* flag () const
+    {
+        return (m_flag);
     }
 
     /* ============== */
@@ -277,13 +287,15 @@ public:
 
             beg = cmp.hash(key) % N;
             for (size_t idx = N; idx != 0; idx--) {
-                if (!m_flag[beg])
+                if (m_flag[beg] == CR_PLTABLE_NONE)
                     break;
-                unt = &m_list[beg];
-                if (cmp.match(key, unt)) {
-                    if (obj != NULL)
-                        mem_cpy(obj, unt, sizeof(T));
-                    return (unt);
+                if (m_flag[beg] == CR_PLTABLE_HAVE) {
+                    unt = &m_list[beg];
+                    if (cmp.match(key, unt)) {
+                        if (obj != NULL)
+                            mem_cpy(obj, unt, sizeof(T));
+                        return (unt);
+                    }
                 }
                 if (++beg >= N)
                     beg = 0;
@@ -303,14 +315,16 @@ public:
 
             beg = cmp.hash(key) % N;
             for (size_t idx = N; idx != 0; idx--) {
-                if (!m_flag[beg])
+                if (m_flag[beg] == CR_PLTABLE_NONE)
                     break;
-                unt = &m_list[beg];
-                if (cmp.match(key, unt)) {
-                    unt->free();
-                    m_flag[beg] = false;
-                    m_cnts -= 1;
-                    break;
+                if (m_flag[beg] == CR_PLTABLE_HAVE) {
+                    unt = &m_list[beg];
+                    if (cmp.match(key, unt)) {
+                        unt->free();
+                        m_flag[beg] = CR_PLTABLE_SKIP;
+                        m_cnts -= 1;
+                        break;
+                    }
                 }
                 if (++beg >= N)
                     beg = 0;
@@ -328,8 +342,8 @@ public:
         beg = cmp.hash(key) % N;
         for (size_t idx = N; idx != 0; idx--) {
             unt = &m_list[beg];
-            if (!m_flag[beg]) {
-                m_flag[beg] = true;
+            if (m_flag[beg] != CR_PLTABLE_HAVE) {
+                m_flag[beg]  = CR_PLTABLE_HAVE;
                 mem_cpy(unt, obj, sizeof(T));
                 m_cnts += 1;
                 return (unt);
@@ -354,7 +368,7 @@ public:
             size_t  tot = m_cnts;
 
             for (size_t idx = 0; idx < N; idx++) {
-                if (m_flag[idx]) {
+                if (m_flag[idx] == CR_PLTABLE_HAVE) {
                     if (!run.doit(ctx, &m_list[idx]))
                         return;
                     if (--tot == 0)
