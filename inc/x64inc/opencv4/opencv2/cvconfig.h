@@ -72,6 +72,9 @@
 #define HAVE_OPENJPEG
 /* #undef HAVE_JASPER */
 
+/* AVIF codec */
+/* #undef HAVE_AVIF */
+
 /* IJG JPEG codec */
 #define HAVE_JPEG
 
@@ -105,6 +108,9 @@
 
 /* PNG codec */
 #define HAVE_PNG
+
+/* PNG codec */
+/* #undef HAVE_SPNG */
 
 /* Posix threads (pthreads) */
 /* #undef HAVE_PTHREAD */
