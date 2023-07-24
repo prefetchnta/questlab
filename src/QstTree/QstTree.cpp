@@ -1073,6 +1073,7 @@ static const sQTEE_icon s_ext_list[] =
     {   QST_ICON_BZ2        , CR_WS(".bz2")                     },
     {   QST_ICON_BZ2        , CR_WS(".bzip2")                   },
     {   QST_ICON_BZ2        , CR_WS(".tbz")                     },
+    {   QST_ICON_BZ2        , CR_WS(".tb2")                     },
     {   QST_ICON_BZ2        , CR_WS(".tbz2")                    },
     {   QST_ICON_RAR        , CR_WS(".rar")                     },
     {   QST_ICON_ARJ        , CR_WS(".arj")                     },
