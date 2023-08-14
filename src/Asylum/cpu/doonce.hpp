@@ -25,11 +25,6 @@ public:
         m_done = 0;
     }
 
-    /* ====== */
-    void free ()
-    {
-    }
-
 public:
     /* ========================== */
     template<class TSUB>void call ()
