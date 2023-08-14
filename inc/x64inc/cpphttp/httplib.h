@@ -8,7 +8,7 @@
 #ifndef CPPHTTPLIB_HTTPLIB_H
 #define CPPHTTPLIB_HTTPLIB_H
 
-#define CPPHTTPLIB_VERSION "0.13.1"
+#define CPPHTTPLIB_VERSION "0.13.3"
 
 /*
  * Configuration
@@ -193,6 +193,7 @@ using socket_t = SOCKET;
 #endif
 #include <csignal>
 #include <pthread.h>
+#include <sys/mman.h>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -668,6 +669,8 @@ using SocketOptions = std::function<void(socket_t sock)>;
 
 void default_socket_options(socket_t sock);
 
+const char *status_message(int status);
+
 namespace detail {
 
 class MatcherBase {
@@ -782,6 +785,7 @@ public:
   bool remove_mount_point(const std::string &mount_point);
   Server &set_file_extension_and_mimetype_mapping(const std::string &ext,
                                                   const std::string &mime);
+  Server &set_default_file_mimetype(const std::string &mime);
   Server &set_file_request_handler(Handler handler);
 
   Server &set_error_handler(HandlerWithResponse handler);
@@ -905,6 +909,7 @@ private:
   };
   std::vector<MountPointEntry> base_dirs_;
   std::map<std::string, std::string> file_extension_and_mimetype_map_;
+  std::string default_file_mimetype_ = "application/octet-stream";
   Handler file_request_handler_;
 
   Handlers get_handlers_;
@@ -948,6 +953,7 @@ enum class Error {
   UnsupportedMultipartBoundaryChars,
   Compression,
   ConnectionTimeout,
+  ProxyConnection,
 
   // For internal use only
   SSLPeerCouldBeClosed_,
@@ -1776,6 +1782,76 @@ inline void default_socket_options(socket_t sock) {
 #endif
 }
 
+inline const char *status_message(int status) {
+  switch (status) {
+  case 100: return "Continue";
+  case 101: return "Switching Protocol";
+  case 102: return "Processing";
+  case 103: return "Early Hints";
+  case 200: return "OK";
+  case 201: return "Created";
+  case 202: return "Accepted";
+  case 203: return "Non-Authoritative Information";
+  case 204: return "No Content";
+  case 205: return "Reset Content";
+  case 206: return "Partial Content";
+  case 207: return "Multi-Status";
+  case 208: return "Already Reported";
+  case 226: return "IM Used";
+  case 300: return "Multiple Choice";
+  case 301: return "Moved Permanently";
+  case 302: return "Found";
+  case 303: return "See Other";
+  case 304: return "Not Modified";
+  case 305: return "Use Proxy";
+  case 306: return "unused";
+  case 307: return "Temporary Redirect";
+  case 308: return "Permanent Redirect";
+  case 400: return "Bad Request";
+  case 401: return "Unauthorized";
+  case 402: return "Payment Required";
+  case 403: return "Forbidden";
+  case 404: return "Not Found";
+  case 405: return "Method Not Allowed";
+  case 406: return "Not Acceptable";
+  case 407: return "Proxy Authentication Required";
+  case 408: return "Request Timeout";
+  case 409: return "Conflict";
+  case 410: return "Gone";
+  case 411: return "Length Required";
+  case 412: return "Precondition Failed";
+  case 413: return "Payload Too Large";
+  case 414: return "URI Too Long";
+  case 415: return "Unsupported Media Type";
+  case 416: return "Range Not Satisfiable";
+  case 417: return "Expectation Failed";
+  case 418: return "I'm a teapot";
+  case 421: return "Misdirected Request";
+  case 422: return "Unprocessable Entity";
+  case 423: return "Locked";
+  case 424: return "Failed Dependency";
+  case 425: return "Too Early";
+  case 426: return "Upgrade Required";
+  case 428: return "Precondition Required";
+  case 429: return "Too Many Requests";
+  case 431: return "Request Header Fields Too Large";
+  case 451: return "Unavailable For Legal Reasons";
+  case 501: return "Not Implemented";
+  case 502: return "Bad Gateway";
+  case 503: return "Service Unavailable";
+  case 504: return "Gateway Timeout";
+  case 505: return "HTTP Version Not Supported";
+  case 506: return "Variant Also Negotiates";
+  case 507: return "Insufficient Storage";
+  case 508: return "Loop Detected";
+  case 510: return "Not Extended";
+  case 511: return "Network Authentication Required";
+
+  default:
+  case 500: return "Internal Server Error";
+  }
+}
+
 template <class Rep, class Period>
 inline Server &
 Server::set_read_timeout(const std::chrono::duration<Rep, Period> &duration) {
@@ -1816,6 +1892,7 @@ inline std::string to_string(const Error error) {
     return "Unsupported HTTP multipart boundary characters";
   case Error::Compression: return "Compression failed";
   case Error::ConnectionTimeout: return "Connection timed out";
+  case Error::ProxyConnection: return "Proxy connection failed";
   case Error::Unknown: return "Unknown";
   default: break;
   }
@@ -2066,6 +2143,29 @@ private:
   const size_t fixed_buffer_size_;
   size_t fixed_buffer_used_size_ = 0;
   std::string glowable_buffer_;
+};
+
+class mmap {
+public:
+  mmap(const char *path);
+  ~mmap();
+
+  bool open(const char *path);
+  void close();
+
+  bool is_open() const;
+  size_t size() const;
+  const char *data() const;
+
+private:
+#if defined(_WIN32)
+  HANDLE hFile_;
+  HANDLE hMapping_;
+#else
+  int fd_;
+#endif
+  size_t size_;
+  void *addr_;
 };
 
 } // namespace detail
@@ -2356,6 +2456,13 @@ inline std::string trim_copy(const std::string &s) {
   return s.substr(r.first, r.second - r.first);
 }
 
+inline std::string trim_double_quotes_copy(const std::string &s) {
+  if (s.length() >= 2 && s.front() == '"' && s.back() == '"') {
+    return s.substr(1, s.size() - 2);
+  }
+  return s;
+}
+
 inline void split(const char *b, const char *e, char d,
                   std::function<void(const char *, const char *)> fn) {
   size_t i = 0;
@@ -2441,6 +2548,95 @@ inline void stream_line_reader::append(char c) {
   }
 }
 
+inline mmap::mmap(const char *path)
+#if defined(_WIN32)
+    : hFile_(NULL), hMapping_(NULL)
+#else
+    : fd_(-1)
+#endif
+      ,
+      size_(0), addr_(nullptr) {
+  if (!open(path)) { std::runtime_error(""); }
+}
+
+inline mmap::~mmap() { close(); }
+
+inline bool mmap::open(const char *path) {
+  close();
+
+#if defined(_WIN32)
+  hFile_ = ::CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL,
+                         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+  if (hFile_ == INVALID_HANDLE_VALUE) { return false; }
+
+  size_ = ::GetFileSize(hFile_, NULL);
+
+  hMapping_ = ::CreateFileMapping(hFile_, NULL, PAGE_READONLY, 0, 0, NULL);
+
+  if (hMapping_ == NULL) {
+    close();
+    return false;
+  }
+
+  addr_ = ::MapViewOfFile(hMapping_, FILE_MAP_READ, 0, 0, 0);
+#else
+  fd_ = ::open(path, O_RDONLY);
+  if (fd_ == -1) { return false; }
+
+  struct stat sb;
+  if (fstat(fd_, &sb) == -1) {
+    close();
+    return false;
+  }
+  size_ = static_cast<size_t>(sb.st_size);
+
+  addr_ = ::mmap(NULL, size_, PROT_READ, MAP_PRIVATE, fd_, 0);
+#endif
+
+  if (addr_ == nullptr) {
+    close();
+    return false;
+  }
+
+  return true;
+}
+
+inline bool mmap::is_open() const { return addr_ != nullptr; }
+
+inline size_t mmap::size() const { return size_; }
+
+inline const char *mmap::data() const { return (const char *)addr_; }
+
+inline void mmap::close() {
+#if defined(_WIN32)
+  if (addr_) {
+    ::UnmapViewOfFile(addr_);
+    addr_ = nullptr;
+  }
+
+  if (hMapping_) {
+    ::CloseHandle(hMapping_);
+    hMapping_ = NULL;
+  }
+
+  if (hFile_ != INVALID_HANDLE_VALUE) {
+    ::CloseHandle(hFile_);
+    hFile_ = INVALID_HANDLE_VALUE;
+  }
+#else
+  if (addr_ != nullptr) {
+    munmap(addr_, size_);
+    addr_ = nullptr;
+  }
+
+  if (fd_ != -1) {
+    ::close(fd_);
+    fd_ = -1;
+  }
+#endif
+  size_ = 0;
+}
 inline int close_socket(socket_t sock) {
 #ifdef _WIN32
   return closesocket(sock);
@@ -3116,9 +3312,10 @@ inline constexpr unsigned int operator"" _t(const char *s, size_t l) {
 
 } // namespace udl
 
-inline const char *
+inline std::string
 find_content_type(const std::string &path,
-                  const std::map<std::string, std::string> &user_data) {
+                  const std::map<std::string, std::string> &user_data,
+                  const std::string &default_content_type) {
   auto ext = file_extension(path);
 
   auto it = user_data.find(ext);
@@ -3127,7 +3324,8 @@ find_content_type(const std::string &path,
   using udl::operator""_t;
 
   switch (str2tag(ext)) {
-  default: return nullptr;
+  default: return default_content_type;
+
   case "css"_t: return "text/css";
   case "csv"_t: return "text/csv";
   case "htm"_t:
@@ -3177,76 +3375,6 @@ find_content_type(const std::string &path,
   case "gz"_t: return "application/gzip";
   case "zip"_t: return "application/zip";
   case "wasm"_t: return "application/wasm";
-  }
-}
-
-inline const char *status_message(int status) {
-  switch (status) {
-  case 100: return "Continue";
-  case 101: return "Switching Protocol";
-  case 102: return "Processing";
-  case 103: return "Early Hints";
-  case 200: return "OK";
-  case 201: return "Created";
-  case 202: return "Accepted";
-  case 203: return "Non-Authoritative Information";
-  case 204: return "No Content";
-  case 205: return "Reset Content";
-  case 206: return "Partial Content";
-  case 207: return "Multi-Status";
-  case 208: return "Already Reported";
-  case 226: return "IM Used";
-  case 300: return "Multiple Choice";
-  case 301: return "Moved Permanently";
-  case 302: return "Found";
-  case 303: return "See Other";
-  case 304: return "Not Modified";
-  case 305: return "Use Proxy";
-  case 306: return "unused";
-  case 307: return "Temporary Redirect";
-  case 308: return "Permanent Redirect";
-  case 400: return "Bad Request";
-  case 401: return "Unauthorized";
-  case 402: return "Payment Required";
-  case 403: return "Forbidden";
-  case 404: return "Not Found";
-  case 405: return "Method Not Allowed";
-  case 406: return "Not Acceptable";
-  case 407: return "Proxy Authentication Required";
-  case 408: return "Request Timeout";
-  case 409: return "Conflict";
-  case 410: return "Gone";
-  case 411: return "Length Required";
-  case 412: return "Precondition Failed";
-  case 413: return "Payload Too Large";
-  case 414: return "URI Too Long";
-  case 415: return "Unsupported Media Type";
-  case 416: return "Range Not Satisfiable";
-  case 417: return "Expectation Failed";
-  case 418: return "I'm a teapot";
-  case 421: return "Misdirected Request";
-  case 422: return "Unprocessable Entity";
-  case 423: return "Locked";
-  case 424: return "Failed Dependency";
-  case 425: return "Too Early";
-  case 426: return "Upgrade Required";
-  case 428: return "Precondition Required";
-  case 429: return "Too Many Requests";
-  case 431: return "Request Header Fields Too Large";
-  case 451: return "Unavailable For Legal Reasons";
-  case 501: return "Not Implemented";
-  case 502: return "Bad Gateway";
-  case 503: return "Service Unavailable";
-  case 504: return "Gateway Timeout";
-  case 505: return "HTTP Version Not Supported";
-  case 506: return "Variant Also Negotiates";
-  case 507: return "Insufficient Storage";
-  case 508: return "Loop Detected";
-  case 510: return "Not Extended";
-  case 511: return "Network Authentication Required";
-
-  default:
-  case 500: return "Internal Server Error";
   }
 }
 
@@ -3384,15 +3512,11 @@ inline bool gzip_decompressor::decompress(const char *data, size_t data_length,
     data += strm_.avail_in;
 
     std::array<char, CPPHTTPLIB_COMPRESSION_BUFSIZ> buff{};
-    while (strm_.avail_in > 0) {
+    while (strm_.avail_in > 0 && ret == Z_OK) {
       strm_.avail_out = static_cast<uInt>(buff.size());
       strm_.next_out = reinterpret_cast<Bytef *>(buff.data());
 
-      auto prev_avail_in = strm_.avail_in;
-
       ret = inflate(&strm_, Z_NO_FLUSH);
-
-      if (prev_avail_in - strm_.avail_in == 0) { return false; }
 
       assert(ret != Z_STREAM_ERROR);
       switch (ret) {
@@ -4066,12 +4190,32 @@ inline bool parse_multipart_boundary(const std::string &content_type,
   if (pos == std::string::npos) { return false; }
   auto end = content_type.find(';', pos);
   auto beg = pos + strlen(boundary_keyword);
-  boundary = content_type.substr(beg, end - beg);
-  if (boundary.length() >= 2 && boundary.front() == '"' &&
-      boundary.back() == '"') {
-    boundary = boundary.substr(1, boundary.size() - 2);
-  }
+  boundary = trim_double_quotes_copy(content_type.substr(beg, end - beg));
   return !boundary.empty();
+}
+
+inline void parse_disposition_params(const std::string &s, Params &params) {
+  std::set<std::string> cache;
+  split(s.data(), s.data() + s.size(), ';', [&](const char *b, const char *e) {
+    std::string kv(b, e);
+    if (cache.find(kv) != cache.end()) { return; }
+    cache.insert(kv);
+
+    std::string key;
+    std::string val;
+    split(b, e, '=', [&](const char *b2, const char *e2) {
+      if (key.empty()) {
+        key.assign(b2, e2);
+      } else {
+        val.assign(b2, e2);
+      }
+    });
+
+    if (!key.empty()) {
+      params.emplace(trim_double_quotes_copy((key)),
+                     trim_double_quotes_copy((val)));
+    }
+  });
 }
 
 #ifdef CPPHTTPLIB_NO_EXCEPTIONS
@@ -4084,7 +4228,7 @@ inline bool parse_range_header(const std::string &s, Ranges &ranges) try {
   if (std::regex_match(s, m, re_first_range)) {
     auto pos = static_cast<size_t>(m.position(1));
     auto len = static_cast<size_t>(m.length(1));
-    bool all_valid_ranges = true;
+    auto all_valid_ranges = true;
     split(&s[pos], &s[pos + len], ',', [&](const char *b, const char *e) {
       if (!all_valid_ranges) return;
       static auto re_another_range = std::regex(R"(\s*(\d*)-(\d*))");
@@ -4131,11 +4275,6 @@ public:
   bool parse(const char *buf, size_t n, const ContentReceiver &content_callback,
              const MultipartContentHeader &header_callback) {
 
-    // TODO: support 'filename*'
-    static const std::regex re_content_disposition(
-        R"~(^Content-Disposition:\s*form-data;\s*name="(.*?)"(?:;\s*filename="(.*?)")?(?:;\s*filename\*=\S+)?\s*$)~",
-        std::regex_constants::icase);
-
     buf_append(buf, n);
 
     while (buf_size() > 0) {
@@ -4173,10 +4312,40 @@ public:
           if (start_with_case_ignore(header, header_name)) {
             file_.content_type = trim_copy(header.substr(header_name.size()));
           } else {
+            static const std::regex re_content_disposition(
+                R"~(^Content-Disposition:\s*form-data;\s*(.*)$)~",
+                std::regex_constants::icase);
+
             std::smatch m;
             if (std::regex_match(header, m, re_content_disposition)) {
-              file_.name = m[1];
-              file_.filename = m[2];
+              Params params;
+              parse_disposition_params(m[1], params);
+
+              auto it = params.find("name");
+              if (it != params.end()) {
+                file_.name = it->second;
+              } else {
+                is_valid_ = false;
+                return false;
+              }
+
+              it = params.find("filename");
+              if (it != params.end()) { file_.filename = it->second; }
+
+              it = params.find("filename*");
+              if (it != params.end()) {
+                // Only allow UTF-8 enconnding...
+                static const std::regex re_rfc5987_encoding(
+                    R"~(^UTF-8''(.+?)$)~", std::regex_constants::icase);
+
+                std::smatch m2;
+                if (std::regex_match(it->second, m2, re_rfc5987_encoding)) {
+                  file_.filename = decode_url(m2[1], false); // override...
+                } else {
+                  is_valid_ = false;
+                  return false;
+                }
+              }
             } else {
               is_valid_ = false;
               return false;
@@ -4217,9 +4386,9 @@ public:
           buf_erase(crlf_.size());
           state_ = 1;
         } else {
-          if (dash_crlf_.size() > buf_size()) { return true; }
-          if (buf_start_with(dash_crlf_)) {
-            buf_erase(dash_crlf_.size());
+          if (dash_.size() > buf_size()) { return true; }
+          if (buf_start_with(dash_)) {
+            buf_erase(dash_.size());
             is_valid_ = true;
             buf_erase(buf_size()); // Remove epilogue
           } else {
@@ -4252,7 +4421,6 @@ private:
 
   const std::string dash_ = "--";
   const std::string crlf_ = "\r\n";
-  const std::string dash_crlf_ = "--\r\n";
   std::string boundary_;
   std::string dash_boundary_crlf_;
   std::string crlf_dash_boundary_;
@@ -4438,12 +4606,13 @@ get_range_offset_and_length(const Request &req, size_t content_length,
   return std::make_pair(r.first, static_cast<size_t>(r.second - r.first) + 1);
 }
 
-inline std::string make_content_range_header_field(size_t offset, size_t length,
-                                                   size_t content_length) {
+inline std::string
+make_content_range_header_field(const std::pair<ssize_t, ssize_t> &range,
+                                size_t content_length) {
   std::string field = "bytes ";
-  field += std::to_string(offset);
+  if (range.first != -1) { field += std::to_string(range.first); }
   field += "-";
-  field += std::to_string(offset + length - 1);
+  if (range.second != -1) { field += std::to_string(range.second); }
   field += "/";
   field += std::to_string(content_length);
   return field;
@@ -4465,21 +4634,22 @@ bool process_multipart_ranges_data(const Request &req, Response &res,
       ctoken("\r\n");
     }
 
-    auto offsets = get_range_offset_and_length(req, res.body.size(), i);
+    ctoken("Content-Range: ");
+    const auto &range = req.ranges[i];
+    stoken(make_content_range_header_field(range, res.content_length_));
+    ctoken("\r\n");
+    ctoken("\r\n");
+
+    auto offsets = get_range_offset_and_length(req, res.content_length_, i);
     auto offset = offsets.first;
     auto length = offsets.second;
-
-    ctoken("Content-Range: ");
-    stoken(make_content_range_header_field(offset, length, res.body.size()));
-    ctoken("\r\n");
-    ctoken("\r\n");
     if (!content(offset, length)) { return false; }
     ctoken("\r\n");
   }
 
   ctoken("--");
   stoken(boundary);
-  ctoken("--\r\n");
+  ctoken("--");
 
   return true;
 }
@@ -5442,6 +5612,11 @@ Server::set_file_extension_and_mimetype_mapping(const std::string &ext,
   return *this;
 }
 
+inline Server &Server::set_default_file_mimetype(const std::string &mime) {
+  default_file_mimetype_ = mime;
+  return *this;
+}
+
 inline Server &Server::set_file_request_handler(Handler handler) {
   file_request_handler_ = std::move(handler);
   return *this;
@@ -5696,7 +5871,7 @@ inline bool Server::write_response_core(Stream &strm, bool close_connection,
     detail::BufferStream bstrm;
 
     if (!bstrm.write_format("HTTP/1.1 %d %s\r\n", res.status,
-                            detail::status_message(res.status))) {
+                            status_message(res.status))) {
       return false;
     }
 
@@ -5893,17 +6068,26 @@ inline bool Server::handle_file_request(const Request &req, Response &res,
         if (path.back() == '/') { path += "index.html"; }
 
         if (detail::is_file(path)) {
-          detail::read_file(path, res.body);
-          auto type =
-              detail::find_content_type(path, file_extension_and_mimetype_map_);
-          if (type) { res.set_header("Content-Type", type); }
           for (const auto &kv : entry.headers) {
             res.set_header(kv.first.c_str(), kv.second);
           }
-          res.status = req.has_header("Range") ? 206 : 200;
+
+          auto mm = std::make_shared<detail::mmap>(path.c_str());
+          if (!mm->is_open()) { return false; }
+
+          res.set_content_provider(
+              mm->size(),
+              detail::find_content_type(path, file_extension_and_mimetype_map_,
+                                        default_file_mimetype_),
+              [mm](size_t offset, size_t length, DataSink &sink) -> bool {
+                sink.write(mm->data() + offset, length);
+                return true;
+              });
+
           if (!head && file_request_handler_) {
             file_request_handler_(req, res);
           }
+
           return true;
         }
       }
@@ -6151,10 +6335,10 @@ inline void Server::apply_ranges(const Request &req, Response &res,
       } else if (req.ranges.size() == 1) {
         auto offsets =
             detail::get_range_offset_and_length(req, res.content_length_, 0);
-        auto offset = offsets.first;
         length = offsets.second;
+
         auto content_range = detail::make_content_range_header_field(
-            offset, length, res.content_length_);
+            req.ranges[0], res.content_length_);
         res.set_header("Content-Range", content_range);
       } else {
         length = detail::get_multipart_ranges_data_length(req, res, boundary,
@@ -6177,13 +6361,15 @@ inline void Server::apply_ranges(const Request &req, Response &res,
     if (req.ranges.empty()) {
       ;
     } else if (req.ranges.size() == 1) {
+      auto content_range = detail::make_content_range_header_field(
+          req.ranges[0], res.body.size());
+      res.set_header("Content-Range", content_range);
+
       auto offsets =
           detail::get_range_offset_and_length(req, res.body.size(), 0);
       auto offset = offsets.first;
       auto length = offsets.second;
-      auto content_range = detail::make_content_range_header_field(
-          offset, length, res.body.size());
-      res.set_header("Content-Range", content_range);
+
       if (offset < res.body.size()) {
         res.body = res.body.substr(offset, length);
       } else {
@@ -6332,14 +6518,14 @@ Server::process_request(Stream &strm, bool close_connection,
     case 100:
     case 417:
       strm.write_format("HTTP/1.1 %d %s\r\n\r\n", status,
-                        detail::status_message(status));
+                        status_message(status));
       break;
     default: return write_response(strm, close_connection, req, res);
     }
   }
 
   // Rounting
-  bool routed = false;
+  auto routed = false;
 #ifdef CPPHTTPLIB_NO_EXCEPTIONS
   routed = routing(req, res, strm);
 #else
@@ -6698,6 +6884,21 @@ inline bool ClientImpl::handle_request(Stream &strm, Request &req,
   }
 
   if (!ret) { return false; }
+
+  if (res.get_header_value("Connection") == "close" ||
+      (res.version == "HTTP/1.0" && res.reason != "Connection established")) {
+    // TODO this requires a not-entirely-obvious chain of calls to be correct
+    // for this to be safe.
+
+    // This is safe to call because handle_request is only called by send_
+    // which locks the request mutex during the process. It would be a bug
+    // to call it from a different thread since it's a thread-safety issue
+    // to do these things to the socket if another thread is using the socket.
+    std::lock_guard<std::mutex> guard(socket_mutex_);
+    shutdown_ssl(socket_, true);
+    shutdown_socket(socket_);
+    close_socket(socket_);
+  }
 
   if (300 < res.status && res.status < 400 && follow_location_) {
     req = req_save;
@@ -7113,24 +7314,6 @@ inline bool ClientImpl::process_request(Stream &strm, Request &req,
     }
   }
 
-  if (res.get_header_value("Connection") == "close" ||
-      (res.version == "HTTP/1.0" && res.reason != "Connection established")) {
-    // TODO this requires a not-entirely-obvious chain of calls to be correct
-    // for this to be safe. Maybe a code refactor (such as moving this out to
-    // the send function and getting rid of the recursiveness of the mutex)
-    // could make this more obvious.
-
-    // This is safe to call because process_request is only called by
-    // handle_request which is only called by send, which locks the request
-    // mutex during the process. It would be a bug to call it from a different
-    // thread since it's a thread-safety issue to do these things to the socket
-    // if another thread is using the socket.
-    std::lock_guard<std::mutex> guard(socket_mutex_);
-    shutdown_ssl(socket_, true);
-    shutdown_socket(socket_);
-    close_socket(socket_);
-  }
-
   // Log
   if (logger_) { logger_(req, res); }
 
@@ -7158,7 +7341,7 @@ inline ContentProviderWithoutLength ClientImpl::get_multipart_content_provider(
       }
 
       DataSink cur_sink;
-      bool has_data = true;
+      auto has_data = true;
       cur_sink.write = sink.write;
       cur_sink.done = [&]() { has_data = false; };
 
@@ -8238,14 +8421,14 @@ inline bool SSLClient::create_and_connect_socket(Socket &socket, Error &error) {
 inline bool SSLClient::connect_with_proxy(Socket &socket, Response &res,
                                           bool &success, Error &error) {
   success = true;
-  Response res2;
+  Response proxy_res;
   if (!detail::process_client_socket(
           socket.sock, read_timeout_sec_, read_timeout_usec_,
           write_timeout_sec_, write_timeout_usec_, [&](Stream &strm) {
             Request req2;
             req2.method = "CONNECT";
             req2.path = host_and_port_;
-            return process_request(strm, req2, res2, false, error);
+            return process_request(strm, req2, proxy_res, false, error);
           })) {
     // Thread-safe to close everything because we are assuming there are no
     // requests in flight
@@ -8256,12 +8439,12 @@ inline bool SSLClient::connect_with_proxy(Socket &socket, Response &res,
     return false;
   }
 
-  if (res2.status == 407) {
+  if (proxy_res.status == 407) {
     if (!proxy_digest_auth_username_.empty() &&
         !proxy_digest_auth_password_.empty()) {
       std::map<std::string, std::string> auth;
-      if (detail::parse_www_authenticate(res2, auth, true)) {
-        Response res3;
+      if (detail::parse_www_authenticate(proxy_res, auth, true)) {
+        proxy_res = Response();
         if (!detail::process_client_socket(
                 socket.sock, read_timeout_sec_, read_timeout_usec_,
                 write_timeout_sec_, write_timeout_usec_, [&](Stream &strm) {
@@ -8272,7 +8455,7 @@ inline bool SSLClient::connect_with_proxy(Socket &socket, Response &res,
                       req3, auth, 1, detail::random_string(10),
                       proxy_digest_auth_username_, proxy_digest_auth_password_,
                       true));
-                  return process_request(strm, req3, res3, false, error);
+                  return process_request(strm, req3, proxy_res, false, error);
                 })) {
           // Thread-safe to close everything because we are assuming there are
           // no requests in flight
@@ -8283,17 +8466,28 @@ inline bool SSLClient::connect_with_proxy(Socket &socket, Response &res,
           return false;
         }
       }
-    } else {
-      res = res2;
-      return false;
     }
+  }
+
+  // If status code is not 200, proxy request is failed.
+  // Set error to ProxyConnection and return proxy response
+  // as the response of the request
+  if (proxy_res.status != 200) {
+    error = Error::ProxyConnection;
+    res = std::move(proxy_res);
+    // Thread-safe to close everything because we are assuming there are
+    // no requests in flight
+    shutdown_ssl(socket, true);
+    shutdown_socket(socket);
+    close_socket(socket);
+    return false;
   }
 
   return true;
 }
 
 inline bool SSLClient::load_certs() {
-  bool ret = true;
+  auto ret = true;
 
   std::call_once(initialize_cert_, [&]() {
     std::lock_guard<std::mutex> guard(ctx_mutex_);
