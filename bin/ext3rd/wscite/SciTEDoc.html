@@ -440,7 +440,7 @@ NameError: name 'mistake' is not defined
         <li>MMIXAL</li>
         <li>MSSQL</li>
         <li>Modula 3</li>
-        <li>Nimrod</li>
+        <li>Nim</li>
         <li>nnCron</li>
         <li>NSIS*</li>
         <li>Objective C</li>
@@ -1439,7 +1439,7 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         Property values may be used in this text using the $() syntax.
           Commonly used properties are: ReadOnly, EOLMode, BufferLength,
           NbOfLines (in buffer), SelLength (chars), SelHeight (lines).
-          Extra properties defined for the status bar are LineNumber, ColumnNumber, and
+          Extra properties defined for the status bar are LineNumber, ColumnNumber, ZoomFactor, and
           OverType which is either "OVR" or "INS" depending on the overtype status.
           You can also use file properties, which, unlike those above, are not updated
           on each keystroke: FileName or FileNameExt, FileDate and FileTime and
@@ -2437,9 +2437,17 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>fold.cil.comment.multiline</td>
         <td>Set this property to 0 to disable folding multi-line comments when fold.comment=1.</td>
         </tr>
+        <tr id='property-fold.coffeescript.comment'>
+        <td>fold.coffeescript.comment</td>
+        <td>Set to 1 to allow folding of comment blocks in CoffeeScript.</td>
+        </tr>
         <tr id='property-fold.comment'>
         <td>fold.comment</td>
         <td>This option enables folding multi-line comments and explicit fold points when using the C++ lexer. Explicit fold points allows adding extra folding by placing a //{ comment at the start and a //} at the end of a section that should fold.</td>
+        </tr>
+        <tr id='property-fold.comment.yaml'>
+        <td>fold.comment.yaml</td>
+        <td>Set to 1 to allow folding of comment blocks in YAML.</td>
         </tr>
         <tr id='property-fold.cpp.comment.explicit'>
         <td>fold.cpp.comment.explicit</td>
@@ -2605,6 +2613,10 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>fold.sql.at.else</td>
         <td>This option enables SQL folding on a "ELSE" and "ELSIF" line of an IF statement.</td>
         </tr>
+        <tr id='property-fold.sql.only.begin'>
+        <td>fold.sql.only.begin</td>
+        <td>Set to 1 to only fold on 'begin' but not other keywords.</td>
+        </tr>
         <tr id='property-fold.verilog.flags'>
         <td>fold.verilog.flags</td>
         <td>This option enables folding module definitions. Typically source files contain only one module definition so this option is somewhat useless.</td>
@@ -2628,6 +2640,30 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <tr id='property-lexer.baan.styling.within.preprocessor'>
         <td>lexer.baan.styling.within.preprocessor</td>
         <td>For Baan code, determines whether all preprocessor code is styled in the preprocessor style (0, the default) or only from the initial # to the end of the command word(1).</td>
+        </tr>
+        <tr id='property-lexer.bash.command.substitution'>
+        <td>lexer.bash.command.substitution</td>
+        <td>Set how to highlight $() command substitution. 0 (the default) highlighted as backticks. 1 highlighted inside. 2 highlighted inside with extra scope tracking.</td>
+        </tr>
+        <tr id='property-lexer.bash.special.parameter'>
+        <td>lexer.bash.special.parameter</td>
+        <td>Set shell (default is Bash) special parameters.</td>
+        </tr>
+        <tr id='property-lexer.bash.styling.inside.backticks'>
+        <td>lexer.bash.styling.inside.backticks</td>
+        <td>Set this property to 1 to highlight shell expansions inside backticks.</td>
+        </tr>
+        <tr id='property-lexer.bash.styling.inside.heredoc'>
+        <td>lexer.bash.styling.inside.heredoc</td>
+        <td>Set this property to 1 to highlight shell expansions inside here document.</td>
+        </tr>
+        <tr id='property-lexer.bash.styling.inside.parameter'>
+        <td>lexer.bash.styling.inside.parameter</td>
+        <td>Set this property to 1 to highlight shell expansions inside ${} parameter expansion.</td>
+        </tr>
+        <tr id='property-lexer.bash.styling.inside.string'>
+        <td>lexer.bash.styling.inside.string</td>
+        <td>Set this property to 1 to highlight shell expansions inside string.</td>
         </tr>
         <tr id='property-lexer.cpp.allow.dollars'>
         <td>lexer.cpp.allow.dollars</td>
@@ -2817,9 +2853,17 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>lexer.sql.allow.dotted.word</td>
         <td>Set to 1 to colourise recognized words with dots (recommended for Oracle PL/SQL objects).</td>
         </tr>
+        <tr id='property-lexer.sql.backticks.identifier'>
+        <td>lexer.sql.backticks.identifier</td>
+        <td>Recognise backtick quoting of identifiers.</td>
+        </tr>
         <tr id='property-lexer.sql.numbersign.comment'>
         <td>lexer.sql.numbersign.comment</td>
         <td>If "lexer.sql.numbersign.comment" property is set to 0 a line beginning with '#' will not be a comment.</td>
+        </tr>
+        <tr id='property-lexer.vb.strings.multiline'>
+        <td>lexer.vb.strings.multiline</td>
+        <td>Set to 1 to allow strings to continue over line ends.</td>
         </tr>
         <tr id='property-lexer.verilog.allupperkeywords'>
         <td>lexer.verilog.allupperkeywords</td>
@@ -2852,6 +2896,18 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <tr id='property-lexer.xml.allow.scripts'>
         <td>lexer.xml.allow.scripts</td>
         <td>Set to 0 to disable scripts in XML.</td>
+        </tr>
+        <tr id='property-nsis.ignorecase'>
+        <td>nsis.ignorecase</td>
+        <td>Set to 1 to ignore case for NSIS.</td>
+        </tr>
+        <tr id='property-nsis.uservars'>
+        <td>nsis.uservars</td>
+        <td>Set to 1 to recognise user defined variables in NSIS.</td>
+        </tr>
+        <tr id='property-ps.level'>
+        <td>ps.level</td>
+        <td>Define level (0..3) of PostScript handled and thus set of keywords. Default is 3.</td>
         </tr>
         <tr id='property-sql.backslash.escapes'>
         <td>sql.backslash.escapes</td>
@@ -3686,7 +3742,7 @@ imports.include=fortran lisp
           escript flagship forth fortran freebasic fsharp gap
           haskell hex html inno json kix latex lisp lot lout
           lua markdown matlab maxima metapost mmixal modula3
-          nim nimrod nncrontab nsis opal oscript others pascal
+          nim nncrontab nsis opal oscript others pascal
           perl pov powerpro powershell ps purebasic python r
           raku rebol registry ruby rust sas scriptol smalltalk
           sorcins specman spice sql tacl tal tcl tex txt2tags
@@ -3695,11 +3751,17 @@ imports.include=fortran lisp
       </tr>
       <tr id='property-command.discover.properties'>
         <td>
-        command.discover.properties
+        <a name='property-discover.properties'></a>
+        command.discover.properties<br />
+        discover.properties
         </td>
         <td>
         This property can be used to run a program to determine file encoding and other properties
         when a file is loaded.<br />
+        Property discovery is disabled by default and must first be enabled by setting
+        discover.properties to 1 in user properties.
+        The extra step is a security safeguard since command.discover.properties may perform any
+        command silently and automatically and be set in local properties for a shared directory or in a downloaded project.<br />
         The program should print a list of property=value lines for each property it wants to set.
         This is the same format as properties files.<br />
         <div class="example">
