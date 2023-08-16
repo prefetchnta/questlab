@@ -1,0 +1,155 @@
+<!-- encoding:65001 -->
+<QstTrade>
+    <Window>
+        <win_space_betw>3</win_space_betw>
+        <win_text_color>0xFF9C9CAA</win_text_color>
+        <text_sml height="25" weight="0">YaHei Consolas Hybrid</text_sml>
+        <text_mdl height="50" weight="0">YaHei Consolas Hybrid</text_mdl>
+        <text_lrg height="100" weight="0">YaHei Consolas Hybrid</text_lrg>
+    </Window>
+    <Candle>
+        <bar_width_full>13</bar_width_full>
+        <bar_side_space>3</bar_side_space>
+        <bar_updn_wline>2</bar_updn_wline>
+        <bar_color_rise>0xFFC80000</bar_color_rise>
+        <bar_color_drop>0xFF00C800</bar_color_drop>
+        <bar_color_eque>0xFFE1E1E1</bar_color_eque>
+        <bar_is_rhollow>true</bar_is_rhollow>
+        <bar_is_dhollow>false</bar_is_dhollow>
+        <bar_hollow_sub>1</bar_hollow_sub>
+        <can_grid_h_count>3</can_grid_h_count>
+        <can_grid_v_count>4</can_grid_v_count>
+        <can_up_dn_padded>50</can_up_dn_padded>
+    </Candle>
+    <CandleGap>
+        <gap_is_render>true</gap_is_render>
+        <gap_blk_color>0xFF484848</gap_blk_color>
+    </CandleGap>
+    <Lines>
+        <line_width>1</line_width>
+        <line_grid_dash>5</line_grid_dash>
+        <line_grid_width>1</line_grid_width>
+        <line_grid_color>0xFF383838</line_grid_color>
+    </Lines>
+    <LineAvg>
+        <line_avg_count>8</line_avg_count>
+        <line_avg_attr01 atime="5" ashow="true">0xFFE1E1E1</line_avg_attr01>
+        <line_avg_attr02 atime="10" ashow="true">0xFFFFAF00</line_avg_attr02>
+        <line_avg_attr03 atime="20" ashow="true">0xFFEB00AF</line_avg_attr03>
+        <line_avg_attr04 atime="30" ashow="true">0xFF00987D</line_avg_attr04>
+        <line_avg_attr05 atime="60" ashow="true">0xFF00AFC8</line_avg_attr05>
+        <line_avg_attr06 atime="120" ashow="true">0xFF8746AF</line_avg_attr06>
+        <line_avg_attr07 atime="125" ashow="false">0xFFF07646</line_avg_attr07>
+        <line_avg_attr08 atime="250" ashow="true">0xFF874600</line_avg_attr08>
+        <line_avg_attr09 atime="0" ashow="false">0</line_avg_attr09>
+        <line_avg_attr10 atime="0" ashow="false">0</line_avg_attr10>
+        <line_avg_attr11 atime="0" ashow="false">0</line_avg_attr11>
+        <line_avg_attr12 atime="0" ashow="false">0</line_avg_attr12>
+        <line_avg_attr13 atime="0" ashow="false">0</line_avg_attr13>
+        <line_avg_attr14 atime="0" ashow="false">0</line_avg_attr14>
+        <line_avg_attr15 atime="0" ashow="false">0</line_avg_attr15>
+        <line_avg_attr16 atime="0" ashow="false">0</line_avg_attr16>
+    </LineAvg>
+    <LinePrice>
+        <line_price_tclose_color>0xFFE1E1E1</line_price_tclose_color>
+        <line_price_topen_color>0xFFDC6E9C</line_price_topen_color>
+        <line_price_high_color>0xFFC80000</line_price_high_color>
+        <line_price_low_color>0xFF00C800</line_price_low_color>
+    </LinePrice>
+    <LineBBI>
+        <line_bbi_color>0xFFFFAF00</line_bbi_color>
+        <line_bbi_level1>3</line_bbi_level1>
+        <line_bbi_level2>6</line_bbi_level2>
+        <line_bbi_level3>12</line_bbi_level3>
+        <line_bbi_level4>24</line_bbi_level4>
+    </LineBBI>
+    <LineBOLL>
+        <line_boll_days>20</line_boll_days>
+        <line_boll_mult>2</line_boll_mult>
+        <line_boll_upper_color>0xFF00AFC8</line_boll_upper_color>
+        <line_boll_mid_color>0xFFFFAF00</line_boll_mid_color>
+        <line_boll_lower_color>0xFFEB00AF</line_boll_lower_color>
+    </LineBOLL>
+    <ChartAmount>
+        <line_amnt_level1>5</line_amnt_level1>
+        <line_amnt_level2>10</line_amnt_level2>
+        <line_amnt_color1>0xFFE1E1E1</line_amnt_color1>
+        <line_amnt_color2>0xFFFFAF00</line_amnt_color2>
+    </ChartAmount>
+    <ChartMACD>
+        <macd_days_fast>12</macd_days_fast>
+        <macd_days_slow>26</macd_days_slow>
+        <macd_days_diff>9</macd_days_diff>
+        <macd_line_dif_color>0xFFE1E1E1</macd_line_dif_color>
+        <macd_line_dea_color>0xFFFFAF00</macd_line_dea_color>
+    </ChartMACD>
+    <ChartKDJ>
+        <kdj_days_r>9</kdj_days_r>
+        <kdj_days_k>3</kdj_days_k>
+        <kdj_days_d>3</kdj_days_d>
+        <kdj_line_k_color>0xFFE1E1E1</kdj_line_k_color>
+        <kdj_line_d_color>0xFFF07646</kdj_line_d_color>
+        <kdj_line_j_color>0xFFDC6E9C</kdj_line_j_color>
+        <kdj_line_j_is_render>true</kdj_line_j_is_render>
+    </ChartKDJ>
+    <ChartRSI>
+        <rsi_line_level1>6</rsi_line_level1>
+        <rsi_line_level2>12</rsi_line_level2>
+        <rsi_line_level3>24</rsi_line_level3>
+        <rsi_line_color1>0xFFE1E1E1</rsi_line_color1>
+        <rsi_line_color2>0xFFF07646</rsi_line_color2>
+        <rsi_line_color3>0xFFDC6E9C</rsi_line_color3>
+    </ChartRSI>
+    <ChartWR>
+        <wr_line_level>10</wr_line_level>
+        <wr_line_color>0xFFE1E1E1</wr_line_color>
+    </ChartWR>
+    <ChartCCI>
+        <cci_line_level>14</cci_line_level>
+        <cci_line_color>0xFFE1E1E1</cci_line_color>
+    </ChartCCI>
+    <IndexList>
+        <item code="000001" path="source\\trade\\index\\000001.day">上证指数</item>
+        <item code="000016" path="source\\trade\\index\\000016.day">上证50</item>
+        <item code="000300" path="source\\trade\\index\\000300.day">沪深300</item>
+        <item code="000688" path="source\\trade\\index\\000688.day">科创50</item>
+        <item code="000813" path="source\\trade\\index\\000813.day">细分化工</item>
+        <item code="000819" path="source\\trade\\index\\000819.day">有色金属</item>
+        <item code="000852" path="source\\trade\\index\\000852.day">中证1000</item>
+        <item code="000905" path="source\\trade\\index\\000905.day">中证500</item>
+        <item code="399001" path="source\\trade\\index\\399001.day">深证成指</item>
+        <item code="399006" path="source\\trade\\index\\399006.day">创业板指</item>
+        <item code="399441" path="source\\trade\\index\\399441.day">生物医药</item>
+        <item code="399804" path="source\\trade\\index\\399804.day">中证体育</item>
+        <item code="399808" path="source\\trade\\index\\399808.day">中证新能</item>
+        <item code="399928" path="source\\trade\\index\\399928.day">中证能源</item>
+        <item code="399932" path="source\\trade\\index\\399932.day">中证消费</item>
+        <item code="399933" path="source\\trade\\index\\399933.day">中证医药</item>
+        <item code="399934" path="source\\trade\\index\\399934.day">中证金融</item>
+        <item code="399967" path="source\\trade\\index\\399967.day">中证军工</item>
+        <item code="399971" path="source\\trade\\index\\399971.day">中证传媒</item>
+        <item code="399973" path="source\\trade\\index\\399973.day">中证国防</item>
+        <item code="399975" path="source\\trade\\index\\399975.day">证券公司</item>
+        <item code="399976" path="source\\trade\\index\\399976.day">CS新能车</item>
+        <item code="399986" path="source\\trade\\index\\399986.day">中证银行</item>
+        <item code="399987" path="source\\trade\\index\\399987.day">中证酒</item>
+        <item code="399989" path="source\\trade\\index\\399989.day">中证医疗</item>
+        <item code="399997" path="source\\trade\\index\\399997.day">中证白酒</item>
+        <item code="399998" path="source\\trade\\index\\399998.day">中证煤炭</item>
+        <item code="885925" path="source\\trade\\index\\885925.day">MCU芯片</item>
+        <item code="930606" path="source\\trade\\index\\930606.day">中证钢铁</item>
+        <item code="930608" path="source\\trade\\index\\930608.day">中证基建</item>
+        <item code="930641" path="source\\trade\\index\\930641.day">中证中药</item>
+        <item code="930651" path="source\\trade\\index\\930651.day">CS计算机</item>
+        <item code="930707" path="source\\trade\\index\\930707.day">中证畜牧</item>
+        <item code="930713" path="source\\trade\\index\\930713.day">CS人工智</item>
+        <item code="930901" path="source\\trade\\index\\930901.day">动漫游戏</item>
+        <item code="930902" path="source\\trade\\index\\930902.day">中证数据</item>
+        <item code="931079" path="source\\trade\\index\\931079.day">5G通信</item>
+        <item code="931151" path="source\\trade\\index\\931151.day">光伏产业</item>
+        <item code="931672" path="source\\trade\\index\\931672.day">风电产业</item>
+        <item code="931775" path="source\\trade\\index\\931775.day">房地产</item>
+        <item code="980032" path="source\\trade\\index\\980032.day">新能电池</item>
+        <item code="H30184" path="source\\trade\\index\\H30184.day">半导体</item>
+    </IndexList>
+</QstTrade>
