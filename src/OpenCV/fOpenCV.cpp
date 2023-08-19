@@ -426,11 +426,11 @@ carplate_find (
     uint_t count, type, result;
     std::vector<CPlate> plate_list;
 
-    pr.LoadSVM("easypr/model/svm_hist.xml");
-    pr.LoadANN("easypr/model/ann.xml");
-    pr.LoadChineseANN("easypr/model/ann_chinese.xml");
-    pr.LoadGrayChANN("easypr/model/annCh.xml");
-    pr.LoadChineseMapping("easypr/model/province_mapping");
+    pr.LoadSVM("source/easypr/model/svm_hist.xml");
+    pr.LoadANN("source/easypr/model/ann.xml");
+    pr.LoadChineseANN("source/easypr/model/ann_chinese.xml");
+    pr.LoadGrayChANN("source/easypr/model/annCh.xml");
+    pr.LoadChineseMapping("source/easypr/model/province_mapping");
 
     count = xml_attr_intxU("count", 1, param);
     type = xml_attr_intxU("type", PR_DETECT_CMSER, param);

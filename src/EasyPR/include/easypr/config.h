@@ -26,16 +26,16 @@ namespace easypr {
     PR_DETECT_CMSER = 0x04,  /**Character detect type, using mser  */
   };
 
-static const char* kDefaultSvmPath = "easypr/model/svm_hist.xml";
-static const char* kLBPSvmPath = "easypr/model/svm_lbp.xml";
-static const char* kHistSvmPath = "easypr/model/svm_hist.xml";
+static const char* kDefaultSvmPath = "source/easypr/model/svm_hist.xml";
+static const char* kLBPSvmPath = "source/easypr/model/svm_lbp.xml";
+static const char* kHistSvmPath = "source/easypr/model/svm_hist.xml";
 
-static const char* kDefaultAnnPath = "easypr/model/ann.xml";
-static const char* kChineseAnnPath = "easypr/model/ann_chinese.xml";
-static const char* kGrayAnnPath = "easypr/model/annCh.xml";
+static const char* kDefaultAnnPath = "source/easypr/model/ann.xml";
+static const char* kChineseAnnPath = "source/easypr/model/ann_chinese.xml";
+static const char* kGrayAnnPath = "source/easypr/model/annCh.xml";
 
 //This is important to for key transform to chinese
-static const char* kChineseMappingPath = "easypr/model/province_mapping";
+static const char* kChineseMappingPath = "source/easypr/model/province_mapping";
 
 typedef enum {
   kForward = 1, // correspond to "has plate"

@@ -1935,7 +1935,7 @@ void clearBorder(const Mat &img, Rect& cropRect) {
 
         if (0 && showDebug) {
           std::stringstream ss(std::stringstream::in | std::stringstream::out);
-          ss << "easypr/resources/image/tmp/" << img_index << "_1_" << "searcgMserRect.jpg";
+          ss << "source/easypr/resources/image/tmp/" << img_index << "_1_" << "searcgMserRect.jpg";
           imwrite(ss.str(), result);
         }
         if (1 && showDebug) {
@@ -2129,7 +2129,7 @@ void clearBorder(const Mat &img, Rect& cropRect) {
 
       if (1) {
         std::stringstream ss(std::stringstream::in | std::stringstream::out);
-        ss << "easypr/resources/image/tmp/plateDetect/plate_" << img_index << "_" << the_color << ".jpg";
+        ss << "source/easypr/resources/image/tmp/plateDetect/plate_" << img_index << "_" << the_color << ".jpg";
         imwrite(ss.str(), result);
       }
     }
@@ -2469,7 +2469,7 @@ void clearBorder(const Mat &img, Rect& cropRect) {
 
     if (1) {
       std::stringstream ss(std::stringstream::in | std::stringstream::out);
-      ss << "easypr/resources/image/tmp/Result/plate_" << img_index << ".jpg";
+      ss << "source/easypr/resources/image/tmp/Result/plate_" << img_index << ".jpg";
       imwrite(ss.str(), img_window);
     }
 
@@ -2563,7 +2563,7 @@ void clearBorder(const Mat &img, Rect& cropRect) {
     struct tm *now = localtime(&t);
     char buf[80];
     strftime(buf, sizeof(buf), "%Y-%m-%d %H_%M_%S", now);
-    ss << "easypr/resources/image/tmp/" << path << "_" << std::string(buf) << "_" << index << ".jpg";
+    ss << "source/easypr/resources/image/tmp/" << path << "_" << std::string(buf) << "_" << index << ".jpg";
     imwrite(ss.str(), outImg);
   }
 }

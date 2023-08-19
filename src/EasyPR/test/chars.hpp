@@ -8,7 +8,7 @@ namespace demo {
 int test_chars_segment() {
   std::cout << "test_chars_segment" << std::endl;
 
-  cv::Mat src = cv::imread("easypr/resources/image/chars_segment.jpg");
+  cv::Mat src = cv::imread("source/easypr/resources/image/chars_segment.jpg");
 
   std::vector<cv::Mat> resultVec;
   CCharsSegment plate;
@@ -30,7 +30,7 @@ int test_chars_segment() {
 int test_chars_identify() {
   std::cout << "test_chars_identify" << std::endl;
 
-  cv::Mat plate = cv::imread("easypr/resources/image/chars_identify.jpg");
+  cv::Mat plate = cv::imread("source/easypr/resources/image/chars_identify.jpg");
 
   std::vector<Mat> matChars;
   std::string license;
@@ -75,7 +75,7 @@ int test_chars_identify() {
 int test_chars_recognise() {
   std::cout << "test_chars_recognise" << std::endl;
 
-  cv::Mat src = cv::imread("easypr/resources/image/chars_recognise.jpg");
+  cv::Mat src = cv::imread("source/easypr/resources/image/chars_recognise.jpg");
   CCharsRecognise cr;
   std::string plateLicense = "";
   int result = cr.charsRecognise(src, plateLicense);

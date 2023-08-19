@@ -11,7 +11,7 @@ using namespace std;
 int test_plate_locate() {
   cout << "test_plate_locate" << endl;
 
-  const string file = "easypr/resources/image/plate_locate.jpg";
+  const string file = "source/easypr/resources/image/plate_locate.jpg";
 
   cv::Mat src = imread(file);
 
@@ -37,7 +37,7 @@ int test_plate_locate() {
 int test_plate_judge() {
   cout << "test_plate_judge" << endl;
 
-  cv::Mat src = imread("easypr/resources/image/plate_judge.jpg");
+  cv::Mat src = imread("source/easypr/resources/image/plate_judge.jpg");
 
   vector<cv::Mat> matVec;
   vector<cv::Mat> resultVec;
@@ -78,7 +78,7 @@ int test_plate_judge() {
 int test_plate_detect() {
   cout << "test_plate_detect" << endl;
 
-  cv::Mat src = imread("easypr/resources/image/plate_detect.jpg");
+  cv::Mat src = imread("source/easypr/resources/image/plate_detect.jpg");
 
   vector<CPlate> resultVec;
   CPlateDetect pd;
@@ -102,7 +102,7 @@ int test_plate_detect() {
 int test_plate_recognize() {
   cout << "test_plate_recognize" << endl;
 
-  Mat src = imread("easypr/resources/image/test.jpg");
+  Mat src = imread("source/easypr/resources/image/test.jpg");
 
   CPlateRecognize pr;
   pr.setLifemode(true);

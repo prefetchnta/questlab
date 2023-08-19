@@ -88,11 +88,11 @@ namespace easypr {
 #endif
       // result xml
       XMLNode xMainNode = XMLNode::createXMLTopNode("tagset");
-      std::string path_result = "easypr/resources/result/Result.xml";
+      std::string path_result = "source/easypr/resources/result/Result.xml";
 
       // find text mapping, for compatiable withe utf-8 and GBK
       std::shared_ptr<easypr::Kv> kv(new easypr::Kv);
-      kv->load("easypr/resources/text/chinese_mapping");
+      kv->load("source/easypr/resources/text/chinese_mapping");
 
       // find groundTruth, for compatiable withe utf-8(Linux/Mac) and GBK(Windows)
       map<string, vector<CPlate>> xmlMap;
@@ -113,13 +113,13 @@ namespace easypr {
       pr.setMaxPlates(4);
 
       // load the maching learning model
-      pr.LoadSVM("easypr/model/svm_hist.xml");
-      pr.LoadANN("easypr/model/ann.xml");
-      pr.LoadChineseANN("easypr/model/ann_chinese.xml");
+      pr.LoadSVM("source/easypr/model/svm_hist.xml");
+      pr.LoadANN("source/easypr/model/ann.xml");
+      pr.LoadChineseANN("source/easypr/model/ann_chinese.xml");
 
       // new in v1.6
-      pr.LoadGrayChANN("easypr/model/annCh.xml");
-      pr.LoadChineseMapping("easypr/model/province_mapping");
+      pr.LoadGrayChANN("source/easypr/model/annCh.xml");
+      pr.LoadChineseMapping("source/easypr/model/province_mapping");
 
       // find all the test files (images)
       // then sort them by image index
@@ -289,7 +289,7 @@ namespace easypr {
 
                 // use to generate the plate trainging data, for training end2end chars recognize model
                 std::stringstream ss(std::stringstream::in | std::stringstream::out);
-                ss << "easypr/resources/image/tmp/plateMat/plate_" << batch_i << "_" << plate_out_i << ".jpg";
+                ss << "source/easypr/resources/image/tmp/plateMat/plate_" << batch_i << "_" << plate_out_i << ".jpg";
                 imwrite(ss.str(), matchPlate->getPlateMat());
                 plate_ss << "plate_" << batch_i << "_" << plate_out_i << ".jpg" << ":" << license << endl;
                 plate_out_i++;
@@ -312,7 +312,7 @@ namespace easypr {
                 CCharacter character = charVec.at(0);
                 if (1) {
                   std::stringstream ss(std::stringstream::in | std::stringstream::out);
-                  ss << "easypr/resources/image/tmp/chinese" << "/" << i << "_" << t << "_" << matchPlate->getChineseKey() << ".jpg";
+                  ss << "source/easypr/resources/image/tmp/chinese" << "/" << i << "_" << t << "_" << matchPlate->getChineseKey() << ".jpg";
                   imwrite(ss.str(), matchPlate->getChineseMat());
                 }
               }
@@ -493,7 +493,7 @@ namespace easypr {
       
       cout << "------------------" << endl;
 
-      ofstream myfile("easypr/resources/result/accuracy.txt", ios::app);
+      ofstream myfile("source/easypr/resources/result/accuracy.txt", ios::app);
       if (myfile.is_open()) {
         time_t t = time(0);  // get time now
         struct tm* now = localtime(&t);
@@ -526,7 +526,7 @@ namespace easypr {
 
       // use to generate the plate trainging data, for training end2end chars recognize model
       if(isGenerateGT) {
-        ofstream myfile("easypr/resources/result/plateGroundTruth.txt", ios::app);
+        ofstream myfile("source/easypr/resources/result/plateGroundTruth.txt", ios::app);
         if (myfile.is_open()) {
           myfile << plate_ss.str();
           myfile.close();
@@ -544,7 +544,7 @@ namespace easypr {
     int accuracyCharRecognizeTest(const char* test_path) {
      // find text mapping, for compatiable withe utf-8 and GBK
       std::shared_ptr<easypr::Kv> kv(new easypr::Kv);
-      kv->load("easypr/resources/text/chinese_mapping");
+      kv->load("source/easypr/resources/text/chinese_mapping");
 
       // parameters
       const bool filesNatureSort = false;
@@ -562,7 +562,7 @@ namespace easypr {
 
       int size = files.size();
       if (0 == size) {
-        cout << "No File Found in \"easypr/resources/image/tmp/plates_200k\"!" << endl;
+        cout << "No File Found in \"source/easypr/resources/image/tmp/plates_200k\"!" << endl;
         return 0;
       }
       cout << "Begin to test the easypr accuracy!" << endl;
@@ -836,7 +836,7 @@ namespace easypr {
       for (auto result : all_results) {
         std::cout << result << std::endl;
  
-        ofstream myfile("easypr/resources/result/gridSearch.txt", ios::app);
+        ofstream myfile("source/easypr/resources/result/gridSearch.txt", ios::app);
         if (myfile.is_open()) {
           time_t t = time(0);  // get time now
           struct tm* now = localtime(&t);
