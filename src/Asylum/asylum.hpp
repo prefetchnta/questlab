@@ -98,6 +98,9 @@
 #include "yaw/tree_a.hpp"
 #include "yaw/tree_l.hpp"
 #include "yaw/map_acs.hpp"
+#include "yaw/msg_pack.hpp"
+#include "yaw/mt_queue.hpp"
+#include "yaw/mt_stack.hpp"
 
 /* Trade System */
 #include "trade/kdays.hpp"
