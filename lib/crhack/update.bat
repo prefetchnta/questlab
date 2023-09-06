@@ -4,6 +4,7 @@ copy /Y ..\..\..\FinalBIN\CRHACK\vc2010_win32_x86\CrH_FMTZ.lib
 copy /Y ..\..\..\FinalBIN\CRHACK\vc2010_win32_x86\CrH_GFX2.lib
 copy /Y ..\..\..\FinalBIN\CRHACK\vc2010_win32_x86\CrH_GFX3.lib
 copy /Y ..\..\..\FinalBIN\CRHACK\vc2010_win32_x86\CrH_MATH.lib
+copy /Y ..\..\..\FinalBIN\CRHACK\vc2010_win32_x86\CrH_UTIL.lib
 call makelib.bat
 cd ..\..\bin
 copy /Y ..\..\FinalBIN\CRHACK\vc2010_win32_x86\CrH_*.dll

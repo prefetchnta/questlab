@@ -64,11 +64,18 @@ coff2omf CrH_GFX3.lib omf\CrH_GFX3.lib
 move CrH_GFX3.lib coff\CrH_GFX3.lib
 rem ========================================
 :crh_math
-if not exist CrH_MATH.lib goto gfx2_gdi
+if not exist CrH_MATH.lib goto crh_util
 del coff\CrH_MATH.lib
 del omf\CrH_MATH.lib
 coff2omf CrH_MATH.lib omf\CrH_MATH.lib
 move CrH_MATH.lib coff\CrH_MATH.lib
+rem ========================================
+:crh_util
+if not exist CrH_UTIL.lib goto gfx2_gdi
+del coff\CrH_UTIL.lib
+del omf\CrH_UTIL.lib
+coff2omf CrH_UTIL.lib omf\CrH_UTIL.lib
+move CrH_UTIL.lib coff\CrH_UTIL.lib
 rem ========================================
 :gfx2_gdi
 if not exist GFX2_GDI.lib goto hacklib
