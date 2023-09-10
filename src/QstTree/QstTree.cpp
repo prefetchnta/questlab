@@ -1091,6 +1091,7 @@ static const sQTEE_icon s_ext_list[] =
     {   QST_ICON_GZ         , CR_WS(".tpz")                     },
     {   QST_ICON_WIM        , CR_WS(".wim")                     },
     {   QST_ICON_WIM        , CR_WS(".swm")                     },
+    {   QST_ICON_WIM        , CR_WS(".esd")                     },
     {   QST_ICON_LZH        , CR_WS(".lha")                     },
     {   QST_ICON_LZH        , CR_WS(".lzh")                     },
     {   QST_ICON_DMG        , CR_WS(".dmg")                     },
