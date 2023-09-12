@@ -85,17 +85,24 @@ coff2omf GFX2_GDI.lib omf\GFX2_GDI.lib
 move GFX2_GDI.lib coff\GFX2_GDI.lib
 rem ========================================
 :hacklib
-if not exist HackLib.lib goto complib
+if not exist HackLib.lib goto complib1
 del coff\HackLib.lib
 del omf\HackLib.lib
 coff2omf HackLib.lib omf\HackLib.lib
 move HackLib.lib coff\HackLib.lib
 rem ========================================
-:complib
-if not exist CompLib.lib goto bat_exit
-del coff\CompLib.lib
-del omf\CompLib.lib
-coff2omf CompLib.lib omf\CompLib.lib
-move CompLib.lib coff\CompLib.lib
+:complib1
+if not exist CompLib1.lib goto complib2
+del coff\CompLib1.lib
+del omf\CompLib1.lib
+coff2omf CompLib1.lib omf\CompLib1.lib
+move CompLib1.lib coff\CompLib1.lib
+rem ========================================
+:complib2
+if not exist CompLib2.lib goto bat_exit
+del coff\CompLib2.lib
+del omf\CompLib2.lib
+coff2omf CompLib2.lib omf\CompLib2.lib
+move CompLib2.lib coff\CompLib2.lib
 rem ========================================
 :bat_exit
