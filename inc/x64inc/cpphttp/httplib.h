@@ -8,7 +8,7 @@
 #ifndef CPPHTTPLIB_HTTPLIB_H
 #define CPPHTTPLIB_HTTPLIB_H
 
-#define CPPHTTPLIB_VERSION "0.13.3"
+#define CPPHTTPLIB_VERSION "0.14.0"
 
 /*
  * Configuration
@@ -487,8 +487,7 @@ struct Request {
 
   bool has_header(const std::string &key) const;
   std::string get_header_value(const std::string &key, size_t id = 0) const;
-  template <typename T>
-  T get_header_value(const std::string &key, size_t id = 0) const;
+  uint64_t get_header_value_u64(const std::string &key, size_t id = 0) const;
   size_t get_header_value_count(const std::string &key) const;
   void set_header(const std::string &key, const std::string &val);
 
@@ -520,8 +519,7 @@ struct Response {
 
   bool has_header(const std::string &key) const;
   std::string get_header_value(const std::string &key, size_t id = 0) const;
-  template <typename T>
-  T get_header_value(const std::string &key, size_t id = 0) const;
+  uint64_t get_header_value_u64(const std::string &key, size_t id = 0) const;
   size_t get_header_value_count(const std::string &key) const;
   void set_header(const std::string &key, const std::string &val);
 
@@ -988,8 +986,8 @@ public:
   bool has_request_header(const std::string &key) const;
   std::string get_request_header_value(const std::string &key,
                                        size_t id = 0) const;
-  template <typename T>
-  T get_request_header_value(const std::string &key, size_t id = 0) const;
+  uint64_t get_request_header_value_u64(const std::string &key,
+                                        size_t id = 0) const;
   size_t get_request_header_value_count(const std::string &key) const;
 
 private:
@@ -1710,15 +1708,9 @@ inline void duration_to_sec_and_usec(const T &duration, U callback) {
   callback(static_cast<time_t>(sec), static_cast<time_t>(usec));
 }
 
-template <typename T>
-inline T get_header_value(const Headers & /*headers*/,
-                          const std::string & /*key*/, size_t /*id*/ = 0,
-                          uint64_t /*def*/ = 0) {}
-
-template <>
-inline uint64_t get_header_value<uint64_t>(const Headers &headers,
-                                           const std::string &key, size_t id,
-                                           uint64_t def) {
+inline uint64_t get_header_value_u64(const Headers &headers,
+                                     const std::string &key, size_t id,
+                                     uint64_t def) {
   auto rng = headers.equal_range(key);
   auto it = rng.first;
   std::advance(it, static_cast<ssize_t>(id));
@@ -1730,14 +1722,14 @@ inline uint64_t get_header_value<uint64_t>(const Headers &headers,
 
 } // namespace detail
 
-template <typename T>
-inline T Request::get_header_value(const std::string &key, size_t id) const {
-  return detail::get_header_value<T>(headers, key, id, 0);
+inline uint64_t Request::get_header_value_u64(const std::string &key,
+                                              size_t id) const {
+  return detail::get_header_value_u64(headers, key, id, 0);
 }
 
-template <typename T>
-inline T Response::get_header_value(const std::string &key, size_t id) const {
-  return detail::get_header_value<T>(headers, key, id, 0);
+inline uint64_t Response::get_header_value_u64(const std::string &key,
+                                               size_t id) const {
+  return detail::get_header_value_u64(headers, key, id, 0);
 }
 
 template <typename... Args>
@@ -1906,10 +1898,9 @@ inline std::ostream &operator<<(std::ostream &os, const Error &obj) {
   return os;
 }
 
-template <typename T>
-inline T Result::get_request_header_value(const std::string &key,
-                                          size_t id) const {
-  return detail::get_header_value<T>(request_headers_, key, id, 0);
+inline uint64_t Result::get_request_header_value_u64(const std::string &key,
+                                                     size_t id) const {
+  return detail::get_header_value_u64(request_headers_, key, id, 0);
 }
 
 template <class Rep, class Period>
@@ -3894,7 +3885,7 @@ bool read_content(Stream &strm, T &x, size_t payload_max_length, int &status,
         } else if (!has_header(x.headers, "Content-Length")) {
           ret = read_content_without_length(strm, out);
         } else {
-          auto len = get_header_value<uint64_t>(x.headers, "Content-Length");
+          auto len = get_header_value_u64(x.headers, "Content-Length", 0, 0);
           if (len > payload_max_length) {
             exceed_payload_max_length = true;
             skip_content_with_length(strm, len);
@@ -4986,7 +4977,7 @@ inline bool parse_www_authenticate(const Response &res,
         s = s.substr(pos + 1);
         auto beg = std::sregex_iterator(s.begin(), s.end(), re);
         for (auto i = beg; i != std::sregex_iterator(); ++i) {
-          auto m = *i;
+          const auto &m = *i;
           auto key = s.substr(static_cast<size_t>(m.position(1)),
                               static_cast<size_t>(m.length(1)));
           auto val = m.length(2) > 0
@@ -6723,9 +6714,9 @@ inline bool ClientImpl::read_response_line(Stream &strm, const Request &req,
   if (!line_reader.getline()) { return false; }
 
 #ifdef CPPHTTPLIB_ALLOW_LF_AS_LINE_TERMINATOR
-  const static std::regex re("(HTTP/1\\.[01]) (\\d{3})(?: (.*?))?\r\n");
-#else
   const static std::regex re("(HTTP/1\\.[01]) (\\d{3})(?: (.*?))?\r?\n");
+#else
+  const static std::regex re("(HTTP/1\\.[01]) (\\d{3})(?: (.*?))?\r\n");
 #endif
 
   std::cmatch m;
