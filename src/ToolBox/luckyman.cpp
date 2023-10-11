@@ -252,6 +252,7 @@ int main (int argc, char *argv[])
     sint_t  min = 0;
     sint_t  max = 63;
     uint_t  num = 0;
+    uint_t  tmp = 0;
     fpxx_t* vec = NULL;
 
     /* 参数解析 */
@@ -271,6 +272,13 @@ int main (int argc, char *argv[])
                 {
                     /* 参数4为历史号码文件 */
                     vec = luck_his(argv[4], &num);
+                    if (argc > 5)
+                    {
+                        /* 参数5为使用的号码数 */
+                        tmp = str2intA(argv[5]);
+                        if (tmp > 1 && tmp < num)
+                            num = tmp;
+                    }
                 }
             }
         }

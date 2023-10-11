@@ -167,6 +167,15 @@ if __name__ == "__main__":
     text = fp.read()
     fp.close()
     list = json.loads(text)
+    total = len(list)
+    if len(sys.argv) > 1:
+        used = int(sys.argv[1])
+        if used > total or used <= 1:
+            used = total
+        list = list[:used]
+    else:
+        used = total
+    print("number used: " + str(used))
 
     ############################# 和值分析 #############################
 
@@ -341,10 +350,11 @@ if __name__ == "__main__":
         for cnt in clist:
             if cnt in count4:
                 cnt4 += count4[cnt]
-        # 最终评分 = [(1 - 黄金分割) * 和值评分 + 黄金分割 * 连号评分] * (相似度概率 + 号码平均概率 / 10)
+        # 最终评分 = (1 - 黄金分割) * 和值评分 + 黄金分割 * 连号评分
         value = value * 0.3819660112501 + (cnt2 + cnt3 * 4 + cnt4 * 60) * 0.6180339887499
         sims = json.loads(memo)
-        value *= count0[simxy_type(sims[0], sstep, stype - 1)] + count_make(count1, number) / 10
+        val1 = count0[simxy_type(sims[0], sstep, stype - 1)]
+        val2 = count_make(count1, number)
         # 备注号码类型
         grp = group_type(number)
         if grp[0] == 1 and grp[1] == 0:
@@ -359,7 +369,7 @@ if __name__ == "__main__":
             tags = " XXX"
         table4[number] = value
         table5[number] = tags
-        table6[number] = memo
+        table6[number] = memo + " <" + str(val1) + ", " + str(val2) + ">"
     fp.close()
     table0 = sorted(table4.items(), key=lambda d: d[1], reverse=True)
     for item in table0:
