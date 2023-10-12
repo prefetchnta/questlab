@@ -549,12 +549,12 @@ imglab_camera_get (
 }
 
 /*****************************************************************************/
-/*                                 目标区域                                  */
+/*                                  多边形                                   */
 /*****************************************************************************/
 
 /*
 =======================================
-    释放目标轮廓 (多边形)
+    释放多边形
 =======================================
 */
 CR_API void_t
@@ -570,55 +570,7 @@ imglab_xpoly_del (
 
 /*
 =======================================
-    释放目标区域 (矩形)
-=======================================
-*/
-CR_API void_t
-imglab_rects_del (
-  __CR_IN__ xrect_lst_t list
-    )
-{
-    std::vector<cv::Rect>*  lst;
-
-    lst = (std::vector<cv::Rect>*)list;
-    delete lst;
-}
-
-/*
-=======================================
-    释放目标区域 (四边形)
-=======================================
-*/
-CR_API void_t
-imglab_rocts_del (
-  __CR_IN__ xroct_lst_t list
-    )
-{
-    std::vector<cv::RotatedRect>*   lst;
-
-    lst = (std::vector<cv::RotatedRect>*)list;
-    delete lst;
-}
-
-/*
-=======================================
-    释放目标轮廓 (多边形)
-=======================================
-*/
-CR_API void_t
-imglab_polys_del (
-  __CR_IN__ xpoly_lst_t list
-    )
-{
-    std::vector<std::vector<cv::Point> >*   lst;
-
-    lst = (std::vector<std::vector<cv::Point> >*)list;
-    delete lst;
-}
-
-/*
-=======================================
-    目标轮廓个数 (多边形)
+    返回多边形点数
 =======================================
 */
 CR_API uint_t
@@ -634,55 +586,7 @@ imglab_xpoly_count (
 
 /*
 =======================================
-    目标区域个数 (矩形)
-=======================================
-*/
-CR_API uint_t
-imglab_rects_count (
-  __CR_IN__ xrect_lst_t list
-    )
-{
-    std::vector<cv::Rect>*  lst;
-
-    lst = (std::vector<cv::Rect>*)list;
-    return ((uint_t)(lst->size()));
-}
-
-/*
-=======================================
-    目标区域个数 (四边形)
-=======================================
-*/
-CR_API uint_t
-imglab_rocts_count (
-  __CR_IN__ xroct_lst_t list
-    )
-{
-    std::vector<cv::RotatedRect>*   lst;
-
-    lst = (std::vector<cv::RotatedRect>*)list;
-    return ((uint_t)(lst->size()));
-}
-
-/*
-=======================================
-    目标轮廓个数 (多边形)
-=======================================
-*/
-CR_API uint_t
-imglab_polys_count (
-  __CR_IN__ xpoly_lst_t list
-    )
-{
-    std::vector<std::vector<cv::Point> >*   lst;
-
-    lst = (std::vector<std::vector<cv::Point> >*)list;
-    return ((uint_t)(lst->size()));
-}
-
-/*
-=======================================
-    目标轮廓索引 (多边形)
+    多边形点坐标索引
 =======================================
 */
 CR_API xpnt2_t
@@ -706,7 +610,111 @@ imglab_xpoly_idx (
 
 /*
 =======================================
-    目标区域索引 (矩形)
+    获取多边形点坐标
+=======================================
+*/
+CR_API void_t
+imglab_xpoly_get (
+  __CR_OT__ sPNT2*  pnt,
+  __CR_IN__ xpnt2_t con,
+  __CR_IN__ uint_t  count
+    )
+{
+    cv::Point*  ptr = (cv::Point*)con;
+
+    for (uint_t idx = 0; idx < count; idx++, ptr++) {
+        pnt[idx].x = ptr->x;
+        pnt[idx].y = ptr->y;
+    }
+}
+
+/*
+=======================================
+    设置多边形点坐标
+=======================================
+*/
+CR_API void_t
+imglab_xpoly_set (
+  __CR_OT__ xpnt2_t         con,
+  __CR_IN__ const sPNT2*    pnt,
+  __CR_IN__ uint_t          count
+    )
+{
+    cv::Point*  ptr = (cv::Point*)con;
+
+    for (uint_t idx = 0; idx < count; idx++, ptr++) {
+        ptr->x = pnt[idx].x;
+        ptr->y = pnt[idx].y;
+    }
+}
+
+/*
+=======================================
+    绘制多边形调试框 (单个)
+=======================================
+*/
+CR_API void_t
+imglab_draw_xploy (
+  __CR_IO__ ximage_t    mat,
+  __CR_IN__ xpoly_t     ply,
+  __CR_IN__ cpix_t      color,
+  __CR_IN__ int         lbold
+    )
+{
+    size_t                  idx, count;
+    std::vector<cv::Point>* con = (std::vector<cv::Point>*)ply;
+
+    count = con->size();
+    if (count-- <= 2)
+        return;
+
+    cv::Mat*    img = (cv::Mat*)mat;
+    cv::Scalar  clr = CPIX2SCALAR(color);
+
+    for (idx = 0; idx < count; idx++)
+        cv::line(*img, (*con)[idx], (*con)[idx + 1], clr, lbold);
+    cv::line(*img, (*con)[0], (*con)[idx], clr, lbold);
+}
+
+/*****************************************************************************/
+/*                                 矩形列表                                  */
+/*****************************************************************************/
+
+/*
+=======================================
+    释放矩形列表
+=======================================
+*/
+CR_API void_t
+imglab_rects_del (
+  __CR_IN__ xrect_lst_t list
+    )
+{
+    std::vector<cv::Rect>*  lst;
+
+    lst = (std::vector<cv::Rect>*)list;
+    delete lst;
+}
+
+/*
+=======================================
+    返回列表矩形个数
+=======================================
+*/
+CR_API uint_t
+imglab_rects_count (
+  __CR_IN__ xrect_lst_t list
+    )
+{
+    std::vector<cv::Rect>*  lst;
+
+    lst = (std::vector<cv::Rect>*)list;
+    return ((uint_t)(lst->size()));
+}
+
+/*
+=======================================
+    列表矩形坐标索引
 =======================================
 */
 CR_API xrect_t
@@ -730,7 +738,163 @@ imglab_rects_idx (
 
 /*
 =======================================
-    目标区域索引 (四边形)
+    获取列表矩形坐标
+=======================================
+*/
+CR_API void_t
+imglab_rects_get (
+  __CR_OT__ sRECT*  box,
+  __CR_IN__ xrect_t rct,
+  __CR_IN__ uint_t  count
+    )
+{
+    cv::Rect*   ptr = (cv::Rect*)rct;
+
+    for (uint_t idx = 0; idx < count; idx++, ptr++)
+        rect_set_wh(&box[idx], ptr->x, ptr->y, ptr->width, ptr->height);
+}
+
+/*
+=======================================
+    设置列表矩形坐标
+=======================================
+*/
+CR_API void_t
+imglab_rects_set (
+  __CR_OT__ xrect_t         rct,
+  __CR_IN__ const sRECT*    box,
+  __CR_IN__ uint_t          count
+    )
+{
+    cv::Rect*   ptr = (cv::Rect*)rct;
+
+    for (uint_t idx = 0; idx < count; idx++, ptr++) {
+        ptr->x      = (int)box[idx].x1;
+        ptr->y      = (int)box[idx].y1;
+        ptr->width  = (int)box[idx].ww;
+        ptr->height = (int)box[idx].hh;
+    }
+}
+
+/*
+=======================================
+    绘制矩形调试框 (单个)
+=======================================
+*/
+CR_API void_t
+imglab_draw_xrect (
+  __CR_IO__ ximage_t    mat,
+  __CR_IN__ xrect_t     rct,
+  __CR_IN__ cpix_t      color,
+  __CR_IN__ int         xbias,
+  __CR_IN__ int         ybias,
+  __CR_IN__ int         lbold
+    )
+{
+    int         lww = xbias * 2;
+    int         lhh = ybias * 2;
+    cv::Mat*    img = (cv::Mat*)mat;
+    cv::Rect*   con = (cv::Rect*)rct;
+    cv::Scalar  clr = CPIX2SCALAR(color);
+    cv::Rect    tmp;
+
+    tmp.x = con->x - xbias;
+    tmp.y = con->y - ybias;
+    tmp.width  = con->width  + lww;
+    tmp.height = con->height + lhh;
+    cv::rectangle(*img, tmp, clr, lbold);
+}
+
+/*
+=======================================
+    绘制矩形调试框 (多个)
+=======================================
+*/
+CR_API void_t
+imglab_draw_rects (
+  __CR_IO__ ximage_t    mat,
+  __CR_IN__ xrect_lst_t list,
+  __CR_IN__ cpix_t      color,
+  __CR_IN__ int         xbias,
+  __CR_IN__ int         ybias,
+  __CR_IN__ int         lbold,
+  __CR_IN__ int         index
+    )
+{
+    std::vector<cv::Rect>*  lst;
+
+    lst = (std::vector<cv::Rect>*)list;
+    if (index >= (int)lst->size())
+        return;
+
+    int         lww = xbias * 2;
+    int         lhh = ybias * 2;
+    cv::Mat*    img = (cv::Mat*)mat;
+    cv::Scalar  clr = CPIX2SCALAR(color);
+    cv::Rect    tmp;
+
+    if (index < 0)
+    {
+        for (auto rct : *lst)
+        {
+            tmp.x = rct.x - xbias;
+            tmp.y = rct.y - ybias;
+            tmp.width  = rct.width  + lww;
+            tmp.height = rct.height + lhh;
+            cv::rectangle(*img, tmp, clr, lbold);
+        }
+    }
+    else
+    {
+        cv::Rect*   rct = &((*lst)[index]);
+
+        tmp.x = rct->x - xbias;
+        tmp.y = rct->y - ybias;
+        tmp.width  = rct->width  + lww;
+        tmp.height = rct->height + lhh;
+        cv::rectangle(*img, tmp, clr, lbold);
+    }
+}
+
+/*****************************************************************************/
+/*                                四边形列表                                 */
+/*****************************************************************************/
+
+/*
+=======================================
+    释放四边形列表
+=======================================
+*/
+CR_API void_t
+imglab_rocts_del (
+  __CR_IN__ xroct_lst_t list
+    )
+{
+    std::vector<cv::RotatedRect>*   lst;
+
+    lst = (std::vector<cv::RotatedRect>*)list;
+    delete lst;
+}
+
+/*
+=======================================
+    返回列表四边形个数
+=======================================
+*/
+CR_API uint_t
+imglab_rocts_count (
+  __CR_IN__ xroct_lst_t list
+    )
+{
+    std::vector<cv::RotatedRect>*   lst;
+
+    lst = (std::vector<cv::RotatedRect>*)list;
+    return ((uint_t)(lst->size()));
+}
+
+/*
+=======================================
+    列表四边形坐标索引
 =======================================
 */
 CR_API xroct_t
@@ -754,111 +918,7 @@ imglab_rocts_idx (
 
 /*
 =======================================
-    目标轮廓索引 (多边形)
-=======================================
-*/
-CR_API xpoly_t
-imglab_polys_idx (
-  __CR_IN__ xpoly_lst_t list,
-  __CR_IN__ uint_t      idx
-    )
-{
-    std::vector<cv::Point>*                 con;
-    std::vector<std::vector<cv::Point> >*   lst;
-
-    lst = (std::vector<std::vector<cv::Point> >*)list;
-    try {
-        con = &lst->at(idx);
-    }
-    catch (...) {
-        return (NULL);
-    }
-    return ((xpoly_t)con);
-}
-
-/*
-=======================================
-    获取目标轮廓 (多边形)
-=======================================
-*/
-CR_API void_t
-imglab_xpoly_get (
-  __CR_OT__ sPNT2*  pnt,
-  __CR_IN__ xpnt2_t con,
-  __CR_IN__ uint_t  count
-    )
-{
-    cv::Point*  ptr = (cv::Point*)con;
-
-    for (uint_t idx = 0; idx < count; idx++, ptr++) {
-        pnt[idx].x = ptr->x;
-        pnt[idx].y = ptr->y;
-    }
-}
-
-/*
-=======================================
-    设置目标轮廓 (多边形)
-=======================================
-*/
-CR_API void_t
-imglab_xpoly_set (
-  __CR_OT__ xpnt2_t         con,
-  __CR_IN__ const sPNT2*    pnt,
-  __CR_IN__ uint_t          count
-    )
-{
-    cv::Point*  ptr = (cv::Point*)con;
-
-    for (uint_t idx = 0; idx < count; idx++, ptr++) {
-        ptr->x = pnt[idx].x;
-        ptr->y = pnt[idx].y;
-    }
-}
-
-/*
-=======================================
-    获取目标区域 (矩形)
-=======================================
-*/
-CR_API void_t
-imglab_rects_get (
-  __CR_OT__ sRECT*  box,
-  __CR_IN__ xrect_t rct,
-  __CR_IN__ uint_t  count
-    )
-{
-    cv::Rect*   ptr = (cv::Rect*)rct;
-
-    for (uint_t idx = 0; idx < count; idx++, ptr++)
-        rect_set_wh(&box[idx], ptr->x, ptr->y, ptr->width, ptr->height);
-}
-
-/*
-=======================================
-    设置目标区域 (矩形)
-=======================================
-*/
-CR_API void_t
-imglab_rects_set (
-  __CR_OT__ xrect_t         rct,
-  __CR_IN__ const sRECT*    box,
-  __CR_IN__ uint_t          count
-    )
-{
-    cv::Rect*   ptr = (cv::Rect*)rct;
-
-    for (uint_t idx = 0; idx < count; idx++, ptr++) {
-        ptr->x = (int)box[idx].x1;
-        ptr->y = (int)box[idx].y1;
-        ptr->width  = (int)box[idx].ww;
-        ptr->height = (int)box[idx].hh;
-    }
-}
-
-/*
-=======================================
-    获取目标区域 (四边形)
+    获取列表四边形坐标
 =======================================
 */
 CR_API void_t
@@ -886,7 +946,7 @@ imglab_rocts_get (
 
 /*
 =======================================
-    获取目标区域 (四边形)
+    获取列表四边形坐标
 =======================================
 */
 CR_API void_t
@@ -915,7 +975,7 @@ imglab_rocts_get2 (
 
 /*
 =======================================
-    设置目标区域 (四边形)
+    设置列表四边形坐标
 =======================================
 */
 CR_API void_t
@@ -952,7 +1012,7 @@ imglab_rocts_set (
 
 /*
 =======================================
-    设置目标区域 (四边形)
+    设置列表四边形坐标
 =======================================
 */
 CR_API void_t
@@ -978,70 +1038,32 @@ imglab_rocts_set2 (
 
 /*
 =======================================
-    绘制调试框 (多边形)
+    绘制四边形调试框 (单个)
 =======================================
 */
 CR_API void_t
-imglab_draw_xploy (
+imglab_draw_xroct (
   __CR_IO__ ximage_t    mat,
-  __CR_IN__ xpoly_t     ply,
+  __CR_IN__ xroct_t     rct,
   __CR_IN__ cpix_t      color,
   __CR_IN__ int         lbold
     )
 {
-    size_t                  idx, count;
-    std::vector<cv::Point>* con = (std::vector<cv::Point>*)ply;
+    cv::Mat*            img = (cv::Mat*)mat;
+    cv::Scalar          clr = CPIX2SCALAR(color);
+    cv::RotatedRect*    con = (cv::RotatedRect*)rct;
+    cv::Point2f         pnt[4];
 
-    count = con->size();
-    if (count-- <= 2)
-        return;
-
-    cv::Mat*    img = (cv::Mat*)mat;
-    cv::Scalar  clr = CPIX2SCALAR(color);
-
-    for (idx = 0; idx < count; idx++)
-        cv::line(*img, (*con)[idx], (*con)[idx + 1], clr, lbold);
-    cv::line(*img, (*con)[0], (*con)[idx], clr, lbold);
+    con->points(pnt);
+    cv::line(*img, pnt[0], pnt[1], clr, lbold);
+    cv::line(*img, pnt[1], pnt[2], clr, lbold);
+    cv::line(*img, pnt[2], pnt[3], clr, lbold);
+    cv::line(*img, pnt[3], pnt[0], clr, lbold);
 }
 
 /*
 =======================================
-    绘制调试框 (矩形)
-=======================================
-*/
-CR_API void_t
-imglab_draw_rects (
-  __CR_IO__ ximage_t    mat,
-  __CR_IN__ xrect_lst_t list,
-  __CR_IN__ cpix_t      color,
-  __CR_IN__ int         xbias,
-  __CR_IN__ int         ybias,
-  __CR_IN__ int         lbold
-    )
-{
-    int         lww = xbias * 2;
-    int         lhh = ybias * 2;
-    cv::Mat*    img = (cv::Mat*)mat;
-    cv::Scalar  clr = CPIX2SCALAR(color);
-    /* ------------------------------- */
-    std::vector<cv::Rect>*  lst;
-
-    lst = (std::vector<cv::Rect>*)list;
-    for (auto rct : *lst)
-    {
-        cv::Rect    tmp;
-
-        tmp.x = rct.x - xbias;
-        tmp.y = rct.y - ybias;
-        tmp.width  = rct.width  + lww;
-        tmp.height = rct.height + lhh;
-        cv::rectangle(*img, tmp, clr, lbold);
-    }
-}
-
-/*
-=======================================
-    绘制调试框 (四边形)
+    绘制四边形调试框 (多个)
 =======================================
 */
 CR_API void_t
@@ -1049,20 +1071,36 @@ imglab_draw_rocts (
   __CR_IO__ ximage_t    mat,
   __CR_IN__ xroct_lst_t list,
   __CR_IN__ cpix_t      color,
-  __CR_IN__ int         lbold
+  __CR_IN__ int         lbold,
+  __CR_IN__ int         index
     )
 {
-    cv::Mat*    img = (cv::Mat*)mat;
-    cv::Scalar  clr = CPIX2SCALAR(color);
-    /* ------------------------------- */
     std::vector<cv::RotatedRect>*   lst;
 
     lst = (std::vector<cv::RotatedRect>*)list;
-    for (auto rct : *lst)
-    {
-        cv::Point2f pnt[4];
+    if (index >= (int)lst->size())
+        return;
 
-        rct.points(pnt);
+    cv::Mat*    img = (cv::Mat*)mat;
+    cv::Scalar  clr = CPIX2SCALAR(color);
+    cv::Point2f pnt[4];
+
+    if (index < 0)
+    {
+        for (auto rct : *lst)
+        {
+            rct.points(pnt);
+            cv::line(*img, pnt[0], pnt[1], clr, lbold);
+            cv::line(*img, pnt[1], pnt[2], clr, lbold);
+            cv::line(*img, pnt[2], pnt[3], clr, lbold);
+            cv::line(*img, pnt[3], pnt[0], clr, lbold);
+        }
+    }
+    else
+    {
+        cv::RotatedRect*    rct = &((*lst)[index]);
+
+        rct->points(pnt);
         cv::line(*img, pnt[0], pnt[1], clr, lbold);
         cv::line(*img, pnt[1], pnt[2], clr, lbold);
         cv::line(*img, pnt[2], pnt[3], clr, lbold);
@@ -1070,9 +1108,69 @@ imglab_draw_rocts (
     }
 }
 
+/*****************************************************************************/
+/*                                多边形列表                                 */
+/*****************************************************************************/
+
 /*
 =======================================
-    绘制调试框 (多边形)
+    释放多边形列表
+=======================================
+*/
+CR_API void_t
+imglab_polys_del (
+  __CR_IN__ xpoly_lst_t list
+    )
+{
+    std::vector<std::vector<cv::Point> >*   lst;
+
+    lst = (std::vector<std::vector<cv::Point> >*)list;
+    delete lst;
+}
+
+/*
+=======================================
+    返回列表多边形个数
+=======================================
+*/
+CR_API uint_t
+imglab_polys_count (
+  __CR_IN__ xpoly_lst_t list
+    )
+{
+    std::vector<std::vector<cv::Point> >*   lst;
+
+    lst = (std::vector<std::vector<cv::Point> >*)list;
+    return ((uint_t)(lst->size()));
+}
+
+/*
+=======================================
+    列表多边形对象索引
+=======================================
+*/
+CR_API xpoly_t
+imglab_polys_idx (
+  __CR_IN__ xpoly_lst_t list,
+  __CR_IN__ uint_t      idx
+    )
+{
+    std::vector<cv::Point>*                 con;
+    std::vector<std::vector<cv::Point> >*   lst;
+
+    lst = (std::vector<std::vector<cv::Point> >*)list;
+    try {
+        con = &lst->at(idx);
+    }
+    catch (...) {
+        return (NULL);
+    }
+    return ((xpoly_t)con);
+}
+
+/*
+=======================================
+    绘制多边形调试框 (多个)
 =======================================
 */
 CR_API void_t
@@ -1080,8 +1178,8 @@ imglab_draw_ploys (
   __CR_IO__ ximage_t    mat,
   __CR_IN__ xpoly_lst_t list,
   __CR_IN__ cpix_t      color,
-  __CR_IN__ int         index,
-  __CR_IN__ int         lbold
+  __CR_IN__ int         lbold,
+  __CR_IN__ int         index
     )
 {
     std::vector<std::vector<cv::Point> >*   lst;

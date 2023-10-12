@@ -132,19 +132,26 @@ CR_API void_t   imglab_rocts_set (xroct_t rct, const sRECT *box,
 
 CR_API void_t   imglab_rocts_set2 (xroct_t rct, const sPNT2 *pnt,
                                    uint_t count CR_DEFAULT(1));
-/* OpenCV 绘制调试方框 */
-CR_API void_t   imglab_draw_xploy (ximage_t mat, xpoly_t ply,
-                                   cpix_t color, int lbold);
-
-CR_API void_t   imglab_draw_rects (ximage_t mat, xrect_lst_t list,
+/* OpenCV 绘制调试框 */
+CR_API void_t   imglab_draw_xrect (ximage_t mat, xrect_t rct,
                                    cpix_t color, int xbias, int ybias,
                                    int lbold);
 
+CR_API void_t   imglab_draw_rects (ximage_t mat, xrect_lst_t list,
+                                   cpix_t color, int xbias, int ybias,
+                                   int lbold, int index);
+
+CR_API void_t   imglab_draw_xroct (ximage_t mat, xroct_t rct,
+                                   cpix_t color, int lbold);
+
 CR_API void_t   imglab_draw_rocts (ximage_t mat, xroct_lst_t list,
+                                   cpix_t color, int lbold, int index);
+
+CR_API void_t   imglab_draw_xploy (ximage_t mat, xpoly_t ply,
                                    cpix_t color, int lbold);
 
 CR_API void_t   imglab_draw_ploys (ximage_t mat, xpoly_lst_t list,
-                                   cpix_t color, int index, int lbold);
+                                   cpix_t color, int lbold, int index);
 
 /*****************************************************************************/
 /*                                 图片滤波                                  */
