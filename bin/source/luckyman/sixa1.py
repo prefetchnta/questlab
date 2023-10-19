@@ -350,8 +350,8 @@ if __name__ == "__main__":
         for cnt in clist:
             if cnt in count4:
                 cnt4 += count4[cnt]
-        # 最终评分 = (1 - 黄金分割) * 和值评分 + 黄金分割 * 连号评分
-        value = value * 0.3819660112501 + (cnt2 + cnt3 * 4 + cnt4 * 60) * 0.6180339887499
+        # 最终评分 = 和值评分 + 连号评分
+        value += cnt2 + cnt3 * 4 + cnt4 * 60
         sims = json.loads(memo)
         val1 = count0[simxy_type(sims[0], sstep, stype - 1)]
         val2 = count_make(count1, number)

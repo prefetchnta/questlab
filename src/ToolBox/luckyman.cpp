@@ -285,29 +285,48 @@ int main (int argc, char *argv[])
     }
 
     /* 参数范围过滤 */
-    if      (min <  0) min = 0;
-    else if (min > 63) min = 63;
-    if      (max <  0) max = 0;
-    else if (max > 63) max = 63;
-    rand_seed(timer_get32());
-    for (idx = 0; idx < cnt; idx++) {
-        for (mix = 188; ; mix /= 88) {
-            if (mix >= 8888)
-                mix %= 8888;
-            thread_sleep(mix);
-            sys = GetTickCount();
-            cpu = __rdtsc();
-            mix = luck_gen(idx + rand_get(), sys, cpu);
-            if (mix > 100000 && luck_flt(mix, min, max, &sum))
-                break;
+    if (cnt != 0)
+    {
+        /* 随机生成号码 */
+        if      (min <  0) min = 0;
+        else if (min > 63) min = 63;
+        if      (max <  0) max = 0;
+        else if (max > 63) max = 63;
+        rand_seed(timer_get32());
+        for (idx = 0; idx < cnt; idx++) {
+            for (mix = 188; ; mix /= 88) {
+                if (mix >= 8888)
+                    mix %= 8888;
+                thread_sleep(mix);
+                sys = GetTickCount();
+                cpu = __rdtsc();
+                mix = luck_gen(idx + rand_get(), sys, cpu);
+                if (mix > 100000 && luck_flt(mix, min, max, &sum))
+                    break;
+            }
+            printf("%06u+%u=%u", mix / 10, mix % 10, sum);
+            if (vec != NULL && num != 0) {
+                luck_sim(sim, mix, vec, num);
+                printf(" [%.15f, %.15f, %.15f, %.15f]",
+                        sim[0], sim[1], sim[2], sim[3]);
+            }
+            printf("\n");
         }
-        printf("%06u+%u=%u", mix / 10, mix % 10, sum);
-        if (vec != NULL && num != 0) {
-            luck_sim(sim, mix, vec, num);
-            printf(" [%.15f, %.15f, %.15f, %.15f]",
-                    sim[0], sim[1], sim[2], sim[3]);
+    }
+    else
+    {
+        /* 穷举生成号码 */
+        for (mix = 0; mix <= 9999999; mix++) {
+            if (luck_flt(mix, 0, 63, &sum)) {
+                printf("%06u+%u=%u", mix / 10, mix % 10, sum);
+                if (vec != NULL && num != 0) {
+                    luck_sim(sim, mix, vec, num);
+                    printf(" [%.15f, %.15f, %.15f, %.15f]",
+                            sim[0], sim[1], sim[2], sim[3]);
+                }
+                printf("\n");
+            }
         }
-        printf("\n");
     }
     TRY_FREE(vec);
     return (QST_OKAY);
