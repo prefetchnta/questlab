@@ -102,4 +102,8 @@ Unfold = 96,
 GridSample = 97,
 CumulativeSum = 98,
 CopyTo = 99,
+Erf = 100,
+Diag = 101,
+CELU = 102,
+Shrink = 103,
 

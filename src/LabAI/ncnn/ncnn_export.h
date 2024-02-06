@@ -9,36 +9,20 @@
 #  ifndef NCNN_EXPORT
 #    ifdef ncnn_EXPORTS
         /* We are building this library */
-#      ifdef _MSC_VER
-#        define NCNN_EXPORT __declspec(dllexport)
-#      else
-#        define NCNN_EXPORT __attribute__((visibility("default")))
-#      endif
+#      define NCNN_EXPORT __declspec(dllexport)
 #    else
         /* We are using this library */
-#      ifdef _MSC_VER
-#        define NCNN_EXPORT __declspec(dllimport)
-#      else
-#        define NCNN_EXPORT __attribute__((visibility("default")))
-#      endif
+#      define NCNN_EXPORT __declspec(dllimport)
 #    endif
 #  endif
 
 #  ifndef NCNN_NO_EXPORT
-#    ifdef _MSC_VER
-#      define NCNN_NO_EXPORT
-#    else
-#      define NCNN_NO_EXPORT __attribute__((visibility("hidden")))
-#    endif
+#    define NCNN_NO_EXPORT 
 #  endif
 #endif
 
 #ifndef NCNN_DEPRECATED
-#  ifdef _MSC_VER
-#    define NCNN_DEPRECATED __declspec(deprecated)
-#  else
-#    define NCNN_DEPRECATED __attribute__ ((__deprecated__))
-#  endif
+#  define NCNN_DEPRECATED __declspec(deprecated)
 #endif
 
 #ifndef NCNN_DEPRECATED_EXPORT
