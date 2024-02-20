@@ -116,6 +116,7 @@
         <item code="000813" path="source\\trade\\index\\000813.day">细分化工</item>
         <item code="000819" path="source\\trade\\index\\000819.day">有色金属</item>
         <item code="000852" path="source\\trade\\index\\000852.day">中证1000</item>
+        <item code="000861" path="source\\trade\\index\\000861.day">央企创新</item>
         <item code="000905" path="source\\trade\\index\\000905.day">中证500</item>
         <item code="399001" path="source\\trade\\index\\399001.day">深证成指</item>
         <item code="399006" path="source\\trade\\index\\399006.day">创业板指</item>
@@ -137,6 +138,7 @@
         <item code="399997" path="source\\trade\\index\\399997.day">中证白酒</item>
         <item code="399998" path="source\\trade\\index\\399998.day">中证煤炭</item>
         <item code="885925" path="source\\trade\\index\\885925.day">MCU芯片</item>
+        <item code="899050" path="source\\trade\\index\\899050.day">北证50</item>
         <item code="930606" path="source\\trade\\index\\930606.day">中证钢铁</item>
         <item code="930608" path="source\\trade\\index\\930608.day">中证基建</item>
         <item code="930641" path="source\\trade\\index\\930641.day">中证中药</item>
@@ -145,11 +147,15 @@
         <item code="930713" path="source\\trade\\index\\930713.day">CS人工智</item>
         <item code="930901" path="source\\trade\\index\\930901.day">动漫游戏</item>
         <item code="930902" path="source\\trade\\index\\930902.day">中证数据</item>
+        <item code="930955" path="source\\trade\\index\\930955.day">红利低波100</item>
         <item code="931079" path="source\\trade\\index\\931079.day">5G通信</item>
         <item code="931151" path="source\\trade\\index\\931151.day">光伏产业</item>
         <item code="931672" path="source\\trade\\index\\931672.day">风电产业</item>
         <item code="931775" path="source\\trade\\index\\931775.day">房地产</item>
+        <item code="980030" path="source\\trade\\index\\980030.day">消费电子</item>
         <item code="980032" path="source\\trade\\index\\980032.day">新能电池</item>
+        <item code="H30035" path="source\\trade\\index\\H30035.day">300非银</item>
         <item code="H30184" path="source\\trade\\index\\H30184.day">半导体</item>
+        <item code="H30199" path="source\\trade\\index\\H30199.day">电力指数</item>
     </IndexList>
 </QstTrade>
