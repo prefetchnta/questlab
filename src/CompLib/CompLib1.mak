@@ -11,7 +11,9 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)blz_depack.$(O) \
          .$(L)blz_depacks.$(O) \
          .$(L)comp_brotli.$(O) \
-         .$(L)brotli$(L)libbrotli.a \
+         .$(L)brotli$(L)libbrotlicommon.a \
+         .$(L)brotli$(L)libbrotlidec.a \
+         .$(L)brotli$(L)libbrotlienc.a \
          .$(L)comp_lz4.$(O) \
          .$(L)lz4$(L)liblz4_static.lib \
          .$(L)comp_qlz.$(O) \
