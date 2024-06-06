@@ -29,7 +29,7 @@
 #define EXE_XNAME   "zOpenCV64"
 
 /* 外部库引用 */
-#pragma comment (lib, "opencv_world490.lib")
+#pragma comment (lib, "opencv_world4100.lib")
 
 /* 桥接函数 */
 #include "../bridge.inl"
