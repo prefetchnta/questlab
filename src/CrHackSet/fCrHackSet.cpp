@@ -1414,12 +1414,9 @@ image_tesseract_ocr (
         /* 保存到临时文件并加载 */
         file_saveA(QST_PATH_OUTPUT "tesseract.txt", rett, str_lenA(rett));
         tessocr_str_free(rett);
-        lang = str_fmtA("qedt:ldr:file " QST_PATH_OUTPUT
-                        "tesseract.txt 0 0 65001");
-        if (lang != NULL) {
-            if (netw != NULL)
-                cmd_shl_send((socket_t)netw, lang);
-            mem_free(lang);
+        if (netw != NULL) {
+            cmd_shl_send((socket_t)netw, "qedt:ldr:file " QST_PATH_OUTPUT
+                                         "tesseract.txt 0 0 65001");
         }
     }
 _func_out:
@@ -1518,7 +1515,19 @@ image_quest64_bridge (
             message_pipe_timeout(mess, QST_TCP_TOUT);
             if (message_recv_buffer(mess, dsrc, info[0]) == info[0]) {
                 if (netw != NULL)
-                    netw_cmd_send((socket_t)netw, dsrc);
+                {
+                    sINIu*  cmdz = ini_parseU(dsrc);
+
+                    if (cmdz != NULL) {
+                        for (leng_t idx = 0; idx < cmdz->count; idx++)
+                        {
+                            ansi_t  *one = cmdz->lines[idx];
+
+                            netw_cmd_send((socket_t)netw, str_trimA(one));
+                        }
+                        ini_closeU(cmdz);
+                    }
+                }
             }
             mem_free(dsrc);
         }
