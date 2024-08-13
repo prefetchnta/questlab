@@ -17,7 +17,8 @@ nop_list = []
 for dirpath, dirnames, filenames in os.walk("."):
     if len(filenames) == 0:
         continue
-    if dirpath.find(".\\x64bin") >= 0:
+    if dirpath.find(".\\x64bin") >= 0 or \
+       dirpath.find(".\\source\\ffmpeg") >= 0:
         continue
     for filename in filenames:
         pth, fnm = os.path.split(filename)
