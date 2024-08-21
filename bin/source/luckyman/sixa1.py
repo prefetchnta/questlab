@@ -134,7 +134,7 @@ def analyse3(item1, item2):
         exy += xy
         dv1 += xx
         dv2 += yy
-    # 欧式相似度
+    # 欧氏相似度
     sim1 = 1 - math.sqrt(float(dlt) / tot)
     # 余弦相似度
     sim2 = exy / (math.sqrt(dv1 * dv2))
