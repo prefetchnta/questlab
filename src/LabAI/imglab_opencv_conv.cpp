@@ -32,7 +32,7 @@
 =======================================
 */
 CR_API void_t
-imglab_blur_box (
+imglab_ocv_blur_box (
   __CR_IN__ ximage_t    mat,
   __CR_IN__ uint_t      ksize_x,
   __CR_IN__ uint_t      ksize_y
@@ -61,7 +61,7 @@ imglab_blur_box (
 =======================================
 */
 CR_API void_t
-imglab_blur_gauss (
+imglab_ocv_blur_gauss (
   __CR_IN__ ximage_t    mat,
   __CR_IN__ uint_t      ksize_x,
   __CR_IN__ uint_t      ksize_y,
@@ -92,7 +92,7 @@ imglab_blur_gauss (
 =======================================
 */
 CR_API void_t
-imglab_blur_median (
+imglab_ocv_blur_median (
   __CR_IN__ ximage_t    mat,
   __CR_IN__ uint_t      ksize
     )

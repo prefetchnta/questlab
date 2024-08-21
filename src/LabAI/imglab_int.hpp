@@ -34,4 +34,7 @@
 #define CPIX2SCALAR(cpix) \
     cv::Scalar(cpix.c32.bbb, cpix.c32.ggg, cpix.c32.rrr, cpix.c32.lrp)
 
+/* ImgLAB 内部工具函数 */
+xpoly_lst_t imglab_split_to_xpoly (std::vector<cv::Point> *pnts, size_t usize);
+
 #endif  /* !__IMGLAB_INT_HPP__ */

@@ -1193,3 +1193,31 @@ imglab_draw_ploys (
 
     cv::drawContours(*img, *lst, index, clr, lbold);
 }
+
+/*****************************************************************************/
+/*                               图形绘制函数                                */
+/*****************************************************************************/
+
+/*
+=======================================
+    绘制文本字符串
+=======================================
+*/
+CR_API void_t
+imglab_draw_text (
+  __CR_IO__ ximage_t        mat,
+  __CR_IN__ const ansi_t*   text,
+  __CR_IN__ sint_t          dx,
+  __CR_IN__ sint_t          dy,
+  __CR_IN__ sint_t          font,
+  __CR_IN__ sint_t          height,
+  __CR_IN__ cpix_t          color,
+  __CR_IN__ sint_t          lbold
+    )
+{
+    cv::Mat*    img = (cv::Mat*)mat;
+    cv::Scalar  clr = CPIX2SCALAR(color);
+    double      scale = cv::getFontScaleFromHeight(font, height, lbold);
+
+    cv::putText(*img, text, cv::Point(dx, dy), font, scale, clr, lbold);
+}

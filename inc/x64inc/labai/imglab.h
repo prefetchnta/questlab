@@ -154,18 +154,36 @@ CR_API void_t   imglab_draw_ploys (ximage_t mat, xpoly_lst_t list,
                                    cpix_t color, int lbold, int index);
 
 /*****************************************************************************/
+/*                                 图形绘制                                  */
+/*****************************************************************************/
+
+/* OpenCV 绘制函数 */
+#define FONT_OCV_HERSHEY_SIMPLEX        0
+#define FONT_OCV_HERSHEY_PLAIN          1
+#define FONT_OCV_HERSHEY_DUPLEX         2
+#define FONT_OCV_HERSHEY_COMPLEX        3
+#define FONT_OCV_HERSHEY_TRIPLEX        4
+#define FONT_OCV_HERSHEY_COMPLEX_SMALL  5
+#define FONT_OCV_HERSHEY_SCRIPT_SIMPLEX 6
+#define FONT_OCV_HERSHEY_SCRIPT_COMPLEX 7
+#define FONT_OCV_ITALIC                 16
+CR_API void_t   imglab_draw_text (ximage_t mat, const ansi_t *text,
+                            sint_t dx, sint_t dy, sint_t font, sint_t height,
+                                    cpix_t color, sint_t lbold);
+
+/*****************************************************************************/
 /*                                 图片滤波                                  */
 /*****************************************************************************/
 
 /* OpenCV 均值滤波 */
-CR_API void_t   imglab_blur_box (ximage_t mat, uint_t ksize_x,
-                                 uint_t ksize_y);
+CR_API void_t   imglab_ocv_blur_box (ximage_t mat, uint_t ksize_x,
+                                     uint_t ksize_y);
 /* OpenCV 高斯滤波 */
-CR_API void_t   imglab_blur_gauss (ximage_t mat, uint_t ksize_x,
-                                   uint_t ksize_y, fp64_t sigma_x,
-                                   fp64_t sigma_y);
+CR_API void_t   imglab_ocv_blur_gauss (ximage_t mat, uint_t ksize_x,
+                                       uint_t ksize_y, fp64_t sigma_x,
+                                       fp64_t sigma_y);
 /* OpenCV 中值滤波 */
-CR_API void_t   imglab_blur_median (ximage_t mat, uint_t ksize);
+CR_API void_t   imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
 
 /*****************************************************************************/
 /*                                 图片分类                                  */
@@ -175,17 +193,41 @@ CR_API void_t   imglab_blur_median (ximage_t mat, uint_t ksize);
 typedef void_t*     cascade_ocv_t;      /* cv::CascadeClassifier* */
 
 /* OpenCV 级联分类器 */
-CR_API cascade_ocv_t    imglab_ocv_cascade_new (const ansi_t *file);
-CR_API void_t           imglab_ocv_cascade_del (cascade_ocv_t clss);
-CR_API bool_t           imglab_ocv_cascade_load (cascade_ocv_t clss,
-                                                 const ansi_t *file);
+CR_API cascade_ocv_t
+imglab_ocv_cascade_new (const ansi_t *file);
+
+CR_API void_t
+imglab_ocv_cascade_del (cascade_ocv_t clss);
+
+CR_API bool_t
+imglab_ocv_cascade_load (cascade_ocv_t clss, const ansi_t *file);
+
 #define CSCD_OCV_DO_CANNY_PRUNING       1
 #define CSCD_OCV_SCALE_IMAGE            2
 #define CSCD_OCV_FIND_BIGGEST_OBJECT    4
 #define CSCD_OCV_DO_ROUGH_SEARCH        8
-CR_API xrect_lst_t      imglab_ocv_cascade_doit (cascade_ocv_t clss,
-                            ximage_t mat, fp32_t fscale, sint_t min_nghbrs,
-                            sint_t flags, uint_t min_width, uint_t min_height,
-                            uint_t max_width, uint_t max_height);
+
+CR_API xrect_lst_t
+imglab_ocv_cascade_doit (cascade_ocv_t clss, ximage_t mat, fp32_t fscale,
+                         sint_t min_nghbrs, sint_t flags, uint_t min_width,
+                                uint_t min_height, uint_t max_width,
+                                        uint_t max_height);
+/* OpenCV 一维码识别类型 */
+typedef void_t*     barcode_ocv_t;      /* cv::barcode::BarcodeDetector* */
+
+/* OpenCV 一维码识别器 */
+CR_API barcode_ocv_t
+imglab_ocv_barcode_new (const ansi_t *sr_model CR_DEFAULT(NULL),
+                        const ansi_t *sr_prototxt CR_DEFAULT(NULL));
+CR_API void_t
+imglab_ocv_barcode_del (barcode_ocv_t bar1);
+
+CR_API void_t
+imglab_ocv_barcode_param (barcode_ocv_t bar1, fp32_t dnsp_lmt,
+                          fp32_t grad_thr, const fp32_t *box_sizes,
+                                    uint_t size_count);
+CR_API size_t
+imglab_ocv_barcode_doit (barcode_ocv_t bar1, ximage_t mat, str_lstA_t *text,
+                                    xpoly_lst_t *list);
 
 #endif  /* !__AI_IMGLAB_H__ */
