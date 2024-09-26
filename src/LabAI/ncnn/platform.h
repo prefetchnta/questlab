@@ -63,14 +63,14 @@
 #define NCNN_BF16 1
 #define NCNN_FORCE_INLINE 1
 
-#define NCNN_VERSION_STRING "1.0.20240410"
+#define NCNN_VERSION_STRING "1.0.20240820"
 
 #include "ncnn_export.h"
 
 #ifdef __cplusplus
 
 #if NCNN_THREADS
-#if (defined _WIN32 && !(defined __MINGW32__))
+#if defined _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <process.h>
@@ -86,7 +86,7 @@
 namespace ncnn {
 
 #if NCNN_THREADS
-#if (defined _WIN32 && !(defined __MINGW32__))
+#if defined _WIN32
 class NCNN_EXPORT Mutex
 {
 public:
@@ -141,7 +141,7 @@ public:
 private:
     DWORD key;
 };
-#else // (defined _WIN32 && !(defined __MINGW32__))
+#else // defined _WIN32
 class NCNN_EXPORT Mutex
 {
 public:
@@ -186,7 +186,7 @@ public:
 private:
     pthread_key_t key;
 };
-#endif // (defined _WIN32 && !(defined __MINGW32__))
+#endif // defined _WIN32
 #else // NCNN_THREADS
 class NCNN_EXPORT Mutex
 {
