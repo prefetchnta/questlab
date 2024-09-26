@@ -21,6 +21,8 @@
  */
 
 #define _QUEST64_
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_DEPRECATE
 #include "../QstLibs/QstLibs.h"
 #include "../CrHackSet/xCrHackSet.h"
 #include "labai/imglab.h"
@@ -91,8 +93,25 @@ static const sXC_PORT   quest64_filter[] =
 {
     { "quest64_helloworld", quest64_helloworld },
     { "quest64_opencv_cascade", quest64_ocv_cascade },
+    { "quest64_opencv_barcode", quest64_ocv_barcode },
     { NULL, NULL },
 };
+
+/*
+---------------------------------------
+    输出调试日志
+---------------------------------------
+*/
+static void logit (char *message)
+{
+    FILE*   fp;
+
+    fp = fopen(QST_PATH_OUTPUT "fQUEST64.log", "a");
+    if (fp != NULL) {
+        fprintf(fp, "[%u] %s\n", GetTickCount(), message);
+        fclose(fp);
+    }
+}
 
 /*
 =======================================
@@ -185,8 +204,7 @@ WinMain (
                     xmlcall_exec(xmlc, data, str, NULL);
                 }
                 catch (...) {
-                    MessageBoxA(NULL, "EXCEPTION OCCURED !!!",
-                                "STOP", MB_OK | MB_ICONSTOP);
+                    logit("EXCEPTION OCCURED !!!");
                 }
             }
 

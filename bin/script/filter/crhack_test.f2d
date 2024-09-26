@@ -122,6 +122,10 @@
             <?quest64_opencv_cascade model="source/opencv/haarcascades/haarcascade_licence_plate_chn.xml"
                 scale="1.1" min_neighbors="3" flags="2" min_width="24" max_width="0" min_height="24" max_height="0" />
 
+            <!-- OpenCV BarcodeDetector -->
+            <?quest64_opencv_barcode sr_model="source/opencv/wechat_qrcode/sr.caffemodel"
+                sr_prototxt="source/opencv/wechat_qrcode/sr.prototxt" dnsp_gate="0" grad_gate="0" dect_scales="[]" />
+
         </filters>
     ]]></quest64_bridge>
 
