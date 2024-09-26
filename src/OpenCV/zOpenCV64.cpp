@@ -21,6 +21,8 @@
  */
 
 #define _QUEST64_
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_DEPRECATE
 #include "opencv2/opencv.hpp"
 #include "../QstLibs/QstLibs.h"
 #include "../CrHackSet/xCrHackSet.h"
@@ -102,6 +104,22 @@ opencv_send_image (
 
     /* 发送图片信息 */
     message_send_buffer(mess, &info, sizeof(info));
+}
+
+/*
+---------------------------------------
+    输出调试日志
+---------------------------------------
+*/
+static void logit (char *message)
+{
+    FILE*   fp;
+
+    fp = fopen(QST_PATH_OUTPUT "zOpenCV64.log", "a");
+    if (fp != NULL) {
+        fprintf(fp, "[%u] %s\n", GetTickCount(), message);
+        fclose(fp);
+    }
 }
 
 /*
@@ -211,8 +229,9 @@ WinMain (
                 if (chr_cmpA(name, OCV_REMOTE_CAMERA, leng) == 0)
                 {
                     /* 打开摄像头 */
+                    logit("camera open");
                     leng = str2intxA(&name[leng]);
-                    frames = new cv::VideoCapture ((int)leng);
+                    frames = new cv::VideoCapture ((int)leng, cv::CAP_DSHOW);
                     if (frames == NULL) {
                         opencv_return_false();
                         continue;
@@ -221,17 +240,21 @@ WinMain (
                         opencv_return_false();
                         delete frames;
                         frames = NULL;
+                        logit("camera failure");
                         continue;
                     }
+                    logit("camera opened");
                     frames->set(cv::CAP_PROP_CONVERT_RGB, 1.0);
                     str_cpyA(imghdr.info, CFCBOCV64);
                     imghdr.count = 256;
+                    logit("camera ready");
 
                     cv::Mat tmp;
 
                     /* 需要提前抓一下图？ */
                     frames->grab();
                     frames->retrieve(tmp);
+                    logit("camera success");
                 }
                 else
                 {
