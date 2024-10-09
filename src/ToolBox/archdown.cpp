@@ -224,9 +224,10 @@ do_file_download (
 {
     leng_t  idx;
     leng_t  len;
-    ansi_t* dir;
-    ansi_t* pth;
     ansi_t* cmd;
+    ansi_t* dir;
+    ansi_t* prm;
+    ansi_t* pth;
 
     /* 拼装下载命令行 */
     dir = str_dupA(root);
@@ -247,13 +248,28 @@ do_file_download (
         if (pth[idx] == '\\')
             pth[idx] = '/';
     }
-    if (proxy != NULL) {
-        cmd = str_fmtA("aria2c \"--dir=%s\" \"--out=%s\" --all-proxy=%s"
-                             " \"%s\"", dir, pth, proxy, url);
+    prm = file_load_as_strA("archdown.txt");
+    if (prm != NULL) {
+        str_trimA(prm);
+        if (proxy != NULL) {
+            cmd = str_fmtA("aria2c \"--dir=%s\" \"--out=%s\" --all-proxy=%s"
+                                 " %s \"%s\"", dir, pth, proxy, prm, url);
+        }
+        else {
+            cmd = str_fmtA("aria2c \"--dir=%s\" \"--out=%s\" %s \"%s\"",
+                                               dir, pth, prm, url);
+        }
+        mem_free(prm);
     }
     else {
-        cmd = str_fmtA("aria2c \"--dir=%s\" \"--out=%s\" \"%s\"",
-                                        dir, pth, url);
+        if (proxy != NULL) {
+            cmd = str_fmtA("aria2c \"--dir=%s\" \"--out=%s\" --all-proxy=%s"
+                                 " \"%s\"", dir, pth, proxy, url);
+        }
+        else {
+            cmd = str_fmtA("aria2c \"--dir=%s\" \"--out=%s\" \"%s\"",
+                                            dir, pth, url);
+        }
     }
     mem_free(dir);
     mem_free(pth);
