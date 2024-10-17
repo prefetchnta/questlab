@@ -1,0 +1,28 @@
+[Version]
+Signature         = "$Windows NT$"
+Class             = DiskDrive
+ClassGuid         = {4d36e967-e325-11ce-bfc1-08002be10318}
+Provider          = %ProviderName%
+DriverVer = 08/18/2024,2.2.0.0
+CatalogFile       = %DriverName%.cat
+DriverPackageType = FileSystem
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[DefaultInstall.NTamd64]
+CopyFiles  = DokanFileSystem.DriverFiles
+
+[SourceDisksNames]
+1 = %Disk1%
+
+[SourceDisksFiles]
+dokan2.sys = 1
+
+[DokanFileSystem.DriverFiles]
+%DriverName%.sys
+
+[Strings]
+ProviderName       = "Dokan"
+DriverName         = "dokan2"
+Disk1              = "Dokan Drive installation media"
