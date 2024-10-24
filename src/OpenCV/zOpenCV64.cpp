@@ -354,6 +354,9 @@ WinMain (
                         crrt = (int32u)frames->get(cv::CAP_PROP_POS_FRAMES);
                     }
                 }
+                else {
+                    logit("camera grab enter");
+                }
 
                 cv::Mat tmp;
 
@@ -373,7 +376,11 @@ WinMain (
                 {
                     /* 抓取失败 */
                     opencv_return_false();
+                    logit("video decode error");
                 }
+
+                if (imghdr.info[0] != 'V')
+                    logit("camera grab leave");
             }
             else
             {
