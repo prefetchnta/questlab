@@ -204,11 +204,11 @@ imglab_crh2mat_dup (
 
     // 复制到 OpenCV 矩阵
     if (chn == 4)
-        mat = new cv::Mat (img->position.hh, img->position.ww, CV_8UC4);
+        mat = new(std::nothrow) cv::Mat (img->position.hh, img->position.ww, CV_8UC4);
     else if (chn == 3)
-        mat = new cv::Mat (img->position.hh, img->position.ww, CV_8UC3);
+        mat = new(std::nothrow) cv::Mat (img->position.hh, img->position.ww, CV_8UC3);
     else
-        mat = new cv::Mat (img->position.hh, img->position.ww, CV_8UC1);
+        mat = new(std::nothrow) cv::Mat (img->position.hh, img->position.ww, CV_8UC1);
     if (mat == NULL) {
         if (rel) image_del(img);
         return (NULL);
@@ -245,7 +245,7 @@ imglab_crh2mat_set (
         case CR_ARGB888: typ = CV_8UC3; break;
         case CR_ARGB8888: typ = CV_8UC4; break;
     }
-    mat = new cv::Mat (img->position.hh, img->position.ww,
+    mat = new(std::nothrow) cv::Mat (img->position.hh, img->position.ww,
                        typ, img->data, img->bpl);
     if (mat == NULL)
         return (NULL);
@@ -268,7 +268,7 @@ imglab_load_file (
 {
     cv::Mat*    mat;
 
-    mat = new cv::Mat ();
+    mat = new(std::nothrow) cv::Mat ();
     if (mat == NULL)
         return (NULL);
     *mat = cv::imread(name);
@@ -292,7 +292,7 @@ imglab_load_data (
 {
     cv::Mat*    mat;
 
-    mat = new cv::Mat ();
+    mat = new(std::nothrow) cv::Mat ();
     if (mat == NULL)
         return (NULL);
 
@@ -356,7 +356,7 @@ imglab_video_new (
 {
     cv::VideoCapture*   cap;
 
-    cap = new cv::VideoCapture (name);
+    cap = new(std::nothrow) cv::VideoCapture (name);
     if (cap == NULL)
         return (NULL);
     if (!cap->isOpened() ||
@@ -397,7 +397,7 @@ imglab_video_get (
     cv::Mat*            img;
     cv::VideoCapture*   cap;
 
-    img = new cv::Mat ();
+    img = new(std::nothrow) cv::Mat ();
     if (img == NULL)
         return (NULL);
     cap = (cv::VideoCapture*)avi;
@@ -463,7 +463,7 @@ imglab_camera_new (
 {
     cv::VideoCapture*   cap;
 
-    cap = new cv::VideoCapture ((int)id);
+    cap = new(std::nothrow) cv::VideoCapture ((int)id);
     if (cap == NULL)
         return (NULL);
     if (!cap->isOpened()) {
@@ -538,7 +538,7 @@ imglab_camera_get (
     cv::Mat*            img;
     cv::VideoCapture*   cap;
 
-    img = new cv::Mat ();
+    img = new(std::nothrow) cv::Mat ();
     if (img == NULL)
         return (NULL);
     cap = (cv::VideoCapture*)cam;

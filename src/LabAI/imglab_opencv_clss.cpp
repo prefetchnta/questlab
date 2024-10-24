@@ -21,6 +21,7 @@
  */
 
 #include "imglab_int.hpp"
+#include "opencv2/wechat_qrcode.hpp"
 
 /*****************************************************************************/
 /*                                级联分类器                                 */
@@ -38,7 +39,7 @@ imglab_ocv_cascade_new (
 {
     cv::CascadeClassifier*  cscd;
 
-    cscd = new cv::CascadeClassifier ();
+    cscd = new(std::nothrow) cv::CascadeClassifier ();
     if (cscd == NULL)
         return (NULL);
     if (file != NULL) {
@@ -111,7 +112,7 @@ imglab_ocv_cascade_doit (
 
     std::vector<cv::Rect>*  rcts;
 
-    rcts = new std::vector<cv::Rect> ();
+    rcts = new(std::nothrow) std::vector<cv::Rect> ();
     if (rcts == NULL)
         return (NULL);
 
@@ -141,9 +142,9 @@ imglab_ocv_barcode_new (
     cv::barcode::BarcodeDetector*   bar1;
 
     if (sr_model != NULL && sr_prototxt != NULL)
-        bar1 = new cv::barcode::BarcodeDetector (sr_prototxt, sr_model);
+        bar1 = new(std::nothrow) cv::barcode::BarcodeDetector (sr_prototxt, sr_model);
     else
-        bar1 = new cv::barcode::BarcodeDetector ();
+        bar1 = new(std::nothrow) cv::barcode::BarcodeDetector ();
     if (bar1 == NULL)
         return (NULL);
     return ((barcode_ocv_t)bar1);
@@ -199,38 +200,6 @@ imglab_ocv_barcode_param (
 
 /*
 =======================================
-    列表多边形生成
-=======================================
-*/
-extern xpoly_lst_t
-imglab_split_to_xpoly (
-  __CR_IN__ std::vector<cv::Point>* pnts,
-  __CR_IN__ size_t                  usize
-    )
-{
-    size_t  count = pnts->size();
-
-    if (count < usize || count % usize != 0)
-        return (NULL);
-
-    std::vector<std::vector<cv::Point> >*   list;
-
-    list = new std::vector<std::vector<cv::Point> > ();
-    if (list == NULL)
-        return (NULL);
-    list->reserve(count / usize);
-
-    for (size_t idx = 0; idx < count; idx += usize)
-    {
-        std::vector<cv::Point>  pt (pnts->begin() + idx,
-                                    pnts->begin() + idx + usize);
-        list->push_back(pt);
-    }
-    return ((xpoly_lst_t)list);
-}
-
-/*
-=======================================
     执行一维码的识别
 =======================================
 */
@@ -272,6 +241,286 @@ imglab_ocv_barcode_doit (
             if (idx < dinfo.size() &&
                 idx < dtype.size() && !dtype[idx].empty()) {
                 (*text)[idx * 2 + 0] = str_dupA(dtype[idx].c_str());
+                (*text)[idx * 2 + 1] = str_dupA(dinfo[idx].c_str());
+            }
+            else {
+                (*text)[idx * 2 + 0] = NULL;
+                (*text)[idx * 2 + 1] = NULL;
+            }
+        }
+    }
+    return (cnts);
+}
+
+/*****************************************************************************/
+/*                                二维码识别                                 */
+/*****************************************************************************/
+
+/* 内部结构 */
+struct  sQR2D_OCV
+{
+    uint_t  type;
+
+    union {
+        cv::QRCodeDetector*                 cmmt;
+        cv::QRCodeDetectorAruco*            aruc;
+        cv::wechat_qrcode::WeChatQRCode*    wcht;
+    };
+};
+
+/*
+=======================================
+    创建二维码识别器
+=======================================
+*/
+CR_API qr2code_ocv_t
+imglab_ocv_qr2code_new (
+  __CR_IN__ uint_t                          type,
+  __CR_IN__ const sOCV_QRCodeWeChatParam*   wechat
+    )
+{
+    sQR2D_OCV*  qr2d;
+
+    qr2d = struct_new(sQR2D_OCV);
+    if (qr2d == NULL)
+        return (NULL);
+
+    if (type == QR2D_OCV_TYPE_NORMAL) {
+        qr2d->cmmt = new(std::nothrow) cv::QRCodeDetector ();
+        if (qr2d->cmmt == NULL)
+            goto _failure;
+    }
+    else
+    if (type == QR2D_OCV_TYPE_ARUCOX) {
+        qr2d->aruc = new(std::nothrow) cv::QRCodeDetectorAruco ();
+        if (qr2d->aruc == NULL)
+            goto _failure;
+    }
+    else
+    if (type == QR2D_OCV_TYPE_WECHAT) {
+        if (wechat != NULL) {
+            qr2d->wcht = new(std::nothrow) cv::wechat_qrcode::WeChatQRCode (
+                                wechat->det_prototxt, wechat->det_model,
+                                wechat->sr_prototxt, wechat->sr_model);
+        }
+        else {
+            qr2d->wcht = new(std::nothrow) cv::wechat_qrcode::WeChatQRCode ();
+        }
+        if (qr2d->wcht == NULL)
+            goto _failure;
+    }
+    else {
+        goto _failure;
+    }
+    qr2d->type = type;
+    return ((qr2code_ocv_t)qr2d);
+
+_failure:
+    mem_free(qr2d);
+    return (NULL);
+}
+
+/*
+=======================================
+    释放二维码识别器
+=======================================
+*/
+CR_API void_t
+imglab_ocv_qr2code_del (
+  __CR_IN__ qr2code_ocv_t   qr2d
+    )
+{
+    sQR2D_OCV*  qrcd;
+
+    qrcd = (sQR2D_OCV*)qr2d;
+    if (qrcd->type == QR2D_OCV_TYPE_NORMAL)
+        delete qrcd->cmmt;
+    else
+    if (qrcd->type == QR2D_OCV_TYPE_ARUCOX)
+        delete qrcd->aruc;
+    else
+    if (qrcd->type == QR2D_OCV_TYPE_WECHAT)
+        delete qrcd->wcht;
+    mem_free(qrcd);
+}
+
+/*
+=======================================
+    设置二维码识别器
+=======================================
+*/
+CR_API void_t
+imglab_ocv_qr2code_param (
+  __CR_IN__ qr2code_ocv_t   qr2d,
+  __CR_IN__ const void_t*   param_data,
+  __CR_IN__ size_t          param_size
+    )
+{
+    sQR2D_OCV*  qrcd;
+
+    qrcd = (sQR2D_OCV*)qr2d;
+    if (qrcd->type == QR2D_OCV_TYPE_NORMAL) {
+        if (param_size == sizeof(sOCV_QRCodeParam))
+        {
+            sOCV_QRCodeParam*   parm;
+
+            parm = (sOCV_QRCodeParam*)param_data;
+            if (parm->epsX > 0)
+                qrcd->cmmt->setEpsX(parm->epsX);
+            if (parm->epsY > 0)
+                qrcd->cmmt->setEpsY(parm->epsY);
+            qrcd->cmmt->setUseAlignmentMarkers(!!parm->useAlignmentMarkers);
+        }
+    }
+    else
+    if (qrcd->type == QR2D_OCV_TYPE_ARUCOX) {
+        if (param_size == sizeof(sOCV_QRCodeArucoParam))
+        {
+            sOCV_QRCodeArucoParam*          parm;
+            cv::QRCodeDetectorAruco::Params copy;
+
+            parm = (sOCV_QRCodeArucoParam*)param_data;
+            copy.minModuleSizeInPyramid   = parm->minModuleSizeInPyramid;
+            copy.maxRotation              = parm->maxRotation;
+            copy.maxModuleSizeMismatch    = parm->maxModuleSizeMismatch;
+            copy.maxTimingPatternMismatch = parm->maxTimingPatternMismatch;
+            copy.maxPenalties             = parm->maxPenalties;
+            copy.maxColorsMismatch        = parm->maxColorsMismatch;
+            copy.scaleTimingPatternScore  = parm->scaleTimingPatternScore;
+            qrcd->aruc->setDetectorParameters(copy);
+        }
+        else
+        if (param_size == sizeof(sOCV_QRCodeArucoDetector))
+        {
+            sOCV_QRCodeArucoDetector*       parm;
+            cv::aruco::DetectorParameters   copy;
+
+            parm = (sOCV_QRCodeArucoDetector*)param_data;
+            copy.adaptiveThreshWinSizeMin              =   parm->adaptiveThreshWinSizeMin;
+            copy.adaptiveThreshWinSizeMax              =   parm->adaptiveThreshWinSizeMax;
+            copy.adaptiveThreshWinSizeStep             =   parm->adaptiveThreshWinSizeStep;
+            copy.adaptiveThreshConstant                =   parm->adaptiveThreshConstant;
+            copy.minMarkerPerimeterRate                =   parm->minMarkerPerimeterRate;
+            copy.maxMarkerPerimeterRate                =   parm->maxMarkerPerimeterRate;
+            copy.polygonalApproxAccuracyRate           =   parm->polygonalApproxAccuracyRate;
+            copy.minCornerDistanceRate                 =   parm->minCornerDistanceRate;
+            copy.minDistanceToBorder                   =   parm->minDistanceToBorder;
+            copy.minMarkerDistanceRate                 =   parm->minMarkerDistanceRate;
+            copy.minGroupDistance                      =   parm->minGroupDistance;
+            copy.cornerRefinementMethod                =   parm->cornerRefinementMethod;
+            copy.cornerRefinementWinSize               =   parm->cornerRefinementWinSize;
+            copy.relativeCornerRefinmentWinSize        =   parm->relativeCornerRefinmentWinSize;
+            copy.cornerRefinementMaxIterations         =   parm->cornerRefinementMaxIterations;
+            copy.cornerRefinementMinAccuracy           =   parm->cornerRefinementMinAccuracy;
+            copy.markerBorderBits                      =   parm->markerBorderBits;
+            copy.perspectiveRemovePixelPerCell         =   parm->perspectiveRemovePixelPerCell;
+            copy.perspectiveRemoveIgnoredMarginPerCell =   parm->perspectiveRemoveIgnoredMarginPerCell;
+            copy.maxErroneousBitsInBorderRate          =   parm->maxErroneousBitsInBorderRate;
+            copy.minOtsuStdDev                         =   parm->minOtsuStdDev;
+            copy.errorCorrectionRate                   =   parm->errorCorrectionRate;
+            copy.aprilTagQuadDecimate                  =   parm->aprilTagQuadDecimate;
+            copy.aprilTagQuadSigma                     =   parm->aprilTagQuadSigma;
+            copy.aprilTagMinClusterPixels              =   parm->aprilTagMinClusterPixels;
+            copy.aprilTagMaxNmaxima                    =   parm->aprilTagMaxNmaxima;
+            copy.aprilTagCriticalRad                   =   parm->aprilTagCriticalRad;
+            copy.aprilTagMaxLineFitMse                 =   parm->aprilTagMaxLineFitMse;
+            copy.aprilTagMinWhiteBlackDiff             =   parm->aprilTagMinWhiteBlackDiff;
+            copy.aprilTagDeglitch                      =   parm->aprilTagDeglitch;
+            copy.detectInvertedMarker                  = !!parm->detectInvertedMarker;
+            copy.useAruco3Detection                    = !!parm->useAruco3Detection;
+            copy.minSideLengthCanonicalImg             =   parm->minSideLengthCanonicalImg;
+            copy.minMarkerLengthRatioOriginalImg       =   parm->minMarkerLengthRatioOriginalImg;
+            qrcd->aruc->setArucoParameters(copy);
+        }
+    }
+    else
+    if (qrcd->type == QR2D_OCV_TYPE_WECHAT) {
+        if (param_size == sizeof(sOCV_QRCodeWeChatParam))
+        {
+            sOCV_QRCodeWeChatParam* parm;
+
+            parm = (sOCV_QRCodeWeChatParam*)param_data;
+            if (parm->fscale > 0)
+                qrcd->wcht->setScaleFactor(parm->fscale);
+        }
+    }
+}
+
+/*
+=======================================
+    执行二维码的识别
+=======================================
+*/
+CR_API size_t
+imglab_ocv_qr2code_doit (
+  __CR_IN__ qr2code_ocv_t   qr2d,
+  __CR_IN__ ximage_t        mat,
+  __CR_OT__ str_lstA_t*     text,
+  __CR_OT__ xpoly_lst_t*    list
+    )
+{
+    std::vector<cv::Point>  pnts;
+    /* ----------------------- */
+    cv::Mat*    mm = (cv::Mat*)mat;
+    sQR2D_OCV*  qrcd = (sQR2D_OCV*)qr2d;
+
+    if (text == NULL) {
+        if (qrcd->type == QR2D_OCV_TYPE_NORMAL ||
+            qrcd->type == QR2D_OCV_TYPE_ARUCOX)
+        {
+            cv::GraphicalCodeDetector*  gc_det;
+
+            gc_det = (cv::GraphicalCodeDetector*)qrcd->cmmt;
+            if (!gc_det->detectMulti(*mm, pnts))
+                return (0);
+        }
+        else
+        if (qrcd->type == QR2D_OCV_TYPE_WECHAT)
+        {
+            qrcd->wcht->detectAndDecode(*mm, pnts);
+            if (pnts.size() < 4)
+                return (0);
+        }
+        else {
+            return (0);
+        }
+
+        if (list != NULL)
+            *list = imglab_split_to_xpoly(&pnts, 4);
+        return (pnts.size() / 4);
+    }
+
+    std::vector<std::string>    dinfo;
+
+    if (qrcd->type == QR2D_OCV_TYPE_NORMAL ||
+        qrcd->type == QR2D_OCV_TYPE_ARUCOX)
+    {
+        cv::GraphicalCodeDetector*  gc_det;
+
+        gc_det = (cv::GraphicalCodeDetector*)qrcd->cmmt;
+        if (!gc_det->detectAndDecodeMulti(*mm, dinfo, pnts))
+            return (0);
+    }
+    else
+    if (qrcd->type == QR2D_OCV_TYPE_WECHAT)
+    {
+        dinfo = qrcd->wcht->detectAndDecode(*mm, pnts);
+        if (pnts.size() < 4)
+            return (0);
+    }
+    else {
+        return (0);
+    }
+    if (list != NULL)
+        *list = imglab_split_to_xpoly(&pnts, 4);
+
+    size_t  cnts = pnts.size() / 4;
+
+    *text = mem_talloc(cnts * 2, ansi_t*);
+    if (*text != NULL) {
+        for (size_t idx = 0; idx < cnts; idx++) {
+            if (idx < dinfo.size() && !dinfo[idx].empty()) {
+                (*text)[idx * 2 + 0] = str_dupA("QRCODE");
                 (*text)[idx * 2 + 1] = str_dupA(dinfo[idx].c_str());
             }
             else {

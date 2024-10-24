@@ -192,7 +192,7 @@ CR_API void_t   imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
 /* OpenCV 分类结构类型 */
 typedef void_t*     cascade_ocv_t;      /* cv::CascadeClassifier* */
 
-/* OpenCV 级联分类器 */
+/* OpenCV 级联分类对象 */
 CR_API cascade_ocv_t
 imglab_ocv_cascade_new (const ansi_t *file);
 
@@ -215,7 +215,7 @@ imglab_ocv_cascade_doit (cascade_ocv_t clss, ximage_t mat, fp32_t fscale,
 /* OpenCV 一维码识别类型 */
 typedef void_t*     barcode_ocv_t;      /* cv::barcode::BarcodeDetector* */
 
-/* OpenCV 一维码识别器 */
+/* OpenCV 一维码识别对象 */
 CR_API barcode_ocv_t
 imglab_ocv_barcode_new (const ansi_t *sr_model CR_DEFAULT(NULL),
                         const ansi_t *sr_prototxt CR_DEFAULT(NULL));
@@ -228,6 +228,102 @@ imglab_ocv_barcode_param (barcode_ocv_t bar1, fp32_t dnsp_lmt,
                                     uint_t size_count);
 CR_API size_t
 imglab_ocv_barcode_doit (barcode_ocv_t bar1, ximage_t mat, str_lstA_t *text,
+                                    xpoly_lst_t *list);
+/* OpenCV 二维码识别类型 */
+typedef void_t*     qr2code_ocv_t;      /* cv::QRCodeDetector
+                                           cv::QRCodeDetectorAruco
+                                           cv::WeChatQRCode */
+/* OpenCV 二维码识别参数 */
+typedef struct
+{
+    fp64_t  epsX;
+    fp64_t  epsY;
+    bool_t  useAlignmentMarkers;
+
+} sOCV_QRCodeParam;
+
+typedef struct  /* cv::QRCodeDetectorAruco::Params */
+{
+    fp32_t  minModuleSizeInPyramid;
+    fp32_t  maxRotation;
+    fp32_t  maxModuleSizeMismatch;
+    fp32_t  maxTimingPatternMismatch;
+    fp32_t  maxPenalties;
+    fp32_t  maxColorsMismatch;
+    fp32_t  scaleTimingPatternScore;
+
+} sOCV_QRCodeArucoParam;
+
+#define QR2D_OCV_CORNER_REFINE_NONE     0
+#define QR2D_OCV_CORNER_REFINE_SUBPIX   1
+#define QR2D_OCV_CORNER_REFINE_CONTOUR  2
+#define QR2D_OCV_CORNER_REFINE_APRILTAG 3
+
+typedef struct  /* cv::aruco::DetectorParameters */
+{
+    sint_t  adaptiveThreshWinSizeMin;
+    sint_t  adaptiveThreshWinSizeMax;
+    sint_t  adaptiveThreshWinSizeStep;
+    fp64_t  adaptiveThreshConstant;
+    fp64_t  minMarkerPerimeterRate;
+    fp64_t  maxMarkerPerimeterRate;
+    fp64_t  polygonalApproxAccuracyRate;
+    fp64_t  minCornerDistanceRate;
+    sint_t  minDistanceToBorder;
+    fp64_t  minMarkerDistanceRate;
+    fp32_t  minGroupDistance;
+    sint_t  cornerRefinementMethod;
+    sint_t  cornerRefinementWinSize;
+    fp32_t  relativeCornerRefinmentWinSize;
+    sint_t  cornerRefinementMaxIterations;
+    fp64_t  cornerRefinementMinAccuracy;
+    sint_t  markerBorderBits;
+    sint_t  perspectiveRemovePixelPerCell;
+    fp64_t  perspectiveRemoveIgnoredMarginPerCell;
+    fp64_t  maxErroneousBitsInBorderRate;
+    fp64_t  minOtsuStdDev;
+    fp64_t  errorCorrectionRate;
+    fp32_t  aprilTagQuadDecimate;
+    fp32_t  aprilTagQuadSigma;
+    sint_t  aprilTagMinClusterPixels;
+    sint_t  aprilTagMaxNmaxima;
+    fp32_t  aprilTagCriticalRad;
+    fp32_t  aprilTagMaxLineFitMse;
+    sint_t  aprilTagMinWhiteBlackDiff;
+    sint_t  aprilTagDeglitch;
+    bool_t  detectInvertedMarker;
+    bool_t  useAruco3Detection;
+    sint_t  minSideLengthCanonicalImg;
+    fp32_t  minMarkerLengthRatioOriginalImg;
+
+} sOCV_QRCodeArucoDetector;
+
+typedef struct
+{
+    fp32_t          fscale;
+    const ansi_t*   sr_model;
+    const ansi_t*   sr_prototxt;
+    const ansi_t*   det_model;
+    const ansi_t*   det_prototxt;
+
+} sOCV_QRCodeWeChatParam;
+
+#define QR2D_OCV_TYPE_NORMAL    0   /* cv::QRCodeDetector */
+#define QR2D_OCV_TYPE_ARUCOX    1   /* cv::QRCodeDetectorAruco */
+#define QR2D_OCV_TYPE_WECHAT    2   /* cv::wechat_qrcode::WeChatQRCode */
+
+/* OpenCV 二维码识别对象 */
+CR_API qr2code_ocv_t
+imglab_ocv_qr2code_new (uint_t type, const sOCV_QRCodeWeChatParam *wechat);
+
+CR_API void_t
+imglab_ocv_qr2code_del (qr2code_ocv_t qr2d);
+
+CR_API void_t
+imglab_ocv_qr2code_param (qr2code_ocv_t qr2d, const void_t *param_data,
+                          size_t param_size);
+CR_API size_t
+imglab_ocv_qr2code_doit (qr2code_ocv_t qr2d, ximage_t mat, str_lstA_t *text,
                                     xpoly_lst_t *list);
 
 #endif  /* !__AI_IMGLAB_H__ */
