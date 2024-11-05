@@ -26,6 +26,7 @@
 #include "../QstLibs/QstLibs.h"
 #include "../CrHackSet/xCrHackSet.h"
 #include "labai/imglab.h"
+#include "util/jsonlib.h"
 
 /* 一些公用宏 */
 #define EXE_XNAME   "fQUEST64"
@@ -33,6 +34,7 @@
 /* 外部库引用 */
 #pragma comment (lib, "LabAI.lib")
 #pragma comment (lib, "CrH_GFX2.lib")
+#pragma comment (lib, "CrH_UTIL.lib")
 
 /* 桥接函数 */
 #include "../bridge.inl"
@@ -41,6 +43,7 @@
 /* Width / Height / BPL / Size */
 static int32u   s_info[4];
 static share_t  s_smem = NULL;
+static iDATOT*  s_rets = NULL;
 
 /* 简化代码 */
 #define quest64_return_true()   message_send_buffer(mess, "OKAY", 4)
@@ -85,6 +88,21 @@ quest64_return_string (
     }
 }
 
+/*
+---------------------------------------
+    设置返回字符串
+---------------------------------------
+*/
+static void_t
+quest64_setup_return (
+  __CR_IN__ const ansi_t*   string
+    )
+{
+    if (s_rets == NULL)
+        return;
+    CR_VCALL(s_rets)->putsA(s_rets, string, str_lenA(string));
+}
+
 /* 滤镜函数 */
 #include "filter.inl"
 
@@ -94,6 +112,9 @@ static const sXC_PORT   quest64_filter[] =
     { "quest64_helloworld", quest64_helloworld },
     { "quest64_opencv_cascade", quest64_ocv_cascade },
     { "quest64_opencv_barcode", quest64_ocv_barcode },
+    { "quest64_opencv_qrcode", quest64_ocv_qrcode },
+    { "quest64_opencv_qrcode_aruco", quest64_ocv_qrcode_aruco },
+    { "quest64_opencv_qrcode_wechat", quest64_ocv_qrcode_wechat },
     { NULL, NULL },
 };
 
@@ -167,10 +188,9 @@ WinMain (
     }
 
     /* 开始工作 */
+    s_rets = create_buff_out(65536);
     for (;;)
     {
-        ansi_t  str[65536];
-
         /* 接收数据包 */
         back = message_recv_buffer(mess, s_info, sizeof(int64u));
         if (back == sizeof(int64u))
@@ -198,13 +218,37 @@ WinMain (
             }
             quest64_return_true();
 
+            ansi_t  str[65536];
+
             /* 接收命令字符串 */
+            mem_zero(str, sizeof(str));
             if (message_recv_string(mess, str, sizeof(str))) {
                 try {
                     xmlcall_exec(xmlc, data, str, NULL);
                 }
                 catch (...) {
                     logit("EXCEPTION OCCURED !!!");
+                }
+
+                /* 一次性返回发送所有数据 */
+                if (s_rets != NULL)
+                {
+                    leng_t  len;
+                    ansi_t* rts;
+
+                    CR_VCALL(s_rets)->putb_no(s_rets, 0);
+                    rts = (ansi_t*)CR_VCALL(s_rets)->flush(s_rets);
+                    len = str_lenA(rts);
+                    if (len > 65500)
+                        rts[65500] = 0x00;
+                    if (len != 0)
+                        quest64_return_string(mess, rts);
+                    else
+                        quest64_return_string(mess, NULL);
+                    CR_VCALL(s_rets)->reput(s_rets, 0);
+                }
+                else {
+                    quest64_return_string(mess, NULL);
                 }
             }
 
@@ -228,6 +272,8 @@ WinMain (
     /* 释放资源 */
     if (s_smem != NULL)
         share_file_close(s_smem);
+    if (s_rets != NULL)
+        CR_VCALL(s_rets)->release(s_rets);
     xmlcall_unload(xmlc);
     message_pipe_close(mess);
     return (QST_OKAY);
