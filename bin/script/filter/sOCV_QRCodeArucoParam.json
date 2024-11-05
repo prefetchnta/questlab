@@ -1,0 +1,9 @@
+{
+    "minModuleSizeInPyramid": 4.0,
+    "maxRotation": 0.26179938779914943653855361527329,
+    "maxModuleSizeMismatch": 1.75,
+    "maxTimingPatternMismatch": 2.0,
+    "maxPenalties": 0.4,
+    "maxColorsMismatch": 0.2,
+    "scaleTimingPatternScore": 0.9
+}

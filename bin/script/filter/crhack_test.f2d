@@ -124,7 +124,19 @@
 
             <!-- OpenCV BarcodeDetector -->
             <?quest64_opencv_barcode sr_model="source/opencv/wechat_qrcode/sr.caffemodel"
-                sr_prototxt="source/opencv/wechat_qrcode/sr.prototxt" dnsp_gate="0" grad_gate="0" dect_scales="[]" />
+                sr_prototxt="source/opencv/wechat_qrcode/sr.prototxt" dnsp_gate="0" grad_gate="0" det_scales="[]" />
+
+            <!-- OpenCV QRCodeDetector -->
+            <?quest64_opencv_qrcode eps_x="0" eps_y="0" use_ali_mrks="1" />
+
+            <!-- OpenCV QRCodeDetectorAruco -->
+            <?quest64_opencv_qrcode_aruco params="script/filter/sOCV_QRCodeArucoParam.json"
+                det_params="script/filter/sOCV_QRCodeArucoDetector.json" />
+
+            <!-- OpenCV WeChatQRCode -->
+            <?quest64_opencv_qrcode_wechat sr_model="source/opencv/wechat_qrcode/sr.caffemodel"
+                sr_prototxt="source/opencv/wechat_qrcode/sr.prototxt" det_model="source/opencv/wechat_qrcode/detect.caffemodel"
+                det_prototxt="source/opencv/wechat_qrcode/detect.prototxt" scale="0" />
 
         </filters>
     ]]></quest64_bridge>
