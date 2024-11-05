@@ -1221,3 +1221,28 @@ imglab_draw_text (
 
     cv::putText(*img, text, cv::Point(dx, dy), font, scale, clr, lbold);
 }
+
+/*
+=======================================
+    返回绘制文本大小
+=======================================
+*/
+CR_API sint_t
+imglab_text_size (
+  __CR_OT__ sPNT2*          size,
+  __CR_IN__ const ansi_t*   text,
+  __CR_IN__ sint_t          font,
+  __CR_IN__ sint_t          height,
+  __CR_IN__ sint_t          lbold
+    )
+{
+    cv::Size    box;
+    /* ---------- */
+    sint_t  baseline = 0;
+    double  scale = cv::getFontScaleFromHeight(font, height, lbold);
+
+    box = cv::getTextSize(text, font, scale, lbold, &baseline);
+    size->x = box.width;
+    size->y = box.height;
+    return (baseline);
+}

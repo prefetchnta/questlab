@@ -171,6 +171,9 @@ CR_API void_t   imglab_draw_text (ximage_t mat, const ansi_t *text,
                             sint_t dx, sint_t dy, sint_t font, sint_t height,
                                     cpix_t color, sint_t lbold);
 
+CR_API sint_t   imglab_text_size (sPNT2 *size, const ansi_t *text,
+                            sint_t font, sint_t height, sint_t lbold);
+
 /*****************************************************************************/
 /*                                 图片滤波                                  */
 /*****************************************************************************/

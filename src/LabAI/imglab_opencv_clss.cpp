@@ -477,9 +477,12 @@ imglab_ocv_qr2code_doit (
         else
         if (qrcd->type == QR2D_OCV_TYPE_WECHAT)
         {
-            qrcd->wcht->detectAndDecode(*mm, pnts);
-            if (pnts.size() < 4)
+            std::vector<cv::Mat>    mats;
+
+            qrcd->wcht->detectAndDecode(*mm, mats);
+            if (mats.size() < 1)
                 return (0);
+            imglab_mats_to_points(&pnts, mats);
         }
         else {
             return (0);
@@ -504,9 +507,12 @@ imglab_ocv_qr2code_doit (
     else
     if (qrcd->type == QR2D_OCV_TYPE_WECHAT)
     {
-        dinfo = qrcd->wcht->detectAndDecode(*mm, pnts);
-        if (pnts.size() < 4)
+        std::vector<cv::Mat>    mats;
+
+        dinfo = qrcd->wcht->detectAndDecode(*mm, mats);
+        if (mats.size() < 1)
             return (0);
+        imglab_mats_to_points(&pnts, mats);
     }
     else {
         return (0);

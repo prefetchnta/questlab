@@ -36,5 +36,6 @@
 
 /* ImgLAB 内部工具函数 */
 xpoly_lst_t imglab_split_to_xpoly (std::vector<cv::Point> *pnts, size_t usize);
+void_t imglab_mats_to_points (std::vector<cv::Point> *pnts, const std::vector<cv::Mat> &mats);
 
 #endif  /* !__IMGLAB_INT_HPP__ */
