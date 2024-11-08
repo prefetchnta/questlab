@@ -118,6 +118,216 @@ SRC_OCV_WECHAT=opencv\wechat_qrcode\binarizermgr.cpp \
                opencv\wechat_qrcode\zxing\qrcode\detector\finder_pattern_info.cpp \
                opencv\wechat_qrcode\zxing\qrcode\detector\pattern_result.cpp
 
+OBJ_ZXING_CPP=BarcodeFormat.obj \
+              BinaryBitmap2.obj \
+              BitArray2.obj \
+              BitMatrix2.obj \
+              BitMatrixIO.obj \
+              BitSource2.obj \
+              CharacterSet.obj \
+              ConcentricFinder.obj \
+              Content.obj \
+              DecodeHints.obj \
+              ECI.obj \
+              GenericGF2.obj \
+              GenericGFPoly2.obj \
+              GlobalHistogramBinarizer.obj \
+              GridSampler.obj \
+              GTIN.obj \
+              HRI.obj \
+              HybridBinarizer.obj \
+              MultiFormatReader.obj \
+              MultiFormatWriter.obj \
+              PerspectiveTransform.obj \
+              ReadBarcode.obj \
+              ReedSolomonDecoder.obj \
+              ReedSolomonEncoder.obj \
+              Result2.obj \
+              ResultPoint2.obj \
+              TextDecoder.obj \
+              TextEncoder.obj \
+              TextUtfEncoding.obj \
+              Utf.obj \
+              WhiteRectDetector.obj \
+              ZXBigInteger.obj \
+              AZDecoder.obj \
+              AZDetector.obj \
+              AZEncoder.obj \
+              AZHighLevelEncoder.obj \
+              AZReader.obj \
+              AZToken.obj \
+              AZWriter.obj \
+              DMBitLayout.obj \
+              DMDataBlock.obj \
+              DMDecoder.obj \
+              DMDetector.obj \
+              DMECEncoder.obj \
+              DMHighLevelEncoder.obj \
+              DMReader.obj \
+              DMSymbolInfo.obj \
+              DMVersion.obj \
+              DMWriter.obj \
+              zueci.obj \
+              MCBitMatrixParser.obj \
+              MCDecoder.obj \
+              MCReader.obj \
+              ODCodabarReader.obj \
+              ODCodabarWriter.obj \
+              ODCode39Reader.obj \
+              ODCode39Writer.obj \
+              ODCode93Reader.obj \
+              ODCode93Writer.obj \
+              ODCode128Patterns.obj \
+              ODCode128Reader.obj \
+              ODCode128Writer.obj \
+              ODDataBarCommon.obj \
+              ODDataBarExpandedBitDecoder.obj \
+              ODDataBarExpandedReader.obj \
+              ODDataBarReader.obj \
+              ODEAN8Writer.obj \
+              ODEAN13Writer.obj \
+              ODITFReader.obj \
+              ODITFWriter.obj \
+              ODMultiUPCEANReader.obj \
+              ODReader.obj \
+              ODRowReader.obj \
+              ODUPCAWriter.obj \
+              ODUPCEANCommon.obj \
+              ODUPCEWriter.obj \
+              ODWriterHelper.obj \
+              PDFBarcodeValue.obj \
+              PDFBoundingBox.obj \
+              PDFCodewordDecoder.obj \
+              PDFDecoder.obj \
+              PDFDetectionResult.obj \
+              PDFDetectionResultColumn.obj \
+              PDFDetector.obj \
+              PDFEncoder.obj \
+              PDFHighLevelEncoder.obj \
+              PDFModulusGF.obj \
+              PDFModulusPoly.obj \
+              PDFReader.obj \
+              PDFScanningDecoder.obj \
+              PDFWriter.obj \
+              QRBitMatrixParser.obj \
+              QRCodecMode.obj \
+              QRDataBlock.obj \
+              QRDecoder.obj \
+              QRDetector.obj \
+              QREncoder.obj \
+              QRErrorCorrectionLevel.obj \
+              QRFormatInformation.obj \
+              QRMaskUtil.obj \
+              QRMatrixUtil.obj \
+              QRReader.obj \
+              QRVersion.obj \
+              QRWriter.obj
+
+SRC_ZXING_CPP=zxing\BarcodeFormat.cpp \
+              zxing\BinaryBitmap2.cpp \
+              zxing\BitArray2.cpp \
+              zxing\BitMatrix2.cpp \
+              zxing\BitMatrixIO.cpp \
+              zxing\BitSource2.cpp \
+              zxing\CharacterSet.cpp \
+              zxing\ConcentricFinder.cpp \
+              zxing\Content.cpp \
+              zxing\DecodeHints.cpp \
+              zxing\ECI.cpp \
+              zxing\GenericGF2.cpp \
+              zxing\GenericGFPoly2.cpp \
+              zxing\GlobalHistogramBinarizer.cpp \
+              zxing\GridSampler.cpp \
+              zxing\GTIN.cpp \
+              zxing\HRI.cpp \
+              zxing\HybridBinarizer.cpp \
+              zxing\MultiFormatReader.cpp \
+              zxing\MultiFormatWriter.cpp \
+              zxing\PerspectiveTransform.cpp \
+              zxing\ReadBarcode.cpp \
+              zxing\ReedSolomonDecoder.cpp \
+              zxing\ReedSolomonEncoder.cpp \
+              zxing\Result2.cpp \
+              zxing\ResultPoint2.cpp \
+              zxing\TextDecoder.cpp \
+              zxing\TextEncoder.cpp \
+              zxing\TextUtfEncoding.cpp \
+              zxing\Utf.cpp \
+              zxing\WhiteRectDetector.cpp \
+              zxing\ZXBigInteger.cpp \
+              zxing\aztec\AZDecoder.cpp \
+              zxing\aztec\AZDetector.cpp \
+              zxing\aztec\AZEncoder.cpp \
+              zxing\aztec\AZHighLevelEncoder.cpp \
+              zxing\aztec\AZReader.cpp \
+              zxing\aztec\AZToken.cpp \
+              zxing\aztec\AZWriter.cpp \
+              zxing\datamatrix\DMBitLayout.cpp \
+              zxing\datamatrix\DMDataBlock.cpp \
+              zxing\datamatrix\DMDecoder.cpp \
+              zxing\datamatrix\DMDetector.cpp \
+              zxing\datamatrix\DMECEncoder.cpp \
+              zxing\datamatrix\DMHighLevelEncoder.cpp \
+              zxing\datamatrix\DMReader.cpp \
+              zxing\datamatrix\DMSymbolInfo.cpp \
+              zxing\datamatrix\DMVersion.cpp \
+              zxing\datamatrix\DMWriter.cpp \
+              zxing\libzueci\zueci.c \
+              zxing\maxicode\MCBitMatrixParser.cpp \
+              zxing\maxicode\MCDecoder.cpp \
+              zxing\maxicode\MCReader.cpp \
+              zxing\oned\ODCodabarReader.cpp \
+              zxing\oned\ODCodabarWriter.cpp \
+              zxing\oned\ODCode39Reader.cpp \
+              zxing\oned\ODCode39Writer.cpp \
+              zxing\oned\ODCode93Reader.cpp \
+              zxing\oned\ODCode93Writer.cpp \
+              zxing\oned\ODCode128Patterns.cpp \
+              zxing\oned\ODCode128Reader.cpp \
+              zxing\oned\ODCode128Writer.cpp \
+              zxing\oned\ODDataBarCommon.cpp \
+              zxing\oned\ODDataBarExpandedBitDecoder.cpp \
+              zxing\oned\ODDataBarExpandedReader.cpp \
+              zxing\oned\ODDataBarReader.cpp \
+              zxing\oned\ODEAN8Writer.cpp \
+              zxing\oned\ODEAN13Writer.cpp \
+              zxing\oned\ODITFReader.cpp \
+              zxing\oned\ODITFWriter.cpp \
+              zxing\oned\ODMultiUPCEANReader.cpp \
+              zxing\oned\ODReader.cpp \
+              zxing\oned\ODRowReader.cpp \
+              zxing\oned\ODUPCAWriter.cpp \
+              zxing\oned\ODUPCEANCommon.cpp \
+              zxing\oned\ODUPCEWriter.cpp \
+              zxing\oned\ODWriterHelper.cpp \
+              zxing\pdf417\PDFBarcodeValue.cpp \
+              zxing\pdf417\PDFBoundingBox.cpp \
+              zxing\pdf417\PDFCodewordDecoder.cpp \
+              zxing\pdf417\PDFDecoder.cpp \
+              zxing\pdf417\PDFDetectionResult.cpp \
+              zxing\pdf417\PDFDetectionResultColumn.cpp \
+              zxing\pdf417\PDFDetector.cpp \
+              zxing\pdf417\PDFEncoder.cpp \
+              zxing\pdf417\PDFHighLevelEncoder.cpp \
+              zxing\pdf417\PDFModulusGF.cpp \
+              zxing\pdf417\PDFModulusPoly.cpp \
+              zxing\pdf417\PDFReader.cpp \
+              zxing\pdf417\PDFScanningDecoder.cpp \
+              zxing\pdf417\PDFWriter.cpp \
+              zxing\qrcode\QRBitMatrixParser.cpp \
+              zxing\qrcode\QRCodecMode.cpp \
+              zxing\qrcode\QRDataBlock.cpp \
+              zxing\qrcode\QRDecoder.cpp \
+              zxing\qrcode\QRDetector.cpp \
+              zxing\qrcode\QREncoder.cpp \
+              zxing\qrcode\QRErrorCorrectionLevel.cpp \
+              zxing\qrcode\QRFormatInformation.cpp \
+              zxing\qrcode\QRMaskUtil.cpp \
+              zxing\qrcode\QRMatrixUtil.cpp \
+              zxing\qrcode\QRReader.cpp \
+              zxing\qrcode\QRVersion.cpp \
+              zxing\qrcode\QRWriter.cpp
+
 OBJ_LIST=dllmain.obj \
          imglab_opencv.obj \
          imglab_opencv_clss.obj \
@@ -129,11 +339,14 @@ SRC_LIST=dllmain.cpp \
          imglab_opencv.cpp \
          imglab_opencv_clss.cpp \
          imglab_opencv_conv.cpp \
-         imglab_opencv_intr.cpp \
-         $(SRC_OCV_WECHAT)
+         imglab_opencv_intr.cpp
+
+FLAGS_ZXING_CPP=/I.\zxing /utf-8 /std:c++17 /wd4101 /wd4127 /wd4244 /wd4245 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
 
 build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4
+    $(CC) $(CFLAGS) /EHsc /I $(INC_OPENCV) $(SRC_OCV_WECHAT)
+    $(CC) $(CFLAGS) /EHsc $(FLAGS_ZXING_CPP) $(SRC_ZXING_CPP)
     $(CC) $(CFLAGS) /EHsc /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)
     $(MT) $(MFLAGS)
