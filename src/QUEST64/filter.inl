@@ -124,10 +124,12 @@ quest64_draw_codes (
   __CR_IN__ uint_t      count
     )
 {
+    cpix_t  color, bkcolor;
+
+    bkcolor.val = 0x800000FF;
     for (uint_t idx = 0; idx < count; idx++)
     {
         bool    okay;
-        cpix_t  color;
         ansi_t* dtype = texts[idx * 2];
         ansi_t* dinfo = texts[idx * 2 + 1];
 
@@ -158,10 +160,11 @@ quest64_draw_codes (
                 imglab_xpoly_get(&pnt[3], imglab_xpoly_idx(ply, 3));
                 pnt[0].x += pnt[1].x + pnt[2].x + pnt[3].x;
                 pnt[0].y += pnt[1].y + pnt[2].y + pnt[3].y;
-                imglab_text_size(&pnt[1], shw, FONT_OCV_HERSHEY_DUPLEX, 12, 1);
+                imglab_calc_gb2312(&pnt[1], shw, 16);
                 pnt[0].x = pnt[0].x / 4 - pnt[1].x / 2;
-                pnt[0].y = pnt[0].y / 4 + pnt[1].y / 2;
-                imglab_draw_text(cvmat, shw, pnt->x, pnt->y, FONT_OCV_HERSHEY_DUPLEX, 12, color, 1);
+                pnt[0].y = pnt[0].y / 4 - pnt[1].y / 2;
+                imglab_draw_gb2312(cvmat, shw, pnt->x, pnt->y, 16,
+                                   CR_BLT_ALP, color, bkcolor);
                 mem_free(shw);
             }
         }
