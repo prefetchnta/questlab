@@ -316,6 +316,10 @@ _func_out1:
         prms._name = (_def); \
     else \
         prms._name = (bool_t)btmp
+#define CJSON_CSTR(_name, _def) \
+    prms._name = cjson_str_dup(root, #_name); \
+    if (prms._name == NULL) \
+        prms._name = str_dupA(_def)
 /*
 ---------------------------------------
     OpenCV ARUCO 参数解析
@@ -348,7 +352,7 @@ quest64_ocv_qrcode_load_aruco_params (
 
 /*
 ---------------------------------------
-    OpenCV ARUCO 监测参数解析
+    OpenCV ARUCO 检测参数解析
 ---------------------------------------
 */
 static void_t
@@ -423,13 +427,10 @@ quest64_ocv_qrcode_aruco (
     if (qr2d == NULL)
         goto _func_out1;
 
-    ansi_t* file;
-    ansi_t* json;
-
     /* 参数解析 */
-    file = xml_attr_stringU("params", param);
+    ansi_t* file = xml_attr_stringU("params", param);
     if (file != NULL) {
-        json = file_load_as_strA(file);
+        ansi_t* json = file_load_as_strA(file);
         mem_free(file);
         if (json != NULL) {
             quest64_ocv_qrcode_load_aruco_params(qr2d, json);
@@ -438,7 +439,7 @@ quest64_ocv_qrcode_aruco (
     }
     file = xml_attr_stringU("det_params", param);
     if (file != NULL) {
-        json = file_load_as_strA(file);
+        ansi_t* json = file_load_as_strA(file);
         mem_free(file);
         if (json != NULL) {
             quest64_ocv_qrcode_load_aruco_det_params(qr2d, json);
@@ -533,6 +534,100 @@ _func_out3:
 _func_out2:
     imglab_ocv_qr2code_del(qr2d);
 _func_out1:
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    ZXing 参数解析
+---------------------------------------
+*/
+static void_t
+quest64_zxi_grpcode_load_options (
+  __CR_OT__ sZXI_ReaderOptions& prms,
+  __CR_IN__ const ansi_t*       json
+    )
+{
+    cJSON*  root;
+
+    root = cJSON_Parse(json);
+    if (root != NULL)
+    {
+        sint_t  btmp;
+
+        CJSON_BOOL(tryHarder, TRUE);
+        CJSON_BOOL(tryRotate, TRUE);
+        CJSON_BOOL(tryInvert, TRUE);
+        CJSON_BOOL(tryDownscale, TRUE);
+        CJSON_BOOL(isPure, FALSE);
+        CJSON_BOOL(tryCode39ExtendedMode, FALSE);
+        CJSON_BOOL(validateCode39CheckSum, FALSE);
+        CJSON_BOOL(validateITFCheckSum, FALSE);
+        CJSON_BOOL(returnCodabarStartEnd, FALSE);
+        CJSON_BOOL(returnErrors, FALSE);
+        CJSON_INTG(downscaleFactor, 3);
+        CJSON_INTG(eanAddOnSymbol, ZXI_EAN_IGNORE);
+        CJSON_INTG(binarizer, ZXI_BIN_LOCAL_AVERAGE);
+        CJSON_INTG(textMode, ZXI_TEXT_HRI);
+        CJSON_CSTR(characterSet, "Unknown");
+        CJSON_INTG(minLineCount, 2);
+        CJSON_INTG(maxNumberOfSymbols, 255);
+        CJSON_INTG(downscaleThreshold, 500);
+        CJSON_INTG(formats, ZXI_TYPE_NONE);
+        cJSON_Delete(root);
+    }
+}
+
+/*
+---------------------------------------
+    ZXing 图形码识别器
+---------------------------------------
+*/
+static bool_t
+quest64_zxi_grpcode (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sZXI_ReaderOptions  prms;
+
+    /* 参数解析 */
+    prms.characterSet = NULL;
+    ansi_t* file = xml_attr_stringU("params", param);
+    if (file != NULL) {
+        ansi_t* json = file_load_as_strA(file);
+        mem_free(file);
+        if (json != NULL) {
+            quest64_zxi_grpcode_load_options(prms, json);
+            mem_free(json);
+        }
+    }
+
+    sIMAGE      dest;
+    leng_t      count;
+    ximage_t    cvmat;
+    str_lstA_t  texts;
+    xpoly_lst_t polys;
+
+    /* 执行图形码识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL) {
+        TRY_FREE(prms.characterSet);
+        return (TRUE);
+    }
+    count = (leng_t)imglab_zxi_grpcode_doit(cvmat, &texts, &polys, &prms);
+    if (count != 0)
+    {
+        /* 显示识别结果 */
+        quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
+        strlst_freeA(texts, count * 2);
+        imglab_polys_del(polys);
+    }
+    TRY_FREE(prms.characterSet);
+    imglab_mat_del(cvmat);
     CR_NOUSE(netw);
     return (TRUE);
 }
