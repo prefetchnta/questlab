@@ -1,0 +1,21 @@
+{
+    "tryHarder": 1,
+    "tryRotate": 1,
+    "tryInvert": 1,
+    "tryDownscale": 1,
+    "isPure": 0,
+    "tryCode39ExtendedMode": 0,
+    "validateCode39CheckSum": 0,
+    "validateITFCheckSum": 0,
+    "returnCodabarStartEnd": 0,
+    "returnErrors": 0,
+    "downscaleFactor": 3,
+    "eanAddOnSymbol": 0,
+    "binarizer": 0,
+    "textMode": 2,
+    "characterSet": "Unknown",
+    "minLineCount": 2,
+    "maxNumberOfSymbols": 255,
+    "downscaleThreshold": 500,
+    "formats": 0
+}

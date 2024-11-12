@@ -138,6 +138,9 @@
                 sr_prototxt="source/opencv/wechat_qrcode/sr.prototxt" det_model="source/opencv/wechat_qrcode/detect.caffemodel"
                 det_prototxt="source/opencv/wechat_qrcode/detect.prototxt" scale="0" />
 
+            <!-- ZXing -->
+            <?quest64_zxing_grpcode params="script/filter/sZXI_ReaderOptions.json" />
+
         </filters>
     ]]></quest64_bridge>
 
