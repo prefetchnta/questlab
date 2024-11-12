@@ -333,13 +333,15 @@ OBJ_LIST=dllmain.obj \
          imglab_opencv_clss.obj \
          imglab_opencv_conv.obj \
          imglab_opencv_intr.obj \
+         imglab_crhack_draw.obj \
          $(OBJ_OCV_WECHAT)
 
 SRC_LIST=dllmain.cpp \
          imglab_opencv.cpp \
          imglab_opencv_clss.cpp \
          imglab_opencv_conv.cpp \
-         imglab_opencv_intr.cpp
+         imglab_opencv_intr.cpp \
+         imglab_crhack_draw.cpp
 
 FLAGS_ZXING_CPP=/I.\zxing /utf-8 /std:c++17 /wd4101 /wd4127 /wd4244 /wd4245 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
 

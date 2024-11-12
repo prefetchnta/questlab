@@ -171,8 +171,15 @@ CR_API void_t   imglab_draw_text (ximage_t mat, const ansi_t *text,
                             sint_t dx, sint_t dy, sint_t font, sint_t height,
                                     cpix_t color, sint_t lbold);
 
-CR_API sint_t   imglab_text_size (sPNT2 *size, const ansi_t *text,
+CR_API sint_t   imglab_calc_text (sPNT2 *size, const ansi_t *text,
                             sint_t font, sint_t height, sint_t lbold);
+/* CrHack 绘制函数 */
+CR_API void_t   imglab_draw_gb2312 (ximage_t mat, const ansi_t *text,
+                            sint_t dx, sint_t dy, uint_t height, int32u mode,
+                                    cpix_t color, cpix_t bkcolor);
+
+CR_API void_t   imglab_calc_gb2312 (sPNT2 *size, const ansi_t *text,
+                                    uint_t height);
 
 /*****************************************************************************/
 /*                                 图片滤波                                  */

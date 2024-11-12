@@ -34,6 +34,9 @@
 #define CPIX2SCALAR(cpix) \
     cv::Scalar(cpix.c32.bbb, cpix.c32.ggg, cpix.c32.rrr, cpix.c32.lrp)
 
+/* OpenCV 矩阵转 iGFX2 接口 */
+iGFX2* imglab_mat_to_igfx2 (ximage_t mat);
+
 /* ImgLAB 内部工具函数 */
 xpoly_lst_t imglab_split_to_xpoly (std::vector<cv::Point> *pnts, size_t usize);
 void_t imglab_mats_to_points (std::vector<cv::Point> *pnts, const std::vector<cv::Mat> &mats);

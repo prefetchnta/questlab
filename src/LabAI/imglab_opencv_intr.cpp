@@ -24,6 +24,42 @@
 
 /*
 =======================================
+    OpenCV 矩阵转 iGFX2 接口
+=======================================
+*/
+extern iGFX2*
+imglab_mat_to_igfx2 (
+  __CR_IN__ ximage_t    mat
+    )
+{
+    iGFX2*      ot;
+    uint_t      tt;
+    cv::Mat*    mm;
+
+    // 创建一个假的对象
+    mm = (cv::Mat*)mat;
+    tt = mm->depth();
+    if (tt != CV_8U && tt != CV_8S)
+        return (NULL);
+    switch (mm->channels())
+    {
+        default: return (NULL);
+        case 1: tt = CR_INDEX8; break;
+        case 3: tt = CR_ARGB888; break;
+        case 4: tt = CR_ARGB8888; break;
+    }
+    ot = create_mem_bitmap(1, 1, tt);
+    if (ot == NULL)
+        return (NULL);
+
+    // 替换内部图像结构
+    mem_free(ot->__back__.data);
+    imglab_mat2crh_set(&ot->__back__, mat);
+    return (ot);
+}
+
+/*
+=======================================
     列表多边形生成
 =======================================
 */

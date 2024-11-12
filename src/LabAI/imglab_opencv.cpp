@@ -1228,7 +1228,7 @@ imglab_draw_text (
 =======================================
 */
 CR_API sint_t
-imglab_text_size (
+imglab_calc_text (
   __CR_OT__ sPNT2*          size,
   __CR_IN__ const ansi_t*   text,
   __CR_IN__ sint_t          font,
