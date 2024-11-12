@@ -118,7 +118,8 @@ SRC_OCV_WECHAT=opencv\wechat_qrcode\binarizermgr.cpp \
                opencv\wechat_qrcode\zxing\qrcode\detector\finder_pattern_info.cpp \
                opencv\wechat_qrcode\zxing\qrcode\detector\pattern_result.cpp
 
-OBJ_ZXING_CPP=BarcodeFormat.obj \
+OBJ_ZXING_CPP=imglab_zxing.obj \
+              BarcodeFormat.obj \
               BinaryBitmap2.obj \
               BitArray2.obj \
               BitMatrix2.obj \
@@ -223,7 +224,8 @@ OBJ_ZXING_CPP=BarcodeFormat.obj \
               QRVersion.obj \
               QRWriter.obj
 
-SRC_ZXING_CPP=zxing\BarcodeFormat.cpp \
+SRC_ZXING_CPP=imglab_zxing.cpp \
+              zxing\BarcodeFormat.cpp \
               zxing\BinaryBitmap2.cpp \
               zxing\BitArray2.cpp \
               zxing\BitMatrix2.cpp \
@@ -334,7 +336,7 @@ OBJ_LIST=dllmain.obj \
          imglab_opencv_conv.obj \
          imglab_opencv_intr.obj \
          imglab_crhack_draw.obj \
-         $(OBJ_OCV_WECHAT)
+         $(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP)
 
 SRC_LIST=dllmain.cpp \
          imglab_opencv.cpp \
@@ -348,7 +350,7 @@ FLAGS_ZXING_CPP=/I.\zxing /utf-8 /std:c++17 /wd4101 /wd4127 /wd4244 /wd4245 /wd4
 build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4
     $(CC) $(CFLAGS) /EHsc /I $(INC_OPENCV) $(SRC_OCV_WECHAT)
-    $(CC) $(CFLAGS) /EHsc $(FLAGS_ZXING_CPP) $(SRC_ZXING_CPP)
+    $(CC) $(CFLAGS) /EHsc /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) $(FLAGS_ZXING_CPP) $(SRC_ZXING_CPP)
     $(CC) $(CFLAGS) /EHsc /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)
     $(MT) $(MFLAGS)

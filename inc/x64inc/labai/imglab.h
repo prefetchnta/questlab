@@ -264,6 +264,7 @@ typedef struct  /* cv::QRCodeDetectorAruco::Params */
 
 } sOCV_QRCodeArucoParam;
 
+/* sOCV_QRCodeArucoDetector::cornerRefinementMethod */
 #define QR2D_OCV_CORNER_REFINE_NONE     0
 #define QR2D_OCV_CORNER_REFINE_SUBPIX   1
 #define QR2D_OCV_CORNER_REFINE_CONTOUR  2
@@ -335,5 +336,82 @@ imglab_ocv_qr2code_param (qr2code_ocv_t qr2d, const void_t *param_data,
 CR_API size_t
 imglab_ocv_qr2code_doit (qr2code_ocv_t qr2d, ximage_t mat, str_lstA_t *text,
                                     xpoly_lst_t *list);
+/* ZXing 图形码识别参数 */
+/* sZXI_ReaderOptions::formats */
+#define ZXI_TYPE_NONE           0
+#define ZXI_TYPE_AZTEC      (1 << 0)
+#define ZXI_TYPE_CODABAR    (1 << 1)
+#define ZXI_TYPE_CODE39     (1 << 2)
+#define ZXI_TYPE_CODE93     (1 << 3)
+#define ZXI_TYPE_CODE128    (1 << 4)
+#define ZXI_TYPE_DATABAR    (1 << 5)
+#define ZXI_TYPE_DATABAREX  (1 << 6)
+#define ZXI_TYPE_DATAMATRIX (1 << 7)
+#define ZXI_TYPE_EAN8       (1 << 8)
+#define ZXI_TYPE_EAN13      (1 << 9)
+#define ZXI_TYPE_ITF        (1 << 10)
+#define ZXI_TYPE_MAXICODE   (1 << 11)
+#define ZXI_TYPE_PDF417     (1 << 12)
+#define ZXI_TYPE_QRCODE     (1 << 13)
+#define ZXI_TYPE_UPCA       (1 << 14)
+#define ZXI_TYPE_UPCE       (1 << 15)
+#define ZXI_TYPE_MC_QRCODE  (1 << 16)
+#define ZXI_TYPE_RM_QRCODE  (1 << 17)
+#define ZXI_TYPE_LINEAR_CODES \
+    (ZXI_TYPE_CODABAR | ZXI_TYPE_CODE39 | ZXI_TYPE_CODE93 | \
+     ZXI_TYPE_CODE128 | ZXI_TYPE_EAN8 | ZXI_TYPE_EAN13 | ZXI_TYPE_ITF | \
+     ZXI_TYPE_DATABAR | ZXI_TYPE_DATABAREX | ZXI_TYPE_UPCA | ZXI_TYPE_UPCE)
+#define ZXI_TYPE_MATRIX_CODES \
+    (ZXI_TYPE_AZTEC | ZXI_TYPE_DATAMATRIX | ZXI_TYPE_MAXICODE | \
+     ZXI_TYPE_PDF417 | ZXI_TYPE_QRCODE | ZXI_TYPE_MC_QRCODE | \
+     ZXI_TYPE_RM_QRCODE)
+#define ZXI_TYPE_ANY    (ZXI_TYPE_LINEAR_CODES | ZXI_TYPE_MATRIX_CODES)
+
+typedef struct  /* ZXing::ReaderOptions */
+{
+    bool_t  tryHarder;
+    bool_t  tryRotate;
+    bool_t  tryInvert;
+    bool_t  tryDownscale;
+    bool_t  isPure;
+    bool_t  tryCode39ExtendedMode;
+    bool_t  validateCode39CheckSum;
+    bool_t  validateITFCheckSum;
+    bool_t  returnCodabarStartEnd;
+    bool_t  returnErrors;
+    sint_t  downscaleFactor;
+    sint_t  eanAddOnSymbol;
+    sint_t  binarizer;
+    sint_t  textMode;
+    cstr_t  characterSet;
+    sint_t  minLineCount;
+    sint_t  maxNumberOfSymbols;
+    sint_t  downscaleThreshold;
+    sint_t  formats;
+
+} sZXI_ReaderOptions;
+
+/* sZXI_ReaderOptions::eanAddOnSymbol */
+#define ZXI_EAN_IGNORE  0
+#define ZXI_EAN_READ    1
+#define ZXI_EAN_REQUIRE 2
+
+/* sZXI_ReaderOptions::textMode */
+#define ZXI_TEXT_PLAIN      0
+#define ZXI_TEXT_ECI        1
+#define ZXI_TEXT_HRI        2
+#define ZXI_TEXT_HEX        3
+#define ZXI_TEXT_ESCAPED    4
+
+/* sZXI_ReaderOptions::binarizer */
+#define ZXI_BIN_LOCAL_AVERAGE       0
+#define ZXI_BIN_GLOBAL_HISTOGRAM    1
+#define ZXI_BIN_FIXED_THRESHOLD     2
+#define ZXI_BIN_BOOL_CAST           3
+
+/* ZXing 图形码识别函数 */
+CR_API size_t
+imglab_zxi_grpcode_doit (ximage_t mat, str_lstA_t *text, xpoly_lst_t *list,
+                         const sZXI_ReaderOptions *options CR_DEFAULT(NULL));
 
 #endif  /* !__AI_IMGLAB_H__ */

@@ -242,6 +242,16 @@ imglab_ocv_barcode_doit (
                 idx < dtype.size() && !dtype[idx].empty()) {
                 (*text)[idx * 2 + 0] = str_dupA(dtype[idx].c_str());
                 (*text)[idx * 2 + 1] = str_dupA(dinfo[idx].c_str());
+                if ((*text)[idx * 2] != NULL)
+                {
+                    ansi_t* str = (*text)[idx * 2];
+
+                    while (*str != 0) {
+                        if (*str == '_')
+                            *str = '-';
+                        str++;
+                    }
+                }
             }
             else {
                 (*text)[idx * 2 + 0] = NULL;
@@ -526,7 +536,7 @@ imglab_ocv_qr2code_doit (
     if (*text != NULL) {
         for (size_t idx = 0; idx < cnts; idx++) {
             if (idx < dinfo.size() && !dinfo[idx].empty()) {
-                (*text)[idx * 2 + 0] = str_dupA("QRCODE");
+                (*text)[idx * 2 + 0] = str_dupA("QRCode");
                 (*text)[idx * 2 + 1] = str_dupA(dinfo[idx].c_str());
             }
             else {
