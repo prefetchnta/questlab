@@ -118,7 +118,7 @@ SRC_OCV_WECHAT=opencv\wechat_qrcode\binarizermgr.cpp \
                opencv\wechat_qrcode\zxing\qrcode\detector\finder_pattern_info.cpp \
                opencv\wechat_qrcode\zxing\qrcode\detector\pattern_result.cpp
 
-OBJ_ZXING_CPP=imglab_zxing.obj \
+OBJ_ZXING_CPP=imglab_zxing_dect.obj \
               BarcodeFormat.obj \
               BinaryBitmap2.obj \
               BitArray2.obj \
@@ -224,7 +224,7 @@ OBJ_ZXING_CPP=imglab_zxing.obj \
               QRVersion.obj \
               QRWriter.obj
 
-SRC_ZXING_CPP=imglab_zxing.cpp \
+SRC_ZXING_CPP=imglab_zxing_dect.cpp \
               zxing\BarcodeFormat.cpp \
               zxing\BinaryBitmap2.cpp \
               zxing\BitArray2.cpp \
@@ -331,19 +331,19 @@ SRC_ZXING_CPP=imglab_zxing.cpp \
               zxing\qrcode\QRWriter.cpp
 
 OBJ_LIST=dllmain.obj \
-         imglab_opencv.obj \
-         imglab_opencv_clss.obj \
-         imglab_opencv_conv.obj \
-         imglab_opencv_intr.obj \
          imglab_crhack_draw.obj \
+         imglab_opencv_base.obj \
+         imglab_opencv_dect.obj \
+         imglab_opencv_intr.obj \
+         imglab_opencv_proc.obj \
          $(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP)
 
 SRC_LIST=dllmain.cpp \
-         imglab_opencv.cpp \
-         imglab_opencv_clss.cpp \
-         imglab_opencv_conv.cpp \
+         imglab_crhack_draw.cpp \
+         imglab_opencv_base.cpp \
+         imglab_opencv_dect.cpp \
          imglab_opencv_intr.cpp \
-         imglab_crhack_draw.cpp
+         imglab_opencv_proc.cpp
 
 FLAGS_ZXING_CPP=/I.\zxing /utf-8 /std:c++17 /wd4101 /wd4127 /wd4244 /wd4245 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
 
