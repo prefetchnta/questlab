@@ -1,6 +1,9 @@
 
 #include "QstView2D.h"
 
+/* 日志函数 */
+#include "../logit.inl"
+
 /* 内部函数的声明 */
 CR_API void_t   qst_clear (sQstView2D *parm);
 
@@ -18,22 +21,6 @@ finfo_free (
 
     unit = (ansi_t**)obj;
     mem_free(*unit);
-}
-
-/*
----------------------------------------
-    输出调试日志
----------------------------------------
-*/
-static void logit (char *message)
-{
-    FILE*   fp;
-
-    fp = fopen(QST_PATH_OUTPUT "QstView2D.log", "a");
-    if (fp != NULL) {
-        fprintf(fp, "[%u] %s\n", GetTickCount(), message);
-        fclose(fp);
-    }
 }
 
 /*****************************************************************************/
@@ -566,11 +553,9 @@ qst_make_image (
     /* 调用滤镜脚本 (如果有的话) */
     if (parm->flt_scr != NULL && parm->flt_lst != NULL)
     {
-        /* 判断64位滤镜有没有崩溃, 崩溃则重启 */
-        if (!misc_is_running("fQUEST64")) {
-            logit("fQUEST64.exe fucked, reboot it!");
-            misc_call_exe("x64bin\\fQUEST64.exe", FALSE, TRUE);
-        }
+        /* 判断64位滤镜有没有崩溃, 崩溃则记录 */
+        if (misc_is_win64() && !misc_is_running("fQUEST64"))
+            logit("fQUEST64.exe fucked, please check it!");
         xmlcall_exec(parm->flt_lst, rgb, "", parm->flt_scr);
     }
 
