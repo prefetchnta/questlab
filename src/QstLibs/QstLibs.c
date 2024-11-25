@@ -17,6 +17,8 @@ DllMain (
     switch (reason)
     {
         case DLL_PROCESS_ATTACH:
+            misc_is_win64();
+            misc_is_win11(NULL);
             break;
 
         case DLL_PROCESS_DETACH:
@@ -1221,11 +1223,21 @@ misc_dir_exist (
 CR_API bool_t STDCALL
 misc_is_win64 (void_t)
 {
-    ansi_t  tmp[MAX_PATH];
+    static sint_t   is_x64 = -1;
 
-    if (GetEnvironmentVariableA("ProgramFiles(x86)", tmp, sizeof(tmp)) == 0)
-        return (FALSE);
-    return (TRUE);
+    if (is_x64 < 0)
+    {
+        ansi_t  tmp[MAX_PATH];
+
+        if (GetEnvironmentVariableA("ProgramFiles(x86)",
+                            tmp, sizeof(tmp)) == 0) {
+            is_x64 = FALSE;
+        }
+        else {
+            is_x64 = TRUE;
+        }
+    }
+    return ((bool_t)is_x64);
 }
 
 /* RtlGetNtVersionNumbers() 函数类型 */
@@ -1241,34 +1253,44 @@ misc_is_win11 (
   __CR_OT__ int32u* vers
     )
 {
-    sbin_t  sbin;
-    gver_t  gver;
-    int32u  back[3];
+    static sint_t   is_w11 = -1;
+    static int32u   back[3] = { 0, 0, 0 };
 
-    if (vers != NULL) {
-        vers[0] = 0;
-        vers[1] = 0;
-        vers[2] = 0;
-    }
-    sbin = sbin_loadA("ntdll.dll");
-    if (sbin == NULL)
-        return (FALSE);
-    gver = sbin_exportT(sbin, "RtlGetNtVersionNumbers", gver_t);
-    if (gver == NULL) {
+    if (is_w11 < 0)
+    {
+        sbin_t  sbin;
+        gver_t  gver;
+
+        if (vers != NULL) {
+            vers[0] = 0;
+            vers[1] = 0;
+            vers[2] = 0;
+        }
+        sbin = sbin_loadA("ntdll.dll");
+        if (sbin == NULL)
+            return (FALSE);
+        gver = sbin_exportT(sbin, "RtlGetNtVersionNumbers", gver_t);
+        if (gver == NULL) {
+            sbin_unload(sbin);
+            return (FALSE);
+        }
+        gver(&back[0], &back[1], &back[2]);
+        back[2] &= 0xFFFF;
         sbin_unload(sbin);
-        return (FALSE);
+        if (back[0] < 10) {
+            is_w11 = FALSE;
+        }
+        else {
+            is_w11 = ((back[2] >= 22000) ? TRUE : FALSE);
+        }
     }
-    gver(&back[0], &back[1], &back[2]);
-    back[2] &= 0xFFFF;
+
     if (vers != NULL) {
         vers[0] = back[0];
         vers[1] = back[1];
         vers[2] = back[2];
     }
-    sbin_unload(sbin);
-    if (back[0] < 10)
-        return (FALSE);
-    return ((back[2] >= 22000) ? TRUE : FALSE);
+    return ((bool_t)is_w11);
 }
 
 /*
