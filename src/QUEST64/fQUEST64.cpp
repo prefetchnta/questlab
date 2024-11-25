@@ -36,6 +36,9 @@
 #pragma comment (lib, "CrH_GFX2.lib")
 #pragma comment (lib, "CrH_UTIL.lib")
 
+/* 日志函数 */
+#include "../logit.inl"
+
 /* 桥接函数 */
 #include "../bridge.inl"
 
@@ -118,22 +121,6 @@ static const sXC_PORT   quest64_filter[] =
     { "quest64_zxing_grpcode", quest64_zxi_grpcode },
     { NULL, NULL },
 };
-
-/*
----------------------------------------
-    输出调试日志
----------------------------------------
-*/
-static void logit (char *message)
-{
-    FILE*   fp;
-
-    fp = fopen(QST_PATH_OUTPUT "fQUEST64.log", "a");
-    if (fp != NULL) {
-        fprintf(fp, "[%u] %s\n", GetTickCount(), message);
-        fclose(fp);
-    }
-}
 
 /*
 =======================================
