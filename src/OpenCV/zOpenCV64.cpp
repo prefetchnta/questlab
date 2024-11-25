@@ -33,6 +33,9 @@
 /* 外部库引用 */
 #pragma comment (lib, "opencv_world4100.lib")
 
+/* 日志函数 */
+#include "../logit.inl"
+
 /* 桥接函数 */
 #include "../bridge.inl"
 
@@ -104,22 +107,6 @@ opencv_send_image (
 
     /* 发送图片信息 */
     message_send_buffer(mess, &info, sizeof(info));
-}
-
-/*
----------------------------------------
-    输出调试日志
----------------------------------------
-*/
-static void logit (char *message)
-{
-    FILE*   fp;
-
-    fp = fopen(QST_PATH_OUTPUT "zOpenCV64.log", "a");
-    if (fp != NULL) {
-        fprintf(fp, "[%u] %s\n", GetTickCount(), message);
-        fclose(fp);
-    }
 }
 
 /*
