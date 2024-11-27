@@ -439,15 +439,6 @@ qst_ocv_text (
 
     Mat img = cvarrToMat(&image, false);
 
-    /*  CV_FONT_HERSHEY_SIMPLEX         0
-        CV_FONT_HERSHEY_PLAIN           1
-        CV_FONT_HERSHEY_DUPLEX          2
-        CV_FONT_HERSHEY_COMPLEX         3
-        CV_FONT_HERSHEY_TRIPLEX         4
-        CV_FONT_HERSHEY_COMPLEX_SMALL   5
-        CV_FONT_HERSHEY_SCRIPT_SIMPLEX  6
-        CV_FONT_HERSHEY_SCRIPT_COMPLEX  7
-        CV_FONT_ITALIC                 +16 */
     sx = (sint_t)str2intxA(argv[1]);
     sy = (sint_t)str2intxA(argv[2]);
     fface = (sint_t)str2intxA(argv[3]);
