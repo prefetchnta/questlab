@@ -1,9 +1,6 @@
 
 #include "../QstView2D/QstView2D.h"
 
-/* 有用的函数类型 */
-typedef void_t  (*flldraw_t) (const sIMAGE*, const sFILL*,
-                              cpix_t, const sRECT*);
 /* 全局绘制参数 */
 static iFONT*       s_font = NULL;                  /* 文字绘制 */
 static egui_t       s_resx = NULL;                  /* 外部资源 */
@@ -14,7 +11,7 @@ static cpix_t       s_color   = { 0xFF000000 };     /* 绘制颜色 */
 static cpix_t       s_trans   = { 0x00000000 };     /* 透明颜色 */
 static cpix_t       s_bkcolor = { 0xFFFFFFFF };     /* 背景颜色 */
 static pixdraw_t    s_pixdraw = pixel_set32z;       /* 绘制模式 */
-static flldraw_t    s_flldraw = fill_set32_c;       /* 填充模式 */
+static pixfill_t    s_flldraw = fill_set32_c;       /* 填充模式 */
 
 /*
 ---------------------------------------
@@ -347,21 +344,24 @@ qst_crh_polygon (
     uint_t  count;
     uint_t  ii, jj;
 
-    /* 参数解析 <X1> <Y1> <X2> <Y2> ... */
-    if (argc < 5 || argc % 2 == 0)
+    /* 参数解析 <Fill> <X1> <Y1> <X2> <Y2> ... */
+    if (argc < 6 || argc % 2 != 0)
         return (FALSE);
     draw = ((sQstView2D*)parm)->paint;
     if (draw == NULL)
         return (FALSE);
-    count = (argc - 1) / 2;
+    count = argc / 2 - 1;
     pnts = mem_talloc(count, sPNT2);
     if (pnts == NULL)
         return (FALSE);
     for (jj = ii = 0; ii < count; ii++, jj++) {
-        pnts[jj].x = (sint_t)str2intxA(argv[ii * 2 + 1]);
-        pnts[jj].y = (sint_t)str2intxA(argv[ii * 2 + 2]);
+        pnts[jj].x = (sint_t)str2intxA(argv[ii * 2 + 2]);
+        pnts[jj].y = (sint_t)str2intxA(argv[ii * 2 + 3]);
     }
-    draw_polygon(draw, pnts, count, 0, s_color, s_pixdraw);
+    if (str2intxA(argv[1]))
+        fill_polygon(draw, pnts, count, 0, s_color, s_pixdraw);
+    else
+        draw_polygon(draw, pnts, count, 0, s_color, s_pixdraw);
     mem_free(pnts);
     return (TRUE);
 }
@@ -523,7 +523,7 @@ qst_crh_circle (
     sIMAGE* draw;
     sint_t  cx, cy, rr;
 
-    /* 参数解析 <X> <Y> <Radius> */
+    /* 参数解析 <X> <Y> <Radius> [Fill] */
     if (argc < 4)
         return (FALSE);
     draw = ((sQstView2D*)parm)->paint;
@@ -532,7 +532,10 @@ qst_crh_circle (
     cx = (sint_t)str2intxA(argv[1]);
     cy = (sint_t)str2intxA(argv[2]);
     rr = (sint_t)str2intxA(argv[3]);
-    draw_circle(draw, cx, cy, rr, s_color, s_pixdraw);
+    if (argc > 4 && str2intxA(argv[4]))
+        fill_circle(draw, cx, cy, rr, s_color, s_pixdraw);
+    else
+        draw_circle(draw, cx, cy, rr, s_color, s_pixdraw);
     return (TRUE);
 }
 
@@ -553,7 +556,7 @@ qst_crh_ellps_xy (
     sint_t  sx, sy;
     sint_t  dx, dy;
 
-    /* 参数解析 <X1> <Y1> <X2> <Y2> */
+    /* 参数解析 <X1> <Y1> <X2> <Y2> [Fill] */
     if (argc < 5)
         return (FALSE);
     draw = ((sQstView2D*)parm)->paint;
@@ -564,7 +567,10 @@ qst_crh_ellps_xy (
     dx = (sint_t)str2intxA(argv[3]);
     dy = (sint_t)str2intxA(argv[4]);
     rect_set_xy(&rect, sx, sy, dx, dy);
-    draw_ellipse(draw, &rect, s_color, s_pixdraw);
+    if (argc > 5 && str2intxA(argv[5]))
+        fill_ellipse(draw, &rect, s_color, s_pixdraw);
+    else
+        draw_ellipse(draw, &rect, s_color, s_pixdraw);
     return (TRUE);
 }
 
@@ -585,7 +591,7 @@ qst_crh_ellps_wh (
     sint_t  sx, sy;
     uint_t  ww, hh;
 
-    /* 参数解析 <X> <Y> <Width> <Height> */
+    /* 参数解析 <X> <Y> <Width> <Height> [Fill] */
     if (argc < 5)
         return (FALSE);
     draw = ((sQstView2D*)parm)->paint;
@@ -596,7 +602,10 @@ qst_crh_ellps_wh (
     ww = (uint_t)str2intxA(argv[3]);
     hh = (uint_t)str2intxA(argv[4]);
     rect_set_wh(&rect, sx, sy, ww, hh);
-    draw_ellipse(draw, &rect, s_color, s_pixdraw);
+    if (argc > 5 && str2intxA(argv[5]))
+        fill_ellipse(draw, &rect, s_color, s_pixdraw);
+    else
+        draw_ellipse(draw, &rect, s_color, s_pixdraw);
     return (TRUE);
 }
 
@@ -663,6 +672,33 @@ qst_crh_fill_wh (
     fill.dw = (uint_t)str2intxA(argv[3]);
     fill.dh = (uint_t)str2intxA(argv[4]);
     s_flldraw(draw, &fill, s_color, NULL);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    填充封闭区域
+---------------------------------------
+*/
+static bool_t
+qst_crh_fill_shp (
+  __CR_IN__ void_t*     parm,
+  __CR_IN__ uint_t      argc,
+  __CR_IN__ ansi_t**    argv
+    )
+{
+    sIMAGE* draw;
+    uint_t  sx, sy;
+
+    /* 参数解析 <X> <Y> */
+    if (argc < 3)
+        return (FALSE);
+    draw = ((sQstView2D*)parm)->paint;
+    if (draw == NULL)
+        return (FALSE);
+    sx = str2intxA(argv[1]);
+    sy = str2intxA(argv[2]);
+    fill_shape(draw, sx, sy, s_color);
     return (TRUE);
 }
 
@@ -802,25 +838,6 @@ qst_crh_btfont (
     }
     return (TRUE);
 }
-
-/* 文字对齐方式 */
-#if     (FALSE)
-    #define EGUI_ALN_L   1  /* 水平左对齐 */
-    #define EGUI_ALN_R   2  /* 水平右对齐 */
-    #define EGUI_ALN_C   3  /* 水平中对齐 */
-    #define EGUI_ALN_T   4  /* 垂直顶对齐 */
-    #define EGUI_ALN_B   8  /* 垂直底对齐 */
-    #define EGUI_ALN_M  12  /* 垂直中对齐 */
-    #define EGUI_ALN_LT (EGUI_ALN_L | EGUI_ALN_T)
-    #define EGUI_ALN_LB (EGUI_ALN_L | EGUI_ALN_B)
-    #define EGUI_ALN_LM (EGUI_ALN_L | EGUI_ALN_M)
-    #define EGUI_ALN_RT (EGUI_ALN_R | EGUI_ALN_T)
-    #define EGUI_ALN_RB (EGUI_ALN_R | EGUI_ALN_B)
-    #define EGUI_ALN_RM (EGUI_ALN_R | EGUI_ALN_M)
-    #define EGUI_ALN_CT (EGUI_ALN_C | EGUI_ALN_T)
-    #define EGUI_ALN_CB (EGUI_ALN_C | EGUI_ALN_B)
-    #define EGUI_ALN_CM (EGUI_ALN_C | EGUI_ALN_M)
-#endif
 
 /*
 ---------------------------------------
@@ -1470,6 +1487,7 @@ CR_API const sQST_CMD   qst_v2d_cmdz[] =
     { "crh:ellps_wh", qst_crh_ellps_wh },
     { "crh:fill_xy", qst_crh_fill_xy },
     { "crh:fill_wh", qst_crh_fill_wh },
+    { "crh:fill_shp", qst_crh_fill_shp },
     { "crh:bkcolor", qst_crh_bkcolor },
     { "crh:ucfont", qst_crh_ucfont },
     { "crh:btfont", qst_crh_btfont },

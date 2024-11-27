@@ -312,7 +312,7 @@
     crh:lines <X1> <Y1> <X2> <Y2> ...
         绘制一组指定的直线
 
-    crh:polygon <X1> <Y1> <X2> <Y2> ...
+    crh:polygon <Fill> <X1> <Y1> <X2> <Y2> ...
         绘制一个封闭的多边形
 
     crh:bezier <Step> <X1> <Y1> <X2> <Y2> <X3> <Y3> <X4> <Y4> ...
@@ -327,20 +327,23 @@
     crh:rect_wh <X> <Y> <Width> <Height>
         以宽高的方式绘制一个方框
 
-    crh:circle <X> <Y> <Radius>
-        绘制一个指定的正圆
+    crh:circle <X> <Y> <Radius> [Fill]
+        绘制一个指定的正圆，默认不填充颜色
 
-    crh:ellps_xy <X1> <Y1> <X2> <Y2>
-        以坐标的方式绘制一个椭圆
+    crh:ellps_xy <X1> <Y1> <X2> <Y2> [Fill]
+        以坐标的方式绘制一个椭圆，默认不填充颜色
 
-    crh:ellps_wh <X> <Y> <Width> <Height>
-        以宽高的方式绘制一个椭圆
+    crh:ellps_wh <X> <Y> <Width> <Height> [Fill]
+        以宽高的方式绘制一个椭圆，默认不填充颜色
 
     crh:fill_xy <X1> <Y1> <X2> <Y2>
         以坐标的方式绘制一个填充
 
     crh:fill_wh <X> <Y> <Width> <Height>
         以宽高的方式绘制一个填充
+
+    crh:fill_shp <X> <Y>
+        填充一个封闭区域
 
     crh:bkcolor <Red> <Green> <Blue> [Alpha]
         设置当前绘制背景色，Alpha 默认为255，缺省为白色
