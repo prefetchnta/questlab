@@ -39,6 +39,22 @@ echo.>> QuestLAB.reg
 echo [HKEY_CLASSES_ROOT\Directory\shell\HaSHer - XOR\command]>> QuestLAB.reg
 echo @="%CD%\\HaSHer.exe \"%%1\" -2">> QuestLAB.reg
 echo.>> QuestLAB.reg
+if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    echo [HKEY_CLASSES_ROOT\*\shell\grepWin]>> QuestLAB.reg
+    echo @="grepWin">> QuestLAB.reg
+    echo "Icon"="%CD%\\x64bin\\grepWin.exe,-107">> QuestLAB.reg
+    echo.>> QuestLAB.reg
+    echo [HKEY_CLASSES_ROOT\*\shell\grepWin\command]>> QuestLAB.reg
+    echo @="\"%CD%\\x64bin\\grepWin.exe\" /searchpath:\"%%1\"">> QuestLAB.reg
+    echo.>> QuestLAB.reg
+    echo [HKEY_CLASSES_ROOT\Directory\shell\grepWin]>> QuestLAB.reg
+    echo @="grepWin">> QuestLAB.reg
+    echo "Icon"="%CD%\\x64bin\\grepWin.exe,-107">> QuestLAB.reg
+    echo.>> QuestLAB.reg
+    echo [HKEY_CLASSES_ROOT\Directory\shell\grepWin\command]>> QuestLAB.reg
+    echo @="\"%CD%\\x64bin\\grepWin.exe\" /searchpath:\"%%1\"">> QuestLAB.reg
+    echo.>> QuestLAB.reg
+)
 QuestLAB.reg
 del /Q QuestLAB.reg
 if exist "%SystemRoot%\Fonts\YHC112.ttf" goto next1
