@@ -1261,6 +1261,7 @@ static const sQTEE_icon s_ext_list[] =
     {   QST_ICON_USER       , CR_WS(".suo")                     },
     {   QST_ICON_USER       , CR_WS(".vssettings")              },
     {   QST_ICON_JSE        , CR_WS(".js")                      },
+    {   QST_ICON_JSE        , CR_WS(".mjs")                     },
     {   QST_ICON_JSE        , CR_WS(".jse")                     },
     {   QST_ICON_JSE        , CR_WS(".sct")                     },
     {   QST_ICON_VBDPROJ    , CR_WS(".vbdproj")                 },
