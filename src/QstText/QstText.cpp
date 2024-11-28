@@ -250,6 +250,7 @@ typedef struct
 #define QST_ACT_CTCL_CUI    0x06    /* Tcl CUI */
 #define QST_ACT_CTCL_GUI    0x07    /* Tcl GUI */
 #define QST_ACT_PNDR_CUI    0x08    /* Pandora */
+#define QST_ACT_QKJS_CUI    0x09    /* QuickJS */
 
 /* 扩展名匹配类型列表 */
 static const sQST_MATCH s_fmatch[] =
@@ -268,6 +269,9 @@ static const sQST_MATCH s_fmatch[] =
     { QST_ACT_CTCL_GUI, ".wish" },
     /* ------------------------ */
     { QST_ACT_PNDR_CUI, ".pndr" },
+    /* ------------------------ */
+    { QST_ACT_QKJS_CUI, ".js"   },
+    { QST_ACT_QKJS_CUI, ".mjs"  },
 };
 
 /*
@@ -786,57 +790,73 @@ qst_file_action (
     {
         default: return;
         case QST_ACT_QSTBATCH:  /* QstBatch */
-            if (!qst_save_file(QST_TMP_SCRIPT, CR_UTF8))
+            if (!qst_save_file(QST_TMP_SCRIPT ".qst", CR_UTF8))
                 return;
-            misc_call_exe("QstCmdz.exe " QST_TMP_SCRIPT, FALSE, TRUE);
+            misc_call_exe("QstCmdz.exe "
+                QST_TMP_SCRIPT ".qst", FALSE, TRUE);
             break;
 
         case QST_ACT_FILTER2D:  /* Filter2D */
-            if (!qst_save_file(QST_TMP_SCRIPT, CR_UTF8))
+            if (!qst_save_file(QST_TMP_SCRIPT ".f2d", CR_UTF8))
                 return;
-            cmd_shl_send(s_wrk_ctx.netw, "qv2d:flt:load " QST_TMP_SCRIPT);
+            cmd_shl_send(s_wrk_ctx.netw, "qv2d:flt:load "
+                QST_TMP_SCRIPT ".f2d");
             break;
 
         case QST_ACT_C_PY_CUI:  /* Python CUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".py", CR_UTF8))
                 return;
-            misc_call_exe("RunPython.exe " QST_TMP_SCRIPT ".py", FALSE, TRUE);
+            misc_call_exe("RunPython.exe "
+                QST_TMP_SCRIPT ".py", FALSE, TRUE);
             break;
 
         case QST_ACT_C_PY_GUI:  /* Python GUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".pyw", CR_UTF8))
                 return;
-            misc_call_exe("RunPython.exe " QST_TMP_SCRIPT ".pyw", FALSE, TRUE);
+            misc_call_exe("RunPython.exe "
+                QST_TMP_SCRIPT ".pyw", FALSE, TRUE);
             break;
 
         case QST_ACT_CLUA_CUI:  /* Lua CUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".lua", CR_UTF8))
                 return;
-            misc_call_exe("RunLua.exe " QST_TMP_SCRIPT ".lua", FALSE, TRUE);
+            misc_call_exe("RunLua.exe "
+                QST_TMP_SCRIPT ".lua", FALSE, TRUE);
             break;
 
         case QST_ACT_CLUA_GUI:  /* Lua GUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".wlua", CR_UTF8))
                 return;
-            misc_call_exe("RunLua.exe " QST_TMP_SCRIPT ".wlua", FALSE, TRUE);
+            misc_call_exe("RunLua.exe "
+                QST_TMP_SCRIPT ".wlua", FALSE, TRUE);
             break;
 
         case QST_ACT_CTCL_CUI:  /* Tcl CUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".tcl", CR_UTF8))
                 return;
-            misc_call_exe("RunTcl.exe " QST_TMP_SCRIPT ".tcl", FALSE, TRUE);
+            misc_call_exe("RunTcl.exe "
+                QST_TMP_SCRIPT ".tcl", FALSE, TRUE);
             break;
 
         case QST_ACT_CTCL_GUI:  /* Tcl GUI */
             if (!qst_save_file(QST_TMP_SCRIPT ".wish", CR_UTF8))
                 return;
-            misc_call_exe("RunTcl.exe " QST_TMP_SCRIPT ".wish", FALSE, TRUE);
+            misc_call_exe("RunTcl.exe "
+                QST_TMP_SCRIPT ".wish", FALSE, TRUE);
             break;
 
         case QST_ACT_PNDR_CUI:  /* Pandora */
             if (!qst_save_file(QST_TMP_SCRIPT ".pndr", CR_UTF8))
                 return;
-            misc_call_exe("Pandora.exe " QST_TMP_SCRIPT ".pndr", FALSE, FALSE);
+            misc_call_exe("Pandora.exe "
+                QST_TMP_SCRIPT ".pndr", FALSE, FALSE);
+            break;
+
+        case QST_ACT_QKJS_CUI:  /* QuickJS */
+            if (!qst_save_file(QST_TMP_SCRIPT ".js", CR_UTF8))
+                return;
+            misc_call_exe("qjs.exe --std --bignum "
+                QST_TMP_SCRIPT ".js", FALSE, FALSE);
             break;
     }
 }

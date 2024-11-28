@@ -60,7 +60,8 @@ object frmMain: TfrmMain
         ' Lua GUI'
         ' Tcl CUI'
         ' Tcl GUI'
-        ' Pandora')
+        ' Pandora'
+        ' QuickJS')
     end
     object btnRefresh: TButton
       Left = 298
