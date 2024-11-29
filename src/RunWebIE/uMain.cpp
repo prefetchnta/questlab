@@ -53,7 +53,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
     /* 执行外部脚本文件 */
     if (chr_cmpA(urla, "quest://", 8) == 0)
     {
-        /* QstCmdz 批处理脚本 */
+        /* QstCmdz 执行脚本 */
         *Cancel = TRUE;
         file = urla + 8;
         line = str_fmtA("QstCmdz.exe \"%s\"", file);
@@ -116,6 +116,19 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         rett = TRUE;
     }
     else
+    if (chr_cmpA(urla, "quickjs://", 10) == 0)
+    {
+        /* QuickJS 执行脚本 */
+        *Cancel = TRUE;
+        file = urla + 10;
+        line = str_fmtA("qjs.exe --std --bignum \"%s\"", file);
+        mem_free(urla);
+        if (line == NULL)
+            return;
+        hide = FALSE;
+        rett = TRUE;
+    }
+    else
     {
         /* 普通网页跳转 */
         *Cancel = FALSE;
@@ -132,8 +145,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         }
         rett = misc_call_exe(line, FALSE, hide);
         mem_free(line);
-        if (rett)
-            this->Close();
+        if (rett) this->Close();
     }
 }
 //---------------------------------------------------------------------------
