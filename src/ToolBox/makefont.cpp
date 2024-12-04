@@ -74,7 +74,7 @@ static void_t font_info_free (void_t *obj)
     获取输出字模数据
 ---------------------------------------
 */
-static bool_t get_char_mask (file_t file, iGFX2 *main, iFONT *font,
+static bool_t get_char_mask (fbuf_t file, iGFX2 *main, iFONT *font,
                 const void_t *text, uint_t attrb, uint_t cpage, uint_t fnt_w,
                             uint_t fnt_h, uint_t *max_w, uint_t *max_h)
 {
@@ -194,7 +194,7 @@ static bool_t get_char_mask (file_t file, iGFX2 *main, iFONT *font,
                             data |= 0x80;
                     }
                     /* 写入文件 */
-                    if (!file_putb(data, file)) {
+                    if (!file_buf_putb(data, file)) {
                         printf("can't write dest file\n");
                         goto _failure;
                     }
@@ -209,7 +209,7 @@ static bool_t get_char_mask (file_t file, iGFX2 *main, iFONT *font,
                             data |= 0x01;
                     }
                     /* 写入文件 */
-                    if (!file_putb(data, file)) {
+                    if (!file_buf_putb(data, file)) {
                         printf("can't write dest file\n");
                         goto _failure;
                     }
@@ -259,9 +259,9 @@ static iFONT* get_char_font (iGFX2 *main, const sARRAY *list, leng_t index)
 static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
         uint_t cpage, uint_t api_w, uint_t api_h, uint_t fnt_w, uint_t fnt_h)
 {
-    iGFX2 *main;
+    iGFX2* main;
     leng_t tag_count;
-    file_t fhzk, fasc;
+    fbuf_t fhzk, fasc;
     uint_t max_w, max_h;
 
     /* 没有 RANGE 标签 */
@@ -272,15 +272,15 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
     }
 
     /* 先生成文件 */
-    fhzk = file_openA("HZK", CR_FO_WO);
+    fhzk = file_buf_openA("HZK", CR_FO_WO);
     if (fhzk == NULL) {
         printf("can't create file HZK\n");
         return (-1);
     }
-    fasc = file_openA("ASC", CR_FO_WO);
+    fasc = file_buf_openA("ASC", CR_FO_WO);
     if (fasc == NULL) {
         printf("can't create file ASC\n");
-        file_close(fhzk);
+        file_buf_close(fhzk);
         file_deleteA("HZK");
         return (-1);
     }
@@ -350,7 +350,7 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
 
     /* 只有一个 RANGE 标签 */
     if (tag_count == 1) {
-        file_close(fhzk);
+        file_buf_close(fhzk);
         file_deleteA("HZK");
         goto _success;
     }
@@ -465,9 +465,9 @@ static sint_t make_font (const sARRAY *list, uint_t attrb, uint_t chset,
         }
     }
     printf("HZK - true (%u x %u)\n", max_w, max_h);
-    file_close(fhzk);
+    file_buf_close(fhzk);
 _success:
-    file_close(fasc);
+    file_buf_close(fasc);
     CR_VCALL(main)->release(main);
     printf("job's done\n");
     return (TRUE);
@@ -475,8 +475,8 @@ _success:
 _failure2:
     CR_VCALL(main)->release(main);
 _failure1:
-    file_close(fasc);
-    file_close(fhzk);
+    file_buf_close(fasc);
+    file_buf_close(fhzk);
     file_deleteA("ASC");
     file_deleteA("HZK");
     return (-1);
