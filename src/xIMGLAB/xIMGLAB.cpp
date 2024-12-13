@@ -1,9 +1,11 @@
 
 #include "xIMGLAB.h"
+#include "util/egui.h"
 #include "../QstLibs/QstLibs.h"
 
 /* 外部库引用 */
 #pragma comment (lib, "CrH_GFX2.lib")
+#pragma comment (lib, "CrH_UTIL.lib")
 #pragma comment (lib, "GFX2_GDI.lib")
 
 /* 显示画面索引 */
