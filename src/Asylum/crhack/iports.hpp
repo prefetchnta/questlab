@@ -7,6 +7,8 @@
 #ifndef __IPORTS_HPP__
 #define __IPORTS_HPP__
 
+#include "util/egui.h"
+
 /* Asylum Namespace */
 namespace asy {
 

@@ -4,6 +4,7 @@
 
 /* 外部库引用 */
 #pragma comment (lib, "CrH_GFX2.lib")
+#pragma comment (lib, "CrH_UTIL.lib")
 #pragma comment (lib, "GFX2_GDI.lib")
 
 /* 全局变量 */
