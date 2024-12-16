@@ -8,6 +8,7 @@
 #define __ASYLUM_HPP__
 
 #include "crhack.h"
+#include "util/egui.h"
 
 /* System Filter */
 #if !defined(_CR_SYS32_) && \
@@ -28,8 +29,10 @@
 #ifndef _CR_NO_PRAGMA_LIB_
     #ifndef ASY_USE_STATIC
         #pragma comment (lib, "CrH_CORE.lib")
+        #pragma comment (lib, "CrH_UTIL.lib")
     #else
         #pragma comment (lib, "COREs.lib")
+        #pragma comment (lib, "UTILs.lib")
     #endif
 #endif
 
