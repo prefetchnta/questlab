@@ -331,6 +331,7 @@ SRC_ZXING_CPP=imglab_zxing_dect.cpp \
               zxing\qrcode\QRWriter.cpp
 
 OBJ_LIST=dllmain.obj \
+         imglab_ncnn_dect.obj \
          imglab_crhack_draw.obj \
          imglab_opencv_base.obj \
          imglab_opencv_dect.obj \
@@ -339,6 +340,7 @@ OBJ_LIST=dllmain.obj \
          $(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP)
 
 SRC_LIST=dllmain.cpp \
+         imglab_ncnn_dect.cpp \
          imglab_crhack_draw.cpp \
          imglab_opencv_base.cpp \
          imglab_opencv_dect.cpp \
@@ -351,7 +353,7 @@ build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4
     $(CC) $(CFLAGS) /EHsc /I $(INC_OPENCV) $(SRC_OCV_WECHAT)
     $(CC) $(CFLAGS) /EHsc /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) $(FLAGS_ZXING_CPP) $(SRC_ZXING_CPP)
-    $(CC) $(CFLAGS) /EHsc /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) $(SRC_LIST)
+    $(CC) $(CFLAGS) /EHsc /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) /openmp $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..\..\bin\x64bin

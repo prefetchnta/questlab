@@ -26,6 +26,19 @@
 #include "crhack.h"
 
 /*****************************************************************************/
+/*                                 基础类型                                  */
+/*****************************************************************************/
+
+/* 物体描述结构 */
+typedef struct
+{
+        sRECT   rect;   /* 物体的位置 */
+        sint_t  type;   /* 物体标签号 */
+        fp32_t  prop;   /* 物体可能性 */
+
+} sIMGLAB_OBJECT;
+
+/*****************************************************************************/
 /*                                 结构转换                                  */
 /*****************************************************************************/
 
@@ -70,11 +83,39 @@ CR_API int64u   imglab_video_seek (xvideo_t avi, int64u frame);
 /*                                摄像头操作                                 */
 /*****************************************************************************/
 
+/* OpenCV 摄像头接口 */
+#define CAP_OCV_ANY             0
+#define CAP_OCV_IEEE1394        300
+#define CAP_OCV_DSHOW           700
+#define CAP_OCV_PVAPI           800
+#define CAP_OCV_OPENNI          900
+#define CAP_OCV_OPENNI_ASUS     910
+#define CAP_OCV_ANDROID         1000
+#define CAP_OCV_XIAPI           1100
+#define CAP_OCV_AVFOUNDATION    1200
+#define CAP_OCV_GIGANETIX       1300
+#define CAP_OCV_MSMF            1400
+#define CAP_OCV_WINRT           1410
+#define CAP_OCV_INTELPERC       1500
+#define CAP_OCV_OPENNI2         1600
+#define CAP_OCV_OPENNI2_ASUS    1610
+#define CAP_OCV_OPENNI2_ASTRA   1620
+#define CAP_OCV_GPHOTO2         1700
+#define CAP_OCV_GSTREAMER       1800
+#define CAP_OCV_FFMPEG          1900
+#define CAP_OCV_IMAGES          2000
+#define CAP_OCV_ARAVIS          2100
+#define CAP_OCV_OPENCV_MJPEG    2200
+#define CAP_OCV_INTEL_MFX       2300
+#define CAP_OCV_XINE            2400
+#define CAP_OCV_UEYE            2500
+#define CAP_OCV_OBSENSOR        2600
+
 /* OpenCV 摄像头类型 */
 typedef void_t*     camera_t;   /* cv::VideoCapture* */
 
-CR_API camera_t imglab_camera_new (uint_t id);
-CR_API camera_t imglab_camera_new2 (const ansi_t *name);
+CR_API camera_t imglab_camera_new (uint_t id, uint_t type);
+CR_API camera_t imglab_camera_new2 (const ansi_t *name, uint_t type);
 CR_API void_t   imglab_camera_del (camera_t cam);
 CR_API ximage_t imglab_camera_get (camera_t cam);
 
@@ -196,10 +237,10 @@ CR_API void_t   imglab_ocv_blur_gauss (ximage_t mat, uint_t ksize_x,
 CR_API void_t   imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
 
 /*****************************************************************************/
-/*                                 图片分类                                  */
+/*                                 目标识别                                  */
 /*****************************************************************************/
 
-/* OpenCV 分类结构类型 */
+/* OpenCV 级联分类类型 */
 typedef void_t*     cascade_ocv_t;      /* cv::CascadeClassifier* */
 
 /* OpenCV 级联分类对象 */
@@ -413,5 +454,39 @@ typedef struct  /* ZXing::ReaderOptions */
 CR_API size_t
 imglab_zxi_grpcode_doit (ximage_t mat, str_lstA_t *text, xpoly_lst_t *list,
                          const sZXI_ReaderOptions *options CR_DEFAULT(NULL));
+
+/* NCNN nanodet 识别类型 */
+typedef void_t*     nanodet_ncnn_t;
+
+/* NCNN nanodet 识别对象 */
+CR_API nanodet_ncnn_t
+imglab_ncnn_nanodet_new (sint_t vk_gpu);
+
+CR_API void_t
+imglab_ncnn_nanodet_del (nanodet_ncnn_t nnet);
+
+CR_API bool_t
+imglab_ncnn_nanodet_load (nanodet_ncnn_t nnet, const ansi_t *name,
+                          bool_t bin_param, bool_t use_vulkan,
+                          bool_t use_bf16 CR_DEFAULT(FALSE));
+/* NCNN nanodet 识别参数 */
+typedef struct
+{
+        sint_t  thread_num;
+        bool_t  light_mode;
+        sint_t  target_size;
+        fp32_t  prob_threshold;
+        fp32_t  nms_threshold;
+        fp32_t  mean_vals[3];
+        fp32_t  norm_vals[3];
+        cstr_t  input_layer;
+        cstr_t  cls_pred8, cls_pred16, cls_pred32;
+        cstr_t  dis_pred8, dis_pred16, dis_pred32;
+
+} sNCNN_NanoDetParam;
+
+CR_API sIMGLAB_OBJECT*
+imglab_ncnn_nanodet_doit (nanodet_ncnn_t nnet, ximage_t mat,
+                          const sNCNN_NanoDetParam *param, size_t *count);
 
 #endif  /* !__AI_IMGLAB_H__ */

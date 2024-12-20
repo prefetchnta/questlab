@@ -458,12 +458,13 @@ imglab_video_seek (
 */
 CR_API camera_t
 imglab_camera_new (
-  __CR_IN__ uint_t  id
+  __CR_IN__ uint_t  id,
+  __CR_IN__ uint_t  type
     )
 {
     cv::VideoCapture*   cap;
 
-    cap = new(std::nothrow) cv::VideoCapture ((int)id);
+    cap = new(std::nothrow) cv::VideoCapture ((int)id, type);
     if (cap == NULL)
         return (NULL);
     if (!cap->isOpened()) {
@@ -487,7 +488,8 @@ imglab_camera_new (
 */
 CR_API camera_t
 imglab_camera_new2 (
-  __CR_IN__ const ansi_t*   name
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ uint_t          type
     )
 {
     uint_t          id, num;
@@ -506,7 +508,7 @@ imglab_camera_new2 (
         TRY_FREE(clist[jj]);
     if (id >= num)
         return (NULL);
-    return (imglab_camera_new(id));
+    return (imglab_camera_new(id, type));
 }
 
 /*
