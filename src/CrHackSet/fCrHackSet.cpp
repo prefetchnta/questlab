@@ -6,6 +6,10 @@
 
 #include <math.h>
 
+#define EXE_XNAME   "CrHackSet"
+
+#include "../logit.inl"
+
 /* 内部函数声明 */
 uint_t  zbar_do_decode (socket_t netw, const sIMAGE *gray,
                         uint_t cpage, sPNT2 **pnts, leng_t *count);
@@ -1446,6 +1450,8 @@ image_quest64_bridge (
     share_t     smem;
     socket_t    mess;
 
+    if (!misc_is_win64())
+        return (TRUE);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
@@ -1496,7 +1502,6 @@ image_quest64_bridge (
     if (dsrc == NULL)
         goto _failure3;
     mem_cpy(dsrc, ssrc, size);
-    message_pipe_timeout(mess, QST_TCP_TOUT * 10);
     if (!message_send_buffer(mess, remove_xml_cmtA(dsrc), size)) {
         mem_free(dsrc);
         goto _failure3;
@@ -1504,8 +1509,22 @@ image_quest64_bridge (
     mem_free(dsrc);
 
     /* 接收返回信息大小 */
-    back = message_recv_buffer(mess, info, sizeof(info) / 2);
-    if (back != sizeof(info) / 2)
+    for (size = 0; size < 10; size++) {
+        back = message_recv_buffer(mess, info, sizeof(info) / 2);
+        if (back == CR_SOCKET_TIMEOUT)
+        {
+            /* 超时判断进程还在不在了 */
+            if (!misc_check_running("fQUEST64")) {
+                logit("fQUEST64.exe fucked, please check it!");
+                goto _failure3;
+            }
+            continue;
+        }
+        if (back != sizeof(info) / 2)
+            goto _failure3;
+        break;
+    }
+    if (size >= 10)
         goto _failure3;
     if (info[0] != 0)
     {
