@@ -1,0 +1,16 @@
+{
+    "thread_num": 0,
+    "light_mode": 0,
+    "target_size": 320,
+    "prob_threshold": 0.4,
+    "nms_threshold": 0.5,
+    "mean_vals": "[103.53, 116.28, 123.675]",
+    "norm_vals": "[0.017429, 0.017507, 0.017125]",
+    "input_layer": "input.1",
+    "cls_pred8": "792",
+    "dis_pred8": "795",
+    "cls_pred16": "814",
+    "dis_pred16": "817",
+    "cls_pred32": "836",
+    "dis_pred32": "839"
+}
