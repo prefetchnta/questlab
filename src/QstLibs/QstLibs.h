@@ -167,6 +167,7 @@ CR_API void_t   STDCALL misc_gen_uuid (ansi_t uuid[33]);
 CR_API bool_t   STDCALL misc_cui_setwin (hwnd_t hwnd, hcui_t hcui,
                                 sint_t x, sint_t y, uint_t w, uint_t h);
 CR_API bool_t   STDCALL misc_is_running (const ansi_t *name);
+CR_API bool_t   STDCALL misc_check_running (const ansi_t *name);
 CR_API bool_t   STDCALL misc_call_exe (const ansi_t *name, bool_t wait,
                                        bool_t hide);
 CR_API ansi_t** STDCALL misc_get_param (const ansi_t *cmdz, uint_t *count);

@@ -346,7 +346,7 @@ message_recv_string (
 
 /*
 =======================================
-    检测程序是否运行
+    检测程序是否运行 (主进程启动调一次)
 =======================================
 */
 static bool_t STDCALL
@@ -360,6 +360,28 @@ misc_is_running (
     if (mutex != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
         return (TRUE);
     return (FALSE);
+}
+
+/*
+=======================================
+    检测程序是否运行 (其他进程可多次调)
+=======================================
+*/
+static bool_t STDCALL
+misc_check_running (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    HANDLE  mutex;
+    bool_t  retc = FALSE;
+
+    mutex = CreateMutexA(NULL, FALSE, name);
+    if (mutex != NULL) {
+        if (GetLastError() == ERROR_ALREADY_EXISTS)
+            retc = TRUE;
+        CloseHandle(mutex);
+    }
+    return (retc);
 }
 
 /* 恢复警告设置 */
