@@ -173,6 +173,62 @@ quest64_draw_codes (
 
 /*
 ---------------------------------------
+    OpenCV 绘制目标结果
+---------------------------------------
+*/
+static void_t
+quest64_draw_objects (
+  __CR_IN__ ximage_t                cvmat,
+  __CR_IN__ const sIMAGE*           image,
+  __CR_IN__ const sIMGLAB_OBJECT*   tango,
+  __CR_IN__ size_t                  count,
+  __CR_IN__ const sINIu*            labels
+    )
+{
+    cpix_t  color, bkcolor;
+
+    bkcolor.val = 0x800000FF;
+    for (size_t idx = 0; idx < count; idx++)
+    {
+        sRECT   rct;
+        ansi_t* shw;
+
+        color.val = 0xFF00FF00;
+        struct_cpy(&rct, &tango[idx].rect, sRECT);
+        rct.x1 -= 4; rct.y1 -= 4;
+        rct.x2 += 4; rct.y2 += 4;
+        rct.ww += 8; rct.hh += 8;
+        draw_rect(image, &rct, color, pixel_set32z);
+        rct.x1 += 1; rct.y1 += 1;
+        rct.x2 -= 1; rct.y2 -= 1;
+        rct.ww -= 2; rct.hh -= 2;
+        draw_rect(image, &rct, color, pixel_set32z);
+        rct.x1 += 1; rct.y1 += 1;
+        rct.x2 -= 1; rct.y2 -= 1;
+        rct.ww -= 2; rct.hh -= 2;
+        draw_rect(image, &rct, color, pixel_set32z);
+        rct.x1 += 1; rct.y1 += 1;
+        if (labels != NULL &&
+            tango[idx].type >= 0 &&
+            tango[idx].type < (int)labels->count) {
+            shw = str_fmtA("%s %.1f%%", labels->lines[tango[idx].type],
+                                        tango[idx].prop * 100);
+        }
+        else {
+            shw = str_fmtA("%d %.1f%%", tango[idx].type,
+                                        tango[idx].prop * 100);
+        }
+        if (shw != NULL) {
+            color.val = 0xFFFFFF00;
+            imglab_draw_gb2312(cvmat, shw, rct.x1, rct.y1, 16,
+                               CR_BLT_ALP, color, bkcolor);
+            mem_free(shw);
+        }
+    }
+}
+
+/*
+---------------------------------------
     OpenCV 一维码识别器
 ---------------------------------------
 */
@@ -320,6 +376,32 @@ _func_out1:
     prms._name = cjson_str_dup(root, #_name); \
     if (prms._name == NULL) \
         prms._name = str_dupA(_def)
+#define CJSON_STRING(_name) \
+    (prms._name = cjson_str_dup(root, #_name))
+#define CJSON_VECTOR3(_name) \
+    cjson_vector3(root, #_name, prms._name)
+/*
+---------------------------------------
+    解析一个向量
+---------------------------------------
+*/
+static bool_t
+cjson_vector3 (
+  __CR_IN__ cJSON*          node,
+  __CR_IN__ const ansi_t*   name,
+  __CR_OT__ fp32_t*         vec3d
+    )
+{
+    ansi_t* str;
+
+    str = cjson_string(node, name);
+    if (str == NULL)
+        return (FALSE);
+    if (str2vecA(vec3d, 3, str, "[],") == NULL)
+        return (FALSE);
+    return (TRUE);
+}
+
 /*
 ---------------------------------------
     OpenCV ARUCO 参数解析
@@ -614,20 +696,183 @@ quest64_zxi_grpcode (
     /* 执行图形码识别器 */
     quest64_set_image(&dest, image);
     cvmat = imglab_crh2mat_set(&dest);
-    if (cvmat == NULL) {
-        TRY_FREE(prms.characterSet);
-        return (TRUE);
-    }
+    if (cvmat == NULL)
+        goto _func_out1;
     count = (leng_t)imglab_zxi_grpcode_doit(cvmat, &texts, &polys, &prms);
-    if (count != 0)
-    {
-        /* 显示识别结果 */
-        quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
-        strlst_freeA(texts, count * 2);
-        imglab_polys_del(polys);
-    }
-    TRY_FREE(prms.characterSet);
+    if (count == 0)
+        goto _func_out2;
+
+    /* 显示识别结果 */
+    quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
+    strlst_freeA(texts, count * 2);
+    imglab_polys_del(polys);
+_func_out2:
     imglab_mat_del(cvmat);
+_func_out1:
+    TRY_FREE(prms.characterSet);
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    NCNN nanodet 参数解析
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_nanodet_load_params (
+  __CR_OT__ sNCNN_NanoDetParam& prms,
+  __CR_IN__ const ansi_t*       json
+    )
+{
+    cJSON*  root;
+    sint_t  btmp;
+
+    root = cJSON_Parse(json);
+    if (root == NULL)
+        return (FALSE);
+    if (CJSON_STRING(input_layer) == NULL)
+        goto _failure1;
+    if (CJSON_STRING(cls_pred8) == NULL)
+        goto _failure2;
+    if (CJSON_STRING(dis_pred8) == NULL)
+        goto _failure3;
+    if (CJSON_STRING(cls_pred16) == NULL)
+        goto _failure4;
+    if (CJSON_STRING(dis_pred16) == NULL)
+        goto _failure5;
+    if (CJSON_STRING(cls_pred32) == NULL)
+        goto _failure6;
+    if (CJSON_STRING(dis_pred32) == NULL)
+        goto _failure7;
+    CJSON_INTG(thread_num, 0);
+    CJSON_BOOL(light_mode, FALSE);
+    CJSON_INTG(target_size, 320);
+    CJSON_FP32(prob_threshold, 0.4f);
+    CJSON_FP32(nms_threshold, 0.5f);
+    if (!CJSON_VECTOR3(mean_vals))
+        prms.mean_vals[0] = prms.mean_vals[1] = prms.mean_vals[2] = -1;
+    if (!CJSON_VECTOR3(norm_vals))
+        prms.norm_vals[0] = prms.norm_vals[1] = prms.norm_vals[2] = -1;
+    cJSON_Delete(root);
+    return (TRUE);
+
+_failure7:
+    mem_free(prms.cls_pred32);
+_failure6:
+    mem_free(prms.dis_pred16);
+_failure5:
+    mem_free(prms.cls_pred16);
+_failure4:
+    mem_free(prms.dis_pred8);
+_failure3:
+    mem_free(prms.cls_pred8);
+_failure2:
+    mem_free(prms.input_layer);
+_failure1:
+    cJSON_Delete(root);
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    NCNN nanodet 识别器
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_nanodet (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sINIu*  line;
+    uint_t  ngpu;
+    uint_t  bprm;
+    uint_t  vlkn;
+    uint_t  bf16;
+    ansi_t* text;
+    ansi_t* file;
+    ansi_t* name;
+
+    /* 参数解析 */
+    name = xml_attr_stringU("model", param);
+    if (name == NULL)
+        goto _func_out1;
+    line = NULL;
+    ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
+    bprm = xml_attr_intxU("bparam", FALSE, param);
+    vlkn = xml_attr_intxU("vulkan", TRUE, param);
+    bf16 = xml_attr_intxU("float16", FALSE, param);
+
+    sNCNN_NanoDetParam  prms;
+
+    file = xml_attr_stringU("params", param);
+    if (file == NULL)
+        goto _func_out2;
+    text = file_load_as_strA(file);
+    mem_free(file);
+    if (text == NULL)
+        goto _func_out2;
+    if (!quest64_ncnn_nanodet_load_params(prms, text)) {
+        mem_free(text);
+        goto _func_out2;
+    }
+    mem_free(text);
+
+    /* 加载标签文件 */
+    file = str_fmtA("%s.label", name);
+    if (file != NULL) {
+        text = file_load_as_strA(file);
+        mem_free(file);
+        if (text != NULL) {
+            line = ini_parseU(text);
+            mem_free(text);
+        }
+    }
+
+    nanodet_ncnn_t  nndt;
+
+    nndt = imglab_ncnn_nanodet_new(ngpu);
+    if (nndt == NULL)
+        goto _func_out3;
+    if (!imglab_ncnn_nanodet_load(nndt, name, !!bprm, !!vlkn, !!bf16))
+        goto _func_out4;
+
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    /* 执行 nanodet 识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL)
+        goto _func_out4;
+
+    size_t          cnts = 0;
+    sIMGLAB_OBJECT* objs = imglab_ncnn_nanodet_doit(nndt, cvmat, &prms, &cnts);
+    if (objs == NULL)
+        goto _func_out5;
+
+    /* 显示识别结果 */
+    quest64_draw_objects(cvmat, &dest, objs, cnts, line);
+    mem_free(objs);
+_func_out5:
+    imglab_mat_del(cvmat);
+_func_out4:
+    imglab_ncnn_nanodet_del(nndt);
+_func_out3:
+    if (line != NULL)
+        ini_closeU(line);
+    mem_free(prms.input_layer);
+    mem_free(prms.cls_pred8);
+    mem_free(prms.cls_pred16);
+    mem_free(prms.cls_pred32);
+    mem_free(prms.dis_pred8);
+    mem_free(prms.dis_pred16);
+    mem_free(prms.dis_pred32);
+_func_out2:
+    mem_free(name);
+_func_out1:
     CR_NOUSE(netw);
     return (TRUE);
 }

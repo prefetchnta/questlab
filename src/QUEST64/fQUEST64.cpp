@@ -119,6 +119,7 @@ static const sXC_PORT   quest64_filter[] =
     { "quest64_opencv_qrcode_aruco", quest64_ocv_qrcode_aruco },
     { "quest64_opencv_qrcode_wechat", quest64_ocv_qrcode_wechat },
     { "quest64_zxing_grpcode", quest64_zxi_grpcode },
+    { "quest64_ncnn_nanodet", quest64_ncnn_nanodet },
     { NULL, NULL },
 };
 
