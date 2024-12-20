@@ -554,7 +554,7 @@ qst_make_image (
     if (parm->flt_scr != NULL && parm->flt_lst != NULL)
     {
         /* 判断64位滤镜有没有崩溃, 崩溃则记录 */
-        if (misc_is_win64() && !misc_is_running("fQUEST64"))
+        if (misc_is_win64() && !misc_check_running("fQUEST64"))
             logit("fQUEST64.exe fucked, please check it!");
         xmlcall_exec(parm->flt_lst, rgb, "", parm->flt_scr);
     }
