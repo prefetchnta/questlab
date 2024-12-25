@@ -615,7 +615,7 @@ ilab_main (
     /*******************/
     /* Step1: 颜色滤波 */
     /*******************/
-    img_idxz = image_indexed(img_clrz, do_pixel, s_cstep_pal, 16, s_cstep);
+    img_idxz = image_indexed(img_clrz, do_pixel, s_cstep_pal, 15, s_cstep);
     if (img_idxz == NULL)
         return (FALSE);
     {
