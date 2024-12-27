@@ -36,9 +36,6 @@
 /* 日志函数 */
 #include "../logit.inl"
 
-/* 桥接函数 */
-#include "../bridge.inl"
-
 /* 工作变量 */
 static int32u   s_size;
 static share_t  s_smem;
