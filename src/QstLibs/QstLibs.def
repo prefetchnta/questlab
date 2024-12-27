@@ -1,33 +1,4 @@
 EXPORTS
-    misc_dir_exist
-    misc_bring2top
-    misc_mem_malloc
-    misc_mem_calloc
-    misc_mem_realloc
-    misc_mem_free
-    misc_is_win64
-    misc_cui_setwin
-    misc_is_running
-    misc_call_exe
-    misc_get_param
-    misc_desk_save
-    misc_desk_load
-    misc_desk_init
-    misc_async_call
-    misc_async_okay
-    cmd_ini_get
-    cmd_ini_send
-    cmd_xml_get
-    cmd_xml_send
-    cmd_shl_split
-    cmd_shl_param
-    cmd_shl_get
-    cmd_shl_send
-    cmd_type_okay
-    cmd_exec_free
-    cmd_exec_init
-    cmd_exec_addn
-    cmd_exec_main
     share_file_open
     share_file_close
     share_file_fill
@@ -35,6 +6,15 @@ EXPORTS
     share_file_unmap
     share_file_get
     share_file_set
+    message_pipe_init
+    message_recv_open
+    message_send_open
+    message_pipe_close
+    message_pipe_timeout
+    message_send_buffer
+    message_send_string
+    message_recv_buffer
+    message_recv_string
     netw_cmd_send
     netw_cmd_recv
     netw_cmd_recv_ex
@@ -45,15 +25,40 @@ EXPORTS
     netw_cli_close
     netw_rcv_shutdwn
     netw_rcv_timeout
-    message_pipe_init
-    message_recv_open
-    message_send_open
-    message_pipe_close
-    message_pipe_timeout
-    message_send_buffer
-    message_send_string
-    message_recv_buffer
-    message_recv_string
+    cmd_type_okay
+    cmd_ini_get
+    cmd_ini_send
+    cmd_xml_get
+    cmd_xml_send
+    cmd_shl_get
+    cmd_shl_send
+    cmd_shl_split
+    cmd_shl_param
+    cmd_exec_free
+    cmd_exec_init
+    cmd_exec_addn
+    cmd_exec_main
+    misc_mem_malloc
+    misc_mem_calloc
+    misc_mem_realloc
+    misc_mem_free
+    misc_dir_exist
+    misc_get_param
+    misc_is_win64
+    misc_is_win11
+    misc_is_console
+    misc_is_terminal
+    misc_is_running
+    misc_check_running
+    misc_gen_uuid
+    misc_call_exe
+    misc_bring2top
+    misc_cui_setwin
+    misc_desk_save
+    misc_desk_load
+    misc_desk_init
+    misc_async_call
+    misc_async_okay
     QstGraph_Init
     QstGraph_Free
     QstGraph_Clear

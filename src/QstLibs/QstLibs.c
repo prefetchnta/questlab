@@ -1,5 +1,8 @@
 
 #include "QstLibs.h"
+#if defined(_CR_SYS64_)
+    #include <io.h>
+#endif
 
 #if defined(_CR_BUILD_DLL_)
 /*
@@ -69,12 +72,339 @@ unit_find (
 }
 
 /*****************************************************************************/
-/*                               桥接通讯接口                                */
+/*                               内存共享文件                                */
 /*****************************************************************************/
 
-#define static  CR_API
-#include "../bridge.inl"
-#undef  static
+/*
+=======================================
+    创建内存共享文件
+=======================================
+*/
+CR_API share_t STDCALL
+share_file_open (
+  __CR_IN__ const ansi_t*   name,
+  __CR_OT__ ansi_t          strn[50],
+  __CR_IN__ leng_t          size
+    )
+{
+    int32u  crc32;
+    leng_t  length;
+    byte_t  hash[24];
+
+    /* 大小为-1表示打开已有 */
+    if (size == ((leng_t)-1))
+        return ((share_t)OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, name));
+
+    /* 文件大小过滤 */
+    if (size < CR_K2B(4))
+        size = CR_K2B(4);
+    else
+    if (size >= ((leng_t)-1) / 8)
+        return (NULL);
+
+    /* 直接使用名称 */
+    if (strn == NULL) {
+        return ((share_t)CreateFileMappingA(INVALID_HANDLE_VALUE, NULL,
+            PAGE_READWRITE, (DWORD)size_hi(size), (DWORD)size, name));
+    }
+
+    /* 使用哈希过的名称 */
+    length = str_lenA(name);
+    crc32 = hash_crc32i_total(name, length);
+    *(int32u*)(&hash[0]) = DWORD_BE(crc32);
+    *(int32u*)(&hash[4]) = DWORD_BE(timer_get32());
+    hash_md5_total(&hash[8], name, length);
+    hex2strA(strn, hash, sizeof(hash));
+    return ((share_t)CreateFileMappingA(INVALID_HANDLE_VALUE, NULL,
+        PAGE_READWRITE, (DWORD)size_hi(size), (DWORD)size, strn));
+}
+
+/*
+=======================================
+    关闭内存共享文件
+=======================================
+*/
+CR_API void_t STDCALL
+share_file_close (
+  __CR_IN__ share_t sfile
+    )
+{
+    CloseHandle((HANDLE)sfile);
+}
+
+/*
+=======================================
+    填充内存共享文件
+=======================================
+*/
+CR_API bool_t STDCALL
+share_file_fill (
+  __CR_IN__ share_t         sfile,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    LPVOID  buff;
+    HANDLE  fmap = (HANDLE)sfile;
+
+    /* 将本地文件复制到共享内存 */
+    buff = MapViewOfFile(fmap, FILE_MAP_WRITE, 0, 0, size);
+    if (buff == NULL)
+        return (FALSE);
+    mem_cpy(buff, data, size);
+    UnmapViewOfFile(buff);
+    return (TRUE);
+}
+
+/*
+=======================================
+    映射内存共享文件
+=======================================
+*/
+CR_API void_t* STDCALL
+share_file_map (
+  __CR_IN__ share_t sfile,
+  __CR_IN__ leng_t  size
+    )
+{
+    /* 共享内存映射到当前进程 */
+    return (MapViewOfFile((HANDLE)sfile, FILE_MAP_READ | FILE_MAP_WRITE,
+                                  0, 0, size));
+}
+
+/*
+=======================================
+    解除映射内存共享文件
+=======================================
+*/
+CR_API bool_t STDCALL
+share_file_unmap (
+  __CR_IN__ share_t sfile
+    )
+{
+    /* 解除映射共享内存到当前进程 */
+    return (UnmapViewOfFile((HANDLE)sfile));
+}
+
+/*
+=======================================
+    获取内存共享文件
+=======================================
+*/
+CR_API void_t* STDCALL
+share_file_get (
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ leng_t          size
+    )
+{
+    LPVOID  buff;
+    HANDLE  fmap;
+    void_t* data;
+
+    /* 将共享文件复制到本地内存 */
+    fmap = OpenFileMappingA(FILE_MAP_READ, FALSE, name);
+    if (fmap == NULL)
+        return (NULL);
+    buff = MapViewOfFile(fmap, FILE_MAP_READ, 0, 0, size);
+    if (buff == NULL)
+        goto _failure1;
+    data = mem_malloc(size);
+    if (data == NULL)
+        goto _failure2;
+    mem_cpy(data, buff, size);
+    UnmapViewOfFile(buff);
+    CloseHandle(fmap);
+    return (data);
+
+_failure2:
+    UnmapViewOfFile(buff);
+_failure1:
+    CloseHandle(fmap);
+    return (NULL);
+}
+
+/*
+=======================================
+    设置内存共享文件
+=======================================
+*/
+CR_API bool_t STDCALL
+share_file_set (
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size
+    )
+{
+    LPVOID  buff;
+    HANDLE  fmap;
+
+    /* 将本地文件复制到共享内存 */
+    fmap = OpenFileMappingA(FILE_MAP_WRITE, FALSE, name);
+    if (fmap == NULL)
+        return (FALSE);
+    buff = MapViewOfFile(fmap, FILE_MAP_WRITE, 0, 0, size);
+    if (buff == NULL) {
+        CloseHandle(fmap);
+        return (FALSE);
+    }
+    mem_cpy(buff, data, size);
+    UnmapViewOfFile(buff);
+    CloseHandle(fmap);
+    return (TRUE);
+}
+
+/*****************************************************************************/
+/*                               UDP 网络通讯                                */
+/*****************************************************************************/
+
+/*
+=======================================
+    UDP 网络库初始化
+=======================================
+*/
+CR_API bool_t STDCALL
+message_pipe_init (void_t)
+{
+    return (socket_init());
+}
+
+/*
+=======================================
+    创建消息接收端
+=======================================
+*/
+CR_API socket_t STDCALL
+message_recv_open (
+  __CR_IN__ int16u  sport
+    )
+{
+    socket_t    netw;
+
+    netw = server_udp_open("127.0.0.1", sport);
+    if (netw != NULL)
+        socket_set_timeout(netw, -1, -1);
+    return (netw);
+}
+
+/*
+=======================================
+    创建消息发送端
+=======================================
+*/
+CR_API socket_t STDCALL
+message_send_open (
+  __CR_IN__ int16u  dport
+    )
+{
+    socket_t    netw;
+
+    netw = client_udp_open("127.0.0.1", dport);
+    if (netw != NULL)
+        socket_set_timeout(netw, -1, -1);
+    return (netw);
+}
+
+/*
+=======================================
+    关闭消息通道
+=======================================
+*/
+CR_API void_t STDCALL
+message_pipe_close (
+  __CR_IN__ socket_t    mess
+    )
+{
+    socket_close(mess);
+}
+
+/*
+=======================================
+    设置消息读取超时
+=======================================
+*/
+CR_API void_t STDCALL
+message_pipe_timeout (
+  __CR_IN__ socket_t    mess,
+  __CR_IN__ int32s      time
+    )
+{
+    /* time 小于0表示永远 */
+    socket_set_timeout(mess, -1, time);
+}
+
+/*
+=======================================
+    发送消息
+=======================================
+*/
+CR_API bool_t STDCALL
+message_send_buffer (
+  __CR_IN__ socket_t        mess,
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ uint_t          size
+    )
+{
+    if (socket_udp_send(mess, NULL, 0, data, size) != size)
+        return (FALSE);
+    return (TRUE);
+}
+
+/*
+=======================================
+    发送字符串
+=======================================
+*/
+CR_API bool_t STDCALL
+message_send_string (
+  __CR_IN__ socket_t        mess,
+  __CR_IN__ const ansi_t*   string
+    )
+{
+    return (message_send_buffer(mess, string, (uint_t)str_lenA(string)));
+}
+
+/*
+=======================================
+    接收消息
+=======================================
+*/
+CR_API uint_t STDCALL
+message_recv_buffer (
+  __CR_IN__ socket_t    mess,
+  __CR_OT__ void_t*     data,
+  __CR_IN__ uint_t      size
+    )
+{
+    uint_t  back;
+
+    back = socket_udp_recv(mess, data, size);
+    return ((back == CR_U_ERROR) ? 0 : back);
+}
+
+/*
+=======================================
+    接收字符串
+=======================================
+*/
+CR_API bool_t STDCALL
+message_recv_string (
+  __CR_IN__ socket_t    mess,
+  __CR_OT__ ansi_t*     buff,
+  __CR_IN__ uint_t      size
+    )
+{
+    uint_t  back;
+
+    if (size <= 1)
+        return (FALSE);
+    back = message_recv_buffer(mess, buff, size);
+    if (back == 0)
+        return (FALSE);
+    if (back == size)
+        back -= 1;
+    buff[back] = 0;
+    return (TRUE);
+}
 
 /*****************************************************************************/
 /*                               TCP 网络通讯                                */
@@ -353,30 +683,19 @@ netw_rcv_timeout (
 
 /*
 =======================================
-    SHL 命令参数提取
+    是否为有效命令数据
 =======================================
 */
-CR_API ansi_t** STDCALL
-cmd_shl_split (
-  __CR_IO__ ansi_t* string,
-  __CR_OT__ uint_t* count
+CR_API bool_t STDCALL
+cmd_type_okay (
+  __CR_IN__ const ansi_t*   string
     )
 {
-    return (str_cmd_splitA(string, count));
-}
-
-/*
-=======================================
-    SHL 命令参数读取
-=======================================
-*/
-CR_API ansi_t* STDCALL
-cmd_shl_param (
-  __CR_IN__ ansi_t**    param,
-  __CR_IN__ uint_t      index
-    )
-{
-    return (param[index]);
+    if (string[0] != '#' &&
+        string[0] != '@' &&
+        string[0] != '$')
+        return (FALSE);
+    return (TRUE);
 }
 
 /*
@@ -505,19 +824,30 @@ cmd_shl_send (
 
 /*
 =======================================
-    是否为有效命令数据
+    SHL 命令参数提取
 =======================================
 */
-CR_API bool_t STDCALL
-cmd_type_okay (
-  __CR_IN__ const ansi_t*   string
+CR_API ansi_t** STDCALL
+cmd_shl_split (
+  __CR_IO__ ansi_t* string,
+  __CR_OT__ uint_t* count
     )
 {
-    if (string[0] != '#' &&
-        string[0] != '@' &&
-        string[0] != '$')
-        return (FALSE);
-    return (TRUE);
+    return (str_cmd_splitA(string, count));
+}
+
+/*
+=======================================
+    SHL 命令参数读取
+=======================================
+*/
+CR_API ansi_t* STDCALL
+cmd_shl_param (
+  __CR_IN__ ansi_t**    param,
+  __CR_IN__ uint_t      index
+    )
+{
+    return (param[index]);
 }
 
 /* 命令行执行对象 */
@@ -715,6 +1045,31 @@ misc_mem_free (
     mem_free(data);
 }
 
+/*
+=======================================
+    判断目录是否存在
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_dir_exist (
+  __CR_IN__ const ansi_t*   path
+    )
+{
+    bool_t              rett;
+    HANDLE              find;
+    WIN32_FIND_DATAA    wfda;
+
+    find = FindFirstFileA(path, &wfda);
+    if (find == INVALID_HANDLE_VALUE)
+        return (FALSE);
+    if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        rett = TRUE;
+    else
+        rett = FALSE;
+    FindClose(find);
+    return (rett);
+}
+
 /* 空命令参数时使用 */
 static ansi_t*  s_temp;
 
@@ -749,470 +1104,6 @@ misc_get_param (
         return (&s_temp);
     }
     return (argv);
-}
-
-/*
----------------------------------------
-    合成窗口配置路径
----------------------------------------
-*/
-static ansi_t*
-misc_desk_mk_path (
-  __CR_IN__ const ansi_t*   name
-    )
-{
-    leng_t  size;
-    ansi_t* full;
-
-    /* 限定在这个目录下 */
-    size  = str_lenA(name) + 1;
-    size += str_lenA(QST_PATH_WINDOW);
-    full = str_allocA(size);
-    if (full == NULL)
-        return (NULL);
-    str_cpyA(full, QST_PATH_WINDOW);
-    return (str_catA(full, name));
-}
-
-/*
-=======================================
-    保存窗口位置配置
-=======================================
-*/
-CR_API bool_t STDCALL
-misc_desk_save (
-  __CR_IN__ const ansi_t*   name,
-  __CR_IN__ sint_t          left,
-  __CR_IN__ sint_t          top,
-  __CR_IN__ uint_t          width,
-  __CR_IN__ uint_t          height
-    )
-{
-    FILE*   fp;
-    ansi_t* full;
-
-    /* 过滤参数 */
-    if (((sint_t)width <= 0) ||
-        ((sint_t)height <= 0))
-        return (FALSE);
-
-    /* 打开配置文件 */
-    full = misc_desk_mk_path(name);
-    if (full == NULL)
-        return (FALSE);
-    fp = fopen(full, "w");
-    mem_free(full);
-    if (fp == NULL)
-        return (FALSE);
-
-    /* 写入配置文件 */
-    fprintf(fp, "win::left = %d\n", left);
-    fprintf(fp, "win::top = %d\n", top);
-    fprintf(fp, "win::width = %u\n", width);
-    fprintf(fp, "win::height = %u\n", height);
-    fclose(fp);
-    return (TRUE);
-}
-
-/*
-=======================================
-    加载窗口位置配置
-=======================================
-*/
-CR_API bool_t STDCALL
-misc_desk_load (
-  __CR_IN__ const ansi_t*   name,
-  __CR_OT__ sint_t*         left,
-  __CR_OT__ sint_t*         top,
-  __CR_OT__ uint_t*         width,
-  __CR_OT__ uint_t*         height
-    )
-{
-    sINIu*  ini;
-    ansi_t* text;
-    ansi_t* full;
-    sint_t  x1, y1;
-    uint_t  ww, hh;
-
-    /* 打开配置文件 */
-    full = misc_desk_mk_path(name);
-    if (full == NULL)
-        return (FALSE);
-    text = file_load_as_strA(full);
-    mem_free(full);
-    if (text == NULL)
-        return (FALSE);
-
-    /* 解析配置文件 */
-    ini = ini_parseU(text);
-    mem_free(text);
-    if (ini == NULL)
-        return (FALSE);
-    x1 = ini_key_intxU("win::left", 0, ini);
-    if (!ini->found)
-        goto _failure;
-    y1 = ini_key_intxU("win::top", 0, ini);
-    if (!ini->found)
-        goto _failure;
-    ww = ini_key_intxU("win::width", 0, ini);
-    if (!ini->found)
-        goto _failure;
-    hh = ini_key_intxU("win::height", 0, ini);
-    if (!ini->found)
-        goto _failure;
-    ini_closeU(ini);
-
-    /* 过滤参数 */
-    if (((sint_t)ww <= 0) ||
-        ((sint_t)hh <= 0))
-        return (FALSE);
-
-    /* 返回结果 */
-    if (left   != NULL) *left   = x1;
-    if (top    != NULL) *top    = y1;
-    if (width  != NULL) *width  = ww;
-    if (height != NULL) *height = hh;
-    return (TRUE);
-
-_failure:
-    ini_closeU(ini);
-    return (FALSE);
-}
-
-/*
-=======================================
-    初始化窗口位置配置
-=======================================
-*/
-CR_API void_t STDCALL
-misc_desk_init (
-  __CR_IN__ const ansi_t*   name,
-  __CR_OT__ sint_t*         left,
-  __CR_OT__ sint_t*         top,
-  __CR_OT__ uint_t*         width,
-  __CR_OT__ uint_t*         height,
-  __CR_IN__ uint_t          def_w,
-  __CR_IN__ uint_t          def_h
-    )
-{
-    RECT    full;
-    sint_t  x1, y1;
-    uint_t  ww, hh;
-    uint_t  sw, sh;
-
-    /* 加载窗口位置 */
-    if (misc_desk_load(name, left, top, width, height))
-        return;
-
-    /* 失败, 使用默认 */
-    ww = def_w; hh = def_h;
-    if (SystemParametersInfo(SPI_GETWORKAREA, 0, &full, 0))
-    {
-        /* 取桌面大小 */
-        sw = full.right - full.left;
-        sh = full.bottom - full.top;
-    }
-    else
-    {
-        /* 失败, 取屏幕大小 */
-        sw = GetSystemMetrics(SM_CXSCREEN);
-        sh = GetSystemMetrics(SM_CYSCREEN);
-    }
-
-    /* 窗口居中放置 */
-    if (sw < ww) ww = sw;
-    if (sh < hh) hh = sh;
-    x1 = (sint_t)((sw - ww) / 2);
-    y1 = (sint_t)((sh - hh) / 2);
-    misc_desk_save(name, x1, y1, ww, hh);
-
-    /* 返回结果 */
-    if (left   != NULL) *left   = x1;
-    if (top    != NULL) *top    = y1;
-    if (width  != NULL) *width  = ww;
-    if (height != NULL) *height = hh;
-}
-
-/*
-=======================================
-    调用外部进程
-=======================================
-*/
-CR_API bool_t STDCALL
-misc_call_exe (
-  __CR_IN__ const ansi_t*   name,
-  __CR_IN__ bool_t          wait,
-  __CR_IN__ bool_t          hide
-    )
-{
-    FILE*               fp;
-    DWORD               cf;
-    sint_t              ty;
-    int32u              x6;
-    ansi_t              bk;
-    ansi_t*             tt;
-    ansi_t*             pt;
-    STARTUPINFOA        si;
-    PROCESS_INFORMATION pi;
-
-    /* 去除头尾空白 */
-    tt = str_dupA(name);
-    if (tt == NULL)
-        return (FALSE);
-    str_trimA(tt);
-
-    /* 拆分出执行文件 */
-    for (bk = 0, pt = tt; *pt != 0; pt++) {
-        if (is_spaceA(*pt)) {
-            bk = *pt;
-            *pt = 0;
-            break;
-        }
-    }
-
-    /* 判断是否是可执行文件 */
-    if (filext_checkA(tt, ".exe"))
-    {
-        /* 判断是否是控制台程序 */
-        ty = misc_is_console(tt, &x6);
-    }
-    else
-    {
-        /* 非可执行文件 */
-        ty = -1;
-        x6 = FALSE;
-    }
-    *pt = bk;
-    pt = NULL;
-
-    /* 二进制可执行文件 */
-    if (ty >= 0)
-    {
-        ansi_t  uuid[33];
-
-        /* Windows 11 下控制台默认放到终端里运行了，导致一些
-           控制台程序窗口位置大小控制失败，所以这里要区分对待 */
-        if (!wait && ty > 0 && misc_is_terminal())
-        {
-            leng_t  len;
-            ansi_t* hex;
-
-            /* 生成执行批处理文件 */
-            misc_gen_uuid(uuid);
-            pt = str_fmtA("call_win11_%s.bat", uuid);
-            if (pt == NULL)
-                goto _failure;
-            fp = fopen(pt, "w");
-            if (fp == NULL) {
-                mem_free(pt);
-                goto _failure;
-            }
-
-            /* 转换成16进制串防传参出错 */
-            len = str_lenA(tt);
-            hex = str_allocA(len * 2 + 1);
-            if (hex == NULL) {
-                fclose(fp);
-                file_deleteA(pt);
-                mem_free(pt);
-                goto _failure;
-            }
-            hex2strA(hex, tt, len);
-            mem_free(tt);
-            tt = hex;
-
-            /* Windows 11 以后没有32位的系统 */
-            if (hide)
-                fprintf(fp, "@echo off\nstart x64bin\\jump_cui.exe 1%s\n", tt);
-            else
-                fprintf(fp, "@echo off\nstart x64bin\\jump_cui.exe 0%s\n", tt);
-            fclose(fp);
-            mem_free(tt);
-            tt = pt;
-            wait = TRUE;
-            hide = TRUE;
-        }
-        else if (x6)        /* 64位的二进制可执行文件不能等待进程结束再返回 */
-        {
-            /* 32位系统下跳过执行 */
-            if (!misc_is_win64())
-                goto _failure;
-
-            /* 生成执行批处理文件 */
-            misc_gen_uuid(uuid);
-            pt = str_fmtA("call_x64_%s.bat", uuid);
-            if (pt == NULL)
-                goto _failure;
-            fp = fopen(pt, "w");
-            if (fp == NULL) {
-                mem_free(pt);
-                goto _failure;
-            }
-            fprintf(fp, "@echo off\nstart %s\n", tt);
-            fclose(fp);
-            mem_free(tt);
-            tt = pt;
-            wait = TRUE;
-            hide = TRUE;
-        }
-    }
-
-    /* 执行命令 */
-    mem_zero(&si, sizeof(si));
-    si.cb = sizeof(STARTUPINFOA);
-    cf = hide ? CREATE_NO_WINDOW : CREATE_NEW_CONSOLE;
-    if (!CreateProcessA(NULL, tt, NULL, NULL, FALSE, cf,
-                        NULL, NULL, &si, &pi))
-        goto _failure;
-    if (wait)
-        WaitForSingleObject(pi.hProcess, INFINITE);
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
-    if (pt != NULL)
-        file_deleteA(pt);
-    mem_free(tt);
-    return (TRUE);
-
-_failure:
-    mem_free(tt);
-    return (FALSE);
-}
-
-/*
-=======================================
-    将窗口提到最前面
-=======================================
-*/
-CR_API void_t STDCALL
-misc_bring2top (
-  __CR_IN__ hwnd_t  hwnd,
-  __CR_IN__ hwnd_t  parent
-    )
-{
-    LONG    style;
-
-    /* 恢复窗口 */
-    if (parent == NULL)
-        parent = hwnd;
-    if (IsIconic(parent))
-        ShowWindow(parent, SW_RESTORE);
-    style = GetWindowLong(hwnd, GWL_EXSTYLE);
-
-    /* 强拉到最前面 */
-    while (!SetWindowPos(hwnd, HWND_TOPMOST,
-        0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
-            thread_sleep(1);
-    if (style & WS_EX_TOPMOST)
-        return;
-    thread_sleep(1);
-    while (!SetWindowPos(hwnd, HWND_NOTOPMOST,
-        0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
-            thread_sleep(1);
-}
-
-/*
-=======================================
-    设置 CUI 程序窗口位置
-=======================================
-*/
-CR_API bool_t STDCALL
-misc_cui_setwin (
-  __CR_IN__ hwnd_t  hwnd,
-  __CR_IN__ hcui_t  hcui,
-  __CR_IN__ sint_t  x,
-  __CR_IN__ sint_t  y,
-  __CR_IN__ uint_t  w,
-  __CR_IN__ uint_t  h
-    )
-{
-    RECT                rect;
-    COORD               wwhh;
-    CONSOLE_FONT_INFO   info;
-
-    /* 先尝试设置位置 */
-    if (!SetWindowPos(hwnd, HWND_TOP, (int)x, (int)y,
-                 (int)w, (int)h, SWP_SHOWWINDOW))
-        return (FALSE);
-
-    /* 获取输出字体宽高 */
-    if (!GetCurrentConsoleFont(hcui, FALSE, &info))
-        return (FALSE);
-    wwhh = GetConsoleFontSize(hcui, info.nFont);
-    if (wwhh.X == 0 || wwhh.Y == 0)
-        return (FALSE);
-
-    /* 如果窗口高度超出则向小的靠拢 */
-    if (!GetWindowRect(hwnd, &rect))
-        return (FALSE);
-    rect.right -= rect.left;
-    rect.bottom -= rect.top;
-    if (h == (uint_t)rect.bottom)
-        return (TRUE);
-    w = (uint_t)rect.right;
-    if (h < (uint_t)rect.bottom)
-        h = rect.bottom - wwhh.Y;
-    return (SetWindowPos(hwnd, HWND_TOP, (int)x, (int)y,
-                 (int)w, (int)h, SWP_SHOWWINDOW));
-}
-
-/*
-=======================================
-    异步调用一个函数
-=======================================
-*/
-CR_API void_t STDCALL
-misc_async_call (
-  __CR_IN__ mt_main_t   func,
-  __CR_IO__ sQST_CTX*   param
-    )
-{
-    thrd_t  thrd;
-
-    param->copyed = FALSE;
-    thrd = thread_new(0, func, param, FALSE, CR_PRRT_NRM, NULL);
-    if (thrd != NULL) {
-        thread_del(thrd);
-        while (!param->copyed)
-            thread_sleep(1);
-    }
-}
-
-/*
-=======================================
-    异步上下文复制完毕
-=======================================
-*/
-CR_API void_t STDCALL
-misc_async_okay (
-  __CR_IO__ sQST_CTX*   param
-    )
-{
-    atom_inc(&param->copyed);
-}
-
-/*
-=======================================
-    判断目录是否存在
-=======================================
-*/
-CR_API bool_t STDCALL
-misc_dir_exist (
-  __CR_IN__ const ansi_t*   path
-    )
-{
-    bool_t              rett;
-    HANDLE              find;
-    WIN32_FIND_DATAA    wfda;
-
-    find = FindFirstFileA(path, &wfda);
-    if (find == INVALID_HANDLE_VALUE)
-        return (FALSE);
-    if (wfda.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        rett = TRUE;
-    else
-        rett = FALSE;
-    FindClose(find);
-    return (rett);
 }
 
 /*
@@ -1424,6 +1315,46 @@ _default1:
 
 /*
 =======================================
+    检测程序是否运行 (主进程启动调一次)
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_is_running (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    HANDLE  mutex;
+
+    mutex = CreateMutexA(NULL, FALSE, name);
+    if (mutex != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+        return (TRUE);
+    return (FALSE);
+}
+
+/*
+=======================================
+    检测程序是否运行 (其他进程可多次调)
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_check_running (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    HANDLE  mutex;
+    bool_t  retc = FALSE;
+
+    mutex = CreateMutexA(NULL, FALSE, name);
+    if (mutex != NULL) {
+        if (GetLastError() == ERROR_ALREADY_EXISTS)
+            retc = TRUE;
+        CloseHandle(mutex);
+    }
+    return (retc);
+}
+
+/*
+=======================================
     生成 UUID 字符串
 =======================================
 */
@@ -1435,6 +1366,461 @@ misc_gen_uuid (
     sprintf(uuid, "%08X%08X%016I64X", GetCurrentProcessId(),
                                       GetCurrentThreadId(),
                                       __rdtsc());
+}
+
+/*
+=======================================
+    调用外部进程
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_call_exe (
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ bool_t          wait,
+  __CR_IN__ bool_t          hide
+    )
+{
+    FILE*               fp;
+    DWORD               cf;
+    sint_t              ty;
+    int32u              x6;
+    ansi_t              bk;
+    ansi_t*             tt;
+    ansi_t*             pt;
+    const ansi_t*       jp;
+    STARTUPINFOA        si;
+    PROCESS_INFORMATION pi;
+
+    /* 去除头尾空白 */
+    tt = str_dupA(name);
+    if (tt == NULL)
+        return (FALSE);
+    str_trimA(tt);
+
+    /* 拆分出执行文件 */
+    for (bk = 0, pt = tt; *pt != 0; pt++) {
+        if (is_spaceA(*pt)) {
+            bk = *pt;
+            *pt = 0;
+            break;
+        }
+    }
+
+    /* 判断是否是可执行文件 */
+    if (filext_checkA(tt, ".exe"))
+    {
+        /* 判断是否是控制台程序 */
+        ty = misc_is_console(tt, &x6);
+    }
+    else
+    {
+        /* 非可执行文件 */
+        ty = -1;
+        x6 = FALSE;
+    }
+    *pt = bk;
+    pt = NULL;
+
+    /* 二进制可执行文件 */
+    if (ty >= 0)
+    {
+        ansi_t  uuid[33];
+
+        /* Windows 11 下控制台默认放到终端里运行了，导致一些
+           控制台程序窗口位置大小控制失败，所以这里要区分对待 */
+        if (!wait && ty > 0 && misc_is_terminal())
+        {
+            leng_t  len;
+            ansi_t* hex;
+
+            /* 生成执行批处理文件 */
+            misc_gen_uuid(uuid);
+            pt = str_fmtA("call_win11_%s.bat", uuid);
+            if (pt == NULL)
+                goto _failure;
+            fp = fopen(pt, "w");
+            if (fp == NULL) {
+                mem_free(pt);
+                goto _failure;
+            }
+
+            /* 转换成16进制串防传参出错 */
+            len = str_lenA(tt);
+            hex = str_allocA(len * 2 + 1);
+            if (hex == NULL) {
+                fclose(fp);
+                file_deleteA(pt);
+                mem_free(pt);
+                goto _failure;
+            }
+            hex2strA(hex, tt, len);
+            mem_free(tt);
+            tt = hex;
+
+#if defined(_CR_SYS64_)
+            if (_access(".\\jump_cui.exe", 0) == 0)
+                jp = "jump_cui.exe";
+            else
+#endif
+                jp = "x64bin\\jump_cui.exe";
+
+            /* Windows 11 以后没有32位的系统 */
+            if (hide)
+                fprintf(fp, "@echo off\nstart %s 1%s\n", jp, tt);
+            else
+                fprintf(fp, "@echo off\nstart %s 0%s\n", jp, tt);
+            fclose(fp);
+            mem_free(tt);
+            tt = pt;
+            wait = TRUE;
+            hide = TRUE;
+        }
+#if defined(_CR_SYS32_)
+        else if (x6)        /* 64位的二进制可执行文件不能等待进程结束再返回 */
+        {
+            /* 32位系统下跳过执行 */
+            if (!misc_is_win64())
+                goto _failure;
+
+            /* 生成执行批处理文件 */
+            misc_gen_uuid(uuid);
+            pt = str_fmtA("call_x64_%s.bat", uuid);
+#else
+        else if (!x6)       /* 32位的二进制可执行文件不能等待进程结束再返回 */
+        {
+            /* 生成执行批处理文件 */
+            misc_gen_uuid(uuid);
+            pt = str_fmtA("call_x86_%s.bat", uuid);
+#endif
+            if (pt == NULL)
+                goto _failure;
+            fp = fopen(pt, "w");
+            if (fp == NULL) {
+                mem_free(pt);
+                goto _failure;
+            }
+            fprintf(fp, "@echo off\nstart %s\n", tt);
+            fclose(fp);
+            mem_free(tt);
+            tt = pt;
+            wait = TRUE;
+            hide = TRUE;
+        }
+    }
+
+    /* 执行命令 */
+    mem_zero(&si, sizeof(si));
+    si.cb = sizeof(STARTUPINFOA);
+    cf = hide ? CREATE_NO_WINDOW : CREATE_NEW_CONSOLE;
+    if (!CreateProcessA(NULL, tt, NULL, NULL, FALSE, cf,
+                        NULL, NULL, &si, &pi))
+        goto _failure;
+    if (wait)
+        WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    if (pt != NULL)
+        file_deleteA(pt);
+    mem_free(tt);
+    return (TRUE);
+
+_failure:
+    mem_free(tt);
+    return (FALSE);
+}
+
+/*
+=======================================
+    将窗口提到最前面
+=======================================
+*/
+CR_API void_t STDCALL
+misc_bring2top (
+  __CR_IN__ hwnd_t  hwnd,
+  __CR_IN__ hwnd_t  parent
+    )
+{
+    LONG    style;
+
+    /* 恢复窗口 */
+    if (parent == NULL)
+        parent = hwnd;
+    if (IsIconic(parent))
+        ShowWindow(parent, SW_RESTORE);
+    style = GetWindowLong(hwnd, GWL_EXSTYLE);
+
+    /* 强拉到最前面 */
+    while (!SetWindowPos(hwnd, HWND_TOPMOST,
+        0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
+            thread_sleep(1);
+    if (style & WS_EX_TOPMOST)
+        return;
+    thread_sleep(1);
+    while (!SetWindowPos(hwnd, HWND_NOTOPMOST,
+        0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE))
+            thread_sleep(1);
+}
+
+/*
+=======================================
+    设置 CUI 程序窗口位置
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_cui_setwin (
+  __CR_IN__ hwnd_t  hwnd,
+  __CR_IN__ hcui_t  hcui,
+  __CR_IN__ sint_t  x,
+  __CR_IN__ sint_t  y,
+  __CR_IN__ uint_t  w,
+  __CR_IN__ uint_t  h
+    )
+{
+    RECT                rect;
+    COORD               wwhh;
+    CONSOLE_FONT_INFO   info;
+
+    /* 先尝试设置位置 */
+    if (!SetWindowPos(hwnd, HWND_TOP, (int)x, (int)y,
+                 (int)w, (int)h, SWP_SHOWWINDOW))
+        return (FALSE);
+
+    /* 获取输出字体宽高 */
+    if (!GetCurrentConsoleFont(hcui, FALSE, &info))
+        return (FALSE);
+    wwhh = GetConsoleFontSize(hcui, info.nFont);
+    if (wwhh.X == 0 || wwhh.Y == 0)
+        return (FALSE);
+
+    /* 如果窗口高度超出则向小的靠拢 */
+    if (!GetWindowRect(hwnd, &rect))
+        return (FALSE);
+    rect.right -= rect.left;
+    rect.bottom -= rect.top;
+    if (h == (uint_t)rect.bottom)
+        return (TRUE);
+    w = (uint_t)rect.right;
+    if (h < (uint_t)rect.bottom)
+        h = rect.bottom - wwhh.Y;
+    return (SetWindowPos(hwnd, HWND_TOP, (int)x, (int)y,
+                 (int)w, (int)h, SWP_SHOWWINDOW));
+}
+
+/*
+---------------------------------------
+    合成窗口配置路径
+---------------------------------------
+*/
+static ansi_t*
+misc_desk_mk_path (
+  __CR_IN__ const ansi_t*   name
+    )
+{
+    leng_t  size;
+    ansi_t* full;
+
+    /* 限定在这个目录下 */
+    size  = str_lenA(name) + 1;
+    size += str_lenA(QST_PATH_WINDOW);
+    full = str_allocA(size);
+    if (full == NULL)
+        return (NULL);
+    str_cpyA(full, QST_PATH_WINDOW);
+    return (str_catA(full, name));
+}
+
+/*
+=======================================
+    保存窗口位置配置
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_desk_save (
+  __CR_IN__ const ansi_t*   name,
+  __CR_IN__ sint_t          left,
+  __CR_IN__ sint_t          top,
+  __CR_IN__ uint_t          width,
+  __CR_IN__ uint_t          height
+    )
+{
+    FILE*   fp;
+    ansi_t* full;
+
+    /* 过滤参数 */
+    if (((sint_t)width <= 0) ||
+        ((sint_t)height <= 0))
+        return (FALSE);
+
+    /* 打开配置文件 */
+    full = misc_desk_mk_path(name);
+    if (full == NULL)
+        return (FALSE);
+    fp = fopen(full, "w");
+    mem_free(full);
+    if (fp == NULL)
+        return (FALSE);
+
+    /* 写入配置文件 */
+    fprintf(fp, "win::left = %d\n", left);
+    fprintf(fp, "win::top = %d\n", top);
+    fprintf(fp, "win::width = %u\n", width);
+    fprintf(fp, "win::height = %u\n", height);
+    fclose(fp);
+    return (TRUE);
+}
+
+/*
+=======================================
+    加载窗口位置配置
+=======================================
+*/
+CR_API bool_t STDCALL
+misc_desk_load (
+  __CR_IN__ const ansi_t*   name,
+  __CR_OT__ sint_t*         left,
+  __CR_OT__ sint_t*         top,
+  __CR_OT__ uint_t*         width,
+  __CR_OT__ uint_t*         height
+    )
+{
+    sINIu*  ini;
+    ansi_t* text;
+    ansi_t* full;
+    sint_t  x1, y1;
+    uint_t  ww, hh;
+
+    /* 打开配置文件 */
+    full = misc_desk_mk_path(name);
+    if (full == NULL)
+        return (FALSE);
+    text = file_load_as_strA(full);
+    mem_free(full);
+    if (text == NULL)
+        return (FALSE);
+
+    /* 解析配置文件 */
+    ini = ini_parseU(text);
+    mem_free(text);
+    if (ini == NULL)
+        return (FALSE);
+    x1 = ini_key_intxU("win::left", 0, ini);
+    if (!ini->found)
+        goto _failure;
+    y1 = ini_key_intxU("win::top", 0, ini);
+    if (!ini->found)
+        goto _failure;
+    ww = ini_key_intxU("win::width", 0, ini);
+    if (!ini->found)
+        goto _failure;
+    hh = ini_key_intxU("win::height", 0, ini);
+    if (!ini->found)
+        goto _failure;
+    ini_closeU(ini);
+
+    /* 过滤参数 */
+    if (((sint_t)ww <= 0) ||
+        ((sint_t)hh <= 0))
+        return (FALSE);
+
+    /* 返回结果 */
+    if (left   != NULL) *left   = x1;
+    if (top    != NULL) *top    = y1;
+    if (width  != NULL) *width  = ww;
+    if (height != NULL) *height = hh;
+    return (TRUE);
+
+_failure:
+    ini_closeU(ini);
+    return (FALSE);
+}
+
+/*
+=======================================
+    初始化窗口位置配置
+=======================================
+*/
+CR_API void_t STDCALL
+misc_desk_init (
+  __CR_IN__ const ansi_t*   name,
+  __CR_OT__ sint_t*         left,
+  __CR_OT__ sint_t*         top,
+  __CR_OT__ uint_t*         width,
+  __CR_OT__ uint_t*         height,
+  __CR_IN__ uint_t          def_w,
+  __CR_IN__ uint_t          def_h
+    )
+{
+    RECT    full;
+    sint_t  x1, y1;
+    uint_t  ww, hh;
+    uint_t  sw, sh;
+
+    /* 加载窗口位置 */
+    if (misc_desk_load(name, left, top, width, height))
+        return;
+
+    /* 失败, 使用默认 */
+    ww = def_w; hh = def_h;
+    if (SystemParametersInfo(SPI_GETWORKAREA, 0, &full, 0))
+    {
+        /* 取桌面大小 */
+        sw = full.right - full.left;
+        sh = full.bottom - full.top;
+    }
+    else
+    {
+        /* 失败, 取屏幕大小 */
+        sw = GetSystemMetrics(SM_CXSCREEN);
+        sh = GetSystemMetrics(SM_CYSCREEN);
+    }
+
+    /* 窗口居中放置 */
+    if (sw < ww) ww = sw;
+    if (sh < hh) hh = sh;
+    x1 = (sint_t)((sw - ww) / 2);
+    y1 = (sint_t)((sh - hh) / 2);
+    misc_desk_save(name, x1, y1, ww, hh);
+
+    /* 返回结果 */
+    if (left   != NULL) *left   = x1;
+    if (top    != NULL) *top    = y1;
+    if (width  != NULL) *width  = ww;
+    if (height != NULL) *height = hh;
+}
+
+/*
+=======================================
+    异步调用一个函数
+=======================================
+*/
+CR_API void_t STDCALL
+misc_async_call (
+  __CR_IN__ mt_main_t   func,
+  __CR_IO__ sQST_CTX*   param
+    )
+{
+    thrd_t  thrd;
+
+    param->copyed = FALSE;
+    thrd = thread_new(0, func, param, FALSE, CR_PRRT_NRM, NULL);
+    if (thrd != NULL) {
+        thread_del(thrd);
+        while (!param->copyed)
+            thread_sleep(1);
+    }
+}
+
+/*
+=======================================
+    异步上下文复制完毕
+=======================================
+*/
+CR_API void_t STDCALL
+misc_async_okay (
+  __CR_IO__ sQST_CTX*   param
+    )
+{
+    atom_inc(&param->copyed);
 }
 
 /*****************************************************************************/

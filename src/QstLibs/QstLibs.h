@@ -31,8 +31,10 @@
 
 /* 外部库引用 */
 #pragma comment (lib, "CrH_CORE.lib")
-#if !defined(_QUEST64_)
-    #ifndef _CR_BUILD_DLL_
+#if !defined(_CR_BUILD_DLL_)
+    #if defined(_CR_SYS64_)
+        #pragma comment (lib, "QstLibs64.lib")
+    #else
         #pragma comment (lib, "QstLibs.lib")
     #endif
 #endif
@@ -83,8 +85,6 @@
 
 /* 内存共享文件 */
 typedef void_t* share_t;
-
-#if !defined(_QUEST64_)
 
 CR_API share_t  STDCALL share_file_open (const ansi_t *name,
                                          ansi_t strn[50], leng_t size);
@@ -137,48 +137,46 @@ typedef void_t*     exec_t;     /* 命令执行对象 */
 typedef void_t*     hcui_t;     /* CUI 输出句柄 */
 
 /* 操作命令函数 */
+CR_API bool_t   STDCALL cmd_type_okay (const ansi_t *string);
 CR_API ansi_t*  STDCALL cmd_ini_get (const ansi_t *string);
 CR_API bool_t   STDCALL cmd_ini_send (socket_t netw, const ansi_t *string);
 CR_API ansi_t*  STDCALL cmd_xml_get (const ansi_t *string);
 CR_API bool_t   STDCALL cmd_xml_send (socket_t netw, const ansi_t *string);
-CR_API ansi_t** STDCALL cmd_shl_split (ansi_t *string, uint_t *count);
-CR_API ansi_t*  STDCALL cmd_shl_param (ansi_t **param, uint_t index);
 CR_API ansi_t*  STDCALL cmd_shl_get (const ansi_t *string);
 CR_API bool_t   STDCALL cmd_shl_send (socket_t netw, const ansi_t *string);
-CR_API bool_t   STDCALL cmd_type_okay (const ansi_t *string);
+CR_API ansi_t** STDCALL cmd_shl_split (ansi_t *string, uint_t *count);
+CR_API ansi_t*  STDCALL cmd_shl_param (ansi_t **param, uint_t index);
 CR_API void_t   STDCALL cmd_exec_free (exec_t objs);
 CR_API exec_t   STDCALL cmd_exec_init (const sQST_CMD *list, leng_t count);
 CR_API bool_t   STDCALL cmd_exec_addn (exec_t objs, const sQST_CMD* list);
 CR_API bool_t   STDCALL cmd_exec_main (exec_t objs, void_t *param,
                                        const ansi_t *cmdz);
 /* 杂项功能函数 */
-CR_API bool_t   STDCALL misc_dir_exist (const ansi_t *path);
-CR_API void_t   STDCALL misc_bring2top (hwnd_t hwnd, hwnd_t parent);
 CR_API void_t*  STDCALL misc_mem_malloc (uint_t size);
 CR_API void_t*  STDCALL misc_mem_calloc (uint_t num, uint_t size);
 CR_API void_t*  STDCALL misc_mem_realloc (void_t *ptr, uint_t new_size);
 CR_API void_t   STDCALL misc_mem_free (const void_t *data);
+CR_API bool_t   STDCALL misc_dir_exist (const ansi_t *path);
+CR_API ansi_t** STDCALL misc_get_param (const ansi_t *cmdz, uint_t *count);
 CR_API bool_t   STDCALL misc_is_win64 (void_t);
 CR_API bool_t   STDCALL misc_is_win11 (int32u *vers CR_DEFAULT(NULL));
 CR_API sint_t   STDCALL misc_is_console (const ansi_t *name,
-                                    int32u *x64bin CR_DEFAULT(NULL));
+                                         int32u *x64bin CR_DEFAULT(NULL));
 CR_API bool_t   STDCALL misc_is_terminal (void_t);
-CR_API void_t   STDCALL misc_gen_uuid (ansi_t uuid[33]);
-CR_API bool_t   STDCALL misc_cui_setwin (hwnd_t hwnd, hcui_t hcui,
-                                sint_t x, sint_t y, uint_t w, uint_t h);
 CR_API bool_t   STDCALL misc_is_running (const ansi_t *name);
 CR_API bool_t   STDCALL misc_check_running (const ansi_t *name);
+CR_API void_t   STDCALL misc_gen_uuid (ansi_t uuid[33]);
 CR_API bool_t   STDCALL misc_call_exe (const ansi_t *name, bool_t wait,
                                        bool_t hide);
-CR_API ansi_t** STDCALL misc_get_param (const ansi_t *cmdz, uint_t *count);
-CR_API bool_t   STDCALL misc_desk_save (const ansi_t *name,
-                            sint_t left, sint_t top, uint_t width,
-                                        uint_t height);
-CR_API bool_t   STDCALL misc_desk_load (const ansi_t *name,
-                            sint_t *left, sint_t *top, uint_t *width,
-                                        uint_t *height);
+CR_API void_t   STDCALL misc_bring2top (hwnd_t hwnd, hwnd_t parent);
+CR_API bool_t   STDCALL misc_cui_setwin (hwnd_t hwnd, hcui_t hcui, sint_t x,
+                                         sint_t y, uint_t w, uint_t h);
+CR_API bool_t   STDCALL misc_desk_save (const ansi_t *name, sint_t left,
+                                sint_t top, uint_t width, uint_t height);
+CR_API bool_t   STDCALL misc_desk_load (const ansi_t *name, sint_t *left,
+                                sint_t *top, uint_t *width, uint_t *height);
 CR_API void_t   STDCALL misc_desk_init (const ansi_t *name, sint_t *left,
-                            sint_t *top, uint_t *width, uint_t *height,
+                                sint_t *top, uint_t *width, uint_t *height,
                                         uint_t def_w, uint_t def_h);
 /* 异步执行结构头 */
 typedef struct
@@ -244,6 +242,5 @@ CR_API void_t   STDCALL QstGraph_SetFloatList (socket_t netw,
 CR_API void_t   STDCALL QstGraph_SetDoubleList (socket_t netw,
                                         const fp64_t *list, uint_t count,
                                             bool_t move CR_DEFAULT(TRUE));
-#endif  /* !_QUEST64_ */
 
 #endif  /* !__QL_QSTLIBS_H__ */
