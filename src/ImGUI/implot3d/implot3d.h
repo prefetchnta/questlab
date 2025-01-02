@@ -15,6 +15,7 @@
 // [SECTION] Macros and Defines
 // [SECTION] Forward declarations and basic types
 // [SECTION] Flags & Enumerations
+// [SECTION] Callbacks
 // [SECTION] Context
 // [SECTION] Begin/End Plot
 // [SECTION] Setup
@@ -30,7 +31,6 @@
 // [SECTION] ImPlot3DBox
 // [SECTION] ImPlot3DQuat
 // [SECTION] ImPlot3DStyle
-// [SECTION] Callbacks
 // [SECTION] Meshes
 
 #pragma once
@@ -97,6 +97,7 @@ enum ImPlot3DFlags_ {
     ImPlot3DFlags_NoLegend = 1 << 1,    // Hide plot legend
     ImPlot3DFlags_NoMouseText = 1 << 2, // Hide mouse position in plot coordinates
     ImPlot3DFlags_NoClip = 1 << 3,      // Disable 3D box clipping
+    ImPlot3DFlags_NoMenus = 1 << 4,     // The user will not be able to open context menus
     ImPlot3DFlags_CanvasOnly = ImPlot3DFlags_NoTitle | ImPlot3DFlags_NoLegend | ImPlot3DFlags_NoMouseText,
 };
 
@@ -248,6 +249,7 @@ enum ImPlot3DAxisFlags_ {
     ImPlot3DAxisFlags_LockMin = 1 << 4,      // The axis minimum value will be locked when panning/zooming
     ImPlot3DAxisFlags_LockMax = 1 << 5,      // The axis maximum value will be locked when panning/zooming
     ImPlot3DAxisFlags_AutoFit = 1 << 6,      // Axis will be auto-fitting to data extents
+    ImPlot3DAxisFlags_Invert = 1 << 7,       // The axis will be inverted
     ImPlot3DAxisFlags_Lock = ImPlot3DAxisFlags_LockMin | ImPlot3DAxisFlags_LockMax,
     ImPlot3DAxisFlags_NoDecorations = ImPlot3DAxisFlags_NoLabel | ImPlot3DAxisFlags_NoGridLines | ImPlot3DAxisFlags_NoTickLabels,
 };
@@ -287,6 +289,13 @@ enum ImPlot3DColormap_ {
     ImPlot3DColormap_Spectral = 14, // Same as matplotlib "Spectral"
     ImPlot3DColormap_Greys = 15,    // White/black
 };
+
+//-----------------------------------------------------------------------------
+// [SECTION] Callbacks
+//-----------------------------------------------------------------------------
+
+// Callback signature for axis tick label formatter
+typedef int (*ImPlot3DFormatter)(float value, char* buff, int size, void* user_data);
 
 namespace ImPlot3D {
 
@@ -353,6 +362,8 @@ IMPLOT3D_API void SetupAxis(ImAxis3D axis, const char* label = nullptr, ImPlot3D
 
 IMPLOT3D_API void SetupAxisLimits(ImAxis3D axis, double v_min, double v_max, ImPlot3DCond cond = ImPlot3DCond_Once);
 
+IMPLOT3D_API void SetupAxisFormat(ImAxis3D idx, ImPlot3DFormatter formatter, void* data = nullptr);
+
 // Sets the label and/or flags for primary X/Y/Z axes (shorthand for three calls to SetupAxis)
 IMPLOT3D_API void SetupAxes(const char* x_label, const char* y_label, const char* z_label, ImPlot3DAxisFlags x_flags = 0, ImPlot3DAxisFlags y_flags = 0, ImPlot3DAxisFlags z_flags = 0);
 
@@ -373,7 +384,8 @@ IMPLOT3D_TMP void PlotTriangle(const char* label_id, const T* xs, const T* ys, c
 
 IMPLOT3D_TMP void PlotQuad(const char* label_id, const T* xs, const T* ys, const T* zs, int count, ImPlot3DQuadFlags flags = 0, int offset = 0, int stride = sizeof(T));
 
-IMPLOT3D_TMP void PlotSurface(const char* label_id, const T* xs, const T* ys, const T* zs, int x_count, int y_count, ImPlot3DSurfaceFlags flags = 0, int offset = 0, int stride = sizeof(T));
+// Plot the surface defined by a grid of vertices. The grid is defined by the x and y arrays, and the z array contains the height of each vertex. A total of x_count * y_count vertices are expected for each array. Leave #scale_min and #scale_max both at 0 for automatic color scaling, or set them to a predefined range.
+IMPLOT3D_TMP void PlotSurface(const char* label_id, const T* xs, const T* ys, const T* zs, int x_count, int y_count, double scale_min = 0.0, double scale_max = 0.0, ImPlot3DSurfaceFlags flags = 0, int offset = 0, int stride = sizeof(T));
 
 IMPLOT3D_API void PlotMesh(const char* label_id, const ImPlot3DPoint* vtx, const unsigned int* idx, int vtx_count, int idx_count, ImPlot3DMeshFlags flags = 0);
 
@@ -711,13 +723,6 @@ struct ImPlot3DStyle {
     // Constructor
     IMPLOT3D_API ImPlot3DStyle();
 };
-
-//-----------------------------------------------------------------------------
-// [SECTION] Callbacks
-//-----------------------------------------------------------------------------
-
-// Callback signature for axis tick label formatter
-typedef int (*ImPlot3DFormatter)(float value, char* buff, int size, void* user_data);
 
 //-----------------------------------------------------------------------------
 // [SECTION] Meshes

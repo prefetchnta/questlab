@@ -279,37 +279,91 @@ void DemoQuadPlots() {
 void DemoSurfacePlots() {
     constexpr int N = 20;
     static float xs[N * N], ys[N * N], zs[N * N];
+    static float t = 0.0f;
+    t += ImGui::GetIO().DeltaTime;
 
     // Define the range for X and Y
-    constexpr float range_min = -5.0f;
-    constexpr float range_max = 5.0f;
-    constexpr float step = (range_max - range_min) / (N - 1);
+    constexpr float min_val = -1.0f;
+    constexpr float max_val = 1.0f;
+    constexpr float step = (max_val - min_val) / (N - 1);
 
     // Populate the xs, ys, and zs arrays
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             int idx = i * N + j;
-            xs[idx] = range_min + j * step;                                   // X values are constant along rows
-            ys[idx] = range_min + i * step;                                   // Y values are constant along columns
-            zs[idx] = ImSin(ImSqrt((xs[idx] * xs[idx] + ys[idx] * ys[idx]))); // Z = sin(sqrt(X^2 + Y^2))
+            xs[idx] = min_val + j * step;                                             // X values are constant along rows
+            ys[idx] = min_val + i * step;                                             // Y values are constant along columns
+            zs[idx] = ImSin(2 * t + ImSqrt((xs[idx] * xs[idx] + ys[idx] * ys[idx]))); // z = sin(2t + sqrt(x^2 + y^2))
         }
     }
 
+    // Choose fill color
+    ImGui::Text("Fill color");
+    static int selected_fill = 1; // Colormap by default
+    static ImVec4 solid_color = ImVec4(0.8f, 0.8f, 0.2f, 0.6f);
+    const char* colormaps[] = {"Viridis", "Plasma", "Hot", "Cool", "Pink", "Jet",
+                               "Twilight", "RdBu", "BrBG", "PiYG", "Spectral", "Greys"};
+    static int sel_colormap = 5; // Jet by default
+    {
+        ImGui::Indent();
+
+        // Choose solid color
+        ImGui::RadioButton("Solid", &selected_fill, 0);
+        if (selected_fill == 0) {
+            ImGui::SameLine();
+            ImGui::ColorEdit4("##SurfaceSolidColor", (float*)&solid_color);
+        }
+
+        // Choose colormap
+        ImGui::RadioButton("Colormap", &selected_fill, 1);
+        if (selected_fill == 1) {
+            ImGui::SameLine();
+            ImGui::Combo("##SurfaceColormap", &sel_colormap, colormaps, IM_ARRAYSIZE(colormaps));
+        }
+        ImGui::Unindent();
+    }
+
+    // Choose range
+    static bool custom_range = false;
+    static float range_min = -1.0f;
+    static float range_max = 1.0f;
+    ImGui::Checkbox("Custom range", &custom_range);
+    {
+        ImGui::Indent();
+
+        if (!custom_range)
+            ImGui::BeginDisabled();
+        ImGui::SliderFloat("Range min", &range_min, -1.0f, range_max - 0.01f);
+        ImGui::SliderFloat("Range max", &range_max, range_min + 0.01f, 1.0f);
+        if (!custom_range)
+            ImGui::EndDisabled();
+
+        ImGui::Unindent();
+    }
+
     // Begin the plot
-    ImPlot3D::PushColormap("Hot");
-    if (ImPlot3D::BeginPlot("Surface Plots")) {
+    if (selected_fill == 1)
+        ImPlot3D::PushColormap(colormaps[sel_colormap]);
+    if (ImPlot3D::BeginPlot("Surface Plots", ImVec2(-1, 400), ImPlot3DFlags_NoClip)) {
         // Set styles
+        ImPlot3D::SetupAxesLimits(-1, 1, -1, 1, -1.5, 1.5);
         ImPlot3D::PushStyleVar(ImPlot3DStyleVar_FillAlpha, 0.8f);
+        if (selected_fill == 0)
+            ImPlot3D::SetNextFillStyle(solid_color);
         ImPlot3D::SetNextLineStyle(ImPlot3D::GetColormapColor(1));
 
         // Plot the surface
-        ImPlot3D::PlotSurface("Wave Surface", xs, ys, zs, N, N);
+        if (custom_range)
+            ImPlot3D::PlotSurface("Wave Surface", xs, ys, zs, N, N, (double)range_min, (double)range_max);
+        else
+            ImPlot3D::PlotSurface("Wave Surface", xs, ys, zs, N, N);
 
         // End the plot
         ImPlot3D::PopStyleVar();
         ImPlot3D::EndPlot();
     }
-    ImPlot3D::PopColormap();
+    if (selected_fill == 1)
+        ImPlot3D::PopColormap();
 }
 
 void DemoMeshPlots() {
@@ -634,7 +688,6 @@ void ShowDemoWindow(bool* p_open) {
         ImGui::ShowMetricsWindow(&show_imgui_metrics);
     if (show_imgui_demo)
         ImGui::ShowDemoWindow(&show_imgui_demo);
-
 
     ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(600, 750), ImGuiCond_FirstUseEver);
