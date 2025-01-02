@@ -178,11 +178,11 @@ quest64_draw_codes (
 */
 static void_t
 quest64_draw_objects (
-  __CR_IN__ ximage_t                cvmat,
-  __CR_IN__ const sIMAGE*           image,
-  __CR_IN__ const sIMGLAB_OBJECT*   tango,
-  __CR_IN__ size_t                  count,
-  __CR_IN__ const sINIu*            labels
+  __CR_IN__ ximage_t            cvmat,
+  __CR_IN__ const sIMAGE*       image,
+  __CR_IN__ const sRECT_OBJECT* tango,
+  __CR_IN__ size_t              count,
+  __CR_IN__ const sINIu*        labels
     )
 {
     cpix_t  color, bkcolor;
@@ -848,8 +848,10 @@ quest64_ncnn_nanodet (
     if (cvmat == NULL)
         goto _func_out4;
 
-    size_t          cnts = 0;
-    sIMGLAB_OBJECT* objs = imglab_ncnn_nanodet_doit(nndt, cvmat, &prms, &cnts);
+    size_t          cnts;
+    sRECT_OBJECT*   objs;
+
+    objs = imglab_ncnn_nanodet_doit(nndt, cvmat, &prms, &cnts);
     if (objs == NULL)
         goto _func_out5;
 
