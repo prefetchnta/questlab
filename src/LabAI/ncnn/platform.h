@@ -40,6 +40,9 @@
 #define NCNN_F16C 1
 #define NCNN_AVX2 1
 #define NCNN_AVXVNNI 1
+#define NCNN_AVXVNNIINT8 1
+#define NCNN_AVXVNNIINT16 0
+#define NCNN_AVXNECONVERT 1
 #define NCNN_AVX512 1
 #define NCNN_AVX512VNNI 1
 #define NCNN_AVX512BF16 1
@@ -59,11 +62,14 @@
 #define NCNN_LSX 0
 #define NCNN_MMI 0
 #define NCNN_RVV 0
+#define NCNN_ZFH 0
+#define NCNN_ZVFH 0
+#define NCNN_XTHEADVECTOR 0
 #define NCNN_INT8 1
 #define NCNN_BF16 1
 #define NCNN_FORCE_INLINE 1
 
-#define NCNN_VERSION_STRING "1.0.20240820"
+#define NCNN_VERSION_STRING "1.0.20241226"
 
 #include "ncnn_export.h"
 
