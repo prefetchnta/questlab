@@ -125,8 +125,10 @@ nms_sorted_bboxes(const std::vector<Object>& faceobjects,
             float inter_area = intersection_area(a, b);
             float union_area = areas[i] + areas[picked[j]] - inter_area;
             // float IoU = inter_area / union_area
-            if (inter_area / union_area > nms_threshold)
+            if (inter_area / union_area > nms_threshold) {
                 keep = 0;
+                break;
+            }
         }
 
         if (keep)
@@ -466,7 +468,7 @@ _failure:
     执行 nanodet 的识别
 =======================================
 */
-CR_API sIMGLAB_OBJECT*
+CR_API sRECT_OBJECT*
 imglab_ncnn_nanodet_doit (
   __CR_IN__ nanodet_ncnn_t              nnet,
   __CR_IN__ ximage_t                    mat,
@@ -481,14 +483,14 @@ imglab_ncnn_nanodet_doit (
 
     detect_nanodet(nndt, *mm, results, param);
 
-    sIMGLAB_OBJECT* rett;
+    sRECT_OBJECT*   rett;
     /* --------------- */
     size_t num = results.size();
 
     if (count != NULL)
         *count = num;
     if (num == 0) return (NULL);
-    rett = mem_talloc(num, sIMGLAB_OBJECT);
+    rett = mem_talloc(num, sRECT_OBJECT);
     if (rett != NULL) {
         for (size_t idx = 0; idx < num; idx++) {
             rect_set_wh(&rett[idx].rect, (sint_t)results[idx].rect.x,

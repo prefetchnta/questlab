@@ -26,19 +26,6 @@
 #include "crhack.h"
 
 /*****************************************************************************/
-/*                                 基础类型                                  */
-/*****************************************************************************/
-
-/* 物体描述结构 */
-typedef struct
-{
-        sRECT   rect;   /* 物体的位置 */
-        sint_t  type;   /* 物体标签号 */
-        fp32_t  prop;   /* 物体可能性 */
-
-} sIMGLAB_OBJECT;
-
-/*****************************************************************************/
 /*                                 结构转换                                  */
 /*****************************************************************************/
 
@@ -485,7 +472,7 @@ typedef struct
 
 } sNCNN_NanoDetParam;
 
-CR_API sIMGLAB_OBJECT*
+CR_API sRECT_OBJECT*
 imglab_ncnn_nanodet_doit (nanodet_ncnn_t nnet, ximage_t mat,
                           const sNCNN_NanoDetParam *param, size_t *count);
 
