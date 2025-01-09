@@ -212,11 +212,11 @@ quest64_draw_objects (
             tango[idx].type >= 0 &&
             tango[idx].type < (int)labels->count) {
             shw = str_fmtA("%s %.1f%%", labels->lines[tango[idx].type],
-                                        tango[idx].prop * 100);
+                                        tango[idx].prob * 100);
         }
         else {
             shw = str_fmtA("%d %.1f%%", tango[idx].type,
-                                        tango[idx].prop * 100);
+                                        tango[idx].prob * 100);
         }
         if (shw != NULL) {
             color.val = 0xFFFFFF00;
@@ -380,9 +380,11 @@ _func_out1:
     (prms._name = cjson_str_dup(root, #_name))
 #define CJSON_VECTOR3(_name) \
     cjson_vector3(root, #_name, prms._name)
+#define CJSON_IARRAY4(_name) \
+    cjson_iarray4(root, #_name, prms._name)
 /*
 ---------------------------------------
-    解析一个向量
+    解析一个 3D 浮点向量
 ---------------------------------------
 */
 static bool_t
@@ -397,7 +399,29 @@ cjson_vector3 (
     str = cjson_string(node, name);
     if (str == NULL)
         return (FALSE);
-    if (str2vecA(vec3d, 3, str, "[],") == NULL)
+    if (str2vecA((fp32_t*)vec3d, 3, str, "[],") == NULL)
+        return (FALSE);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    解析一个 4D 整数向量
+---------------------------------------
+*/
+static bool_t
+cjson_iarray4 (
+  __CR_IN__ cJSON*          node,
+  __CR_IN__ const ansi_t*   name,
+  __CR_OT__ sint_t*         int4d
+    )
+{
+    ansi_t* str;
+
+    str = cjson_string(node, name);
+    if (str == NULL)
+        return (FALSE);
+    if (str2lstA((uint_t*)int4d, 4, str, "[],") == NULL)
         return (FALSE);
     return (TRUE);
 }
@@ -716,7 +740,7 @@ _func_out1:
 
 /*
 ---------------------------------------
-    NCNN nanodet 参数解析
+    NCNN NanoDet 参数解析
 ---------------------------------------
 */
 static bool_t
@@ -776,7 +800,7 @@ _failure1:
 
 /*
 ---------------------------------------
-    NCNN nanodet 识别器
+    NCNN NanoDet 识别器
 ---------------------------------------
 */
 static bool_t
@@ -842,7 +866,7 @@ quest64_ncnn_nanodet (
     sIMAGE      dest;
     ximage_t    cvmat;
 
-    /* 执行 nanodet 识别器 */
+    /* 执行 NanoDet 识别器 */
     quest64_set_image(&dest, image);
     cvmat = imglab_crh2mat_set(&dest);
     if (cvmat == NULL)
@@ -873,6 +897,314 @@ _func_out3:
     mem_free(prms.dis_pred16);
     mem_free(prms.dis_pred32);
 _func_out2:
+    mem_free(name);
+_func_out1:
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    NCNN NanoDetPlus 参数解析
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_nanodet_plus_load_params (
+  __CR_OT__ sNCNN_NanoDetPlusParam& prms,
+  __CR_IN__ const ansi_t*           json
+    )
+{
+    cJSON*  root;
+    sint_t  btmp;
+
+    root = cJSON_Parse(json);
+    if (root == NULL)
+        return (FALSE);
+    if (CJSON_STRING(input_layer) == NULL)
+        goto _failure1;
+    if (CJSON_STRING(pred8) == NULL)
+        goto _failure2;
+    if (CJSON_STRING(pred16) == NULL)
+        goto _failure3;
+    if (CJSON_STRING(pred32) == NULL)
+        goto _failure4;
+    if (CJSON_STRING(pred64) == NULL)
+        goto _failure5;
+    CJSON_INTG(thread_num, 0);
+    CJSON_BOOL(light_mode, FALSE);
+    CJSON_INTG(target_size, 416);
+    CJSON_INTG(num_class, 80);
+    CJSON_BOOL(have_sigmoid, TRUE);
+    CJSON_FP32(prob_threshold, 0.4f);
+    CJSON_FP32(nms_threshold, 0.5f);
+    if (!CJSON_VECTOR3(mean_vals))
+        prms.mean_vals[0] = prms.mean_vals[1] = prms.mean_vals[2] = -1;
+    if (!CJSON_VECTOR3(norm_vals))
+        prms.norm_vals[0] = prms.norm_vals[1] = prms.norm_vals[2] = -1;
+    cJSON_Delete(root);
+    return (TRUE);
+
+_failure5:
+    mem_free(prms.pred32);
+_failure4:
+    mem_free(prms.pred16);
+_failure3:
+    mem_free(prms.pred8);
+_failure2:
+    mem_free(prms.input_layer);
+_failure1:
+    cJSON_Delete(root);
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    NCNN NanoDetPlus 识别器
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_nanodet_plus (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sINIu*  line;
+    uint_t  ngpu;
+    uint_t  bprm;
+    uint_t  vlkn;
+    uint_t  bf16;
+    ansi_t* text;
+    ansi_t* file;
+    ansi_t* name;
+
+    /* 参数解析 */
+    name = xml_attr_stringU("model", param);
+    if (name == NULL)
+        goto _func_out1;
+    line = NULL;
+    ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
+    bprm = xml_attr_intxU("bparam", FALSE, param);
+    vlkn = xml_attr_intxU("vulkan", TRUE, param);
+    bf16 = xml_attr_intxU("float16", FALSE, param);
+
+    sNCNN_NanoDetPlusParam  prms;
+
+    file = xml_attr_stringU("params", param);
+    if (file == NULL)
+        goto _func_out2;
+    text = file_load_as_strA(file);
+    mem_free(file);
+    if (text == NULL)
+        goto _func_out2;
+    if (!quest64_ncnn_nanodet_plus_load_params(prms, text)) {
+        mem_free(text);
+        goto _func_out2;
+    }
+    mem_free(text);
+
+    /* 加载标签文件 */
+    file = str_fmtA("%s.label", name);
+    if (file != NULL) {
+        text = file_load_as_strA(file);
+        mem_free(file);
+        if (text != NULL) {
+            line = ini_parseU(text);
+            mem_free(text);
+        }
+    }
+
+    nanodet_ncnn_t  nndt;
+
+    nndt = imglab_ncnn_nanodet_new(ngpu);
+    if (nndt == NULL)
+        goto _func_out3;
+    if (!imglab_ncnn_nanodet_load(nndt, name, !!bprm, !!vlkn, !!bf16))
+        goto _func_out4;
+
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    /* 执行 NanoDet 识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL)
+        goto _func_out4;
+
+    size_t          cnts;
+    sRECT_OBJECT*   objs;
+
+    objs = imglab_ncnn_nanodet_plus_doit(nndt, cvmat, &prms, &cnts);
+    if (objs == NULL)
+        goto _func_out5;
+
+    /* 显示识别结果 */
+    quest64_draw_objects(cvmat, &dest, objs, cnts, line);
+    mem_free(objs);
+_func_out5:
+    imglab_mat_del(cvmat);
+_func_out4:
+    imglab_ncnn_nanodet_del(nndt);
+_func_out3:
+    if (line != NULL)
+        ini_closeU(line);
+    mem_free(prms.input_layer);
+    mem_free(prms.pred8);
+    mem_free(prms.pred16);
+    mem_free(prms.pred32);
+    mem_free(prms.pred64);
+_func_out2:
+    mem_free(name);
+_func_out1:
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    NCNN MobileNetSSD 参数解析
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_mbntssd_load_params (
+  __CR_OT__ sNCNN_MobileNetSSD_Param&   prms,
+  __CR_IN__ const ansi_t*               json
+    )
+{
+    cJSON*  root;
+    sint_t  btmp;
+
+    root = cJSON_Parse(json);
+    if (root == NULL)
+        return (FALSE);
+    if (CJSON_STRING(input_layer) == NULL)
+        goto _failure1;
+    if (CJSON_STRING(output_layer) == NULL)
+        goto _failure2;
+    CJSON_INTG(thread_num, 0);
+    CJSON_BOOL(light_mode, FALSE);
+    CJSON_INTG(target_size, 300);
+    CJSON_INTG(net_version, 1);
+    CJSON_FP32(prob_threshold, 0.6f);
+    if (!CJSON_VECTOR3(mean_vals))
+        prms.mean_vals[0] = prms.mean_vals[1] = prms.mean_vals[2] = -1;
+    if (!CJSON_VECTOR3(norm_vals))
+        prms.norm_vals[0] = prms.norm_vals[1] = prms.norm_vals[2] = -1;
+    cJSON_Delete(root);
+    return (TRUE);
+
+_failure2:
+    mem_free(prms.input_layer);
+_failure1:
+    cJSON_Delete(root);
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    NCNN MobileNetSSD 识别器
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_mbntssd (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sINIu*  line;
+    uint_t  ngpu;
+    uint_t  bprm;
+    uint_t  vlkn;
+    uint_t  bf16;
+    ansi_t* text;
+    ansi_t* file;
+    ansi_t* name;
+    ansi_t* noop;
+
+    /* 参数解析 */
+    name = xml_attr_stringU("model", param);
+    if (name == NULL)
+        goto _func_out1;
+    line = NULL;
+    noop = xml_attr_stringU("silence", param);
+    ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
+    bprm = xml_attr_intxU("bparam", FALSE, param);
+    vlkn = xml_attr_intxU("vulkan", TRUE, param);
+    bf16 = xml_attr_intxU("float16", FALSE, param);
+
+    sNCNN_MobileNetSSD_Param    prms;
+
+    file = xml_attr_stringU("params", param);
+    if (file == NULL)
+        goto _func_out2;
+    text = file_load_as_strA(file);
+    mem_free(file);
+    if (text == NULL)
+        goto _func_out2;
+    if (!quest64_ncnn_mbntssd_load_params(prms, text)) {
+        mem_free(text);
+        goto _func_out2;
+    }
+    mem_free(text);
+
+    /* 加载标签文件 */
+    file = str_fmtA("%s.label", name);
+    if (file != NULL) {
+        text = file_load_as_strA(file);
+        mem_free(file);
+        if (text != NULL) {
+            line = ini_parseU(text);
+            mem_free(text);
+        }
+    }
+
+    mbntssd_ncnn_t  nndt;
+
+    nndt = imglab_ncnn_mbntssd_new(ngpu);
+    if (nndt == NULL)
+        goto _func_out3;
+    if (noop == NULL) {
+        if (!imglab_ncnn_mbntssd_load(nndt, name, "silence",
+                                    !!bprm, !!vlkn, !!bf16))
+            goto _func_out4;
+    }
+    else {
+        if (!imglab_ncnn_mbntssd_load(nndt, name, noop,
+                                    !!bprm, !!vlkn, !!bf16))
+            goto _func_out4;
+    }
+
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    /* 执行 MobileNetSSD 识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL)
+        goto _func_out4;
+
+    size_t          cnts;
+    sRECT_OBJECT*   objs;
+
+    objs = imglab_ncnn_mbntssd_doit(nndt, cvmat, &prms, &cnts);
+    if (objs == NULL)
+        goto _func_out5;
+
+    /* 显示识别结果 */
+    quest64_draw_objects(cvmat, &dest, objs, cnts, line);
+    mem_free(objs);
+_func_out5:
+    imglab_mat_del(cvmat);
+_func_out4:
+    imglab_ncnn_mbntssd_del(nndt);
+_func_out3:
+    if (line != NULL)
+        ini_closeU(line);
+    mem_free(prms.input_layer);
+    mem_free(prms.output_layer);
+_func_out2:
+    TRY_FREE(noop);
     mem_free(name);
 _func_out1:
     CR_NOUSE(netw);
