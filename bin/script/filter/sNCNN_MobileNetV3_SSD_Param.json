@@ -1,0 +1,11 @@
+{
+    "thread_num": 0,
+    "light_mode": 0,
+    "target_size": 300,
+    "net_version": 3,
+    "prob_threshold": 0.6,
+    "mean_vals": "[123.675, 116.28, 103.53]",
+    "norm_vals": "[1.0, 1.0, 1.0]",
+    "input_layer": "input",
+    "output_layer": "detection_out"
+}

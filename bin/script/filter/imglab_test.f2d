@@ -28,9 +28,25 @@
             <!-- ZXing -->
             <?quest64_zxing_grpcode params="script/filter/sZXI_ReaderOptions.json" />
 
-            <!-- NCNN nanodet -->
+            <!-- NCNN NanoDet -->
             <?quest64_ncnn_nanodet vk_gpu="-1" model="source/ncnn/nanodet_m" bparam="0" vulkan="1" float16="0"
                 params="script/filter/sNCNN_NanoDetParam.json" />
+
+            <!-- NCNN NanoDetPlus -->
+            <?quest64_ncnn_nanodet_plus vk_gpu="-1" model="source/ncnn/nanodet-plus-m_416" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_NanoDetPlusParam.json" />
+
+            <!-- NCNN MobileNetV1_SSD -->
+            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenet_ssd_voc_ncnn" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_MobileNetV1_SSD_Param.json" />
+
+            <!-- NCNN MobileNetV2_SSD -->
+            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenetv2_ssdlite_voc" bparam="0" vulkan="1" float16="0" silence="silence"
+                params="script/filter/sNCNN_MobileNetV2_SSD_Param.json" />
+
+            <!-- NCNN MobileNetV3_SSD -->
+            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenetv3_ssdlite_voc" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_MobileNetV3_SSD_Param.json" />
 
         </filters>
     ]]></quest64_bridge>
