@@ -152,7 +152,7 @@ CR_API void_t   imglab_rocts_get (sPNT2 *pnt, xroct_t rct,
                                   uint_t count CR_DEFAULT(1));
 
 CR_API void_t   imglab_rocts_get2 (sRECT *box, fp32_t *angle,
-                        xroct_t rct, uint_t count CR_DEFAULT(1));
+                            xroct_t rct, uint_t count CR_DEFAULT(1));
 
 CR_API void_t   imglab_rocts_set (xroct_t rct, const sRECT *box,
                                   const fp32_t *angle,
@@ -442,10 +442,10 @@ CR_API size_t
 imglab_zxi_grpcode_doit (ximage_t mat, str_lstA_t *text, xpoly_lst_t *list,
                          const sZXI_ReaderOptions *options CR_DEFAULT(NULL));
 
-/* NCNN nanodet 识别类型 */
+/* NCNN NanoDet 识别类型 */
 typedef void_t*     nanodet_ncnn_t;
 
-/* NCNN nanodet 识别对象 */
+/* NCNN NanoDet 识别对象 */
 CR_API nanodet_ncnn_t
 imglab_ncnn_nanodet_new (sint_t vk_gpu);
 
@@ -456,7 +456,7 @@ CR_API bool_t
 imglab_ncnn_nanodet_load (nanodet_ncnn_t nnet, const ansi_t *name,
                           bool_t bin_param, bool_t use_vulkan,
                           bool_t use_bf16 CR_DEFAULT(FALSE));
-/* NCNN nanodet 识别参数 */
+/* NCNN NanoDet 识别参数 */
 typedef struct
 {
         sint_t  thread_num;
@@ -472,8 +472,64 @@ typedef struct
 
 } sNCNN_NanoDetParam;
 
+/* NCNN NanoDetPlus 识别参数 */
+typedef struct
+{
+        sint_t  thread_num;
+        bool_t  light_mode;
+        sint_t  target_size;
+        sint_t  num_class;
+        bool_t  have_sigmoid;
+        fp32_t  prob_threshold;
+        fp32_t  nms_threshold;
+        fp32_t  mean_vals[3];
+        fp32_t  norm_vals[3];
+        cstr_t  input_layer;
+        cstr_t  pred8, pred16, pred32, pred64;
+
+} sNCNN_NanoDetPlusParam;
+
 CR_API sRECT_OBJECT*
 imglab_ncnn_nanodet_doit (nanodet_ncnn_t nnet, ximage_t mat,
-                          const sNCNN_NanoDetParam *param, size_t *count);
+                          const sNCNN_NanoDetParam *param,
+                          size_t *count);
+CR_API sRECT_OBJECT*
+imglab_ncnn_nanodet_plus_doit (nanodet_ncnn_t nnet, ximage_t mat,
+                               const sNCNN_NanoDetPlusParam *param,
+                               size_t *count);
+
+/* NCNN MobileNetSSD 识别类型 */
+typedef void_t*     mbntssd_ncnn_t;
+
+/* NCNN MobileNetSSD 识别对象 */
+CR_API mbntssd_ncnn_t
+imglab_ncnn_mbntssd_new (sint_t vk_gpu);
+
+CR_API void_t
+imglab_ncnn_mbntssd_del (mbntssd_ncnn_t nnet);
+
+CR_API bool_t
+imglab_ncnn_mbntssd_load (mbntssd_ncnn_t nnet, const ansi_t *name,
+                    const ansi_t *silence, bool_t bin_param, bool_t use_vulkan,
+                                bool_t use_bf16 CR_DEFAULT(FALSE));
+/* NCNN MobileNetSSD 识别参数 */
+typedef struct
+{
+        sint_t  thread_num;
+        bool_t  light_mode;
+        sint_t  target_size;
+        sint_t  net_version;
+        fp32_t  prob_threshold;
+        fp32_t  mean_vals[3];
+        fp32_t  norm_vals[3];
+        cstr_t  input_layer;
+        cstr_t  output_layer;
+
+} sNCNN_MobileNetSSD_Param;
+
+CR_API sRECT_OBJECT*
+imglab_ncnn_mbntssd_doit (mbntssd_ncnn_t nnet, ximage_t mat,
+                          const sNCNN_MobileNetSSD_Param *param,
+                          size_t *count);
 
 #endif  /* !__AI_IMGLAB_H__ */
