@@ -48,7 +48,7 @@
 /**
 @defgroup imgproc Image Processing
 
-This module includes image-processing functions.
+This module offers a comprehensive suite of image processing functions, enabling tasks such as those listed above.
 
 @{
     @defgroup imgproc_filter Image Filtering
@@ -236,7 +236,7 @@ enum MorphShapes {
     MORPH_CROSS   = 1, //!< a cross-shaped structuring element:
                        //!< \f[E_{ij} = \begin{cases} 1 & \texttt{if } {i=\texttt{anchor.y } {or } {j=\texttt{anchor.x}}} \\0 & \texttt{otherwise} \end{cases}\f]
     MORPH_ELLIPSE = 2 //!< an elliptic structuring element, that is, a filled ellipse inscribed
-                      //!< into the rectangle Rect(0, 0, esize.width, 0.esize.height)
+                      //!< into the rectangle Rect(0, 0, esize.width, esize.height)
 };
 
 //! @} imgproc_filter
@@ -1536,12 +1536,14 @@ respectively (see #getGaussianKernel for details); to fully control the result r
 possible future modifications of all this semantics, it is recommended to specify all of ksize,
 sigmaX, and sigmaY.
 @param borderType pixel extrapolation method, see #BorderTypes. #BORDER_WRAP is not supported.
+@param hint Implementation modfication flags. See #AlgorithmHint
 
 @sa  sepFilter2D, filter2D, blur, boxFilter, bilateralFilter, medianBlur
  */
 CV_EXPORTS_W void GaussianBlur( InputArray src, OutputArray dst, Size ksize,
                                 double sigmaX, double sigmaY = 0,
-                                int borderType = BORDER_DEFAULT );
+                                int borderType = BORDER_DEFAULT,
+                                AlgorithmHint hint = cv::ALGO_HINT_DEFAULT );
 
 /** @brief Applies the bilateral filter to an image.
 
@@ -2163,11 +2165,13 @@ Must fall between 0 and max_theta.
 @param max_theta For standard and multi-scale Hough transform, an upper bound for the angle.
 Must fall between min_theta and CV_PI. The actual maximum angle in the accumulator may be slightly
 less than max_theta, depending on the parameters min_theta and theta.
+@param use_edgeval True if you want to use weighted Hough transform.
  */
 CV_EXPORTS_W void HoughLines( InputArray image, OutputArray lines,
                               double rho, double theta, int threshold,
                               double srn = 0, double stn = 0,
-                              double min_theta = 0, double max_theta = CV_PI );
+                              double min_theta = 0, double max_theta = CV_PI,
+                              bool use_edgeval = false );
 
 /** @brief Finds line segments in a binary image using the probabilistic Hough transform.
 
@@ -2485,7 +2489,10 @@ CV_EXPORTS_W void warpPerspective( InputArray src, OutputArray dst,
 The function remap transforms the source image using the specified map:
 
 \f[\texttt{dst} (x,y) =  \texttt{src} (map_x(x,y),map_y(x,y))\f]
-\f[\texttt{dst} (x,y) =  \texttt{src} (x+map_x(x,y),y+map_y(x,y))\f] with WARP_RELATIVE_MAP
+
+with the WARP_RELATIVE_MAP flag :
+
+\f[\texttt{dst} (x,y) =  \texttt{src} (x+map_x(x,y),y+map_y(x,y))\f]
 
 where values of pixels with non-integer coordinates are computed using one of available
 interpolation methods. \f$map_x\f$ and \f$map_y\f$ can be encoded as separate floating-point maps
@@ -2506,7 +2513,7 @@ representation to fixed-point for speed.
 if map1 is (x,y) points), respectively.
 @param interpolation Interpolation method (see #InterpolationFlags). The methods #INTER_AREA
 #INTER_LINEAR_EXACT and #INTER_NEAREST_EXACT are not supported by this function.
-The extra flag WARP_RELATIVE_MAP that can be ORed to the interpolation method
+The extra flag WARP_RELATIVE_MAP can be ORed to the interpolation method
 (e.g. INTER_LINEAR | WARP_RELATIVE_MAP)
 @param borderMode Pixel extrapolation method (see #BorderTypes). When
 borderMode=#BORDER_TRANSPARENT, it means that the pixels in the destination image that
@@ -3721,10 +3728,11 @@ floating-point.
 @param code color space conversion code (see #ColorConversionCodes).
 @param dstCn number of channels in the destination image; if the parameter is 0, the number of the
 channels is derived automatically from src and code.
+@param hint Implementation modfication flags. See #AlgorithmHint
 
 @see @ref imgproc_color_conversions
  */
-CV_EXPORTS_W void cvtColor( InputArray src, OutputArray dst, int code, int dstCn = 0 );
+CV_EXPORTS_W void cvtColor( InputArray src, OutputArray dst, int code, int dstCn = 0, AlgorithmHint hint = cv::ALGO_HINT_DEFAULT );
 
 /** @brief Converts an image from one color space to another where the source image is
 stored in two planes.
@@ -3743,8 +3751,9 @@ This function only supports YUV420 to RGB conversion as of now.
 - #COLOR_YUV2RGB_NV21
 - #COLOR_YUV2BGRA_NV21
 - #COLOR_YUV2RGBA_NV21
+@param hint Implementation modfication flags. See #AlgorithmHint
 */
-CV_EXPORTS_W void cvtColorTwoPlane( InputArray src1, InputArray src2, OutputArray dst, int code );
+CV_EXPORTS_W void cvtColorTwoPlane( InputArray src1, InputArray src2, OutputArray dst, int code, AlgorithmHint hint = cv::ALGO_HINT_DEFAULT );
 
 /** @brief main function for all demosaicing processes
 
@@ -4055,6 +4064,28 @@ CV_EXPORTS_W void approxPolyDP( InputArray curve,
                                 OutputArray approxCurve,
                                 double epsilon, bool closed );
 
+/** @brief Approximates a polygon with a convex hull with a specified accuracy and number of sides.
+
+The cv::approxPolyN function approximates a polygon with a convex hull
+so that the difference between the contour area of the original contour and the new polygon is minimal.
+It uses a greedy algorithm for contracting two vertices into one in such a way that the additional area is minimal.
+Straight lines formed by each edge of the convex contour are drawn and the areas of the resulting triangles are considered.
+Each vertex will lie either on the original contour or outside it.
+
+The algorithm based on the paper @cite LowIlie2003 .
+
+@param curve Input vector of a 2D points stored in std::vector or Mat, points must be float or integer.
+@param approxCurve Result of the approximation. The type is vector of a 2D point (Point2f or Point) in std::vector or Mat.
+@param nsides The parameter defines the number of sides of the result polygon.
+@param epsilon_percentage defines the percentage of the maximum of additional area.
+If it equals -1, it is not used. Otherwise algorighm stops if additional area is greater than contourArea(_curve) * percentage.
+If additional area exceeds the limit, algorithm returns as many vertices as there were at the moment the limit was exceeded.
+@param ensure_convex If it is true, algorithm creates a convex hull of input contour. Otherwise input vector should be convex.
+ */
+CV_EXPORTS_W void approxPolyN(InputArray curve, OutputArray approxCurve,
+                              int nsides, float epsilon_percentage = -1.0,
+                              bool ensure_convex = true);
+
 /** @brief Calculates a contour perimeter or a curve length.
 
 The function computes a curve length or a closed contour perimeter.
@@ -4248,7 +4279,7 @@ Examples of how intersectConvexConvex works
 When false, no intersection is found. If the polygons share a side or the vertex of one polygon lies on an edge
 of the other, they are not considered nested and an intersection will be found regardless of the value of handleNested.
 
-@returns Absolute value of area of intersecting polygon
+@returns Area of intersecting polygon. May be negative, if algorithm has not converged, e.g. non-convex input.
 
 @note intersectConvexConvex doesn't confirm that both polygons are convex and will return invalid results if they aren't.
  */
@@ -4313,7 +4344,7 @@ CV_EXPORTS_W RotatedRect fitEllipseAMS( InputArray points );
 
  The function calculates the ellipse that fits a set of 2D points.
  It returns the rotated rectangle in which the ellipse is inscribed.
- The Direct least square (Direct) method by @cite Fitzgibbon1999 is used.
+ The Direct least square (Direct) method by @cite oy1998NumericallySD is used.
 
  For an ellipse, this basis set is \f$ \chi= \left(x^2, x y, y^2, x, y, 1\right) \f$,
  which is a set of six free coefficients \f$ A^T=\left\{A_{\text{xx}},A_{\text{xy}},A_{\text{yy}},A_x,A_y,A_0\right\} \f$.
