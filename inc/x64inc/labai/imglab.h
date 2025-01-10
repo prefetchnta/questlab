@@ -485,7 +485,8 @@ typedef struct
         fp32_t  mean_vals[3];
         fp32_t  norm_vals[3];
         cstr_t  input_layer;
-        cstr_t  pred8, pred16, pred32, pred64;
+        cstr_t  pred8, pred16;
+        cstr_t  pred32, pred64;
 
 } sNCNN_NanoDetPlusParam;
 
