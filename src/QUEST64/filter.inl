@@ -379,53 +379,7 @@ _func_out1:
 #define CJSON_STRING(_name) \
     (prms._name = cjson_str_dup(root, #_name))
 #define CJSON_VECTOR3(_name) \
-    cjson_vector3(root, #_name, prms._name)
-#define CJSON_IARRAY4(_name) \
-    cjson_iarray4(root, #_name, prms._name)
-/*
----------------------------------------
-    解析一个 3D 浮点向量
----------------------------------------
-*/
-static bool_t
-cjson_vector3 (
-  __CR_IN__ cJSON*          node,
-  __CR_IN__ const ansi_t*   name,
-  __CR_OT__ fp32_t*         vec3d
-    )
-{
-    ansi_t* str;
-
-    str = cjson_string(node, name);
-    if (str == NULL)
-        return (FALSE);
-    if (str2vecA((fp32_t*)vec3d, 3, str, "[],") == NULL)
-        return (FALSE);
-    return (TRUE);
-}
-
-/*
----------------------------------------
-    解析一个 4D 整数向量
----------------------------------------
-*/
-static bool_t
-cjson_iarray4 (
-  __CR_IN__ cJSON*          node,
-  __CR_IN__ const ansi_t*   name,
-  __CR_OT__ sint_t*         int4d
-    )
-{
-    ansi_t* str;
-
-    str = cjson_string(node, name);
-    if (str == NULL)
-        return (FALSE);
-    if (str2lstA((uint_t*)int4d, 4, str, "[],") == NULL)
-        return (FALSE);
-    return (TRUE);
-}
-
+    cjson_fvec(root, #_name, prms._name, 3)
 /*
 ---------------------------------------
     OpenCV ARUCO 参数解析
