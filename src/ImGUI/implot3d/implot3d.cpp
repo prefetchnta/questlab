@@ -48,6 +48,11 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 
+// We define this to avoid accidentally using the deprecated API
+#ifndef IMPLOT_DISABLE_OBSOLETE_FUNCTIONS
+#define IMPLOT_DISABLE_OBSOLETE_FUNCTIONS
+#endif
+
 #include "implot3d.h"
 #include "implot3d_internal.h"
 
@@ -105,8 +110,7 @@ void AddTextRotated(ImDrawList* draw_list, ImVec2 pos, float angle, ImU32 col, c
     ImFont* font = g.Font;
 
     // Align to be pixel perfect
-    pos.x = IM_FLOOR(pos.x);
-    pos.y = IM_FLOOR(pos.y);
+    pos = ImFloor(pos);
 
     const float scale = g.FontSize / font->FontSize;
 
@@ -242,7 +246,6 @@ void ShowLegendEntries(ImPlot3DItemGroup& items, const ImRect& legend_bb, bool h
     const int num_items = items.GetLegendCount();
     if (num_items == 0)
         return;
-    ImPlot3DContext& gp = *GImPlot3D;
 
     // Render legend items
     for (int i = 0; i < num_items; i++) {
@@ -529,8 +532,6 @@ void RenderPlotBackground(ImDrawList* draw_list, const ImPlot3DPlot& plot, const
 }
 
 void RenderPlotBorder(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImVec2* corners_pix, const bool* active_faces, const int plane_2d) {
-    ImGuiIO& io = ImGui::GetIO();
-
     int hovered_edge = -1;
     if (!plot.Held)
         GetMouseOverAxis(plot, active_faces, corners_pix, plane_2d, &hovered_edge);
@@ -573,13 +574,11 @@ void RenderGrid(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImPlot3DP
         // Get the two axes (u and v) that define the face plane
         int idx0 = faces[face_idx][0];
         int idx1 = faces[face_idx][1];
-        int idx2 = faces[face_idx][2];
         int idx3 = faces[face_idx][3];
 
         // Corners of the face in plot space
         ImPlot3DPoint p0 = corners[idx0];
         ImPlot3DPoint p1 = corners[idx1];
-        ImPlot3DPoint p2 = corners[idx2];
         ImPlot3DPoint p3 = corners[idx3];
 
         // Vectors along the edges
@@ -593,6 +592,11 @@ void RenderGrid(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImPlot3DP
 
                 // Compute position along u
                 float t_u = (tick.PlotPos - axis_u.Range.Min) / (axis_u.Range.Max - axis_u.Range.Min);
+
+                // Skip ticks that are out of range
+                if (t_u < 0.0f || t_u > 1.0f)
+                    continue;
+
                 ImPlot3DPoint p_start = p0 + u_vec * t_u;
                 ImPlot3DPoint p_end = p3 + u_vec * t_u;
 
@@ -614,6 +618,11 @@ void RenderGrid(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImPlot3DP
 
                 // Compute position along v
                 float t_v = (tick.PlotPos - axis_v.Range.Min) / (axis_v.Range.Max - axis_v.Range.Min);
+
+                // Skip ticks that are out of range
+                if (t_v < 0.0f || t_v > 1.0f)
+                    continue;
+
                 ImPlot3DPoint p_start = p0 + v_vec * t_v;
                 ImPlot3DPoint p_end = p1 + v_vec * t_v;
 
@@ -716,6 +725,9 @@ void RenderTickMarks(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImPl
             const ImPlot3DTick& tick = axis.Ticker.Ticks[t];
             float v = (tick.PlotPos - axis.Range.Min) / (axis.Range.Max - axis.Range.Min);
 
+            // Skip ticks that are out of range
+            if (v < 0.0f || v > 1.0f)
+                continue;
             ImPlot3DPoint tick_pos_ndc = PlotToNDC(axis_start + axis_dir * (v * axis_len));
 
             // Half tick on each side of the axis line
@@ -734,7 +746,6 @@ void RenderTickMarks(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImPl
 }
 
 void RenderTickLabels(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImPlot3DPoint* corners, const ImVec2* corners_pix, const int axis_corners[3][2]) {
-    ImVec2 box_center_pix = PlotToPixels(plot.RangeCenter());
     ImU32 col_tick_txt = GetStyleColorU32(ImPlot3DCol_AxisText);
 
     for (int a = 0; a < 3; a++) {
@@ -807,6 +818,10 @@ void RenderTickLabels(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImP
 
             // Compute position along the axis
             float t_axis = (tick.PlotPos - axis.Range.Min) / (axis.Range.Max - axis.Range.Min);
+
+            // Skip ticks that are out of range
+            if (t_axis < 0.0f || t_axis > 1.0f)
+                continue;
             ImPlot3DPoint tick_pos = axis_start + axis_dir * t_axis;
 
             // Convert to pixel coordinates
@@ -825,7 +840,6 @@ void RenderTickLabels(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImP
 }
 
 void RenderAxisLabels(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImPlot3DPoint* corners, const ImVec2* corners_pix, const int axis_corners[3][2]) {
-    ImPlot3DPoint range_center = plot.RangeCenter();
     for (int a = 0; a < 3; a++) {
         const ImPlot3DAxis& axis = plot.Axes[a];
         if (!axis.HasLabel())
@@ -842,12 +856,13 @@ void RenderAxisLabels(ImDrawList* draw_list, const ImPlot3DPlot& plot, const ImP
             continue;
 
         // Position at the end of the axis
-        ImPlot3DPoint label_pos = (corners[idx0] + corners[idx1]) * 0.5f;
+        ImPlot3DPoint label_pos = (PlotToNDC(corners[idx0]) + PlotToNDC(corners[idx1])) * 0.5f;
+        ImPlot3DPoint center_dir = label_pos.Normalized();
         // Add offset
-        label_pos += (label_pos - range_center) * 0.4f;
+        label_pos += center_dir * 0.3f;
 
         // Convert to pixel coordinates
-        ImVec2 label_pos_pix = PlotToPixels(label_pos);
+        ImVec2 label_pos_pix = NDCToPixels(label_pos);
 
         // Adjust label position and angle
         ImU32 col_ax_txt = GetStyleColorU32(ImPlot3DCol_AxisText);
@@ -919,11 +934,9 @@ void ComputeBoxCornersPix(ImVec2* corners_pix, const ImPlot3DPoint* corners) {
 
 void RenderPlotBox(ImDrawList* draw_list, const ImPlot3DPlot& plot) {
     // Get plot parameters
-    const ImRect& plot_area = plot.PlotRect;
     const ImPlot3DQuat& rotation = plot.Rotation;
     ImPlot3DPoint range_min = plot.RangeMin();
     ImPlot3DPoint range_max = plot.RangeMax();
-    ImPlot3DPoint range_center = plot.RangeCenter();
 
     // Compute active faces
     bool active_faces[3];
@@ -1069,11 +1082,11 @@ double NiceNum(double x, bool round) {
     return nf * ImPow(10.0, expv);
 }
 
-void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, ImPlot3DFormatter formatter, void* formatter_data) {
+void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, float pixels, ImPlot3DFormatter formatter, void* formatter_data) {
     if (range.Min == range.Max)
         return;
-    const int nMinor = 5;
-    const int nMajor = 3;
+    const int nMinor = ImMin(ImMax(1, (int)IM_ROUND(pixels / 30.0f)), 5);
+    const int nMajor = ImMax(2, (int)IM_ROUND(pixels / 80.0f));
     const int max_ticks_labels = 7;
     const double nice_range = NiceNum(range.Size() * 0.99, false);
     const double interval = NiceNum(nice_range / (nMajor - 1), true);
@@ -1081,10 +1094,9 @@ void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, ImPlot3
     const double graphmax = ceil(range.Max / interval) * interval;
     bool first_major_set = false;
     int first_major_idx = 0;
-    const int idx0 = ticker.TickCount(); // ticker may have user custom ticks
-    ImVec2 total_size(0, 0);
+    const int idx0 = ticker.TickCount(); // Ticker may have user custom ticks
     for (double major = graphmin; major < graphmax + 0.5 * interval; major += interval) {
-        // is this zero? combat zero formatting issues
+        // Is this zero? combat zero formatting issues
         if (major - interval < 0 && major + interval > 0)
             major = 0;
         if (range.Contains((float)major)) {
@@ -1092,12 +1104,12 @@ void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, ImPlot3
                 first_major_idx = ticker.TickCount();
                 first_major_set = true;
             }
-            total_size += ticker.AddTick(major, true, true, formatter, formatter_data).LabelSize;
+            ticker.AddTick(major, true, true, formatter, formatter_data);
         }
         for (int i = 1; i < nMinor; ++i) {
             double minor = major + i * interval / nMinor;
             if (range.Contains((float)minor)) {
-                total_size += ticker.AddTick(minor, false, true, formatter, formatter_data).LabelSize;
+                ticker.AddTick(minor, false, true, formatter, formatter_data);
             }
         }
     }
@@ -1108,6 +1120,15 @@ void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, ImPlot3
             ticker.Ticks[i].ShowLabel = false;
         for (int i = first_major_idx + 1; i < ticker.TickCount(); i += 2)
             ticker.Ticks[i].ShowLabel = false;
+    }
+}
+
+void AddTicksCustom(const double* values, const char* const labels[], int n, ImPlot3DTicker& ticker, ImPlot3DFormatter formatter, void* data) {
+    for (int i = 0; i < n; ++i) {
+        if (labels != nullptr)
+            ticker.AddTick(values[i], false, true, labels[i]);
+        else
+            ticker.AddTick(values[i], false, true, formatter, data);
     }
 }
 
@@ -1204,7 +1225,6 @@ void ShowAxisContextMenu(ImPlot3DAxis& axis) {
 }
 
 void ShowPlaneContextMenu(ImPlot3DPlot& plot, int plane_idx) {
-    char buf[16] = {};
     for (int i = 0; i < 3; i++) {
         if (i == plane_idx)
             continue;
@@ -1232,6 +1252,22 @@ void ShowPlotContextMenu(ImPlot3DPlot& plot) {
     }
 
     ImGui::Separator();
+
+    if ((ImGui::BeginMenu("Box"))) {
+        ImGui::PushItemWidth(75);
+        float temp_scale[3] = {plot.BoxScale[0], plot.BoxScale[1], plot.BoxScale[2]};
+        if (ImGui::DragFloat("Scale X", &temp_scale[0], 0.01f, 0.1f, 3.0f))
+            plot.BoxScale[0] = ImMax(temp_scale[0], 0.01f);
+        if (ImGui::DragFloat("Scale Y", &temp_scale[1], 0.01f, 0.1f, 3.0f))
+            plot.BoxScale[1] = ImMax(temp_scale[1], 0.01f);
+        if (ImGui::DragFloat("Scale Z", &temp_scale[2], 0.01f, 0.1f, 3.0f))
+            plot.BoxScale[2] = ImMax(temp_scale[2], 0.01f);
+        ImGui::PopItemWidth();
+        ImGui::EndMenu();
+    }
+
+    ImGui::Separator();
+
     if ((ImGui::BeginMenu("Legend"))) {
         if (ShowLegendContextMenu(plot.Items.Legend, !ImPlot3D::ImHasFlag(plot.Flags, ImPlot3DFlags_NoLegend)))
             ImFlipFlag(plot.Flags, ImPlot3DFlags_NoLegend);
@@ -1319,6 +1355,11 @@ bool BeginPlot(const char* title_id, const ImVec2& size, ImPlot3DFlags flags) {
     // Reset legend
     plot.Items.Legend.Reset();
 
+    // Reset axes
+    for (int i = 0; i < ImAxis3D_COUNT; ++i) {
+        plot.Axes[i].Reset();
+    }
+
     // Push frame rect clipping
     ImGui::PushClipRect(plot.FrameRect.Min, plot.FrameRect.Max, true);
     plot.DrawList._Flags = window->DrawList->Flags;
@@ -1381,9 +1422,8 @@ void EndPlot() {
 
     // Plane context menus
     for (int i = 0; i < 3; i++) {
-        ImPlot3DAxis& axis = plot.Axes[i];
         if (ImGui::BeginPopup(plane_contexts[i])) {
-            ImGui::Text(plane_labels[i]);
+            ImGui::Text("%s", plane_labels[i]);
             ImGui::Separator();
             ShowPlaneContextMenu(plot, i);
             ImGui::EndPopup();
@@ -1452,6 +1492,31 @@ void SetupAxisFormat(ImAxis3D idx, ImPlot3DFormatter formatter, void* data) {
     axis.FormatterData = data;
 }
 
+void SetupAxisTicks(ImAxis3D idx, const double* values, int n_ticks, const char* const labels[], bool keep_default) {
+    ImPlot3DContext& gp = *GImPlot3D;
+    IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
+                         "Setup needs to be called after BeginPlot and before any setup locking functions (e.g. PlotX)!");
+    ImPlot3DPlot& plot = *gp.CurrentPlot;
+    ImPlot3DAxis& axis = plot.Axes[idx];
+    axis.ShowDefaultTicks = keep_default;
+    AddTicksCustom(values,
+                   labels,
+                   n_ticks,
+                   axis.Ticker,
+                   axis.Formatter ? axis.Formatter : Formatter_Default,
+                   (axis.Formatter && axis.FormatterData) ? axis.FormatterData : (void*)IMPLOT3D_LABEL_FORMAT);
+}
+
+void SetupAxisTicks(ImAxis3D idx, double v_min, double v_max, int n_ticks, const char* const labels[], bool keep_default) {
+    ImPlot3DContext& gp = *GImPlot3D;
+    IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
+                         "Setup needs to be called after BeginPlot and before any setup locking functions (e.g. PlotX)!");
+    n_ticks = n_ticks < 2 ? 2 : n_ticks;
+    ImVector<double> temp;
+    FillRange(temp, n_ticks, v_min, v_max);
+    SetupAxisTicks(idx, temp.Data, n_ticks, labels, keep_default);
+}
+
 void SetupAxes(const char* x_label, const char* y_label, const char* z_label, ImPlot3DAxisFlags x_flags, ImPlot3DAxisFlags y_flags, ImPlot3DAxisFlags z_flags) {
     SetupAxis(ImAxis3D_X, x_label, x_flags);
     SetupAxis(ImAxis3D_Y, y_label, y_flags);
@@ -1464,6 +1529,15 @@ void SetupAxesLimits(double x_min, double x_max, double y_min, double y_max, dou
     SetupAxisLimits(ImAxis3D_Z, z_min, z_max, cond);
     if (cond == ImPlot3DCond_Once)
         GImPlot3D->CurrentPlot->FitThisFrame = false;
+}
+
+void SetupBoxScale(float x, float y, float z) {
+    ImPlot3DContext& gp = *GImPlot3D;
+    IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
+                         "SetupBoxScale() needs to be called after BeginPlot() and before any setup locking functions (e.g. PlotX)!");
+    IM_ASSERT_USER_ERROR(x > 0.0f && y > 0.0f && z > 0.0f, "SetupBoxScale() requires all aspect ratios to be greater than 0!");
+    ImPlot3DPlot& plot = *gp.CurrentPlot;
+    plot.BoxScale = ImPlot3DPoint(x, y, z);
 }
 
 void SetupLegend(ImPlot3DLocation location, ImPlot3DLegendFlags flags) {
@@ -1553,21 +1627,21 @@ ImPlot3DPoint PixelsToPlotPlane(const ImVec2& pix, ImPlane3D plane, bool mask) {
         return O + D * t;
     };
 
-    // Helper lambda to check if point P is within the plot box
-    auto InRange = [&](const ImPlot3DPoint& P) {
-        return P.x >= -0.5 && P.x <= 0.5 &&
-               P.y >= -0.5 && P.y <= 0.5 &&
-               P.z >= -0.5 && P.z <= 0.5;
-    };
-
     // Compute which plane to intersect with
     bool active_faces[3];
     ComputeActiveFaces(active_faces, plot.Rotation, plot.Axes);
 
     // Calculate intersection point with the planes
-    ImPlot3DPoint P = IntersectPlane(active_faces[plane] ? 0.5f : -0.5f);
+    ImPlot3DPoint P = IntersectPlane(active_faces[plane] ? 0.5f * plot.BoxScale[plane] : -0.5f * plot.BoxScale[plane]);
     if (P.IsNaN())
         return P;
+
+    // Helper lambda to check if point P is within the plot box
+    auto InRange = [&](const ImPlot3DPoint& P) {
+        return P.x >= -0.5f * plot.BoxScale.x && P.x <= 0.5f * plot.BoxScale.x &&
+               P.y >= -0.5f * plot.BoxScale.y && P.y <= 0.5f * plot.BoxScale.y &&
+               P.z >= -0.5f * plot.BoxScale.z && P.z <= 0.5f * plot.BoxScale.z;
+    };
 
     // Handle mask (if one of the intersections is out of range, set it to NAN)
     if (mask) {
@@ -1627,8 +1701,13 @@ ImPlot3DPoint PlotToNDC(const ImPlot3DPoint& point) {
     SetupLock();
 
     ImPlot3DPoint ndc_point;
-    for (int i = 0; i < 3; i++)
-        ndc_point[i] = plot.Axes[i].PlotToNDC(point[i]);
+    for (int i = 0; i < 3; i++) {
+        ImPlot3DAxis& axis = plot.Axes[i];
+        float ndc_range = 0.5f * plot.BoxScale[i];
+        float t = (point[i] - axis.Range.Min) / (axis.Range.Max - axis.Range.Min);
+        t *= plot.BoxScale[i];
+        ndc_point[i] = ImPlot3D::ImHasFlag(axis.Flags, ImPlot3DAxisFlags_Invert) ? (ndc_range - t) : (t - ndc_range);
+    }
     return ndc_point;
 }
 
@@ -1639,8 +1718,13 @@ ImPlot3DPoint NDCToPlot(const ImPlot3DPoint& point) {
     SetupLock();
 
     ImPlot3DPoint plot_point;
-    for (int i = 0; i < 3; i++)
-        plot_point[i] = plot.Axes[i].NDCToPlot(point[i]);
+    for (int i = 0; i < 3; i++) {
+        ImPlot3DAxis& axis = plot.Axes[i];
+        float ndc_range = 0.5f * plot.BoxScale[i];
+        float t = ImPlot3D::ImHasFlag(axis.Flags, ImPlot3DAxisFlags_Invert) ? (ndc_range - point[i]) : (point[i] + ndc_range);
+        t /= plot.BoxScale[i];
+        plot_point[i] = axis.Range.Min + t * (axis.Range.Max - axis.Range.Min);
+    }
     return plot_point;
 }
 
@@ -1650,9 +1734,8 @@ ImVec2 NDCToPixels(const ImPlot3DPoint& point) {
     ImPlot3DPlot& plot = *gp.CurrentPlot;
     SetupLock();
 
-    float zoom = ImMin(plot.PlotRect.GetWidth(), plot.PlotRect.GetHeight()) / 1.8f;
     ImVec2 center = plot.PlotRect.GetCenter();
-    ImPlot3DPoint point_pix = zoom * (plot.Rotation * point);
+    ImPlot3DPoint point_pix = plot.GetBoxZoom() * (plot.Rotation * point);
     point_pix.y *= -1.0f; // Invert y-axis
     point_pix.x += center.x;
     point_pix.y += center.y;
@@ -1667,7 +1750,7 @@ ImPlot3DRay PixelsToNDCRay(const ImVec2& pix) {
     SetupLock();
 
     // Calculate zoom factor and plot center
-    float zoom = ImMin(plot.PlotRect.GetWidth(), plot.PlotRect.GetHeight()) / 1.8f;
+    float zoom = plot.GetBoxZoom();
     ImVec2 center = plot.PlotRect.GetCenter();
 
     // Undo screen transformations to get back to NDC space
@@ -1689,7 +1772,6 @@ ImPlot3DRay PixelsToNDCRay(const ImVec2& pix) {
 ImPlot3DRay NDCRayToPlotRay(const ImPlot3DRay& ray) {
     ImPlot3DContext& gp = *GImPlot3D;
     IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr, "NDCRayToPlotRay() needs to be called between BeginPlot() and EndPlot()!");
-    ImPlot3DPlot& plot = *gp.CurrentPlot;
     SetupLock();
 
     // Convert NDC origin and a point along the ray to plot coordinates
@@ -1769,17 +1851,16 @@ void HandleInput(ImPlot3DPlot& plot) {
 
     // Check which axes should be transformed (fit/zoom/translate)
     bool any_axis_held = plot.Axes[0].Held || plot.Axes[1].Held || plot.Axes[2].Held;
-    static bool transform_axis[3] = {false, false, false};
     if (!any_axis_held) {
         // Only update the transformation axes if the user is not already performing a transformation
-        transform_axis[0] = transform_axis[1] = transform_axis[2] = false;
+        plot.Axes[0].Hovered = plot.Axes[1].Hovered = plot.Axes[2].Hovered = false;
         if (hovered_axis != -1) {
-            transform_axis[hovered_axis] = true;
+            plot.Axes[hovered_axis].Hovered = true;
         } else if (hovered_plane != -1) {
-            transform_axis[(hovered_plane + 1) % 3] = true;
-            transform_axis[(hovered_plane + 2) % 3] = true;
+            plot.Axes[(hovered_plane + 1) % 3].Hovered = true;
+            plot.Axes[(hovered_plane + 2) % 3].Hovered = true;
         } else {
-            transform_axis[0] = transform_axis[1] = transform_axis[2] = true;
+            plot.Axes[0].Hovered = plot.Axes[1].Hovered = plot.Axes[2].Hovered = true;
         }
     }
 
@@ -1787,20 +1868,20 @@ void HandleInput(ImPlot3DPlot& plot) {
     ImPlane3D mouse_plane = ImPlane3D_XY;
     if (plane_2d != -1)
         mouse_plane = plane_2d;
-    else if (transform_axis[1] && transform_axis[2])
+    else if (plot.Axes[1].Hovered && plot.Axes[2].Hovered)
         mouse_plane = ImPlane3D_YZ;
-    else if (transform_axis[0] && transform_axis[2])
+    else if (plot.Axes[0].Hovered && plot.Axes[2].Hovered)
         mouse_plane = ImPlane3D_XZ;
-    else if (transform_axis[2])
+    else if (plot.Axes[2].Hovered)
         mouse_plane = ImPlane3D_YZ;
     ImVec2 mouse_pos = ImGui::GetMousePos();
     ImPlot3DPoint mouse_pos_plot = PixelsToPlotPlane(mouse_pos, mouse_plane, false);
 
     // Handle translation/zoom fit with double click
-    if (plot_clicked && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) || ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Middle)) {
+    if (plot_clicked && (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) || ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Middle))) {
         plot.FitThisFrame = true;
         for (int i = 0; i < 3; i++)
-            plot.Axes[i].FitThisFrame = transform_axis[i];
+            plot.Axes[i].FitThisFrame = plot.Axes[i].Hovered;
     }
 
     // Handle auto fit
@@ -1814,18 +1895,18 @@ void HandleInput(ImPlot3DPlot& plot) {
     if (plot.Held && ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
         ImVec2 delta(IO.MouseDelta.x, IO.MouseDelta.y);
 
-        if (transform_axis[0] && transform_axis[1] && transform_axis[2]) {
+        if (plot.Axes[0].Hovered && plot.Axes[1].Hovered && plot.Axes[2].Hovered) {
             // Perform unconstrained translation (translate on the viewer plane)
 
             // Compute delta_pixels in 3D (invert y-axis)
             ImPlot3DPoint delta_pixels(delta.x, -delta.y, 0.0f);
 
             // Convert delta to NDC space
-            float zoom = ImMin(plot.PlotRect.GetWidth(), plot.PlotRect.GetHeight()) / 1.8f;
+            float zoom = plot.GetBoxZoom();
             ImPlot3DPoint delta_NDC = plot.Rotation.Inverse() * (delta_pixels / zoom);
 
             // Convert delta to plot space
-            ImPlot3DPoint delta_plot = delta_NDC * (plot.RangeMax() - plot.RangeMin());
+            ImPlot3DPoint delta_plot = delta_NDC * (plot.RangeMax() - plot.RangeMin()) / plot.BoxScale;
 
             // Adjust delta for inverted axes
             for (int i = 0; i < 3; i++) {
@@ -1835,8 +1916,11 @@ void HandleInput(ImPlot3DPlot& plot) {
 
             // Adjust plot range to translate the plot
             for (int i = 0; i < 3; i++) {
-                if (transform_axis[i]) {
-                    plot.Axes[i].SetRange(plot.Axes[i].Range.Min - delta_plot[i], plot.Axes[i].Range.Max - delta_plot[i]);
+                if (plot.Axes[i].Hovered) {
+                    if (!plot.Axes[i].IsInputLocked()) {
+                        plot.Axes[i].SetMin(plot.Axes[i].Range.Min - delta_plot[i]);
+                        plot.Axes[i].SetMax(plot.Axes[i].Range.Max - delta_plot[i]);
+                    }
                     plot.Axes[i].Held = true;
                 }
                 // If no axis was held before (user started translating in this frame), set the held edge/plane indices
@@ -1845,7 +1929,7 @@ void HandleInput(ImPlot3DPlot& plot) {
                     plot.HeldPlaneIdx = hovered_plane_idx;
                 }
             }
-        } else if (transform_axis[0] || transform_axis[1] || transform_axis[2]) {
+        } else if (plot.Axes[0].Hovered || plot.Axes[1].Hovered || plot.Axes[2].Hovered) {
             // Translate along plane/axis
 
             // Mouse delta in pixels
@@ -1856,9 +1940,11 @@ void HandleInput(ImPlot3DPlot& plot) {
 
             // Apply translation to the selected axes
             for (int i = 0; i < 3; i++) {
-                if (transform_axis[i]) {
-                    plot.Axes[i].SetRange(plot.Axes[i].Range.Min - delta_plot[i],
-                                          plot.Axes[i].Range.Max - delta_plot[i]);
+                if (plot.Axes[i].Hovered) {
+                    if (!plot.Axes[i].IsInputLocked()) {
+                        plot.Axes[i].SetMin(plot.Axes[i].Range.Min - delta_plot[i]);
+                        plot.Axes[i].SetMax(plot.Axes[i].Range.Max - delta_plot[i]);
+                    }
                     plot.Axes[i].Held = true;
                 }
                 if (!any_axis_held) {
@@ -1985,8 +2071,11 @@ void HandleInput(ImPlot3DPlot& plot) {
             }
 
             // Set new range after zoom
-            if (transform_axis[i]) {
-                plot.Axes[i].SetRange(new_min, new_max);
+            if (plot.Axes[i].Hovered) {
+                if (!plot.Axes[i].IsInputLocked()) {
+                    plot.Axes[i].SetMin(new_min);
+                    plot.Axes[i].SetMax(new_max);
+                }
                 plot.Axes[i].Held = true;
             }
 
@@ -2060,8 +2149,10 @@ void SetupLock() {
     // Compute ticks
     for (int i = 0; i < 3; i++) {
         ImPlot3DAxis& axis = plot.Axes[i];
-        axis.Ticker.Reset();
-        axis.Locator(axis.Ticker, axis.Range, axis.Formatter, axis.FormatterData);
+        if (axis.ShowDefaultTicks) {
+            float pixels = plot.GetBoxZoom() * plot.BoxScale[i];
+            axis.Locator(axis.Ticker, axis.Range, pixels, axis.Formatter, axis.FormatterData);
+        }
     }
 
     // Render title
@@ -2115,22 +2206,22 @@ struct ImPlot3DStyleVarInfo {
 static const ImPlot3DStyleVarInfo GPlot3DStyleVarInfo[] =
     {
         // Item style
-        {ImGuiDataType_Float, 1, (ImU32)IM_OFFSETOF(ImPlot3DStyle, LineWeight)},   // ImPlot3DStyleVar_LineWeight
-        {ImGuiDataType_S32, 1, (ImU32)IM_OFFSETOF(ImPlot3DStyle, Marker)},         // ImPlot3DStyleVar_Marker
-        {ImGuiDataType_Float, 1, (ImU32)IM_OFFSETOF(ImPlot3DStyle, MarkerSize)},   // ImPlot3DStyleVar_MarkerSize
-        {ImGuiDataType_Float, 1, (ImU32)IM_OFFSETOF(ImPlot3DStyle, MarkerWeight)}, // ImPlot3DStyleVar_MarkerWeight
-        {ImGuiDataType_Float, 1, (ImU32)IM_OFFSETOF(ImPlot3DStyle, FillAlpha)},    // ImPlot3DStyleVar_FillAlpha
+        {ImGuiDataType_Float, 1, (ImU32)offsetof(ImPlot3DStyle, LineWeight)},   // ImPlot3DStyleVar_LineWeight
+        {ImGuiDataType_S32, 1, (ImU32)offsetof(ImPlot3DStyle, Marker)},         // ImPlot3DStyleVar_Marker
+        {ImGuiDataType_Float, 1, (ImU32)offsetof(ImPlot3DStyle, MarkerSize)},   // ImPlot3DStyleVar_MarkerSize
+        {ImGuiDataType_Float, 1, (ImU32)offsetof(ImPlot3DStyle, MarkerWeight)}, // ImPlot3DStyleVar_MarkerWeight
+        {ImGuiDataType_Float, 1, (ImU32)offsetof(ImPlot3DStyle, FillAlpha)},    // ImPlot3DStyleVar_FillAlpha
 
         // Plot style
-        {ImGuiDataType_Float, 2, (ImU32)IM_OFFSETOF(ImPlot3DStyle, PlotDefaultSize)}, // ImPlot3DStyleVar_Plot3DDefaultSize
-        {ImGuiDataType_Float, 2, (ImU32)IM_OFFSETOF(ImPlot3DStyle, PlotMinSize)},     // ImPlot3DStyleVar_Plot3DMinSize
-        {ImGuiDataType_Float, 2, (ImU32)IM_OFFSETOF(ImPlot3DStyle, PlotPadding)},     // ImPlot3DStyleVar_Plot3DPadding
+        {ImGuiDataType_Float, 2, (ImU32)offsetof(ImPlot3DStyle, PlotDefaultSize)}, // ImPlot3DStyleVar_Plot3DDefaultSize
+        {ImGuiDataType_Float, 2, (ImU32)offsetof(ImPlot3DStyle, PlotMinSize)},     // ImPlot3DStyleVar_Plot3DMinSize
+        {ImGuiDataType_Float, 2, (ImU32)offsetof(ImPlot3DStyle, PlotPadding)},     // ImPlot3DStyleVar_Plot3DPadding
 
         // Label style
-        {ImGuiDataType_Float, 2, (ImU32)IM_OFFSETOF(ImPlot3DStyle, LabelPadding)},       // ImPlot3DStyleVar_LabelPaddine
-        {ImGuiDataType_Float, 2, (ImU32)IM_OFFSETOF(ImPlot3DStyle, LegendPadding)},      // ImPlot3DStyleVar_LegendPadding
-        {ImGuiDataType_Float, 2, (ImU32)IM_OFFSETOF(ImPlot3DStyle, LegendInnerPadding)}, // ImPlot3DStyleVar_LegendInnerPadding
-        {ImGuiDataType_Float, 2, (ImU32)IM_OFFSETOF(ImPlot3DStyle, LegendSpacing)},      // ImPlot3DStyleVar_LegendSpacing
+        {ImGuiDataType_Float, 2, (ImU32)offsetof(ImPlot3DStyle, LabelPadding)},       // ImPlot3DStyleVar_LabelPaddine
+        {ImGuiDataType_Float, 2, (ImU32)offsetof(ImPlot3DStyle, LegendPadding)},      // ImPlot3DStyleVar_LegendPadding
+        {ImGuiDataType_Float, 2, (ImU32)offsetof(ImPlot3DStyle, LegendInnerPadding)}, // ImPlot3DStyleVar_LegendInnerPadding
+        {ImGuiDataType_Float, 2, (ImU32)offsetof(ImPlot3DStyle, LegendSpacing)},      // ImPlot3DStyleVar_LegendSpacing
 };
 
 static const ImPlot3DStyleVarInfo* GetPlotStyleVarInfo(ImPlot3DStyleVar idx) {
@@ -2956,7 +3047,6 @@ void ImDrawList3D::SortedMoveToImGuiDrawList() {
     // Copy indices with triangle sorting based on distance from viewer
     ImDrawIdx* idx_out = draw_list._IdxWritePtr;
     ImDrawIdx* idx_in = IdxBuffer.Data;
-    int triangles_added = 0;
     for (int i = 0; i < tri_count; i++) {
         int tri_i = tris[i].tri_idx;
         int base_idx = tri_i * 3;
@@ -2973,7 +3063,6 @@ void ImDrawList3D::SortedMoveToImGuiDrawList() {
         idx_out[2] = (ImDrawIdx)(i2 + idx_offset);
 
         idx_out += 3;
-        triangles_added++;
     }
     draw_list._IdxWritePtr = idx_out;
 
@@ -3017,16 +3106,6 @@ void ImPlot3DAxis::ApplyFit() {
     FitExtents.Max = -HUGE_VAL;
 }
 
-float ImPlot3DAxis::PlotToNDC(float value) const {
-    float t = (value - Range.Min) / (Range.Max - Range.Min);
-    return ImPlot3D::ImHasFlag(Flags, ImPlot3DAxisFlags_Invert) ? (0.5f - t) : (t - 0.5f);
-}
-
-float ImPlot3DAxis::NDCToPlot(float value) const {
-    float t = ImPlot3D::ImHasFlag(Flags, ImPlot3DAxisFlags_Invert) ? (0.5f - value) : (value + 0.5f);
-    return Range.Min + t * (Range.Max - Range.Min);
-}
-
 //-----------------------------------------------------------------------------
 // [SECTION] ImPlot3DPlot
 //-----------------------------------------------------------------------------
@@ -3057,6 +3136,10 @@ void ImPlot3DPlot::SetRange(const ImPlot3DPoint& min, const ImPlot3DPoint& max) 
     Axes[0].SetRange(min.x, max.x);
     Axes[1].SetRange(min.y, max.y);
     Axes[2].SetRange(min.z, max.z);
+}
+
+float ImPlot3DPlot::GetBoxZoom() const {
+    return ImMin(PlotRect.GetWidth(), PlotRect.GetHeight()) / 1.8f;
 }
 
 //-----------------------------------------------------------------------------

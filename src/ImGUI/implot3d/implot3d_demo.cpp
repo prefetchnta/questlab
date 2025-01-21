@@ -15,10 +15,16 @@
 // [SECTION] User Namespace
 // [SECTION] Helpers
 // [SECTION] Plots
+// [SECTION] Axes
 // [SECTION] Custom
 // [SECTION] Demo Window
 // [SECTION] Style Editor
 // [SECTION] User Namespace Implementation
+
+// We define this to avoid accidentally using the deprecated API
+#ifndef IMPLOT_DISABLE_OBSOLETE_FUNCTIONS
+#define IMPLOT_DISABLE_OBSOLETE_FUNCTIONS
+#endif
 
 #include "implot3d.h"
 #include "implot3d_internal.h"
@@ -122,7 +128,7 @@ void DemoScatterPlots() {
         ImPlot3D::PlotScatter("Data 1", xs1, ys1, zs1, 100);
         ImPlot3D::PushStyleVar(ImPlot3DStyleVar_FillAlpha, 0.25f);
         ImPlot3D::SetNextMarkerStyle(ImPlot3DMarker_Square, 6, ImPlot3D::GetColormapColor(1), IMPLOT3D_AUTO, ImPlot3D::GetColormapColor(1));
-        ImPlot3D::PlotScatter("Data 2", xs2, ys2, zs1, 50);
+        ImPlot3D::PlotScatter("Data 2", xs2, ys2, zs2, 50);
         ImPlot3D::PopStyleVar();
         ImPlot3D::EndPlot();
     }
@@ -536,6 +542,53 @@ void DemoNaNValues() {
 }
 
 //-----------------------------------------------------------------------------
+// [SECTION] Axes
+//-----------------------------------------------------------------------------
+
+void DemoBoxScale() {
+    constexpr int N = 100;
+    float xs[N], ys[N], zs[N];
+    for (int i = 0; i < N; ++i) {
+        float t = i / (float)(N - 1);
+        xs[i] = sinf(t * 2.0f * IM_PI);
+        ys[i] = cosf(t * 4.0f * IM_PI);
+        zs[i] = t * 2.0f - 1.0f;
+    }
+
+    static float scale[3] = {1.0f, 1.0f, 1.0f};
+    ImGui::SliderFloat3("Box Scale", scale, 0.1f, 2.0f, "%.2f");
+
+    if (ImPlot3D::BeginPlot("##BoxScale")) {
+        ImPlot3D::SetupBoxScale(scale[0], scale[1], scale[2]);
+        ImPlot3D::PlotLine("3D Curve", xs, ys, zs, N);
+        ImPlot3D::EndPlot();
+    }
+}
+
+void DemoTickLabels() {
+    static bool custom_ticks = false;
+    static bool custom_labels = true;
+    ImGui::Checkbox("Show Custom Ticks", &custom_ticks);
+    if (custom_ticks) {
+        ImGui::SameLine();
+        ImGui::Checkbox("Show Custom Labels", &custom_labels);
+    }
+    const double pi = 3.14;
+    const char* pi_str[] = {"PI"};
+    static double letters_ticks[] = {0.0, 0.2, 0.4, 0.6, 0.8, 1.0};
+    static const char* letters_labels[] = {"A", "B", "C", "D", "E", "F"};
+    if (ImPlot3D::BeginPlot("##Ticks")) {
+        ImPlot3D::SetupAxesLimits(2, 5, 0, 1, 0, 1);
+        if (custom_ticks) {
+            ImPlot3D::SetupAxisTicks(ImAxis3D_X, &pi, 1, custom_labels ? pi_str : nullptr, true);
+            ImPlot3D::SetupAxisTicks(ImAxis3D_Y, letters_ticks, 6, custom_labels ? letters_labels : nullptr, false);
+            ImPlot3D::SetupAxisTicks(ImAxis3D_Z, 0, 1, 6, custom_labels ? letters_labels : nullptr, false);
+        }
+        ImPlot3D::EndPlot();
+    }
+}
+
+//-----------------------------------------------------------------------------
 // [SECTION] Custom
 //-----------------------------------------------------------------------------
 
@@ -719,6 +772,11 @@ void ShowDemoWindow(bool* p_open) {
             DemoHeader("Realtime Plots", DemoRealtimePlots);
             DemoHeader("Markers and Text", DemoMarkersAndText);
             DemoHeader("NaN Values", DemoNaNValues);
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Axes")) {
+            DemoHeader("Box Scale", DemoBoxScale);
+            DemoHeader("Tick Labels", DemoTickLabels);
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Custom")) {
