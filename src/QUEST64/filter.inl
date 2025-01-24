@@ -1164,3 +1164,153 @@ _func_out1:
     CR_NOUSE(netw);
     return (TRUE);
 }
+
+/*
+---------------------------------------
+    NCNN YOLO 参数解析
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_yolo_load_params (
+  __CR_OT__ sNCNN_YOLO_Param&   prms,
+  __CR_IN__ const ansi_t*       json
+    )
+{
+    cJSON*  root;
+    sint_t  btmp;
+
+    root = cJSON_Parse(json);
+    if (root == NULL)
+        return (FALSE);
+    if (CJSON_STRING(input_layer) == NULL)
+        goto _failure1;
+    if (CJSON_STRING(output_layer) == NULL)
+        goto _failure2;
+    CJSON_INTG(thread_num, 0);
+    CJSON_BOOL(light_mode, FALSE);
+    CJSON_INTG(target_size, 416);
+    CJSON_INTG(yolo_version, 2);
+    CJSON_FP32(prob_threshold, 0.6f);
+    if (!CJSON_VECTOR3(mean_vals))
+        prms.mean_vals[0] = prms.mean_vals[1] = prms.mean_vals[2] = -1;
+    if (!CJSON_VECTOR3(norm_vals))
+        prms.norm_vals[0] = prms.norm_vals[1] = prms.norm_vals[2] = -1;
+    cJSON_Delete(root);
+    return (TRUE);
+
+_failure2:
+    mem_free(prms.input_layer);
+_failure1:
+    cJSON_Delete(root);
+    return (FALSE);
+}
+
+/*
+---------------------------------------
+    NCNN YOLO 识别器
+---------------------------------------
+*/
+static bool_t
+quest64_ncnn_yolo (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sINIu*  line;
+    uint_t  ngpu;
+    uint_t  bprm;
+    uint_t  vlkn;
+    uint_t  bf16;
+    ansi_t* text;
+    ansi_t* file;
+    ansi_t* name;
+    ansi_t* noop;
+
+    /* 参数解析 */
+    name = xml_attr_stringU("model", param);
+    if (name == NULL)
+        goto _func_out1;
+    line = NULL;
+    noop = xml_attr_stringU("v5focus", param);
+    ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
+    bprm = xml_attr_intxU("bparam", FALSE, param);
+    vlkn = xml_attr_intxU("vulkan", TRUE, param);
+    bf16 = xml_attr_intxU("float16", FALSE, param);
+
+    sNCNN_YOLO_Param    prms;
+
+    file = xml_attr_stringU("params", param);
+    if (file == NULL)
+        goto _func_out2;
+    text = file_load_as_strA(file);
+    mem_free(file);
+    if (text == NULL)
+        goto _func_out2;
+    if (!quest64_ncnn_yolo_load_params(prms, text)) {
+        mem_free(text);
+        goto _func_out2;
+    }
+    mem_free(text);
+
+    /* 加载标签文件 */
+    file = str_fmtA("%s.label", name);
+    if (file != NULL) {
+        text = file_load_as_strA(file);
+        mem_free(file);
+        if (text != NULL) {
+            line = ini_parseU(text);
+            mem_free(text);
+        }
+    }
+
+    yolo_ncnn_t nndt;
+
+    nndt = imglab_ncnn_yolo_new(ngpu);
+    if (nndt == NULL)
+        goto _func_out3;
+    if (noop == NULL) {
+        if (!imglab_ncnn_yolo_load(nndt, name, "YoloV5Focus",
+                                    !!bprm, !!vlkn, !!bf16))
+            goto _func_out4;
+    }
+    else {
+        if (!imglab_ncnn_yolo_load(nndt, name, noop, !!bprm, !!vlkn, !!bf16))
+            goto _func_out4;
+    }
+
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    /* 执行 YOLO 识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL)
+        goto _func_out4;
+
+    size_t          cnts;
+    sRECT_OBJECT*   objs;
+
+    objs = imglab_ncnn_yolo_doit(nndt, cvmat, &prms, &cnts);
+    if (objs == NULL)
+        goto _func_out5;
+
+    /* 显示识别结果 */
+    quest64_draw_objects(cvmat, &dest, objs, cnts, line);
+    mem_free(objs);
+_func_out5:
+    imglab_mat_del(cvmat);
+_func_out4:
+    imglab_ncnn_yolo_del(nndt);
+_func_out3:
+    if (line != NULL)
+        ini_closeU(line);
+    mem_free(prms.input_layer);
+    mem_free(prms.output_layer);
+_func_out2:
+    TRY_FREE(noop);
+    mem_free(name);
+_func_out1:
+    CR_NOUSE(netw);
+    return (TRUE);
+}
