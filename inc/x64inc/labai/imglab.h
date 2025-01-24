@@ -519,7 +519,7 @@ typedef struct
         sint_t  thread_num;
         bool_t  light_mode;
         sint_t  target_size;
-        sint_t  net_version;
+        sint_t  net_version;    /* 1, 2, 3 */
         fp32_t  prob_threshold;
         fp32_t  mean_vals[3];
         fp32_t  norm_vals[3];
@@ -532,5 +532,38 @@ CR_API sRECT_OBJECT*
 imglab_ncnn_mbntssd_doit (mbntssd_ncnn_t nnet, ximage_t mat,
                           const sNCNN_MobileNetSSD_Param *param,
                           size_t *count);
+/* NCNN YOLO 识别类型 */
+typedef void_t*     yolo_ncnn_t;
+
+/* NCNN YOLO 识别对象 */
+CR_API yolo_ncnn_t
+imglab_ncnn_yolo_new (sint_t vk_gpu);
+
+CR_API void_t
+imglab_ncnn_yolo_del (yolo_ncnn_t nnet);
+
+CR_API bool_t
+imglab_ncnn_yolo_load (yolo_ncnn_t nnet, const ansi_t *name,
+                    const ansi_t *v5focus, bool_t bin_param, bool_t use_vulkan,
+                                bool_t use_bf16 CR_DEFAULT(FALSE));
+/* NCNN YOLO 识别参数 */
+typedef struct
+{
+        sint_t  thread_num;
+        bool_t  light_mode;
+        sint_t  target_size;
+        sint_t  yolo_version;   /* 2, 3, 4 */
+        fp32_t  prob_threshold;
+        fp32_t  mean_vals[3];
+        fp32_t  norm_vals[3];
+        cstr_t  input_layer;
+        cstr_t  output_layer;
+
+} sNCNN_YOLO_Param;
+
+CR_API sRECT_OBJECT*
+imglab_ncnn_yolo_doit (yolo_ncnn_t nnet, ximage_t mat,
+                       const sNCNN_YOLO_Param *param,
+                       size_t *count);
 
 #endif  /* !__AI_IMGLAB_H__ */

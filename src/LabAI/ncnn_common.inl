@@ -136,12 +136,6 @@ nms_sorted_bboxes(const std::vector<Object>& objects,
 class Noop : public ncnn::Layer {};
 DEFINE_LAYER_CREATOR(Noop)
 
-template<class T>
-const T& clamp(const T& v, const T& lo, const T& hi)
-{
-    return v < lo ? lo : hi < v ? hi : v;
-}
-
 static inline float sigmoid(float x)
 {
     return 1.0f / (1.0f + exp(-x));
