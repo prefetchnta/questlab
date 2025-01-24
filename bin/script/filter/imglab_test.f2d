@@ -48,6 +48,22 @@
             <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenetv3_ssdlite_voc" bparam="0" vulkan="1" float16="0"
                 params="script/filter/sNCNN_MobileNetV3_SSD_Param.json" />
 
+            <!-- NCNN YOLOv2 -->
+            <?quest64_ncnn_yolov2 vk_gpu="-1" model="source/ncnn/mobilenet_yolo" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_YOLOv2_Param.json" />
+
+            <!-- NCNN YOLOv3 -->
+            <?quest64_ncnn_yolov3 vk_gpu="-1" model="source/ncnn/mobilenetv2_yolov3" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_YOLOv3_Param.json" />
+
+            <!-- NCNN YOLOv4 -->
+            <?quest64_ncnn_yolov4 vk_gpu="-1" model="source/ncnn/yolov4-opt" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_YOLOv4_Param.json" />
+
+            <!-- NCNN YOLOv4 -->
+            <?quest64_ncnn_yolov4 vk_gpu="-1" model="source/ncnn/yolov4-tiny-opt" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_YOLOv4T_Param.json" />
+
         </filters>
     ]]></quest64_bridge>
 

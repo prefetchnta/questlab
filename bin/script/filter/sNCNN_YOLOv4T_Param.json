@@ -1,0 +1,11 @@
+{
+    "thread_num": 0,
+    "light_mode": 0,
+    "target_size": 416,
+    "yolo_version": 4,
+    "prob_threshold": 0.6,
+    "mean_vals": "[0, 0, 0]",
+    "norm_vals": "[0.0039215686, 0.0039215686, 0.0039215686]",
+    "input_layer": "data",
+    "output_layer": "output"
+}
