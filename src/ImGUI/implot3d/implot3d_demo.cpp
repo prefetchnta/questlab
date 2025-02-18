@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// ImPlot3D v0.1
+// ImPlot3D v0.2
 // implot3d_demo.cpp
 // Date: 2024-11-17
 // Author: Breno Cunha Queiroz (brenocq.com)
@@ -565,6 +565,52 @@ void DemoBoxScale() {
     }
 }
 
+void DemoBoxRotation() {
+    float origin[2] = {0.0f, 0.0f};
+    float axis[2] = {0.0f, 1.0f};
+
+    // Sliders for rotation angles
+    static float elevation = 45.0f;
+    static float azimuth = -135.0f;
+    static bool animate = false;
+    ImGui::Text("Rotation");
+    bool changed = false;
+    if (ImGui::SliderFloat("Elevation", &elevation, -90.0f, 90.0f, "%.1f degrees"))
+        changed = true;
+    if (ImGui::SliderFloat("Azimuth", &azimuth, -180.0f, 180.0f, "%.1f degrees"))
+        changed = true;
+    ImGui::Checkbox("Animate", &animate);
+
+    ImGui::Text("Initial Rotation");
+    ImGui::SameLine();
+    HelpMarker("The rotation will be reset to the initial rotation when you double right-click");
+    static float init_elevation = 45.0f;
+    static float init_azimuth = -135.0f;
+    ImGui::SliderFloat("Initial Elevation", &init_elevation, -90.0f, 90.0f, "%.1f degrees");
+    ImGui::SliderFloat("Initial Azimuth", &init_azimuth, -180.0f, 180.0f, "%.1f degrees");
+
+    if (ImPlot3D::BeginPlot("##BoxRotation")) {
+        ImPlot3D::SetupAxesLimits(-1, 1, -1, 1, -1, 1, ImPlot3DCond_Always);
+
+        // Set initial rotation
+        ImPlot3D::SetupBoxInitialRotation(init_elevation, init_azimuth);
+
+        // Set the rotation using the specified elevation and azimuth
+        if (changed)
+            ImPlot3D::SetupBoxRotation(elevation, azimuth, animate, ImPlot3DCond_Always);
+
+        // Plot axis lines
+        ImPlot3D::SetNextLineStyle(ImVec4(0.8f, 0.2f, 0.2f, 1));
+        ImPlot3D::PlotLine("X-Axis", axis, origin, origin, 2);
+        ImPlot3D::SetNextLineStyle(ImVec4(0.2f, 0.8f, 0.2f, 1));
+        ImPlot3D::PlotLine("Y-Axis", origin, axis, origin, 2);
+        ImPlot3D::SetNextLineStyle(ImVec4(0.2f, 0.2f, 0.8f, 1));
+        ImPlot3D::PlotLine("Z-Axis", origin, origin, axis, 2);
+
+        ImPlot3D::EndPlot();
+    }
+}
+
 void DemoTickLabels() {
     static bool custom_ticks = false;
     static bool custom_labels = true;
@@ -776,6 +822,7 @@ void ShowDemoWindow(bool* p_open) {
         }
         if (ImGui::BeginTabItem("Axes")) {
             DemoHeader("Box Scale", DemoBoxScale);
+            DemoHeader("Box Rotation", DemoBoxRotation);
             DemoHeader("Tick Labels", DemoTickLabels);
             ImGui::EndTabItem();
         }
@@ -973,6 +1020,7 @@ void ShowStyleEditor(ImPlot3DStyle* ref) {
             filter.Draw("Filter colors", ImGui::GetFontSize() * 16);
 
             static ImGuiColorEditFlags alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf;
+#if IMGUI_VERSION_NUM < 19173
             if (ImGui::RadioButton("Opaque", alpha_flags == ImGuiColorEditFlags_None))
                 alpha_flags = ImGuiColorEditFlags_None;
             ImGui::SameLine();
@@ -982,6 +1030,17 @@ void ShowStyleEditor(ImPlot3DStyle* ref) {
             if (ImGui::RadioButton("Both", alpha_flags == ImGuiColorEditFlags_AlphaPreviewHalf))
                 alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf;
             ImGui::SameLine();
+#else
+            if (ImGui::RadioButton("Opaque", alpha_flags == ImGuiColorEditFlags_AlphaOpaque))
+                alpha_flags = ImGuiColorEditFlags_AlphaOpaque;
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Alpha",  alpha_flags == ImGuiColorEditFlags_None))
+                alpha_flags = ImGuiColorEditFlags_None;
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Both",   alpha_flags == ImGuiColorEditFlags_AlphaPreviewHalf))
+                alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf;
+            ImGui::SameLine();
+#endif
             HelpMarker(
                 "In the color list:\n"
                 "Left-click on color square to open color picker,\n"

@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// ImPlot3D v0.1
+// ImPlot3D v0.2
 // implot3d_meshes.cpp
 // Date: 2024-12-07
 // Author: Breno Cunha Queiroz (brenocq.com)

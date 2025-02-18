@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// ImPlot3D v0.1
+// ImPlot3D v0.2
 // implot3d.h
 // Date: 2024-11-16
 // Author: Breno Cunha Queiroz (brenocq.com)
@@ -45,7 +45,7 @@
 #define IMPLOT3D_API
 #endif
 
-#define IMPLOT3D_VERSION "0.1"                // ImPlot3D version
+#define IMPLOT3D_VERSION "0.2"                // ImPlot3D version
 #define IMPLOT3D_AUTO -1                      // Deduce variable automatically
 #define IMPLOT3D_AUTO_COL ImVec4(0, 0, 0, -1) // Deduce color automatically
 #define IMPLOT3D_TMP template <typename T> IMPLOT3D_API
@@ -373,10 +373,22 @@ IMPLOT3D_API void SetupAxisTicks(ImAxis3D axis, double v_min, double v_max, int 
 // Sets the label and/or flags for primary X/Y/Z axes (shorthand for three calls to SetupAxis)
 IMPLOT3D_API void SetupAxes(const char* x_label, const char* y_label, const char* z_label, ImPlot3DAxisFlags x_flags = 0, ImPlot3DAxisFlags y_flags = 0, ImPlot3DAxisFlags z_flags = 0);
 
-// Sets the X/Y/Z axes range limits. If ImPlotCond_Always is used, the axes limits will be locked (shorthand for two calls to SetupAxisLimits)
+// Sets the X/Y/Z axes range limits. If ImPlot3DCond_Always is used, the axes limits will be locked (shorthand for two calls to SetupAxisLimits)
 IMPLOT3D_API void SetupAxesLimits(double x_min, double x_max, double y_min, double y_max, double z_min, double z_max, ImPlot3DCond cond = ImPlot3DCond_Once);
 
-// Sets the plot box X/Y/Z scale. A scale of 1.0 is the default. Values greater than 1.0 enlarge the plot, while values between 0.0 and 1.0 shrink it.
+// Sets the plot box rotation given the elevation and azimuth angles in degrees. If ImPlot3DCond_Always is used, the rotation will be locked
+IMPLOT3D_API void SetupBoxRotation(float elevation, float azimuth, bool animate = false, ImPlot3DCond cond = ImPlot3DCond_Once);
+
+// Sets the plot box rotation given a quaternion. If ImPlot3DCond_Always is used, the rotation will be locked
+IMPLOT3D_API void SetupBoxRotation(ImPlot3DQuat rotation, bool animate = false, ImPlot3DCond cond = ImPlot3DCond_Once);
+
+// Sets the plot box initial rotation given the elevation and azimuth angles in degrees. The initial rotation is the rotation the plot goes back to when a left mouse button double click happens
+IMPLOT3D_API void SetupBoxInitialRotation(float elevation, float azimuth);
+
+// Sets the plot box initial rotation given a quaternion. The initial rotation is the rotation the plot goes back to when a left mouse button double click happens
+IMPLOT3D_API void SetupBoxInitialRotation(ImPlot3DQuat rotation);
+
+// Sets the plot box X/Y/Z scale. A scale of 1.0 is the default. Values greater than 1.0 enlarge the plot, while values between 0.0 and 1.0 shrink it
 IMPLOT3D_API void SetupBoxScale(float x, float y, float z);
 
 IMPLOT3D_API void SetupLegend(ImPlot3DLocation location, ImPlot3DLegendFlags flags = 0);
@@ -393,7 +405,7 @@ IMPLOT3D_TMP void PlotTriangle(const char* label_id, const T* xs, const T* ys, c
 
 IMPLOT3D_TMP void PlotQuad(const char* label_id, const T* xs, const T* ys, const T* zs, int count, ImPlot3DQuadFlags flags = 0, int offset = 0, int stride = sizeof(T));
 
-// Plot the surface defined by a grid of vertices. The grid is defined by the x and y arrays, and the z array contains the height of each vertex. A total of x_count * y_count vertices are expected for each array. Leave #scale_min and #scale_max both at 0 for automatic color scaling, or set them to a predefined range.
+// Plot the surface defined by a grid of vertices. The grid is defined by the x and y arrays, and the z array contains the height of each vertex. A total of x_count * y_count vertices are expected for each array. Leave #scale_min and #scale_max both at 0 for automatic color scaling, or set them to a predefined range
 IMPLOT3D_TMP void PlotSurface(const char* label_id, const T* xs, const T* ys, const T* zs, int x_count, int y_count, double scale_min = 0.0, double scale_max = 0.0, ImPlot3DSurfaceFlags flags = 0, int offset = 0, int stride = sizeof(T));
 
 IMPLOT3D_API void PlotMesh(const char* label_id, const ImPlot3DPoint* vtx, const unsigned int* idx, int vtx_count, int idx_count, ImPlot3DMeshFlags flags = 0);
@@ -668,6 +680,9 @@ struct ImPlot3DQuat {
 
     // Set quaternion from two vectors
     IMPLOT3D_API static ImPlot3DQuat FromTwoVectors(const ImPlot3DPoint& v0, const ImPlot3DPoint& v1);
+
+    // Set quaternion given elevation and azimuth angles in radians
+    IMPLOT3D_API static ImPlot3DQuat FromElAz(float elevation, float azimuth);
 
     // Get quaternion length
     IMPLOT3D_API float Length() const;

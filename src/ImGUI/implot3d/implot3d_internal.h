@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// ImPlot3D v0.1
+// ImPlot3D v0.2
 // implot3d_internal.h
 // Date: 2024-11-17
 // Author: Breno Cunha Queiroz (brenocq.com)
@@ -486,6 +486,7 @@ struct ImPlot3DAxis {
         ShowDefaultTicks = true;
         FitExtents.Min = HUGE_VAL;
         FitExtents.Max = -HUGE_VAL;
+        RangeCond = ImPlot3DCond_None;
         Ticker.Reset();
     }
 
@@ -552,7 +553,9 @@ struct ImPlot3DPlot {
     ImRect CanvasRect; // Frame rectangle reduced by padding
     ImRect PlotRect;   // Bounding rectangle for the actual plot area
     // Rotation & axes & box
-    ImPlot3DQuat Rotation;  // Current rotation quaternion
+    ImPlot3DQuat InitialRotation; // Initial rotation quaternion
+    ImPlot3DQuat Rotation;        // Current rotation quaternion
+    ImPlot3DCond RotationCond;
     ImPlot3DAxis Axes[3];   // X, Y, Z axes
     ImPlot3DPoint BoxScale; // Scale factor for plot box X, Y, Z axes
     // Animation
@@ -579,7 +582,9 @@ struct ImPlot3DPlot {
         PreviousFlags = Flags = ImPlot3DFlags_None;
         JustCreated = true;
         Initialized = false;
+        InitialRotation = ImPlot3DQuat(-0.513269f, -0.212596f, -0.318184f, 0.76819f);
         Rotation = ImPlot3DQuat(0.0f, 0.0f, 0.0f, 1.0f);
+        RotationCond = ImPlot3DCond_None;
         for (int i = 0; i < 3; i++)
             Axes[i] = ImPlot3DAxis();
         BoxScale = ImPlot3DPoint(1.0f, 1.0f, 1.0f);
@@ -602,6 +607,7 @@ struct ImPlot3DPlot {
     }
     inline bool HasTitle() const { return !Title.empty() && !ImPlot3D::ImHasFlag(Flags, ImPlot3DFlags_NoTitle); }
     inline const char* GetTitle() const { return Title.Buf.Data; }
+    inline bool IsRotationLocked() const { return RotationCond == ImPlot3DCond_Always; }
 
     void ExtendFit(const ImPlot3DPoint& point);
     ImPlot3DPoint RangeMin() const;

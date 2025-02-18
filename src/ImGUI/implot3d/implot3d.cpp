@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// ImPlot3D v0.1
+// ImPlot3D v0.2
 // implot3d.cpp
 // Date: 2024-11-16
 // Author: Breno Cunha Queiroz (brenocq.com)
@@ -75,8 +75,6 @@ namespace ImPlot3D {
 #ifndef GImPlot3D
 ImPlot3DContext* GImPlot3D = nullptr;
 #endif
-
-static ImPlot3DQuat init_rotation = ImPlot3DQuat(-0.513269f, -0.212596f, -0.318184f, 0.76819f);
 
 ImPlot3DContext* CreateContext() {
     ImPlot3DContext* ctx = IM_NEW(ImPlot3DContext)();
@@ -893,7 +891,7 @@ void ComputeActiveFaces(bool* active_faces, const ImPlot3DQuat& rotation, const 
     };
 
     int num_deg = 0; // Check number of planes that are degenerate (seen as a line)
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; i++) {
         // Determine the active face based on the Z component
         if (fabs(rot_face_n[i].z) < 0.025) {
             // If aligned with the plane, choose the min face for bottom/left
@@ -1106,7 +1104,7 @@ void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, float p
             }
             ticker.AddTick(major, true, true, formatter, formatter_data);
         }
-        for (int i = 1; i < nMinor; ++i) {
+        for (int i = 1; i < nMinor; i++) {
             double minor = major + i * interval / nMinor;
             if (range.Contains((float)minor)) {
                 ticker.AddTick(minor, false, true, formatter, formatter_data);
@@ -1124,7 +1122,7 @@ void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, float p
 }
 
 void AddTicksCustom(const double* values, const char* const labels[], int n, ImPlot3DTicker& ticker, ImPlot3DFormatter formatter, void* data) {
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; i++) {
         if (labels != nullptr)
             ticker.AddTick(values[i], false, true, labels[i]);
         else
@@ -1315,7 +1313,7 @@ bool BeginPlot(const char* title_id, const ImVec2& size, ImPlot3DFlags flags) {
     plot.ID = ID;
     plot.JustCreated = just_created;
     if (just_created) {
-        plot.Rotation = init_rotation;
+        plot.Rotation = plot.InitialRotation;
         plot.FitThisFrame = true;
         for (int i = 0; i < 3; i++) {
             plot.Axes[i] = ImPlot3DAxis();
@@ -1327,6 +1325,7 @@ bool BeginPlot(const char* title_id, const ImVec2& size, ImPlot3DFlags flags) {
     plot.PreviousFlags = flags;
     plot.SetupLocked = false;
     plot.OpenContextThisFrame = false;
+    plot.RotationCond = ImPlot3DCond_None;
 
     // Populate title
     plot.SetTitle(title_id);
@@ -1356,9 +1355,8 @@ bool BeginPlot(const char* title_id, const ImVec2& size, ImPlot3DFlags flags) {
     plot.Items.Legend.Reset();
 
     // Reset axes
-    for (int i = 0; i < ImAxis3D_COUNT; ++i) {
+    for (int i = 0; i < ImAxis3D_COUNT; i++)
         plot.Axes[i].Reset();
-    }
 
     // Push frame rect clipping
     ImGui::PushClipRect(plot.FrameRect.Min, plot.FrameRect.Max, true);
@@ -1455,6 +1453,17 @@ void EndPlot() {
 // [SECTION] Setup
 //-----------------------------------------------------------------------------
 
+static const float ANIMATION_ANGULAR_VELOCITY = 2 * 3.1415f;
+
+float CalcAnimationTime(ImPlot3DQuat q0, ImPlot3DQuat q1) {
+    // Compute the angular distance between orientations
+    float dot_product = ImClamp(q0.Dot(q1), -1.0f, 1.0f);
+    float angle = 2.0f * acosf(fabsf(dot_product));
+
+    // Calculate animation time for constant the angular velocity
+    return angle / ANIMATION_ANGULAR_VELOCITY;
+}
+
 void SetupAxis(ImAxis3D idx, const char* label, ImPlot3DAxisFlags flags) {
     ImPlot3DContext& gp = *GImPlot3D;
     IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
@@ -1472,7 +1481,7 @@ void SetupAxis(ImAxis3D idx, const char* label, ImPlot3DAxisFlags flags) {
 void SetupAxisLimits(ImAxis3D idx, double min_lim, double max_lim, ImPlot3DCond cond) {
     ImPlot3DContext& gp = *GImPlot3D;
     IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
-                         "SetupAxisLimits() needs to be called after BeginPlot and before any setup locking functions (e.g. PlotX)!"); // get plot and axis
+                         "SetupAxisLimits() needs to be called after BeginPlot and before any setup locking functions (e.g. PlotX)!");
     ImPlot3DPlot& plot = *gp.CurrentPlot;
     ImPlot3DAxis& axis = plot.Axes[idx];
     if (!plot.Initialized || cond == ImPlot3DCond_Always) {
@@ -1529,6 +1538,51 @@ void SetupAxesLimits(double x_min, double x_max, double y_min, double y_max, dou
     SetupAxisLimits(ImAxis3D_Z, z_min, z_max, cond);
     if (cond == ImPlot3DCond_Once)
         GImPlot3D->CurrentPlot->FitThisFrame = false;
+}
+
+void SetupBoxRotation(float elevation, float azimuth, bool animate, ImPlot3DCond cond) {
+    // Convert angles from degrees to radians
+    float elev_rad = elevation * IM_PI / 180.0f;
+    float azim_rad = azimuth * IM_PI / 180.0f;
+
+    // Call quaternion SetupBoxRotation
+    SetupBoxRotation(ImPlot3DQuat::FromElAz(elev_rad, azim_rad), animate, cond);
+}
+
+void SetupBoxRotation(ImPlot3DQuat rotation, bool animate, ImPlot3DCond cond) {
+    ImPlot3DContext& gp = *GImPlot3D;
+    IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
+                         "SetupBoxRotation() needs to be called after BeginPlot and before any setup locking functions (e.g. PlotX)!");
+    ImPlot3DPlot& plot = *gp.CurrentPlot;
+
+    if (!plot.Initialized || cond == ImPlot3DCond_Always) {
+        if (!animate) {
+            plot.Rotation = rotation;
+            plot.AnimationTime = 0.0f; // Force any running rotation animation to stop
+        } else {
+            plot.RotationAnimationEnd = rotation;
+            plot.AnimationTime = CalcAnimationTime(plot.Rotation, plot.RotationAnimationEnd);
+        }
+        plot.RotationCond = cond;
+    }
+}
+
+void SetupBoxInitialRotation(float elevation, float azimuth) {
+    // Convert angles from degrees to radians
+    float elev_rad = elevation * IM_PI / 180.0f;
+    float azim_rad = azimuth * IM_PI / 180.0f;
+
+    // Call quaternion SetupBoxInitialRotation
+    SetupBoxInitialRotation(ImPlot3DQuat::FromElAz(elev_rad, azim_rad));
+}
+
+void SetupBoxInitialRotation(ImPlot3DQuat rotation) {
+    ImPlot3DContext& gp = *GImPlot3D;
+    IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
+                         "SetupBoxInitialRotation() needs to be called after BeginPlot and before any setup locking functions (e.g. PlotX)!");
+    ImPlot3DPlot& plot = *gp.CurrentPlot;
+
+    plot.InitialRotation = rotation;
 }
 
 void SetupBoxScale(float x, float y, float z) {
@@ -1795,7 +1849,6 @@ ImPlot3DRay NDCRayToPlotRay(const ImPlot3DRay& ray) {
 //-----------------------------------------------------------------------------
 
 static const float MOUSE_CURSOR_DRAG_THRESHOLD = 5.0f;
-static const float ANIMATION_ANGULAR_VELOCITY = 2 * 3.1415f;
 
 void HandleInput(ImPlot3DPlot& plot) {
     ImGuiIO& IO = ImGui::GetIO();
@@ -1962,12 +2015,12 @@ void HandleInput(ImPlot3DPlot& plot) {
         plot.ContextClick = false;
 
     // Handle reset rotation with left mouse double click
-    if (plot.Held && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Right)) {
+    if (plot.Held && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Right) && !plot.IsRotationLocked()) {
         plot.RotationAnimationEnd = plot.Rotation;
 
         // Calculate rotation to align the z-axis with the camera direction
         if (hovered_plane == -1) {
-            plot.RotationAnimationEnd = init_rotation;
+            plot.RotationAnimationEnd = plot.InitialRotation;
         } else {
             // Compute plane normal
             ImPlot3DPoint axis_normal = ImPlot3DPoint(0.0f, 0.0f, 0.0f);
@@ -2005,7 +2058,7 @@ void HandleInput(ImPlot3DPlot& plot) {
 
                 // Find the candidate with the maximum dot product
                 AxisAlignment* best_candidate = &candidates[0];
-                for (int i = 1; i < 4; ++i) {
+                for (int i = 1; i < 4; i++) {
                     if (candidates[i].dot > best_candidate->dot) {
                         best_candidate = &candidates[i];
                     }
@@ -2017,16 +2070,12 @@ void HandleInput(ImPlot3DPlot& plot) {
             }
         }
 
-        // Compute the angular distance between current and target rotation
-        float dot_product = ImClamp(plot.Rotation.Dot(plot.RotationAnimationEnd), -1.0f, 1.0f);
-        float angle = 2.0f * acosf(fabsf(dot_product));
-
-        // Calculate animation time for constant the angular velocity
-        plot.AnimationTime = angle / ANIMATION_ANGULAR_VELOCITY;
+        // Calculate animation time
+        plot.AnimationTime = CalcAnimationTime(plot.Rotation, plot.RotationAnimationEnd);
     }
 
     // Handle rotation with left mouse dragging
-    if (plot.Held && ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
+    if (plot.Held && ImGui::IsMouseDown(ImGuiMouseButton_Right) && !plot.IsRotationLocked()) {
         ImVec2 delta(IO.MouseDelta.x, IO.MouseDelta.y);
 
         // Map delta to rotation angles (in radians)
@@ -2424,7 +2473,7 @@ ImPlot3DColormap AddColormap(const char* name, const ImVec4* colormap, int size,
     IM_ASSERT_USER_ERROR(gp.ColormapData.GetIndex(name) == -1, "The colormap name has already been used!");
     ImVector<ImU32> buffer;
     buffer.resize(size);
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < size; i++)
         buffer[i] = ImGui::ColorConvertFloat4ToU32(colormap[i]);
     return gp.ColormapData.Append(name, buffer.Data, size, qual);
 }
@@ -2866,6 +2915,16 @@ ImPlot3DQuat ImPlot3DQuat::FromTwoVectors(const ImPlot3DPoint& v0, const ImPlot3
     q.w = ImCos(half_angle);
 
     return q;
+}
+
+ImPlot3DQuat ImPlot3DQuat::FromElAz(float elevation, float azimuth) {
+    // Create quaternions for azimuth and elevation
+    ImPlot3DQuat azimuth_quat(azimuth, ImPlot3DPoint(0.0f, 0.0f, 1.0f));     // Rotate around Z-axis
+    ImPlot3DQuat elevation_quat(elevation, ImPlot3DPoint(1.0f, 0.0f, 0.0f)); // Rotate around X-axis
+    ImPlot3DQuat zero_quat(-IM_PI / 2, ImPlot3DPoint(1.0f, 0.0f, 0.0f));     // Rotate to zero azimuth/elevation orientation
+
+    // Combine rotations
+    return elevation_quat * zero_quat * azimuth_quat;
 }
 
 float ImPlot3DQuat::Length() const {
