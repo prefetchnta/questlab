@@ -152,7 +152,7 @@ CR_API void_t   imglab_rocts_get (sPNT2 *pnt, xroct_t rct,
                                   uint_t count CR_DEFAULT(1));
 
 CR_API void_t   imglab_rocts_get2 (sRECT *box, fp32_t *angle,
-                            xroct_t rct, uint_t count CR_DEFAULT(1));
+                      xroct_t rct, uint_t count CR_DEFAULT(1));
 
 CR_API void_t   imglab_rocts_set (xroct_t rct, const sRECT *box,
                                   const fp32_t *angle,
@@ -227,7 +227,9 @@ CR_API void_t   imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
 /*                                 目标识别                                  */
 /*****************************************************************************/
 
+/***********************/
 /* OpenCV 级联分类类型 */
+/***********************/
 typedef void_t*     cascade_ocv_t;      /* cv::CascadeClassifier* */
 
 /* OpenCV 级联分类对象 */
@@ -250,7 +252,9 @@ imglab_ocv_cascade_doit (cascade_ocv_t clss, ximage_t mat, fp32_t fscale,
                          sint_t min_nghbrs, sint_t flags, uint_t min_width,
                                 uint_t min_height, uint_t max_width,
                                         uint_t max_height);
+/*************************/
 /* OpenCV 一维码识别类型 */
+/*************************/
 typedef void_t*     barcode_ocv_t;      /* cv::barcode::BarcodeDetector* */
 
 /* OpenCV 一维码识别对象 */
@@ -267,7 +271,9 @@ imglab_ocv_barcode_param (barcode_ocv_t bar1, fp32_t dnsp_lmt,
 CR_API size_t
 imglab_ocv_barcode_doit (barcode_ocv_t bar1, ximage_t mat, str_lstA_t *text,
                                     xpoly_lst_t *list);
+/*************************/
 /* OpenCV 二维码识别类型 */
+/*************************/
 typedef void_t*     qr2code_ocv_t;      /* cv::QRCodeDetector
                                            cv::QRCodeDetectorAruco
                                            cv::WeChatQRCode */
@@ -364,7 +370,10 @@ imglab_ocv_qr2code_param (qr2code_ocv_t qr2d, const void_t *param_data,
 CR_API size_t
 imglab_ocv_qr2code_doit (qr2code_ocv_t qr2d, ximage_t mat, str_lstA_t *text,
                                     xpoly_lst_t *list);
+/************************/
 /* ZXing 图形码识别参数 */
+/************************/
+
 /* sZXI_ReaderOptions::formats */
 #define ZXI_TYPE_NONE           0
 #define ZXI_TYPE_AZTEC      (1 << 0)
@@ -442,7 +451,9 @@ CR_API size_t
 imglab_zxi_grpcode_doit (ximage_t mat, str_lstA_t *text, xpoly_lst_t *list,
                          const sZXI_ReaderOptions *options CR_DEFAULT(NULL));
 
+/*************************/
 /* NCNN NanoDet 识别类型 */
+/*************************/
 typedef void_t*     nanodet_ncnn_t;
 
 /* NCNN NanoDet 识别对象 */
@@ -499,7 +510,9 @@ imglab_ncnn_nanodet_plus_doit (nanodet_ncnn_t nnet, ximage_t mat,
                                const sNCNN_NanoDetPlusParam *param,
                                size_t *count);
 
+/******************************/
 /* NCNN MobileNetSSD 识别类型 */
+/******************************/
 typedef void_t*     mbntssd_ncnn_t;
 
 /* NCNN MobileNetSSD 识别对象 */
@@ -532,7 +545,9 @@ CR_API sRECT_OBJECT*
 imglab_ncnn_mbntssd_doit (mbntssd_ncnn_t nnet, ximage_t mat,
                           const sNCNN_MobileNetSSD_Param *param,
                           size_t *count);
+/**********************/
 /* NCNN YOLO 识别类型 */
+/**********************/
 typedef void_t*     yolo_ncnn_t;
 
 /* NCNN YOLO 识别对象 */
