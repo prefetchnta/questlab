@@ -29,7 +29,8 @@ for dirpath, dirnames, filenames in os.walk(root):
         spath = dirpath + "/" + filename
         print(spath)
         dpath = dirpath + "/" + filename.replace(sver, dver, 1)
-        cmdstr = "svn -q mv %s %s" % (spath, dpath)
-        os.system(cmdstr)
+        cmd_str = 'svn -q mv "%s" "%s"' % (spath, dpath)
+        print(cmd_str)
+        os.system(cmd_str)
         cnts += 1
 print(cnts)

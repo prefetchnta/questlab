@@ -43,7 +43,7 @@ for full_path in dlls:
     else:
         leng = max_len - leng + 1
     os.environ["PATH"] = os.path.dirname(full_path) + ";" + path_base
-    cmd_str = "sbinload.exe %u %s" % (leng, full_path)
+    cmd_str = 'sbinload.exe %u "%s"' % (leng, full_path)
     if os.system(cmd_str) == 0:
         okays += 1
     count += 1
