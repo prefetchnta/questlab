@@ -24,9 +24,11 @@
 
 #define BEA_USE_STDCALL
 #include "BeaEngine.h"
+#include "capstone.h"
 
 /* 外部库引用 */
 #pragma comment (lib, "BeaEngine.lib")
+#pragma comment (lib, "capstone.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*
@@ -795,7 +797,9 @@ string_show (
     return (ret);
 }
 
+/********************/
 /* BeaEngine 模式值 */
+/********************/
 static const ansi_t*    s_bea_archi = "X86";
 #define BEA_DEF_OPT (NoTabulation | SuffixedNumeral | \
                      ShowSegmentRegs | ShowEVEXMasking)
@@ -814,7 +818,7 @@ unasm_bea_show (
   __CR_IN__ bool_t          is_be
     )
 {
-    int     retc;
+    sint_t  retc;
     DISASM  unasm;
 
     CR_NOUSE(is_be);
@@ -828,6 +832,69 @@ unasm_bea_show (
         return (NULL);
     return (str_fmtA(" %s: (%u) %s", s_bea_archi, retc,
                         unasm.CompleteInstr));
+}
+
+/*******************/
+/* Capstone 模式值 */
+/*******************/
+static sint_t           s_CapOptions = CS_MODE_ARM;
+static sint_t           s_CapByteOrder = CS_MODE_LITTLE_ENDIAN;
+static sint_t           s_CapMIPS = 0, s_CapPPC = 0;
+static sint_t           s_CapRISCV = 0, s_CapSH = 0;
+static cs_arch          s_CapArchi = CS_ARCH_ARM;
+static cs_opt_value     s_CapAsmSyn = CS_OPT_SYNTAX_DEFAULT;
+static const ansi_t*    s_cap_archi = "ARM";
+
+/*
+---------------------------------------
+    Capstone
+---------------------------------------
+*/
+static ansi_t*
+unasm_cap_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    csh         caph;
+    cs_err      retc;
+    sint_t      mode;
+    size_t      cnts;
+    ansi_t*     dasm;
+    cs_insn*    insn;
+
+    CR_NOUSE(is_be);
+    mode = s_CapOptions | s_CapByteOrder;
+    if (s_CapArchi == CS_ARCH_MIPS)
+        mode |= s_CapMIPS;
+    else
+    if (s_CapArchi == CS_ARCH_PPC)
+        mode |= s_CapPPC;
+    else
+    if (s_CapArchi == CS_ARCH_RISCV)
+        mode |= s_CapRISCV;
+    else
+    if (s_CapArchi == CS_ARCH_SH)
+        mode |= s_CapSH;
+    retc = cs_open(s_CapArchi, (cs_mode)mode, &caph);
+    if (retc != 0)
+        return (NULL);
+    dasm = NULL;
+    cs_option(caph, CS_OPT_DETAIL, CS_OPT_OFF);
+    cs_option(caph, CS_OPT_SYNTAX, s_CapAsmSyn);
+    cnts = cs_disasm(caph, (uint8_t*)data, size, 0, 0, &insn);
+    if (cnts != 0)
+    {
+        const ansi_t*   bo;
+
+        bo = (s_CapByteOrder & CS_MODE_BIG_ENDIAN) ? "be" : "le";
+        dasm = str_fmtA(" %s[%s]: (%u) %s %s", s_cap_archi, bo,
+                    insn->size, insn->mnemonic, insn->op_str);
+        cs_free(insn, cnts);
+    }
+    cs_close(&caph);
+    return (dasm);
 }
 
 /*****************************************************************************/
@@ -864,6 +931,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "OLETIME", oletime_show },
     { "STRING", string_show },
     { "BEA", unasm_bea_show },
+    { "CAP", unasm_cap_show },
     { NULL, NULL }
 };
 
@@ -893,6 +961,365 @@ data_type (
         if (strcmp(type, "8086") == 0) {
             s_BeaArchi = 16;
             s_bea_archi = "8086";
+        }
+        return;
+    }
+
+    /* Capstone */
+    if (chr_cmpA(type, "Cap:", 4) == 0) {
+        type += 4;
+        if (strcmp(type, "ARM") == 0) {
+            s_CapArchi = CS_ARCH_ARM;
+            s_CapOptions = CS_MODE_ARM;
+            s_cap_archi = "ARM";
+        }
+        else
+        if (strcmp(type, "Thumb2") == 0) {
+            s_CapArchi = CS_ARCH_ARM;
+            s_CapOptions = CS_MODE_THUMB;
+            s_cap_archi = "ARM(THUMB2)";
+        }
+        else
+        if (strcmp(type, "Thumb8") == 0) {
+            s_CapArchi = CS_ARCH_ARM;
+            s_CapOptions = CS_MODE_THUMB | CS_MODE_V8;
+            s_cap_archi = "ARM(THUMBv8)";
+        }
+        else
+        if (strcmp(type, "MClass") == 0) {
+            s_CapArchi = CS_ARCH_ARM;
+            s_CapOptions = CS_MODE_THUMB | CS_MODE_MCLASS;
+            s_cap_archi = "ARM(Cortex-M)";
+        }
+        else
+        if (strcmp(type, "AArch32") == 0) {
+            s_CapArchi = CS_ARCH_ARM;
+            s_CapOptions = CS_MODE_ARM | CS_MODE_V8;
+            s_cap_archi = "ARM(AArch32)";
+        }
+        else
+        if (strcmp(type, "AArch64") == 0) {
+            s_CapArchi = CS_ARCH_ARM64;
+            s_CapOptions = CS_MODE_ARM;
+            s_cap_archi = "ARM(AArch64)";
+        }
+        else
+        if (strcmp(type, "X86") == 0) {
+            s_CapArchi = CS_ARCH_X86;
+            s_CapOptions = CS_MODE_32;
+            s_cap_archi = "X86";
+        }
+        else
+        if (strcmp(type, "X64") == 0) {
+            s_CapArchi = CS_ARCH_X86;
+            s_CapOptions = CS_MODE_64;
+            s_cap_archi = "X64";
+        }
+        else
+        if (strcmp(type, "8086") == 0) {
+            s_CapArchi = CS_ARCH_X86;
+            s_CapOptions = CS_MODE_16;
+            s_cap_archi = "8086";
+        }
+        else
+        if (strcmp(type, "MIPS32") == 0) {
+            s_CapArchi = CS_ARCH_MIPS;
+            s_CapOptions = CS_MODE_MIPS32;
+            s_cap_archi = "MIPS32";
+        }
+        else
+        if (strcmp(type, "MIPS64") == 0) {
+            s_CapArchi = CS_ARCH_MIPS;
+            s_CapOptions = CS_MODE_MIPS64;
+            s_cap_archi = "MIPS64";
+        }
+        else
+        if (strcmp(type, "PPC32") == 0) {
+            s_CapArchi = CS_ARCH_PPC;
+            s_CapOptions = CS_MODE_32;
+            s_cap_archi = "PPC32";
+        }
+        else
+        if (strcmp(type, "PPC64") == 0) {
+            s_CapArchi = CS_ARCH_PPC;
+            s_CapOptions = CS_MODE_64;
+            s_cap_archi = "PPC64";
+        }
+        else
+        if (strcmp(type, "RISCV32") == 0) {
+            s_CapArchi = CS_ARCH_RISCV;
+            s_CapOptions = CS_MODE_RISCV32;
+            s_cap_archi = "RISCV32";
+        }
+        else
+        if (strcmp(type, "RISCV64") == 0) {
+            s_CapArchi = CS_ARCH_RISCV;
+            s_CapOptions = CS_MODE_RISCV64;
+            s_cap_archi = "RISCV64";
+        }
+        else
+        if (strcmp(type, "M68000") == 0) {
+            s_CapArchi = CS_ARCH_M68K;
+            s_CapOptions = CS_MODE_M68K_000;
+            s_cap_archi = "M68000";
+        }
+        else
+        if (strcmp(type, "M68010") == 0) {
+            s_CapArchi = CS_ARCH_M68K;
+            s_CapOptions = CS_MODE_M68K_010;
+            s_cap_archi = "M68010";
+        }
+        else
+        if (strcmp(type, "M68020") == 0) {
+            s_CapArchi = CS_ARCH_M68K;
+            s_CapOptions = CS_MODE_M68K_020;
+            s_cap_archi = "M68020";
+        }
+        else
+        if (strcmp(type, "M68030") == 0) {
+            s_CapArchi = CS_ARCH_M68K;
+            s_CapOptions = CS_MODE_M68K_030;
+            s_cap_archi = "M68030";
+        }
+        else
+        if (strcmp(type, "M68040") == 0) {
+            s_CapArchi = CS_ARCH_M68K;
+            s_CapOptions = CS_MODE_M68K_040;
+            s_cap_archi = "M68040";
+        }
+        else
+        if (strcmp(type, "M68060") == 0) {
+            s_CapArchi = CS_ARCH_M68K;
+            s_CapOptions = CS_MODE_M68K_060;
+            s_cap_archi = "M68060";
+        }
+        else
+        if (strcmp(type, "MC6301") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6301;
+            s_cap_archi = "MC6301";
+        }
+        else
+        if (strcmp(type, "MC6309") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6309;
+            s_cap_archi = "MC6309";
+        }
+        else
+        if (strcmp(type, "MC6800") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6800;
+            s_cap_archi = "MC6800";
+        }
+        else
+        if (strcmp(type, "MC6801") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6801;
+            s_cap_archi = "MC6801";
+        }
+        else
+        if (strcmp(type, "MC6805") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6805;
+            s_cap_archi = "MC6805";
+        }
+        else
+        if (strcmp(type, "MC6808") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6808;
+            s_cap_archi = "MC6808";
+        }
+        else
+        if (strcmp(type, "MC6809") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6809;
+            s_cap_archi = "MC6809";
+        }
+        else
+        if (strcmp(type, "MC6811") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_6811;
+            s_cap_archi = "MC6811";
+        }
+        else
+        if (strcmp(type, "HCS12") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_CPU12;
+            s_cap_archi = "HCS12";
+        }
+        else
+        if (strcmp(type, "HCS08") == 0) {
+            s_CapArchi = CS_ARCH_M680X;
+            s_CapOptions = CS_MODE_M680X_HCS08;
+            s_cap_archi = "HCS08";
+        }
+        else
+        if (strcmp(type, "M6502") == 0) {
+            s_CapArchi = CS_ARCH_MOS65XX;
+            s_CapOptions = CS_MODE_MOS65XX_6502;
+            s_cap_archi = "M6502";
+        }
+        else
+        if (strcmp(type, "M65C02") == 0) {
+            s_CapArchi = CS_ARCH_MOS65XX;
+            s_CapOptions = CS_MODE_MOS65XX_65C02;
+            s_cap_archi = "M65C02";
+        }
+        else
+        if (strcmp(type, "W65C02") == 0) {
+            s_CapArchi = CS_ARCH_MOS65XX;
+            s_CapOptions = CS_MODE_MOS65XX_W65C02;
+            s_cap_archi = "W65C02";
+        }
+        else
+        if (strcmp(type, "M65816ss") == 0) {
+            s_CapArchi = CS_ARCH_MOS65XX;
+            s_CapOptions = CS_MODE_MOS65XX_65816;
+            s_cap_archi = "M65816ss";
+        }
+        else
+        if (strcmp(type, "M65816ls") == 0) {
+            s_CapArchi = CS_ARCH_MOS65XX;
+            s_CapOptions = CS_MODE_MOS65XX_65816_LONG_M;
+            s_cap_archi = "M65816ls";
+        }
+        else
+        if (strcmp(type, "M65816sl") == 0) {
+            s_CapArchi = CS_ARCH_MOS65XX;
+            s_CapOptions = CS_MODE_MOS65XX_65816_LONG_X;
+            s_cap_archi = "M65816sl";
+        }
+        else
+        if (strcmp(type, "M65816ll") == 0) {
+            s_CapArchi = CS_ARCH_MOS65XX;
+            s_CapOptions = CS_MODE_MOS65XX_65816_LONG_MX;
+            s_cap_archi = "M65816ll";
+        }
+        else
+        if (strcmp(type, "BPFc") == 0) {
+            s_CapArchi = CS_ARCH_BPF;
+            s_CapOptions = CS_MODE_BPF_CLASSIC;
+            s_cap_archi = "BPFc";
+        }
+        else
+        if (strcmp(type, "BPFe") == 0) {
+            s_CapArchi = CS_ARCH_BPF;
+            s_CapOptions = CS_MODE_BPF_EXTENDED;
+            s_cap_archi = "BPFe";
+        }
+        else
+        if (strcmp(type, "SPARC") == 0) {
+            s_CapArchi = CS_ARCH_SPARC;
+            s_CapOptions = CS_MODE_BIG_ENDIAN;
+            s_cap_archi = "SPARC";
+        }
+        else
+        if (strcmp(type, "SPARCv9") == 0) {
+            s_CapArchi = CS_ARCH_SPARC;
+            s_CapOptions = CS_MODE_BIG_ENDIAN | CS_MODE_V9;
+            s_cap_archi = "SPARCv9";
+        }
+        else
+        if (strcmp(type, "SH2") == 0) {
+            s_CapArchi = CS_ARCH_SH;
+            s_CapOptions = CS_MODE_SH2;
+            s_cap_archi = "SH2";
+        }
+        else
+        if (strcmp(type, "SH2A") == 0) {
+            s_CapArchi = CS_ARCH_SH;
+            s_CapOptions = CS_MODE_SH2A;
+            s_cap_archi = "SH2A";
+        }
+        else
+        if (strcmp(type, "SH3") == 0) {
+            s_CapArchi = CS_ARCH_SH;
+            s_CapOptions = CS_MODE_SH3;
+            s_cap_archi = "SH3";
+        }
+        else
+        if (strcmp(type, "SH4") == 0) {
+            s_CapArchi = CS_ARCH_SH;
+            s_CapOptions = CS_MODE_SH4;
+            s_cap_archi = "SH4";
+        }
+        else
+        if (strcmp(type, "SH4A") == 0) {
+            s_CapArchi = CS_ARCH_SH;
+            s_CapOptions = CS_MODE_SH4A;
+            s_cap_archi = "SH4A";
+        }
+        else
+        if (strcmp(type, "TCORE110") == 0) {
+            s_CapArchi = CS_ARCH_TRICORE;
+            s_CapOptions = CS_MODE_TRICORE_110;
+            s_cap_archi = "TCORE110";
+        }
+        else
+        if (strcmp(type, "TCORE120") == 0) {
+            s_CapArchi = CS_ARCH_TRICORE;
+            s_CapOptions = CS_MODE_TRICORE_120;
+            s_cap_archi = "TCORE120";
+        }
+        else
+        if (strcmp(type, "TCORE130") == 0) {
+            s_CapArchi = CS_ARCH_TRICORE;
+            s_CapOptions = CS_MODE_TRICORE_130;
+            s_cap_archi = "TCORE130";
+        }
+        else
+        if (strcmp(type, "TCORE131") == 0) {
+            s_CapArchi = CS_ARCH_TRICORE;
+            s_CapOptions = CS_MODE_TRICORE_131;
+            s_cap_archi = "TCORE131";
+        }
+        else
+        if (strcmp(type, "TCORE160") == 0) {
+            s_CapArchi = CS_ARCH_TRICORE;
+            s_CapOptions = CS_MODE_TRICORE_160;
+            s_cap_archi = "TCORE160";
+        }
+        else
+        if (strcmp(type, "TCORE161") == 0) {
+            s_CapArchi = CS_ARCH_TRICORE;
+            s_CapOptions = CS_MODE_TRICORE_161;
+            s_cap_archi = "TCORE161";
+        }
+        else
+        if (strcmp(type, "TCORE162") == 0) {
+            s_CapArchi = CS_ARCH_TRICORE;
+            s_CapOptions = CS_MODE_TRICORE_162;
+            s_cap_archi = "TCORE162";
+        }
+        else
+        if (strcmp(type, "EVM") == 0) {
+            s_CapArchi = CS_ARCH_EVM;
+            s_CapOptions = 0;
+            s_cap_archi = "EVM";
+        }
+        else
+        if (strcmp(type, "SystemZ") == 0) {
+            s_CapArchi = CS_ARCH_SYSZ;
+            s_CapOptions = CS_MODE_BIG_ENDIAN;
+            s_cap_archi = "SystemZ";
+        }
+        else
+        if (strcmp(type, "TMS320C64X") == 0) {
+            s_CapArchi = CS_ARCH_TMS320C64X;
+            s_CapOptions = 0;
+            s_cap_archi = "TMS320C64X";
+        }
+        else
+        if (strcmp(type, "XCore") == 0) {
+            s_CapArchi = CS_ARCH_XCORE;
+            s_CapOptions = 0;
+            s_cap_archi = "XCore";
+        }
+        else
+        if (strcmp(type, "WASM") == 0) {
+            s_CapArchi = CS_ARCH_WASM;
+            s_CapOptions = 0;
+            s_cap_archi = "WASM";
         }
         return;
     }
@@ -926,6 +1353,119 @@ data_mode (
         else
         if (strcmp(mode, "IntrinMem") == 0)
             s_BeaOptions |= IntrinsicMemSyntax;
+        return;
+    }
+
+    /* Capstone */
+    if (chr_cmpA(mode, "Cap:", 4) == 0) {
+        mode += 4;
+        if (chr_cmpA(mode, "AsmSyn:", 7) == 0) {
+            mode += 7;
+            if (strcmp(mode, "Default") == 0)
+                s_CapAsmSyn = CS_OPT_SYNTAX_DEFAULT;
+            else
+            if (strcmp(mode, "Intel") == 0)
+                s_CapAsmSyn = CS_OPT_SYNTAX_INTEL;
+            else
+            if (strcmp(mode, "AT&T") == 0)
+                s_CapAsmSyn = CS_OPT_SYNTAX_ATT;
+            else
+            if (strcmp(mode, "Masm") == 0)
+                s_CapAsmSyn = CS_OPT_SYNTAX_MASM;
+            else
+            if (strcmp(mode, "NoReg") == 0)
+                s_CapAsmSyn = CS_OPT_SYNTAX_NOREGNAME;
+            else
+            if (strcmp(mode, "Moto") == 0)
+                s_CapAsmSyn = CS_OPT_SYNTAX_MOTOROLA;
+        }
+        else
+        if (chr_cmpA(mode, "ByteOrder:", 10) == 0) {
+            mode += 10;
+            if (strcmp(mode, "LE") == 0)
+                s_CapByteOrder = CS_MODE_LITTLE_ENDIAN;
+            else
+            if (strcmp(mode, "BE") == 0)
+                s_CapByteOrder = CS_MODE_BIG_ENDIAN;
+        }
+        else
+        if (chr_cmpA(mode, "MIPS:", 5) == 0) {
+            mode += 5;
+            if (strcmp(mode, "II 0") == 0)
+                s_CapMIPS &= ~CS_MODE_MIPS2;
+            else
+            if (strcmp(mode, "II 1") == 0)
+                s_CapMIPS |=  CS_MODE_MIPS2;
+            else
+            if (strcmp(mode, "III 0") == 0)
+                s_CapMIPS &= ~CS_MODE_MIPS3;
+            else
+            if (strcmp(mode, "III 1") == 0)
+                s_CapMIPS |=  CS_MODE_MIPS3;
+            else
+            if (strcmp(mode, "32R6 0") == 0)
+                s_CapMIPS &= ~CS_MODE_MIPS32R6;
+            else
+            if (strcmp(mode, "32R6 1") == 0)
+                s_CapMIPS |=  CS_MODE_MIPS32R6;
+            else
+            if (strcmp(mode, "Micro 0") == 0)
+                s_CapMIPS &= ~CS_MODE_MICRO;
+            else
+            if (strcmp(mode, "Micro 1") == 0)
+                s_CapMIPS |=  CS_MODE_MICRO;
+        }
+        else
+        if (chr_cmpA(mode, "PPC:", 4) == 0) {
+            mode += 4;
+            if (strcmp(mode, "QPX 0") == 0)
+                s_CapPPC &= ~CS_MODE_QPX;
+            else
+            if (strcmp(mode, "QPX 1") == 0)
+                s_CapPPC |=  CS_MODE_QPX;
+            else
+            if (strcmp(mode, "SPE 0") == 0)
+                s_CapPPC &= ~CS_MODE_SPE;
+            else
+            if (strcmp(mode, "SPE 1") == 0)
+                s_CapPPC |=  CS_MODE_SPE;
+            else
+            if (strcmp(mode, "BOOKE 0") == 0)
+                s_CapPPC &= ~CS_MODE_BOOKE;
+            else
+            if (strcmp(mode, "BOOKE 1") == 0)
+                s_CapPPC |=  CS_MODE_BOOKE;
+            else
+            if (strcmp(mode, "PS 0") == 0)
+                s_CapPPC &= ~CS_MODE_PS;
+            else
+            if (strcmp(mode, "PS 1") == 0)
+                s_CapPPC |=  CS_MODE_PS;
+        }
+        else
+        if (chr_cmpA(mode, "RISCV:", 6) == 0) {
+            mode += 6;
+            if (strcmp(mode, "C 0") == 0)
+                s_CapRISCV &= ~CS_MODE_RISCVC;
+            else
+            if (strcmp(mode, "C 1") == 0)
+                s_CapRISCV |=  CS_MODE_RISCVC;
+        }
+        else
+        if (chr_cmpA(mode, "SH:", 3) == 0) {
+            mode += 3;
+            if (strcmp(mode, "FPU 0") == 0)
+                s_CapSH &= ~CS_MODE_SHFPU;
+            else
+            if (strcmp(mode, "FPU 1") == 0)
+                s_CapSH |=  CS_MODE_SHFPU;
+            else
+            if (strcmp(mode, "DSP 0") == 0)
+                s_CapSH &= ~CS_MODE_SHDSP;
+            else
+            if (strcmp(mode, "DSP 1") == 0)
+                s_CapSH |=  CS_MODE_SHDSP;
+        }
         return;
     }
 }
