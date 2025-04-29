@@ -11,7 +11,7 @@
         <MenuItem name="subG2dSaveNow" text="保存当前原图帧(&N)..." scut="Ctrl+N" />
         <MenuItem name="subG2dSaveAll" text="保存所有原图帧(&M)..." scut="Ctrl+M" />
         <MenuItem name="subG2dSaveShow" text="保存当前显示帧(&H)..." scut="Ctrl+H" />
-        <MenuItem name="subG2dSaveGrub" text="保存当前最小帧(&H)..." scut="Ctrl+G" />
+        <MenuItem name="subG2dSaveGrub" text="保存当前最小帧(&G)..." scut="Ctrl+G" />
         <MenuItem name="xxxSepOper3" text="-" />
         <MenuItem name="subWinShow" text="显示所有窗口(&R)" scut="Ctrl+R" />
         <MenuItem name="subWinLoad" text="加载窗口位置(&L)" scut="Ctrl+L" />
@@ -77,15 +77,120 @@
     <MenuItem name="subDetect" text="探测(&D)">
         <MenuItem name="subDisasm" text="反汇编(&U)">
             <MenuItem name="subBeaEngine" text="BeaEngine (&B)">
-                <MenuItem name="subBeaX86" text="CPU - X86 (&1)" radio="1" group="1" checked="1" />
-                <MenuItem name="subBeaX64" text="CPU - X64 (&2)" radio="1" group="1" />
-                <MenuItem name="subBea8086" text="CPU - 8086 (&3)" radio="1" group="1" />
+                <MenuItem name="subBeaX86" text="CPU - X86" radio="1" group="1" checked="1" />
+                <MenuItem name="subBeaX64" text="CPU - X64" radio="1" group="1" />
+                <MenuItem name="subBea8086" text="CPU - 8086" radio="1" group="1" />
                 <MenuItem name="xxxSepBea" text="-" />
-                <MenuItem name="subBeaMasm" text="Style - Masm (&4)" radio="1" group="2" checked="1" />
-                <MenuItem name="subBeaGoAsm" text="Style - GoAsm (&5)" radio="1" group="2" />
-                <MenuItem name="subBeaNasm" text="Style - Nasm (&6)" radio="1" group="2" />
-                <MenuItem name="subBeaATT" text="Style - AT&&T (&7)" radio="1" group="2" />
-                <MenuItem name="subBeaIntrin" text="Style - IntrinMem (&8)" radio="1" group="2" />
+                <MenuItem name="subBeaMasm" text="Style - Masm" radio="1" group="2" checked="1" />
+                <MenuItem name="subBeaGoAsm" text="Style - GoAsm" radio="1" group="2" />
+                <MenuItem name="subBeaNasm" text="Style - Nasm" radio="1" group="2" />
+                <MenuItem name="subBeaATT" text="Style - AT&&T" radio="1" group="2" />
+                <MenuItem name="subBeaIntrin" text="Style - IntrinMem" radio="1" group="2" />
+            </MenuItem>
+            <MenuItem name="subCapstone" text="Capstone (&C)">
+                <MenuItem name="subCapAsmSyntax" text="Asm Syntax">
+                    <MenuItem name="subCapASdef" text="Default" radio="1" group="1" checked="1" />
+                    <MenuItem name="subCapASintel" text="Intel" radio="1" group="1" />
+                    <MenuItem name="subCapASatt" text="AT&&T" radio="1" group="1" />
+                    <MenuItem name="subCapASmasm" text="Masm" radio="1" group="1" />
+                    <MenuItem name="subCapASnreg" text="No register name (number)" radio="1" group="1" />
+                    <MenuItem name="subCapASmoto" text="M65XX use $ as hex prefix" radio="1" group="1" />
+                </MenuItem>
+                <MenuItem name="subCapByteOrder" text="Byte Order">
+                    <MenuItem name="subCapBOLE" text="Little Endian" radio="1" group="1" checked="1" />
+                    <MenuItem name="subCapBOBE" text="Big Endian" radio="1" group="1" />
+                </MenuItem>
+                <MenuItem name="xxxSepCap1" text="-" />
+                <MenuItem name="subCapARM" text="ARM" radio="1" group="1" checked="1" />
+                <MenuItem name="subCapThumb2" text="ARM - THUMB2" radio="1" group="1" />
+                <MenuItem name="subCapThumb8" text="ARM - THUMBv8" radio="1" group="1" />
+                <MenuItem name="subCapMClass" text="ARM - MClass" radio="1" group="1" />
+                <MenuItem name="subCapARMv8" text="ARM - AArch32" radio="1" group="1" />
+                <MenuItem name="subCapARM64" text="ARM - AArch64" radio="1" group="1" />
+                <MenuItem name="xxxSepCap2" text="-" />
+                <MenuItem name="subCapX86" text="CPU - X86" radio="1" group="1" />
+                <MenuItem name="subCapX64" text="CPU - X64" radio="1" group="1" />
+                <MenuItem name="subCap8086" text="CPU - 8086" radio="1" group="1" />
+                <MenuItem name="xxxSepCap3" text="-" />
+                <MenuItem name="subCapMIPS32" text="MIPS32" radio="1" group="1" />
+                <MenuItem name="subCapMIPS64" text="MIPS64" radio="1" group="1" />
+                <MenuItem name="subCapMipsISA" text="MIPS ISA type">
+                    <MenuItem name="subCapMipsII" text="MIPS II" />
+                    <MenuItem name="subCapMipsIII" text="MIPS III" />
+                    <MenuItem name="subCapMips32R6" text="MIPS32R6" />
+                    <MenuItem name="subCapMipsMicro" text="MicroMIPS" />
+                </MenuItem>
+                <MenuItem name="xxxSepCap4" text="-" />
+                <MenuItem name="subCapPPC32" text="PowerPC32" radio="1" group="1" />
+                <MenuItem name="subCapPPC64" text="PowerPC64" radio="1" group="1" />
+                <MenuItem name="subCapPpcMode" text="PowerPC mode">
+                    <MenuItem name="subCapPpcQPX" text="QPX mode" />
+                    <MenuItem name="subCapPpcSPE" text="SPE mode" />
+                    <MenuItem name="subCapPpcBOOKE" text="BOOK-E mode" />
+                    <MenuItem name="subCapPpcPS" text="Paired-singles mode" />
+                </MenuItem>
+                <MenuItem name="xxxSepCap5" text="-" />
+                <MenuItem name="subCapRV32" text="RISCV32" radio="1" group="1" />
+                <MenuItem name="subCapRV64" text="RISCV64" radio="1" group="1" />
+                <MenuItem name="subCapRVMode" text="RISCV mode">
+                    <MenuItem name="subCapRVC" text="RISCV compressed mode" />
+                </MenuItem>
+                <MenuItem name="xxxSepCap6" text="-" />
+                <MenuItem name="subCapM68000" text="M68K - 68000" radio="1" group="1" />
+                <MenuItem name="subCapM68010" text="M68K - 68010" radio="1" group="1" />
+                <MenuItem name="subCapM68020" text="M68K - 68020" radio="1" group="1" />
+                <MenuItem name="subCapM68030" text="M68K - 68030" radio="1" group="1" />
+                <MenuItem name="subCapM68040" text="M68K - 68040" radio="1" group="1" />
+                <MenuItem name="subCapM68060" text="M68K - 68060" radio="1" group="1" />
+                <MenuItem name="xxxSepCap7" text="-" />
+                <MenuItem name="subCapM680X_6301" text="M680X - 6301,6303" radio="1" group="1" />
+                <MenuItem name="subCapM680X_6309" text="M680X - 6309" radio="1" group="1" />
+                <MenuItem name="subCapM680X_6800" text="M680X - 6800,6802" radio="1" group="1" />
+                <MenuItem name="subCapM680X_6801" text="M680X - 6801,6803" radio="1" group="1" />
+                <MenuItem name="subCapM680X_6805" text="M680X - 6805" radio="1" group="1" />
+                <MenuItem name="subCapM680X_6808" text="M680X - 68HC08" radio="1" group="1" />
+                <MenuItem name="subCapM680X_6809" text="M680X - 6809" radio="1" group="1" />
+                <MenuItem name="subCapM680X_6811" text="M680X - 68HC11" radio="1" group="1" />
+                <MenuItem name="subCapM680X_CPU12" text="M680X - HCS12" radio="1" group="1" />
+                <MenuItem name="subCapM680X_HCS08" text="M680X - HCS08" radio="1" group="1" />
+                <MenuItem name="xxxSepCap8" text="-" />
+                <MenuItem name="subCapMOS65XX_6502" text="MOS65XXX - 6502" radio="1" group="1" />
+                <MenuItem name="subCapMOS65XX_65C02" text="MOS65XXX - 65C02" radio="1" group="1" />
+                <MenuItem name="subCapMOS65XX_W65C02" text="MOS65XXX - W65C02" radio="1" group="1" />
+                <MenuItem name="subCapMOS65XX_65816ss" text="MOS65XXX - 65816, m08/x08" radio="1" group="1" />
+                <MenuItem name="subCapMOS65XX_65816ls" text="MOS65XXX - 65816, m16/x08" radio="1" group="1" />
+                <MenuItem name="subCapMOS65XX_65816sl" text="MOS65XXX - 65816, m08/x16" radio="1" group="1" />
+                <MenuItem name="subCapMOS65XX_65816ll" text="MOS65XXX - 65816, m16/x16" radio="1" group="1" />
+                <MenuItem name="xxxSepCap9" text="-" />
+                <MenuItem name="subCapBPFc" text="BPF - Classic" radio="1" group="1" />
+                <MenuItem name="subCapBPFe" text="BPF - Extended" radio="1" group="1" />
+                <MenuItem name="xxxSepCap0" text="-" />
+                <MenuItem name="subCapSPARC" text="SPARC" radio="1" group="1" />
+                <MenuItem name="subCapSPARCv9" text="SPARCv9" radio="1" group="1" />
+                <MenuItem name="xxxSepCapQ" text="-" />
+                <MenuItem name="subCapSH2" text="SuperH - SH2" radio="1" group="1" />
+                <MenuItem name="subCapSH2A" text="SuperH - SH2A" radio="1" group="1" />
+                <MenuItem name="subCapSH3" text="SuperH - SH3" radio="1" group="1" />
+                <MenuItem name="subCapSH4" text="SuperH - SH4" radio="1" group="1" />
+                <MenuItem name="subCapSH4A" text="SuperH - SH4A" radio="1" group="1" />
+                <MenuItem name="subCapSHmode" text="SuperH mode">
+                    <MenuItem name="subCapShFPU" text="SuperH - w/ FPU" />
+                    <MenuItem name="subCapShDSP" text="SuperH - w/ DSP" />
+                </MenuItem>
+                <MenuItem name="xxxSepCapW" text="-" />
+                <MenuItem name="subCapTCore110" text="TriCore - 1.1" radio="1" group="1" />
+                <MenuItem name="subCapTCore120" text="TriCore - 1.2" radio="1" group="1" />
+                <MenuItem name="subCapTCore130" text="TriCore - 1.3" radio="1" group="1" />
+                <MenuItem name="subCapTCore131" text="TriCore - 1.3.1" radio="1" group="1" />
+                <MenuItem name="subCapTCore160" text="TriCore - 1.6" radio="1" group="1" />
+                <MenuItem name="subCapTCore161" text="TriCore - 1.6.1" radio="1" group="1" />
+                <MenuItem name="subCapTCore162" text="TriCore - 1.6.2" radio="1" group="1" />
+                <MenuItem name="xxxSepCapE" text="-" />
+                <MenuItem name="subCapEVM" text="Ethereum VM" radio="1" group="1" />
+                <MenuItem name="subCapSysZ" text="SystemZ" radio="1" group="1" />
+                <MenuItem name="subCapTMS320" text="TMS320C64X" radio="1" group="1" />
+                <MenuItem name="subCapXCore" text="XCore" radio="1" group="1" />
+                <MenuItem name="subCapWASM" text="WebAssembly" radio="1" group="1" />
             </MenuItem>
         </MenuItem>
     </MenuItem>

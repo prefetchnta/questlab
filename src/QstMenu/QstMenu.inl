@@ -75,6 +75,85 @@ void __fastcall subBeaNasmClick(TObject *Sender);
 void __fastcall subBeaATTClick(TObject *Sender);
 void __fastcall subBeaIntrinClick(TObject *Sender);
 //---------------------------------------------------------------------------
+void __fastcall subCapASdefClick(TObject *Sender);
+void __fastcall subCapASintelClick(TObject *Sender);
+void __fastcall subCapASattClick(TObject *Sender);
+void __fastcall subCapASmasmClick(TObject *Sender);
+void __fastcall subCapASnregClick(TObject *Sender);
+void __fastcall subCapASmotoClick(TObject *Sender);
+void __fastcall subCapBOLEClick(TObject *Sender);
+void __fastcall subCapBOBEClick(TObject *Sender);
+void __fastcall subCapARMClick(TObject *Sender);
+void __fastcall subCapThumb2Click(TObject *Sender);
+void __fastcall subCapThumb8Click(TObject *Sender);
+void __fastcall subCapMClassClick(TObject *Sender);
+void __fastcall subCapARMv8Click(TObject *Sender);
+void __fastcall subCapARM64Click(TObject *Sender);
+void __fastcall subCapX86Click(TObject *Sender);
+void __fastcall subCapX64Click(TObject *Sender);
+void __fastcall subCap8086Click(TObject *Sender);
+void __fastcall subCapMIPS32Click(TObject *Sender);
+void __fastcall subCapMIPS64Click(TObject *Sender);
+void __fastcall subCapMipsIIClick(TObject *Sender);
+void __fastcall subCapMipsIIIClick(TObject *Sender);
+void __fastcall subCapMips32R6Click(TObject *Sender);
+void __fastcall subCapMipsMicroClick(TObject *Sender);
+void __fastcall subCapPPC32Click(TObject *Sender);
+void __fastcall subCapPPC64Click(TObject *Sender);
+void __fastcall subCapPpcQPXClick(TObject *Sender);
+void __fastcall subCapPpcSPEClick(TObject *Sender);
+void __fastcall subCapPpcBOOKEClick(TObject *Sender);
+void __fastcall subCapPpcPSClick(TObject *Sender);
+void __fastcall subCapRV32Click(TObject *Sender);
+void __fastcall subCapRV64Click(TObject *Sender);
+void __fastcall subCapRVCClick(TObject *Sender);
+void __fastcall subCapM68000Click(TObject *Sender);
+void __fastcall subCapM68010Click(TObject *Sender);
+void __fastcall subCapM68020Click(TObject *Sender);
+void __fastcall subCapM68030Click(TObject *Sender);
+void __fastcall subCapM68040Click(TObject *Sender);
+void __fastcall subCapM68060Click(TObject *Sender);
+void __fastcall subCapM680X_6301Click(TObject *Sender);
+void __fastcall subCapM680X_6309Click(TObject *Sender);
+void __fastcall subCapM680X_6800Click(TObject *Sender);
+void __fastcall subCapM680X_6801Click(TObject *Sender);
+void __fastcall subCapM680X_6805Click(TObject *Sender);
+void __fastcall subCapM680X_6808Click(TObject *Sender);
+void __fastcall subCapM680X_6809Click(TObject *Sender);
+void __fastcall subCapM680X_6811Click(TObject *Sender);
+void __fastcall subCapM680X_CPU12Click(TObject *Sender);
+void __fastcall subCapM680X_HCS08Click(TObject *Sender);
+void __fastcall subCapMOS65XX_6502Click(TObject *Sender);
+void __fastcall subCapMOS65XX_65C02Click(TObject *Sender);
+void __fastcall subCapMOS65XX_W65C02Click(TObject *Sender);
+void __fastcall subCapMOS65XX_65816ssClick(TObject *Sender);
+void __fastcall subCapMOS65XX_65816lsClick(TObject *Sender);
+void __fastcall subCapMOS65XX_65816slClick(TObject *Sender);
+void __fastcall subCapMOS65XX_65816llClick(TObject *Sender);
+void __fastcall subCapBPFcClick(TObject *Sender);
+void __fastcall subCapBPFeClick(TObject *Sender);
+void __fastcall subCapSPARCClick(TObject *Sender);
+void __fastcall subCapSPARCv9Click(TObject *Sender);
+void __fastcall subCapSH2Click(TObject *Sender);
+void __fastcall subCapSH2AClick(TObject *Sender);
+void __fastcall subCapSH3Click(TObject *Sender);
+void __fastcall subCapSH4Click(TObject *Sender);
+void __fastcall subCapSH4AClick(TObject *Sender);
+void __fastcall subCapShFPUClick(TObject *Sender);
+void __fastcall subCapShDSPClick(TObject *Sender);
+void __fastcall subCapTCore110Click(TObject *Sender);
+void __fastcall subCapTCore120Click(TObject *Sender);
+void __fastcall subCapTCore130Click(TObject *Sender);
+void __fastcall subCapTCore131Click(TObject *Sender);
+void __fastcall subCapTCore160Click(TObject *Sender);
+void __fastcall subCapTCore161Click(TObject *Sender);
+void __fastcall subCapTCore162Click(TObject *Sender);
+void __fastcall subCapEVMClick(TObject *Sender);
+void __fastcall subCapSysZClick(TObject *Sender);
+void __fastcall subCapTMS320Click(TObject *Sender);
+void __fastcall subCapXCoreClick(TObject *Sender);
+void __fastcall subCapWASMClick(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subAboutClick(TObject *Sender);
@@ -642,6 +721,585 @@ void __fastcall TfrmMain::subBeaIntrinClick(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapASdefClick(TObject *Sender)
+{
+    /* Capstone AsmSyntax Default */
+    qst_send_cmdz("hex:mode Cap:AsmSyn:Default");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapASintelClick(TObject *Sender)
+{
+    /* Capstone AsmSyntax Intel */
+    qst_send_cmdz("hex:mode Cap:AsmSyn:Intel");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapASattClick(TObject *Sender)
+{
+    /* Capstone AsmSyntax AT&T */
+    qst_send_cmdz("hex:mode Cap:AsmSyn:AT&T");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapASmasmClick(TObject *Sender)
+{
+    /* Capstone AsmSyntax Masm */
+    qst_send_cmdz("hex:mode Cap:AsmSyn:Masm");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapASnregClick(TObject *Sender)
+{
+    /* Capstone AsmSyntax NoReg */
+    qst_send_cmdz("hex:mode Cap:AsmSyn:NoReg");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapASmotoClick(TObject *Sender)
+{
+    /* Capstone AsmSyntax Moto */
+    qst_send_cmdz("hex:mode Cap:AsmSyn:Moto");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapBOLEClick(TObject *Sender)
+{
+    /* Capstone ByteOrder LE */
+    qst_send_cmdz("hex:mode Cap:ByteOrder:LE");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapBOBEClick(TObject *Sender)
+{
+    /* Capstone ByteOrder BE */
+    qst_send_cmdz("hex:mode Cap:ByteOrder:BE");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapARMClick(TObject *Sender)
+{
+    /* Capstone ARM */
+    qst_send_cmdz("hex:type Cap:ARM");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapThumb2Click(TObject *Sender)
+{
+    /* Capstone ARM - Thumb2 */
+    qst_send_cmdz("hex:type Cap:Thumb2");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapThumb8Click(TObject *Sender)
+{
+    /* Capstone ARM - Thumb8 */
+    qst_send_cmdz("hex:type Cap:Thumb8");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMClassClick(TObject *Sender)
+{
+    /* Capstone ARM - MClass */
+    qst_send_cmdz("hex:type Cap:MClass");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapARMv8Click(TObject *Sender)
+{
+    /* Capstone ARM - AArch32 */
+    qst_send_cmdz("hex:type Cap:AArch32");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapARM64Click(TObject *Sender)
+{
+    /* Capstone ARM - AArch64 */
+    qst_send_cmdz("hex:type Cap:AArch64");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapX86Click(TObject *Sender)
+{
+    /* Capstone X86 */
+    qst_send_cmdz("hex:type Cap:X86");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapX64Click(TObject *Sender)
+{
+    /* Capstone X64 */
+    qst_send_cmdz("hex:type Cap:X64");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCap8086Click(TObject *Sender)
+{
+    /* Capstone 8086 */
+    qst_send_cmdz("hex:type Cap:8086");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMIPS32Click(TObject *Sender)
+{
+    /* Capstone MIPS32 */
+    qst_send_cmdz("hex:type Cap:MIPS32");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMIPS64Click(TObject *Sender)
+{
+    /* Capstone MIPS64 */
+    qst_send_cmdz("hex:type Cap:MIPS64");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMipsIIClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone MIPS II */
+    if (btn) qst_send_cmdz("hex:mode Cap:MIPS:II 0");
+    else     qst_send_cmdz("hex:mode Cap:MIPS:II 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMipsIIIClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone MIPS III */
+    if (btn) qst_send_cmdz("hex:mode Cap:MIPS:III 0");
+    else     qst_send_cmdz("hex:mode Cap:MIPS:III 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMips32R6Click(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone MIPS32R6 */
+    if (btn) qst_send_cmdz("hex:mode Cap:MIPS:32R6 0");
+    else     qst_send_cmdz("hex:mode Cap:MIPS:32R6 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMipsMicroClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone MIPS Micro */
+    if (btn) qst_send_cmdz("hex:mode Cap:MIPS:Micro 0");
+    else     qst_send_cmdz("hex:mode Cap:MIPS:Micro 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapPPC32Click(TObject *Sender)
+{
+    /* Capstone PowerPC32 */
+    qst_send_cmdz("hex:type Cap:PPC32");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapPPC64Click(TObject *Sender)
+{
+    /* Capstone PowerPC64 */
+    qst_send_cmdz("hex:type Cap:PPC64");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapPpcQPXClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone PowerPC QPX mode */
+    if (btn) qst_send_cmdz("hex:mode Cap:PPC:QPX 0");
+    else     qst_send_cmdz("hex:mode Cap:PPC:QPX 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapPpcSPEClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone PowerPC SPE mode */
+    if (btn) qst_send_cmdz("hex:mode Cap:PPC:SPE 0");
+    else     qst_send_cmdz("hex:mode Cap:PPC:SPE 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapPpcBOOKEClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone PowerPC BOOK-E mode */
+    if (btn) qst_send_cmdz("hex:mode Cap:PPC:BOOKE 0");
+    else     qst_send_cmdz("hex:mode Cap:PPC:BOOKE 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapPpcPSClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone PowerPC Paired-singles mode */
+    if (btn) qst_send_cmdz("hex:mode Cap:PPC:PS 0");
+    else     qst_send_cmdz("hex:mode Cap:PPC:PS 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapRV32Click(TObject *Sender)
+{
+    /* Capstone RISCV32G */
+    qst_send_cmdz("hex:type Cap:RISCV32");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapRV64Click(TObject *Sender)
+{
+    /* Capstone RISCV64G */
+    qst_send_cmdz("hex:type Cap:RISCV64");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapRVCClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone RISCV compressed mode */
+    if (btn) qst_send_cmdz("hex:mode Cap:RISCV:C 0");
+    else     qst_send_cmdz("hex:mode Cap:RISCV:C 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM68000Click(TObject *Sender)
+{
+    /* Capstone M68K - 68000 */
+    qst_send_cmdz("hex:type Cap:M68000");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM68010Click(TObject *Sender)
+{
+    /* Capstone M68K - 68010 */
+    qst_send_cmdz("hex:type Cap:M68010");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM68020Click(TObject *Sender)
+{
+    /* Capstone M68K - 68020 */
+    qst_send_cmdz("hex:type Cap:M68020");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM68030Click(TObject *Sender)
+{
+    /* Capstone M68K - 68030 */
+    qst_send_cmdz("hex:type Cap:M68030");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM68040Click(TObject *Sender)
+{
+    /* Capstone M68K - 68040 */
+    qst_send_cmdz("hex:type Cap:M68040");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM68060Click(TObject *Sender)
+{
+    /* Capstone M68K - 68060 */
+    qst_send_cmdz("hex:type Cap:M68060");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6301Click(TObject *Sender)
+{
+    /* Capstone M680X - 6301 */
+    qst_send_cmdz("hex:type Cap:MC6301");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6309Click(TObject *Sender)
+{
+    /* Capstone M680X - 6309 */
+    qst_send_cmdz("hex:type Cap:MC6309");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6800Click(TObject *Sender)
+{
+    /* Capstone M680X - 6800 */
+    qst_send_cmdz("hex:type Cap:MC6800");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6801Click(TObject *Sender)
+{
+    /* Capstone M680X - 6801 */
+    qst_send_cmdz("hex:type Cap:MC6801");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6805Click(TObject *Sender)
+{
+    /* Capstone M680X - 6805 */
+    qst_send_cmdz("hex:type Cap:MC6805");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6808Click(TObject *Sender)
+{
+    /* Capstone M680X - 6808 */
+    qst_send_cmdz("hex:type Cap:MC6808");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6809Click(TObject *Sender)
+{
+    /* Capstone M680X - 6809 */
+    qst_send_cmdz("hex:type Cap:MC6809");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_6811Click(TObject *Sender)
+{
+    /* Capstone M680X - 6811 */
+    qst_send_cmdz("hex:type Cap:MC6811");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_CPU12Click(TObject *Sender)
+{
+    /* Capstone M680X - HCS12 */
+    qst_send_cmdz("hex:type Cap:HCS12");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapM680X_HCS08Click(TObject *Sender)
+{
+    /* Capstone M680X - HCS08 */
+    qst_send_cmdz("hex:type Cap:HCS08");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMOS65XX_6502Click(TObject *Sender)
+{
+    /* Capstone MOS65XXX - 6502 */
+    qst_send_cmdz("hex:type Cap:M6502");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMOS65XX_65C02Click(TObject *Sender)
+{
+    /* Capstone MOS65XXX - 65C02 */
+    qst_send_cmdz("hex:type Cap:M65C02");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMOS65XX_W65C02Click(TObject *Sender)
+{
+    /* Capstone MOS65XXX - W65C02 */
+    qst_send_cmdz("hex:type Cap:W65C02");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMOS65XX_65816ssClick(TObject *Sender)
+{
+    /* Capstone MOS65XXX - 65816, m08/x08 */
+    qst_send_cmdz("hex:type Cap:M65816ss");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMOS65XX_65816lsClick(TObject *Sender)
+{
+    /* Capstone MOS65XXX - 65816, m16/x08 */
+    qst_send_cmdz("hex:type Cap:M65816ls");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMOS65XX_65816slClick(TObject *Sender)
+{
+    /* Capstone MOS65XXX - 65816, m08/x16 */
+    qst_send_cmdz("hex:type Cap:M65816sl");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapMOS65XX_65816llClick(TObject *Sender)
+{
+    /* Capstone MOS65XXX - 65816, m16/x16 */
+    qst_send_cmdz("hex:type Cap:M65816ll");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapBPFcClick(TObject *Sender)
+{
+    /* Capstone BPF - Classic */
+    qst_send_cmdz("hex:type Cap:BPFc");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapBPFeClick(TObject *Sender)
+{
+    /* Capstone BPF - Extended */
+    qst_send_cmdz("hex:type Cap:BPFe");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSPARCClick(TObject *Sender)
+{
+    /* Capstone SPARC */
+    qst_send_cmdz("hex:type Cap:SPARC");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSPARCv9Click(TObject *Sender)
+{
+    /* Capstone SPARCv9 */
+    qst_send_cmdz("hex:type Cap:SPARCv9");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSH2Click(TObject *Sender)
+{
+    /* Capstone SuperH - SH2 */
+    qst_send_cmdz("hex:type Cap:SH2");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSH2AClick(TObject *Sender)
+{
+    /* Capstone SuperH - SH2A */
+    qst_send_cmdz("hex:type Cap:SH2A");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSH3Click(TObject *Sender)
+{
+    /* Capstone SuperH - SH3 */
+    qst_send_cmdz("hex:type Cap:SH3");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSH4Click(TObject *Sender)
+{
+    /* Capstone SuperH - SH4 */
+    qst_send_cmdz("hex:type Cap:SH4");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSH4AClick(TObject *Sender)
+{
+    /* Capstone SuperH - SH4A */
+    qst_send_cmdz("hex:type Cap:SH4A");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapShFPUClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone SuperH - w/ FPU */
+    if (btn) qst_send_cmdz("hex:mode Cap:SH:FPU 0");
+    else     qst_send_cmdz("hex:mode Cap:SH:FPU 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapShDSPClick(TObject *Sender)
+{
+    bool    btn = ((TMenuItem*)Sender)->Checked;
+
+    /* Capstone SuperH - w/ DSP */
+    if (btn) qst_send_cmdz("hex:mode Cap:SH:DSP 0");
+    else     qst_send_cmdz("hex:mode Cap:SH:DSP 1");
+    ((TMenuItem*)Sender)->Checked = !btn;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTCore110Click(TObject *Sender)
+{
+    /* Capstone TriCore - 1.1 */
+    qst_send_cmdz("hex:type Cap:TCORE110");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTCore120Click(TObject *Sender)
+{
+    /* Capstone TriCore - 1.2 */
+    qst_send_cmdz("hex:type Cap:TCORE120");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTCore130Click(TObject *Sender)
+{
+    /* Capstone TriCore - 1.3 */
+    qst_send_cmdz("hex:type Cap:TCORE130");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTCore131Click(TObject *Sender)
+{
+    /* Capstone TriCore - 1.3.1 */
+    qst_send_cmdz("hex:type Cap:TCORE131");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTCore160Click(TObject *Sender)
+{
+    /* Capstone TriCore - 1.6 */
+    qst_send_cmdz("hex:type Cap:TCORE160");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTCore161Click(TObject *Sender)
+{
+    /* Capstone TriCore - 1.6.1 */
+    qst_send_cmdz("hex:type Cap:TCORE161");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTCore162Click(TObject *Sender)
+{
+    /* Capstone TriCore - 1.6.2 */
+    qst_send_cmdz("hex:type Cap:TCORE162");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapEVMClick(TObject *Sender)
+{
+    /* Capstone Ethereum VM */
+    qst_send_cmdz("hex:type Cap:EVM");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapSysZClick(TObject *Sender)
+{
+    /* Capstone SystemZ */
+    qst_send_cmdz("hex:type Cap:SystemZ");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapTMS320Click(TObject *Sender)
+{
+    /* Capstone TMS320C64X */
+    qst_send_cmdz("hex:type Cap:TMS320C64X");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapXCoreClick(TObject *Sender)
+{
+    /* Capstone XCore */
+    qst_send_cmdz("hex:type Cap:XCore");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subCapWASMClick(TObject *Sender)
+{
+    /* Capstone WebAssembly */
+    qst_send_cmdz("hex:type Cap:WASM");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subParamClick(TObject *Sender)
 {
     /* 参数菜单项 */
@@ -827,6 +1485,84 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subBeaNasm);
     QST_MENU_EVENT(subBeaATT);
     QST_MENU_EVENT(subBeaIntrin);
+    QST_MENU_EVENT(subCapASdef);
+    QST_MENU_EVENT(subCapASintel);
+    QST_MENU_EVENT(subCapASatt);
+    QST_MENU_EVENT(subCapASmasm);
+    QST_MENU_EVENT(subCapASnreg);
+    QST_MENU_EVENT(subCapASmoto);
+    QST_MENU_EVENT(subCapBOLE);
+    QST_MENU_EVENT(subCapBOBE);
+    QST_MENU_EVENT(subCapARM);
+    QST_MENU_EVENT(subCapThumb2);
+    QST_MENU_EVENT(subCapThumb8);
+    QST_MENU_EVENT(subCapMClass);
+    QST_MENU_EVENT(subCapARMv8);
+    QST_MENU_EVENT(subCapARM64);
+    QST_MENU_EVENT(subCapX86);
+    QST_MENU_EVENT(subCapX64);
+    QST_MENU_EVENT(subCap8086);
+    QST_MENU_EVENT(subCapMIPS32);
+    QST_MENU_EVENT(subCapMIPS64);
+    QST_MENU_EVENT(subCapMipsII);
+    QST_MENU_EVENT(subCapMipsIII);
+    QST_MENU_EVENT(subCapMips32R6);
+    QST_MENU_EVENT(subCapMipsMicro);
+    QST_MENU_EVENT(subCapPPC32);
+    QST_MENU_EVENT(subCapPPC64);
+    QST_MENU_EVENT(subCapPpcQPX);
+    QST_MENU_EVENT(subCapPpcSPE);
+    QST_MENU_EVENT(subCapPpcBOOKE);
+    QST_MENU_EVENT(subCapPpcPS);
+    QST_MENU_EVENT(subCapRV32);
+    QST_MENU_EVENT(subCapRV64);
+    QST_MENU_EVENT(subCapRVC);
+    QST_MENU_EVENT(subCapM68000);
+    QST_MENU_EVENT(subCapM68010);
+    QST_MENU_EVENT(subCapM68020);
+    QST_MENU_EVENT(subCapM68030);
+    QST_MENU_EVENT(subCapM68040);
+    QST_MENU_EVENT(subCapM68060);
+    QST_MENU_EVENT(subCapM680X_6301);
+    QST_MENU_EVENT(subCapM680X_6309);
+    QST_MENU_EVENT(subCapM680X_6800);
+    QST_MENU_EVENT(subCapM680X_6801);
+    QST_MENU_EVENT(subCapM680X_6805);
+    QST_MENU_EVENT(subCapM680X_6808);
+    QST_MENU_EVENT(subCapM680X_6809);
+    QST_MENU_EVENT(subCapM680X_6811);
+    QST_MENU_EVENT(subCapM680X_CPU12);
+    QST_MENU_EVENT(subCapM680X_HCS08);
+    QST_MENU_EVENT(subCapMOS65XX_6502);
+    QST_MENU_EVENT(subCapMOS65XX_65C02);
+    QST_MENU_EVENT(subCapMOS65XX_W65C02);
+    QST_MENU_EVENT(subCapMOS65XX_65816ss);
+    QST_MENU_EVENT(subCapMOS65XX_65816ls);
+    QST_MENU_EVENT(subCapMOS65XX_65816sl);
+    QST_MENU_EVENT(subCapMOS65XX_65816ll);
+    QST_MENU_EVENT(subCapBPFc);
+    QST_MENU_EVENT(subCapBPFe);
+    QST_MENU_EVENT(subCapSPARC);
+    QST_MENU_EVENT(subCapSPARCv9);
+    QST_MENU_EVENT(subCapSH2);
+    QST_MENU_EVENT(subCapSH2A);
+    QST_MENU_EVENT(subCapSH3);
+    QST_MENU_EVENT(subCapSH4);
+    QST_MENU_EVENT(subCapSH4A);
+    QST_MENU_EVENT(subCapShFPU);
+    QST_MENU_EVENT(subCapShDSP);
+    QST_MENU_EVENT(subCapTCore110);
+    QST_MENU_EVENT(subCapTCore120);
+    QST_MENU_EVENT(subCapTCore130);
+    QST_MENU_EVENT(subCapTCore131);
+    QST_MENU_EVENT(subCapTCore160);
+    QST_MENU_EVENT(subCapTCore161);
+    QST_MENU_EVENT(subCapTCore162);
+    QST_MENU_EVENT(subCapEVM);
+    QST_MENU_EVENT(subCapSysZ);
+    QST_MENU_EVENT(subCapTMS320);
+    QST_MENU_EVENT(subCapXCore);
+    QST_MENU_EVENT(subCapWASM);
     QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subAbout);
 
