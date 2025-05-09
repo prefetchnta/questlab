@@ -154,6 +154,8 @@ void __fastcall subCapTMS320Click(TObject *Sender);
 void __fastcall subCapXCoreClick(TObject *Sender);
 void __fastcall subCapWASMClick(TObject *Sender);
 //---------------------------------------------------------------------------
+void __fastcall subMAMEunidasmXXXXClick(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subAboutClick(TObject *Sender);
@@ -1300,6 +1302,26 @@ void __fastcall TfrmMain::subCapWASMClick(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subMAMEunidasmXXXXClick(TObject *Sender)
+{
+    int         size;
+    AnsiString  line;
+
+    /* MAME unidasm */
+    line = "hex:type MAME:";
+    line += ((TMenuItem*)Sender)->Caption;
+    size = line.Length();
+    for (int idx = 1; idx <= size; idx++) {
+        if (line[idx] == '&') {
+            line.Delete(idx, 1);
+            idx  -= 1;
+            size -= 1;
+        }
+    }
+    qst_send_cmdz(line.c_str());
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subParamClick(TObject *Sender)
 {
     /* 参数菜单项 */
@@ -1343,7 +1365,7 @@ add_filter_menu (
     parent->Add(item);
     return (TRUE);
 }
-//---------------------------------------------------------------------------
+
 /*
 ---------------------------------------
     添加图像实验菜单
@@ -1372,6 +1394,47 @@ add_imglab_menu (
                    frmMain->subImgLabXXXXClick, 0, name);
     parent->Add(item);
     return (TRUE);
+}
+
+/*
+---------------------------------------
+    添加 MAME 反汇编菜单
+---------------------------------------
+*/
+static void_t
+add_mame_unidasm_menu (
+  __CR_IN__ TMenuItem*  parent
+    )
+{
+    sINIu*      ini;
+    ansi_t*     str;
+    TMenuItem*  item;
+
+    /* 加载架构类型列表 */
+    str = file_load_as_strA("x64bin\\unidasm.txt");
+    if (str == NULL)
+        return;
+    ini = ini_parseU(str);
+    mem_free(str);
+    if (ini == NULL)
+        return;
+
+    ansi_t  name[128];
+    uint_t  name_idx = 0;
+
+    /* 添加到子菜单项 */
+    for (leng_t idx = 0; idx < ini->count; idx++) {
+        str = str_trimA(ini->lines[idx]);
+        if (*str == 0x00)
+            continue;
+        sprintf(name, "subMAMEunidasm%04u", name_idx++);
+        item = NewItem(str, 0, false, true,
+                       frmMain->subMAMEunidasmXXXXClick, 0, name);
+        item->RadioItem = true;
+        item->GroupIndex = 1;
+        parent->Add(item);
+    }
+    ini_closeU(ini);
 }
 //---------------------------------------------------------------------------
 /*
@@ -1566,6 +1629,8 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subAbout);
 
+    bool_t      is_win64;
+    TMenuItem*  next_menu;
     TMenuItem*  temp_menu;
     TMenuItem*  root_menu;
 
@@ -1573,27 +1638,50 @@ void __fastcall TfrmMain::SetupMenu(void)
     root_menu = mnuMain->Items;
     qst_load_menu(root_menu, &tbl);
     curbead_freeT(&tbl, sMenuEvent);
+    is_win64 = misc_is_win64();
 
-    /* 根据滤镜脚本文件添加菜单 */
+    /* 动态添加的菜单项 */
     for (idx = 0; idx < root_menu->Count; idx++) {
         temp_menu = root_menu->Items[idx];
         if (temp_menu->Name == "subFilter2D")
-            break;
-    }
-    if (idx < root_menu->Count) {
-        file_searchA(QST_PATH_SCRIPT, TRUE, TRUE, FALSE,
-            "filter\\*.f2d", add_filter_menu, temp_menu);
-    }
-
-    /* 根据图像实验插件添加菜单 */
-    for (idx = 0; idx < root_menu->Count; idx++) {
-        temp_menu = root_menu->Items[idx];
+        {
+            /* 根据滤镜脚本文件添加菜单 */
+            file_searchA(QST_PATH_SCRIPT, TRUE, TRUE, FALSE,
+                "filter\\*.f2d", add_filter_menu, temp_menu);
+        }
+        else
         if (temp_menu->Name == "subImgLab2D")
-            break;
-    }
-    if (idx < root_menu->Count) {
-        file_searchA(QST_PATH_PLUGIN, FALSE, TRUE, FALSE,
-                "*.ilab", add_imglab_menu, temp_menu);
+        {
+            /* 根据图像实验插件添加菜单 */
+            file_searchA(QST_PATH_PLUGIN, FALSE, TRUE, FALSE,
+                    "*.ilab", add_imglab_menu, temp_menu);
+        }
+        else
+        if (is_win64 && temp_menu->Name == "subDetect")
+        {
+            int ii, jj;
+
+            /* 找到数据探测菜单项 */
+            for (ii = 0; ii < temp_menu->Count; ii++)
+            {
+                /* 找到反汇编菜单项 */
+                next_menu = temp_menu->Items[ii];
+                if (next_menu->Name == "subDisasm")
+                {
+                    /* 根据外部文件添加 MAME 反汇编类型 */
+                    for (jj = 0; jj < next_menu->Count; jj++)
+                    {
+                        TMenuItem*  mame_menu = next_menu->Items[jj];
+
+                        if (mame_menu->Name == "subMAMEunidasm") {
+                            add_mame_unidasm_menu(mame_menu);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
     }
 }
 //---------------------------------------------------------------------------

@@ -192,6 +192,7 @@
                 <MenuItem name="subCapXCore" text="XCore" radio="1" group="1" />
                 <MenuItem name="subCapWASM" text="WebAssembly" radio="1" group="1" />
             </MenuItem>
+            <MenuItem name="subMAMEunidasm" text="MAME unidasm (&M)" />
         </MenuItem>
     </MenuItem>
     <MenuItem name="subParam" text="参数(&P)" />
