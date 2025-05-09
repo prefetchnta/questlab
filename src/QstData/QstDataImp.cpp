@@ -29,6 +29,7 @@
 /* 外部库引用 */
 #pragma comment (lib, "BeaEngine.lib")
 #pragma comment (lib, "capstone.lib")
+#pragma comment (lib, "QstLibs.lib")
 
 #if defined(_CR_BUILD_DLL_)
 /*
@@ -897,6 +898,61 @@ unasm_cap_show (
     return (dasm);
 }
 
+/***************/
+/* MAME 模式值 */
+/***************/
+static ansi_t*  s_mame_archi = NULL;
+
+/*
+---------------------------------------
+    MAME unidasm
+---------------------------------------
+*/
+static ansi_t*
+unasm_mame_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    FILE*   fp;
+    leng_t  len;
+    ansi_t* str;
+    ansi_t* txt;
+
+    /* 输出执行命令 */
+    CR_NOUSE(is_be);
+    if (s_mame_archi == NULL || !misc_is_win64())
+        return (NULL);
+    if (!file_saveA(QST_PATH_OUTPUT "unidasm.bin", data, size))
+        return (NULL);
+    fp = fopen(QST_PATH_OUTPUT "unidasm.bat", "wb");
+    if (fp == NULL)
+        return (NULL);
+    fprintf(fp, "x64bin\\unidasm.exe "
+                QST_PATH_OUTPUT "unidasm.bin -arch %s -count 1 > "
+                QST_PATH_OUTPUT "unidasm.txt\r\n", s_mame_archi);
+    fclose(fp);
+
+    /* 读取执行结果 */
+    misc_call_exe(QST_PATH_OUTPUT "unidasm.bat", TRUE, TRUE);
+    str = file_load_as_strA(QST_PATH_OUTPUT "unidasm.txt");
+    file_deleteA(QST_PATH_OUTPUT "unidasm.bat");
+    file_deleteA(QST_PATH_OUTPUT "unidasm.bin");
+    if (str == NULL)
+        return (NULL);
+    len = str_lenA(str);
+    if (len <= 3 || chr_cmpA(str, "0: ", 3) != 0) {
+        mem_free(str);
+        return (NULL);
+    }
+    str_trimA(str);
+    txt = str_fmtA(" %s: %s", s_mame_archi, str + 3);
+    file_deleteA(QST_PATH_OUTPUT "unidasm.txt");
+    mem_free(str);
+    return (txt);
+}
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -932,6 +988,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "STRING", string_show },
     { "BEA", unasm_bea_show },
     { "CAP", unasm_cap_show },
+    { "MAME", unasm_mame_show },
     { NULL, NULL }
 };
 
@@ -1321,6 +1378,16 @@ data_type (
             s_CapOptions = 0;
             s_cap_archi = "WASM";
         }
+        return;
+    }
+
+    /* MAME unidasm */
+    if (chr_cmpA(type, "MAME:", 5) == 0) {
+        type += 5;
+        if (s_mame_archi != NULL)
+            mem_free(s_mame_archi);
+        s_mame_archi = str_dupA(type);
+        str_trimA(s_mame_archi);
         return;
     }
 }
