@@ -1411,7 +1411,7 @@ add_mame_unidasm_menu (
     TMenuItem*  item;
 
     /* 加载架构类型列表 */
-    str = file_load_as_strA("x64bin\\unidasm.txt");
+    str = file_load_as_strA("x64bin\\unidasm.lst");
     if (str == NULL)
         return;
     ini = ini_parseU(str);
