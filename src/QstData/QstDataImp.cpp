@@ -942,12 +942,13 @@ unasm_mame_show (
     if (str == NULL)
         return (NULL);
     len = str_lenA(str);
-    if (len <= 3 || chr_cmpA(str, "0: ", 3) != 0) {
+    txt = str_strA(str, ": ");
+    if (len <= 2 || chr_cmpA(str, "0:", 2) != 0 || txt == NULL) {
         mem_free(str);
         return (NULL);
     }
     str_trimA(str);
-    txt = str_fmtA(" %s: %s", s_mame_archi, str + 3);
+    txt = str_fmtA(" %s: %s", s_mame_archi, txt + 2);
     file_deleteA(QST_PATH_OUTPUT "unidasm.txt");
     mem_free(str);
     return (txt);
