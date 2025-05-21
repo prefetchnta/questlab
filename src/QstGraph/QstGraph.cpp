@@ -36,10 +36,9 @@ qst_grp_main (
     while (!ctx->quit)
     {
         bool    move;
-        uchar*  pntr;
         double  vals;
         uint_t  back, leng, idx;
-        byte_t  data[QST_UDP_MAX];
+        byte_t  data[QST_UDP_MAX], *pntr;
 
         /* 读取命令数据包 */
         mem_zero(data, sizeof(data));
@@ -73,9 +72,19 @@ qst_grp_main (
                     frm->setLeft(*(fp32_t*)(&data[2]), *(fp32_t*)(&data[6]));
                 break;
 
-            case QST_MK_CMD(0x00, 0x04):    /* 设置曲线颜色 */
+            case QST_MK_CMD(0x00, 0x04):    /* 设置前景颜色 */
                 if (back == sizeof(int16u) + sizeof(int32u))
-                    frm->setLineColor(*(int32u*)(&data[2]));
+                    frm->setLineColor(*(int32u*)(&data[2]), false);
+                break;
+
+            case QST_MK_CMD(0x00, 0x05):    /* 设置背景颜色 */
+                if (back == sizeof(int16u) + sizeof(int32u))
+                    frm->setLineColor(*(int32u*)(&data[2]), true);
+                break;
+
+            case QST_MK_CMD(0x00, 0x06):    /* 设置绘制线宽 */
+                if (back == sizeof(int16u) + sizeof(byte_t))
+                    frm->setLineWidth(data[2]);
                 break;
 
             case QST_MK_CMD(0x01, 0x00):    /* 设置一个数值 */
@@ -296,7 +305,7 @@ WinMain (
     mem_zero(&s_wrk_ctx, sizeof(s_wrk_ctx));
     if (argc > 3) {
         s_wrk_ctx.type = str2intxA(argv[3]);
-        if (s_wrk_ctx.type < 1 || s_wrk_ctx.type > 11)
+        if (s_wrk_ctx.type > 11)
             return (QST_ERROR);
         if (argc > 4) {
             if (!misc_desk_load(argv[4], &s_wrk_ctx.winx, &s_wrk_ctx.winy,

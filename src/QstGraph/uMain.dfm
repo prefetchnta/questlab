@@ -14,8 +14,16 @@ object frmMain: TfrmMain
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
+  object ShowMain: TImage
+    Left = 0
+    Top = 0
+    Width = 792
+    Height = 450
+    Align = alClient
+  end
   object ChartMain: TChart
     Left = 0
     Top = 0
