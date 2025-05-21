@@ -1934,7 +1934,7 @@ QstGraph_SetAxisLeft (
 
 /*
 =======================================
-    QstGraph 设置曲线颜色
+    QstGraph 设置前景颜色
 =======================================
 */
 CR_API void_t STDCALL
@@ -1953,6 +1953,53 @@ QstGraph_SetLineColor (
     cmd[3] = (byte_t)g;
     cmd[4] = (byte_t)r;
     cmd[5] = 0x00;
+    socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
+}
+
+/*
+=======================================
+    QstGraph 设置背景颜色
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetBackColor (
+  __CR_IN__ socket_t    netw,
+  __CR_IN__ uint_t      r,
+  __CR_IN__ uint_t      g,
+  __CR_IN__ uint_t      b
+    )
+{
+    byte_t  cmd[2 + 4];
+
+    cmd[0] = 0x00;
+    cmd[1] = 0x05;
+    cmd[2] = (byte_t)b;
+    cmd[3] = (byte_t)g;
+    cmd[4] = (byte_t)r;
+    cmd[5] = 0x00;
+    socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
+}
+
+/*
+=======================================
+    QstGraph 设置绘制线宽
+=======================================
+*/
+CR_API void_t STDCALL
+QstGraph_SetLineWidth (
+  __CR_IN__ socket_t    netw,
+  __CR_IN__ uint_t      width
+    )
+{
+    byte_t  cmd[2 + 1];
+
+    if (width > 255)
+        width = 255;
+    else if (width == 0)
+        width = 1;
+    cmd[0] = 0x00;
+    cmd[1] = 0x06;
+    cmd[2] = (byte_t)width;
     socket_udp_send(netw, NULL, 0, cmd, sizeof(cmd));
 }
 
