@@ -3,7 +3,7 @@ Signature         = "$Windows NT$"
 Class             = DiskDrive
 ClassGuid         = {4d36e967-e325-11ce-bfc1-08002be10318}
 Provider          = %ProviderName%
-DriverVer = 01/18/2025,2.2.1.0
+DriverVer = 04/19/2025,2.3.0.0
 CatalogFile       = %DriverName%.cat
 DriverPackageType = FileSystem
 
