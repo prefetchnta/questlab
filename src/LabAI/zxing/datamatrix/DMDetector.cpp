@@ -25,7 +25,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <map>
-#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -485,6 +484,35 @@ public:
 
 		return lineLength / meanModSize;
 	}
+
+	bool truncateIfLShape()
+	{
+		auto lenThis = Size(_points);
+		auto lineAB = RegressionLine(_points.front(), _points.back());
+		if (lenThis < 16 || lineAB.distance(_points[lenThis / 2]) < 5)
+			return false;
+
+		auto maxP = _points.begin();
+		double maxD = 0.0;
+		for (auto p = _points.begin(); p != _points.end(); ++p) {
+			auto d = lineAB.distance(*p);
+			if (d > maxD) {
+				maxP = p;
+				maxD = d;
+			}
+		}
+
+		auto lenL = distance(_points.front(), *maxP) - 1;
+		auto lenB = distance(*maxP, _points.back()) - 1;
+		if (maxD < std::min(lenL, lenB) / 2)
+			return false;
+
+		setDirectionInward(_points.back() - *maxP);
+
+		_points.resize(std::distance(_points.begin(), maxP) - 1);
+
+		return true;
+	}
 };
 
 class EdgeTracer : public BitMatrixCursorF
@@ -711,6 +739,7 @@ static DetectorResult Scan(EdgeTracer& startTracer, std::array<DMRegressionLine,
 #endif
 
 		auto t = startTracer;
+		PointF up, right;
 
 		// follow left leg upwards
 		t.turnRight();
@@ -725,17 +754,19 @@ static DetectorResult Scan(EdgeTracer& startTracer, std::array<DMRegressionLine,
 		t.state = 1;
 		t.setDirection(tlTracer.right());
 		CHECK(t.traceLine(t.left(), lineL));
-		if (!lineL.isValid())
-			t.updateDirectionFromOrigin(tl);
-		auto up = t.back();
+
+		// check if lineL is L-shaped -> truncate the lower leg and set t to just before the corner
+		if (lineL.truncateIfLShape())
+			t.p = lineL.points().back();
+		t.updateDirectionFromOrigin(tl);
+		up = t.back();
 		CHECK(t.traceCorner(t.left(), bl));
 
 		// follow bottom leg right
 		t.state = 2;
 		CHECK(t.traceLine(t.left(), lineB));
-		if (!lineB.isValid())
-			t.updateDirectionFromOrigin(bl);
-		auto right = t.front();
+		t.updateDirectionFromOrigin(bl);
+		right = t.front();
 		CHECK(t.traceCorner(t.left(), br));
 
 		auto lenL = distance(tl, bl) - 1;
@@ -922,7 +953,7 @@ static DetectorResult DetectPure(const BitMatrix& image)
 	int bottom = top + height - 1;
 
 	// Now just read off the bits (this is a crop + subsample)
-	return {Deflate(image, dimT, dimR, top + modSizeX / 2, left + modSizeY / 2, modSize),
+	return {Deflate(image, dimT, dimR, top + modSizeY / 2, left + modSizeX / 2, modSize),
 			{{left, top}, {right, top}, {right, bottom}, {left, bottom}}};
 }
 

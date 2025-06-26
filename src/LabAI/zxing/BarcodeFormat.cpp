@@ -31,7 +31,9 @@ static BarcodeFormatName NAMES[] = {
 	{BarcodeFormat::Code128, "Code128"},
 	{BarcodeFormat::DataBar, "DataBar"},
 	{BarcodeFormat::DataBarExpanded, "DataBarExpanded"},
+	{BarcodeFormat::DataBarLimited, "DataBarLimited"},
 	{BarcodeFormat::DataMatrix, "DataMatrix"},
+	{BarcodeFormat::DXFilmEdge, "DXFilmEdge"},
 	{BarcodeFormat::EAN8, "EAN-8"},
 	{BarcodeFormat::EAN13, "EAN-13"},
 	{BarcodeFormat::ITF, "ITF"},
@@ -66,7 +68,11 @@ static std::string NormalizeFormatString(std::string_view sv)
 {
 	std::string str(sv);
 	std::transform(str.begin(), str.end(), str.begin(), [](char c) { return (char)std::tolower(c); });
+#ifdef __cpp_lib_erase_if
+	std::erase_if(str, [](char c) { return Contains("_-[]", c); });
+#else
 	str.erase(std::remove_if(str.begin(), str.end(), [](char c) { return Contains("_-[]", c); }), str.end());
+#endif
 	return str;
 }
 

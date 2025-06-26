@@ -46,9 +46,6 @@ imglab_zxi_grpcode_doit (
         param.setTryDownscale(!!options->tryDownscale);
         param.setIsPure(!!options->isPure);
         param.setTryCode39ExtendedMode(!!options->tryCode39ExtendedMode);
-        param.setValidateCode39CheckSum(!!options->validateCode39CheckSum);
-        param.setValidateITFCheckSum(!!options->validateITFCheckSum);
-        param.setReturnCodabarStartEnd(!!options->returnCodabarStartEnd);
         param.setReturnErrors(!!options->returnErrors);
         param.setDownscaleFactor((uint8_t)options->downscaleFactor);
         switch (options->eanAddOnSymbol)
@@ -115,13 +112,13 @@ imglab_zxi_grpcode_doit (
         default: break;
         case 1: fmt = ZXing::ImageFormat::Lum;  break;
         case 3: fmt = ZXing::ImageFormat::BGR;  break;
-        case 4: fmt = ZXing::ImageFormat::BGRX; break;
+        case 4: fmt = ZXing::ImageFormat::BGRA; break;
     }
     if (mm->depth() != CV_8U || fmt == ZXing::ImageFormat::None)
         return (0);
 
     ZXing::ImageView    img (mm->data, mm->cols, mm->rows, fmt);
-    ZXing::Results      rets = ZXing::ReadBarcodes(img, param);
+    ZXing::Barcodes     rets = ZXing::ReadBarcodes(img, param);
 
     size_t  cnts = rets.size();
 

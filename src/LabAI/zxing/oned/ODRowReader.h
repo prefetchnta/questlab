@@ -9,7 +9,7 @@
 
 #include "BitArray.h"
 #include "Pattern.h"
-#include "Result.h"
+#include "Barcode.h"
 #include "ZXAlgorithms.h"
 
 #include <algorithm>
@@ -64,7 +64,7 @@ public:
 
 	virtual ~RowReader() {}
 
-	virtual Result decodePattern(int rowNumber, PatternView& next, std::unique_ptr<DecodingState>& state) const = 0;
+	virtual Barcode decodePattern(int rowNumber, PatternView& next, std::unique_ptr<DecodingState>& state) const = 0;
 
 	/**
 	 * Determines how closely a set of observed counts of runs of black/white values matches a given
@@ -79,8 +79,8 @@ public:
 	template <typename CP, typename PP>
 	static float PatternMatchVariance(const CP* counters, const PP* pattern, size_t length, float maxIndividualVariance)
 	{
-		int total = std::accumulate(counters, counters+length, 0);
-		int patternLength = std::accumulate(pattern, pattern+length, 0);
+		int total = Reduce(counters, counters + length, 0);
+		int patternLength = Reduce(pattern, pattern + length, 0);
 		if (total < patternLength) {
 			// If we don't even have one pixel per unit of bar width, assume this is too small
 			// to reliably match, so fail:
@@ -215,7 +215,7 @@ public:
 };
 
 template<typename Range>
-Result DecodeSingleRow(const RowReader& reader, const Range& range)
+Barcode DecodeSingleRow(const RowReader& reader, const Range& range)
 {
 	PatternRow row;
 	GetPatternRow(range, row);

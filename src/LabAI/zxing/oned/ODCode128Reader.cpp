@@ -7,15 +7,13 @@
 #include "ODCode128Reader.h"
 
 #include "ODCode128Patterns.h"
-#include "Result.h"
+#include "Barcode.h"
 #include "ZXAlgorithms.h"
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <initializer_list>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace ZXing::OneD {
@@ -160,7 +158,7 @@ public:
 constexpr auto START_PATTERN_PREFIX = FixedPattern<3, 4>{2, 1, 1};
 constexpr int CHAR_LEN = 6;
 constexpr float QUIET_ZONE = 5;	// quiet zone spec is 10 modules, real world examples ignore that, see #138
-constexpr int CHAR_SUM = 11;
+constexpr int CHAR_MODS = 11;
 
 //TODO: make this a constexpr variable initialization
 static auto E2E_PATTERNS = [] {
@@ -177,12 +175,12 @@ static auto E2E_PATTERNS = [] {
 	return res;
 }();
 
-Result Code128Reader::decodePattern(int rowNumber, PatternView& next, std::unique_ptr<DecodingState>&) const
+Barcode Code128Reader::decodePattern(int rowNumber, PatternView& next, std::unique_ptr<DecodingState>&) const
 {
 	int minCharCount = 4; // start + payload + checksum + stop
 	auto decodePattern = [](const PatternView& view, bool start = false) {
 		// This is basically the reference algorithm from the specification
-		int code = IndexOf(E2E_PATTERNS, ToInt(NormalizedE2EPattern<CHAR_LEN, CHAR_SUM>(view)));
+		int code = IndexOf(E2E_PATTERNS, ToInt(NormalizedE2EPattern<CHAR_LEN>(view, CHAR_MODS)));
 		if (code == -1 && !start) // if the reference algo fails, give the original upstream version a try (required to decode a few samples)
 			code = DecodeDigit(view, Code128::CODE_PATTERNS, MAX_AVG_VARIANCE, MAX_INDIVIDUAL_VARIANCE);
 		return code;
@@ -240,8 +238,8 @@ Result Code128Reader::decodePattern(int rowNumber, PatternView& next, std::uniqu
 		error = ChecksumError();
 
 	int xStop = next.pixelsTillEnd();
-	return Result(raw2txt.text(), rowNumber, xStart, xStop, BarcodeFormat::Code128, raw2txt.symbologyIdentifier(), error,
-				  raw2txt.readerInit());
+	return Barcode(raw2txt.text(), rowNumber, xStart, xStop, BarcodeFormat::Code128, raw2txt.symbologyIdentifier(), error,
+				   raw2txt.readerInit());
 }
 
 } // namespace ZXing::OneD

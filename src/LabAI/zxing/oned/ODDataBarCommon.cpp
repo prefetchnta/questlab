@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "ODDataBarCommon.h"
+
 #include <cmath>
 
 namespace ZXing::OneD::DataBar {
@@ -35,7 +36,11 @@ static int combins(int n, int r)
 	return val;
 }
 
+#ifdef __cpp_lib_span
+int GetValue(const std::span<int> widths, int maxWidth, bool noNarrow)
+#else
 int GetValue(const Array4I& widths, int maxWidth, bool noNarrow)
+#endif
 {
 	int elements = Size(widths);
 	int n = Reduce(widths);
@@ -64,18 +69,19 @@ int GetValue(const Array4I& widths, int maxWidth, bool noNarrow)
 	return val;
 }
 
-template <typename T>
-struct OddEven
-{
-	T odd = {}, evn = {};
-	T& operator[](int i) { return i & 1 ? evn : odd; }
-};
-
 using Array4F = std::array<float, 4>;
 
 bool ReadDataCharacterRaw(const PatternView& view, int numModules, bool reversed, Array4I& oddPattern,
 						  Array4I& evnPattern)
 {
+#if 1
+	auto pattern = NormalizedPatternFromE2E<8>(view, numModules, reversed);
+	OddEven<Array4I&> res = {oddPattern, evnPattern};
+
+	for (int i = 0; i < Size(pattern); ++i)
+		res[i % 2][i / 2] = pattern[i];
+
+#else
 	OddEven<Array4I&> res = {oddPattern, evnPattern};
 	OddEven<Array4F> rem;
 
@@ -88,6 +94,7 @@ bool ReadDataCharacterRaw(const PatternView& view, int numModules, bool reversed
 		res[i % 2][i / 2] = int(v + .5f);
 		rem[i % 2][i / 2] = v - res[i % 2][i / 2];
 	}
+#endif
 
 	// DataBarExpanded data character is 17 modules wide
 	// DataBar outer   data character is 16 modules wide

@@ -394,10 +394,13 @@ imglab_ocv_qr2code_doit (qr2code_ocv_t qr2d, ximage_t mat, str_lstA_t *text,
 #define ZXI_TYPE_UPCE       (1 << 15)
 #define ZXI_TYPE_MC_QRCODE  (1 << 16)
 #define ZXI_TYPE_RM_QRCODE  (1 << 17)
+#define ZXI_TYPE_DX_FILMEG  (1 << 18)
+#define ZXI_TYPE_DATABARLM  (1 << 19)
 #define ZXI_TYPE_LINEAR_CODES \
     (ZXI_TYPE_CODABAR | ZXI_TYPE_CODE39 | ZXI_TYPE_CODE93 | \
      ZXI_TYPE_CODE128 | ZXI_TYPE_EAN8 | ZXI_TYPE_EAN13 | ZXI_TYPE_ITF | \
-     ZXI_TYPE_DATABAR | ZXI_TYPE_DATABAREX | ZXI_TYPE_UPCA | ZXI_TYPE_UPCE)
+     ZXI_TYPE_DATABAR | ZXI_TYPE_DATABAREX | ZXI_TYPE_DATABARLM | \
+     ZXI_TYPE_DX_FILMEG | ZXI_TYPE_UPCA | ZXI_TYPE_UPCE)
 #define ZXI_TYPE_MATRIX_CODES \
     (ZXI_TYPE_AZTEC | ZXI_TYPE_DATAMATRIX | ZXI_TYPE_MAXICODE | \
      ZXI_TYPE_PDF417 | ZXI_TYPE_QRCODE | ZXI_TYPE_MC_QRCODE | \
@@ -412,9 +415,6 @@ typedef struct  /* ZXing::ReaderOptions */
     bool_t  tryDownscale;
     bool_t  isPure;
     bool_t  tryCode39ExtendedMode;
-    bool_t  validateCode39CheckSum;
-    bool_t  validateITFCheckSum;
-    bool_t  returnCodabarStartEnd;
     bool_t  returnErrors;
     sint_t  downscaleFactor;
     sint_t  eanAddOnSymbol;

@@ -4,11 +4,27 @@
 */
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Result.h"
+#include "Barcode.h"
 
 #include "DecoderResult.h"
-#include "TextDecoder.h"
+#include "DetectorResult.h"
 #include "ZXAlgorithms.h"
+
+#ifdef ZXING_EXPERIMENTAL_API
+#include "BitMatrix.h"
+
+#ifdef ZXING_USE_ZINT
+#include <zint.h>
+void zint_symbol_deleter::operator()(zint_symbol* p) const noexcept
+{
+	ZBarcode_Delete(p);
+}
+#else
+struct zint_symbol {};
+void zint_symbol_deleter::operator()(zint_symbol*) const noexcept {}
+#endif
+
+#endif
 
 #include <cmath>
 #include <list>
@@ -25,15 +41,18 @@ Result::Result(const std::string& text, int y, int xStart, int xStop, BarcodeFor
 	  _readerInit(readerInit)
 {}
 
-Result::Result(DecoderResult&& decodeResult, Position&& position, BarcodeFormat format)
+Result::Result(DecoderResult&& decodeResult, DetectorResult&& detectorResult, BarcodeFormat format)
 	: _content(std::move(decodeResult).content()),
 	  _error(std::move(decodeResult).error()),
-	  _position(std::move(position)),
+	  _position(std::move(detectorResult).position()),
 	  _sai(decodeResult.structuredAppend()),
 	  _format(format),
 	  _lineCount(decodeResult.lineCount()),
 	  _isMirrored(decodeResult.isMirrored()),
 	  _readerInit(decodeResult.readerInit())
+#ifdef ZXING_EXPERIMENTAL_API
+	  , _symbol(std::make_shared<BitMatrix>(std::move(detectorResult).bits()))
+#endif
 {
 	if (decodeResult.versionNumber())
 		snprintf(_version, 4, "%d", decodeResult.versionNumber());
@@ -42,9 +61,13 @@ Result::Result(DecoderResult&& decodeResult, Position&& position, BarcodeFormat 
 	// TODO: add type opaque and code specific 'extra data'? (see DecoderResult::extra())
 }
 
+Result::Result(DecoderResult&& decodeResult, Position&& position, BarcodeFormat format)
+	: Result(std::move(decodeResult), {{}, std::move(position)}, format)
+{}
+
 bool Result::isValid() const
 {
-	return format() != BarcodeFormat::None && _content.symbology.code != 0 && !error();
+	return format() != BarcodeFormat::None && !_content.bytes.empty() && !error();
 }
 
 const ByteArray& Result::bytes() const
@@ -121,6 +144,24 @@ Result& Result::setReaderOptions(const ReaderOptions& opts)
 	return *this;
 }
 
+#ifdef ZXING_EXPERIMENTAL_API
+void Result::symbol(BitMatrix&& bits)
+{
+	bits.flipAll();
+	_symbol = std::make_shared<BitMatrix>(std::move(bits));
+}
+
+ImageView Result::symbol() const
+{
+	return {_symbol->row(0).begin(), _symbol->width(), _symbol->height(), ImageFormat::Lum};
+}
+
+void Result::zint(unique_zint_symbol&& z)
+{
+	_zint = std::shared_ptr(std::move(z));
+}
+#endif
+
 bool Result::operator==(const Result& o) const
 {
 	// handle case where both are MatrixCodes first
@@ -144,59 +185,64 @@ bool Result::operator==(const Result& o) const
 	// the following code is only meant for this or other lineCount == 1
 	assert(lineCount() == 1 || o.lineCount() == 1);
 
-	const auto& r1 = lineCount() == 1 ? *this : o;
-	const auto& r2 = lineCount() == 1 ? o : *this;
+	// sl == single line, ml = multi line
+	const auto& sl = lineCount() == 1 ? *this : o;
+	const auto& ml = lineCount() == 1 ? o : *this;
 
-	// if one line is less than half the length of the other away from the
-	// latter, we consider it to belong to the same symbol. additionally, both need to have
-	// roughly the same length (see #367)
-	auto dTop = maxAbsComponent(r2.position().topLeft() - r1.position().topLeft());
-	auto dBot = maxAbsComponent(r2.position().bottomLeft() - r1.position().topLeft());
-	auto length = maxAbsComponent(r1.position().topLeft() - r1.position().bottomRight());
-	auto dLength = std::abs(length - maxAbsComponent(r2.position().topLeft() - r2.position().bottomRight()));
+	// If one line is less than half the length of the other away from the
+	// latter, we consider it to belong to the same symbol.
+	// Additionally, both need to have roughly the same length (see #367).
+	auto dTop = maxAbsComponent(ml.position().topLeft() - sl.position().topLeft());
+	auto dBot = maxAbsComponent(ml.position().bottomLeft() - sl.position().topLeft());
+	auto slLength = maxAbsComponent(sl.position().topLeft() - sl.position().bottomRight());
+	bool isHorizontal = sl.position().topLeft().y == sl.position().bottomRight().y;
+	// Measure the multi line length in the same direction as the single line one (not diagonaly)
+	// to make sure overly tall symbols don't get segmented (see #769).
+	auto mlLength = isHorizontal ? std::abs(ml.position().topLeft().x - ml.position().bottomRight().x)
+								 : std::abs(ml.position().topLeft().y - ml.position().bottomRight().y);
 
-	return std::min(dTop, dBot) < length / 2 && dLength < length / 5;
+	return std::min(dTop, dBot) < slLength / 2 && std::abs(slLength - mlLength) < slLength / 5;
 }
 
-Result MergeStructuredAppendSequence(const Results& results)
+Barcode MergeStructuredAppendSequence(const Barcodes& barcodes)
 {
-	if (results.empty())
+	if (barcodes.empty())
 		return {};
 
-	std::list<Result> allResults(results.begin(), results.end());
-	allResults.sort([](const Result& r1, const Result& r2) { return r1.sequenceIndex() < r2.sequenceIndex(); });
+	std::list<Barcode> allBarcodes(barcodes.begin(), barcodes.end());
+	allBarcodes.sort([](const Barcode& r1, const Barcode& r2) { return r1.sequenceIndex() < r2.sequenceIndex(); });
 
-	Result res = allResults.front();
-	for (auto i = std::next(allResults.begin()); i != allResults.end(); ++i)
+	Barcode res = allBarcodes.front();
+	for (auto i = std::next(allBarcodes.begin()); i != allBarcodes.end(); ++i)
 		res._content.append(i->_content);
 
 	res._position = {};
 	res._sai.index = -1;
 
-	if (allResults.back().sequenceSize() != Size(allResults) ||
-		!std::all_of(allResults.begin(), allResults.end(),
-					 [&](Result& it) { return it.sequenceId() == allResults.front().sequenceId(); }))
+	if (allBarcodes.back().sequenceSize() != Size(allBarcodes) ||
+		!std::all_of(allBarcodes.begin(), allBarcodes.end(),
+					 [&](Barcode& it) { return it.sequenceId() == allBarcodes.front().sequenceId(); }))
 		res._error = FormatError("sequenceIDs not matching during structured append sequence merging");
 
 	return res;
 }
 
-Results MergeStructuredAppendSequences(const Results& results)
+Barcodes MergeStructuredAppendSequences(const Barcodes& barcodes)
 {
-	std::map<std::string, Results> sas;
-	for (auto& res : results) {
-		if (res.isPartOfSequence())
-			sas[res.sequenceId()].push_back(res);
+	std::map<std::string, Barcodes> sas;
+	for (auto& barcode : barcodes) {
+		if (barcode.isPartOfSequence())
+			sas[barcode.sequenceId()].push_back(barcode);
 	}
 
-	Results saiResults;
+	Barcodes res;
 	for (auto& [id, seq] : sas) {
-		auto res = MergeStructuredAppendSequence(seq);
-		if (res.isValid())
-			saiResults.push_back(std::move(res));
+		auto barcode = MergeStructuredAppendSequence(seq);
+		if (barcode.isValid())
+			res.push_back(std::move(barcode));
 	}
 
-	return saiResults;
+	return res;
 }
 
-} // ZXing
+} // namespace ZXing

@@ -44,7 +44,7 @@ PatternView FindPattern(const PatternView& view)
 	return FindLeftGuard<PATTERN.size()>(view, PATTERN.size(), [](const PatternView& view, int spaceInPixel) {
 		// perform a fast plausability test for 1:1:3:1:1 pattern
 		if (view[2] < 2 * std::max(view[0], view[4]) || view[2] < std::max(view[1], view[3]))
-			return 0.f;
+			return 0.;
 		return IsPattern<E2E>(view, PATTERN, spaceInPixel, 0.1); // the requires 4, here we accept almost 0
 	});
 }
@@ -79,7 +79,7 @@ std::vector<ConcentricPattern> FindFinderPatterns(const BitMatrix& image, bool t
 				log(p);
 				N++;
 				auto pattern = LocateConcentricPattern<E2E>(image, PATTERN, p,
-															Reduce(next) * 3); // 3 for very skewed samples
+															next.sum() * 3); // 3 for very skewed samples
 				if (pattern) {
 					log(*pattern, 3);
 					log(*pattern + PointF(.2, 0), 3);
@@ -683,6 +683,7 @@ DetectorResult SampleMQR(const BitMatrix& image, const ConcentricPattern& fp)
 
 	FormatInformation bestFI;
 	PerspectiveTransform bestPT;
+	BitMatrixCursorF cur(image, {}, {});
 
 	for (int i = 0; i < 4; ++i) {
 		auto mod2Pix = PerspectiveTransform(srcQuad, RotatedCorners(*fpQuad, i));
@@ -698,7 +699,7 @@ DetectorResult SampleMQR(const BitMatrix& image, const ConcentricPattern& fp)
 
 		int formatInfoBits = 0;
 		for (int i = 1; i <= 15; ++i)
-			AppendBit(formatInfoBits, image.get(mod2Pix(centered(FORMAT_INFO_COORDS[i]))));
+			AppendBit(formatInfoBits, cur.blackAt(mod2Pix(centered(FORMAT_INFO_COORDS[i]))));
 
 		auto fi = FormatInformation::DecodeMQR(formatInfoBits);
 		if (fi.hammingDistance < bestFI.hammingDistance) {
@@ -718,7 +719,7 @@ DetectorResult SampleMQR(const BitMatrix& image, const ConcentricPattern& fp)
 	for (int i = 0; i < dim; ++i) {
 		auto px = bestPT(centered(PointI{i, dim}));
 		auto py = bestPT(centered(PointI{dim, i}));
-		blackPixels += (image.isIn(px) && image.get(px)) + (image.isIn(py) && image.get(py));
+		blackPixels += cur.blackAt(px) && cur.blackAt(py);
 	}
 	if (blackPixels > 2 * dim / 3)
 		return {};
@@ -744,13 +745,13 @@ DetectorResult SampleRMQR(const BitMatrix& image, const ConcentricPattern& fp)
 
 	FormatInformation bestFI;
 	PerspectiveTransform bestPT;
+	BitMatrixCursorF cur(image, {}, {});
 
 	for (int i = 0; i < 4; ++i) {
 		auto mod2Pix = PerspectiveTransform(srcQuad, RotatedCorners(*fpQuad, i));
 
 		auto check = [&](int i, bool on) {
-			auto p = mod2Pix(centered(FORMAT_INFO_EDGE_COORDS[i]));
-			return image.isIn(p) && image.get(p) == on;
+			return cur.testAt(mod2Pix(centered(FORMAT_INFO_EDGE_COORDS[i]))) == BitMatrixCursorF::Value(on);
 		};
 
 		// check that we see top edge timing pattern modules
@@ -759,7 +760,7 @@ DetectorResult SampleRMQR(const BitMatrix& image, const ConcentricPattern& fp)
 
 		uint32_t formatInfoBits = 0;
 		for (int i = 0; i < Size(FORMAT_INFO_COORDS); ++i)
-			AppendBit(formatInfoBits, image.get(mod2Pix(centered(FORMAT_INFO_COORDS[i]))));
+			AppendBit(formatInfoBits, cur.blackAt(mod2Pix(centered(FORMAT_INFO_COORDS[i]))));
 
 		auto fi = FormatInformation::DecodeRMQR(formatInfoBits, 0 /*formatInfoBits2*/);
 		if (fi.hammingDistance < bestFI.hammingDistance) {
@@ -779,9 +780,9 @@ DetectorResult SampleRMQR(const BitMatrix& image, const ConcentricPattern& fp)
 		auto br = Center(b);
 		// rotate points such that topLeft of a is furthest away from b and topLeft of b is closest to a
 		auto dist2B = [c = br](auto a, auto b) { return distance(a, c) < distance(b, c); };
-		auto offsetA = std::max_element(a.begin(), a.end(), dist2B) - a.begin();
+		auto offsetA = narrow_cast<int>(std::max_element(a.begin(), a.end(), dist2B) - a.begin());
 		auto dist2A = [c = tl](auto a, auto b) { return distance(a, c) < distance(b, c); };
-		auto offsetB = std::min_element(b.begin(), b.end(), dist2A) - b.begin();
+		auto offsetB = narrow_cast<int>(std::min_element(b.begin(), b.end(), dist2A) - b.begin());
 
 		a = RotatedCorners(a, offsetA);
 		b = RotatedCorners(b, offsetB);

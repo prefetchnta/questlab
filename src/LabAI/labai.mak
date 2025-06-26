@@ -4,7 +4,7 @@ BIN_NAME=$(PROJECT).dll
 LIB_NAME=$(PROJECT).lib
 INC_LABAI=..\..\inc\x64inc\labai
 INC_OPENCV=..\..\inc\x64inc\opencv
-!INCLUDE "../vc2019_x64.mak"
+!INCLUDE "../vc2022_x64.mak"
 
 OBJ_OCV_WECHAT=binarizermgr.obj \
                decodermgr.obj \
@@ -119,6 +119,7 @@ SRC_OCV_WECHAT=opencv\wechat_qrcode\binarizermgr.cpp \
                opencv\wechat_qrcode\zxing\qrcode\detector\pattern_result.cpp
 
 OBJ_ZXING_CPP=imglab_zxing_dect.obj \
+              Barcode.obj \
               BarcodeFormat.obj \
               BinaryBitmap2.obj \
               BitArray2.obj \
@@ -130,6 +131,7 @@ OBJ_ZXING_CPP=imglab_zxing_dect.obj \
               Content.obj \
               DecodeHints.obj \
               ECI.obj \
+              Error.obj \
               GenericGF2.obj \
               GenericGFPoly2.obj \
               GlobalHistogramBinarizer.obj \
@@ -143,14 +145,12 @@ OBJ_ZXING_CPP=imglab_zxing_dect.obj \
               ReadBarcode.obj \
               ReedSolomonDecoder.obj \
               ReedSolomonEncoder.obj \
-              Result2.obj \
               ResultPoint2.obj \
               TextDecoder.obj \
               TextEncoder.obj \
               TextUtfEncoding.obj \
               Utf.obj \
               WhiteRectDetector.obj \
-              ZXBigInteger.obj \
               AZDecoder.obj \
               AZDetector.obj \
               AZEncoder.obj \
@@ -184,14 +184,15 @@ OBJ_ZXING_CPP=imglab_zxing_dect.obj \
               ODDataBarCommon.obj \
               ODDataBarExpandedBitDecoder.obj \
               ODDataBarExpandedReader.obj \
+              ODDataBarLimitedReader.obj \
               ODDataBarReader.obj \
+              ODDXFilmEdgeReader.obj \
               ODEAN8Writer.obj \
               ODEAN13Writer.obj \
               ODITFReader.obj \
               ODITFWriter.obj \
               ODMultiUPCEANReader.obj \
               ODReader.obj \
-              ODRowReader.obj \
               ODUPCAWriter.obj \
               ODUPCEANCommon.obj \
               ODUPCEWriter.obj \
@@ -210,6 +211,7 @@ OBJ_ZXING_CPP=imglab_zxing_dect.obj \
               PDFReader.obj \
               PDFScanningDecoder.obj \
               PDFWriter.obj \
+              ZXBigInteger.obj \
               QRBitMatrixParser.obj \
               QRCodecMode.obj \
               QRDataBlock.obj \
@@ -225,6 +227,7 @@ OBJ_ZXING_CPP=imglab_zxing_dect.obj \
               QRWriter.obj
 
 SRC_ZXING_CPP=imglab_zxing_dect.cpp \
+              zxing\Barcode.cpp \
               zxing\BarcodeFormat.cpp \
               zxing\BinaryBitmap2.cpp \
               zxing\BitArray2.cpp \
@@ -236,6 +239,7 @@ SRC_ZXING_CPP=imglab_zxing_dect.cpp \
               zxing\Content.cpp \
               zxing\DecodeHints.cpp \
               zxing\ECI.cpp \
+              zxing\Error.cpp \
               zxing\GenericGF2.cpp \
               zxing\GenericGFPoly2.cpp \
               zxing\GlobalHistogramBinarizer.cpp \
@@ -249,14 +253,12 @@ SRC_ZXING_CPP=imglab_zxing_dect.cpp \
               zxing\ReadBarcode.cpp \
               zxing\ReedSolomonDecoder.cpp \
               zxing\ReedSolomonEncoder.cpp \
-              zxing\Result2.cpp \
               zxing\ResultPoint2.cpp \
               zxing\TextDecoder.cpp \
               zxing\TextEncoder.cpp \
               zxing\TextUtfEncoding.cpp \
               zxing\Utf.cpp \
               zxing\WhiteRectDetector.cpp \
-              zxing\ZXBigInteger.cpp \
               zxing\aztec\AZDecoder.cpp \
               zxing\aztec\AZDetector.cpp \
               zxing\aztec\AZEncoder.cpp \
@@ -290,14 +292,15 @@ SRC_ZXING_CPP=imglab_zxing_dect.cpp \
               zxing\oned\ODDataBarCommon.cpp \
               zxing\oned\ODDataBarExpandedBitDecoder.cpp \
               zxing\oned\ODDataBarExpandedReader.cpp \
+              zxing\oned\ODDataBarLimitedReader.cpp \
               zxing\oned\ODDataBarReader.cpp \
+              zxing\oned\ODDXFilmEdgeReader.cpp \
               zxing\oned\ODEAN8Writer.cpp \
               zxing\oned\ODEAN13Writer.cpp \
               zxing\oned\ODITFReader.cpp \
               zxing\oned\ODITFWriter.cpp \
               zxing\oned\ODMultiUPCEANReader.cpp \
               zxing\oned\ODReader.cpp \
-              zxing\oned\ODRowReader.cpp \
               zxing\oned\ODUPCAWriter.cpp \
               zxing\oned\ODUPCEANCommon.cpp \
               zxing\oned\ODUPCEWriter.cpp \
@@ -316,6 +319,7 @@ SRC_ZXING_CPP=imglab_zxing_dect.cpp \
               zxing\pdf417\PDFReader.cpp \
               zxing\pdf417\PDFScanningDecoder.cpp \
               zxing\pdf417\PDFWriter.cpp \
+              zxing\pdf417\ZXBigInteger.cpp \
               zxing\qrcode\QRBitMatrixParser.cpp \
               zxing\qrcode\QRCodecMode.cpp \
               zxing\qrcode\QRDataBlock.cpp \
@@ -347,7 +351,8 @@ SRC_LIST=dllmain.cpp \
          imglab_opencv_intr.cpp \
          imglab_opencv_proc.cpp
 
-FLAGS_ZXING_CPP=/I.\zxing /utf-8 /std:c++17 /wd4101 /wd4127 /wd4244 /wd4245 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
+FLAGS_ZXING_CPP=/I.\zxing /D "ZXING_READERS" /utf-8 /std:c++20 /Zc:__cplusplus \
+                /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
 
 build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4

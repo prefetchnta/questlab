@@ -276,8 +276,6 @@ generate_proposals_nanodet_plus(const ncnn::Mat& pred,
                                 float prob_threshold,
                                 std::vector<Object>& objects)
 {
-    const int num_grid = pred.h;
-
     int num_grid_x = pred.w;
     int num_grid_y = pred.h;
 

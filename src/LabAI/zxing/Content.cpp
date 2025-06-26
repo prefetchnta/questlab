@@ -12,6 +12,10 @@
 #include "Utf.h"
 #include "ZXAlgorithms.h"
 
+#if !defined(ZXING_READERS) && !defined(ZXING_WRITERS)
+#include "Version.h"
+#endif
+
 #include <cctype>
 
 namespace ZXing {
@@ -98,6 +102,7 @@ std::string Content::render(bool withECI) const
 	if (empty() || !canProcess())
 		return {};
 
+#ifdef ZXING_READERS
 	std::string res;
 	if (withECI)
 		res = symbology.toString(true);
@@ -136,6 +141,10 @@ std::string Content::render(bool withECI) const
 	});
 
 	return res;
+#else
+	//TODO: replace by proper construction from encoded data from within zint
+	return std::string(bytes.asString());
+#endif
 }
 
 std::string Content::text(TextMode mode) const
@@ -145,6 +154,7 @@ std::string Content::text(TextMode mode) const
 	case TextMode::ECI: return render(true);
 	case TextMode::HRI:
 		switch (type()) {
+#ifdef ZXING_READERS
 		case ContentType::GS1: {
 			auto plain = render(false);
 			auto hri = HRIFromGS1(plain);
@@ -152,6 +162,7 @@ std::string Content::text(TextMode mode) const
 		}
 		case ContentType::ISO15434: return HRIFromISO15434(render(false));
 		case ContentType::Text: return render(false);
+#endif
 		default: return text(TextMode::Escaped);
 		}
 	case TextMode::Hex: return ToHex(bytes);
@@ -190,6 +201,7 @@ ByteArray Content::bytesECI() const
 
 CharacterSet Content::guessEncoding() const
 {
+#ifdef ZXING_READERS
 	// assemble all blocks with unknown encoding
 	ByteArray input;
 	ForEachECIBlock([&](ECI eci, int begin, int end) {
@@ -201,10 +213,14 @@ CharacterSet Content::guessEncoding() const
 		return CharacterSet::Unknown;
 
 	return TextDecoder::GuessEncoding(input.data(), input.size(), CharacterSet::ISO8859_1);
+#else
+	return CharacterSet::Unknown;
+#endif
 }
 
 ContentType Content::type() const
 {
+#ifdef ZXING_READERS
 	if (empty())
 		return ContentType::Text;
 
@@ -235,6 +251,10 @@ ContentType Content::type() const
 		return ContentType::Binary;
 
 	return ContentType::Mixed;
+#else
+	//TODO: replace by proper construction from encoded data from within zint
+	return ContentType::Text;
+#endif
 }
 
 } // namespace ZXing

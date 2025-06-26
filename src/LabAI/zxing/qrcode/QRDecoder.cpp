@@ -306,7 +306,7 @@ DecoderResult DecodeBitStream(ByteArray&& bytes, const Version& version, ErrorCo
 			}
 			}
 		}
-	} catch (std::out_of_range& e) { // see BitSource::readBits
+	} catch (std::out_of_range&) { // see BitSource::readBits
 		error = FormatError("Truncated bit stream");
 	} catch (Error e) {
 		error = std::move(e);
@@ -346,24 +346,30 @@ DecoderResult Decode(const BitMatrix& bits)
 
 	// Count total number of data bytes
 	const auto op = [](auto totalBytes, const auto& dataBlock){ return totalBytes + dataBlock.numDataCodewords();};
-	const auto totalBytes = std::accumulate(std::begin(dataBlocks), std::end(dataBlocks), int{}, op);
+	const auto totalBytes = Reduce(dataBlocks, int{}, op);
 	ByteArray resultBytes(totalBytes);
 	auto resultIterator = resultBytes.begin();
 
 	// Error-correct and copy data blocks together into a stream of bytes
+	Error error;
 	for (auto& dataBlock : dataBlocks)
 	{
 		ByteArray& codewordBytes = dataBlock.codewords();
 		int numDataCodewords = dataBlock.numDataCodewords();
 
 		if (!CorrectErrors(codewordBytes, numDataCodewords))
-			return ChecksumError();
+			error = ChecksumError();
 
 		resultIterator = std::copy_n(codewordBytes.begin(), numDataCodewords, resultIterator);
 	}
 
 	// Decode the contents of that stream of bytes
-	return DecodeBitStream(std::move(resultBytes), version, formatInfo.ecLevel).setIsMirrored(formatInfo.isMirrored);
+	auto ret = DecodeBitStream(std::move(resultBytes), version, formatInfo.ecLevel)
+		.setDataMask(formatInfo.mask)
+		.setIsMirrored(formatInfo.isMirrored);
+	if (error)
+		ret.setError(error);
+	return ret;
 }
 
 } // namespace ZXing::QRCode

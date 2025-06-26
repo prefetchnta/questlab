@@ -14,10 +14,12 @@
 #include "ODCode39Reader.h"
 #include "ODCode93Reader.h"
 #include "ODDataBarExpandedReader.h"
+#include "ODDataBarLimitedReader.h"
 #include "ODDataBarReader.h"
+#include "ODDXFilmEdgeReader.h"
 #include "ODITFReader.h"
 #include "ODMultiUPCEANReader.h"
-#include "Result.h"
+#include "Barcode.h"
 
 #include <algorithm>
 #include <utility>
@@ -29,7 +31,7 @@
 
 namespace ZXing {
 
-void IncrementLineCount(Result& r)
+void IncrementLineCount(Barcode& r)
 {
 	++r._lineCount;
 }
@@ -61,6 +63,10 @@ Reader::Reader(const ReaderOptions& opts) : ZXing::Reader(opts)
 		_readers.emplace_back(new DataBarReader(opts));
 	if (formats.testFlags(BarcodeFormat::DataBarExpanded))
 		_readers.emplace_back(new DataBarExpandedReader(opts));
+	if (formats.testFlags(BarcodeFormat::DataBarLimited))
+		_readers.emplace_back(new DataBarLimitedReader(opts));
+	if (formats.testFlag(BarcodeFormat::DXFilmEdge))
+		_readers.emplace_back(new DXFilmEdgeReader(opts));
 }
 
 Reader::~Reader() = default;
@@ -74,10 +80,10 @@ Reader::~Reader() = default;
 * decided that moving up and down by about 1/16 of the image is pretty good; we try more of the
 * image if "trying harder".
 */
-static Results DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, const BinaryBitmap& image,
-						bool tryHarder, bool rotate, bool isPure, int maxSymbols, int minLineCount, bool returnErrors)
+static Barcodes DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, const BinaryBitmap& image, bool tryHarder,
+						 bool rotate, bool isPure, int maxSymbols, int minLineCount, bool returnErrors)
 {
-	Results res;
+	Barcodes res;
 
 	std::vector<std::unique_ptr<RowReader::DecodingState>> decodingState(readers.size());
 
@@ -96,6 +102,8 @@ static Results DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, 
 
 	if (isPure)
 		minLineCount = 1;
+	else
+		minLineCount = std::min(minLineCount, height);
 	std::vector<int> checkRows;
 
 	PatternRow bars;
@@ -161,7 +169,7 @@ static Results DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, 
 
 				PatternView next(bars);
 				do {
-					Result result = readers[r]->decodePattern(rowNumber, next, decodingState[r]);
+					Barcode result = readers[r]->decodePattern(rowNumber, next, decodingState[r]);
 					if (result.isValid() || (returnErrors && result.error())) {
 						IncrementLineCount(result);
 						if (upsideDown) {
@@ -198,7 +206,7 @@ static Results DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, 
 								other.setPosition(points);
 								IncrementLineCount(other);
 								// clear the result, so we don't insert it again below
-								result = Result();
+								result = Barcode();
 								break;
 							}
 						}
@@ -215,7 +223,7 @@ static Results DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, 
 							}
 						}
 
-						if (maxSymbols && Reduce(res, 0, [&](int s, const Result& r) {
+						if (maxSymbols && Reduce(res, 0, [&](int s, const Barcode& r) {
 											  return s + (r.lineCount() >= minLineCount);
 										  }) == maxSymbols) {
 							goto out;
@@ -231,18 +239,25 @@ static Results DoDecode(const std::vector<std::unique_ptr<RowReader>>& readers, 
 
 out:
 	// remove all symbols with insufficient line count
+#ifdef __cpp_lib_erase_if
+	std::erase_if(res, [&](auto&& r) { return r.lineCount() < minLineCount; });
+#else
 	auto it = std::remove_if(res.begin(), res.end(), [&](auto&& r) { return r.lineCount() < minLineCount; });
 	res.erase(it, res.end());
+#endif
 
 	// if symbols overlap, remove the one with a lower line count
 	for (auto a = res.begin(); a != res.end(); ++a)
 		for (auto b = std::next(a); b != res.end(); ++b)
 			if (HaveIntersectingBoundingBoxes(a->position(), b->position()))
-				*(a->lineCount() < b->lineCount() ? a : b) = Result();
+				*(a->lineCount() < b->lineCount() ? a : b) = Barcode();
 
-	//TODO: C++20 res.erase_if()
+#ifdef __cpp_lib_erase_if
+	std::erase_if(res, [](auto&& r) { return r.format() == BarcodeFormat::None; });
+#else
 	it = std::remove_if(res.begin(), res.end(), [](auto&& r) { return r.format() == BarcodeFormat::None; });
 	res.erase(it, res.end());
+#endif
 
 #ifdef PRINT_DEBUG
 	SaveAsPBM(dbg, rotate ? "od-log-r.pnm" : "od-log.pnm");
@@ -251,8 +266,7 @@ out:
 	return res;
 }
 
-Result
-Reader::decode(const BinaryBitmap& image) const
+Barcode Reader::decode(const BinaryBitmap& image) const
 {
 	auto result =
 		DoDecode(_readers, image, _opts.tryHarder(), false, _opts.isPure(), 1, _opts.minLineCount(), _opts.returnErrors());
@@ -263,7 +277,7 @@ Reader::decode(const BinaryBitmap& image) const
 	return FirstOrDefault(std::move(result));
 }
 
-Results Reader::decode(const BinaryBitmap& image, int maxSymbols) const
+Barcodes Reader::decode(const BinaryBitmap& image, int maxSymbols) const
 {
 	auto resH = DoDecode(_readers, image, _opts.tryHarder(), false, _opts.isPure(), maxSymbols, _opts.minLineCount(),
 						 _opts.returnErrors());

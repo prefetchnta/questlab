@@ -8,13 +8,19 @@
 
 #include <cassert>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 
-#if __has_include(<bit>) && __cplusplus > 201703L // MSVC has the <bit> header but then warns about including it
+// MSVC has the <bit> header but then warns about including it.
+// We check for _MSVC_LANG here as well, so client code is depending on /Zc:__cplusplus
+#if __has_include(<bit>) && (__cplusplus > 201703L || (defined(_MSVC_LANG) && _MSVC_LANG > 201703L))
 #include <bit>
 #if __cplusplus > 201703L && defined(__ANDROID__) // NDK 25.1.8937393 has the implementation but fails to advertise it
 #define __cpp_lib_bitops 201907L
 #endif
+#elif defined(_MSC_VER)
+// accoring to #863 MSVC defines __cpp_lib_bitops even when <bit> it not included and bitops are not available
+#undef __cpp_lib_bitops
 #endif
 
 #if defined(__clang__) || defined(__GNUC__)
@@ -41,12 +47,16 @@ inline int NumberOfLeadingZeros(T x)
 	return std::countl_zero(static_cast<std::make_unsigned_t<T>>(x));
 #else
 	if constexpr (sizeof(x) <= 4) {
+		static_assert(sizeof(x) == 4, "NumberOfLeadingZeros not implemented for 8 and 16 bit ints.");
 		if (x == 0)
 			return 32;
 #ifdef ZX_HAS_GCC_BUILTINS
 		return __builtin_clz(x);
 #elif defined(ZX_HAS_MSC_BUILTINS)
-		return __lzcnt(x);
+		unsigned long where;
+		if (_BitScanReverse(&where, x))
+			return 31 - static_cast<int>(where);
+		return 32;
 #else
 		int n = 0;
 		if ((x & 0xFFFF0000) == 0) { n = n + 16; x = x << 16; }
@@ -61,9 +71,7 @@ inline int NumberOfLeadingZeros(T x)
 			return 64;
 #ifdef ZX_HAS_GCC_BUILTINS
 		return __builtin_clzll(x);
-#elif defined(ZX_HAS_MSC_BUILTINS)
-		return __lzcnt64(x);
-#else
+#else // including ZX_HAS_MSC_BUILTINS
 		int n = NumberOfLeadingZeros(static_cast<uint32_t>(x >> 32));
 		if (n == 32)
 			n += NumberOfLeadingZeros(static_cast<uint32_t>(x));
@@ -79,13 +87,13 @@ inline int NumberOfLeadingZeros(T x)
 template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 inline int NumberOfTrailingZeros(T v)
 {
-	assert(v != 0);
 #ifdef __cpp_lib_bitops
 	return std::countr_zero(static_cast<std::make_unsigned_t<T>>(v));
 #else
 	if constexpr (sizeof(v) <= 4) {
+		static_assert(sizeof(v) == 4, "NumberOfTrailingZeros not implemented for 8 and 16 bit ints.");
 #ifdef ZX_HAS_GCC_BUILTINS
-		return __builtin_ctz(v);
+		return v == 0 ? 32 : __builtin_ctz(v);
 #elif defined(ZX_HAS_MSC_BUILTINS)
 		unsigned long where;
 		if (_BitScanForward(&where, v))
@@ -104,22 +112,8 @@ inline int NumberOfTrailingZeros(T v)
 #endif
 	} else {
 #ifdef ZX_HAS_GCC_BUILTINS
-		return __builtin_ctzll(v);
-#elif defined(ZX_HAS_MSC_BUILTINS)
-		unsigned long where;
-	#if defined(_WIN64)
-		if (_BitScanForward64(&where, v))
-			return static_cast<int>(where);
-	#elif defined(_WIN32)
-		if (_BitScanForward(&where, static_cast<unsigned long>(v)))
-			return static_cast<int>(where);
-		if (_BitScanForward(&where, static_cast<unsigned long>(v >> 32)))
-			return static_cast<int>(where + 32);
-	#else
-		#error "Implementation of __builtin_ctzll required"
-	#endif
-		return 64;
-#else
+		return v == 0 ? 64 : __builtin_ctzll(v);
+#else // including ZX_HAS_MSC_BUILTINS
 		int n = NumberOfTrailingZeros(static_cast<uint32_t>(v));
 		if (n == 32)
 			n += NumberOfTrailingZeros(static_cast<uint32_t>(v >> 32));

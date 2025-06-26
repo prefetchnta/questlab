@@ -1,6 +1,5 @@
 /*
-* Copyright 2016 Nu-book Inc.
-* Copyright 2016 ZXing authors
+* Copyright 2024 Axel Waggershauser
 */
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,7 +9,10 @@
 
 namespace ZXing::OneD {
 
-class CodabarReader : public RowReader
+/**
+* Decodes DataBarLimited sybmols. See ISO/IEC 24724:2011.
+*/
+class DataBarLimitedReader : public RowReader
 {
 public:
 	using RowReader::RowReader;
