@@ -2,7 +2,7 @@ PROJECT=QstLibs64
 SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).dll
 LIB_NAME=$(PROJECT).lib
-!INCLUDE "../vc2019_x64.mak"
+!INCLUDE "../vc2022_x64.mak"
 
 OBJ_LIST=.$(L)QstLibs.$(O)
 

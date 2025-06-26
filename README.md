@@ -18,7 +18,7 @@
 - **Borland C++Builder 6.0 Update4**
 - **Microsoft Visual Studio 2010 SP1**
 - **Microsoft Visual Studio 2013 Update5**
-- **Microsoft Visual Studio 2019 Lastest**
+- **Microsoft Visual Studio 2022 Lastest**
 
 ## 【部件简介】
 
