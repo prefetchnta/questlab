@@ -1,7 +1,7 @@
 PROJECT=fQUEST64
 SUBSYSTEM=WINDOWS
 BIN_NAME=$(PROJECT).exe
-!INCLUDE "../vc2019_x64.mak"
+!INCLUDE "../vc2022_x64.mak"
 
 OBJ_LIST=.$(L)fQUEST64.$(O) \
          .$(L)$(PROJECT).res

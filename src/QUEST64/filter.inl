@@ -622,9 +622,6 @@ quest64_zxi_grpcode_load_options (
         CJSON_BOOL(tryDownscale, TRUE);
         CJSON_BOOL(isPure, FALSE);
         CJSON_BOOL(tryCode39ExtendedMode, FALSE);
-        CJSON_BOOL(validateCode39CheckSum, FALSE);
-        CJSON_BOOL(validateITFCheckSum, FALSE);
-        CJSON_BOOL(returnCodabarStartEnd, FALSE);
         CJSON_BOOL(returnErrors, FALSE);
         CJSON_INTG(downscaleFactor, 3);
         CJSON_INTG(eanAddOnSymbol, ZXI_EAN_IGNORE);
