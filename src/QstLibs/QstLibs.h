@@ -156,6 +156,8 @@ CR_API void_t*  STDCALL misc_mem_malloc (uint_t size);
 CR_API void_t*  STDCALL misc_mem_calloc (uint_t num, uint_t size);
 CR_API void_t*  STDCALL misc_mem_realloc (void_t *ptr, uint_t new_size);
 CR_API void_t   STDCALL misc_mem_free (const void_t *data);
+CR_API ansi_t*  STDCALL misc_dat2hex (const void_t *dat, uint_t size);
+CR_API ansi_t*  STDCALL misc_str2hex (const ansi_t *str);
 CR_API bool_t   STDCALL misc_dir_exist (const ansi_t *path);
 CR_API ansi_t** STDCALL misc_get_param (const ansi_t *cmdz, uint_t *count);
 CR_API bool_t   STDCALL misc_is_win64 (void_t);

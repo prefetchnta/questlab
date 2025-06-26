@@ -1047,6 +1047,38 @@ misc_mem_free (
 
 /*
 =======================================
+    数据转16进制字符串
+=======================================
+*/
+CR_API ansi_t* STDCALL
+misc_dat2hex (
+  __CR_IN__ const void_t*   dat,
+  __CR_IN__ uint_t          size
+    )
+{
+    ansi_t* str;
+
+    str = str_allocA(size * 2 + 1);
+    if (str == NULL)
+        return (NULL);
+    return (hex2strA(str, dat, size));
+}
+
+/*
+=======================================
+    字符串转16进制字符串
+=======================================
+*/
+CR_API ansi_t* STDCALL
+misc_str2hex (
+  __CR_IN__ const ansi_t*   str
+    )
+{
+    return (misc_dat2hex(str, (uint_t)str_lenA(str)));
+}
+
+/*
+=======================================
     判断目录是否存在
 =======================================
 */

@@ -42,6 +42,8 @@ EXPORTS
     misc_mem_calloc
     misc_mem_realloc
     misc_mem_free
+    misc_dat2hex
+    misc_str2hex
     misc_dir_exist
     misc_get_param
     misc_is_win64
@@ -66,6 +68,8 @@ EXPORTS
     QstGraph_SetAxisBottom2
     QstGraph_SetAxisLeft
     QstGraph_SetLineColor
+    QstGraph_SetBackColor
+    QstGraph_SetLineWidth
     QstGraph_SetChar
     QstGraph_SetUChar
     QstGraph_SetShort
