@@ -134,6 +134,10 @@ CR_API xpnt2_t  imglab_xpoly_idx (xpoly_t ply, uint_t idx);
 CR_API xrect_t  imglab_rects_idx (xrect_lst_t list, uint_t idx);
 CR_API xroct_t  imglab_rocts_idx (xroct_lst_t list, uint_t idx);
 CR_API xpoly_t  imglab_polys_idx (xpoly_lst_t list, uint_t idx);
+CR_API xpnt2_t  imglab_xpoly_idx2 (xpoly_t ply, uint_t idx);
+CR_API xrect_t  imglab_rects_idx2 (xrect_lst_t list, uint_t idx);
+CR_API xroct_t  imglab_rocts_idx2 (xroct_lst_t list, uint_t idx);
+CR_API xpoly_t  imglab_polys_idx2 (xpoly_lst_t list, uint_t idx);
 
 /* CrHack 与 OpenCV 区域结构交换 */
 CR_API void_t   imglab_xpoly_get (sPNT2 *pnt, xpnt2_t con,

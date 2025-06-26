@@ -612,6 +612,23 @@ imglab_xpoly_idx (
 
 /*
 =======================================
+    多边形点坐标索引
+=======================================
+*/
+CR_API xpnt2_t
+imglab_xpoly_idx2 (
+  __CR_IN__ xpoly_t ply,
+  __CR_IN__ uint_t  idx
+    )
+{
+    std::vector<cv::Point>* con;
+
+    con = (std::vector<cv::Point>*)ply;
+    return ((xpnt2_t)(&((*con)[idx])));
+}
+
+/*
+=======================================
     获取多边形点坐标
 =======================================
 */
@@ -736,6 +753,23 @@ imglab_rects_idx (
         return (NULL);
     }
     return ((xrect_t)rct);
+}
+
+/*
+=======================================
+    列表矩形坐标索引
+=======================================
+*/
+CR_API xrect_t
+imglab_rects_idx2 (
+  __CR_IN__ xrect_lst_t list,
+  __CR_IN__ uint_t      idx
+    )
+{
+    std::vector<cv::Rect>*  lst;
+
+    lst = (std::vector<cv::Rect>*)list;
+    return ((xrect_t)(&((*lst)[idx])));
 }
 
 /*
@@ -916,6 +950,23 @@ imglab_rocts_idx (
         return (NULL);
     }
     return ((xroct_t)rct);
+}
+
+/*
+=======================================
+    列表四边形坐标索引
+=======================================
+*/
+CR_API xroct_t
+imglab_rocts_idx2 (
+  __CR_IN__ xroct_lst_t list,
+  __CR_IN__ uint_t      idx
+    )
+{
+    std::vector<cv::RotatedRect>*   lst;
+
+    lst = (std::vector<cv::RotatedRect>*)list;
+    return ((xroct_t)(&((*lst)[idx])));
 }
 
 /*
@@ -1168,6 +1219,23 @@ imglab_polys_idx (
         return (NULL);
     }
     return ((xpoly_t)con);
+}
+
+/*
+=======================================
+    列表多边形对象索引
+=======================================
+*/
+CR_API xpoly_t
+imglab_polys_idx2 (
+  __CR_IN__ xpoly_lst_t list,
+  __CR_IN__ uint_t      idx
+    )
+{
+    std::vector<std::vector<cv::Point> >*   lst;
+
+    lst = (std::vector<std::vector<cv::Point> >*)list;
+    return ((xpoly_t)(&((*lst)[idx])));
 }
 
 /*
