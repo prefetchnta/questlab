@@ -175,11 +175,13 @@ read_image (
 {
     sPNT2                   pt;
     sARRAY                  loc;
+    ansi_t*                 str;
+    ansi_t*                 tmp;
+    ansi_t*                 hex;
     uint_t                  cnt =  0;
     sint_t                  res = -1;
+    string                  err_txt = "zxing::error";
     vector<Ref<Result> >    results;
-    ansi_t                  *str, *tmp;
-    string                  cell_result;
 
     /* 创建对象 */
     array_initT(&loc, sPNT2);
@@ -206,36 +208,26 @@ read_image (
         res = 0;
     }
     catch (const ReaderException& e) {
-        cell_result = "zxing::ReaderException: " + string(e.what());
+        err_txt = "zxing::ReaderException: " + string(e.what());
         res = -2;
     }
     catch (const zxing::IllegalArgumentException& e) {
-        cell_result = "zxing::IllegalArgumentException: " + string(e.what());
+        err_txt = "zxing::IllegalArgumentException: " + string(e.what());
         res = -3;
     }
     catch (const zxing::Exception& e) {
-        cell_result = "zxing::Exception: " + string(e.what());
+        err_txt = "zxing::Exception: " + string(e.what());
         res = -4;
     }
     catch (const std::exception& e) {
-        cell_result = "std::exception: " + string(e.what());
+        err_txt = "std::exception: " + string(e.what());
         res = -5;
     }
 
     /* 输出结果 */
-    if (netw != NULL)
-        cmd_shl_send(netw, "txt:clear 0 0");
     if (res != 0) {
-        str = str_esc_makeU(cell_result.c_str());
-        if (str != NULL) {
-            tmp = str_fmtA("info::main=\"0> %s\"", str);
-            mem_free(str);
-            if (tmp != NULL) {
-                if (netw != NULL)
-                    cmd_ini_send(netw, tmp);
-                mem_free(tmp);
-            }
-        }
+        if (netw != NULL)
+            netw_cmd_send(netw, err_txt.c_str());
         return (0);
     }
     for (size_t ii = 0; ii < results.size(); ii++) {
@@ -247,22 +239,25 @@ read_image (
         }
 
         /* 打印结果 */
-        tmp = str_fmtA("%s: %s", BarcodeFormat::barcodeFormatNames[
-                                results[ii]->getBarcodeFormat()],
-                                results[ii]->getText()->getText().c_str());
-        if (tmp == NULL)
+        if (netw == NULL)
             continue;
-        str = str_esc_makeU(tmp);
-        mem_free(tmp);
-        if (str == NULL)
-            continue;
-        tmp = str_fmtA("info::main=\"0> %s\"", str);
-        mem_free(str);
-        if (tmp == NULL)
-            continue;
-        if (netw != NULL)
-            cmd_ini_send(netw, tmp);
-        mem_free(tmp);
+        tmp = (ansi_t*)results[ii]->getText()->getText().c_str();
+        hex = misc_str2hex(tmp);
+        if (hex == NULL) {
+            str = str_fmtA("|ZXing| %s: %s",
+                            BarcodeFormat::barcodeFormatNames[
+                                results[ii]->getBarcodeFormat()], tmp);
+        }
+        else {
+            str = str_fmtA("|ZXing| %s: %s (%s)",
+                            BarcodeFormat::barcodeFormatNames[
+                                results[ii]->getBarcodeFormat()], tmp, hex);
+            mem_free(hex);
+        }
+        if (str != NULL) {
+            netw_cmd_send(netw, str);
+            mem_free(str);
+        }
     }
     *pnts  = array_get_dataT(&loc, sPNT2);
     *count = array_get_sizeT(&loc, sPNT2);

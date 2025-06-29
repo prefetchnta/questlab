@@ -15,7 +15,6 @@ extern uint_t
 zbar_do_decode (
   __CR_IN__ socket_t        netw,
   __CR_IN__ const sIMAGE*   gray,
-  __CR_IN__ uint_t          cpage,
   __CR_OT__ sPNT2**         pnts,
   __CR_OT__ leng_t*         count
     )
@@ -29,6 +28,7 @@ zbar_do_decode (
     uint_t                  cnt;
     ansi_t*                 str;
     ansi_t*                 tmp;
+    ansi_t*                 hex;
     byte_t*                 dst;
     byte_t*                 src;
     byte_t*                 dat;
@@ -71,8 +71,6 @@ zbar_do_decode (
     zbar_process_image(bar, img);
 
     /* 输出结果 */
-    if (netw != NULL)
-        cmd_shl_send(netw, "txt:clear 0 0");
     sym = zbar_image_first_symbol(img);
     for (; sym != NULL; sym = zbar_symbol_next(sym)) {
         typ = zbar_symbol_get_type(sym);
@@ -87,32 +85,29 @@ zbar_do_decode (
         }
 
         /* 打印结果 */
+        if (netw == NULL)
+            continue;
         sz = zbar_symbol_get_data_length(sym);
         tmp = str_allocA(sz + 1);
         if (tmp == NULL)
             continue;
         mem_cpy(tmp, zbar_symbol_get_data(sym), sz);
         tmp[sz] = NIL;
-        str = str_fmtA("%s%s: %s", zbar_get_symbol_name(typ),
-                        zbar_get_addon_name(typ), tmp);
+        hex = misc_str2hex(tmp);
+        if (hex == NULL) {
+            str = str_fmtA("|ZBar| %s%s: %s", zbar_get_symbol_name(typ),
+                                    zbar_get_addon_name(typ), tmp);
+        }
+        else {
+            str = str_fmtA("|ZBar| %s%s: %s (%s)", zbar_get_symbol_name(typ),
+                                    zbar_get_addon_name(typ), tmp, hex);
+            mem_free(hex);
+        }
         mem_free(tmp);
-        if (str == NULL)
-            continue;
-        tmp = utf8_to_local(cpage, str);
-        mem_free(str);
-        if (tmp == NULL)
-            continue;
-        str = str_esc_makeU(tmp);
-        mem_free(tmp);
-        if (str == NULL)
-            continue;
-        tmp = str_fmtA("info::main=\"0> %s\"", str);
-        mem_free(str);
-        if (tmp == NULL)
-            continue;
-        if (netw != NULL)
-            cmd_ini_send(netw, tmp);
-        mem_free(tmp);
+        if (str != NULL) {
+            netw_cmd_send(netw, str);
+            mem_free(str);
+        }
     }
     *pnts  = array_get_dataT(&loc, sPNT2);
     *count = array_get_sizeT(&loc, sPNT2);

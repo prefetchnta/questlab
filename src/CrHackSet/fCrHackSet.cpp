@@ -12,10 +12,11 @@
 
 /* 内部函数声明 */
 uint_t  zbar_do_decode (socket_t netw, const sIMAGE *gray,
-                        uint_t cpage, sPNT2 **pnts, leng_t *count);
+                        sPNT2 **pnts, leng_t *count);
 
 uint_t  zxing_do_decode (socket_t netw, const sIMAGE *gray,
-            bool_t hybrid, uint_t type, sPNT2 **pnts, leng_t *count);
+                         bool_t hybrid, uint_t type,
+                         sPNT2 **pnts, leng_t *count);
 
 /*****************************************************************************/
 /*                                 公用函数                                  */
@@ -1114,18 +1115,17 @@ zbar_decode (
 {
     sPNT2*  pnts;
     leng_t  cnts;
-    uint_t  page;
     sIMAGE* dest;
     sIMAGE* gray;
 
+    CR_NOUSE(param);
     dest = (sIMAGE*)image;
     if (dest->fmt != CR_ARGB8888)
         return (TRUE);
     gray = image_graying(dest);
     if (gray == NULL)
         return (TRUE);
-    page = xml_attr_intxU("codepage", CR_LOCAL, param);
-    if (zbar_do_decode((socket_t)netw, gray, page, &pnts, &cnts) != 0) {
+    if (zbar_do_decode((socket_t)netw, gray, &pnts, &cnts) != 0) {
         if (pnts != NULL) {
             for (leng_t idx = 0; idx < cnts; idx++)
                 draw_circle_ex(dest, pnts[idx].x, pnts[idx].y, 7, 3);
@@ -1163,8 +1163,7 @@ zxing_decode (
         return (TRUE);
     brid = xml_attr_intxU("hybrid", TRUE, param);
     type = xml_attr_intxU("bar_type", 0, param);
-    if (zxing_do_decode((socket_t)netw, gray, brid, type,
-                            &pnts, &cnts) != 0) {
+    if (zxing_do_decode((socket_t)netw, gray, brid, type, &pnts, &cnts) != 0) {
         if (pnts != NULL) {
             for (leng_t idx = 0; idx < cnts; idx++)
                 draw_circle_ex(dest, pnts[idx].x, pnts[idx].y, 7, 3);
