@@ -359,7 +359,9 @@ qrcode_decode (
         }
     }
 
-    ansi_t*         text;
+    ansi_t*         str;
+    ansi_t*         tmp;
+    ansi_t*         hex;
     CvPoint         point;
     QrCodeHeader    header;
 
@@ -369,14 +371,25 @@ qrcode_decode (
 
     /* 获取得到的文本字符串 */
     if (netw != NULL) {
-        size = header.byte_size + 1;
-        text = str_allocA(size);
-        if (text == NULL)
+        size = header.byte_size;
+        tmp = str_allocA(size + 1);
+        if (tmp == NULL)
             goto _func_out;
-        qr_decoder_get_body(qrcode, (byte_t*)text, size);
-        text[size - 1] = 0x00;
-        netw_cmd_send((socket_t)netw, text);
-        mem_free(text);
+        qr_decoder_get_body(qrcode, (byte_t*)tmp, size);
+        tmp[size] = NIL;
+        hex = misc_str2hex(tmp);
+        if (hex == NULL) {
+            str = str_fmtA("|libdecodeqr| QRCode: %s", tmp);
+        }
+        else {
+            str = str_fmtA("|libdecodeqr| QRCode: %s (%s)", tmp, hex);
+            mem_free(hex);
+        }
+        mem_free(tmp);
+        if (str != NULL) {
+            netw_cmd_send((socket_t)netw, str);
+            mem_free(str);
+        }
     }
 
     CvBox2D*    boxes;
@@ -455,7 +468,7 @@ carplate_find (
     if (result == 0)
     {
         size_t  num;
-        ansi_t  str[64];
+        ansi_t* str;
         Point2f pnts[4];
 
         num = plate_list.size();
@@ -472,9 +485,11 @@ carplate_find (
                      cvScalar(0, 255, 0, 255), 2, 8);
             }
             if (netw != NULL) {
-                sprintf(str, "info::main=\"0> %s\"", rtext.c_str());
-                cmd_shl_send((socket_t)netw, "txt:clear 0 0");
-                cmd_ini_send((socket_t)netw, str);
+                str = str_fmtA("|EasyPR| %s (%u)", rtext.c_str(), (int)rclrs);
+                if (str != NULL) {
+                    netw_cmd_send((socket_t)netw, str);
+                    mem_free(str);
+                }
             }
         }
     }
