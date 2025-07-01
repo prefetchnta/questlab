@@ -77,6 +77,7 @@ quest64_ocv_cascade (
     max_height = xml_attr_intxU("max_height", 0, param);
 
     sIMAGE      dest;
+    cpix_t      color;
     ximage_t    cvmat;
     xrect_lst_t boxes;
 
@@ -94,10 +95,7 @@ quest64_ocv_cascade (
 
     /* 显示分类结果 */
     count = imglab_rects_count(boxes);
-    if (count != 0)
-    {
-        cpix_t  color;
-
+    if (count != 0) {
         color.val = 0xFF00FF00;
         imglab_draw_rects(cvmat, boxes, color, 3, 3, 3, -1);
     }
@@ -118,10 +116,11 @@ _func_out1:
 */
 static void_t
 quest64_draw_codes (
-  __CR_IN__ ximage_t    cvmat,
-  __CR_IN__ str_lstA_t  texts,
-  __CR_IN__ xpoly_lst_t polys,
-  __CR_IN__ uint_t      count
+  __CR_IN__ ximage_t        cvmat,
+  __CR_IN__ str_lstA_t      texts,
+  __CR_IN__ xpoly_lst_t     polys,
+  __CR_IN__ uint_t          count,
+  __CR_IN__ const ansi_t*   title
     )
 {
     cpix_t  color, bkcolor;
@@ -145,6 +144,7 @@ quest64_draw_codes (
         if (okay)
         {
             ansi_t* shw;
+            ansi_t* hex;
             xpoly_t ply;
 
             shw = str_fmtA("[%s] %s", dtype, dinfo);
@@ -153,11 +153,11 @@ quest64_draw_codes (
                 sPNT2   pnt[4];
 
                 color.val = 0xFFFFFF00;
-                ply = imglab_polys_idx(polys, idx);
-                imglab_xpoly_get(&pnt[0], imglab_xpoly_idx(ply, 0));
-                imglab_xpoly_get(&pnt[1], imglab_xpoly_idx(ply, 1));
-                imglab_xpoly_get(&pnt[2], imglab_xpoly_idx(ply, 2));
-                imglab_xpoly_get(&pnt[3], imglab_xpoly_idx(ply, 3));
+                ply = imglab_polys_idx2(polys, idx);
+                imglab_xpoly_get(&pnt[0], imglab_xpoly_idx2(ply, 0));
+                imglab_xpoly_get(&pnt[1], imglab_xpoly_idx2(ply, 1));
+                imglab_xpoly_get(&pnt[2], imglab_xpoly_idx2(ply, 2));
+                imglab_xpoly_get(&pnt[3], imglab_xpoly_idx2(ply, 3));
                 pnt[0].x += pnt[1].x + pnt[2].x + pnt[3].x;
                 pnt[0].y += pnt[1].y + pnt[2].y + pnt[3].y;
                 imglab_calc_gb2312(&pnt[1], shw, 16);
@@ -165,6 +165,18 @@ quest64_draw_codes (
                 pnt[0].y = pnt[0].y / 4 - pnt[1].y / 2;
                 imglab_draw_gb2312(cvmat, shw, pnt->x, pnt->y, 16,
                                    CR_BLT_ALP, color, bkcolor);
+                mem_free(shw);
+            }
+            hex = misc_str2hex(dinfo);
+            if (hex == NULL) {
+                shw = str_fmtA("|%s| %s: %s\n", title, dtype, dinfo);
+            }
+            else {
+                shw = str_fmtA("|%s| %s: %s (%s)\n", title, dtype, dinfo, hex);
+                mem_free(hex);
+            }
+            if (shw != NULL) {
+                quest64_setup_return(shw);
                 mem_free(shw);
             }
         }
@@ -290,7 +302,7 @@ quest64_ocv_barcode (
         goto _func_out3;
 
     /* 显示识别结果 */
-    quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
+    quest64_draw_codes(cvmat, texts, polys, (uint_t)count, "OpenCV");
     strlst_freeA(texts, count * 2);
     imglab_polys_del(polys);
 _func_out3:
@@ -345,7 +357,7 @@ quest64_ocv_qrcode (
         goto _func_out3;
 
     /* 显示识别结果 */
-    quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
+    quest64_draw_codes(cvmat, texts, polys, (uint_t)count, "OpenCV");
     strlst_freeA(texts, count * 2);
     imglab_polys_del(polys);
 _func_out3:
@@ -523,7 +535,7 @@ quest64_ocv_qrcode_aruco (
         goto _func_out3;
 
     /* 显示识别结果 */
-    quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
+    quest64_draw_codes(cvmat, texts, polys, (uint_t)count, "OpenCV");
     strlst_freeA(texts, count * 2);
     imglab_polys_del(polys);
 _func_out3:
@@ -586,7 +598,7 @@ quest64_ocv_qrcode_wechat (
         goto _func_out3;
 
     /* 显示识别结果 */
-    quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
+    quest64_draw_codes(cvmat, texts, polys, (uint_t)count, "WeChat");
     strlst_freeA(texts, count * 2);
     imglab_polys_del(polys);
 _func_out3:
@@ -678,7 +690,7 @@ quest64_zxi_grpcode (
         goto _func_out2;
 
     /* 显示识别结果 */
-    quest64_draw_codes(cvmat, texts, polys, (uint_t)count);
+    quest64_draw_codes(cvmat, texts, polys, (uint_t)count, "ZXing");
     strlst_freeA(texts, count * 2);
     imglab_polys_del(polys);
 _func_out2:
