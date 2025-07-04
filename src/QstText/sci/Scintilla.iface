@@ -410,6 +410,8 @@ ali SC_MARKNUM_FOLDERTAIL=FOLDER_TAIL
 ali SC_MARKNUM_FOLDERSUB=FOLDER_SUB
 ali SC_MARKNUM_FOLDEROPEN=FOLDER_OPEN
 
+val SC_MASK_HISTORY=0x01E00000
+
 # SC_MASK_FOLDERS doesn't go in an enumeration as larger than max 32-bit positive integer
 val SC_MASK_FOLDERS=0xFE000000
 
@@ -698,6 +700,23 @@ set void StyleSetCheckMonospaced=2254(int style, bool checkMonospaced)
 # Get whether a style may be monospaced.
 get bool StyleGetCheckMonospaced=2255(int style,)
 
+enu FontStretch=SC_STRETCH_
+val SC_STRETCH_ULTRA_CONDENSED=1
+val SC_STRETCH_EXTRA_CONDENSED=2
+val SC_STRETCH_CONDENSED=3
+val SC_STRETCH_SEMI_CONDENSED=4
+val SC_STRETCH_NORMAL=5
+val SC_STRETCH_SEMI_EXPANDED=6
+val SC_STRETCH_EXPANDED=7
+val SC_STRETCH_EXTRA_EXPANDED=8
+val SC_STRETCH_ULTRA_EXPANDED=9
+
+# Set the stretch of characters of a style.
+set void StyleSetStretch=2258(int style, FontStretch stretch)
+
+# Get the stretch of characters of a style.
+get FontStretch StyleGetStretch=2259(int style,)
+
 # Set the invisible representation for a style.
 set void StyleSetInvisibleRepresentation=2256(int style, string representation)
 
@@ -834,6 +853,9 @@ fun void BeginUndoAction=2078(,)
 
 # End a sequence of actions that is undone and redone as a unit.
 fun void EndUndoAction=2079(,)
+
+# Is an undo sequence active?
+get int GetUndoSequence=2799(,)
 
 # How many undo actions are in the history?
 get int GetUndoActions=2790(,)
@@ -1146,6 +1168,18 @@ set void AutoCSetMaxHeight=2210(int rowCount,)
 # Set the maximum height, in rows, of auto-completion and user lists.
 get int AutoCGetMaxHeight=2211(,)
 
+# Set the style number used for auto-completion and user lists fonts.
+set void AutoCSetStyle=2109(int style,)
+
+# Get the style number used for auto-completion and user lists fonts.
+get int AutoCGetStyle=2120(,)
+
+# Set the scale factor in percent for auto-completion list images.
+set void AutoCSetImageScale=2815(int scalePercent,)
+
+# Get the scale factor in percent for auto-completion list images.
+get int AutoCGetImageScale=2816(,)
+
 # Set the number of spaces used for one level of indentation.
 set void SetIndent=2122(int indentSize,)
 
@@ -1306,6 +1340,23 @@ set void SetChangeHistory=2780(ChangeHistoryOption changeHistory,)
 # Report change history status.
 get ChangeHistoryOption GetChangeHistory=2781(,)
 
+enu UndoSelectionHistoryOption=SC_UNDO_SELECTION_HISTORY_
+val SC_UNDO_SELECTION_HISTORY_DISABLED=0
+val SC_UNDO_SELECTION_HISTORY_ENABLED=1
+val SC_UNDO_SELECTION_HISTORY_SCROLL=2
+
+# Enable or disable undo selection history.
+set void SetUndoSelectionHistory=2782(UndoSelectionHistoryOption undoSelectionHistory,)
+
+# Report undo selection history status.
+get UndoSelectionHistoryOption GetUndoSelectionHistory=2783(,)
+
+# Set selection from serialized form.
+set void SetSelectionSerialized=2784(, string selectionString)
+
+# Retrieve serialized form of selection.
+get position GetSelectionSerialized=2785(, stringresult selectionString)
+
 # Retrieve the display line at the top of the display.
 get line GetFirstVisibleLine=2152(,)
 
@@ -1370,6 +1421,9 @@ fun position PositionFromLine=2167(line line,)
 
 # Scroll horizontally and vertically.
 fun void LineScroll=2168(position columns, line lines)
+
+# Scroll vertically with allowance for wrapping.
+fun void ScrollVertical=2817(line docLine, line subLine)
 
 # Ensure the caret is visible.
 fun void ScrollCaret=2169(,)
@@ -1521,7 +1575,7 @@ fun void CallTipCancel=2201(,)
 fun bool CallTipActive=2202(,)
 
 # Retrieve the position where the caret was before displaying the call tip.
-fun position CallTipPosStart=2203(,)
+get position CallTipPosStart=2203(,)
 
 # Set the start position in order to change when backspacing removes the calltip.
 set void CallTipSetPosStart=2214(position posStart,)
@@ -1982,8 +2036,15 @@ fun void DeleteBack=2326(,)
 # If more than one line selected, indent the lines.
 fun void Tab=2327(,)
 
-# Dedent the selected lines.
+# Indent the current and selected lines.
+fun void LineIndent=2813(,)
+
+# If selection is empty or all on one line dedent the line if caret is at start, else move caret.
+# If more than one line selected, dedent the lines.
 fun void BackTab=2328(,)
+
+# Dedent the current and selected lines.
+fun void LineDedent=2814(,)
 
 # Insert a new line, may use a CRLF, CR or LF depending on EOL mode.
 fun void NewLine=2329(,)
@@ -2657,6 +2718,15 @@ get int GetLayoutThreads=2776(,)
 # Copy the selection, if selection empty copy the line with the caret
 fun void CopyAllowLine=2519(,)
 
+# Cut the selection, if selection empty cut the line with the caret
+fun void CutAllowLine=2810(,)
+
+# Set the string to separate parts when copying a multiple selection.
+set void SetCopySeparator=2811(, string separator)
+
+# Get the string to separate parts when copying a multiple selection.
+get int GetCopySeparator=2812(, stringresult separator)
+
 # Compact the document buffer and return a read-only pointer to the
 # characters in the document.
 get pointer GetCharacterPointer=2520(,)
@@ -2695,7 +2765,7 @@ set void SetExtraDescent=2527(int extraDescent,)
 get int GetExtraDescent=2528(,)
 
 # Which symbol was defined for markerNumber with MarkerDefine
-fun int MarkerSymbolDefined=2529(int markerNumber,)
+fun MarkerSymbol MarkerSymbolDefined=2529(int markerNumber,)
 
 # Set the text in the text margin for a line
 set void MarginSetText=2530(line line, string text)
@@ -3032,6 +3102,7 @@ val SC_TECHNOLOGY_DEFAULT=0
 val SC_TECHNOLOGY_DIRECTWRITE=1
 val SC_TECHNOLOGY_DIRECTWRITERETAIN=2
 val SC_TECHNOLOGY_DIRECTWRITEDC=3
+val SC_TECHNOLOGY_DIRECT_WRITE_1=4
 
 ali SC_TECHNOLOGY_DIRECTWRITE=DIRECT_WRITE
 ali SC_TECHNOLOGY_DIRECTWRITERETAIN=DIRECT_WRITE_RETAIN

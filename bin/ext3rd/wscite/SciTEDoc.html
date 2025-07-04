@@ -9,6 +9,7 @@
     <title>
       SciTE
     </title>
+    <link rel="canonical" href="https://scintilla.org/SciTEDoc.html" />
 <style type="text/css">
         table {
             border: 1px solid #1F1F1F;
@@ -369,7 +370,9 @@ NameError: name 'mistake' is not defined
         command line last session will not restore even if "save.session"
         variable is set to "1". This makes "save.session" safe to use - you
         will never open a couple of files when you are trying to open just
-        one, specific file.
+        one, specific file. However, if you wish to have files opened with your
+        last session, you can do so by also setting "load.session.always"
+        and "check.if.already.open" to "1".
      </p>
      <p>
         By setting "session.bookmarks" and "session.folds" variables bookmarks
@@ -706,6 +709,13 @@ NameError: name 'mistake' is not defined
        When expanding, the names don't need to be separated from the previous text.
        Ie. if you define 'é' as '&amp;eacute;', you can expand it inside a word.<br />
        When multiple abbreviation names match, the longest matching name will be expanded.
+    </p>
+    <p>
+       There could be more than one '|' in the abbreviation. If the Insert Abbreviation
+       menu command is used then the selection is placed at the last '|' and the caret is
+       placed at the first '|'.<br />
+       A simple example is <code>if (|) {\n\t|\n}</code> - the selection will become
+       the body and the caret will be placed to the condition.
     </p>
     <h3 id="Folding">
        Folding
@@ -1151,8 +1161,6 @@ NameError: name 'mistake' is not defined
           <div class="example">
 representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         </td>
-
-        </td>
       </tr>
       <tr id='property-view.whitespace'>
         <td>
@@ -1382,6 +1390,15 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
           tool bar buttons to be less accurate. This may improve performance on slow machines.
         </td>
       </tr>
+      <tr id='property-undo.selection.history'>
+        <td>
+          undo.selection.history
+        </td>
+        <td>
+          Setting this to 0 stops collection of the selection at each action to be restored on undo and redo.
+	  This decreases the amount of memory used.
+        </td>
+      </tr>
       <tr id='property-change.history'>
         <td>
           change.history<br />
@@ -1400,7 +1417,7 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         </td>
         <td>
           The change.history property controls whether changes to the document (insertions, deletions, saved chanes, ...) are
-          shown as margin markers or indicators within text.<br .>
+          shown as margin markers or indicators within text.<br />
           It is a set of bit flags (1=enable, 2=margin markers, 4=indicators in text) so the most likely settings are
           0=disabled; 3=enabled with margin marks, or 7=enabled with margin markers and in-text indicators.<br />
           There is a default set of visuals for this feature but they may be altered with the marker.* and indicator.* properties.<br />
@@ -1595,10 +1612,8 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         when the UTF-16 encoding is used.
         </td>
       </tr>
-      </tr>
       <tr id='property-file.size.large'>
         <td>
-          <a name='property-file.size.large'></a>
            file.size.large
         </td>
         <td>
@@ -1613,7 +1628,6 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
       </tr>
       <tr id='property-file.size.no.styles'>
         <td>
-          <a name='property-file.size.no.styles'></a>
            file.size.no.styles
         </td>
         <td>
@@ -2323,7 +2337,7 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
       </tr>
       <tr id='property-calltip.*.parameters.start'>
         <td>
-          <a name='property-calltip.*.parameters.end'></a><a name='property-calltip.*.parameters.separators'></a>
+          <a id='property-calltip.*.parameters.end'></a><a id='property-calltip.*.parameters.separators'></a>
           calltip.<i>lexer</i>.parameters.start<br />
           calltip.<i>lexer</i>.parameters.end<br />
           calltip.<i>lexer</i>.parameters.separators<br />
@@ -2419,7 +2433,7 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         </tr>
         <tr id='property-fold.baan.syntax.based'>
         <td>fold.baan.syntax.based</td>
-        <td>Set this property to 0 to disable syntax based folding, which is folding based on '{' & '('.</td>
+        <td>Set this property to 0 to disable syntax based folding, which is folding based on '{' &amp; '('.</td>
         </tr>
         <tr id='property-fold.basic.comment.explicit'>
         <td>fold.basic.comment.explicit</td>
@@ -2767,7 +2781,7 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         </tr>
         <tr id='property-lexer.haskell.allow.questionmark'>
         <td>lexer.haskell.allow.questionmark</td>
-        <td>Set to 1 to allow the '?' character at the start of identifiers with the haskell lexer (GHC & Hugs -XImplicitParams extension)</td>
+        <td>Set to 1 to allow the '?' character at the start of identifiers with the haskell lexer (GHC &amp; Hugs -XImplicitParams extension)</td>
         </tr>
         <tr id='property-lexer.haskell.allow.quotes'>
         <td>lexer.haskell.allow.quotes</td>
@@ -2780,6 +2794,14 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <tr id='property-lexer.haskell.import.safe'>
         <td>lexer.haskell.import.safe</td>
         <td>Set to 0 to disallow "safe" keyword in imports (GHC -XSafe, -XTrustworthy, -XUnsafe extensions)</td>
+        </tr>
+        <tr id='property-lexer.html.allow.asp'>
+        <td>lexer.html.allow.asp</td>
+        <td>Set to 0 to disable ASP in HTML.</td>
+        </tr>
+        <tr id='property-lexer.html.allow.php'>
+        <td>lexer.html.allow.php</td>
+        <td>Set to 0 to disable PHP in HTML, 1 to accept &lt;?php and &lt;?=, 2 to also accept &lt;?.The default is 2.</td>
         </tr>
         <tr id='property-lexer.html.django'>
         <td>lexer.html.django</td>
@@ -2908,6 +2930,14 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <tr id='property-lexer.visualprolog.verbatim.strings'>
         <td>lexer.visualprolog.verbatim.strings</td>
         <td>Set to 0 to disable highlighting verbatim strings using '@'.</td>
+        </tr>
+        <tr id='property-lexer.xml.allow.asp'>
+        <td>lexer.xml.allow.asp</td>
+        <td>Set to 0 to disable ASP in XML.</td>
+        </tr>
+        <tr id='property-lexer.xml.allow.php'>
+        <td>lexer.xml.allow.php</td>
+        <td>Set to 0 to disable PHP in XML, 1 to accept &lt;?php and &lt;?=, 2 to also accept &lt;?.The default is 2.</td>
         </tr>
         <tr id='property-lexer.xml.allow.scripts'>
         <td>lexer.xml.allow.scripts</td>
@@ -3277,16 +3307,19 @@ Prev File|IDM_PREVFILE|<br/>
       </tr>
       <tr id='property-save.session'>
         <td>
-          <a name='property-save.recent'></a><a name='property-save.position'></a><a name='property-save.find'></a>
+          <a name='property-save.recent'></a><a name='property-load.session.always'></a><a name='property-save.position'></a><a name='property-save.find'></a>
           save.session<br />
+          load.session.always<br />
           save.recent<br />
           save.position<br />
           save.find
         </td>
         <td>
-        If you set save.session, the list of currently opened buffers will be saved on exit
+        If you set save.session to 1, the list of currently opened buffers will be saved on exit
         in a session file. When you start SciTE next time (without specifying a file name
-        on the command line) the last session will be restored automatically.<br />
+        on the command line) the last session will be restored automatically. If you also
+        set load.session.always and check.if.already.open to 1, SciTE will restore your last session
+        and open the specified file alongside it.<br />
         <b>For GTK</b>, the file is called ".SciTE.session" and is located in the
         directory given by the SciTE_USERHOME environment variable and if that is
         not set, the value of the SciTE_HOME environment variable and if that is not
@@ -3785,11 +3818,10 @@ imports.include=fortran lisp
          </div>
         A simple Python script that recognises a particular tag that indicates the file is in the Korean code page 949:<br />
         <div class="example">
-<span><span class="S5">import</span><span class="S0"> </span>sys<br />
-<span class="S5">if</span><span class="S0"> </span><span class="S3">"Language:Korean"</span><span class="S0"> </span><span class="S5">in</span><span class="S0"> </span>open<span class="S10">(</span>sys<span class="S10">.</span>argv<span class="S10">[</span><span class="S2">1</span><span class="S10">]).</span>read<span class="S10">():</span><br />
+<span class="S5">import</span><span class="S0">&nbsp;</span>sys<br />
+<span class="S5">if</span><span class="S0">&nbsp;</span><span class="S3">"Language:Korean"</span><span class="S0">&nbsp;</span><span class="S5">in</span><span class="S0">&nbsp;</span>open<span class="S10">(</span>sys<span class="S10">.</span>argv<span class="S10">[</span><span class="S2">1</span><span class="S10">]).</span>read<span class="S10">():</span><br />
 <span class="S0">&nbsp; &nbsp; &nbsp; &nbsp; </span><span class="S5">print</span><span class="S10">(</span><span class="S4">'code.page=949'</span><span class="S10">)</span><br />
 <span class="S0">&nbsp; &nbsp; &nbsp; &nbsp; </span><span class="S5">print</span><span class="S10">(</span><span class="S4">'character.set=129'</span><span class="S10">)</span><br />
-<span class="S0"></span></span>
          </div>
         </td>
       </tr>
@@ -3966,7 +3998,7 @@ imports.include=fortran lisp
           each lexer.<br />
            The value of each setting is a set of ',' separated attributes, some of which have a
           subvalue after a ':'. The attributes are: <div class="example">font, size, fore, back, italics, notitalics, bold,
-          notbold, weight, eolfilled, noteolfilled, underlined, notunderlined, case,
+          notbold, weight, stretch. eolfilled, noteolfilled, underlined, notunderlined, case,
           visible, notvisible, invisiblerepresentation, changeable, and notchangeable</div>
          <table cellpadding="1" cellspacing="0" border="1" summary="Style fields">
           <tr><th>attribute</th><th>subvalue</th></tr>
@@ -3978,7 +4010,8 @@ imports.include=fortran lisp
           <tr><td>notitalics</td><td></td></tr>
           <tr><td>bold</td><td></td></tr>
           <tr><td>notbold</td><td></td></tr>
-          <tr><td>weight</td><td>numeric 1.. 999: 100=light, 400=normal, 700=bold</td></tr>
+          <tr><td>weight</td><td>numeric 1 .. 999: 100=light, 400=normal, 700=bold</td></tr>
+          <tr><td>stretch</td><td>numeric 1 .. 9: 1=ultra-condensed, 5=normal, 9=ultra-expanded</td></tr>
           <tr><td>eolfilled</td><td></td></tr>
           <tr><td>noteolfilled</td><td></td></tr>
           <tr><td>underlined</td><td></td></tr>

@@ -207,6 +207,7 @@
 	<p>position editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETRECTANGULARSELECTIONCARETVIRTUALSPACE'>RectangularSelectionCaretVirtualSpace</a><span class="comment"> -- Set the virtual space of the caret of the rectangular selection.</span></p>
 	<p>position editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETRECTANGULARSELECTIONANCHOR'>RectangularSelectionAnchor</a><span class="comment"> -- Set the anchor position of the rectangular selection.</span></p>
 	<p>position editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETRECTANGULARSELECTIONANCHORVIRTUALSPACE'>RectangularSelectionAnchorVirtualSpace</a><span class="comment"> -- Set the virtual space of the anchor of the rectangular selection.</span></p>
+	<p>string editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETSELECTIONSERIALIZED'>SelectionSerialized</a><span class="comment"> -- Set selection from serialized form.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETADDITIONALSELALPHA'>AdditionalSelAlpha</a><span class="comment"> -- Set the alpha of the selection.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETADDITIONALSELFORE'>AdditionalSelFore</a> write-only<span class="comment"> -- Set the foreground colour of additional selections. Must have previously called SetSelFore with non-zero first argument for this to have an effect.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETADDITIONALSELBACK'>AdditionalSelBack</a> write-only<span class="comment"> -- Set the background colour of additional selections. Must have previously called SetSelBack with non-zero first argument for this to have an effect.</span></p>
@@ -244,9 +245,11 @@
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CLEAR'>Clear</a>()<span class="comment"> -- Clear the selection.</span></p>
 	<p>bool editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CANPASTE'>CanPaste</a>()<span class="comment"> -- Will a paste succeed?</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_COPYALLOWLINE'>CopyAllowLine</a>()<span class="comment"> -- Copy the selection, if selection empty copy the line with the caret</span></p>
+	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CUTALLOWLINE'>CutAllowLine</a>()<span class="comment"> -- Cut the selection, if selection empty cut the line with the caret</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_COPYRANGE'>CopyRange</a>(position start, position end)<span class="comment"> -- Copy a range of text to the clipboard. Positions are clipped into the document.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_COPYTEXT'>CopyText</a>(string text)<span class="comment"> -- Copy argument text to the clipboard.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETPASTECONVERTENDINGS'>PasteConvertEndings</a><span class="comment"> -- Enable/Disable convert-on-paste for line endings</span></p>
+	<p>string editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETCOPYSEPARATOR'>CopySeparator</a><span class="comment"> -- Set the string to separate parts when copying a multiple selection.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_REPLACERECTANGULAR'>ReplaceRectangular</a>(string text)<span class="comment"> -- Replace the selection with text like a rectangular paste.</span></p>
 	<h2>Undo and Redo</h2>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_UNDO'>Undo</a>()<span class="comment"> -- Undo one action in the undo history.</span></p>
@@ -257,12 +260,15 @@
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETUNDOCOLLECTION'>UndoCollection</a><span class="comment"> -- Choose between collecting actions into the undo history and discarding them.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_BEGINUNDOACTION'>BeginUndoAction</a>()<span class="comment"> -- Start a sequence of actions that is undone and redone as a unit. May be nested.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ENDUNDOACTION'>EndUndoAction</a>()<span class="comment"> -- End a sequence of actions that is undone and redone as a unit.</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETUNDOSEQUENCE'>UndoSequence</a> read-only</p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ADDUNDOACTION'>AddUndoAction</a>(int token, int flags)<span class="comment"> -- Add a container action to the undo stack</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETUNDOSELECTIONHISTORY'>UndoSelectionHistory</a><span class="comment"> -- Enable or disable undo selection history.</span></p>
 	<h2>Change history</h2>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETCHANGEHISTORY'>ChangeHistory</a><span class="comment"> -- Enable or disable change history.</span></p>
 	<h2>Scrolling and automatic scrolling</h2>
 	<p>line editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETFIRSTVISIBLELINE'>FirstVisibleLine</a><span class="comment"> -- Scroll so that a display line is at the top of the display.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETXOFFSET'>XOffset</a><span class="comment"> -- Set the xOffset (ie, horizontal scroll position).</span></p>
+	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SCROLLVERTICAL'>ScrollVertical</a>(line docLine, line subLine)<span class="comment"> -- Scroll vertically with allowance for wrapping.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_LINESCROLL'>LineScroll</a>(position columns, line lines)<span class="comment"> -- Scroll horizontally and vertically.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SCROLLCARET'>ScrollCaret</a>()<span class="comment"> -- Ensure the caret is visible.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SCROLLRANGE'>ScrollRange</a>(position secondary, position primary)<span class="comment"> -- Scroll the argument positions and the range between them into view giving priority to the primary position then the secondary position. This may be used to make a search match visible.</span></p>
@@ -319,6 +325,7 @@
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETSIZEFRACTIONAL'>StyleSizeFractional</a>[int style]<span class="comment"> -- Set the size of characters of a style. Size is in points multiplied by 100.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETBOLD'>StyleBold</a>[int style]<span class="comment"> -- Set a style to be bold or not.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETWEIGHT'>StyleWeight</a>[int style]<span class="comment"> -- Set the weight of characters of a style.</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETSTRETCH'>StyleStretch</a>[int style]<span class="comment"> -- Set the stretch of characters of a style.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETITALIC'>StyleItalic</a>[int style]<span class="comment"> -- Set a style to be italic or not.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETUNDERLINE'>StyleUnderline</a>[int style]<span class="comment"> -- Set a style to be underlined or not.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_STYLESETFORE'>StyleFore</a>[int style]<span class="comment"> -- Set the foreground colour of a style.</span></p>
@@ -512,14 +519,15 @@
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_AUTOCSETTYPESEPARATOR'>AutoCTypeSeparator</a><span class="comment"> -- Change the type-separator character in the string setting up an auto-completion list. Default is '?' but can be changed if items contain '?'.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_AUTOCSETMAXHEIGHT'>AutoCMaxHeight</a><span class="comment"> -- Set the maximum height, in rows, of auto-completion and user lists. The default is 5 rows.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_AUTOCSETMAXWIDTH'>AutoCMaxWidth</a><span class="comment"> -- Set the maximum width, in characters, of auto-completion and user lists. Set to 0 to autosize to fit longest item, which is the default.</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_AUTOCSETSTYLE'>AutoCStyle</a><span class="comment"> -- Set the style number used for auto-completion and user lists fonts.</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_AUTOCSETIMAGESCALE'>AutoCImageScale</a><span class="comment"> -- Set the scale factor in percent for auto-completion list images.</span></p>
 	<h2>User lists</h2>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_USERLISTSHOW'>UserListShow</a>(int listType, string itemList)<span class="comment"> -- Display a list of strings and send notification when user chooses one.</span></p>
 	<h2>Call tips</h2>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPSHOW'>CallTipShow</a>(position pos, string definition)<span class="comment"> -- Show a call tip containing a definition near position pos.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPCANCEL'>CallTipCancel</a>()<span class="comment"> -- Remove the call tip from the screen.</span></p>
 	<p>bool editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPACTIVE'>CallTipActive</a>()<span class="comment"> -- Is there an active call tip?</span></p>
-	<p>position editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPPOSSTART'>CallTipPosStart</a>()<span class="comment"> -- Retrieve the position where the caret was before displaying the call tip.</span></p>
-	<p>position editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPSETPOSSTART'>CallTipPosStart</a> write-only<span class="comment"> -- Set the start position in order to change when backspacing removes the calltip.</span></p>
+	<p>position editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPSETPOSSTART'>CallTipPosStart</a><span class="comment"> -- Set the start position in order to change when backspacing removes the calltip.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPSETHLT'>CallTipSetHlt</a>(position highlightStart, position highlightEnd)<span class="comment"> -- Highlight a segment of the definition.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPSETBACK'>CallTipBack</a> write-only<span class="comment"> -- Set the background colour for the call tip.</span></p>
 	<p>colour editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_CALLTIPSETFORE'>CallTipFore</a> write-only<span class="comment"> -- Set the foreground colour for the call tip.</span></p>
