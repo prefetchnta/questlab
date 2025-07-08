@@ -31,7 +31,7 @@
 #define EXE_XNAME   "zOpenCV64"
 
 /* 外部库引用 */
-#pragma comment (lib, "opencv_world4110.lib")
+#pragma comment (lib, "opencv_world4120.lib")
 
 /* 日志函数 */
 #include "../logit.inl"
