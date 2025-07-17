@@ -344,7 +344,8 @@ OBJ_HYPERLPR=camera_buffer.obj \
              plate_detector.obj \
              plate_recognition.obj \
              recognition_engine.obj \
-             mnn_adapter.obj
+             mnn_adapter.obj \
+             hyper_lpr_sdk.obj
 
 SRC_HYPERLPR=hyperlpr\buffer_module\camera_buffer.cpp \
              hyperlpr\context_module\hyper_lpr_context.cpp \
@@ -358,7 +359,8 @@ SRC_HYPERLPR=hyperlpr\buffer_module\camera_buffer.cpp \
              hyperlpr\nn_implementation_module\detect\plate_detector.cpp \
              hyperlpr\nn_implementation_module\recognition\plate_recognition.cpp \
              hyperlpr\nn_implementation_module\recognition\recognition_engine.cpp \
-             hyperlpr\nn_module\mnn_adapter.cpp
+             hyperlpr\nn_module\mnn_adapter.cpp \
+             hyperlpr\hyper_lpr_sdk.cc
 
 OBJ_LIST=dllmain.obj \
          imglab_ncnn_dect.obj \
@@ -385,7 +387,7 @@ FLAGS_ZXING_CPP=/I $(INC_OPENCV) /I.\zxing /D "ZXING_READERS" /utf-8 /Zc:__cplus
                 /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
 
 FLAGS_HYPERLPR=/I $(INC_OPENCV) /I.\hyperlpr /I.\mnn /D "_CRT_SECURE_NO_WARNINGS" /D "INFERENCE_HELPER_ENABLE_MNN" \
-               /openmp /utf-8 /wd4065 /wd4091 /wd4100 /wd4189 /wd4244 /wd4305
+               /openmp /utf-8 /wd4065 /wd4091 /wd4100 /wd4189 /wd4244 /wd4267 /wd4305
 
 build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4

@@ -167,7 +167,7 @@ detect_nanodet(ncnn::Net *nanodet,
             cv::cvtColor(img, bgr, cv::COLOR_GRAY2BGR);
         else
         if (type == 4)
-            cv::cvtColor(img, bgr, cv::COLOR_RGBA2BGR);
+            cv::cvtColor(img, bgr, cv::COLOR_BGRA2BGR);
         else
             return;
         in = ncnn::Mat::from_pixels_resize(bgr.data, ncnn::Mat::PIXEL_BGR,
@@ -406,7 +406,7 @@ detect_nanodet_plus(ncnn::Net *nanodet,
             cv::cvtColor(img, bgr, cv::COLOR_GRAY2BGR);
         else
         if (type == 4)
-            cv::cvtColor(img, bgr, cv::COLOR_RGBA2BGR);
+            cv::cvtColor(img, bgr, cv::COLOR_BGRA2BGR);
         else
             return;
         in = ncnn::Mat::from_pixels_resize(bgr.data, ncnn::Mat::PIXEL_BGR,

@@ -93,7 +93,7 @@ detect_yolo(ncnn::Net *yolo, const cv::Mat& img, std::vector<Object>& objects,
             cv::cvtColor(img, bgr, cv::COLOR_GRAY2BGR);
         else
         if (type == 4)
-            cv::cvtColor(img, bgr, cv::COLOR_RGBA2BGR);
+            cv::cvtColor(img, bgr, cv::COLOR_BGRA2BGR);
         else
             return;
         in = ncnn::Mat::from_pixels_resize(bgr.data, format, width, height,
