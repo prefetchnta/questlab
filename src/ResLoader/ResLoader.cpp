@@ -182,8 +182,8 @@ res_load (
         mem_free(full);
         return (FALSE);
     }
-    mem_free(full);     /* 加大网络超时五倍 */
-    socket_set_timeout(s_netw, -1, QST_TCP_TOUT * 5);
+    mem_free(full);     /* 加大网络超时等待时间 */
+    socket_set_timeout(s_netw, -1, QST_TCP_TOUT * QST_BIG_TOUT);
 
     /* 等待资源加载返回 */
     for (;;)
