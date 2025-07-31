@@ -1508,7 +1508,7 @@ image_quest64_bridge (
     mem_free(dsrc);
 
     /* 接收返回信息大小 */
-    for (size = 0; size < 10; size++) {
+    for (size = 0; size < QST_BIG_TOUT; size++) {
         back = message_recv_buffer(mess, info, sizeof(info) / 2);
         if (back == CR_SOCKET_TIMEOUT)
         {

@@ -215,7 +215,7 @@ load_remote_pic (
     mess = message_send_open(CRH_REMOTE_IMG_PORT);
     if (mess == NULL)
         goto _failure1;
-    message_pipe_timeout(mess, QST_TCP_TOUT * 60);
+    message_pipe_timeout(mess, QST_TCP_TOUT * QST_BIG_TOUT);
 
     /* 发送文件名, 接收文件头 */
     if (!message_send_buffer(mess, name, sizeof(name)))

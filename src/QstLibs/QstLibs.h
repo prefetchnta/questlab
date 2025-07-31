@@ -48,6 +48,7 @@
 #define QST_ERROR   (__LINE__)
 
 /* 默认网络参数 */
+#define QST_BIG_TOUT         99         /* 长时间的超时 */
 #define QST_TCP_TOUT        1000        /* 网络读取超时 */
 #define QST_DEF_PORT        2012        /* 登录缺省端口 */
 #define QST_DEF_ADDR    "127.0.0.1"     /* 登录缺省地址 */
