@@ -111,7 +111,7 @@ _func_out1:
 
 /*
 ---------------------------------------
-    OpenCV 绘制图码结果
+    绘制图码结果
 ---------------------------------------
 */
 static void_t
@@ -185,7 +185,7 @@ quest64_draw_codes (
 
 /*
 ---------------------------------------
-    OpenCV 绘制目标结果
+    绘制目标结果
 ---------------------------------------
 */
 static void_t
@@ -219,7 +219,7 @@ quest64_draw_objects (
         rct.x2 -= 1; rct.y2 -= 1;
         rct.ww -= 2; rct.hh -= 2;
         draw_rect(image, &rct, color, pixel_set32z);
-        rct.x1 += 1; rct.y1 += 1;
+        rct.x1 -= 2; rct.y1 -= 2 + 16;
         if (labels != NULL &&
             tango[idx].type >= 0 &&
             tango[idx].type < (int)labels->count) {
@@ -229,6 +229,62 @@ quest64_draw_objects (
         else {
             shw = str_fmtA("%d %.1f%%", tango[idx].type,
                                         tango[idx].prob * 100);
+        }
+        if (shw != NULL) {
+            color.val = 0xFFFFFF00;
+            imglab_draw_gb2312(cvmat, shw, rct.x1, rct.y1, 16,
+                               CR_BLT_ALP, color, bkcolor);
+            mem_free(shw);
+        }
+    }
+}
+
+/*
+---------------------------------------
+    绘制目标结果 (带描述)
+---------------------------------------
+*/
+static void_t
+quest64_draw_objects_desc (
+  __CR_IN__ ximage_t                    cvmat,
+  __CR_IN__ const sIMAGE*               image,
+  __CR_IN__ const sRECT_OBJECT_DESC*    tango,
+  __CR_IN__ size_t                      count,
+  __CR_IN__ const sINIu*                labels
+    )
+{
+    cpix_t  color, bkcolor;
+
+    bkcolor.val = 0x800000FF;
+    for (size_t idx = 0; idx < count; idx++)
+    {
+        sRECT   rct;
+        ansi_t* shw;
+
+        color.val = 0xFF00FF00;
+        struct_cpy(&rct, &tango[idx].rect, sRECT);
+        rct.x1 -= 4; rct.y1 -= 4;
+        rct.x2 += 4; rct.y2 += 4;
+        rct.ww += 8; rct.hh += 8;
+        draw_rect(image, &rct, color, pixel_set32z);
+        rct.x1 += 1; rct.y1 += 1;
+        rct.x2 -= 1; rct.y2 -= 1;
+        rct.ww -= 2; rct.hh -= 2;
+        draw_rect(image, &rct, color, pixel_set32z);
+        rct.x1 += 1; rct.y1 += 1;
+        rct.x2 -= 1; rct.y2 -= 1;
+        rct.ww -= 2; rct.hh -= 2;
+        draw_rect(image, &rct, color, pixel_set32z);
+        rct.x1 -= 2; rct.y1 -= 2 + 16;
+        if (labels != NULL &&
+            tango[idx].type >= 0 &&
+            tango[idx].type < (int)labels->count) {
+            shw = str_fmtA("%s: [%s] %.1f%%", labels->lines[tango[idx].type],
+                            tango[idx].desc, tango[idx].prob * 100);
+        }
+        else {
+            shw = str_fmtA("%d: [%s] %.1f%%", tango[idx].type,
+                            tango[idx].desc, tango[idx].prob * 100);
         }
         if (shw != NULL) {
             color.val = 0xFFFFFF00;
@@ -660,9 +716,11 @@ quest64_zxi_grpcode (
   __CR_IN__ sXNODEu*    param
     )
 {
+    bool_t              lded;
     sZXI_ReaderOptions  prms;
 
     /* 参数解析 */
+    lded = FALSE;
     prms.characterSet = NULL;
     ansi_t* file = xml_attr_stringU("params", param);
     if (file != NULL) {
@@ -671,6 +729,7 @@ quest64_zxi_grpcode (
         if (json != NULL) {
             quest64_zxi_grpcode_load_options(prms, json);
             mem_free(json);
+            lded = TRUE;
         }
     }
 
@@ -685,7 +744,10 @@ quest64_zxi_grpcode (
     cvmat = imglab_crh2mat_set(&dest);
     if (cvmat == NULL)
         goto _func_out1;
-    count = (leng_t)imglab_zxi_grpcode_doit(cvmat, &texts, &polys, &prms);
+    if (lded)
+        count = (leng_t)imglab_zxi_grpcode_doit(cvmat, &texts, &polys, &prms);
+    else
+        count = (leng_t)imglab_zxi_grpcode_doit(cvmat, &texts, &polys, NULL);
     if (count == 0)
         goto _func_out2;
 
@@ -697,6 +759,122 @@ _func_out2:
     imglab_mat_del(cvmat);
 _func_out1:
     TRY_FREE(prms.characterSet);
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    HyperLPRv3 参数解析
+---------------------------------------
+*/
+static bool_t
+quest64_hyperlpr3_load_params (
+  __CR_OT__ sHLPR3_Param&   prms,
+  __CR_IN__ const ansi_t*   json
+    )
+{
+    cJSON*  root;
+    sint_t  btmp;
+
+    root = cJSON_Parse(json);
+    if (root == NULL)
+        return (FALSE);
+    CJSON_INTG(max_num, 5);
+    CJSON_INTG(threads, 1);
+    CJSON_BOOL(use_half, FALSE);
+    CJSON_FP32(box_conf_threshold, 0.3f);
+    CJSON_FP32(nms_threshold, 0.5f);
+    CJSON_FP32(rec_confidence_threshold, 0.75f);
+    CJSON_INTG(det_level, 0);
+    cJSON_Delete(root);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    HyperLPRv3 车牌识别器
+---------------------------------------
+*/
+static bool_t
+quest64_hyperlpr3_carplate (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sINIu*  line;
+    ansi_t* text;
+    ansi_t* file;
+    ansi_t* path;
+
+    /* 参数解析 */
+    path = xml_attr_stringU("model_path", param);
+    if (path == NULL)
+        goto _func_out1;
+    line = NULL;
+
+    sHLPR3_Param    prms;
+
+    file = xml_attr_stringU("params", param);
+    if (file == NULL)
+        goto _func_out2;
+    text = file_load_as_strA(file);
+    mem_free(file);
+    if (text == NULL)
+        goto _func_out2;
+    if (!quest64_hyperlpr3_load_params(prms, text)) {
+        mem_free(text);
+        goto _func_out2;
+    }
+    mem_free(text);
+
+    /* 加载标签文件 */
+    file = str_fmtA("%s\\HyperLPR.label", path);
+    if (file != NULL) {
+        text = file_load_as_strA(file);
+        mem_free(file);
+        if (text != NULL) {
+            line = ini_parseU(text);
+            mem_free(text);
+        }
+    }
+
+    hyperlpr3_t hlpr;
+
+    hlpr = imglab_hyperlpr3_new(path, &prms);
+    if (hlpr == NULL)
+        goto _func_out3;
+
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    /* 执行 HyperLPR 车牌识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL)
+        goto _func_out4;
+
+    size_t              cnts;
+    sRECT_OBJECT_DESC*  objs;
+
+    objs = imglab_hyperlpr3_doit(hlpr, cvmat, &cnts);
+    if (objs == NULL)
+        goto _func_out5;
+
+    /* 显示识别结果 */
+    quest64_draw_objects_desc(cvmat, &dest, objs, cnts, line);
+    mem_free(objs);
+_func_out5:
+    imglab_mat_del(cvmat);
+_func_out4:
+    imglab_hyperlpr3_del(hlpr);
+_func_out3:
+    if (line != NULL)
+        ini_closeU(line);
+_func_out2:
+    mem_free(path);
+_func_out1:
     CR_NOUSE(netw);
     return (TRUE);
 }
