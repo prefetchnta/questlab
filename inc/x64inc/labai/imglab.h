@@ -231,12 +231,11 @@ CR_API void_t   imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
 /*                                 目标识别                                  */
 /*****************************************************************************/
 
-/***********************/
-/* OpenCV 级联分类类型 */
-/***********************/
+/*******************/
+/* OpenCV 级联分类 */
+/*******************/
 typedef void_t*     cascade_ocv_t;      /* cv::CascadeClassifier* */
 
-/* OpenCV 级联分类对象 */
 CR_API cascade_ocv_t
 imglab_ocv_cascade_new (const ansi_t *file);
 
@@ -256,12 +255,11 @@ imglab_ocv_cascade_doit (cascade_ocv_t clss, ximage_t mat, fp32_t fscale,
                          sint_t min_nghbrs, sint_t flags, uint_t min_width,
                                 uint_t min_height, uint_t max_width,
                                         uint_t max_height);
-/*************************/
-/* OpenCV 一维码识别类型 */
-/*************************/
+/*********************/
+/* OpenCV 一维码识别 */
+/*********************/
 typedef void_t*     barcode_ocv_t;      /* cv::barcode::BarcodeDetector* */
 
-/* OpenCV 一维码识别对象 */
 CR_API barcode_ocv_t
 imglab_ocv_barcode_new (const ansi_t *sr_model CR_DEFAULT(NULL),
                         const ansi_t *sr_prototxt CR_DEFAULT(NULL));
@@ -275,13 +273,12 @@ imglab_ocv_barcode_param (barcode_ocv_t bar1, fp32_t dnsp_lmt,
 CR_API size_t
 imglab_ocv_barcode_doit (barcode_ocv_t bar1, ximage_t mat, str_lstA_t *text,
                                     xpoly_lst_t *list);
-/*************************/
-/* OpenCV 二维码识别类型 */
-/*************************/
+/*********************/
+/* OpenCV 二维码识别 */
+/*********************/
 typedef void_t*     qr2code_ocv_t;      /* cv::QRCodeDetector
                                            cv::QRCodeDetectorAruco
                                            cv::WeChatQRCode */
-/* OpenCV 二维码识别参数 */
 typedef struct
 {
     fp64_t  epsX;
@@ -361,7 +358,6 @@ typedef struct
 #define QR2D_OCV_TYPE_ARUCOX    1   /* cv::QRCodeDetectorAruco */
 #define QR2D_OCV_TYPE_WECHAT    2   /* cv::wechat_qrcode::WeChatQRCode */
 
-/* OpenCV 二维码识别对象 */
 CR_API qr2code_ocv_t
 imglab_ocv_qr2code_new (uint_t type, const sOCV_QRCodeWeChatParam *wechat);
 
@@ -374,9 +370,9 @@ imglab_ocv_qr2code_param (qr2code_ocv_t qr2d, const void_t *param_data,
 CR_API size_t
 imglab_ocv_qr2code_doit (qr2code_ocv_t qr2d, ximage_t mat, str_lstA_t *text,
                                     xpoly_lst_t *list);
-/************************/
-/* ZXing 图形码识别参数 */
-/************************/
+/********************/
+/* ZXing 图形码识别 */
+/********************/
 
 /* sZXI_ReaderOptions::formats */
 #define ZXI_TYPE_NONE           0
@@ -450,17 +446,14 @@ typedef struct  /* ZXing::ReaderOptions */
 #define ZXI_BIN_FIXED_THRESHOLD     2
 #define ZXI_BIN_BOOL_CAST           3
 
-/* ZXing 图形码识别函数 */
 CR_API size_t
 imglab_zxi_grpcode_doit (ximage_t mat, str_lstA_t *text, xpoly_lst_t *list,
                          const sZXI_ReaderOptions *options CR_DEFAULT(NULL));
-
-/*************************/
-/* NCNN NanoDet 识别类型 */
-/*************************/
+/*********************/
+/* NCNN NanoDet 识别 */
+/*********************/
 typedef void_t*     nanodet_ncnn_t;
 
-/* NCNN NanoDet 识别对象 */
 CR_API nanodet_ncnn_t
 imglab_ncnn_nanodet_new (sint_t vk_gpu);
 
@@ -471,7 +464,6 @@ CR_API bool_t
 imglab_ncnn_nanodet_load (nanodet_ncnn_t nnet, const ansi_t *name,
                           bool_t bin_param, bool_t use_vulkan,
                           bool_t use_bf16 CR_DEFAULT(FALSE));
-/* NCNN NanoDet 识别参数 */
 typedef struct
 {
         sint_t  thread_num;
@@ -487,7 +479,6 @@ typedef struct
 
 } sNCNN_NanoDetParam;
 
-/* NCNN NanoDetPlus 识别参数 */
 typedef struct
 {
         sint_t  thread_num;
@@ -513,13 +504,11 @@ CR_API sRECT_OBJECT*
 imglab_ncnn_nanodet_plus_doit (nanodet_ncnn_t nnet, ximage_t mat,
                                const sNCNN_NanoDetPlusParam *param,
                                size_t *count);
-
-/******************************/
-/* NCNN MobileNetSSD 识别类型 */
-/******************************/
+/**************************/
+/* NCNN MobileNetSSD 识别 */
+/**************************/
 typedef void_t*     mbntssd_ncnn_t;
 
-/* NCNN MobileNetSSD 识别对象 */
 CR_API mbntssd_ncnn_t
 imglab_ncnn_mbntssd_new (sint_t vk_gpu);
 
@@ -530,7 +519,6 @@ CR_API bool_t
 imglab_ncnn_mbntssd_load (mbntssd_ncnn_t nnet, const ansi_t *name,
                     const ansi_t *silence, bool_t bin_param, bool_t use_vulkan,
                                 bool_t use_bf16 CR_DEFAULT(FALSE));
-/* NCNN MobileNetSSD 识别参数 */
 typedef struct
 {
         sint_t  thread_num;
@@ -549,12 +537,11 @@ CR_API sRECT_OBJECT*
 imglab_ncnn_mbntssd_doit (mbntssd_ncnn_t nnet, ximage_t mat,
                           const sNCNN_MobileNetSSD_Param *param,
                           size_t *count);
-/**********************/
-/* NCNN YOLO 识别类型 */
-/**********************/
+/******************/
+/* NCNN YOLO 识别 */
+/******************/
 typedef void_t*     yolo_ncnn_t;
 
-/* NCNN YOLO 识别对象 */
 CR_API yolo_ncnn_t
 imglab_ncnn_yolo_new (sint_t vk_gpu);
 
@@ -565,7 +552,6 @@ CR_API bool_t
 imglab_ncnn_yolo_load (yolo_ncnn_t nnet, const ansi_t *name,
                     const ansi_t *v5focus, bool_t bin_param, bool_t use_vulkan,
                                 bool_t use_bf16 CR_DEFAULT(FALSE));
-/* NCNN YOLO 识别参数 */
 typedef struct
 {
         sint_t  thread_num;
@@ -584,5 +570,30 @@ CR_API sRECT_OBJECT*
 imglab_ncnn_yolo_doit (yolo_ncnn_t nnet, ximage_t mat,
                        const sNCNN_YOLO_Param *param,
                        size_t *count);
+/*********************/
+/* HyperLPR 车牌识别 */
+/*********************/
+typedef void_t*     hyperlpr3_t;    /* P_HLPR_Context */
+
+typedef struct  /* HLPR_ContextConfiguration */
+{
+        sint_t  max_num;
+        sint_t  threads;
+        bool_t  use_half;
+        fp32_t  box_conf_threshold;
+        fp32_t  nms_threshold;
+        fp32_t  rec_confidence_threshold;
+        sint_t  det_level;
+
+} sHLPR3_Param;
+
+CR_API hyperlpr3_t
+imglab_hyperlpr3_new (const ansi_t *path, const sHLPR3_Param *param);
+
+CR_API void_t
+imglab_hyperlpr3_del (hyperlpr3_t hlpr);
+
+CR_API sRECT_OBJECT_DESC*
+imglab_hyperlpr3_doit (hyperlpr3_t hlpr, ximage_t mat, size_t *count);
 
 #endif  /* !__AI_IMGLAB_H__ */

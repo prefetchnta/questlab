@@ -5,6 +5,7 @@ LIB_NAME=$(PROJECT).lib
 INC_LABAI=..\..\inc\x64inc\labai
 INC_OPENCV=..\..\inc\x64inc\opencv
 !INCLUDE "../vc2022_x64.mak"
+CFLAGS=$(CFLAGS) /std:c++20 /EHsc /utf-8
 
 OBJ_OCV_WECHAT=binarizermgr.obj \
                decodermgr.obj \
@@ -332,35 +333,35 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\qrcode\QRVersion.cpp \
               zxing\qrcode\QRWriter.cpp
 
-OBJ_HYPERLPR=camera_buffer.obj \
-             hyper_lpr_context.obj \
-             inference_helper.obj \
-             inference_helper_mnn.obj \
-             classification_engine.obj \
-             plate_classification.obj \
-             det_arch.obj \
-             det_backbone.obj \
-             det_header.obj \
-             plate_detector.obj \
-             plate_recognition.obj \
-             recognition_engine.obj \
-             mnn_adapter.obj \
-             hyper_lpr_sdk.obj
+OBJ_HYPERLPR3=camera_buffer.obj \
+              hyper_lpr_context.obj \
+              inference_helper.obj \
+              inference_helper_mnn.obj \
+              classification_engine.obj \
+              plate_classification.obj \
+              det_arch.obj \
+              det_backbone.obj \
+              det_header.obj \
+              plate_detector.obj \
+              plate_recognition.obj \
+              recognition_engine.obj \
+              mnn_adapter.obj \
+              hyper_lpr_sdk.obj
 
-SRC_HYPERLPR=hyperlpr\buffer_module\camera_buffer.cpp \
-             hyperlpr\context_module\hyper_lpr_context.cpp \
-             hyperlpr\inference_helper_module\inference_helper.cpp \
-             hyperlpr\inference_helper_module\inference_helper_mnn.cpp \
-             hyperlpr\nn_implementation_module\classification\classification_engine.cpp \
-             hyperlpr\nn_implementation_module\classification\plate_classification.cpp \
-             hyperlpr\nn_implementation_module\detect\det_arch.cpp \
-             hyperlpr\nn_implementation_module\detect\det_backbone.cpp \
-             hyperlpr\nn_implementation_module\detect\det_header.cpp \
-             hyperlpr\nn_implementation_module\detect\plate_detector.cpp \
-             hyperlpr\nn_implementation_module\recognition\plate_recognition.cpp \
-             hyperlpr\nn_implementation_module\recognition\recognition_engine.cpp \
-             hyperlpr\nn_module\mnn_adapter.cpp \
-             hyperlpr\hyper_lpr_sdk.cc
+SRC_HYPERLPR3=hyperlpr\v3\buffer_module\camera_buffer.cpp \
+              hyperlpr\v3\context_module\hyper_lpr_context.cpp \
+              hyperlpr\v3\inference_helper_module\inference_helper.cpp \
+              hyperlpr\v3\inference_helper_module\inference_helper_mnn.cpp \
+              hyperlpr\v3\nn_implementation_module\classification\classification_engine.cpp \
+              hyperlpr\v3\nn_implementation_module\classification\plate_classification.cpp \
+              hyperlpr\v3\nn_implementation_module\detect\det_arch.cpp \
+              hyperlpr\v3\nn_implementation_module\detect\det_backbone.cpp \
+              hyperlpr\v3\nn_implementation_module\detect\det_header.cpp \
+              hyperlpr\v3\nn_implementation_module\detect\plate_detector.cpp \
+              hyperlpr\v3\nn_implementation_module\recognition\plate_recognition.cpp \
+              hyperlpr\v3\nn_implementation_module\recognition\recognition_engine.cpp \
+              hyperlpr\v3\nn_module\mnn_adapter.cpp \
+              hyperlpr\v3\hyper_lpr_sdk.cc
 
 OBJ_LIST=dllmain.obj \
          imglab_ncnn_dect.obj \
@@ -370,7 +371,8 @@ OBJ_LIST=dllmain.obj \
          imglab_opencv_dect.obj \
          imglab_opencv_intr.obj \
          imglab_opencv_proc.obj \
-         $(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP) $(OBJ_HYPERLPR)
+         imglab_hyperlpr_dect.obj \
+         $(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP) $(OBJ_HYPERLPR3)
 
 SRC_LIST=dllmain.cpp \
          imglab_ncnn_dect.cpp \
@@ -379,22 +381,23 @@ SRC_LIST=dllmain.cpp \
          imglab_opencv_base.cpp \
          imglab_opencv_dect.cpp \
          imglab_opencv_intr.cpp \
-         imglab_opencv_proc.cpp
+         imglab_opencv_proc.cpp \
+         imglab_hyperlpr_dect.cpp
 
 FLAGS_OCV_WECHAT=/I $(INC_OPENCV)
 
-FLAGS_ZXING_CPP=/I $(INC_OPENCV) /I.\zxing /D "ZXING_READERS" /utf-8 /Zc:__cplusplus \
+FLAGS_ZXING_CPP=/I $(INC_OPENCV) /I.\zxing /D "ZXING_READERS" /Zc:__cplusplus \
                 /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
 
-FLAGS_HYPERLPR=/I $(INC_OPENCV) /I.\hyperlpr /I.\mnn /D "_CRT_SECURE_NO_WARNINGS" /D "INFERENCE_HELPER_ENABLE_MNN" \
-               /openmp /utf-8 /wd4065 /wd4091 /wd4100 /wd4189 /wd4244 /wd4267 /wd4305
+FLAGS_HYPERLPR3=/I $(INC_OPENCV) /I.\hyperlpr\v3\ /I.\mnn /D "_CRT_SECURE_NO_WARNINGS" /D "INFERENCE_HELPER_ENABLE_MNN" \
+                /openmp /wd4065 /wd4091 /wd4100 /wd4189 /wd4244 /wd4267 /wd4305
 
 build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4
-    $(CC) $(CFLAGS) /std:c++20 /EHsc $(FLAGS_OCV_WECHAT) $(SRC_OCV_WECHAT)
-    $(CC) $(CFLAGS) /std:c++20 /EHsc $(FLAGS_ZXING_CPP) $(SRC_ZXING_CPP)
-    $(CC) $(CFLAGS) /std:c++20 /EHsc $(FLAGS_HYPERLPR) $(SRC_HYPERLPR)
-    $(CC) $(CFLAGS) /std:c++20 /EHsc /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) /openmp $(SRC_LIST)
+    $(CC) $(CFLAGS) $(FLAGS_OCV_WECHAT) $(SRC_OCV_WECHAT)
+    $(CC) $(CFLAGS) $(FLAGS_ZXING_CPP) $(SRC_ZXING_CPP)
+    $(CC) $(CFLAGS) $(FLAGS_HYPERLPR3) $(SRC_HYPERLPR3)
+    $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) /openmp $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..\..\bin\x64bin
