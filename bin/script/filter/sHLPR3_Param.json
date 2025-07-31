@@ -1,0 +1,9 @@
+{
+    "max_num": 5,
+    "threads": 1,
+    "use_half": 0,
+    "box_conf_threshold": 0.3,
+    "nms_threshold": 0.5,
+    "rec_confidence_threshold": 0.75,
+    "det_level": 0
+}

@@ -28,6 +28,9 @@
             <!-- ZXing -->
             <?quest64_zxing_grpcode params="script/filter/sZXI_ReaderOptions.json" />
 
+            <!-- HyperLPR -->
+            <?quest64_hyperlpr3_carplate model_path="source/hyperlpr/v3" params="script/filter/sHLPR3_Param.json" />
+
             <!-- NCNN NanoDet -->
             <?quest64_ncnn_nanodet vk_gpu="-1" model="source/ncnn/nanodet_m" bparam="0" vulkan="1" float16="0"
                 params="script/filter/sNCNN_NanoDetParam.json" />
