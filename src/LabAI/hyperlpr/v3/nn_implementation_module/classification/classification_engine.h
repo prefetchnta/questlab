@@ -9,7 +9,7 @@
 #include "configuration.h"
 #include "plate_cls_common.h"
 #include "basic_types.h"
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 
 namespace hyper {
 

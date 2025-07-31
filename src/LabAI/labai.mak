@@ -333,6 +333,34 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\qrcode\QRVersion.cpp \
               zxing\qrcode\QRWriter.cpp
 
+OBJ_HYPERLPR1=CNNRecognizer.obj \
+              FastDeskew.obj \
+              FineMapping.obj \
+              Pipeline1.obj \
+              PlateDetection1.obj \
+              PlateSegmentation.obj \
+              Recognizer.obj \
+              SegmentationFreeRecognizer.obj
+
+SRC_HYPERLPR1=hyperlpr\v1\src\CNNRecognizer.cpp \
+              hyperlpr\v1\src\FastDeskew.cpp \
+              hyperlpr\v1\src\FineMapping.cpp \
+              hyperlpr\v1\src\Pipeline1.cpp \
+              hyperlpr\v1\src\PlateDetection1.cpp \
+              hyperlpr\v1\src\PlateSegmentation.cpp \
+              hyperlpr\v1\src\Recognizer.cpp \
+              hyperlpr\v1\src\SegmentationFreeRecognizer.cpp
+
+OBJ_HYPERLPR2=FineTune.obj \
+              Pipeline2.obj \
+              PlateDetection2.obj \
+              PlateRecognation.obj
+
+SRC_HYPERLPR2=hyperlpr\v2\src\FineTune.cpp \
+              hyperlpr\v2\src\Pipeline2.cpp \
+              hyperlpr\v2\src\PlateDetection2.cpp \
+              hyperlpr\v2\src\PlateRecognation.cpp
+
 OBJ_HYPERLPR3=camera_buffer.obj \
               hyper_lpr_context.obj \
               inference_helper.obj \
@@ -372,7 +400,8 @@ OBJ_LIST=dllmain.obj \
          imglab_opencv_intr.obj \
          imglab_opencv_proc.obj \
          imglab_hyperlpr_dect.obj \
-         $(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP) $(OBJ_HYPERLPR3)
+         $(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP) \
+         $(OBJ_HYPERLPR1) $(OBJ_HYPERLPR2) $(OBJ_HYPERLPR3)
 
 SRC_LIST=dllmain.cpp \
          imglab_ncnn_dect.cpp \
@@ -389,6 +418,10 @@ FLAGS_OCV_WECHAT=/I $(INC_OPENCV)
 FLAGS_ZXING_CPP=/I $(INC_OPENCV) /I.\zxing /D "ZXING_READERS" /Zc:__cplusplus \
                 /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
 
+FLAGS_HYPERLPR1=/I $(INC_OPENCV) /I.\hyperlpr\v1\ /wd4100 /wd4189 /wd4244 /wd4267 /wd4456 /wd5205
+
+FLAGS_HYPERLPR2=/I $(INC_OPENCV) /I.\hyperlpr\v2\ /wd4189 /wd4244
+
 FLAGS_HYPERLPR3=/I $(INC_OPENCV) /I.\hyperlpr\v3\ /I.\mnn /D "_CRT_SECURE_NO_WARNINGS" /D "INFERENCE_HELPER_ENABLE_MNN" \
                 /openmp /wd4065 /wd4091 /wd4100 /wd4189 /wd4244 /wd4267 /wd4305
 
@@ -396,6 +429,8 @@ build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4
     $(CC) $(CFLAGS) $(FLAGS_OCV_WECHAT) $(SRC_OCV_WECHAT)
     $(CC) $(CFLAGS) $(FLAGS_ZXING_CPP) $(SRC_ZXING_CPP)
+    $(CC) $(CFLAGS) $(FLAGS_HYPERLPR1) $(SRC_HYPERLPR1)
+    $(CC) $(CFLAGS) $(FLAGS_HYPERLPR2) $(SRC_HYPERLPR2)
     $(CC) $(CFLAGS) $(FLAGS_HYPERLPR3) $(SRC_HYPERLPR3)
     $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) /openmp $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST)

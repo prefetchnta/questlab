@@ -6,7 +6,7 @@
         <filters>
 
             <!-- OpenCV CascadeClassifier -->
-            <?quest64_opencv_cascade model="source/opencv/haarcascades/haarcascade_licence_plate_chn.xml"
+            <?quest64_opencv_cascade model="source/hyperlpr/v1/cascade.xml"
                 scale="1.1" min_neighbors="3" flags="2" min_width="24" max_width="0" min_height="24" max_height="0" />
 
             <!-- OpenCV BarcodeDetector -->
