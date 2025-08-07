@@ -765,6 +765,124 @@ _func_out1:
 
 /*
 ---------------------------------------
+    HyperLPRv1 车牌识别器
+---------------------------------------
+*/
+static bool_t
+quest64_hyperlpr1_carplate (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    uint_t  mthd;
+    fp32_t  gate;
+    ansi_t* path;
+
+    /* 参数解析 */
+    path = xml_attr_stringU("model_path", param);
+    if (path == NULL)
+        goto _func_out1;
+    mthd = xml_attr_intxU("method", 0, param);
+    gate = xml_attr_fp32U("gate", 0.75f, param);
+
+    hyperlpr1_t hlpr;
+
+    hlpr = imglab_hyperlpr1_new(path);
+    if (hlpr == NULL)
+        goto _func_out2;
+
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    /* 执行 HyperLPRv1 车牌识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL)
+        goto _func_out3;
+
+    size_t              cnts;
+    sRECT_OBJECT_DESC*  objs;
+
+    objs = imglab_hyperlpr1_doit(hlpr, cvmat, mthd, gate, &cnts);
+    if (objs == NULL)
+        goto _func_out4;
+
+    /* 显示识别结果 */
+    quest64_draw_objects_desc(cvmat, &dest, objs, cnts, NULL);
+    mem_free(objs);
+_func_out4:
+    imglab_mat_del(cvmat);
+_func_out3:
+    imglab_hyperlpr1_del(hlpr);
+_func_out2:
+    mem_free(path);
+_func_out1:
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    HyperLPRv2 车牌识别器
+---------------------------------------
+*/
+static bool_t
+quest64_hyperlpr2_carplate (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    uint_t  mthd;
+    fp32_t  gate;
+    ansi_t* path;
+
+    /* 参数解析 */
+    path = xml_attr_stringU("model_path", param);
+    if (path == NULL)
+        goto _func_out1;
+    mthd = xml_attr_intxU("is_db", 0, param);
+    gate = xml_attr_fp32U("gate", 0.75f, param);
+
+    hyperlpr2_t hlpr;
+
+    hlpr = imglab_hyperlpr2_new(path);
+    if (hlpr == NULL)
+        goto _func_out2;
+
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    /* 执行 HyperLPRv2 车牌识别器 */
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat == NULL)
+        goto _func_out3;
+
+    size_t              cnts;
+    sRECT_OBJECT_DESC*  objs;
+
+    objs = imglab_hyperlpr2_doit(hlpr, cvmat, mthd, gate, &cnts);
+    if (objs == NULL)
+        goto _func_out4;
+
+    /* 显示识别结果 */
+    quest64_draw_objects_desc(cvmat, &dest, objs, cnts, NULL);
+    mem_free(objs);
+_func_out4:
+    imglab_mat_del(cvmat);
+_func_out3:
+    imglab_hyperlpr2_del(hlpr);
+_func_out2:
+    mem_free(path);
+_func_out1:
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     HyperLPRv3 参数解析
 ---------------------------------------
 */
@@ -849,7 +967,7 @@ quest64_hyperlpr3_carplate (
     sIMAGE      dest;
     ximage_t    cvmat;
 
-    /* 执行 HyperLPR 车牌识别器 */
+    /* 执行 HyperLPRv3 车牌识别器 */
     quest64_set_image(&dest, image);
     cvmat = imglab_crh2mat_set(&dest);
     if (cvmat == NULL)

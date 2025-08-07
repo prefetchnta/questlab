@@ -28,7 +28,13 @@
             <!-- ZXing -->
             <?quest64_zxing_grpcode params="script/filter/sZXI_ReaderOptions.json" />
 
-            <!-- HyperLPR -->
+            <!-- HyperLPRv1 -->
+            <?quest64_hyperlpr1_carplate model_path="source/hyperlpr/v1" method="0" gate="0.75" />
+
+            <!-- HyperLPRv2 -->
+            <?quest64_hyperlpr2_carplate model_path="source/hyperlpr/v2" is_db="0" gate="0.75" />
+
+            <!-- HyperLPRv3 -->
             <?quest64_hyperlpr3_carplate model_path="source/hyperlpr/v3" params="script/filter/sHLPR3_Param.json" />
 
             <!-- NCNN NanoDet -->
