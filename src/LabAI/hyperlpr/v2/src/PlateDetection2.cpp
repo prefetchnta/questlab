@@ -19,19 +19,9 @@ namespace pr2 {
 		Mat in;
 		img.convertTo(in, CV_32F);
 		Mat input(img.size(), CV_32FC3);
-		Mat inputblob1 = input.reshape(1, { 1, 3,rows,cols });
-		Mat input_blob = dnn::blobFromImages(in, 0.225, Size(), Scalar(103.53, 116.28, 123.675), false);
-		float *blobdata = input_blob.ptr<float>();
-		float *blobdata2 = inputblob1.ptr<float>();
-		{
-			for (int i = 0; i < rows; i++)
-			{
-				memcpy(blobdata2 + i * cols, blobdata + 3 * i * cols, cols * sizeof(float));
-				memcpy(blobdata2 + i * cols + rows * cols, blobdata + (1 + 3 * i) * cols, cols * sizeof(float));
-				memcpy(blobdata2 + i * cols + rows * cols * 2, blobdata + (2 + 3 * i) * cols, cols * sizeof(float));
-			}
-		}
-		ssdNet.setInput(inputblob1);
+		Mat input_blob = dnn::blobFromImage(in, 1.0 / (0.225 * 255.0), Size(), Scalar(123.675, 116.28, 103.53), true);
+
+		ssdNet.setInput(input_blob);
 
 		Mat outputBlob = ssdNet.forward("detection_out");
 

@@ -573,7 +573,12 @@ imglab_ncnn_yolo_doit (yolo_ncnn_t nnet, ximage_t mat,
 /*********************/
 /* HyperLPR 车牌识别 */
 /*********************/
+typedef void_t*     hyperlpr1_t;    /* pr1::PipelinePR* */
+typedef void_t*     hyperlpr2_t;    /* pr2::PipelinePR* */
 typedef void_t*     hyperlpr3_t;    /* P_HLPR_Context */
+
+#define HLPR1_SEGMENTATION_FREE_METHOD      0
+#define HLPR1_SEGMENTATION_BASED_METHOD     1
 
 typedef struct  /* HLPR_ContextConfiguration */
 {
@@ -587,6 +592,27 @@ typedef struct  /* HLPR_ContextConfiguration */
 
 } sHLPR3_Param;
 
+/* V1 */
+CR_API hyperlpr1_t
+imglab_hyperlpr1_new (const ansi_t *path);
+
+CR_API void_t
+imglab_hyperlpr1_del (hyperlpr1_t hlpr);
+
+CR_API sRECT_OBJECT_DESC*
+imglab_hyperlpr1_doit (hyperlpr1_t hlpr, ximage_t mat, uint_t method,
+                       fp32_t gate, size_t *count);
+/* V2 */
+CR_API hyperlpr2_t
+imglab_hyperlpr2_new (const ansi_t *path);
+
+CR_API void_t
+imglab_hyperlpr2_del (hyperlpr2_t hlpr);
+
+CR_API sRECT_OBJECT_DESC*
+imglab_hyperlpr2_doit (hyperlpr2_t hlpr, ximage_t mat, bool_t is_db,
+                       fp32_t gate, size_t *count);
+/* V3 */
 CR_API hyperlpr3_t
 imglab_hyperlpr3_new (const ansi_t *path, const sHLPR3_Param *param);
 
