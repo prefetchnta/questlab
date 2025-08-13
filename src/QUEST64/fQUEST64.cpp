@@ -122,9 +122,7 @@ static const sXC_PORT   quest64_filter[] =
     { "quest64_ncnn_nanodet", quest64_ncnn_nanodet },
     { "quest64_ncnn_nanodet_plus", quest64_ncnn_nanodet_plus },
     { "quest64_ncnn_mobilenetssd", quest64_ncnn_mbntssd },
-    { "quest64_ncnn_yolov2", quest64_ncnn_yolo },
-    { "quest64_ncnn_yolov3", quest64_ncnn_yolo },
-    { "quest64_ncnn_yolov4", quest64_ncnn_yolo },
+    { "quest64_ncnn_yolo", quest64_ncnn_yolo },
     { NULL, NULL },
 };
 

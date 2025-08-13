@@ -1487,15 +1487,25 @@ quest64_ncnn_yolo_load_params (
     root = cJSON_Parse(json);
     if (root == NULL)
         return (FALSE);
+    prms.output_layer16 = NULL;
+    prms.output_layer32 = NULL;
     if (CJSON_STRING(input_layer) == NULL)
         goto _failure1;
-    if (CJSON_STRING(output_layer) == NULL)
+    if (CJSON_STRING(output_layer8) == NULL)
         goto _failure2;
+    CJSON_INTG(yolo_version, 2);
+    if (prms.yolo_version == 5 || prms.yolo_version == 500 ||
+        prms.yolo_version == 560 || prms.yolo_version == 562) {
+        if (CJSON_STRING(output_layer16) == NULL)
+            goto _failure3;
+        if (CJSON_STRING(output_layer32) == NULL)
+            goto _failure4;
+    }
     CJSON_INTG(thread_num, 0);
     CJSON_BOOL(light_mode, FALSE);
     CJSON_INTG(target_size, 416);
-    CJSON_INTG(yolo_version, 2);
     CJSON_FP32(prob_threshold, 0.6f);
+    CJSON_FP32(nms_threshold, 0.5f);
     if (!CJSON_VECTOR3(mean_vals))
         prms.mean_vals[0] = prms.mean_vals[1] = prms.mean_vals[2] = -1;
     if (!CJSON_VECTOR3(norm_vals))
@@ -1503,6 +1513,10 @@ quest64_ncnn_yolo_load_params (
     cJSON_Delete(root);
     return (TRUE);
 
+_failure4:
+    TRY_FREE(prms.output_layer16);
+_failure3:
+    TRY_FREE(prms.output_layer8);
 _failure2:
     mem_free(prms.input_layer);
 _failure1:
@@ -1611,7 +1625,9 @@ _func_out3:
     if (line != NULL)
         ini_closeU(line);
     mem_free(prms.input_layer);
-    mem_free(prms.output_layer);
+    mem_free(prms.output_layer8);
+    TRY_FREE(prms.output_layer16);
+    TRY_FREE(prms.output_layer32);
 _func_out2:
     TRY_FREE(noop);
     mem_free(name);
