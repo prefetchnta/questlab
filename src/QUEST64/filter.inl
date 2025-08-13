@@ -1495,6 +1495,7 @@ quest64_ncnn_yolo_load_params (
         goto _failure2;
     CJSON_INTG(yolo_version, 2);
     if (prms.yolo_version == 5 || prms.yolo_version == 500 ||
+        prms.yolo_version == 7 || prms.yolo_version == 700 ||
         prms.yolo_version == 560 || prms.yolo_version == 562) {
         if (CJSON_STRING(output_layer16) == NULL)
             goto _failure3;
