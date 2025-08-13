@@ -85,6 +85,14 @@
             <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov5s.ncnn" bparam="0" vulkan="1" float16="0"
                 params="script/filter/sNCNN_YOLOv5_pnnx_Param.json" />
 
+            <!-- NCNN YOLOv7 -->
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov7-tiny" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_YOLOv7_Param.json" />
+
+            <!-- NCNN YOLOv7 -->
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov7.ncnn" bparam="0" vulkan="1" float16="0"
+                params="script/filter/sNCNN_YOLOv7_pnnx_Param.json" />
+
         </filters>
     ]]></quest64_bridge>
 
