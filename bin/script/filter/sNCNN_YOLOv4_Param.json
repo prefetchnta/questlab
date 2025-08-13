@@ -7,5 +7,5 @@
     "mean_vals": "[0, 0, 0]",
     "norm_vals": "[0.0039215686, 0.0039215686, 0.0039215686]",
     "input_layer": "data",
-    "output_layer": "output"
+    "output_layer8": "output"
 }

@@ -1,0 +1,14 @@
+{
+    "thread_num": 0,
+    "light_mode": 0,
+    "target_size": 640,
+    "yolo_version": 5,
+    "prob_threshold": 0.6,
+    "nms_threshold": 0.5,
+    "mean_vals": "[0, 0, 0]",
+    "norm_vals": "[0.0039215686, 0.0039215686, 0.0039215686]",
+    "input_layer": "images",
+    "output_layer8": "output",
+    "output_layer16": "781",
+    "output_layer32": "801"
+}
