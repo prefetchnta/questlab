@@ -557,12 +557,15 @@ typedef struct
         sint_t  thread_num;
         bool_t  light_mode;
         sint_t  target_size;
-        sint_t  yolo_version;   /* 2, 3, 4 */
+        sint_t  yolo_version;   /* 2, 3, 4, 5, 500, 560, 562 */
         fp32_t  prob_threshold;
+        fp32_t  nms_threshold;
         fp32_t  mean_vals[3];
         fp32_t  norm_vals[3];
         cstr_t  input_layer;
-        cstr_t  output_layer;
+        cstr_t  output_layer8;
+        cstr_t  output_layer16;
+        cstr_t  output_layer32;
 
 } sNCNN_YOLO_Param;
 

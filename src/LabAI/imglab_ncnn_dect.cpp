@@ -415,15 +415,22 @@ imglab_ncnn_yolo_doit (
   __CR_OT__ size_t*                 count
     )
 {
-    if (param->yolo_version < 2 || param->yolo_version > 4)
-        return (NULL);
-
     std::vector<Object> results;
     /* ---------------------- */
     cv::Mat*    mm = (cv::Mat*)mat;
     ncnn::Net*  nndt = (ncnn::Net*)nnet;
 
-    detect_yolo(nndt, *mm, results, param);
+    if (param->yolo_version >= 2 && param->yolo_version <= 4) {
+        detect_yolo(nndt, *mm, results, param);
+    }
+    else
+    if (param->yolo_version == 5 || param->yolo_version == 500 ||
+        param->yolo_version == 560 || param->yolo_version == 562) {
+        detect_yolo5(nndt, *mm, results, param);
+    }
+    else {
+        return (NULL);
+    }
 
     sRECT_OBJECT*   rett;
     /* --------------- */

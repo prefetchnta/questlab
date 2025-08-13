@@ -96,7 +96,7 @@ qsort_descent_inplace(std::vector<Object>& objects)
 static void
 nms_sorted_bboxes(const std::vector<Object>& objects,
                   std::vector<int>& picked, float nms_threshold,
-                  bool agnostic = true)
+                  bool agnostic = false)
 {
     const int n = (int)objects.size();
 
