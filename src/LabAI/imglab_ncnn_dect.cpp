@@ -428,6 +428,10 @@ imglab_ncnn_yolo_doit (
         param->yolo_version == 560 || param->yolo_version == 562) {
         detect_yolo5(nndt, *mm, results, param);
     }
+    else
+    if (param->yolo_version == 7 || param->yolo_version == 700) {
+        detect_yolo7(nndt, *mm, results, param);
+    }
     else {
         return (NULL);
     }
