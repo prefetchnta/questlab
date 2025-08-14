@@ -4,7 +4,7 @@
     "target_size": 416,
     "yolo_version": 2,
     "prob_threshold": 0.6,
-    "mean_vals": "[1.0, 1.0, 1.0]",
+    "mean_vals": "[127.5, 127.5, 127.5]",
     "norm_vals": "[0.007843137, 0.007843137, 0.007843137]",
     "input_layer": "data",
     "output_layer8": "detection_out"
