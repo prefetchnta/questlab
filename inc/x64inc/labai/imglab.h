@@ -562,6 +562,9 @@ typedef struct
         fp32_t  nms_threshold;
         fp32_t  mean_vals[3];
         fp32_t  norm_vals[3];
+        fp32_t  anchors8[6];
+        fp32_t  anchors16[6];
+        fp32_t  anchors32[6];
         cstr_t  input_layer;
         cstr_t  output_layer8;
         cstr_t  output_layer16;
