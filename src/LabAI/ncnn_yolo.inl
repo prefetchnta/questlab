@@ -349,17 +349,11 @@ detect_yolo_5_7(ncnn::Net *yolo, const cv::Mat& img, std::vector<Object>& object
                                            width, height, w, h);
     }
 
-    bool is_pnnx;
-    int max_stride;
+    int max_stride = 32;
+    bool is_pnnx = false;
 
-    if (param->yolo_version == 5 || param->yolo_version == 7) {
-        is_pnnx = false;
-        max_stride = 32;
-    }
-    else {
+    if (param->yolo_version == 500 || param->yolo_version == 700)
         is_pnnx = true;
-        max_stride = 64;
-    }
 
     // letterbox pad to multiple of MAX_STRIDE
     int wpad = (w + max_stride - 1) / max_stride * max_stride - w;

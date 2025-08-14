@@ -425,8 +425,7 @@ imglab_ncnn_yolo_doit (
     }
     else
     if (param->yolo_version == 5 || param->yolo_version == 500 ||
-        param->yolo_version == 7 || param->yolo_version == 700 ||
-        param->yolo_version == 560 || param->yolo_version == 562) {
+        param->yolo_version == 7 || param->yolo_version == 700) {
         detect_yolo_5_7(nndt, *mm, results, param);
     }
     else {
