@@ -448,6 +448,8 @@ _func_out1:
     (prms._name = cjson_str_dup(root, #_name))
 #define CJSON_VECTOR3(_name) \
     cjson_fvec(root, #_name, prms._name, 3)
+#define CJSON_VECTOR6(_name) \
+    cjson_fvec(root, #_name, prms._name, 6)
 /*
 ---------------------------------------
     OpenCV ARUCO 参数解析
@@ -1497,6 +1499,12 @@ quest64_ncnn_yolo_load_params (
     if (prms.yolo_version == 5 || prms.yolo_version == 500 ||
         prms.yolo_version == 7 || prms.yolo_version == 700 ||
         prms.yolo_version == 560 || prms.yolo_version == 562) {
+        if (!CJSON_VECTOR6(anchors8))
+            goto _failure3;
+        if (!CJSON_VECTOR6(anchors16))
+            goto _failure3;
+        if (!CJSON_VECTOR6(anchors32))
+            goto _failure3;
         if (CJSON_STRING(output_layer16) == NULL)
             goto _failure3;
         if (CJSON_STRING(output_layer32) == NULL)
@@ -1517,7 +1525,7 @@ quest64_ncnn_yolo_load_params (
 _failure4:
     TRY_FREE(prms.output_layer16);
 _failure3:
-    TRY_FREE(prms.output_layer8);
+    mem_free(prms.output_layer8);
 _failure2:
     mem_free(prms.input_layer);
 _failure1:
