@@ -421,16 +421,13 @@ imglab_ncnn_yolo_doit (
     ncnn::Net*  nndt = (ncnn::Net*)nnet;
 
     if (param->yolo_version >= 2 && param->yolo_version <= 4) {
-        detect_yolo(nndt, *mm, results, param);
+        detect_yolo_2_3_4(nndt, *mm, results, param);
     }
     else
     if (param->yolo_version == 5 || param->yolo_version == 500 ||
+        param->yolo_version == 7 || param->yolo_version == 700 ||
         param->yolo_version == 560 || param->yolo_version == 562) {
-        detect_yolo5(nndt, *mm, results, param);
-    }
-    else
-    if (param->yolo_version == 7 || param->yolo_version == 700) {
-        detect_yolo7(nndt, *mm, results, param);
+        detect_yolo_5_7(nndt, *mm, results, param);
     }
     else {
         return (NULL);
