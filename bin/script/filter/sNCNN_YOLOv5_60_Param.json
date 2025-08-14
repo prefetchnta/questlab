@@ -2,7 +2,7 @@
     "thread_num": 0,
     "light_mode": 0,
     "target_size": 640,
-    "yolo_version": 560,
+    "yolo_version": 5,
     "prob_threshold": 0.6,
     "nms_threshold": 0.5,
     "mean_vals": "[0, 0, 0]",
