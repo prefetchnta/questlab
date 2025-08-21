@@ -26,10 +26,7 @@
 #if defined(max)
     #undef  max
 #endif
-#if defined(_CR_CC_MSC_)
-    #pragma warning (disable: 4251)
-    #pragma warning (disable: 4273)
-#endif
+#define NCNN_STATIC_DEFINE
 #include "ncnn/net.h"
 
 struct Object

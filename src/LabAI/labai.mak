@@ -392,6 +392,7 @@ SRC_HYPERLPR3=hyperlpr\v3\buffer_module\camera_buffer.cpp \
               hyperlpr\v3\hyper_lpr_sdk.cc
 
 OBJ_LIST=dllmain.obj \
+         imglab_ncnn_base.obj \
          imglab_ncnn_dect.obj \
          imglab_zxing_dect.obj \
          imglab_crhack_draw.obj \
@@ -404,6 +405,7 @@ OBJ_LIST=dllmain.obj \
          $(OBJ_HYPERLPR1) $(OBJ_HYPERLPR2) $(OBJ_HYPERLPR3)
 
 SRC_LIST=dllmain.cpp \
+         imglab_ncnn_base.cpp \
          imglab_ncnn_dect.cpp \
          imglab_zxing_dect.cpp \
          imglab_crhack_draw.cpp \

@@ -26,6 +26,28 @@
 #include "crhack.h"
 
 /*****************************************************************************/
+/*                                 计算设备                                  */
+/*****************************************************************************/
+
+/* NCNN GPU 相关 */
+typedef struct
+{
+    uint_t          gpu_type;
+    int32u          vers_api;
+    int32u          vers_drv;
+    int32u          vendor_id;
+    int32u          device_id;
+    int32u          driver_id;
+    const ansi_t*   device_name;
+    const ansi_t*   driver_name;
+
+} sNCNN_GPU_INFO;
+
+CR_API uint_t   imglab_ncnn_gpu_count (void_t);
+CR_API uint_t   imglab_ncnn_gpu_default (void_t);
+CR_API bool_t   imglab_ncnn_gpu_info (sNCNN_GPU_INFO *gpu, sint_t idx);
+
+/*****************************************************************************/
 /*                                 结构转换                                  */
 /*****************************************************************************/
 
@@ -373,7 +395,6 @@ imglab_ocv_qr2code_doit (qr2code_ocv_t qr2d, ximage_t mat, str_lstA_t *text,
 /********************/
 /* ZXing 图形码识别 */
 /********************/
-
 /* sZXI_ReaderOptions::formats */
 #define ZXI_TYPE_NONE           0
 #define ZXI_TYPE_AZTEC      (1 << 0)
