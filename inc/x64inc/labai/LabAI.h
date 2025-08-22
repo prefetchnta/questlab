@@ -32,7 +32,10 @@
 /* NCNN GPU 相关 */
 typedef struct
 {
-    uint_t          gpu_type;
+    uint_t          gpu_type;   /* 0 = discrete gpu
+                                   1 = integrated gpu
+                                   2 = virtual gpu
+                                   3 = cpu */
     int32u          vers_api;
     int32u          vers_drv;
     int32u          vendor_id;
