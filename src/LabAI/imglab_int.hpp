@@ -28,7 +28,7 @@
 #define _CRT_NONSTDC_NO_DEPRECATE
 #include "opencv2/opencv.hpp"
 
-#include "imglab.h"
+#include "LabAI.h"
 
 /* CrHack 与 OpenCV 颜色转换 */
 #define CPIX2SCALAR(cpix) \

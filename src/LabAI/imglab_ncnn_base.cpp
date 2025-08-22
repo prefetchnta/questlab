@@ -22,7 +22,7 @@
 
 #define NCNN_STATIC_DEFINE
 #include "ncnn/gpu.h"
-#include "imglab.h"
+#include "LabAI.h"
 
 /*
 =======================================

@@ -16,12 +16,12 @@
  *             ##       CREATE: 2018-03-05
  *              #
  ================================================
-        图像 LAB 头文件
+        LabAI 总头文件
  ================================================
  */
 
-#ifndef __AI_IMGLAB_H__
-#define __AI_IMGLAB_H__
+#ifndef __AI_LAB_H__
+#define __AI_LAB_H__
 
 #include "crhack.h"
 
@@ -649,4 +649,4 @@ imglab_hyperlpr3_del (hyperlpr3_t hlpr);
 CR_API sRECT_OBJECT_DESC*
 imglab_hyperlpr3_doit (hyperlpr3_t hlpr, ximage_t mat, size_t *count);
 
-#endif  /* !__AI_IMGLAB_H__ */
+#endif  /* !__AI_LAB_H__ */
