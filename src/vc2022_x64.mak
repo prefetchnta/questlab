@@ -49,8 +49,8 @@ MFLAGS=/outputresource:$(BIN_NAME)^;^#2 /manifest ".\\2.manifest"
 CFLAGS=/c /O2 /Oi /Ot /GF /GL /GS /Gy /Oy- /WX- /Gm- /MD /W4 \
        /wd4819 /Zc:forScope /Zc:inline /fp:precise /arch:AVX /arch:AVX2 \
        /I "..\..\..\CrHack\inc" /I "..\..\..\CrHack\inc\l3rd\dxsdk" \
-       /I "..\..\inc\x64inc" /D "NDEBUG" /D "WIN64" /D "_WIN64" /D "UNICODE" \
-       /D "_UNICODE" /errorReport:prompt
+       /D "NDEBUG" /D "WIN64" /D "_WIN64" /D "UNICODE" /D "_UNICODE" \
+       /errorReport:prompt
 
 ##
 ##=====================================
