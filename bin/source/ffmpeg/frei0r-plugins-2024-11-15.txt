@@ -1,0 +1,9 @@
+frei0r plugins for Windows from www.gyan.dev
+
+Version: 2024-11-15-git-9178c72e59
+
+License: GPL v2
+
+Source Code: https://github.com/dyne/frei0r/commit/9178c72e59
+
+To use these frei0r plugins with FFmpeg, set environment variable FREI0R_PATH to point to the frei0r-1 folder in this package.

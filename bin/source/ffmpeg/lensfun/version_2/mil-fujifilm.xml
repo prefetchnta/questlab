@@ -10,6 +10,11 @@
         <compat>Generic</compat>
     </mount>
 
+    <mount>
+        <name>Fujifilm G</name>
+        <compat>Generic</compat>
+    </mount>
+
     <camera>
         <maker>Fujifilm</maker>
         <model>X-Pro1</model>
@@ -131,6 +136,13 @@
 
     <camera>
         <maker>Fujifilm</maker>
+        <model>X-M5</model>
+        <mount>Fujifilm X</mount>
+        <cropfactor>1.534</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Fujifilm</maker>
         <model>X-A1</model>
         <mount>Fujifilm X</mount>
         <cropfactor>1.529</cropfactor>
@@ -167,6 +179,13 @@
     <camera>
         <maker>Fujifilm</maker>
         <model>X-T30 II</model>
+        <mount>Fujifilm X</mount>
+        <cropfactor>1.534</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Fujifilm</maker>
+        <model>X-T50</model>
         <mount>Fujifilm X</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
@@ -244,6 +263,13 @@
     <camera>
         <maker>Fujifilm</maker>
         <model>GFX100S</model>
+        <mount>Fujifilm G</mount>
+        <cropfactor>0.79</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Fujifilm</maker>
+        <model>GFX100S II</model>
         <mount>Fujifilm G</mount>
         <cropfactor>0.79</cropfactor>
     </camera>
@@ -2002,6 +2028,41 @@
         <calibration>
              <!-- Taken with Fujifilm GFX100 II -->
             <distortion model="ptlens" focal="55" a="0.0108298" b="-0.0385622" c="0.0226601"/>
+        </calibration>
+    </lens>
+
+    <lens>
+        <maker>Fujifilm</maker>
+        <model>XF56mmF1.2 R WR</model>
+        <model lang="en">XF 56mm f/1.2 R WR</model>
+        <mount>Fujifilm X</mount>
+        <cropfactor>1.534</cropfactor>
+        <calibration>
+            <!-- Taken with Fujifilm X-H1 -->
+            <distortion model="ptlens" focal="56" a="-0.0048366" b="0.0206698" c="-0.0228413"/>
+            <tca model="poly3" focal="56" vr="1.0000281" vb="0.9999962"/>
+        </calibration>
+    </lens>
+
+    <lens>
+        <maker>Fujifilm</maker>
+        <model>GF50mmF3.5 R LM WR</model>
+        <mount>Fujifilm G</mount>
+        <cropfactor>0.79</cropfactor>
+        <calibration>
+            <!-- Taken with Fujifilm GFX 50R -->
+            <distortion model="ptlens" focal="50" a="0.0010657" b="-0.0069749" c="0.0043144"/>
+            <tca model="poly3" focal="50" vr="1.0000513" vb="1.0001203"/>
+            <vignetting model="pa" focal="50" aperture="3.5" distance="10" k1="-1.5453" k2="1.4058" k3="-0.6097"/>
+            <vignetting model="pa" focal="50" aperture="3.5" distance="1000" k1="-1.5453" k2="1.4058" k3="-0.6097"/>
+            <vignetting model="pa" focal="50" aperture="5" distance="10" k1="-0.4375" k2="-0.4412" k3="0.2506"/>
+            <vignetting model="pa" focal="50" aperture="5" distance="1000" k1="-0.4375" k2="-0.4412" k3="0.2506"/>
+            <vignetting model="pa" focal="50" aperture="7.1" distance="10" k1="-0.6311" k2="0.5251" k3="-0.4519"/>
+            <vignetting model="pa" focal="50" aperture="7.1" distance="1000" k1="-0.6311" k2="0.5251" k3="-0.4519"/>
+            <vignetting model="pa" focal="50" aperture="10" distance="10" k1="-0.6458" k2="0.4786" k3="-0.2900"/>
+            <vignetting model="pa" focal="50" aperture="10" distance="1000" k1="-0.6458" k2="0.4786" k3="-0.2900"/>
+            <vignetting model="pa" focal="50" aperture="32" distance="10" k1="-0.5867" k2="0.2035" k3="-0.0310"/>
+            <vignetting model="pa" focal="50" aperture="32" distance="1000" k1="-0.5867" k2="0.2035" k3="-0.0310"/>
         </calibration>
     </lens>
 

@@ -92,6 +92,11 @@
         <compat>Generic</compat>
     </mount>
 
+    <mount>
+        <name>Pentax 645AF2</name>
+        <compat>Generic</compat>
+    </mount>
+
     <camera>
         <maker>Pentax</maker>
         <model>35mm film: full frame</model>
@@ -248,7 +253,7 @@
     <camera>
         <maker>Pentax</maker>
         <model>Pentax K-5 II s</model>
-        <model lang="en">K-5 II s</model>
+        <model lang="en">K-5 IIs</model>
         <mount>Pentax KAF2</mount>
         <cropfactor>1.526</cropfactor>
     </camera>
@@ -302,7 +307,7 @@
         <maker>Ricoh Imaging Company, Ltd.</maker>
         <maker lang="en">Pentax</maker>
         <model>PENTAX K-1 Mark II</model>
-        <model lang="en">K-1 Mark II</model>
+        <model lang="en">K-1 II</model>
         <mount>Pentax KAF4</mount>
         <cropfactor>1.0</cropfactor>
     </camera>
@@ -377,10 +382,36 @@
     <camera>
         <maker>Ricoh Imaging Company, Ltd.</maker>
         <maker lang="en">Pentax</maker>
+        <model>Pentax KF</model>
+        <model lang="en">KF</model>
+        <mount>Pentax KAF2</mount>
+        <cropfactor>1.534</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Ricoh Imaging Company, Ltd.</maker>
+        <maker lang="en">Pentax</maker>
         <model>Pentax KP</model>
         <model lang="en">KP</model>
         <mount>Pentax KAF2</mount>
         <cropfactor>1.534</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Pentax</maker>
+        <model>Pentax 645D</model>
+        <model lang="en">645D</model>
+        <mount>Pentax 645AF2</mount>
+        <cropfactor>0.79</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Ricoh Imaging Company, Ltd.</maker>
+        <maker lang="en">Pentax</maker>
+        <model>Pentax 645Z</model>
+        <model lang="en">645Z</model>
+        <mount>Pentax 645AF2</mount>
+        <cropfactor>0.79</cropfactor>
     </camera>
 
     <lens>
@@ -2670,6 +2701,38 @@
             <tca model="poly3" focal="28" vr="1.0000588" vb="1.0000178"/>
             <tca model="poly3" focal="36" vr="0.9999965" vb="0.9999863"/>
             <tca model="poly3" focal="50" vr="0.9999438" vb="0.9999804"/>
+        </calibration>
+    </lens>
+
+    <lens>
+        <maker>Pentax</maker>
+        <model>smc PENTAX-F ZOOM 35-70mm f/3.5-4.5</model>
+        <mount>Pentax K</mount>
+        <cropfactor>1.538</cropfactor>
+        <calibration>
+            <!-- Taken with Pentax K20D -->
+            <distortion model="ptlens" focal="35" a="0.0029795" b="-0.0169706" c="0.0094146"/>
+            <distortion model="ptlens" focal="45" a="-0.0004702" b="0.0032256" c="-0.0102588"/>
+            <distortion model="ptlens" focal="50" a="0.0062203" b="-0.0237862" c="0.0332323"/>
+            <distortion model="ptlens" focal="60" a="-0.0087412" b="0.0255429" c="-0.0119117"/>
+            <distortion model="ptlens" focal="70" a="0.0076255" b="-0.0274699" c="0.0373287"/>
+            <tca model="poly3" focal="35" vr="1.0002254" vb="1.0000726"/>
+            <tca model="poly3" focal="45" vr="1.0001346" vb="1.0001010"/>
+            <tca model="poly3" focal="50" vr="1.0000664" vb="1.0001334"/>
+            <tca model="poly3" focal="60" vr="1.0000188" vb="1.0001530"/>
+            <tca model="poly3" focal="70" vr="1.0000365" vb="1.0000631"/>
+        </calibration>
+    </lens>
+
+    <lens>
+        <maker>Pentax</maker>
+        <model>smc PENTAX-M 50mm f/1.4</model>
+        <mount>Pentax K</mount>
+        <cropfactor>1.538</cropfactor>
+        <calibration>
+            <!-- Taken with Pentax K20D -->
+            <distortion model="ptlens" focal="50" a="-0.00072809" b="-0.000329008" c="0.000031"/>
+            <tca model="poly3" focal="50" vr="1.0002201" vb="0.9997294"/>
         </calibration>
     </lens>
 

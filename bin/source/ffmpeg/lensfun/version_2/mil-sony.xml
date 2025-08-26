@@ -306,8 +306,32 @@
 
     <camera>
         <maker>Sony</maker>
+        <model>ILCE-9M2</model>
+        <model lang="en">Alpha 9 II</model>
+        <mount>Sony E</mount>
+        <cropfactor>1</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Sony</maker>
+        <model>ILCE-9M3</model>
+        <model lang="en">Alpha 9 III</model>
+        <mount>Sony E</mount>
+        <cropfactor>1</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Sony</maker>
         <model>ILCE-1</model>
         <model lang="en">Alpha 1</model>
+        <mount>Sony E</mount>
+        <cropfactor>1</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Sony</maker>
+        <model>ILCE-1M2</model>
+        <model lang="en">Alpha 1 II</model>
         <mount>Sony E</mount>
         <cropfactor>1</cropfactor>
     </camera>
@@ -338,6 +362,14 @@
     <camera>
         <maker>Sony</maker>
         <model>ZV-E10</model>
+        <mount>Sony E</mount>
+        <cropfactor>1.534</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>Sony</maker>
+        <model>ZV-E10M2</model>
+        <model lang="en">ZV-E10 II</model>
         <mount>Sony E</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
