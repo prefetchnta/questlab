@@ -855,7 +855,7 @@ qst_file_action (
         case QST_ACT_QKJS_CUI:  /* QuickJS */
             if (!qst_save_file(QST_TMP_SCRIPT ".js", CR_UTF8))
                 return;
-            misc_call_exe("qjs.exe --std --bignum "
+            misc_call_exe("qjs.exe --std "
                 QST_TMP_SCRIPT ".js", FALSE, FALSE);
             break;
     }
