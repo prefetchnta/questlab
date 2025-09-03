@@ -121,7 +121,7 @@ void __fastcall TfrmMain::cppWebBeforeNavigate2(TObject *Sender,
         /* QuickJS 执行脚本 */
         *Cancel = TRUE;
         file = urla + 10;
-        line = str_fmtA("qjs.exe --std --bignum \"%s\"", file);
+        line = str_fmtA("qjs.exe --std \"%s\"", file);
         mem_free(urla);
         if (line == NULL)
             return;
