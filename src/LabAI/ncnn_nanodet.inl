@@ -186,8 +186,6 @@ detect_nanodet(ncnn::Net *nanodet,
 
     ncnn::Extractor ex = nanodet->create_extractor();
 
-    if (param->thread_num > 0)
-        ex.set_num_threads(param->thread_num);
     ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in_pad);
 
@@ -425,8 +423,6 @@ detect_nanodet_plus(ncnn::Net *nanodet,
 
     ncnn::Extractor ex = nanodet->create_extractor();
 
-    if (param->thread_num > 0)
-        ex.set_num_threads(param->thread_num);
     ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in_pad);
 

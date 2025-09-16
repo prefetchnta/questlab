@@ -60,8 +60,6 @@ detect_yolo_2_3_4(ncnn::Net *yolo, const cv::Mat& img, std::vector<Object>& obje
 
     ncnn::Extractor ex = yolo->create_extractor();
 
-    if (param->thread_num > 0)
-        ex.set_num_threads(param->thread_num);
     ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in);
 
@@ -367,8 +365,6 @@ detect_yolo_5_7(ncnn::Net *yolo, const cv::Mat& img, std::vector<Object>& object
 
     ncnn::Extractor ex = yolo->create_extractor();
 
-    if (param->thread_num > 0)
-        ex.set_num_threads(param->thread_num);
     ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in_pad);
 

@@ -77,7 +77,8 @@ imglab_ncnn_nanodet_load (
   __CR_IN__ const ansi_t*   name,
   __CR_IN__ bool_t          bin_param,
   __CR_IN__ bool_t          use_vulkan,
-  __CR_IN__ bool_t          use_bf16
+  __CR_IN__ bool_t          use_bf16,
+  __CR_IN__ sint_t          thread_num
     )
 {
     ansi_t*     file;
@@ -87,6 +88,8 @@ imglab_ncnn_nanodet_load (
     if (file == NULL)
         return (FALSE);
     nndt = (ncnn::Net*)nnet;
+    if (thread_num > 0)
+        nndt->opt.num_threads = thread_num;
     nndt->opt.use_vulkan_compute = !!use_vulkan;
     nndt->opt.use_bf16_storage = !!use_bf16;
     if (bin_param) {
@@ -242,7 +245,8 @@ imglab_ncnn_mbntssd_load (
   __CR_IN__ const ansi_t*   silence,
   __CR_IN__ bool_t          bin_param,
   __CR_IN__ bool_t          use_vulkan,
-  __CR_IN__ bool_t          use_bf16
+  __CR_IN__ bool_t          use_bf16,
+  __CR_IN__ sint_t          thread_num
     )
 {
     ansi_t*     file;
@@ -252,6 +256,8 @@ imglab_ncnn_mbntssd_load (
     if (file == NULL)
         return (FALSE);
     nndt = (ncnn::Net*)nnet;
+    if (thread_num > 0)
+        nndt->opt.num_threads = thread_num;
     nndt->opt.use_vulkan_compute = !!use_vulkan;
     nndt->opt.use_bf16_storage = !!use_bf16;
     nndt->register_custom_layer(silence, Noop_layer_creator);
@@ -370,7 +376,8 @@ imglab_ncnn_yolo_load (
   __CR_IN__ const ansi_t*   v5focus,
   __CR_IN__ bool_t          bin_param,
   __CR_IN__ bool_t          use_vulkan,
-  __CR_IN__ bool_t          use_bf16
+  __CR_IN__ bool_t          use_bf16,
+  __CR_IN__ sint_t          thread_num
     )
 {
     ansi_t*     file;
@@ -380,6 +387,8 @@ imglab_ncnn_yolo_load (
     if (file == NULL)
         return (FALSE);
     nndt = (ncnn::Net*)nnet;
+    if (thread_num > 0)
+        nndt->opt.num_threads = thread_num;
     nndt->opt.use_vulkan_compute = !!use_vulkan;
     nndt->opt.use_bf16_storage = !!use_bf16;
     nndt->register_custom_layer(v5focus, YoloV5Focus_layer_creator);
