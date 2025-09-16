@@ -109,4 +109,5 @@ Shrink = 103,
 RMSNorm = 104,
 Spectrogram = 105,
 InverseSpectrogram = 106,
+Flip = 107,
 
