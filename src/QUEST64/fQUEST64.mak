@@ -10,7 +10,7 @@ SRC_LIST=.$(L)fQUEST64.$(P)
 
 build_all:
     $(RC) $(RFLAGS)
-    $(CC) $(CFLAGS) /EHsc $(SRC_LIST)
+    $(CC) $(CFLAGS) /EHsc /I "..\..\inc\x64inc" $(SRC_LIST)
     $(LD) $(LFLAGS) $(OBJ_LIST)
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..$(L)..$(L)bin$(L)x64bin$(L)

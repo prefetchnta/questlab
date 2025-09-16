@@ -25,7 +25,7 @@
 #define _CRT_NONSTDC_NO_DEPRECATE
 #include "../QstLibs/QstLibs.h"
 #include "../CrHackSet/xCrHackSet.h"
-#include "labai/imglab.h"
+#include "labai/LabAI.h"
 #include "util/jsonlib.h"
 
 /* 一些公用宏 */
