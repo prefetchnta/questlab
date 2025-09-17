@@ -1,5 +1,4 @@
 {
-    "light_mode": 0,
     "target_size": 416,
     "num_class": 80,
     "have_sigmoid": 1,

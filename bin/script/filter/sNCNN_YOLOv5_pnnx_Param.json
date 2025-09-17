@@ -1,5 +1,4 @@
 {
-    "light_mode": 0,
     "target_size": 640,
     "yolo_version": 500,
     "prob_threshold": 0.6,

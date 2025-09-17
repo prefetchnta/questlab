@@ -38,59 +38,59 @@
             <?quest64_hyperlpr3_carplate model_path="source/hyperlpr/v3" params="script/filter/sHLPR3_Param.json" />
 
             <!-- NCNN NanoDet -->
-            <?quest64_ncnn_nanodet vk_gpu="-1" model="source/ncnn/nanodet_m" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_nanodet vk_gpu="-1" model="source/ncnn/nanodet_m" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_NanoDetParam.json" />
 
             <!-- NCNN NanoDetPlus -->
-            <?quest64_ncnn_nanodet_plus vk_gpu="-1" model="source/ncnn/nanodet-plus-m_416" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_nanodet_plus vk_gpu="-1" model="source/ncnn/nanodet-plus-m_416" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_NanoDetPlusParam.json" />
 
             <!-- NCNN MobileNetV1_SSD -->
-            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenet_ssd_voc_ncnn" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenet_ssd_voc_ncnn" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_MobileNetV1_SSD_Param.json" />
 
             <!-- NCNN MobileNetV2_SSD -->
-            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenetv2_ssdlite_voc" bparam="0" vulkan="1" float16="0" threads="0" silence="silence"
+            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenetv2_ssdlite_voc" bparam="0" vulkan="1" float16="0" light="0" threads="0" silence="silence"
                 params="script/filter/sNCNN_MobileNetV2_SSD_Param.json" />
 
             <!-- NCNN MobileNetV3_SSD -->
-            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenetv3_ssdlite_voc" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_mobilenetssd vk_gpu="-1" model="source/ncnn/mobilenetv3_ssdlite_voc" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_MobileNetV3_SSD_Param.json" />
 
             <!-- NCNN YOLOv2 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/mobilenet_yolo" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/mobilenet_yolo" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv2_Param.json" />
 
             <!-- NCNN YOLOv3 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/mobilenetv2_yolov3" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/mobilenetv2_yolov3" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv3_Param.json" />
 
             <!-- NCNN YOLOv4 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov4-opt" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov4-opt" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv4_Param.json" />
 
             <!-- NCNN YOLOv4 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov4-tiny-opt" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov4-tiny-opt" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv4T_Param.json" />
 
             <!-- NCNN YOLOv5 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov5s" bparam="0" vulkan="1" float16="0" threads="0" v5focus="YoloV5Focus"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov5s" bparam="0" vulkan="1" float16="0" light="0" threads="0" v5focus="YoloV5Focus"
                 params="script/filter/sNCNN_YOLOv5_Param.json" />
 
             <!-- NCNN YOLOv5 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov5s_6.0" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov5s_6.0" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv5_60_Param.json" />
 
             <!-- NCNN YOLOv5 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov5s.ncnn" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov5s.ncnn" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv5_pnnx_Param.json" />
 
             <!-- NCNN YOLOv7 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov7-tiny" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov7-tiny" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv7_Param.json" />
 
             <!-- NCNN YOLOv7 -->
-            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov7.ncnn" bparam="0" vulkan="1" float16="0" threads="0"
+            <?quest64_ncnn_yolo vk_gpu="-1" model="source/ncnn/yolov7.ncnn" bparam="0" vulkan="1" float16="0" light="0" threads="0"
                 params="script/filter/sNCNN_YOLOv7_pnnx_Param.json" />
 
         </filters>
