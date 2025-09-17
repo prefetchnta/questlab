@@ -186,7 +186,6 @@ detect_nanodet(ncnn::Net *nanodet,
 
     ncnn::Extractor ex = nanodet->create_extractor();
 
-    ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in_pad);
 
     std::vector<Object> proposals;
@@ -423,7 +422,6 @@ detect_nanodet_plus(ncnn::Net *nanodet,
 
     ncnn::Extractor ex = nanodet->create_extractor();
 
-    ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in_pad);
 
     std::vector<Object> proposals;

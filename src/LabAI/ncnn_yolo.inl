@@ -60,7 +60,6 @@ detect_yolo_2_3_4(ncnn::Net *yolo, const cv::Mat& img, std::vector<Object>& obje
 
     ncnn::Extractor ex = yolo->create_extractor();
 
-    ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in);
 
     ncnn::Mat out;
@@ -365,7 +364,6 @@ detect_yolo_5_7(ncnn::Net *yolo, const cv::Mat& img, std::vector<Object>& object
 
     ncnn::Extractor ex = yolo->create_extractor();
 
-    ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in_pad);
 
     std::vector<Object> proposals;

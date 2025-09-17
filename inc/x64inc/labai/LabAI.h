@@ -478,6 +478,16 @@ imglab_zxi_grpcode_doit (ximage_t mat, str_lstA_t *text, xpoly_lst_t *list,
 /*********************/
 typedef void_t*     nanodet_ncnn_t;
 
+typedef struct
+{
+        bool_t  bin_params;
+        bool_t  use_vulkan;
+        bool_t  use_bf16st;
+        bool_t  light_mode;
+        sint_t  thread_num;
+
+} sNCNN_Options;
+
 CR_API nanodet_ncnn_t
 imglab_ncnn_nanodet_new (sint_t vk_gpu);
 
@@ -486,12 +496,9 @@ imglab_ncnn_nanodet_del (nanodet_ncnn_t nnet);
 
 CR_API bool_t
 imglab_ncnn_nanodet_load (nanodet_ncnn_t nnet, const ansi_t *name,
-                          bool_t bin_param, bool_t use_vulkan,
-                          bool_t use_bf16 CR_DEFAULT(FALSE),
-                          sint_t thread_num CR_DEFAULT(-1));
+                          const sNCNN_Options *options CR_DEFAULT(NULL));
 typedef struct
 {
-        bool_t  light_mode;
         sint_t  target_size;
         fp32_t  prob_threshold;
         fp32_t  nms_threshold;
@@ -505,7 +512,6 @@ typedef struct
 
 typedef struct
 {
-        bool_t  light_mode;
         sint_t  target_size;
         sint_t  num_class;
         bool_t  have_sigmoid;
@@ -539,13 +545,11 @@ CR_API void_t
 imglab_ncnn_mbntssd_del (mbntssd_ncnn_t nnet);
 
 CR_API bool_t
-imglab_ncnn_mbntssd_load (mbntssd_ncnn_t nnet, const ansi_t *name,
-                    const ansi_t *silence, bool_t bin_param, bool_t use_vulkan,
-                                bool_t use_bf16 CR_DEFAULT(FALSE),
-                                sint_t thread_num CR_DEFAULT(-1));
+imglab_ncnn_mbntssd_load (mbntssd_ncnn_t nnet,
+                          const ansi_t *name, const ansi_t *silence,
+                          const sNCNN_Options *options CR_DEFAULT(NULL));
 typedef struct
 {
-        bool_t  light_mode;
         sint_t  target_size;
         sint_t  net_version;    /* 1, 2, 3 */
         fp32_t  prob_threshold;
@@ -572,13 +576,11 @@ CR_API void_t
 imglab_ncnn_yolo_del (yolo_ncnn_t nnet);
 
 CR_API bool_t
-imglab_ncnn_yolo_load (yolo_ncnn_t nnet, const ansi_t *name,
-                    const ansi_t *v5focus, bool_t bin_param, bool_t use_vulkan,
-                            bool_t use_bf16 CR_DEFAULT(FALSE),
-                            sint_t thread_num CR_DEFAULT(-1));
+imglab_ncnn_yolo_load (yolo_ncnn_t nnet,
+                       const ansi_t *name, const ansi_t *v5focus,
+                       const sNCNN_Options *options CR_DEFAULT(NULL));
 typedef struct
 {
-        bool_t  light_mode;
         sint_t  target_size;
         sint_t  yolo_version;   /* 2, 3, 4, 5, 500, 7, 700 */
         fp32_t  prob_threshold;

@@ -57,7 +57,6 @@ detect_mobilenetssd(ncnn::Net *mobilenetssd, const cv::Mat& img,
 
     ncnn::Extractor ex = mobilenetssd->create_extractor();
 
-    ex.set_light_mode(!!param->light_mode);
     ex.input(param->input_layer, in);
 
     ncnn::Mat out;

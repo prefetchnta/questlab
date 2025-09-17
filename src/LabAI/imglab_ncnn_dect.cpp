@@ -26,6 +26,62 @@
 #include "ncnn_mobilenetssd.inl"
 #include "ncnn_yolo.inl"
 
+/*
+---------------------------------------
+    通用的参数配置
+---------------------------------------
+*/
+static void_t
+imglab_ncnn_set_options (
+  __CR_IN__ ncnn::Net*              nndt,
+  __CR_IN__ const sNCNN_Options*    opts
+    )
+{
+    if (opts == NULL)
+        return;
+    if (opts->thread_num > 0)
+        nndt->opt.num_threads = opts->thread_num;
+    nndt->opt.use_vulkan_compute = !!opts->use_vulkan;
+    nndt->opt.use_bf16_storage = !!opts->use_bf16st;
+    nndt->opt.lightmode = !!opts->light_mode;
+}
+
+/*
+---------------------------------------
+    通用的模型加载
+---------------------------------------
+*/
+static bool_t
+imglab_ncnn_load_model (
+  __CR_IN__ ncnn::Net*              nndt,
+  __CR_IN__ const ansi_t*           name,
+  __CR_IN__ const sNCNN_Options*    opts
+    )
+{
+    ansi_t* file;
+
+    file = str_fmtA("%s.param", name);
+    if (file == NULL)
+        return (FALSE);
+    if (opts == NULL || !opts->bin_params) {
+        if (nndt->load_param(file))
+            goto _failure;
+    }
+    else {
+        if (nndt->load_param_bin(file))
+            goto _failure;
+    }
+    sprintf(file, "%s.bin", name);
+    if (nndt->load_model(file))
+        goto _failure;
+    mem_free(file);
+    return (TRUE);
+
+_failure:
+    mem_free(file);
+    return (FALSE);
+}
+
 /*****************************************************************************/
 /*                                 NanoDet                                   */
 /*****************************************************************************/
@@ -73,42 +129,13 @@ imglab_ncnn_nanodet_del (
 */
 CR_API bool_t
 imglab_ncnn_nanodet_load (
-  __CR_IN__ nanodet_ncnn_t  nnet,
-  __CR_IN__ const ansi_t*   name,
-  __CR_IN__ bool_t          bin_param,
-  __CR_IN__ bool_t          use_vulkan,
-  __CR_IN__ bool_t          use_bf16,
-  __CR_IN__ sint_t          thread_num
+  __CR_IN__ nanodet_ncnn_t          nnet,
+  __CR_IN__ const ansi_t*           name,
+  __CR_IN__ const sNCNN_Options*    options
     )
 {
-    ansi_t*     file;
-    ncnn::Net*  nndt;
-
-    file = str_fmtA("%s.param", name);
-    if (file == NULL)
-        return (FALSE);
-    nndt = (ncnn::Net*)nnet;
-    if (thread_num > 0)
-        nndt->opt.num_threads = thread_num;
-    nndt->opt.use_vulkan_compute = !!use_vulkan;
-    nndt->opt.use_bf16_storage = !!use_bf16;
-    if (bin_param) {
-        if (nndt->load_param_bin(file))
-            goto _failure;
-    }
-    else {
-        if (nndt->load_param(file))
-            goto _failure;
-    }
-    sprintf(file, "%s.bin", name);
-    if (nndt->load_model(file))
-        goto _failure;
-    mem_free(file);
-    return (TRUE);
-
-_failure:
-    mem_free(file);
-    return (FALSE);
+    imglab_ncnn_set_options((ncnn::Net*)nnet, options);
+    return (imglab_ncnn_load_model((ncnn::Net*)nnet, name, options));
 }
 
 /*
@@ -240,44 +267,15 @@ imglab_ncnn_mbntssd_del (
 */
 CR_API bool_t
 imglab_ncnn_mbntssd_load (
-  __CR_IN__ mbntssd_ncnn_t  nnet,
-  __CR_IN__ const ansi_t*   name,
-  __CR_IN__ const ansi_t*   silence,
-  __CR_IN__ bool_t          bin_param,
-  __CR_IN__ bool_t          use_vulkan,
-  __CR_IN__ bool_t          use_bf16,
-  __CR_IN__ sint_t          thread_num
+  __CR_IN__ mbntssd_ncnn_t          nnet,
+  __CR_IN__ const ansi_t*           name,
+  __CR_IN__ const ansi_t*           silence,
+  __CR_IN__ const sNCNN_Options*    options
     )
 {
-    ansi_t*     file;
-    ncnn::Net*  nndt;
-
-    file = str_fmtA("%s.param", name);
-    if (file == NULL)
-        return (FALSE);
-    nndt = (ncnn::Net*)nnet;
-    if (thread_num > 0)
-        nndt->opt.num_threads = thread_num;
-    nndt->opt.use_vulkan_compute = !!use_vulkan;
-    nndt->opt.use_bf16_storage = !!use_bf16;
-    nndt->register_custom_layer(silence, Noop_layer_creator);
-    if (bin_param) {
-        if (nndt->load_param_bin(file))
-            goto _failure;
-    }
-    else {
-        if (nndt->load_param(file))
-            goto _failure;
-    }
-    sprintf(file, "%s.bin", name);
-    if (nndt->load_model(file))
-        goto _failure;
-    mem_free(file);
-    return (TRUE);
-
-_failure:
-    mem_free(file);
-    return (FALSE);
+    imglab_ncnn_set_options((ncnn::Net*)nnet, options);
+    ((ncnn::Net*)nnet)->register_custom_layer(silence, Noop_layer_creator);
+    return (imglab_ncnn_load_model((ncnn::Net*)nnet, name, options));
 }
 
 /*
@@ -371,44 +369,15 @@ imglab_ncnn_yolo_del (
 */
 CR_API bool_t
 imglab_ncnn_yolo_load (
-  __CR_IN__ yolo_ncnn_t     nnet,
-  __CR_IN__ const ansi_t*   name,
-  __CR_IN__ const ansi_t*   v5focus,
-  __CR_IN__ bool_t          bin_param,
-  __CR_IN__ bool_t          use_vulkan,
-  __CR_IN__ bool_t          use_bf16,
-  __CR_IN__ sint_t          thread_num
+  __CR_IN__ yolo_ncnn_t             nnet,
+  __CR_IN__ const ansi_t*           name,
+  __CR_IN__ const ansi_t*           v5focus,
+  __CR_IN__ const sNCNN_Options*    options
     )
 {
-    ansi_t*     file;
-    ncnn::Net*  nndt;
-
-    file = str_fmtA("%s.param", name);
-    if (file == NULL)
-        return (FALSE);
-    nndt = (ncnn::Net*)nnet;
-    if (thread_num > 0)
-        nndt->opt.num_threads = thread_num;
-    nndt->opt.use_vulkan_compute = !!use_vulkan;
-    nndt->opt.use_bf16_storage = !!use_bf16;
-    nndt->register_custom_layer(v5focus, YoloV5Focus_layer_creator);
-    if (bin_param) {
-        if (nndt->load_param_bin(file))
-            goto _failure;
-    }
-    else {
-        if (nndt->load_param(file))
-            goto _failure;
-    }
-    sprintf(file, "%s.bin", name);
-    if (nndt->load_model(file))
-        goto _failure;
-    mem_free(file);
-    return (TRUE);
-
-_failure:
-    mem_free(file);
-    return (FALSE);
+    imglab_ncnn_set_options((ncnn::Net*)nnet, options);
+    ((ncnn::Net*)nnet)->register_custom_layer(v5focus, YoloV5Focus_layer_creator);
+    return (imglab_ncnn_load_model((ncnn::Net*)nnet, name, options));
 }
 
 /*
