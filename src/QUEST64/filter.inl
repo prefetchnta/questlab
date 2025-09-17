@@ -1011,7 +1011,6 @@ quest64_ncnn_nanodet_load_params (
     )
 {
     cJSON*  root;
-    sint_t  btmp;
 
     root = cJSON_Parse(json);
     if (root == NULL)
@@ -1030,7 +1029,6 @@ quest64_ncnn_nanodet_load_params (
         goto _failure6;
     if (CJSON_STRING(dis_pred32) == NULL)
         goto _failure7;
-    CJSON_BOOL(light_mode, FALSE);
     CJSON_INTG(target_size, 320);
     CJSON_FP32(prob_threshold, 0.4f);
     CJSON_FP32(nms_threshold, 0.5f);
@@ -1072,10 +1070,6 @@ quest64_ncnn_nanodet (
 {
     sINIu*  line;
     uint_t  ngpu;
-    uint_t  bprm;
-    uint_t  vlkn;
-    uint_t  bf16;
-    sint_t  nthd;
     ansi_t* text;
     ansi_t* file;
     ansi_t* name;
@@ -1085,11 +1079,15 @@ quest64_ncnn_nanodet (
     if (name == NULL)
         goto _func_out1;
     line = NULL;
+
+    sNCNN_Options   opts;
+
     ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
-    bprm = xml_attr_intxU("bparam", FALSE, param);
-    vlkn = xml_attr_intxU("vulkan", TRUE, param);
-    bf16 = xml_attr_intxU("float16", FALSE, param);
-    nthd = xml_attr_intxU("threads", 0, param);
+    opts.bin_params = xml_attr_intxU("bparam", FALSE, param);
+    opts.use_vulkan = xml_attr_intxU("vulkan", TRUE, param);
+    opts.use_bf16st = xml_attr_intxU("float16", FALSE, param);
+    opts.light_mode = xml_attr_intxU("light", FALSE, param);
+    opts.thread_num = xml_attr_intxU("threads", 0, param);
 
     sNCNN_NanoDetParam  prms;
 
@@ -1122,7 +1120,7 @@ quest64_ncnn_nanodet (
     nndt = imglab_ncnn_nanodet_new(ngpu);
     if (nndt == NULL)
         goto _func_out3;
-    if (!imglab_ncnn_nanodet_load(nndt, name, !!bprm, !!vlkn, !!bf16, nthd))
+    if (!imglab_ncnn_nanodet_load(nndt, name, &opts))
         goto _func_out4;
 
     sIMAGE      dest;
@@ -1192,7 +1190,6 @@ quest64_ncnn_nanodet_plus_load_params (
         goto _failure4;
     if (CJSON_STRING(pred64) == NULL)
         goto _failure5;
-    CJSON_BOOL(light_mode, FALSE);
     CJSON_INTG(target_size, 416);
     CJSON_INTG(num_class, 80);
     CJSON_BOOL(have_sigmoid, TRUE);
@@ -1232,10 +1229,6 @@ quest64_ncnn_nanodet_plus (
 {
     sINIu*  line;
     uint_t  ngpu;
-    uint_t  bprm;
-    uint_t  vlkn;
-    uint_t  bf16;
-    sint_t  nthd;
     ansi_t* text;
     ansi_t* file;
     ansi_t* name;
@@ -1245,11 +1238,15 @@ quest64_ncnn_nanodet_plus (
     if (name == NULL)
         goto _func_out1;
     line = NULL;
+
+    sNCNN_Options   opts;
+
     ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
-    bprm = xml_attr_intxU("bparam", FALSE, param);
-    vlkn = xml_attr_intxU("vulkan", TRUE, param);
-    bf16 = xml_attr_intxU("float16", FALSE, param);
-    nthd = xml_attr_intxU("threads", 0, param);
+    opts.bin_params = xml_attr_intxU("bparam", FALSE, param);
+    opts.use_vulkan = xml_attr_intxU("vulkan", TRUE, param);
+    opts.use_bf16st = xml_attr_intxU("float16", FALSE, param);
+    opts.light_mode = xml_attr_intxU("light", FALSE, param);
+    opts.thread_num = xml_attr_intxU("threads", 0, param);
 
     sNCNN_NanoDetPlusParam  prms;
 
@@ -1282,7 +1279,7 @@ quest64_ncnn_nanodet_plus (
     nndt = imglab_ncnn_nanodet_new(ngpu);
     if (nndt == NULL)
         goto _func_out3;
-    if (!imglab_ncnn_nanodet_load(nndt, name, !!bprm, !!vlkn, !!bf16, nthd))
+    if (!imglab_ncnn_nanodet_load(nndt, name, &opts))
         goto _func_out4;
 
     sIMAGE      dest;
@@ -1335,7 +1332,6 @@ quest64_ncnn_mbntssd_load_params (
     )
 {
     cJSON*  root;
-    sint_t  btmp;
 
     root = cJSON_Parse(json);
     if (root == NULL)
@@ -1344,7 +1340,6 @@ quest64_ncnn_mbntssd_load_params (
         goto _failure1;
     if (CJSON_STRING(output_layer) == NULL)
         goto _failure2;
-    CJSON_BOOL(light_mode, FALSE);
     CJSON_INTG(target_size, 300);
     CJSON_INTG(net_version, 1);
     CJSON_FP32(prob_threshold, 0.6f);
@@ -1376,10 +1371,6 @@ quest64_ncnn_mbntssd (
 {
     sINIu*  line;
     uint_t  ngpu;
-    uint_t  bprm;
-    uint_t  vlkn;
-    uint_t  bf16;
-    sint_t  nthd;
     ansi_t* text;
     ansi_t* file;
     ansi_t* name;
@@ -1390,12 +1381,16 @@ quest64_ncnn_mbntssd (
     if (name == NULL)
         goto _func_out1;
     line = NULL;
+
+    sNCNN_Options   opts;
+
     noop = xml_attr_stringU("silence", param);
     ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
-    bprm = xml_attr_intxU("bparam", FALSE, param);
-    vlkn = xml_attr_intxU("vulkan", TRUE, param);
-    bf16 = xml_attr_intxU("float16", FALSE, param);
-    nthd = xml_attr_intxU("threads", 0, param);
+    opts.bin_params = xml_attr_intxU("bparam", FALSE, param);
+    opts.use_vulkan = xml_attr_intxU("vulkan", TRUE, param);
+    opts.use_bf16st = xml_attr_intxU("float16", FALSE, param);
+    opts.light_mode = xml_attr_intxU("light", FALSE, param);
+    opts.thread_num = xml_attr_intxU("threads", 0, param);
 
     sNCNN_MobileNetSSD_Param    prms;
 
@@ -1429,13 +1424,11 @@ quest64_ncnn_mbntssd (
     if (nndt == NULL)
         goto _func_out3;
     if (noop == NULL) {
-        if (!imglab_ncnn_mbntssd_load(nndt, name, "silence",
-                                    !!bprm, !!vlkn, !!bf16, nthd))
+        if (!imglab_ncnn_mbntssd_load(nndt, name, "silence", &opts))
             goto _func_out4;
     }
     else {
-        if (!imglab_ncnn_mbntssd_load(nndt, name, noop,
-                                    !!bprm, !!vlkn, !!bf16, nthd))
+        if (!imglab_ncnn_mbntssd_load(nndt, name, noop, &opts))
             goto _func_out4;
     }
 
@@ -1487,7 +1480,6 @@ quest64_ncnn_yolo_load_params (
     )
 {
     cJSON*  root;
-    sint_t  btmp;
 
     root = cJSON_Parse(json);
     if (root == NULL)
@@ -1512,7 +1504,6 @@ quest64_ncnn_yolo_load_params (
         if (CJSON_STRING(output_layer32) == NULL)
             goto _failure4;
     }
-    CJSON_BOOL(light_mode, FALSE);
     CJSON_INTG(target_size, 416);
     CJSON_FP32(prob_threshold, 0.6f);
     CJSON_FP32(nms_threshold, 0.5f);
@@ -1548,10 +1539,6 @@ quest64_ncnn_yolo (
 {
     sINIu*  line;
     uint_t  ngpu;
-    uint_t  bprm;
-    uint_t  vlkn;
-    uint_t  bf16;
-    sint_t  nthd;
     ansi_t* text;
     ansi_t* file;
     ansi_t* name;
@@ -1562,12 +1549,16 @@ quest64_ncnn_yolo (
     if (name == NULL)
         goto _func_out1;
     line = NULL;
+
+    sNCNN_Options   opts;
+
     noop = xml_attr_stringU("v5focus", param);
     ngpu = xml_attr_intxU("vk_gpu", 0-1UL, param);
-    bprm = xml_attr_intxU("bparam", FALSE, param);
-    vlkn = xml_attr_intxU("vulkan", TRUE, param);
-    bf16 = xml_attr_intxU("float16", FALSE, param);
-    nthd = xml_attr_intxU("threads", 0, param);
+    opts.bin_params = xml_attr_intxU("bparam", FALSE, param);
+    opts.use_vulkan = xml_attr_intxU("vulkan", TRUE, param);
+    opts.use_bf16st = xml_attr_intxU("float16", FALSE, param);
+    opts.light_mode = xml_attr_intxU("light", FALSE, param);
+    opts.thread_num = xml_attr_intxU("threads", 0, param);
 
     sNCNN_YOLO_Param    prms;
 
@@ -1601,13 +1592,11 @@ quest64_ncnn_yolo (
     if (nndt == NULL)
         goto _func_out3;
     if (noop == NULL) {
-        if (!imglab_ncnn_yolo_load(nndt, name, "YoloV5Focus",
-                                 !!bprm, !!vlkn, !!bf16, nthd))
+        if (!imglab_ncnn_yolo_load(nndt, name, "YoloV5Focus", &opts))
             goto _func_out4;
     }
     else {
-        if (!imglab_ncnn_yolo_load(nndt, name, noop,
-                                 !!bprm, !!vlkn, !!bf16, nthd))
+        if (!imglab_ncnn_yolo_load(nndt, name, noop, &opts))
             goto _func_out4;
     }
 
