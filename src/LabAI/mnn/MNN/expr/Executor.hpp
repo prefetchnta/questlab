@@ -130,6 +130,7 @@ public:
         void setHint(Interpreter::HintMode mode, int* value, size_t size);
         void setHintPtr(Interpreter::HintMode mode, void* value);
         bool getInfo(Interpreter::SessionInfoCode code, void* ptr);
+        static bool getDeviceInfo(const std::string& deviceKey, const MNNForwardType type, std::string& deviceValue);
         BackendConfig* getBnConfig();
         const RuntimeAttr* getInside() const {
             return mInside;
@@ -141,6 +142,11 @@ public:
         RuntimeManager();
     };
     static bool getComputeInfo(EXPRP expr, Interpreter::SessionInfoCode code, void* ptr);
+#ifndef MNN_REDUCE_SIZE
+    std::map<std::string, std::shared_ptr<SubGraph>>& subgraph() {
+        return mSubGraph;
+    };
+#endif
 private:
     std::shared_ptr<Runtime> _getOrCreateRuntime(MNNForwardType type, const BackendConfig* config, int numberThread, bool reset = true);
     Executor(std::shared_ptr<Runtime> backend, MNNForwardType type, int numberThread);
