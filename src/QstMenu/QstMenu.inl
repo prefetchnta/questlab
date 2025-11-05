@@ -156,6 +156,10 @@ void __fastcall subCapWASMClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subMAMEunidasmXXXXClick(TObject *Sender);
 //---------------------------------------------------------------------------
+void __fastcall subNasmX86Click(TObject *Sender);
+void __fastcall subNasmX64Click(TObject *Sender);
+void __fastcall subNasm8086Click(TObject *Sender);
+//---------------------------------------------------------------------------
 void __fastcall subParamClick(TObject *Sender);
 //---------------------------------------------------------------------------
 void __fastcall subAboutClick(TObject *Sender);
@@ -1322,6 +1326,27 @@ void __fastcall TfrmMain::subMAMEunidasmXXXXClick(TObject *Sender)
     ((TMenuItem*)Sender)->Checked = true;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMain::subNasmX86Click(TObject *Sender)
+{
+    /* NASM X86 */
+    qst_send_cmdz("hex:type NASM:X86");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subNasmX64Click(TObject *Sender)
+{
+    /* NASM X64 */
+    qst_send_cmdz("hex:type NASM:X64");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMain::subNasm8086Click(TObject *Sender)
+{
+    /* NASM 8086 */
+    qst_send_cmdz("hex:type NASM:8086");
+    ((TMenuItem*)Sender)->Checked = true;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::subParamClick(TObject *Sender)
 {
     /* 参数菜单项 */
@@ -1626,6 +1651,9 @@ void __fastcall TfrmMain::SetupMenu(void)
     QST_MENU_EVENT(subCapTMS320);
     QST_MENU_EVENT(subCapXCore);
     QST_MENU_EVENT(subCapWASM);
+    QST_MENU_EVENT(subNasmX86);
+    QST_MENU_EVENT(subNasmX64);
+    QST_MENU_EVENT(subNasm8086);
     QST_MENU_EVENT(subParam);
     QST_MENU_EVENT(subAbout);
 

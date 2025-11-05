@@ -193,6 +193,11 @@
                 <MenuItem name="subCapWASM" text="WebAssembly" radio="1" group="1" />
             </MenuItem>
             <MenuItem name="subMAMEunidasm" text="MAME unidasm (&M)" />
+            <MenuItem name="subNASMndisasm" text="NASM ndisasm (&N)" >
+                <MenuItem name="subNasmX86" text="CPU - X86" radio="1" group="1" checked="1" />
+                <MenuItem name="subNasmX64" text="CPU - X64" radio="1" group="1" />
+                <MenuItem name="subNasm8086" text="CPU - 8086" radio="1" group="1" />
+            </MenuItem>
         </MenuItem>
     </MenuItem>
     <MenuItem name="subParam" text="参数(&P)" />
