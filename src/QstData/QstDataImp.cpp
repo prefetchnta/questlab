@@ -954,6 +954,78 @@ unasm_mame_show (
     return (txt);
 }
 
+/***************/
+/* NASM 模式值 */
+/***************/
+static uint_t   s_nasm_type = 32;
+static ansi_t*  s_nasm_archi = "X86";
+
+/*
+---------------------------------------
+    NASM ndisasm
+---------------------------------------
+*/
+static ansi_t*
+unasm_nasm_show (
+  __CR_IN__ const void_t*   data,
+  __CR_IN__ leng_t          size,
+  __CR_IN__ bool_t          is_be
+    )
+{
+    FILE*   fp;
+    leng_t  len;
+    ansi_t* str;
+    ansi_t* txt;
+
+    /* 输出执行命令 */
+    CR_NOUSE(is_be);
+    if (!file_saveA(QST_PATH_OUTPUT "ndisasm.bin", data, size))
+        return (NULL);
+    fp = fopen(QST_PATH_OUTPUT "ndisasm.bat", "wb");
+    if (fp == NULL)
+        return (NULL);
+    fprintf(fp, "ndisasm.exe -b %u "
+                QST_PATH_OUTPUT "ndisasm.bin > "
+                QST_PATH_OUTPUT "ndisasm.txt\r\n", s_nasm_type);
+    fclose(fp);
+
+    /* 读取执行结果 */
+    misc_call_exe(QST_PATH_OUTPUT "ndisasm.bat", TRUE, TRUE);
+    str = file_load_as_strA(QST_PATH_OUTPUT "ndisasm.txt");
+    file_deleteA(QST_PATH_OUTPUT "ndisasm.bat");
+    file_deleteA(QST_PATH_OUTPUT "ndisasm.bin");
+    if (str == NULL)
+        return (NULL);
+
+    sINIu*  ini;
+
+    ini = ini_parseU(str);
+    mem_free(str);
+    if (ini == NULL)
+        return (NULL);
+    str = str_trimA(ini->lines[0]);
+    len = str_lenA(str);
+    if (len <= 10 || chr_cmpA(str, "00000000  ", 10) != 0) {
+        ini_closeU(ini);
+        return (NULL);
+    }
+    str += 10;
+    txt = str;
+    for (len -= 10; len != 0; len--, txt++) {
+        if (is_spaceA(*txt))
+            break;
+    }
+    if (len == 0) {
+        ini_closeU(ini);
+        return (NULL);
+    }
+    str_trimA(txt + 2);
+    txt = str_fmtA(" %s: %s", s_nasm_archi, str);
+    file_deleteA(QST_PATH_OUTPUT "ndisasm.txt");
+    ini_closeU(ini);
+    return (txt);
+}
+
 /*****************************************************************************/
 /*                                 接口导出                                  */
 /*****************************************************************************/
@@ -990,6 +1062,7 @@ CR_API const sQDAT_UNIT viewer[] =
     { "BEA", unasm_bea_show },
     { "CAP", unasm_cap_show },
     { "MAME", unasm_mame_show },
+    { "NASM", unasm_nasm_show },
     { NULL, NULL }
 };
 
@@ -1389,6 +1462,26 @@ data_type (
             mem_free(s_mame_archi);
         s_mame_archi = str_dupA(type);
         str_trimA(s_mame_archi);
+        return;
+    }
+
+    /* NASM ndisasm */
+    if (chr_cmpA(type, "NASM:", 5) == 0) {
+        type += 5;
+        if (strcmp(type, "X86") == 0) {
+            s_nasm_type = 32;
+            s_nasm_archi = "X86";
+        }
+        else
+        if (strcmp(type, "X64") == 0) {
+            s_nasm_type = 64;
+            s_nasm_archi = "X64";
+        }
+        else
+        if (strcmp(type, "8086") == 0) {
+            s_nasm_type = 16;
+            s_nasm_archi = "8086";
+        }
         return;
     }
 }
