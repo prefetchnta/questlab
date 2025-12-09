@@ -22,6 +22,18 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
     /* 使用系统字体 */
     this->Font->Assign(Screen->MenuFont);
 
+    TEXTMETRIC  tm;
+
+    /* 数据观察窗口字体设成等宽字体 */
+    this->Canvas->Font->Assign(this->Font);
+    GetTextMetrics(this->Canvas->Handle, &tm);
+    if (tm.tmPitchAndFamily & TMPF_FIXED_PITCH) {
+        lstHash->Font->Name = "Consolas";
+        lstHash->Font->Height = this->Font->Height;
+        txtResult->Font->Name = "Consolas";
+        txtResult->Font->Height = this->Font->Height;
+    }
+
     /* 加载窗口位置配置 */
     misc_desk_init(WIN_ICONF, &x1, &y1, &ww, &hh,
                    this->Width, this->Height);
