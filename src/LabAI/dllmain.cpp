@@ -26,7 +26,7 @@
 #pragma comment (lib, "CrH_CORE.lib")
 #pragma comment (lib, "CrH_GFX2.lib")
 #pragma comment (lib, "CrH_MATH.lib")
-#pragma comment (lib, "opencv_world4120.lib")
+#pragma comment (lib, "opencv_world4130.lib")
 #pragma comment (lib, "MNN.lib")
 #pragma comment (lib, "ncnn.lib")
 
