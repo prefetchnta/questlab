@@ -120,6 +120,7 @@ ks0164
 kl1839vm1
 lc57
 lc58
+lc6500
 lc8670
 lh5801
 lr35902
@@ -260,12 +261,12 @@ tms1100
 tms1400
 tms2100
 tms2400
-tms32010
-tms32025
-tms32031
-tms32051
-tms32082_mp
-tms32082_pp
+tms320c1x
+tms320c2x
+tms320c3x
+tms320c5x
+tms320c82_mp
+tms320c82_pp
 tms34010
 tms34020
 tms57002
