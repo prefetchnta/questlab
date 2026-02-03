@@ -110,4 +110,6 @@ RMSNorm = 104,
 Spectrogram = 105,
 InverseSpectrogram = 106,
 Flip = 107,
+SDPA = 108,
+RotaryEmbed = 109,
 
