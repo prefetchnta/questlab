@@ -106,11 +106,11 @@ text2clipboard (
 
 /*
 ---------------------------------------
-    图形码识别
+    ZXing 图形码识别
 ---------------------------------------
 */
 static void_t
-grp_decode (
+zxing_decode (
   __CR_IN__ const sIMAGE*   img,
   __CR_IN__ const ansi_t*   word,
   __CR_IN__ sint_t          cpage
@@ -205,17 +205,18 @@ int main (int argc, char *argv[])
             usage();
             return (QST_ERROR);
 
-        case 0:     /* 图形码识别 */
+        case 0:     /* ZXing 图形码识别 */
         {
             sint_t          page = -1;
             const ansi_t*   word = NULL;
 
+            /* 参数解析 [字符串编码] [过滤单词] */
             if (argc > 2) {
                 page = str2intxA(argv[2]);
                 if (argc > 3)
                     word = argv[3];
             }
-            grp_decode(screen, word, page);
+            zxing_decode(screen, word, page);
             break;
         }
     }
