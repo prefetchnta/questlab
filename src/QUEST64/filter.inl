@@ -37,6 +37,39 @@ quest64_helloworld (
 
 /*
 ---------------------------------------
+    OpenCV 非锐化掩模
+---------------------------------------
+*/
+static bool_t
+quest64_ocv_unsharp_masking (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE      dest;
+    ximage_t    cvmat;
+
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat != NULL)
+    {
+        fp32_t  kpower = xml_attr_fp32U("kpower", 3.0f, param);
+        uint_t  ksize_x = xml_attr_intxU("ksize_x", 9, param);
+        uint_t  ksize_y = xml_attr_intxU("ksize_y", 9, param);
+        fp64_t  sigma_x = xml_attr_fp64U("sigma_x", 0.0, param);
+        fp64_t  sigma_y = xml_attr_fp64U("sigma_y", 0.0, param);
+
+        imglab_ocv_unsharp_masking(cvmat, ksize_x, ksize_y,
+                                   sigma_x, sigma_y, kpower);
+        imglab_mat_del(cvmat);
+    }
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     OpenCV 级联分类器
 ---------------------------------------
 */

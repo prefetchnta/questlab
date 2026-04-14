@@ -110,6 +110,7 @@ quest64_setup_return (
 static const sXC_PORT   quest64_filter[] =
 {
     { "quest64_helloworld", quest64_helloworld },
+    { "quest64_opencv_unsharp_masking", quest64_ocv_unsharp_masking },
     { "quest64_opencv_cascade", quest64_ocv_cascade },
     { "quest64_opencv_barcode", quest64_ocv_barcode },
     { "quest64_opencv_qrcode", quest64_ocv_qrcode },
