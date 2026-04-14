@@ -252,6 +252,11 @@ CR_API void_t   imglab_ocv_blur_gauss (ximage_t mat, uint_t ksize_x,
 /* OpenCV 中值滤波 */
 CR_API void_t   imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
 
+/* OpenCV 非锐化掩模 */
+CR_API void_t   imglab_ocv_unsharp_masking (ximage_t mat, uint_t ksize_x,
+                                            uint_t ksize_y, fp64_t sigma_x,
+                                            fp64_t sigma_y, fp32_t kpower);
+
 /*****************************************************************************/
 /*                                 目标识别                                  */
 /*****************************************************************************/

@@ -108,3 +108,41 @@ imglab_ocv_blur_median (
         ksize += 1;
     cv::medianBlur(*mm, *mm, ksize);
 }
+
+/*
+=======================================
+    非锐化掩模
+=======================================
+*/
+CR_API void_t
+imglab_ocv_unsharp_masking (
+  __CR_IN__ ximage_t    mat,
+  __CR_IN__ uint_t      ksize_x,
+  __CR_IN__ uint_t      ksize_y,
+  __CR_IN__ fp64_t      sigma_x,
+  __CR_IN__ fp64_t      sigma_y,
+  __CR_IN__ fp32_t      kpower
+    )
+{
+    cv::Mat I, I_blur, mask, *mm = (cv::Mat*)mat;
+
+    // 对原图 I 进行高斯模糊 → 得到 I_blur
+    // 计算掩模：mask = I - I_blur
+    // 锐化结果：I_sharp = I + k * mask（k 为强度系数）
+    mm->convertTo(I, CV_32F);
+    if (ksize_x < 3)
+        ksize_x = 3;
+    else
+    if (ksize_x % 2 == 0)
+        ksize_x += 1;
+    if (ksize_y < 3)
+        ksize_y = 3;
+    else
+    if (ksize_y % 2 == 0)
+        ksize_y += 1;
+    cv::GaussianBlur(I, I_blur, cv::Size(ksize_x, ksize_y), sigma_x, sigma_y);
+    mask = I - I_blur;
+    mask *= kpower;
+    I += mask;
+    I.convertTo(*mm, CV_8U);
+}
