@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024-2025 Breno Cunha Queiroz
+// SPDX-FileCopyrightText: 2024-2026 Breno Cunha Queiroz
 
-// ImPlot3D v0.4 WIP
+// ImPlot3D v0.4
 
 // Acknowledgments:
 //  ImPlot3D is heavily inspired by ImPlot

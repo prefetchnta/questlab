@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2024-2025 Breno Cunha Queiroz
+// SPDX-FileCopyrightText: 2024-2026 Breno Cunha Queiroz
 
-// ImPlot3D v0.4 WIP
+// ImPlot3D v0.4
 
 // Acknowledgments:
 //  ImPlot3D is heavily inspired by ImPlot
@@ -12,6 +12,7 @@
 // Table of Contents:
 // [SECTION] Constants
 // [SECTION] Generic Helpers
+// [SECTION] Internal Enumerations
 // [SECTION] Forward Declarations
 // [SECTION] Callbacks
 // [SECTION] Structs
@@ -114,6 +115,14 @@ template <typename T> void FillRange(ImVector<T>& buffer, int n, T vmin, T vmax)
 } // namespace ImPlot3D
 
 //-----------------------------------------------------------------------------
+// [SECTION] Internal Enumerations
+//-----------------------------------------------------------------------------
+
+enum ImPlot3DMarkerInternal_ {
+    ImPlot3DMarker_Invalid = -3,
+};
+
+//-----------------------------------------------------------------------------
 // [SECTION] Forward Declarations
 //-----------------------------------------------------------------------------
 
@@ -177,12 +186,7 @@ struct ImDrawList3D {
 };
 
 struct ImPlot3DNextItemData {
-    ImVec4 Colors[4]; // ImPlot3DCol_Line, ImPlot3DCol_Fill, ImPlot3DCol_MarkerOutline, ImPlot3DCol_MarkerFill,
-    float LineWeight;
-    ImPlot3DMarker Marker;
-    float MarkerSize;
-    float MarkerWeight;
-    float FillAlpha;
+    ImPlot3DSpec Spec;
     bool RenderLine;
     bool RenderFill;
     bool RenderMarkerLine;
@@ -194,13 +198,7 @@ struct ImPlot3DNextItemData {
     ImPlot3DNextItemData() { Reset(); }
 
     void Reset() {
-        for (int i = 0; i < 4; i++)
-            Colors[i] = IMPLOT3D_AUTO_COL;
-        LineWeight = IMPLOT3D_AUTO;
-        Marker = IMPLOT3D_AUTO;
-        MarkerSize = IMPLOT3D_AUTO;
-        MarkerWeight = IMPLOT3D_AUTO;
-        FillAlpha = IMPLOT3D_AUTO;
+        Spec = ImPlot3DSpec();
         RenderLine = false;
         RenderFill = false;
         RenderMarkerLine = true;
@@ -265,7 +263,7 @@ struct ImPlot3DColormapData {
                 for (int s = 0; s < 255; ++s) {
                     ImU32 a = keys[i];
                     ImU32 b = keys[i + 1];
-                    ImU32 c = ImPlot3D::ImMixU32(a, b, s);
+                    ImU32 c = ImPlot3D::ImMixU32(a, b, (ImU32)s);
                     // if (c != last) {
                     Tables.push_back(c);
                     // last = c;
@@ -322,6 +320,7 @@ struct ImPlot3DColormapData {
 struct ImPlot3DItem {
     ImGuiID ID;
     ImU32 Color;
+    ImPlot3DMarker Marker;
     int NameOffset;
     bool Show;
     bool LegendHovered;
@@ -330,6 +329,7 @@ struct ImPlot3DItem {
     ImPlot3DItem() {
         ID = 0;
         Color = IM_COL32_WHITE;
+        Marker = ImPlot3DMarker_None;
         NameOffset = -1;
         Show = true;
         LegendHovered = false;
@@ -367,8 +367,12 @@ struct ImPlot3DItemGroup {
     ImPool<ImPlot3DItem> ItemPool;
     ImPlot3DLegend Legend;
     int ColormapIdx;
+    ImPlot3DMarker MarkerIdx;
 
-    ImPlot3DItemGroup() { ColormapIdx = 0; }
+    ImPlot3DItemGroup() {
+        ColormapIdx = 0;
+        MarkerIdx = 0;
+    }
 
     int GetItemCount() const { return ItemPool.GetBufSize(); }
     ImGuiID GetItemID(const char* label_id) { return ImGui::GetID(label_id); }
@@ -384,6 +388,7 @@ struct ImPlot3DItemGroup {
         ItemPool.Clear();
         Legend.Reset();
         ColormapIdx = 0;
+        MarkerIdx = 0;
     }
 };
 
@@ -483,6 +488,10 @@ struct ImPlot3DAxis {
     // User input
     bool Hovered;
     bool Held;
+    // Cached colors
+    ImU32 ColorBg;
+    ImU32 ColorHov;
+    ImU32 ColorAct;
 
     // Constructor
     ImPlot3DAxis() {
@@ -510,6 +519,8 @@ struct ImPlot3DAxis {
         // User input
         Hovered = false;
         Held = false;
+        // Cached colors
+        ColorBg = ColorHov = ColorAct = IM_COL32_BLACK_TRANS;
     }
 
     inline void Reset() {
@@ -848,7 +859,9 @@ IMPLOT3D_API void RenderColorBar(const ImU32* colors, int size, ImDrawList& Draw
 // [SECTION] Item Utils
 //-----------------------------------------------------------------------------
 
-IMPLOT3D_API bool BeginItem(const char* label_id, ImPlot3DItemFlags flags = 0, ImPlot3DCol recolor_from = IMPLOT3D_AUTO);
+// Begins a new item. Returns false if the item should not be plotted
+IMPLOT3D_API bool BeginItem(const char* label_id, const ImPlot3DSpec& spec = ImPlot3DSpec(), const ImVec4& item_col = IMPLOT3D_AUTO_COL,
+                            ImPlot3DMarker item_mkr = ImPlot3DMarker_Invalid);
 IMPLOT3D_API void EndItem();
 
 // Register or get an existing item from the current plot
