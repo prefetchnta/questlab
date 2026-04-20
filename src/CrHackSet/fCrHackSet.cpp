@@ -1523,8 +1523,10 @@ image_quest64_bridge (
             goto _failure3;
         break;
     }
-    if (size >= 10)
+    if (size >= QST_BIG_TOUT) {
+        logit("fQUEST64.exe timeout, please check it!");
         goto _failure3;
+    }
     if (info[0] != 0)
     {
         /* 发送返回命令字符串 */
