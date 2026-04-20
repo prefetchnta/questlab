@@ -67,6 +67,10 @@ CR_API bool_t   imglab_mat2crh_set (sIMAGE *img, ximage_t mat);
 CR_API ximage_t imglab_crh2mat_dup (const sIMAGE *img);
 CR_API ximage_t imglab_crh2mat_set (const sIMAGE *img);
 
+/* OpenCV 内容复制 (支持掩码复制) */
+CR_API void_t   imglab_mat_copy (ximage_t dst, ximage_t src);
+CR_API void_t   imglab_mat_copy2 (ximage_t dst, ximage_t src, ximage_t mask);
+
 /*****************************************************************************/
 /*                                 图片加载                                  */
 /*****************************************************************************/
@@ -243,19 +247,43 @@ CR_API void_t   imglab_calc_gb2312 (sPNT2 *size, const ansi_t *text,
 /*****************************************************************************/
 
 /* OpenCV 均值滤波 */
-CR_API void_t   imglab_ocv_blur_box (ximage_t mat, uint_t ksize_x,
+CR_API ximage_t imglab_ocv_blur_box (ximage_t mat, uint_t ksize_x,
                                      uint_t ksize_y);
+/* OpenCV 栈式滤波 */
+CR_API ximage_t imglab_ocv_blur_stack (ximage_t mat, uint_t ksize_x,
+                                       uint_t ksize_y);
 /* OpenCV 高斯滤波 */
-CR_API void_t   imglab_ocv_blur_gauss (ximage_t mat, uint_t ksize_x,
+CR_API ximage_t imglab_ocv_blur_gauss (ximage_t mat, uint_t ksize_x,
                                        uint_t ksize_y, fp64_t sigma_x,
                                        fp64_t sigma_y);
 /* OpenCV 中值滤波 */
-CR_API void_t   imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
+CR_API ximage_t imglab_ocv_blur_median (ximage_t mat, uint_t ksize);
 
+/* OpenCV 双边滤波 */
+CR_API ximage_t imglab_ocv_filter_bilateral (ximage_t mat, sint_t diameter,
+                                    fp64_t sigma_color, fp64_t sigma_space);
 /* OpenCV 非锐化掩模 */
-CR_API void_t   imglab_ocv_unsharp_masking (ximage_t mat, uint_t ksize_x,
+CR_API ximage_t imglab_ocv_unsharp_masking (ximage_t mat, uint_t ksize_x,
                                             uint_t ksize_y, fp64_t sigma_x,
                                             fp64_t sigma_y, fp32_t kpower);
+/* OpenCV 颜色类聚 */
+CR_API ximage_t imglab_ocv_color_clustering (ximage_t mat, uint_t kind,
+                                             uint_t count, fp64_t eps,
+                                             uint_t ntrys, bool_t is_lab,
+                                             bool_t kmedoids);
+/* OpenCV Sobel 勾边 */
+CR_API ximage_t imglab_ocv_edge_sobel (ximage_t mat, uint_t dx, uint_t dy,
+                                    uint_t ksize, fp64_t scale, fp64_t delta);
+/* OpenCV Scharr 勾边 */
+CR_API ximage_t imglab_ocv_edge_scharr (ximage_t mat, fp64_t scale,
+                                        fp64_t delta);
+/* OpenCV Laplacian 勾边 */
+CR_API ximage_t imglab_ocv_edge_laplacian (ximage_t mat, uint_t ksize,
+                                           fp64_t scale, fp64_t delta);
+/* OpenCV Canny 勾边 */
+CR_API ximage_t imglab_ocv_edge_canny (ximage_t mat, fp64_t lgate,
+                                       fp64_t hgate, uint_t ksize,
+                                       bool_t l2grad);
 
 /*****************************************************************************/
 /*                                 目标识别                                  */
