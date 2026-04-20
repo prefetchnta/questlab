@@ -37,6 +37,41 @@ quest64_helloworld (
 
 /*
 ---------------------------------------
+    OpenCV 双边滤波
+---------------------------------------
+*/
+static bool_t
+quest64_ocv_bilateral_filter (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE      dest;
+    ximage_t    cvmat, result;
+
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat != NULL)
+    {
+        sint_t  diameter = xml_attr_intxU("diameter", 5, param);
+        fp64_t  sigma_color = xml_attr_fp64U("sigma_color", 80.0, param);
+        fp64_t  sigma_space = xml_attr_fp64U("sigma_space", 80.0, param);
+
+        result = imglab_ocv_filter_bilateral(cvmat, diameter, sigma_color,
+                                             sigma_space);
+        if (result != NULL) {
+            imglab_mat_copy(cvmat, result);
+            imglab_mat_del(result);
+        }
+        imglab_mat_del(cvmat);
+    }
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
     OpenCV 非锐化掩模
 ---------------------------------------
 */
@@ -48,7 +83,7 @@ quest64_ocv_unsharp_masking (
     )
 {
     sIMAGE      dest;
-    ximage_t    cvmat;
+    ximage_t    cvmat, result;
 
     quest64_set_image(&dest, image);
     cvmat = imglab_crh2mat_set(&dest);
@@ -60,8 +95,50 @@ quest64_ocv_unsharp_masking (
         fp64_t  sigma_x = xml_attr_fp64U("sigma_x", 0.0, param);
         fp64_t  sigma_y = xml_attr_fp64U("sigma_y", 0.0, param);
 
-        imglab_ocv_unsharp_masking(cvmat, ksize_x, ksize_y,
-                                   sigma_x, sigma_y, kpower);
+        result = imglab_ocv_unsharp_masking(cvmat, ksize_x, ksize_y,
+                                sigma_x, sigma_y, kpower);
+        if (result != NULL) {
+            imglab_mat_copy(cvmat, result);
+            imglab_mat_del(result);
+        }
+        imglab_mat_del(cvmat);
+    }
+    CR_NOUSE(netw);
+    return (TRUE);
+}
+
+/*
+---------------------------------------
+    OpenCV 颜色类聚
+---------------------------------------
+*/
+static bool_t
+quest64_ocv_color_clustering (
+  __CR_IN__ void_t*     netw,
+  __CR_IO__ void_t*     image,
+  __CR_IN__ sXNODEu*    param
+    )
+{
+    sIMAGE      dest;
+    ximage_t    cvmat, result;
+
+    quest64_set_image(&dest, image);
+    cvmat = imglab_crh2mat_set(&dest);
+    if (cvmat != NULL)
+    {
+        uint_t  kind = xml_attr_intxU("kind", 8, param);
+        uint_t  count = xml_attr_intxU("count", 10, param);
+        fp64_t  eps = xml_attr_fp64U("eps", 1.0, param);
+        uint_t  ntrys = xml_attr_intxU("ntrys", 3, param);
+        uint_t  is_lab = xml_attr_intxU("is_lab", 0, param);
+        uint_t  kmedoids = xml_attr_intxU("kmedoids", 0, param);
+
+        result = imglab_ocv_color_clustering(cvmat, kind, count, eps,
+                                             ntrys, is_lab, kmedoids);
+        if (result != NULL) {
+            imglab_mat_copy(cvmat, result);
+            imglab_mat_del(result);
+        }
         imglab_mat_del(cvmat);
     }
     CR_NOUSE(netw);

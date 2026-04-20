@@ -5,8 +5,14 @@
     <quest64_bridge><![CDATA[
         <filters>
 
+            <!-- OpenCV Bilateral Filter -->
+            <?quest64_opencv_bilateral_filter diameter="5" sigma_color="80.0" sigma_space="80.0" />
+
             <!-- OpenCV Unsharp Masking -->
             <?quest64_opencv_unsharp_masking kpower="3.0" ksize_x="9" ksize_y="9" sigma_x="0.0" sigma_y="0.0" />
+
+            <!-- OpenCV Color Clustering -->
+            <?quest64_opencv_color_clustering kind="8" count="10" eps="1.0" ntrys="3" is_lab="0" kmedoids="0" />
 
             <!-- OpenCV CascadeClassifier -->
             <?quest64_opencv_cascade model="source/hyperlpr/v1/cascade.xml"
