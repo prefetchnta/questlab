@@ -515,3 +515,80 @@ imglab_ocv_edge_canny (
     }
     return ((ximage_t)dd);
 }
+
+/*****************************************************************************/
+/*                                  形态学                                   */
+/*****************************************************************************/
+
+/*
+=======================================
+    形态学腐蚀
+=======================================
+*/
+CR_API void_t
+imglab_ocv_erode (
+  __CR_IO__ ximage_t    mat,
+  __CR_IN__ uint_t      shape,
+  __CR_IN__ uint_t      ksize_x,
+  __CR_IN__ uint_t      ksize_y,
+  __CR_IN__ uint_t      times
+    )
+{
+    if (shape > MORPH_OCV_DIAMOND)
+        return;
+    cv::erode(*(cv::Mat*)mat, *(cv::Mat*)mat,
+              cv::getStructuringElement(shape, cv::Size(ksize_x, ksize_y)),
+              cv::Point(-1, -1), times);
+}
+
+/*
+=======================================
+    形态学膨胀
+=======================================
+*/
+CR_API void_t
+imglab_ocv_dilate (
+  __CR_IO__ ximage_t    mat,
+  __CR_IN__ uint_t      shape,
+  __CR_IN__ uint_t      ksize_x,
+  __CR_IN__ uint_t      ksize_y,
+  __CR_IN__ uint_t      times
+    )
+{
+    if (shape > MORPH_OCV_DIAMOND)
+        return;
+    cv::dilate(*(cv::Mat*)mat, *(cv::Mat*)mat,
+               cv::getStructuringElement(shape, cv::Size(ksize_x, ksize_y)),
+               cv::Point(-1, -1), times);
+}
+
+/*
+=======================================
+    形态学操作
+=======================================
+*/
+CR_API ximage_t
+imglab_ocv_morph (
+  __CR_IN__ ximage_t    mat,
+  __CR_IN__ uint_t      shape,
+  __CR_IN__ uint_t      ksize_x,
+  __CR_IN__ uint_t      ksize_y,
+  __CR_IN__ uint_t      times,
+  __CR_IN__ uint_t      opers
+    )
+{
+    if (shape > MORPH_OCV_DIAMOND || opers > MORPH_OCV_HITMISS)
+        return (NULL);
+    if (opers == MORPH_OCV_HITMISS && ((cv::Mat*)mat)->type() != CV_8UC1)
+        return (NULL);
+
+    cv::Mat*    ss = (cv::Mat*)mat;
+    cv::Mat*    dd = new(std::nothrow) cv::Mat (ss->size(), ss->type());
+
+    if (dd != NULL) {
+        cv::morphologyEx(*ss, *dd, opers,
+                         cv::getStructuringElement(shape, cv::Size(ksize_x, ksize_y)),
+                         cv::Point(-1, -1), times);
+    }
+    return ((ximage_t)dd);
+}

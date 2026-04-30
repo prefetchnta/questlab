@@ -284,6 +284,26 @@ CR_API ximage_t imglab_ocv_edge_laplacian (ximage_t mat, uint_t ksize,
 CR_API ximage_t imglab_ocv_edge_canny (ximage_t mat, fp64_t lgate,
                                        fp64_t hgate, uint_t ksize,
                                        bool_t l2grad);
+/* OpenCV 形态学操作 */
+#define MORPH_OCV_RECT      0
+#define MORPH_OCV_CROSS     1
+#define MORPH_OCV_ELLIPSE   2
+#define MORPH_OCV_DIAMOND   3
+CR_API void_t   imglab_ocv_erode (ximage_t mat, uint_t shape, uint_t ksize_x,
+                                  uint_t ksize_y, uint_t times);
+
+CR_API void_t   imglab_ocv_dilate (ximage_t mat, uint_t shape, uint_t ksize_x,
+                                   uint_t ksize_y, uint_t times);
+#define MORPH_OCV_ERODE     0
+#define MORPH_OCV_DILATE    1
+#define MORPH_OCV_OPEN      2
+#define MORPH_OCV_CLOSE     3
+#define MORPH_OCV_GRADIENT  4
+#define MORPH_OCV_TOPHAT    5
+#define MORPH_OCV_BLACKHAT  6
+#define MORPH_OCV_HITMISS   7
+CR_API ximage_t imglab_ocv_morph (ximage_t mat, uint_t shape, uint_t ksize_x,
+                                  uint_t ksize_y, uint_t times, uint_t opers);
 
 /*****************************************************************************/
 /*                                 目标识别                                  */
