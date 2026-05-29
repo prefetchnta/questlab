@@ -128,6 +128,7 @@ extern PFN_vkWaitForFences vkWaitForFences;
 
 // instance extension capability
 extern int support_VK_KHR_external_memory_capabilities;
+extern int support_VK_KHR_device_group_creation;
 extern int support_VK_KHR_get_physical_device_properties2;
 extern int support_VK_KHR_get_surface_capabilities2;
 extern int support_VK_KHR_surface;
@@ -225,6 +226,12 @@ public:
     // 3 = cpu
     int type() const;
 
+    // performance score roughly evaluated based on parameters such as device type,
+    // supported extensions, video memory size etc.
+    // high-end device scores over 75
+    // low-end device scores below 10
+    uint32_t rough_score() const;
+
     // hardware limit
     uint32_t max_shared_memory_size() const;
     uint32_t max_workgroup_count_x() const;
@@ -252,6 +259,7 @@ public:
 
     // property
     bool unified_compute_transfer_queue() const;
+    bool resizable_bar_enabled() const;
 
     // subgroup
     uint32_t subgroup_size() const;
@@ -301,6 +309,9 @@ public:
     bool support_cooperative_matrix_16_8_16() const;
     bool support_cooperative_matrix_16_16_16() const;
 
+    // bf16 cooperative matrix feature
+    bool support_bf16_cooperative_matrix() const;
+
     // extension capability
     int support_VK_KHR_8bit_storage() const;
     int support_VK_KHR_16bit_storage() const;
@@ -310,6 +321,7 @@ public:
     int support_VK_KHR_cooperative_matrix() const;
     int support_VK_KHR_dedicated_allocation() const;
     int support_VK_KHR_descriptor_update_template() const;
+    int support_VK_KHR_device_group() const;
     int support_VK_KHR_driver_properties() const;
     int support_VK_KHR_external_memory() const;
     int support_VK_KHR_get_memory_requirements2() const;
@@ -335,6 +347,7 @@ public:
     int support_VK_KHR_zero_initialize_workgroup_memory() const;
     int support_VK_EXT_buffer_device_address() const;
     int support_VK_EXT_descriptor_indexing() const;
+    int support_VK_EXT_external_memory_host() const;
     int support_VK_EXT_memory_budget() const;
     int support_VK_EXT_memory_priority() const;
     int support_VK_EXT_queue_family_foreign() const;
@@ -382,6 +395,7 @@ public:
     const VkPhysicalDeviceShaderIntegerDotProductProperties& queryShaderIntegerDotProductProperties() const;
     const VkPhysicalDeviceSubgroupProperties& querySubgroupProperties() const;
     const VkPhysicalDeviceSubgroupSizeControlPropertiesEXT& querySubgroupSizeControlProperties() const;
+    const VkPhysicalDeviceExternalMemoryHostPropertiesEXT& queryExternalMemoryHostProperties() const;
 
     // extension sub properties
     const std::vector<VkCooperativeMatrixPropertiesKHR>& queryCooperativeMatrixSubProperties() const;
@@ -390,7 +404,7 @@ public:
     const std::vector<VkCooperativeVectorPropertiesNV>& queryCooperativeVectorSubPropertiesNV() const;
 
     // some utility functions
-    void get_optimal_cooperative_matrix_mnk(int M, int N, int K, VkComponentTypeKHR type, VkComponentTypeKHR acctype, VkScopeKHR scope, int& coopmat_M, int& coopmat_N, int& coopmat_K) const;
+    void get_optimal_cooperative_matrix_mnk(int M, int N, int K, VkComponentTypeKHR type, VkComponentTypeKHR acctype, VkScopeKHR scope, int& coopmat_M, int& coopmat_N, int& coopmat_K, int& coopmat_subgroup_size) const;
 
 private:
     GpuInfo(const GpuInfo&);
@@ -428,11 +442,13 @@ public:
     int create_descriptorset_layout(int binding_count, const int* binding_types, VkDescriptorSetLayout* descriptorset_layout) const;
     int create_pipeline_layout(int push_constant_count, VkDescriptorSetLayout descriptorset_layout, VkPipelineLayout* pipeline_layout) const;
     int create_pipeline(VkShaderModule shader_module, VkPipelineLayout pipeline_layout, const std::vector<vk_specialization_type>& specializations, uint32_t subgroup_size, VkPipeline* pipeline) const;
+    int create_pipeline(VkShaderModule shader_module, VkPipelineLayout pipeline_layout, const std::vector<vk_specialization_type>& specializations, uint32_t subgroup_size, VkPipelineCache pipeline_cache, VkPipeline* pipeline) const;
     int create_descriptor_update_template(int binding_count, const int* binding_types, VkDescriptorSetLayout descriptorset_layout, VkPipelineLayout pipeline_layout, VkDescriptorUpdateTemplateKHR* descriptor_update_template) const;
 
     uint32_t find_memory_index(uint32_t memory_type_bits, VkFlags required, VkFlags preferred, VkFlags preferred_not) const;
     bool is_mappable(uint32_t memory_type_index) const;
     bool is_coherent(uint32_t memory_type_index) const;
+    bool is_device_local(uint32_t memory_type_index) const;
 
     VkQueue acquire_queue(uint32_t queue_family_index) const;
     void reclaim_queue(uint32_t queue_family_index, VkQueue queue) const;
@@ -507,6 +523,9 @@ public:
 
     // VK_EXT_buffer_device_address
     PFN_vkGetBufferDeviceAddressEXT vkGetBufferDeviceAddressEXT;
+
+    // VK_EXT_external_memory_host
+    PFN_vkGetMemoryHostPointerPropertiesEXT vkGetMemoryHostPointerPropertiesEXT;
 
 #if __ANDROID_API__ >= 26
     // VK_ANDROID_external_memory_android_hardware_buffer
