@@ -76,7 +76,7 @@ public:
 		  _pixStride(pixStride ? pixStride : PixStride(format)),
 		  _rowStride(rowStride ? rowStride : width * _pixStride)
 	{
-		// TODO: [[deprecated]] this check is to prevent exising code from suddenly throwing, remove in 3.0
+		// TODO: [[deprecated]] this check is to prevent existing code from suddenly throwing, remove in 3.1
 		if (_data == nullptr && _width == 0 && _height == 0 && rowStride == 0 && pixStride == 0) {
 			fprintf(stderr, "zxing-cpp deprecation warning: ImageView(nullptr, ...) will throw in the future, use ImageView()\n");
 			return;
@@ -123,8 +123,8 @@ public:
 		case 90:  return {data(0, _height - 1), _height, _width, _format, _pixStride, -_rowStride};
 		case 180: return {data(_width - 1, _height - 1), _width, _height, _format, -_rowStride, -_pixStride};
 		case 270: return {data(_width - 1, 0), _height, _width, _format, -_pixStride, _rowStride};
+		default:  return *this;
 		}
-		return *this;
 	}
 
 	ImageView subsampled(int scale) const

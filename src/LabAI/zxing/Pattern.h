@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include "BitHacks.h"
 #include "Range.h"
 #include "ZXAlgorithms.h"
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -152,9 +152,9 @@ constexpr auto BarAndSpaceSum(const T* view) noexcept
  *
  * N = number of bars/spaces
  * SUM = sum over all N elements (size of pattern in modules)
- * IS_SPARCE = whether or not the pattern contains '0's denoting 'wide' bars/spaces
+ * IS_SPARSE = whether or not the pattern contains '0's denoting 'wide' bars/spaces
  */
-template <int N, int SUM, bool IS_SPARCE = false>
+template <int N, int SUM, bool IS_SPARSE = false>
 struct FixedPattern
 {
 	using value_type = PatternRow::value_type;
@@ -166,7 +166,7 @@ struct FixedPattern
 };
 
 template <int N, int SUM>
-using FixedSparcePattern = FixedPattern<N, SUM, true>;
+using FixedSparsePattern = FixedPattern<N, SUM, true>;
 
 template <bool E2E = false, int LEN, int SUM>
 double IsPattern(const PatternView& view, const FixedPattern<LEN, SUM, false>& pattern, int spaceInPixel = 0,
@@ -184,7 +184,7 @@ double IsPattern(const PatternView& view, const FixedPattern<LEN, SUM, false>& p
 		if (minQuietZone && spaceInPixel < minQuietZone * modSize.space)
 			return 0;
 
-		const BarAndSpace<double> thr = {modSize[0] * .75 + .5, modSize[1] / (2 + (LEN < 6)) + .5};
+		const BarAndSpace<double> thr = {modSize[0] * .75 + .5, modSize[1] * .5 + .5};
 
 		for (int x = 0; x < LEN; ++x)
 			if (std::abs(view[x] - pattern[x] * modSize[x]) > thr[x])
@@ -244,10 +244,13 @@ double IsPattern(const PatternView& view, const FixedPattern<N, SUM, true>& patt
 	return moduleSize;
 }
 
-template <int N, int SUM, bool IS_SPARCE>
-bool IsRightGuard(const PatternView& view, const FixedPattern<N, SUM, IS_SPARCE>& pattern, double minQuietZone,
+template <int N, int SUM, bool IS_SPARSE>
+bool IsRightGuard(const PatternView& view, const FixedPattern<N, SUM, IS_SPARSE>& pattern, double minQuietZone,
 				  double moduleSizeRef = 0)
 {
+	assert(view.size() == pattern.size());
+	if (!view.isValid())
+		return false;
 	int spaceInPixel = view.isAtLastBar() ? std::numeric_limits<int>::max() : *view.end();
 	return IsPattern(view, pattern, spaceInPixel, minQuietZone, moduleSizeRef) != 0;
 }
@@ -268,8 +271,8 @@ PatternView FindLeftGuard(const PatternView& view, int minSize, Pred isGuard)
 	return {};
 }
 
-template <int LEN, int SUM, bool IS_SPARCE>
-PatternView FindLeftGuard(const PatternView& view, int minSize, const FixedPattern<LEN, SUM, IS_SPARCE>& pattern,
+template <int LEN, int SUM, bool IS_SPARSE>
+PatternView FindLeftGuard(const PatternView& view, int minSize, const FixedPattern<LEN, SUM, IS_SPARSE>& pattern,
 						  double minQuietZone)
 {
 	return FindLeftGuard<LEN>(view, std::max(minSize, LEN),
@@ -378,14 +381,14 @@ void GetPatternRow(Range<I> b_row, PatternRow& p_row)
 	if constexpr (std::is_pointer_v<I> && sizeof(I) == 8 && sizeof(std::remove_pointer_t<I>) == 1) {
 		using simd_t = uint64_t;
 		while (bitPos < bitPosEnd - sizeof(simd_t)) {
-			auto asSimd0 = BitHacks::LoadU<simd_t>(bitPos);
-			auto asSimd1 = BitHacks::LoadU<simd_t>(bitPos + 1);
+			auto asSimd0 = LoadU<simd_t>(bitPos);
+			auto asSimd1 = LoadU<simd_t>(bitPos + 1);
 			auto z = asSimd0 ^ asSimd1;
 			if (z) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-				int step = BitHacks::NumberOfTrailingZeros(z) / 8 + 1;
+				int step = std::countr_zero(z) / 8 + 1;
 #else
-				int step = BitHacks::NumberOfLeadingZeros(z) / 8 + 1;
+				int step = std::countl_zero(z) / 8 + 1;
 #endif
 				(*intPos++) += step;
 				bitPos += step;

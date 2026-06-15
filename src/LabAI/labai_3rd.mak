@@ -127,7 +127,6 @@ OBJ_ZXING_CPP=Barcode.obj \
               CharacterSet.obj \
               ConcentricFinder.obj \
               Content.obj \
-              DecodeHints.obj \
               ECI.obj \
               Error.obj \
               GenericGF2.obj \
@@ -137,6 +136,7 @@ OBJ_ZXING_CPP=Barcode.obj \
               GTIN.obj \
               HRI.obj \
               HybridBinarizer.obj \
+              JSON.obj \
               MultiFormatReader.obj \
               MultiFormatWriter.obj \
               PerspectiveTransform.obj \
@@ -146,7 +146,6 @@ OBJ_ZXING_CPP=Barcode.obj \
               ResultPoint2.obj \
               TextDecoder.obj \
               TextEncoder.obj \
-              TextUtfEncoding.obj \
               Utf.obj \
               WhiteRectDetector.obj \
               AZDecoder.obj \
@@ -234,7 +233,6 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\CharacterSet.cpp \
               zxing\ConcentricFinder.cpp \
               zxing\Content.cpp \
-              zxing\DecodeHints.cpp \
               zxing\ECI.cpp \
               zxing\Error.cpp \
               zxing\GenericGF2.cpp \
@@ -244,6 +242,7 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\GTIN.cpp \
               zxing\HRI.cpp \
               zxing\HybridBinarizer.cpp \
+              zxing\JSON.cpp \
               zxing\MultiFormatReader.cpp \
               zxing\MultiFormatWriter.cpp \
               zxing\PerspectiveTransform.cpp \
@@ -253,7 +252,6 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\ResultPoint2.cpp \
               zxing\TextDecoder.cpp \
               zxing\TextEncoder.cpp \
-              zxing\TextUtfEncoding.cpp \
               zxing\Utf.cpp \
               zxing\WhiteRectDetector.cpp \
               zxing\aztec\AZDecoder.cpp \
@@ -394,8 +392,8 @@ OBJ_LIST=$(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP) \
 
 FLAGS_OCV_WECHAT=/I $(INC_OPENCV)
 
-FLAGS_ZXING_CPP=/I $(INC_OPENCV) /I.\zxing /D "ZXING_READERS" /Zc:__cplusplus \
-                /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706
+FLAGS_ZXING_CPP=/I $(INC_OPENCV) /I.\zxing /D "ZXING_READERS" /D "ZXING_INTERNAL" /Zc:__cplusplus \
+                /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706 /wd4996
 
 FLAGS_HYPERLPR1=/I $(INC_OPENCV) /I.\hyperlpr\v1\ /wd4100 /wd4189 /wd4244 /wd4267 /wd4456 /wd5205
 

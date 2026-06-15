@@ -9,7 +9,6 @@
 
 #include "AZDetectorResult.h"
 #include "BitArray.h"
-#include "BitHacks.h"
 #include "BitMatrix.h"
 #include "ConcentricFinder.h"
 #include "GenericGF.h"
@@ -20,6 +19,8 @@
 #include "ZXAlgorithms.h"
 
 #include <algorithm>
+#include <bit>
+#include <ranges>
 #include <optional>
 #include <vector>
 
@@ -117,6 +118,15 @@ static std::vector<ConcentricPattern> FindPureFinderPattern(const BitMatrix& ima
 			return {};
 	}	
 
+	// Symbols can have a blank row or column at the edge (in particular, top and left)
+	if (width < height && image.width() >= height) {
+		left = std::max(0, left - (height - width + 1) / 2); // No real net effect if right edge blank
+		width = height;
+	} else if (height < width && image.height() >= width) {
+		top = std::max(0, top - (width - height + 1) / 2); // No real net effect if bottom edge blank
+		height = width;
+	}
+
 	PointF p(left + width / 2, top + height / 2);
 	constexpr auto PATTERN = FixedPattern<7, 7>{1, 1, 1, 1, 1, 1, 1};
 	if (auto pattern = LocateConcentricPattern(image, PATTERN, p, width))
@@ -200,11 +210,11 @@ static std::vector<ConcentricPattern> FindFinderPatterns(const BitMatrix& image,
 
 			// make sure p is not 'inside' an already found pattern area
 			bool found = false;
-			for (auto old = res.rbegin(); old != res.rend(); ++old) {
+			for (auto& old : std::ranges::reverse_view(res)) {
 				// search from back to front, stop once we are out of range due to the y-coordinate
-				if (p.y - old->y > old->size / 2)
+				if (p.y - old.y > old.size / 2)
 					break;
-				if (distance(p, *old) < old->size / 2) {
+				if (distance(p, old) < old.size / 2) {
 					found = true;
 					break;
 				}
@@ -229,7 +239,7 @@ static std::vector<ConcentricPattern> FindFinderPatterns(const BitMatrix& image,
 #endif
 
 #ifdef PRINT_DEBUG
-	printf("\n# checked centeres: %d, # found centers: %d\n", N, Size(res));
+	printf("\n# checked centers: %d, # found centers: %d\n", N, Size(res));
 #endif
 	return res;
 }
@@ -238,7 +248,7 @@ static int FindRotation(uint32_t bits, bool mirror)
 {
 	const uint32_t mask = mirror ? 0b111'000'001'110 : 0b111'011'100'000;
 	for (int i = 0; i < 4; ++i) {
-		if (BitHacks::CountBitsSet(mask ^ bits) <= 2) // at most 2 bits may be wrong (24778:2008(E) 14.3.3 sais 3 but that is wrong)
+		if (std::popcount(mask ^ bits) <= 2) // at most 2 bits may be wrong (24778:2008(E) 14.3.3 says 3 but that is wrong)
 			return i;
 		bits = ((bits << 3) & 0xfff) | ((bits >> 9) & 0b111); // left shift/rotate, see RotatedCorners(Quadrilateral)
 	}
@@ -379,7 +389,7 @@ DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int 
 			// decoding fails.
 			// Unfortunately, this seems to be wrong: there are 12-bit patterns in those 8 cases that differ only in 4 bits like
 			// 011'100'000'111 (rot90 && !mirror) and 111'000'001'110 (rot0 && mirror), meaning if two of those are wrong, both cases
-			// have a hamming distance of 2, meaning only 1 bit errors can be relyable recovered from. The following code therefore
+			// have a hamming distance of 2, meaning only 1 bit errors can be reliable recovered from. The following code therefore
 			// incorporates the complete set of mode message bits to help determine the orientation of the symbol. This is still not
 			// sufficient for the ErrorInModeMessageZero test case in AZDecoderTest.cpp but good enough for the author.
 			for (radius = 5; radius <= 7; radius += 2) {
