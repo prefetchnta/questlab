@@ -45,7 +45,7 @@ imglab_zxi_grpcode_doit (
         param.setTryInvert(!!options->tryInvert);
         param.setTryDownscale(!!options->tryDownscale);
         param.setIsPure(!!options->isPure);
-        param.setTryCode39ExtendedMode(!!options->tryCode39ExtendedMode);
+        param.setValidateOptionalChecksum(!!options->validateOptionalChecksum);
         param.setReturnErrors(!!options->returnErrors);
         param.setDownscaleFactor((uint8_t)options->downscaleFactor);
         switch (options->eanAddOnSymbol)
@@ -89,11 +89,14 @@ imglab_zxi_grpcode_doit (
             case ZXI_TEXT_HRI:
                 param.setTextMode(ZXing::TextMode::HRI);
                 break;
+            case ZXI_TEXT_ESCAPED:
+                param.setTextMode(ZXing::TextMode::Escaped);
+                break;
             case ZXI_TEXT_HEX:
                 param.setTextMode(ZXing::TextMode::Hex);
                 break;
-            case ZXI_TEXT_ESCAPED:
-                param.setTextMode(ZXing::TextMode::Escaped);
+            case ZXI_TEXT_HEX_ECI:
+                param.setTextMode(ZXing::TextMode::HexECI);
                 break;
         }
         if (options->characterSet != NULL)
@@ -101,7 +104,8 @@ imglab_zxi_grpcode_doit (
         param.setMinLineCount((uint8_t)options->minLineCount);
         param.setMaxNumberOfSymbols((uint8_t)options->maxNumberOfSymbols);
         param.setDownscaleThreshold((uint16_t)options->downscaleThreshold);
-        param.setFormats(static_cast<ZXing::BarcodeFormat>(options->formats));
+        if (options->formats != NULL)
+            param.setFormats(ZXing::BarcodeFormatsFromString(options->formats));
     }
 
     cv::Mat*            mm = (cv::Mat*)mat;

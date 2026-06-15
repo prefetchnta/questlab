@@ -31,7 +31,7 @@ SRC_LIST=dllmain.cpp \
 
 build_all:
     if not exist $(INC_OPENCV) mklink /J $(INC_OPENCV) $(INC_OPENCV)4
-    $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /I $(INC_LABAI) /I $(INC_OPENCV) /openmp $(SRC_LIST)
+    $(CC) $(CFLAGS) /D "_CR_BUILD_DLL_" /wd4996 /I $(INC_LABAI) /I $(INC_OPENCV) /openmp $(SRC_LIST)
     $(LD) $(LFLAGS) /DLL $(OBJ_LIST) LabAIex.lib
     $(MT) $(MFLAGS)
     move $(BIN_NAME) ..\..\bin\x64bin
