@@ -801,7 +801,7 @@ quest64_zxi_grpcode_load_options (
         CJSON_BOOL(tryInvert, TRUE);
         CJSON_BOOL(tryDownscale, TRUE);
         CJSON_BOOL(isPure, FALSE);
-        CJSON_BOOL(tryCode39ExtendedMode, FALSE);
+        CJSON_BOOL(validateOptionalChecksum, FALSE);
         CJSON_BOOL(returnErrors, FALSE);
         CJSON_INTG(downscaleFactor, 3);
         CJSON_INTG(eanAddOnSymbol, ZXI_EAN_IGNORE);
@@ -811,7 +811,7 @@ quest64_zxi_grpcode_load_options (
         CJSON_INTG(minLineCount, 2);
         CJSON_INTG(maxNumberOfSymbols, 255);
         CJSON_INTG(downscaleThreshold, 500);
-        CJSON_INTG(formats, ZXI_TYPE_NONE);
+        CJSON_CSTR(formats, "]*r");
         cJSON_Delete(root);
     }
 }
@@ -833,7 +833,7 @@ quest64_zxi_grpcode (
 
     /* 参数解析 */
     lded = FALSE;
-    prms.characterSet = NULL;
+    prms.characterSet = prms.formats = NULL;
     ansi_t* file = xml_attr_stringU("params", param);
     if (file != NULL) {
         ansi_t* json = file_load_as_strA(file);
@@ -871,6 +871,7 @@ _func_out2:
     imglab_mat_del(cvmat);
 _func_out1:
     TRY_FREE(prms.characterSet);
+    TRY_FREE(prms.formats);
     CR_NOUSE(netw);
     return (TRUE);
 }

@@ -4,7 +4,7 @@
     "tryInvert": 1,
     "tryDownscale": 1,
     "isPure": 0,
-    "tryCode39ExtendedMode": 1,
+    "validateOptionalChecksum": 0,
     "returnErrors": 0,
     "downscaleFactor": 3,
     "eanAddOnSymbol": 0,
@@ -14,5 +14,5 @@
     "minLineCount": 2,
     "maxNumberOfSymbols": 255,
     "downscaleThreshold": 500,
-    "formats": 0
+    "formats": "]*r"
 }
