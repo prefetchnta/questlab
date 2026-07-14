@@ -55,6 +55,9 @@ public:
     void setLazyComputeMode(uint32_t mode);
     void setGlobalExecutorConfig(MNNForwardType type, const BackendConfig& config, int numberThread);
     int getCurrentRuntimeStatus(RuntimeStatus statusEnum);
+    // Get last GPU execution time in ms (measured by GPU timestamps).
+    // Returns -1.0f if profiling is not supported or not enabled.
+    float getLastGpuTimeMs() const;
     enum GCFlag {
         FULL,
         PART
@@ -129,6 +132,9 @@ public:
         void setHint(Interpreter::HintMode mode, int value);
         void setHint(Interpreter::HintMode mode, int* value, size_t size);
         void setHintPtr(Interpreter::HintMode mode, void* value);
+        // Push this RTM's KVCACHE_INFO meta onto its Runtime; call before any
+        // path that creates or clones Backends (Backends capture pMeta at ctor).
+        void applyMetaToRuntime() const;
         bool getInfo(Interpreter::SessionInfoCode code, void* ptr);
         static bool getDeviceInfo(const std::string& deviceKey, const MNNForwardType type, std::string& deviceValue);
         BackendConfig* getBnConfig();
