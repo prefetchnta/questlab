@@ -893,6 +893,8 @@ public:
 	void ReleaseLineCharacterIndex(Scintilla::LineCharacterIndexType lineCharacterIndex);
 	Line LineFromIndexPosition(Position pos, Scintilla::LineCharacterIndexType lineCharacterIndex);
 	Position IndexPositionFromLine(Line line, Scintilla::LineCharacterIndexType lineCharacterIndex);
+	bool DragDropEnabled();
+	void SetDragDropEnabled(bool dragDropEnabled);
 	void StartRecord();
 	void StopRecord();
 	int Lexer();
@@ -933,6 +935,8 @@ public:
 	int DescriptionOfStyle(int style, char *description);
 	std::string DescriptionOfStyle(int style);
 	void SetILexer(void *ilexer);
+	void SetScaleTechnique(Scintilla::ScaleTechnique technique);
+	Scintilla::ScaleTechnique ScaleTechnique();
 	Scintilla::Bidirectional Bidirectional();
 	void SetBidirectional(Scintilla::Bidirectional bidirectional);
 

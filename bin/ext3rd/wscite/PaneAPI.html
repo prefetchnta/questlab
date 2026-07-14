@@ -105,6 +105,7 @@
 	<p>string editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GETLINE'>GetLine</a>(line line)<span class="comment"> -- Retrieve the contents of a line. Returns the length of the line.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_REPLACESEL'>ReplaceSel</a>(string text)<span class="comment"> -- Replace the selected text with the argument text.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETREADONLY'>ReadOnly</a><span class="comment"> -- Set to read only or read write.</span></p>
+	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETDRAGDROPENABLED'>DragDropEnabled</a><span class="comment"> -- Enable or disable drag-and-drop</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ALLOCATE'>Allocate</a>(position bytes)<span class="comment"> -- Enlarge the document to a particular size of text bytes.</span></p>
 	<p>line editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ALLOCATELINES'>AllocateLines</a> write-only<span class="comment"> -- Enlarge the number of lines allocated.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_ADDTEXT'>AddText</a>(string text)<span class="comment"> -- Add text to the document at current position.</span></p>
@@ -417,6 +418,7 @@
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETFONTQUALITY'>FontQuality</a><span class="comment"> -- Choose the quality level for text from the FontQuality enumeration.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETCODEPAGE'>CodePage</a><span class="comment"> -- Set the code page used to interpret the bytes of the document as characters. The SC_CP_UTF8 value can be used to enter Unicode mode.</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETIMEINTERACTION'>IMEInteraction</a><span class="comment"> -- Choose to display the IME in a window or inline.</span></p>
+	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETSCALETECHNIQUE'>ScaleTechnique</a><span class="comment"> -- Set the scale technique</span></p>
 	<p>int editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETBIDIRECTIONAL'>Bidirectional</a><span class="comment"> -- Set bidirectional text display state.</span></p>
 	<p>editor:<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_GRABFOCUS'>GrabFocus</a>()<span class="comment"> -- Set the focus to this Scintilla widget.</span></p>
 	<p>bool editor.<a href='https://www.scintilla.org/ScintillaDoc.html#SCI_SETFOCUS'>Focus</a><span class="comment"> -- Change internal focus flag.</span></p>

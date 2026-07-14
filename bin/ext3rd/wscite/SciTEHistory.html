@@ -622,6 +622,18 @@
 	<td>Gianluca Vaccari</td>
 	<td>8day</td>
 	<td>Ahmet Sait</td>
+	<td>Sven Ritter</td>
+      </tr><tr>
+	<td>Franck Reinquin</td>
+	<td>Peter C. Jones</td>
+	<td>Stefan Löffler</td>
+	<td>Nathaniel Braun</td>
+      </tr><tr>
+	<td>Stephan T. Lavavej</td>
+	<td>RealMalWare</td>
+	<td>p4p3r of CYBERONE</td>
+	<td>Schreiner</td>
+      </tr><tr>
       </tr>
     </table>
     <p>
@@ -630,6 +642,402 @@
         Icons</a> Copyright(C) 1998 by Dean S. Jones<br />
     </p>
     <h2 id="Releases">Releases</h2>
+    <h3>
+       <a href="https://www.scintilla.org/scite564.zip">Release 5.6.4</a>
+    </h3>
+    <ul>
+	<li>SciTE</li>
+	<ul>
+		<li>
+		Released 6 July 2026.
+		</li>
+		<li>
+		Add allow.local.script, allow.script.lexer, and properties.local.enable
+		properties to avoid some potential problems with running untrusted code.
+		Protect SciteDefaultHome and SciteUserHome so they can not be modified in
+		local or directory options.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2389/">Bug #2389</a>.
+		</li>
+	</ul>
+	<li>Lexilla 5.5.1</li>
+	<ul>
+		<li>
+		Baan: Fix stack out-of-bounds write for with long preprocessor token and long identifier.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/364">Issue #364</a>.
+		</li>
+		<li>
+		XML and HTML: Change CDATA styling so that only the contents are in SCE_H_CDATA.
+		The "CDATA" is styled as SCE_H_SGML_COMMAND and the punctuation as SCE_H_SGML_DEFAULT.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/365">Issue #365</a>.
+		</li>
+	</ul>
+	<li>Scintilla 5.6.4</li>
+	<ul>
+		<li>
+		On Qt improve display for fractional scaling by providing SCI_SETSCALETECHNIQUE API.
+		The SCALE_TECHNIQUE_PIXEL_ALIGNED value will eliminate potential 'seams' between lines
+		and between runs on a line.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2450/">Bug #2450</a>.
+		</li>
+		<li>
+		Scintilla.iface is augmented with comments indicating which APIs take pixel values so may
+		be automatically scaled by wrappers.
+		For compatibility this is currently indicated in comments after each affected API but this will
+		change to using the 'pixels' type in a future version,
+		Downstream projects should examine this and make any needed changes, such as using floating
+		point types for wrapper methods.
+		To help migration, the scripts/FilterPixels.py script can convert this Scintilla.iface into the previous form
+		with no mention of 'pixels' or into the final form with 'pixels' as the only type for these features.
+		</li>
+		<li>
+		On Qt always place ScintillaEditBase library in scintilla/bin instead of depending on Qt version.
+		</li>
+		<li>
+		Optimize SCI_CHANGEINSERTION that sets empty insertion by not producing empty undo action
+		and potential save point change.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1588/">Feature #1588</a>.
+		</li>
+	</ul>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scite563.zip">Release 5.6.3</a>
+    </h3>
+    <ul>
+	<li>SciTE</li>
+	<ul>
+		<li>
+		Released 6 June 2026.
+		</li>
+	</ul>
+	<li>Lexilla 5.5.0</li>
+	<ul>
+		<li>
+		Fortran: Fold enumeration type and select rank. Treat GFortran !GCC$ as preprocessor.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/363">Issue #363</a>,
+		<a href="https://sourceforge.net/p/scintilla/bugs/2509/">Bug #2509</a>.
+		</li>
+		<li>
+		LaTeX: Fix issues at end of file.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/355">Issue #355</a>,
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/358">Pull request #358</a>.
+		</li>
+		<li>
+		LaTeX: Fix non-terminating optional argument by lexing as SCE_L_MATH.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/360">Issue #360</a>.
+		</li>
+	</ul>
+	<li>Scintilla 5.6.3</li>
+	<ul>
+		<li>
+		Restore selection and scroll position for undo and redo on additional views instead of just the view
+		performing the undo or redo.
+		<a href="https://github.com/notepad-plus-plus/notepad-plus-plus/pull/18014">Notepad++ Pull Request #18014</a>.
+		</li>
+		<li>
+		Improve performance of rectangular paste when many spaces must be inserted.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2302/">Bug #2302</a>.
+		</li>
+		<li>
+		On Win32, close the clipboard before inserting pasted or dropped text so that the clipboard is not blocked while
+		the insertion is performed.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2507/">Bug #2507</a>.
+		</li>
+		<li>
+		On Qt with Wayland, fix failures with displaying calltips and autocompletion lists.
+		</li>
+	</ul>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scite562.zip">Release 5.6.2</a>
+    </h3>
+    <ul>
+	<li>SciTE</li>
+	<ul>
+		<li>
+		Released 29 April 2026.
+		</li>
+		<li>
+		Fix spurious error message when an untitled buffer has a filter command executed on it.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2504/">Bug #2504</a>.
+		</li>
+	</ul>
+	<li>Lexilla 5.4.9</li>
+	<ul>
+		<li>
+		Assembler: Add SCE_ASM_STRINGBACKQUOTE for NASM `back-quoted strings`.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/220">Issue #220</a>.
+		</li>
+		<li>
+		C++: Fold for '#pragma region' and '#pragma endregion'.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/324">Issue #324</a>.
+		</li>
+		<li>
+		F#: Allow '!' for async keywords.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/352">Issue #352</a>.
+		</li>
+		<li>
+		F#: Stabilize styling of long strings.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/353">Issue #353</a>.
+		</li>
+		<li>
+		F#: Fold long strings with fold.fsharp.quotes.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/354">Issue #354</a>.
+		</li>
+		<li>
+		LaTeX: Fix bug when "\" at end of file.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/355">Issue #355</a>,
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/356">Pull request #356</a>.
+		</li>
+		<li>
+		Pascal: New SCE_PAS_MULTILINESTRING for multi-line triple-quoted strings.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/321">Issue #321</a>.
+		</li>
+		<li>
+		Ruby: Fix bug when "?\" at end of file.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/355">Issue #355</a>,
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/357">Pull request #357</a>.
+		</li>
+	</ul>
+	<li>Scintilla 5.6.2</li>
+	<ul>
+		<li>
+		Add error status SC_STATUS_OUTSIDE_DOCUMENT that is set when operations are attempted on a position
+		outside the document.
+		Positions are checked earlier to prevent actions partly succeeding.
+		Incomplete actions could lead to features that are out of synchronization
+		like change history referring to text that has been deleted.
+		</li>
+		<li>
+		On Win32 with DirectWrite in a GDI scaled application, draw sharper text in autocompletion lists.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2505/">Bug #2505</a>.
+		</li>
+		<li>
+		On Win32 update scaling when the application moves to another monitor.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2503/">Bug #2503</a>.
+		</li>
+	</ul>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scite561.zip">Release 5.6.1</a>
+    </h3>
+    <ul>
+	<li>SciTE</li>
+	<ul>
+		<li>
+		Released 26 March 2026.
+		</li>
+		<li>
+		For GTK, replace deprecated or removed function gdk_pixbuf_new_from_xpm_data.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2498/">Bug #2498</a>.
+		</li>
+	</ul>
+	<li>Lexilla 5.4.8</li>
+	<ul>
+		<li>
+		Batch: Remove line length limitation and change to an object lexer.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/228">Issue #228</a>.
+		</li>
+		<li>
+		Forth: Treat \r\n line ends the same as \n. This makes testing easier.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/349">Issue #349</a>.
+		</li>
+		<li>
+		Forth: Allow more Forth words to be symbols or begin with a symbol.
+		Require whitespace around line comment tokens,
+		similar to the left-hand parenthesis of stream comments.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/351">Issue #351</a>.
+		</li>
+		<li>
+		JavaScript: in cpp lexer, add lexer.cpp.enable.preprocessor and lexer.cpp.allow.hashes properties.
+		This allows disabling preprocessor recognition (as JavaScript doesn't have a preprocessor) and
+		recognizing private elements that start with a #.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/48">Issue #48</a>.
+		</li>
+		<li>
+		JSON: Fix escaped quote in SCE_JSON_URI.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/72">Issue #72</a>.
+		</li>
+	</ul>
+	<li>Scintilla 5.6.1</li>
+	<ul>
+		<li>
+		Add mode to draw tabs as [HT] blobs with SCI_SETTABDRAWMODE(SCTD_CONTROLCHAR).
+		</li>
+		<li>
+		Improve mouse drag behaviour when drag and drop disabled.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1581/">Feature #1581</a>.
+		</li>
+		<li>
+		Fix regression in SCI_CONVERTEOLS that may not convert whole file.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2501/">Bug #2501</a>.
+		</li>
+	</ul>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scite560.zip">Release 5.6.0</a>
+    </h3>
+    <ul>
+	<li>SciTE</li>
+	<ul>
+		<li>
+		Released 25 February 2026.
+		</li>
+	</ul>
+	<li>Scintilla 5.6.0</li>
+	<ul>
+		<li>
+		Fix crash when window is too narrow to show any text.
+		</li>
+	</ul>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scite559.zip">Release 5.5.9</a>
+    </h3>
+    <ul>
+	<li>SciTE</li>
+	<ul>
+		<li>
+		Released 25 February 2026.
+		</li>
+		<li>
+		Windows executable releases are now signed with
+		"Open Source Developer, Neil Hodgson".
+		This should help with avoiding system warnings.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1509/">Feature #1509</a>.
+		</li>
+		<li>
+		On Windows, fix window border after restore from full screen.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2499/">Bug #2499</a>.
+		</li>
+	</ul>
+	<li>Lexilla 5.4.7</li>
+	<ul>
+		<li>
+		Test a single lexer or multiple directories by specifying as command line arguments to TestLexers.
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/344">Pull request #344</a>.
+		</li>
+		<li>
+		Lexer added for escape sequences "escseq".
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/336">Pull request #336</a>.
+		</li>
+		<li>
+		Errorlist: Fix reset escape sequence to set style SCE_ERR_DEFAULT (0) instead of SCE_ERR_ES_BLACK.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/333">Issue #333</a>.
+		</li>
+		<li>
+		Makefile: Recognize comments in more situations.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/40">Issue #40</a>.
+		</li>
+		<li>
+		Perl: Handle 'method' the same as 'sub' for special cases.
+		<a href="https://github.com/ScintillaOrg/lexilla/issues/342">Issue #342</a>,
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/343">Pull request #343</a>.
+		</li>
+		<li>
+		Progress: Add SCE_ABL_ANNOTATION and SCE_ABL_TYPEDANNOTATION styles.
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/346">Pull request #346</a>.
+		</li>
+	</ul>
+	<li>Scintilla 5.5.9</li>
+	<ul>
+		<li>
+		Add option to disable drag/drop editing.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/184/">Feature #184</a>.
+		</li>
+		<li>
+		Allow Euro '&euro;' in code page 936 for 0x80.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1575/">Feature #1575</a>.
+		</li>
+		<li>
+		Fix SCI_SETSELECTIONNSTART and SCI_SETSELECTIONNEND to behave more sensibly.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2488/">Bug #2488</a>.
+		</li>
+		<li>
+		Fix lexing after undo at end of document.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2491/">Bug #2491</a>.
+		</li>
+		<li>
+		When a line end is not selected, change the colour of the rectangle that indicates the line end is selected
+		to white space background instead of previous character's background except for EOL filled style.
+		</li>
+		<li>
+		On Qt, add const to ScintillaDocument and ScintillaEdit methods.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2494/">Bug #2494</a>.
+		</li>
+		<li>
+		On Qt, prevent crash when using ScintillaDocument object.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2495/">Bug #2495</a>.
+		</li>
+	</ul>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scite558.zip">Release 5.5.8</a>
+    </h3>
+    <ul>
+	<li>SciTE</li>
+	<ul>
+		<li>
+		Released 10 November 2025.
+		</li>
+	</ul>
+	<li>Lexilla 5.4.6</li>
+	<ul>
+		<li>
+		Lexer added for SINEX "sinex".
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/329">Pull request #329</a>.
+		</li>
+		<li>
+		Update character categories to Unicode 16.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1569/">Feature #1569</a>.
+		</li>
+		<li>
+		Errorlist: Allow "bright" ANSI sequences (ESC[90m - ESC[97m).
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/332">Pull request #332</a>.
+		</li>
+		<li>
+		Progress: Treat '.' as part of compound identifiers instead of as an operator between identifiers.
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/316">Pull request #316</a>.
+		</li>
+		<li>
+		Python: Support t-strings t\"var={var}\" added by Python 3.14.
+		<a href="https://github.com/ScintillaOrg/lexilla/pull/328">Pull request #328</a>.
+		</li>
+	</ul>
+	<li>Scintilla 5.5.8</li>
+	<ul>
+		<li>
+		Change format for SCI_GETSELECTIONSERIALIZED.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1563/">Feature #1563</a>.
+		</li>
+		<li>
+		Ensure selection drawn correctly when selection restored by undo.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2487/">Bug #2487</a>.
+		</li>
+		<li>
+		Update to Unicode 16.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1569/">Feature #1569</a>.
+		</li>
+		<li>
+		Fix bug when indenting rectangular selection.
+		<a href="https://sourceforge.net/p/scintilla/feature-requests/1567/">Feature #1567</a>.
+		</li>
+		<li>
+		Add PTRDIFF_DOESNT_ALIAS_INT preprocessor choice.
+		</li>
+		<li>
+		On Win32, force autocompletion list colours to be opaque.
+		Enlarge bitmap to avoid visible blank background between items.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2482/">Bug #2482</a>.
+		</li>
+		<li>
+		On Cocoa, fix crash with bidirectional mode when scrolled before start of document.
+		</li>
+		<li>
+		On Cocoa, use same default calltip colours as other platforms for consistency.
+		<a href="https://sourceforge.net/p/scintilla/bugs/2486/">Bug #2486</a>.
+		</li>
+	</ul>
+    </ul>
     <h3>
        <a href="https://www.scintilla.org/scite557.zip">Release 5.5.7</a>
     </h3>
@@ -790,7 +1198,7 @@
 		Remember selection with undo and redo. Controlled with undo.selection.history property.
 		</li>
 		<li>
-		Remember multiple and rectangular selction when switching buffers.
+		Remember multiple and rectangular selection when switching buffers.
 		<a href="https://sourceforge.net/p/scintilla/bugs/2018/">Bug #2018</a>.
 		</li>
 	</ul>
@@ -3381,7 +3789,7 @@
 		Released 9 April 2021.
 		</li>
 		<li>
-		Drop lexerpath.&lt;filepattern&gt; property superceded by Lexilla with lexilla.path.
+		Drop lexerpath.&lt;filepattern&gt; property superseded by Lexilla with lexilla.path.
 		</li>
 		<li>
 		On GTK, include the file name in print job names to make it easier to control printing.
@@ -3410,7 +3818,7 @@
 	<ul>
 		<li>
 		Remove SetLexer, SetLexerLanguage, and LoadLexerLibrary methods.
-		These have been superceded by Lexilla and the SetILexer API.
+		These have been superseded by Lexilla and the SetILexer API.
 		</li>
 		<li>
 		Improve the platform layer interface.

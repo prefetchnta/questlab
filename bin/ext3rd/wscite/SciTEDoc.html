@@ -780,6 +780,8 @@ NameError: name 'mistake' is not defined
       which overrides those in the user properties file which override those
       in the global properties files. Environment variables are also available as properties and these
       are overridden by an explicit setting in one of the properties files.
+      The evaluation of the local properties file is enabled by default but may be disabled by
+      setting the variable properties.local.enable to 0 in the user or global properties file.
     </p>
     <p>
       The directory properties file can be used as project options file where user commands and
@@ -906,6 +908,9 @@ NameError: name 'mistake' is not defined
                <tr id='property-Appearance'><td>Appearance</td><td>whether the system is using a light (0) or dark (1) theme</td></tr>
                <tr id='property-Contrast'><td>Contrast</td><td>1 when the system is in high-contrast mode else 0</td></tr>
         </table>
+    <p>
+        The SciteDefaultHome and SciteUserHome variables are protected and can not be set in local or directory options.
+    </p>
     <p>
        Some features use file name patterns to see which variable to use. For example, the lexer
       variable can be specialised for a particular file, or a group of files based upon wildcard
@@ -1396,7 +1401,7 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         </td>
         <td>
           Setting this to 0 stops collection of the selection at each action to be restored on undo and redo.
-	  This decreases the amount of memory used.
+          This decreases the amount of memory used.
         </td>
       </tr>
       <tr id='property-change.history'>
@@ -2543,6 +2548,10 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>fold.fsharp.preprocessor</td>
         <td>Setting this option to 1 enables folding of F# compiler directives.</td>
         </tr>
+        <tr id='property-fold.fsharp.quotes'>
+        <td>fold.fsharp.quotes</td>
+        <td>Setting this option to 1 enables folding of multi-line strings in F# files.</td>
+        </tr>
         <tr id='property-fold.gdscript.quotes'>
         <td>fold.gdscript.quotes</td>
         <td>This option enables folding multi-line quoted strings when using the GDScript lexer.</td>
@@ -2695,9 +2704,17 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>lexer.cpp.allow.dollars</td>
         <td>Set to 0 to disallow the '$' character in identifiers with the cpp lexer.</td>
         </tr>
+        <tr id='property-lexer.cpp.allow.hashes'>
+        <td>lexer.cpp.allow.hashes</td>
+        <td>Set to 1 to allow the '#' character in identifiers.</td>
+        </tr>
         <tr id='property-lexer.cpp.backquoted.strings'>
         <td>lexer.cpp.backquoted.strings</td>
         <td>Set how to highlighting back-quoted strings. 0 (the default) no highlighting. 1 highlighted as Go raw string. 2 highlighted as JavaScript template literal.</td>
+        </tr>
+        <tr id='property-lexer.cpp.enable.preprocessor'>
+        <td>lexer.cpp.enable.preprocessor</td>
+        <td>Set to 0 to disable recognition of preprocessor directives.</td>
         </tr>
         <tr id='property-lexer.cpp.escape.sequence'>
         <td>lexer.cpp.escape.sequence</td>
@@ -2749,7 +2766,11 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         </tr>
         <tr id='property-lexer.errorlist.value.separate'>
         <td>lexer.errorlist.value.separate</td>
-        <td>For lines in the output pane that are matches from Find in Files or GCC-style diagnostics, style the path and line number separately from the rest of the line with style 21 used for the rest of the line. This allows matched text to be more easily distinguished from its location.</td>
+        <td>For lines in the output pane that are matches from Find in Files or GCC-stylediagnostics, style the path and line number separately from the rest of theline with style 21 used for the rest of the line.This allows matched text to be more easily distinguished from its location.</td>
+        </tr>
+        <tr id='property-lexer.escseq.colour.text'>
+        <td>lexer.escseq.colour.text</td>
+        <td>Set to 1 to colour text following the escape sequences.</td>
         </tr>
         <tr id='property-lexer.flagship.styling.within.preprocessor'>
         <td>lexer.flagship.styling.within.preprocessor</td>
@@ -2835,6 +2856,10 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>lexer.nim.raw.strings.highlight.ident</td>
         <td>Set to 1 to enable highlighting generalized raw string identifiers. Generalized raw string identifiers are anything other than r (or R).</td>
         </tr>
+        <tr id='property-lexer.pascal.smart.highlighting'>
+        <td>lexer.pascal.smart.highlighting</td>
+        <td>Set to 0 to not completely handle some complex features like 'property'.</td>
+        </tr>
         <tr id='property-lexer.props.allow.initial.spaces'>
         <td>lexer.props.allow.initial.spaces</td>
         <td>For properties files, set to 0 to style all lines that start with whitespace in the default style. This is not suitable for SciTE .properties files which use indentation for flow control but can be used for RFC2822 text where indentation is used for continuation lines.</td>
@@ -2870,6 +2895,10 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <tr id='property-lexer.python.strings.over.newline'>
         <td>lexer.python.strings.over.newline</td>
         <td>Set to 1 to allow strings to span newline characters.</td>
+        </tr>
+        <tr id='property-lexer.python.strings.t'>
+        <td>lexer.python.strings.t</td>
+        <td>Set to 0 to not recognise Python 3.14 t-string literals t"var={var}".</td>
         </tr>
         <tr id='property-lexer.python.strings.u'>
         <td>lexer.python.strings.u</td>
@@ -3155,8 +3184,8 @@ Prev File|IDM_PREVFILE|<br/>
           wrap.visual.startindent
         </td>
         <td>
-          Sets the indention of continued wrapped lines to better visually identify the wrapping.
-          Default is 0 (no indention). Note if wrap.visual.flags is 2 or 3 (begin marker displayed)
+          Sets the indentation of continued wrapped lines to better visually identify the wrapping.
+          Default is 0 (no indentation). Note if wrap.visual.flags is 2 or 3 (begin marker displayed)
           the line is indented at least 1, even if wrap.visual.startindent is still 0.
         </td>
       </tr>
@@ -3348,6 +3377,16 @@ Prev File|IDM_PREVFILE|<br/>
         If you set session.folds then the folding state will be saved in session
         files. When loading a session file bookmarks and/or folds are restored.
         Folding states are not restored if fold.on.open is set.
+        </td>
+      </tr>
+      <tr id='property-session.readonly'>
+        <td>
+          <a name='property-session.readonly'></a>
+          session.readonly
+        </td>
+        <td>
+          Setting session.readonly causes the read-only state of each buffer to be saved in session files
+          and restored when a session file is loaded.
         </td>
       </tr>
       <tr class="windowsonly" id='property-open.dialog.in.file.directory'>
@@ -3879,7 +3918,8 @@ imports.include=fortran lisp
       </tr>
       <tr id='property-lexer'>
         <td>
-          lexer.<i>filepattern</i>
+          lexer.<i>filepattern</i><br />
+          allow.script.lexer
         </td>
         <td>
           A lexer splits a file up into syntactic pieces. SciTE can then display these pieces in
@@ -3889,7 +3929,8 @@ imports.include=fortran lisp
           settings associate a file name with a lexer.<br />
           The lexers included in SciTE are written in C++ and compiled into the SciTE executable.
           Lexers can also be written as a <a href="ScriptLexer.html">Lua script</a>
-          or as a Lua LPeg lexer using <a href="https://orbitalquark.github.io/scintillua">scintillua</a>.
+          or as a Lua LPeg lexer using <a href="https://orbitalquark.github.io/scintillua">scintillua</a>.<br />
+          Lua script lexers require setting allow.script.lexer=1.
         </td>
       </tr>
       <tr id='property-shbang'>
@@ -4924,6 +4965,7 @@ groupundo - yes or no<br />
           ext.lua.startup.script<br />
           ext.lua.auto.reload<br />
           ext.lua.reset<br />
+          allow.local.script<br />
           extension.<i>filepattern</i>
         </td>
         <td>
@@ -4959,6 +5001,11 @@ groupundo - yes or no<br />
           sense for both auto.reload and reset to be enabled, but usually
           ext.lua.auto.reload alone will suffice.
           <br />
+          To prevent executing arbitrary code, the ext.lua.startup.script may only be specified in
+          user or global properties by default.
+          To allow specifying the script from local or directory properties, allow.local.script
+          must be set to 1 in user or global properties.
+          <br />
           Aside from ext.lua.startup.script, the extension.<i>filepattern</i> property
           provides a way to load additional functions and event handlers that may be
           specific to a given file type.  If the extension property value ends in .lua
@@ -4972,6 +5019,9 @@ groupundo - yes or no<br />
           property, SciTE looks for the file in the standard property file locations,
           starting with the local directory.  This can be very useful in combination
           with a local SciTE.properties file.
+          Similar to ext.lua.startup.script, extension may only be set in user or global properties unless
+          allow.local.script=1. The local directory is only searched when allow.local.script=1.
+          <br />
         </td>
       </tr>
       <tr class="windowsonly" id='property-create.hidden.console'>
@@ -5003,6 +5053,16 @@ groupundo - yes or no<br />
           Enables or disables the evaluation of the directory properties file.
           The default is 0 which disables the evaluation. Any other value enables
                    this properties file.
+        </td>
+      </tr>
+      <tr id='property-properties.local.enable'>
+        <td>
+          properties.local.enable
+        </td>
+        <td>
+          Enables or disables the evaluation of the local properties file.
+          The default is 1 which enables the evaluation. The value 0 disables this properties file.
+          This property may be set to 0 for safety when working in untrusted directories.
         </td>
       </tr>
           <tr id='property-editor.config.enable'>
