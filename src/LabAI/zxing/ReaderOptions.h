@@ -18,11 +18,9 @@
 namespace ZXing {
 
 /**
- * @brief The Binarizer enum
+ * @brief Specify which algorithm to use for the grayscale to binary transformation.
  *
- * Specify which algorithm to use for the grayscale to binary transformation.
- * The difference is how to get to a threshold value T which results in a bit
- * value R = L <= T.
+ * The difference is how to get to a threshold value T which results in a bit value R(esult) = L(uminance) <= T(hreshold).
  */
 enum class Binarizer : unsigned char // needs to be unsigned for the bitfield below to work, uint8_t fails as well
 {
@@ -32,6 +30,9 @@ enum class Binarizer : unsigned char // needs to be unsigned for the bitfield be
 	BoolCast,        ///< T = 0, fastest possible
 };
 
+/**
+ * @brief Specify whether to ignore, read or require EAN-2/5 add-on symbols while scanning EAN/UPC codes.
+ */
 enum class EanAddOnSymbol : unsigned char // see above
 {
 	Ignore,  ///< Ignore any Add-On symbol during read/scan
@@ -39,6 +40,11 @@ enum class EanAddOnSymbol : unsigned char // see above
 	Require, ///< Require EAN-2/EAN-5 Add-On symbol to be present
 };
 
+/**
+ * @brief Specify how the decoded byte content of a barcode should be transcoded to text.
+ *
+ * @see Barcode::text(), ReaderOptions::textMode().
+ */
 enum class TextMode : unsigned char // see above
 {
 	Plain,   ///< bytes() transcoded to unicode based on ECI info or guessed charset (the default mode prior to 2.0)
@@ -50,10 +56,8 @@ enum class TextMode : unsigned char // see above
 };
 
 /**
- * @class ReaderOptions
  * @brief Configuration options for barcode reading and decoding behavior.
  *
- * @details
  * ReaderOptions encapsulates a set of flags and parameters that control
  * how barcode detection and decoding is performed. It provides
  * fluent setters that support chaining. Both `name(val)` and `setName(val)`
@@ -100,16 +104,16 @@ public:
 	inline ReaderOptions& setFormats(const BarcodeFormats& v) & { return formats(BarcodeFormats(v)); }
 	inline ReaderOptions&& setFormats(const BarcodeFormats& v) && { return std::move(*this).formats(BarcodeFormats(v)); }
 
-	/// Spend more time to try to find a barcode; optimize for accuracy, not speed.
+	/// Spend more time to try to find a barcode; optimize for accuracy instead of not speed (default: true).
 	ZX_PROPERTY(bool, tryHarder, setTryHarder)
 
-	/// Also try detecting code in 90, 180 and 270 degree rotated images.
+	/// Try detecting codes in 90, 180 and 270 degree rotated images (default: true).
 	ZX_PROPERTY(bool, tryRotate, setTryRotate)
 
-	/// Also try detecting inverted ("reversed reflectance") codes if the format allows for those.
+	/// Try detecting inverted ("reversed reflectance") codes if the format allows for those (default: true).
 	ZX_PROPERTY(bool, tryInvert, setTryInvert)
 
-	/// Also try detecting code in downscaled images (depending on image size).
+	/// Try detecting code in downscaled images (depending on image size) (default: true).
 	ZX_PROPERTY(bool, tryDownscale, setTryDownscale)
 
 #ifdef ZXING_EXPERIMENTAL_API
@@ -117,37 +121,37 @@ public:
 	ZX_PROPERTY(bool, tryDenoise, setTryDenoise)
 #endif
 
-	/// Binarizer to use internally when using the ReadBarcode function
+	/// Binarizer to use for grayscale to binary transformation (default: Binarizer::LocalAverage).
 	ZX_PROPERTY(Binarizer, binarizer, setBinarizer)
 
-	/// Set to true if the input contains nothing but a single perfectly aligned barcode (generated image)
+	/// Set to true if the input contains nothing but a single perfectly aligned barcode (generated image).
 	ZX_PROPERTY(bool, isPure, setIsPure)
 
-	/// Image size ( min(width, height) ) threshold at which to start downscaled scanning
+	/// Image size ( min(width, height) ) threshold at which to start downscaled scanning.
 	ZX_PROPERTY(uint16_t, downscaleThreshold, setDownscaleThreshold)
 
-	/// Scale factor used during downscaling, meaningful values are 2, 3 and 4
+	/// Scale factor used during downscaling, meaningful values are 2, 3 and 4.
 	ZX_PROPERTY(uint8_t, downscaleFactor, setDownscaleFactor)
 
-	/// The number of scan lines in a linear barcode that have to be equal to accept the result, default is 2
+	/// The number of scan lines in a linear barcode that have to be equal to accept the result (default: 2).
 	ZX_PROPERTY(uint8_t, minLineCount, setMinLineCount)
 
-	/// The maximum number of symbols (barcodes) to detect / look for in the image with ReadBarcodes
+	/// The maximum number of symbols (barcodes) to detect / look for with ReadBarcodes().
 	ZX_PROPERTY(uint8_t, maxNumberOfSymbols, setMaxNumberOfSymbols)
 
-	/// Validate optional checksums where applicable (e.g. Code39, ITF)
+	/// Validate optional checksums where applicable (e.g. Code39, ITF) (default: false).
 	ZX_PROPERTY(bool, validateOptionalChecksum, setValidateOptionalChecksum)
 
-	/// If true, return the barcodes with errors as well (e.g. checksum errors, see @Barcode::error())
+	/// If true, return the barcodes with errors as well (e.g. checksum errors, see Barcode::error()) (default: false).
 	ZX_PROPERTY(bool, returnErrors, setReturnErrors)
 
-	/// Specify whether to ignore, read or require EAN-2/5 add-on symbols while scanning EAN/UPC codes
+	/// Specify whether to ignore, read or require EAN-2/5 add-on symbols while scanning EAN/UPC codes.
 	ZX_PROPERTY(EanAddOnSymbol, eanAddOnSymbol, setEanAddOnSymbol)
 
-	/// Specifies the TextMode that controls the return of the Barcode::text() function
+	/// Specifies the TextMode that controls the return of the Barcode::text() function (default: TextMode::HRI).
 	ZX_PROPERTY(TextMode, textMode, setTextMode)
 
-	/// Specifies fallback character set to use instead of auto-detecting it (when applicable)
+	/// Specifies fallback character set to use instead of auto-detecting it (when applicable).
 	ZX_PROPERTY(CharacterSet, characterSet, setCharacterSet)
 	ReaderOptions& characterSet(std::string_view v) &;
 	ReaderOptions&& characterSet(std::string_view v) &&;
@@ -156,10 +160,15 @@ public:
 
 #undef ZX_PROPERTY
 
-	// Silence deprecated-declarations warnings, only happening here for deprecated inline functions and only with GCC
+/// @cond DEPRECATED
+
+	// Silence deprecated-declarations warnings, only happening here for deprecated inline functions
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996)
 #endif
 
 #define ZX_DEPRECATED_PROPERTY(TYPE, NAME, SETTER, GET_IMPL, SET_IMPL) \
@@ -169,21 +178,25 @@ public:
 	[[deprecated]] inline ReaderOptions& SETTER(TYPE v) & { return NAME(v); } \
 	[[deprecated]] inline ReaderOptions&& SETTER(TYPE v) && { return std::move(*this).NAME(v); }
 
-	/// Deprecated / does nothing. See BarcodeFormat::Code39Ext and ::Code39Std to select full ASCII or standard Code39 mode.
+	/// @deprecated (does nothing). See BarcodeFormat::Code39Ext and ::Code39Std to select full ASCII or standard Code39 mode.
 	ZX_DEPRECATED_PROPERTY(bool, tryCode39ExtendedMode, setTryCode39ExtendedMode, true, (void)v)
 
-	/// Deprecated (use validateOptionalChecksum). The Code39 symbol has a valid checksum iff symbologyIdentifier()[2] is an odd digit
+	/// @deprecated (use validateOptionalChecksum). The Code39 symbol has a valid checksum iff symbologyIdentifier()[2] is an odd digit
 	ZX_DEPRECATED_PROPERTY(bool, validateCode39CheckSum, setValidateCode39CheckSum, validateOptionalChecksum(),
 						   validateOptionalChecksum(v))
 
-	/// Deprecated (use validateOptionalChecksum). The ITF symbol has a valid checksum iff symbologyIdentifier()[2] == '1'.
+	/// @deprecated (use validateOptionalChecksum). The ITF symbol has a valid checksum iff symbologyIdentifier()[2] == '1'.
 	ZX_DEPRECATED_PROPERTY(bool, validateITFCheckSum, setValidateITFCheckSum, validateOptionalChecksum(), validateOptionalChecksum(v))
 
 #undef ZX_DEPRECATED_PROPERTY
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
 #endif
+
+/// @endcond
 
 #ifdef ZXING_INTERNAL
 	/// Check if a specific format is explicitly enabled in the formats set

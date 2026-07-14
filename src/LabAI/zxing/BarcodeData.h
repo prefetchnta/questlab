@@ -11,10 +11,12 @@
 #include "DecoderResult.h"
 #include "DetectorResult.h"
 #include "Error.h"
+#include "Quadrilateral.h"
 #include "ReaderOptions.h"
 #include "StructuredAppend.h"
 
 #include <memory>
+#include <mutex>
 #include <numbers>
 #include <string>
 #include <vector>
@@ -41,11 +43,12 @@ struct BarcodeData
 	BarcodeFormat format = BarcodeFormat::None;
 	std::string extra = {};
 	StructuredAppendInfo sai = {};
-	ReaderOptions readerOpts = {};
 	BitMatrix symbol = {};
 #ifdef ZXING_USE_ZINT
 	unique_zint_symbol zint = {};
+	mutable std::unique_ptr<std::mutex> zintMutex = {};
 #endif
+	TextMode defaultTextMode = TextMode::HRI;
 	int lineCount = 0;
 	bool isMirrored = false;
 	bool isInverted = false;

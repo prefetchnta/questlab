@@ -93,11 +93,19 @@ static bool TerminatesCompaction(int code)
 **/
 static int ProcessECI(const std::vector<int>& codewords, int codeIndex, const int length, const int code, Content& result)
 {
-	if (codeIndex < length && IsECI(code)) {
-		if (code == ECI_CHARSET)
-			result.switchEncoding(ECI(codewords[codeIndex++]));
-		else
-			codeIndex += code == ECI_GENERAL_PURPOSE ? 2 : 1; // Don't currently handle non-character set ECIs so just ignore
+	if (!IsECI(code))
+		return codeIndex;
+
+	if (codeIndex >= length)
+		return codeIndex; // throw FormatError(); TODO: check why there are unit tests that expect this to be silently ignored
+
+	if (code == ECI_CHARSET) {
+		result.switchEncoding(ECI(codewords[codeIndex++]));
+	} else {
+		int paramCount = code == ECI_GENERAL_PURPOSE ? 2 : 1;
+		if (codeIndex + paramCount > length)
+			return codeIndex; // throw FormatError(); TODO: check why there are unit tests that expect this to be silently ignored
+		codeIndex += paramCount; // Don't currently handle non-character set ECIs so just ignore
 	}
 
 	return codeIndex;
@@ -356,8 +364,9 @@ static int ProcessByteECIs(const std::vector<int>& codewords, int codeIndex, Con
 	while (codeIndex < codewords[0] && codewords[codeIndex] >= TEXT_COMPACTION_MODE_LATCH
 			&& !TerminatesCompaction(codewords[codeIndex])) {
 		int code = codewords[codeIndex++];
-		if (IsECI(code))
-			codeIndex = ProcessECI(codewords, codeIndex, codewords[0], code, result);
+		if (!IsECI(code))
+			throw FormatError();
+		codeIndex = ProcessECI(codewords, codeIndex, codewords[0], code, result);
 	}
 
 	return codeIndex;
@@ -385,8 +394,12 @@ static int ByteCompaction(int mode, const std::vector<int>& codewords, int codeI
 
 	for (int batch = 0; batch < batches; batch++) {
 		int64_t value = 0;
-		for (int count = 0; count < 5; count++)
+		for (int count = 0; count < 5; count++) {
+			// Per ISO/IEC 15438:2015 5.5.3.2, ECI shall not appear within a 5-codeword data group
+			if (codeIndex >= codewords[0] || codewords[codeIndex] >= TEXT_COMPACTION_MODE_LATCH)
+				throw FormatError();
 			value = 900 * value + codewords[codeIndex++];
+		}
 
 		for (int j = 0; j < 6; ++j)
 			result.push_back((uint8_t)(value >> (8 * (5 - j))));
@@ -395,7 +408,7 @@ static int ByteCompaction(int mode, const std::vector<int>& codewords, int codeI
 		codeIndex = ProcessByteECIs(codewords, codeIndex, result);
 	}
 
-	for (int i = 0; i < trailingCount; i++) {
+	for (int i = 0; i < trailingCount && codeIndex < codewords[0]; i++) {
 		result.push_back((uint8_t)codewords[codeIndex++]);
 		// Deal with inter-byte ECIs
 		codeIndex = ProcessByteECIs(codewords, codeIndex, result);
@@ -630,6 +643,9 @@ int DecodeMacroBlock(const std::vector<int>& codewords, int codeIndex, PDF417Cus
 
 DecoderResult Decode(const std::vector<int>& codewords)
 {
+	if (codewords.empty() || codewords[0] < 1 || codewords[0] > Size(codewords))
+		return FormatError();
+
 	Content result;
 	result.symbology = {'L', '2', -1};
 

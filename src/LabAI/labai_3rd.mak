@@ -129,20 +129,18 @@ OBJ_ZXING_CPP=Barcode.obj \
               Content.obj \
               ECI.obj \
               Error.obj \
-              GenericGF2.obj \
-              GenericGFPoly2.obj \
               GlobalHistogramBinarizer.obj \
               GridSampler.obj \
               GTIN.obj \
               HRI.obj \
               HybridBinarizer.obj \
               JSON.obj \
+              LocalGrid.obj \
               MultiFormatReader.obj \
               MultiFormatWriter.obj \
               PerspectiveTransform.obj \
               ReadBarcode.obj \
-              ReedSolomonDecoder.obj \
-              ReedSolomonEncoder.obj \
+              ReedSolomon.obj \
               ResultPoint2.obj \
               TextDecoder.obj \
               TextEncoder.obj \
@@ -175,7 +173,6 @@ OBJ_ZXING_CPP=Barcode.obj \
               ODCode39Writer.obj \
               ODCode93Reader.obj \
               ODCode93Writer.obj \
-              ODCode128Patterns.obj \
               ODCode128Reader.obj \
               ODCode128Writer.obj \
               ODDataBarCommon.obj \
@@ -190,10 +187,13 @@ OBJ_ZXING_CPP=Barcode.obj \
               ODITFWriter.obj \
               ODMultiUPCEANReader.obj \
               ODReader.obj \
+              ODTelepenReader.obj \
               ODUPCAWriter.obj \
               ODUPCEANCommon.obj \
               ODUPCEWriter.obj \
               ODWriterHelper.obj \
+              MicroPDFReader.obj \
+              PDF417.obj \
               PDFBarcodeValue.obj \
               PDFBoundingBox.obj \
               PDFCodewordDecoder.obj \
@@ -203,8 +203,6 @@ OBJ_ZXING_CPP=Barcode.obj \
               PDFDetector.obj \
               PDFEncoder.obj \
               PDFHighLevelEncoder.obj \
-              PDFModulusGF.obj \
-              PDFModulusPoly.obj \
               PDFReader.obj \
               PDFScanningDecoder.obj \
               PDFWriter.obj \
@@ -235,20 +233,18 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\Content.cpp \
               zxing\ECI.cpp \
               zxing\Error.cpp \
-              zxing\GenericGF2.cpp \
-              zxing\GenericGFPoly2.cpp \
               zxing\GlobalHistogramBinarizer.cpp \
               zxing\GridSampler.cpp \
               zxing\GTIN.cpp \
               zxing\HRI.cpp \
               zxing\HybridBinarizer.cpp \
               zxing\JSON.cpp \
+              zxing\LocalGrid.cpp \
               zxing\MultiFormatReader.cpp \
               zxing\MultiFormatWriter.cpp \
               zxing\PerspectiveTransform.cpp \
               zxing\ReadBarcode.cpp \
-              zxing\ReedSolomonDecoder.cpp \
-              zxing\ReedSolomonEncoder.cpp \
+              zxing\ReedSolomon.cpp \
               zxing\ResultPoint2.cpp \
               zxing\TextDecoder.cpp \
               zxing\TextEncoder.cpp \
@@ -281,7 +277,6 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\oned\ODCode39Writer.cpp \
               zxing\oned\ODCode93Reader.cpp \
               zxing\oned\ODCode93Writer.cpp \
-              zxing\oned\ODCode128Patterns.cpp \
               zxing\oned\ODCode128Reader.cpp \
               zxing\oned\ODCode128Writer.cpp \
               zxing\oned\ODDataBarCommon.cpp \
@@ -296,10 +291,13 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\oned\ODITFWriter.cpp \
               zxing\oned\ODMultiUPCEANReader.cpp \
               zxing\oned\ODReader.cpp \
+              zxing\oned\ODTelepenReader.cpp \
               zxing\oned\ODUPCAWriter.cpp \
               zxing\oned\ODUPCEANCommon.cpp \
               zxing\oned\ODUPCEWriter.cpp \
               zxing\oned\ODWriterHelper.cpp \
+              zxing\pdf417\MicroPDFReader.cpp \
+              zxing\pdf417\PDF417.cpp \
               zxing\pdf417\PDFBarcodeValue.cpp \
               zxing\pdf417\PDFBoundingBox.cpp \
               zxing\pdf417\PDFCodewordDecoder.cpp \
@@ -309,8 +307,6 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\pdf417\PDFDetector.cpp \
               zxing\pdf417\PDFEncoder.cpp \
               zxing\pdf417\PDFHighLevelEncoder.cpp \
-              zxing\pdf417\PDFModulusGF.cpp \
-              zxing\pdf417\PDFModulusPoly.cpp \
               zxing\pdf417\PDFReader.cpp \
               zxing\pdf417\PDFScanningDecoder.cpp \
               zxing\pdf417\PDFWriter.cpp \
@@ -393,7 +389,7 @@ OBJ_LIST=$(OBJ_OCV_WECHAT) $(OBJ_ZXING_CPP) \
 FLAGS_OCV_WECHAT=/I $(INC_OPENCV)
 
 FLAGS_ZXING_CPP=/I $(INC_OPENCV) /I.\zxing /D "ZXING_READERS" /D "ZXING_INTERNAL" /Zc:__cplusplus \
-                /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706 /wd4996
+                /wd4101 /wd4127 /wd4244 /wd4245 /wd4267 /wd4305 /wd4456 /wd4457 /wd4458 /wd4459 /wd4706 /wd4805
 
 FLAGS_HYPERLPR1=/I $(INC_OPENCV) /I.\hyperlpr\v1\ /wd4100 /wd4189 /wd4244 /wd4267 /wd4456 /wd5205
 

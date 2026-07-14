@@ -85,6 +85,9 @@ static std::string DecodeCode32(std::string_view str)
 
 	int val = Reduce(str, 0, [&](int acc, char c) { return acc * 32 + IndexOf(TABELLA, c); });
 
+	if (val < 0 || val >= 1000000000)
+		return {};
+
 	std::string res = ToString(val, 9);
 
 	int checksum = 0;
@@ -102,7 +105,7 @@ static std::string DecodeCode32(std::string_view str)
 
 static bool IsPZN(std::string_view str)
 {
-	if (str.size() != 9 || str[0] != '-' || !std::all_of(str.begin() + 1, str.end(), [](char c) { return std::isdigit(c); }))
+	if (str.size() != 9 || str[0] != '-' || !std::all_of(str.begin() + 1, str.end(), IsDigit<char>))
 		return false;
 
 	int checksum = 0;

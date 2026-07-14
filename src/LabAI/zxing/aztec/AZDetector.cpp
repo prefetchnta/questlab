@@ -10,19 +10,24 @@
 #include "AZDetectorResult.h"
 #include "BitArray.h"
 #include "BitMatrix.h"
+#include "BitMatrixCursor.h"
 #include "ConcentricFinder.h"
-#include "GenericGF.h"
 #include "GridSampler.h"
+#include "LocalGrid.h"
 #include "LogMatrix.h"
 #include "Pattern.h"
-#include "ReedSolomonDecoder.h"
+#include "ReedSolomon.h"
 #include "ZXAlgorithms.h"
 
 #include <algorithm>
 #include <bit>
-#include <ranges>
 #include <optional>
+#include <ranges>
 #include <vector>
+
+#ifndef PRINT_DEBUG
+#define printf(...){}
+#endif
 
 namespace ZXing::Aztec {
 
@@ -308,14 +313,14 @@ static int ModeMessage(const BitMatrix& image, const PerspectiveTransform& mod2P
 		bits >>= 4;
 	}
 
-	bool decodeResult = ReedSolomonDecode(GenericGF::AztecParam(), words, numECCodewords);
+	auto decodeResult = ReedSolomonDecode(GF2nAztec(4), words, numECCodewords);
 
 	if ((!decodeResult) && compact) {
 		// Is this a Rune?
 		for (auto& word : words)
 			word ^= 0b1010;
 		
-		decodeResult = ReedSolomonDecode(GenericGF::AztecParam(), words, numECCodewords);
+		decodeResult = ReedSolomonDecode(GF2nAztec(4), words, numECCodewords);
 
 		if (decodeResult)
 			isRune = true;
@@ -353,12 +358,12 @@ static void ExtractParameters(int modeMessage, bool compact, int& nbLayers, int&
 	}
 }
 
-DetectorResult Detect(const BitMatrix& image, bool isPure, bool tryHarder)
+DetectorResult Detect(const BitMatrix& image, bool isPure, bool tryHarder, bool standard, bool runes)
 {
-	return FirstOrDefault(Detect(image, isPure, tryHarder, 1));
+	return FirstOrDefault(Detect(image, isPure, tryHarder, 1, standard, runes));
 }
 
-DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int maxSymbols)
+DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int maxSymbols, bool standard, bool runes)
 {
 #ifdef PRINT_DEBUG
 	LogMatrixWriter lmw(log, image, 5, "az-log.pnm");
@@ -381,7 +386,8 @@ DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int 
 		int rotate; // [0..3]
 		int modeMessage = -1;
 		bool isRune = false;
-		[&]() {
+
+		auto parseModeMessage = [&image, &radius, &mirror, &rotate, &modeMessage, &isRune](QuadrilateralF srcQuad, QuadrilateralF fpQuad) {
 			// 24778:2008(E) 14.3.3 reads:
 			// In the outer layer of the Core Symbol, the 12 orientation bits at the corners are bitwise compared against the specified
 			// pattern in each of four possible orientations and their four mirror inverse orientations as well. If in any of the 8
@@ -393,38 +399,41 @@ DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int 
 			// incorporates the complete set of mode message bits to help determine the orientation of the symbol. This is still not
 			// sufficient for the ErrorInModeMessageZero test case in AZDecoderTest.cpp but good enough for the author.
 			for (radius = 5; radius <= 7; radius += 2) {
-				uint32_t bits = SampleOrientationBits(image, mod2Pix, radius);
+				uint32_t bits = SampleOrientationBits(image, PerspectiveTransform(srcQuad, fpQuad), radius);
 				if (bits == 0)
 					continue;
 				for (mirror = 0; mirror <= 1; ++mirror) {
 					rotate = FindRotation(bits, mirror);
 					if (rotate == -1)
 						continue;
-					modeMessage = ModeMessage(image, PerspectiveTransform(srcQuad, RotatedCorners(*fpQuad, rotate, mirror)), radius, isRune);
+					modeMessage = ModeMessage(image, PerspectiveTransform(srcQuad, RotatedCorners(fpQuad, rotate, mirror)), radius, isRune);
 					if (modeMessage != -1)
-						return;
+						return true;
 				}
 			}
-		}();
-
-		if (modeMessage == -1)
-			continue;
+			return false;
+		};
 
 #if 1
-		// improve prescision of sample grid by extrapolating from outer square of white pixels (5 edges away from center)
-		if (radius == 7) {
+		if (!parseModeMessage(srcQuad, *fpQuad) || radius == 7) {
+			// improve prescision of sample grid by extrapolating from outer square of white pixels (5 edges away from center)
 			if (auto fpQuad5 = FindConcentricPatternCorners(image, fp, fp.size * 5 / 3, 5)) {
-				if (auto mod2Pix = PerspectiveTransform(CenteredSquare(11), *fpQuad5); mod2Pix.isValid()) {
-					int rotate5 = FindRotation(SampleOrientationBits(image, mod2Pix, radius), mirror);
-					if (rotate5 != -1) {
-						srcQuad = CenteredSquare(11);
-						fpQuad = fpQuad5;
-						rotate = rotate5;
-					}
+				if (parseModeMessage(CenteredSquare(11), *fpQuad5) && radius == 7) {
+					srcQuad = CenteredSquare(11);
+					fpQuad = fpQuad5;
 				}
 			}
+			if (modeMessage == -1)
+				continue;
 		}
+#else
+		if (!parseModeMessage(srcQuad, *fpQuad))
+			continue;
 #endif
+
+		if ((!standard && !isRune) || (!runes && isRune))
+			continue;
+
 		*fpQuad = RotatedCorners(*fpQuad, rotate, mirror);
 
 		int nbLayers = 0;
@@ -435,10 +444,55 @@ DetectorResults Detect(const BitMatrix& image, bool isPure, bool tryHarder, int 
 		}
 
 		int dim = radius == 5 ? 4 * nbLayers + 11 : 4 * nbLayers + 2 * ((2 * nbLayers + 6) / 15) + 15;
-		double low = dim / 2.0 + srcQuad[0].x;
-		double high = dim / 2.0 + srcQuad[2].x;
 
-		auto bits = SampleGrid(image, dim, dim, PerspectiveTransform{{PointF{low, low}, {high, low}, {high, high}, {low, high}}, *fpQuad});
+		auto center = PointF(dim / 2.0, dim / 2.0);
+		srcQuad = Move(srcQuad, center);
+		mod2Pix = PerspectiveTransform{srcQuad, *fpQuad};
+
+		ZXing::DetectorResult bits;
+#if 1
+		// for symbols with timing patterns, find those starting from the center and successively move outward
+		if (dim >= 35) {
+			int R = (dim / 2) / 16;
+			int firstTimingPattern = dim / 2 - R * 16;
+
+			auto apM = std::vector<int>(); // alignment pattern positions in modules
+			for (int i = firstTimingPattern; i < dim; i += 16)
+				apM.push_back(i);//, printf("apM: %d\n", i);
+			auto apP = Matrix<std::optional<PointF>>(Size(apM), Size(apM)); // found/guessed alignment pattern positions in pixels
+			apP.set(Size(apM) / 2, Size(apM) / 2, mod2Pix(center)); // center point
+
+			for (int r = R-1; r >= 0; --r) {
+				srcQuad = Move(CenteredSquare(32 * (R - r)), center);
+				auto idxs = std::array<PointI, 4>{PointI{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+				QuadrilateralF dstQuad;
+				for (int i = 0; i < 4; ++i) {
+					auto pi = (R - r) * idxs[i] + Size(apM) / 2 * PointI{1, 1};
+					printf("\nlocate %dx%d\n", pi.x, pi.y);
+					apP.set(pi.x, pi.y, LocalGrid(image, mod2Pix, PointI(srcQuad[i]), {dim, dim}).findTimingPatternCross(true, 4));
+					dstQuad[i] = apP(pi.x, pi.y).value_or(mod2Pix(srcQuad[i]));
+					log(dstQuad[i], 2);
+				}
+				mod2Pix = PerspectiveTransform(srcQuad, dstQuad);
+			}
+
+#if 1
+			// find the remaining (non-corner) alignment patterns
+			for (int y = 0; y < Size(apM); ++y)
+				for (int x = 0; x < Size(apM); ++x) {
+					if (!apP(x, y)) {
+						printf("\nlocate %dx%d\n", x, y);
+						apP.set(x, y, LocalGrid(image, mod2Pix, {apM[x], apM[y]}, {dim, dim}).findTimingPatternCross(true, 4));
+					}
+				}
+#endif
+
+			bits = SampleGrid(image, dim, dim, mod2Pix, std::move(apP), apM, apM);
+		}
+		else
+#endif
+			bits = SampleGrid(image, dim, dim, mod2Pix);
+
 		if (!bits.isValid())
 			continue;
 

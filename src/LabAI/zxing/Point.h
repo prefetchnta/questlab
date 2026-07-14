@@ -11,6 +11,11 @@
 
 namespace ZXing {
 
+/**
+ * @brief A simple 2D point class template.
+ *
+ * PointT is a simple 2D point class template with direct access to its x and y coordinate members.
+ */
 template <typename T>
 struct PointT
 {
@@ -18,7 +23,7 @@ struct PointT
 	T x = 0, y = 0;
 
 	constexpr PointT() = default;
-	constexpr PointT(T x, T y) : x(x), y(y) {}
+	constexpr PointT(T xx, T yy) : x(xx), y(yy) {}
 
 	template <typename U>
 	constexpr explicit PointT(const PointT<U>& p) : x(static_cast<T>(p.x)), y(static_cast<T>(p.y))
@@ -32,6 +37,11 @@ struct PointT
 		return *this;
 	}
 };
+
+using PointI = PointT<int>;
+using PointF = PointT<double>;
+
+/// @cond INTERNAL
 
 template <typename T>
 bool operator==(const PointT<T>& a, const PointT<T>& b)
@@ -120,22 +130,6 @@ auto distance(PointT<T> a, PointT<T> b) -> decltype(length(a - b))
 	return length(a - b);
 }
 
-using PointI = PointT<int>;
-using PointF = PointT<double>;
-
-/// Calculate a floating point pixel coordinate representing the 'center' of the pixel.
-/// This is sort of the inverse operation of the PointI(PointF) conversion constructor.
-/// See also the documentation of the GridSampler API.
-inline PointF centered(PointI p)
-{
-	return p + PointF(0.5f, 0.5f);
-}
-
-inline PointF centered(PointF p)
-{
-	return {std::floor(p.x) + 0.5f, std::floor(p.y) + 0.5f};
-}
-
 template <typename T>
 PointF normalized(PointT<T> d)
 {
@@ -153,6 +147,33 @@ PointT<T> mainDirection(PointT<T> d)
 {
 	return std::abs(d.x) > std::abs(d.y) ? PointT<T>(d.x, 0) : PointT<T>(0, d.y);
 }
+
+template <typename T>
+PointT<T> right(PointT<T> d)
+{
+	return {-d.y, d.x};
+}
+
+template <typename T>
+PointT<T> left(PointT<T> d)
+{
+	return {d.y, -d.x};
+}
+
+/// Calculate a floating point pixel coordinate representing the 'center' of the pixel.
+/// This is sort of the inverse operation of the PointI(PointF) conversion constructor.
+/// See also the documentation of the GridSampler API.
+inline PointF centered(PointI p)
+{
+	return p + PointF(0.5f, 0.5f);
+}
+
+inline PointF centered(PointF p)
+{
+	return {std::floor(p.x) + 0.5f, std::floor(p.y) + 0.5f};
+}
+
+/// @endcond
 
 template <typename T>
 std::string ToString(const PointT<T>& p, bool swap = false, char delim = 'x')

@@ -171,7 +171,12 @@ BarcodeFormats BarcodeFormats::list(const BarcodeFormats& filter)
 BarcodeFormats BarcodeFormats::operator&(const BarcodeFormats& other)
 {
 	std::vector<BarcodeFormat> res;
-	std::set_intersection(begin(), end(), other.begin(), other.end(), std::back_inserter(res));
+	for (auto l : formats_)
+		for (auto r : other.formats_)
+			if (l <= r)
+				res.push_back(l);
+			else if (r <= l)
+				res.push_back(r);
 	return res;
 }
 
@@ -203,7 +208,6 @@ std::string ToString(const BarcodeFormats& formats)
 
 #include "ZXAlgorithms.h"
 
-#include <cctype>
 #include <iterator>
 #include <stdexcept>
 
@@ -231,6 +235,7 @@ static const BarcodeFormatName NAMES[] = {
 	{BarcodeFormat::EAN13, "EAN-13"},
 	{BarcodeFormat::ITF, "ITF"},
 	{BarcodeFormat::MaxiCode, "MaxiCode"},
+	{BarcodeFormat::MicroPDF417, "MicroPDF417"},
 	{BarcodeFormat::MicroQRCode, "MicroQRCode"},
 	{BarcodeFormat::PDF417, "PDF417"},
 	{BarcodeFormat::QRCode, "QRCode"},

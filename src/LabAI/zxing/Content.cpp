@@ -12,12 +12,9 @@
 #include "TextDecoder.h"
 #include "Utf.h"
 #include "ZXAlgorithms.h"
-
-#if !defined(ZXING_READERS) && !defined(ZXING_WRITERS)
 #include "Version.h"
-#endif
 
-#include <cctype>
+#include <cassert>
 
 namespace ZXing {
 
@@ -190,7 +187,7 @@ std::string Content::text(TextMode mode) const
 		case ContentType::GS1: {
 			auto plain = render(false);
 			auto hri = HRIFromGS1(plain);
-			return hri.empty() ? plain : hri;
+			return hri.empty() ? EscapeNonGraphical(plain) : hri;
 		}
 		case ContentType::ISO15434: return HRIFromISO15434(render(false));
 		case ContentType::Text: return render(false);
@@ -445,7 +442,7 @@ ContentType Content::type() const
 		return ContentType::GS1;
 
 	// check for the absolute minimum of a ISO 15434 conforming message ("[)>" + RS + digit + digit)
-	if (bytes.size() > 6 && bytes.asString(0, 4) == "[)>\x1E" && std::isdigit(bytes[4]) && std::isdigit(bytes[5]))
+	if (bytes.size() > 6 && bytes.asString(0, 4) == "[)>\x1E" && IsDigit(bytes[4]) && IsDigit(bytes[5]))
 		return ContentType::ISO15434;
 
 	ECI fallback = ToECI(guessEncoding());

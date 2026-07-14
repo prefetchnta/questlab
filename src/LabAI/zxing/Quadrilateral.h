@@ -17,6 +17,14 @@
 
 namespace ZXing {
 
+/**
+ * @brief A simple class representing a quadrilateral defined by its four corner points.
+ *
+ * It represents a quadrilateral defined by its four corner points:
+ * top-left, top-right, bottom-right, and bottom-left. Those points are relative to the detected symbol
+ * i.e. topLeft() will return the coordinates of the top-left corner of the symbol. If e.g. the symbol
+ * is rotated 180 degrees, the top-left corner will be the one that is at the bottom-right position in the image.
+ */
 template <typename T>
 class Quadrilateral : public std::array<T, 4>
 {
@@ -37,6 +45,8 @@ public:
 	constexpr Point bottomRight() const noexcept { return at(2); }
 	constexpr Point bottomLeft() const noexcept { return at(3); }
 
+	/// Return the orientation of the quadrilateral in radians, where 0 means the horizontal center line
+	/// is parallel to the x-axis and positive values mean a clockwise rotation.
 	double orientation() const
 	{
 		auto centerLine = (topRight() + bottomRight()) - (topLeft() + bottomLeft());
@@ -133,6 +143,12 @@ template <typename PointT>
 Quadrilateral<PointT> Scale(const Quadrilateral<PointT>& q, int factor)
 {
 	return {factor * q[0], factor * q[1], factor * q[2], factor * q[3]};
+}
+
+template <typename PointT>
+Quadrilateral<PointT> Move(const Quadrilateral<PointT>& q, PointT offset)
+{
+	return {q[0] + offset, q[1] + offset, q[2] + offset, q[3] + offset};
 }
 
 template <typename PointT>

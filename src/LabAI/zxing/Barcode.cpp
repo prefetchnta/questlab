@@ -69,7 +69,7 @@ std::string Barcode::text(TextMode mode) const
 
 std::string Barcode::text() const
 {
-	return text(d->readerOpts.textMode());
+	return text(d->defaultTextMode);
 }
 
 ContentType Barcode::contentType() const
@@ -126,7 +126,7 @@ Barcode& Barcode::setReaderOptions(const ReaderOptions& opts)
 {
 	if (opts.characterSet() != CharacterSet::Unknown)
 		d->content.defaultCharset = opts.characterSet();
-	d->readerOpts = opts;
+	d->defaultTextMode = opts.textMode();
 	return *this;
 }
 
@@ -151,7 +151,7 @@ std::string Barcode::extra(std::string_view key) const
 		auto res =
 			StrCat("{", JsonProp("Text", text(TextMode::Plain)), JsonProp("HRI", text(TextMode::HRI)),
 				   JsonProp("TextECI", text(TextMode::ECI)), JsonProp("Bytes", text(TextMode::Hex)),
-				   JsonProp("Identifier", symbologyIdentifier()), JsonProp("Type", Name(format())),
+				   JsonProp("Identifier", symbologyIdentifier()), JsonProp("Format", Name(format())),
 				   JsonProp("Symbology", Name(Symbology(format()))), JsonProp("ContentType", isValid() ? ToString(contentType()) : ""),
 				   JsonProp("Position", ToString(position())), JsonProp("HasECI", hasECI()), JsonProp("IsMirrored", isMirrored()),
 				   JsonProp("IsInverted", isInverted()), d->extra, JsonProp("Error", ToString(error())));
@@ -175,10 +175,11 @@ bool BarcodeData::operator==(const BarcodeData& o) const
 
 	// handle MatrixCodes first
 	if (!(format & BarcodeFormat::AllLinear)) {
-		if (isValid() && o.isValid() && content.bytes != o.content.bytes)
+		if (content.bytes != o.content.bytes)
 			return false;
 
-		// check for equal position if both are valid with equal bytes or at least one is in error
+		// At this point both are valid with the same content or both are in error.
+		// Treat them as equal if their positions are about the same (center of one is inside the other).
 		return IsInside(Center(o.position), position);
 	}
 
