@@ -65,11 +65,33 @@ class CV_EXPORTS_W_SIMPLE Dictionary {
      */
     CV_WRAP bool identify(const Mat &onlyBits, CV_OUT int &idx, CV_OUT int &rotation, double maxCorrectionRate) const;
 
+    /** @brief Given a matrix of pixel ratio ranging from 0 to 1. Returns whether the marker is identified or not.
+     *
+     * Returns reference to the marker id in the dictionary (if any) and its rotation.
+     */
+    CV_WRAP bool identify(const Mat &onlyCellPixelRatio, CV_OUT int &idx, CV_OUT int &rotation, double maxCorrectionRate, float validBitIdThreshold) const;
+
     /** @brief Returns Hamming distance of the input bits to the specific id.
      *
-     * If `allRotations` flag is set, the four posible marker rotations are considered
+     * If `allRotations` flag is set, the four possible marker rotations are considered
      */
     CV_WRAP int getDistanceToId(InputArray bits, int id, bool allRotations = true) const;
+
+    /** @brief Returns number of cells that differ from the specific id.
+     *
+     * For each cell, the distance is increased when the difference between the detected
+     * cell pixel ratio and the dictionary bit value is greater than `validBitIdThreshold`.
+     * If `allRotations` is set, the four possible marker rotations are considered.
+     *
+     * @param onlyCellPixelRatio markerSize x markerSize matrix (CV_32FC1) holding, for each cell,
+     * the ratio of white pixels ranging from 0 to 1
+     * @param id marker id in the dictionary to compute the distance to
+     * @param allRotations if set, the four possible marker rotations are considered and the
+     * smallest distance is returned
+     * @param validBitIdThreshold maximum allowed difference between a cell pixel ratio and the
+     * dictionary bit value; cells exceeding it are counted as differing
+     */
+    CV_WRAP int getDistanceToId(InputArray onlyCellPixelRatio, int id, bool allRotations, float validBitIdThreshold) const;
 
     /** @brief Generate a canonical marker image
      */
@@ -84,6 +106,10 @@ class CV_EXPORTS_W_SIMPLE Dictionary {
     /** @brief Transform list of bytes to matrix of bits
       */
     CV_WRAP static Mat getBitsFromByteList(const Mat &byteList, int markerSize, int rotationId = 0);
+
+    /** @brief Get ground truth bits float
+      */
+     CV_WRAP Mat getMarkerBits(int markerId, int rotationId = 0) const;
 };
 
 
