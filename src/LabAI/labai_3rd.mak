@@ -127,6 +127,7 @@ OBJ_ZXING_CPP=Barcode.obj \
               CharacterSet.obj \
               ConcentricFinder.obj \
               Content.obj \
+              CreateBarcode.obj \
               ECI.obj \
               Error.obj \
               GlobalHistogramBinarizer.obj \
@@ -146,6 +147,7 @@ OBJ_ZXING_CPP=Barcode.obj \
               TextEncoder.obj \
               Utf.obj \
               WhiteRectDetector.obj \
+              WriteBarcode.obj \
               AZDecoder.obj \
               AZDetector.obj \
               AZEncoder.obj \
@@ -231,6 +233,7 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\CharacterSet.cpp \
               zxing\ConcentricFinder.cpp \
               zxing\Content.cpp \
+              zxing\CreateBarcode.cpp \
               zxing\ECI.cpp \
               zxing\Error.cpp \
               zxing\GlobalHistogramBinarizer.cpp \
@@ -250,6 +253,7 @@ SRC_ZXING_CPP=zxing\Barcode.cpp \
               zxing\TextEncoder.cpp \
               zxing\Utf.cpp \
               zxing\WhiteRectDetector.cpp \
+              zxing\WriteBarcode.cpp \
               zxing\aztec\AZDecoder.cpp \
               zxing\aztec\AZDetector.cpp \
               zxing\aztec\AZEncoder.cpp \
