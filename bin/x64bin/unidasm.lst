@@ -60,6 +60,7 @@ dsp56156
 dsp563xx
 dspp
 e0c6200
+edsp
 epg3231
 esrip
 f2mc16
@@ -179,6 +180,7 @@ nec
 nios2
 nova
 ns32000
+ns32532
 nuon
 nsc8105
 nx8_500s
