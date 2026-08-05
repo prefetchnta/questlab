@@ -21,7 +21,7 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)comp_qlz2.$(O) \
          .$(L)comp_qlz3.$(O) \
          .$(L)comp_snappy.$(O) \
-         .$(L)snappy$(L)snappy.lib \
+         .$(L)snappy$(L)libsnappy.a \
          .$(L)comp_zstd.$(O) \
          .$(L)zstd$(L)libzstd_static.lib \
          .$(L)comp_lzma.$(O) \
