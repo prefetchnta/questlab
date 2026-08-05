@@ -8,7 +8,7 @@ rm -rf mingw64
     rm -rf double-mingw64
     mkdir double-mingw64
     cd double-mingw64
-    ../configure ${confflags} --enable-sse2 --enable-avx && make -j4 && make install
+    ../configure ${confflags} --enable-sse2 --enable-avx --enable-avx2 && make -j4 && make install
     cp -f tests/.libs/bench.exe `pwd`/../mingw64/bin/bench.exe
 )
 
@@ -16,7 +16,7 @@ rm -rf mingw64
     rm -rf single-mingw64
     mkdir single-mingw64
     cd single-mingw64
-    ../configure ${confflags} --enable-sse2 --enable-avx --enable-float && make -j4 && make install
+    ../configure ${confflags} --enable-sse2 --enable-avx --enable-avx2 --enable-float && make -j4 && make install
     cp -f tests/.libs/bench.exe `pwd`/../mingw64/bin/benchf.exe
 )
 
