@@ -16,7 +16,7 @@
  *             ##       CREATE: 2025-08-21
  *              #
  ================================================
-        ImageLAB NCNN 基础功能函数库
+        LabAI NCNN 基础功能函数库
  ================================================
  */
 
@@ -30,7 +30,7 @@
 =======================================
 */
 CR_API uint_t
-imglab_ncnn_gpu_count (void_t)
+labai_ncnn_gpu_count (void_t)
 {
     return (ncnn::get_gpu_count());
 }
@@ -41,7 +41,7 @@ imglab_ncnn_gpu_count (void_t)
 =======================================
 */
 CR_API uint_t
-imglab_ncnn_gpu_default (void_t)
+labai_ncnn_gpu_default (void_t)
 {
     return (ncnn::get_default_gpu_index());
 }
@@ -52,7 +52,7 @@ imglab_ncnn_gpu_default (void_t)
 =======================================
 */
 CR_API bool_t
-imglab_ncnn_gpu_info (
+labai_ncnn_gpu_info (
   __CR_OT__ sNCNN_GPU_INFO* gpu,
   __CR_IN__ sint_t          idx
     )

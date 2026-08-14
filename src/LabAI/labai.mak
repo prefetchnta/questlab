@@ -7,8 +7,8 @@ INC_OPENCV=..\..\inc\x64inc\opencv
 !INCLUDE "../vc2022_x64.mak"
 CFLAGS=$(CFLAGS) /std:c++20 /EHsc /utf-8
 
-OBJ_LIST=dllmain.obj \
-         imglab_ncnn_base.obj \
+OBJ_LIST=labai.obj \
+         labai_ncnn.obj \
          imglab_ncnn_dect.obj \
          imglab_zxing_dect.obj \
          imglab_crhack_draw.obj \
@@ -18,8 +18,8 @@ OBJ_LIST=dllmain.obj \
          imglab_opencv_proc.obj \
          imglab_hyperlpr_dect.obj
 
-SRC_LIST=dllmain.cpp \
-         imglab_ncnn_base.cpp \
+SRC_LIST=labai.cpp \
+         labai_ncnn.cpp \
          imglab_ncnn_dect.cpp \
          imglab_zxing_dect.cpp \
          imglab_crhack_draw.cpp \
