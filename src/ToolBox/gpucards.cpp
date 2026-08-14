@@ -33,8 +33,8 @@ int main ()
 {
     printf("==========================================\n");
 
-    uint_t  cnts = imglab_ncnn_gpu_count();
-    uint_t  defs = imglab_ncnn_gpu_default();
+    uint_t  cnts = labai_ncnn_gpu_count();
+    uint_t  defs = labai_ncnn_gpu_default();
 
     printf("==========================================\n");
     printf("GPU count %u, default index %u\n", cnts, defs);
@@ -43,7 +43,7 @@ int main ()
     {
         sNCNN_GPU_INFO  gpu;
 
-        imglab_ncnn_gpu_info(&gpu, idx);
+        labai_ncnn_gpu_info(&gpu, idx);
         printf("%u: %s", idx, gpu.device_name);
         switch (gpu.gpu_type)
         {
