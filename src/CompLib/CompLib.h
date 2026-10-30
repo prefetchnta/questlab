@@ -127,7 +127,8 @@ CR_API leng_t   uncompr_qlz3 (void_t *dst, leng_t dstlen,
                               const void_t *src, leng_t srclen);
 /* SNAPPY */
 CR_API leng_t   compr_snappy (void_t *dst, leng_t dstlen,
-                              const void_t *src, leng_t srclen);
+                              const void_t *src, leng_t srclen,
+                              uint_t level CR_DEFAULT(1));
 
 CR_API leng_t   uncompr_snappy (void_t *dst, leng_t dstlen,
                                 const void_t *src, leng_t srclen);

@@ -30,7 +30,8 @@ compr_snappy (
   __CR_OT__ void_t*         dst,
   __CR_IN__ leng_t          dstlen,
   __CR_IN__ const void_t*   src,
-  __CR_IN__ leng_t          srclen
+  __CR_IN__ leng_t          srclen,
+  __CR_IN__ uint_t          level
     )
 {
     snappy_status   rett;
@@ -38,7 +39,8 @@ compr_snappy (
     if (dst == NULL)
         return (snappy_max_compressed_length(srclen));
 
-    rett = snappy_compress((char*)src, srclen, (char*)dst, (size_t*)&dstlen);
+    rett = snappy_compress_with_level((char*)src, srclen, level,
+                                      (char*)dst, (size_t*)&dstlen);
     return ((rett == SNAPPY_OK) ? dstlen : 0);
 }
 
