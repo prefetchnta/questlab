@@ -6,6 +6,7 @@
 
 #define NCNN_STDIO 1
 #define NCNN_STRING 1
+#define NCNN_VALIDATION 1
 #define NCNN_SIMPLEOCV 0
 #define NCNN_SIMPLEOMP 0
 #define NCNN_SIMPLESTL 0
@@ -14,12 +15,14 @@
 #define NCNN_BENCHMARK 0
 #define NCNN_C_API 1
 #define NCNN_PLATFORM_API 1
+#define NCNN_BATCH 1
 #define NCNN_WINXP 0
 #define NCNN_PIXEL 1
 #define NCNN_PIXEL_ROTATE 1
 #define NCNN_PIXEL_AFFINE 1
 #define NCNN_PIXEL_DRAWING 1
 #define NCNN_VULKAN 1
+#define NCNN_COVERAGE 0
 #define NCNN_SIMPLEVK 1
 #define NCNN_SYSTEM_GLSLANG 0
 #define NCNN_RUNTIME_CPU 1
@@ -27,6 +30,7 @@
 #define NCNN_AVX 1
 #define NCNN_XOP 1
 #define NCNN_FMA 1
+#define NCNN_FMA4 1
 #define NCNN_F16C 1
 #define NCNN_AVX2 1
 #define NCNN_AVXVNNI 1
@@ -55,13 +59,16 @@
 #define NCNN_RVV 0
 #define NCNN_ZFH 0
 #define NCNN_ZVFH 0
+#define NCNN_ZVFBFMIN 0
+#define NCNN_ZVFBFWMA 0
 #define NCNN_XTHEADVECTOR 0
 #define NCNN_INT8 1
+#define NCNN_WEIGHT_QUANT 1
 #define NCNN_BF16 1
 #define NCNN_FORCE_INLINE 1
 
-#define NCNN_VERSION_STRING "1.0.20260526"
-#define NCNN_VERSION_NUMBER 20260526
+#define NCNN_VERSION_STRING "1.0.20261020"
+#define NCNN_VERSION_NUMBER 20261020
 
 #include "ncnn_export.h"
 
