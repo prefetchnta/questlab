@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2024-2026 Breno Cunha Queiroz
 
-// ImPlot3D v0.4
+// ImPlot3D v0.5
 
 // Acknowledgments:
 //  ImPlot3D is heavily inspired by ImPlot
@@ -63,10 +63,22 @@ template <typename TSet, typename TFlag> static inline void ImFlipFlag(TSet& set
 template <typename T> static inline T ImRemap01(T x, T x0, T x1) { return (x1 - x0) ? ((x - x0) / (x1 - x0)) : 0; }
 // Returns always positive modulo (assumes r != 0)
 static inline int ImPosMod(int l, int r) { return (l % r + r) % r; }
+// Returns the IEEE-754 bit pattern of val. NaN and infinity are tested on these bits rather than with isnan() or
+// comparisons, so the tests need no <cmath>, don't depend on whether isnan is a macro or a function, and keep
+// working when -ffast-math (-ffinite-math-only) or /fp:fast lets the compiler assume floats are never NaN or infinite.
+static inline ImU64 ImDoubleBits(double val) {
+    static_assert(sizeof(ImU64) == sizeof(double), "ImDoubleBits expects a 64-bit double");
+    ImU64 bits;
+    memcpy(&bits, &val, sizeof(bits));
+#if defined(__FINITE_MATH_ONLY__) && __FINITE_MATH_ONLY__ && (defined(__GNUC__) || defined(__clang__))
+    __asm__("" : "+r"(bits)); // hide the bits from the optimizer, which would otherwise fold these tests to false
+#endif
+    return bits;
+}
 // Returns true if val is NAN
-static inline bool ImNan(double val) { return isnan(val); }
+static inline bool ImNan(double val) { return (ImDoubleBits(val) & 0x7FFFFFFFFFFFFFFFull) > 0x7FF0000000000000ull; }
 // Returns true if val is NAN or INFINITY
-static inline bool ImNanOrInf(double val) { return !(val >= -DBL_MAX && val <= DBL_MAX) || ImNan(val); }
+static inline bool ImNanOrInf(double val) { return (ImDoubleBits(val) & 0x7FF0000000000000ull) == 0x7FF0000000000000ull; }
 // Turns NANs to 0s
 static inline double ImConstrainNan(double val) { return ImNan(val) ? 0 : val; }
 // Turns infinity to floating point maximums
@@ -152,13 +164,13 @@ struct ImDrawList3D {
     ImDrawVert* _VtxWritePtr; // [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
     ImDrawIdx* _IdxWritePtr;  // [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
     double* _ZWritePtr;       // [Internal] point within ZBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
-    ImDrawListFlags _Flags;   // [Internal] draw list flags
     ImVector<ImTextureBufferItem> _TextureBuffer; // [Internal] buffer for SetTexture/ResetTexture
     ImDrawListSharedData* _SharedData;            // [Internal] shared draw list data
+    ImDrawList* _ParentDrawList; // [Internal] viewport's real ImDrawList, used to reach ImGui-internal helpers (e.g. _SelectLineTexture())
 
     ImDrawList3D() {
-        _Flags = ImDrawListFlags_None;
         _SharedData = nullptr;
+        _ParentDrawList = nullptr;
         ResetBuffers();
     }
 
@@ -344,9 +356,11 @@ struct ImPlot3DLegend {
     ImPlot3DLegendFlags PreviousFlags;
     ImPlot3DLocation Location;
     ImPlot3DLocation PreviousLocation;
+    ImVec2 Scroll;
     ImVector<int> Indices;
     ImGuiTextBuffer Labels;
     ImRect Rect;
+    ImRect RectClamped;
     bool Hovered;
     bool Held;
 
@@ -354,6 +368,7 @@ struct ImPlot3DLegend {
         PreviousFlags = Flags = ImPlot3DLegendFlags_None;
         Hovered = Held = false;
         PreviousLocation = Location = ImPlot3DLocation_NorthWest;
+        Scroll = ImVec2(0, 0);
     }
 
     void Reset() {
@@ -364,12 +379,14 @@ struct ImPlot3DLegend {
 
 // Holds items
 struct ImPlot3DItemGroup {
+    ImGuiID ID;
     ImPool<ImPlot3DItem> ItemPool;
     ImPlot3DLegend Legend;
     int ColormapIdx;
     ImPlot3DMarker MarkerIdx;
 
     ImPlot3DItemGroup() {
+        ID = 0;
         ColormapIdx = 0;
         MarkerIdx = 0;
     }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2024-2026 Breno Cunha Queiroz
 
-// ImPlot3D v0.4
+// ImPlot3D v0.5
 
 // Acknowledgments:
 //  ImPlot3D is heavily inspired by ImPlot
@@ -350,6 +350,28 @@ ImVec2 CalcLegendSize(ImPlot3DItemGroup& items, const ImVec2& pad, const ImVec2&
     return legend_size;
 }
 
+bool ClampLegendRect(ImRect& legend_rect, const ImRect& outer_rect, const ImVec2& pad) {
+    bool clamped = false;
+    ImRect outer_rect_pad(outer_rect.Min + pad, outer_rect.Max - pad);
+    if (legend_rect.Min.x < outer_rect_pad.Min.x) {
+        legend_rect.Min.x = outer_rect_pad.Min.x;
+        clamped = true;
+    }
+    if (legend_rect.Min.y < outer_rect_pad.Min.y) {
+        legend_rect.Min.y = outer_rect_pad.Min.y;
+        clamped = true;
+    }
+    if (legend_rect.Max.x > outer_rect_pad.Max.x) {
+        legend_rect.Max.x = outer_rect_pad.Max.x;
+        clamped = true;
+    }
+    if (legend_rect.Max.y > outer_rect_pad.Max.y) {
+        legend_rect.Max.y = outer_rect_pad.Max.y;
+        clamped = true;
+    }
+    return clamped;
+}
+
 void ShowLegendEntries(ImPlot3DItemGroup& items, const ImRect& legend_bb, const ImVec2& pad, const ImVec2& spacing, bool vertical,
                        ImDrawList& draw_list) {
     const float txt_ht = ImGui::GetTextLineHeight();
@@ -434,18 +456,54 @@ void RenderLegend() {
     const ImVec2 legend_size = CalcLegendSize(plot.Items, gp.Style.LegendInnerPadding, gp.Style.LegendSpacing, !legend_horz);
     const ImVec2 legend_pos = GetLocationPos(plot.PlotRect, legend_size, legend.Location, gp.Style.LegendPadding);
     legend.Rect = ImRect(legend_pos, legend_pos + legend_size);
+    legend.RectClamped = legend.Rect;
+    const bool legend_scrollable = ClampLegendRect(legend.RectClamped, plot.PlotRect, gp.Style.LegendPadding);
 
-    // Test hover
-    legend.Hovered = legend.Rect.Contains(IO.MousePos);
+    // Test hover (using the clamped rect so off-screen overflow does not register)
+    // clang-format off
+    const ImGuiButtonFlags legend_button_flags = (ImGuiButtonFlags)ImGuiButtonFlags_AllowOverlap
+                                               | ImGuiButtonFlags_PressedOnClick
+                                               | ImGuiButtonFlags_PressedOnDoubleClick
+                                               | ImGuiButtonFlags_MouseButtonLeft
+                                               | ImGuiButtonFlags_MouseButtonRight
+                                               | ImGuiButtonFlags_MouseButtonMiddle
+                                               | ImGuiButtonFlags_FlattenChildren;
+    // clang-format on
+    ImGui::KeepAliveID(plot.Items.ID);
+    ImGui::ButtonBehavior(legend.RectClamped, plot.Items.ID, &legend.Hovered, &legend.Held, legend_button_flags);
+    legend.Hovered = legend.Hovered || legend.RectClamped.Contains(IO.MousePos);
 
-    // Render background
+    // Handle legend scrolling
+    if (legend_scrollable) {
+        if (legend.Hovered) {
+            ImGui::SetKeyOwner(ImGuiKey_MouseWheelY, plot.Items.ID);
+            if (IO.MouseWheel != 0.0f) {
+                ImVec2 max_step = legend.Rect.GetSize() * 0.67f;
+                float font_size = ImGui::GetFontSize();
+                float scroll_step = ImFloor(ImMin(2 * font_size, max_step.x));
+                legend.Scroll.x += scroll_step * IO.MouseWheel;
+                legend.Scroll.y += scroll_step * IO.MouseWheel;
+            }
+        }
+        const ImVec2 min_scroll_offset = legend.RectClamped.GetSize() - legend.Rect.GetSize();
+        legend.Scroll.x = ImClamp(legend.Scroll.x, min_scroll_offset.x, 0.0f);
+        legend.Scroll.y = ImClamp(legend.Scroll.y, min_scroll_offset.y, 0.0f);
+        const ImVec2 scroll_offset = legend_horz ? ImVec2(legend.Scroll.x, 0) : ImVec2(0, legend.Scroll.y);
+        ImVec2 legend_offset = legend.RectClamped.Min - legend.Rect.Min + scroll_offset;
+        legend.Rect.Min += legend_offset;
+        legend.Rect.Max += legend_offset;
+    } else {
+        legend.Scroll = ImVec2(0, 0);
+    }
+
+    // Render background and entries (clipped to the clamped rect to hide scrolled-off overflow)
     ImU32 col_bg = GetStyleColorU32(ImPlot3DCol_LegendBg);
     ImU32 col_bd = GetStyleColorU32(ImPlot3DCol_LegendBorder);
-    draw_list->AddRectFilled(legend.Rect.Min, legend.Rect.Max, col_bg);
-    draw_list->AddRect(legend.Rect.Min, legend.Rect.Max, col_bd);
-
-    // Render legends
+    ImGui::PushClipRect(legend.RectClamped.Min, legend.RectClamped.Max, true);
+    draw_list->AddRectFilled(legend.RectClamped.Min, legend.RectClamped.Max, col_bg);
     ShowLegendEntries(plot.Items, legend.Rect, gp.Style.LegendInnerPadding, gp.Style.LegendSpacing, !legend_horz, *draw_list);
+    draw_list->AddRect(legend.RectClamped.Min, legend.RectClamped.Max, col_bd);
+    ImGui::PopClipRect();
 }
 
 //-----------------------------------------------------------------------------
@@ -1389,7 +1447,12 @@ void Locator_Default(ImPlot3DTicker& ticker, const ImPlot3DRange& range, float p
     const int nMajor = ImMax(2, (int)IM_ROUND(pixels / 80.0f));
     const int max_ticks_labels = 7;
     const double nice_range = NiceNum(range.Size() * 0.99, false);
-    const double interval = NiceNum(nice_range / (nMajor - 1), true);
+    double interval = NiceNum(nice_range / (nMajor - 1), true);
+    // Keep interval >= one ULP so `major += interval` always advances (e.g. range from SetupAxisLimits(v, v))
+    const double magnitude = ImMax(ImAbs(range.Min), ImAbs(range.Max));
+    const double min_interval = nextafter(magnitude, HUGE_VAL) - magnitude;
+    if (interval < min_interval)
+        interval = min_interval;
     const double graphmin = floor(range.Min / interval) * interval;
     const double graphmax = ceil(range.Max / interval) * interval;
     bool first_major_set = false;
@@ -1705,6 +1768,7 @@ bool BeginPlot(const char* title_id, const ImVec2& size, ImPlot3DFlags flags) {
 
     // Populate plot
     plot.ID = ID;
+    plot.Items.ID = ID - 1;
     plot.JustCreated = just_created;
     if (just_created) {
         plot.Rotation = plot.InitialRotation;
@@ -1750,8 +1814,8 @@ bool BeginPlot(const char* title_id, const ImVec2& size, ImPlot3DFlags flags) {
 
     // Push frame rect clipping
     ImGui::PushClipRect(plot.FrameRect.Min, plot.FrameRect.Max, true);
-    plot.DrawList._Flags = window->DrawList->Flags;
     plot.DrawList._SharedData = ImGui::GetDrawListSharedData();
+    plot.DrawList._ParentDrawList = window->DrawList;
 
     return true;
 }
@@ -1939,6 +2003,7 @@ void SetupAxisTicks(ImAxis3D idx, double v_min, double v_max, int n_ticks, const
     ImPlot3DContext& gp = *GImPlot3D;
     IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr && !gp.CurrentPlot->SetupLocked,
                          "Setup needs to be called after BeginPlot and before any setup locking functions (e.g. PlotX)!");
+    IM_ASSERT_USER_ERROR(labels == nullptr || n_ticks >= 2, "When providing custom labels, n_ticks must be at least 2!");
     n_ticks = n_ticks < 2 ? 2 : n_ticks;
     ImVector<double> temp;
     FillRange(temp, n_ticks, v_min, v_max);
@@ -2321,7 +2386,7 @@ void HandleInput(ImPlot3DPlot& plot) {
     ImGuiIO& IO = ImGui::GetIO();
 
     // clang-format off
-    const ImGuiButtonFlags plot_button_flags = ImGuiButtonFlags_AllowOverlap
+    const ImGuiButtonFlags plot_button_flags = (ImGuiButtonFlags)ImGuiButtonFlags_AllowOverlap
                                              | ImGuiButtonFlags_PressedOnClick
                                              | ImGuiButtonFlags_PressedOnDoubleClick
                                              | ImGuiButtonFlags_MouseButtonLeft
@@ -4224,8 +4289,10 @@ void ImPlot3D::ShowMetricsWindow(bool* p_popen) {
                 }
             }
         }
-        if (show_legend_rects && plot.Items.GetLegendCount() > 0)
+        if (show_legend_rects && plot.Items.GetLegendCount() > 0) {
             fg.AddRect(plot.Items.Legend.Rect.Min, plot.Items.Legend.Rect.Max, IM_COL32(255, 192, 0, 255));
+            fg.AddRect(plot.Items.Legend.RectClamped.Min, plot.Items.Legend.RectClamped.Max, IM_COL32(255, 128, 0, 255));
+        }
     }
     if (ImGui::TreeNode("Plots", "Plots (%d)", n_plots)) {
         for (int p = 0; p < n_plots; ++p) {
