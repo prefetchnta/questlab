@@ -107,7 +107,17 @@ th {
 	<p>A lexer may be written as a script in the Lua language instead of in C++.
 	This is a little simpler and allows lexers to be developed without using a C++ compiler.</p>
 	<p>A script lexer is attached by setting the file lexer to be a name that starts with "script_".
-	Styles and other properties can then be assigned using this name. For example,</p>
+	Styles and other properties can then be assigned using this name.</p>
+	<p>To use a script lexer:</p>
+	<ol>
+	<li>Add your <code>OnStyle</code> function to the Lua startup script
+	(default: <code>$(SciteUserHome)/SciTEStartup.lua</code>, configured by
+	<code>ext.lua.startup.script</code> in SciTEGlobal.properties)</li>
+	<li>Create a <code>*.properties</code> file with the lexer assignment and styles</li>
+	</ol>
+	<p>See <a href="SciTEDoc.html#property-ext.lua.startup.script">ext.lua.startup.script</a>
+	for details on the startup script.</p>
+	<p>For example,</p>
 	<div class="example">
 	lexer.*.zog=script_zog<br/>
 style.script_zog.0=fore:#7f007f,bold<br/>

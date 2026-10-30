@@ -861,6 +861,12 @@ NameError: name 'mistake' is not defined
       These prefixes are discussed in the <a href="#DefinedVariables">"Defined variables"</a> section.
       </p>
       <p>
+      The "escape" function quotes characters that have special roles in Unix shells with \, so a file called
+      <span class="example">bad`name.py</span> will be run successfully as
+      <span class="example">python3 bad\`name.py</span> if the run command is specified as
+      <span class="example">command.go.*.py=python3 $(escape FileNameExt)</span>.
+      </p>
+      <p>
       Colours are defined like HTML with '#' followed by 6 or 8 hexadecimal digits #RRGGBB or #RRGGBBAA
       defining the red, green, blue, and alpha values of the colour.
       Alpha is the degree of translucency with 00 completely transparent and FF completely opaque.
@@ -1277,6 +1283,17 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
           displayed in the selection margin area.
         </td>
       </tr>
+      <tr id='property-margin.cursor'>
+        <td>
+          margin.cursor
+        </td>
+        <td>
+          This property sets the mouse pointer used over the margins.
+          The supported values are 7 for a reverse arrow which is the default and 2 for a standard arrow.
+          Other values may be provided by the Scintilla CursorType enumeration but are platform dependent.
+          On GTK, setting to 2 may eliminate warning messages in console that look similar to "Unable to load right_ptr".
+        </td>
+      </tr>
       <tr class="windowsonly" id='property-full.screen.hides.menu'>
         <td>
           full.screen.hides.menu
@@ -1293,6 +1310,14 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         </td>
         <td>
         Setting this to 1 minimizes SciTE to the system tray rather than to the task bar.
+        </td>
+      </tr>
+      <tr class="windowsonly" id='property-icon.busy'>
+        <td>
+          icon.busy
+        </td>
+        <td>
+        Setting this to 1 changes the SciTE taskbar icon while a command is executing.
         </td>
       </tr>
       <tr id='property-line.margin.visible'>
@@ -2712,6 +2737,10 @@ representations=π=Pi,\u20AA=shekel(\u20AA),!0,#FF000090,\x0D\x0A=crlf</div>
         <td>lexer.cpp.backquoted.strings</td>
         <td>Set how to highlighting back-quoted strings. 0 (the default) no highlighting. 1 highlighted as Go raw string. 2 highlighted as JavaScript template literal.</td>
         </tr>
+        <tr id='property-lexer.cpp.continuation.only.in.strings'>
+        <td>lexer.cpp.continuation.only.in.strings</td>
+        <td>Set to 1 to only handle line continuation inside string literals</td>
+        </tr>
         <tr id='property-lexer.cpp.enable.preprocessor'>
         <td>lexer.cpp.enable.preprocessor</td>
         <td>Set to 0 to disable recognition of preprocessor directives.</td>
@@ -3918,6 +3947,7 @@ imports.include=fortran lisp
       </tr>
       <tr id='property-lexer'>
         <td>
+          <a name='property-allow.script.lexer'>
           lexer.<i>filepattern</i><br />
           allow.script.lexer
         </td>
@@ -4378,6 +4408,28 @@ groupundo - yes or no<br />
         <td>
         Defines a command to be executed for help on the SciTE program itself which normally
         means displaying this file in a browser.
+        </td>
+      </tr>
+      <tr id='property-unsafe.path.characters'>
+        <td>
+        unsafe.path.characters
+        </td>
+        <td>
+          Commands are executed by a shell like bash or cmd that interprets various characters in special ways.
+          Spaces separate parameters so a file name like "My Code.c" may be interpreted as two files when passed to a build command.
+          To prevent most problems, use quotes around file name variables when specifying commands.
+         <div class="example">
+         Prefer<br />
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command.compile.*.c=gcc -c "$(FileNameExt)"<br />
+         over<br />
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command.compile.*.c=gcc -c $(FileNameExt)
+         </div>
+          Characters that may be interpreted as running another command like <span class="example">`</span> in bash may cause further problems.
+          Commands will not run when unsafe characters are present in the path of the current file.
+          The set of unsafe characters is defined by the unsafe.path.characters property which
+          defaults to <span class="example">`$\"</span> on Unix and is empty on Windows.
+          It may be redefined to match the project conventions or set empty to allow unusual file names.<br />
+          This property may only be set in user or global properties.
         </td>
       </tr>
       <tr id='property-time.commands'>
@@ -4961,7 +5013,7 @@ groupundo - yes or no<br />
       </tr>
       <tr id='property-ext.lua.startup.script'>
         <td>
-          <a name='property-ext.lua.auto.reload'></a><a name='property-ext.lua.reset'></a><a name='property-extension'></a>
+          <a name='property-ext.lua.auto.reload'></a><a name='property-ext.lua.reset'></a><a name='property-extension'></a><a name='property-allow.local.script'></a>
           ext.lua.startup.script<br />
           ext.lua.auto.reload<br />
           ext.lua.reset<br />
