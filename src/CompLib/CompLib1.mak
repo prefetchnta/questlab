@@ -15,7 +15,11 @@ OBJ_LIST=.$(L)CompLib.$(O) \
          .$(L)brotli$(L)libbrotlidec.a \
          .$(L)brotli$(L)libbrotlienc.a \
          .$(L)comp_lz4.$(O) \
-         .$(L)lz4$(L)liblz4_static.lib \
+         .$(L)lz4.$(O) \
+         .$(L)lz4file.$(O) \
+         .$(L)lz4frame.$(O) \
+         .$(L)lz4hc.$(O) \
+         .$(L)xxhash.$(O) \
          .$(L)comp_qlz.$(O) \
          .$(L)comp_qlz1.$(O) \
          .$(L)comp_qlz2.$(O) \
@@ -57,6 +61,11 @@ SRC_LIST=.$(L)CompLib.$(P) \
          /Tp .$(L)brieflz$(L)blz_depacks.$(C) \
          .$(L)comp_brotli.$(C) \
          .$(L)comp_lz4.$(C) \
+         .$(L)lz4$(L)lz4.$(C) \
+         .$(L)lz4$(L)lz4file.$(C) \
+         .$(L)lz4$(L)lz4frame.$(C) \
+         .$(L)lz4$(L)lz4hc.$(C) \
+         .$(L)lz4$(L)xxhash.$(C) \
          .$(L)comp_qlz.$(C) \
          .$(L)comp_qlz1.$(C) \
          .$(L)comp_qlz2.$(C) \
