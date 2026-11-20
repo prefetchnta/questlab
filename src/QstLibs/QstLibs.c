@@ -1330,15 +1330,20 @@ misc_is_terminal (void_t)
         goto _default2;
     if (type != REG_SZ || size != sizeof(data))
         goto _default2;
+    mem_zero(data, sizeof(data));
     if (RegQueryValueExA(hkey, "DelegationConsole", NULL, &type,
                          data, &size) != ERROR_SUCCESS)
         goto _default2;
     if (mem_cmp(data, "{B23D10C0-E52E-411E-9D5B-C09FDF709C7D}",
-                            sizeof(data)) != 0)
-        goto _default2;
-    RegCloseKey(hkey);
-    return (FALSE);
-
+                            sizeof(data)) == 0) {
+        RegCloseKey(hkey);
+        return (FALSE);
+    }
+    if (mem_cmp(data, "{2EACA947-7F5F-4CFA-BA87-8F7FBEEFBE69}",
+                            sizeof(data)) == 0) {
+        RegCloseKey(hkey);
+        return (TRUE);
+    }
 _default2:
     RegCloseKey(hkey);
 _default1:
