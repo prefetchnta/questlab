@@ -888,7 +888,7 @@ OPENCV_HAL_IMPL_AVX512_CMP_OP_INT(v_int64x8,   epi64, epi64, (int64)-1)
 
 #define OPENCV_HAL_IMPL_AVX512_CMP_OP_FLT(_Tpvec, sufcmp, sufset, tval)           \
     OPENCV_HAL_IMPL_AVX512_CMP_FLT(v_eq, _CMP_EQ_OQ,  _Tpvec, sufcmp, sufset, tval)  \
-    OPENCV_HAL_IMPL_AVX512_CMP_FLT(v_ne, _CMP_NEQ_OQ, _Tpvec, sufcmp, sufset, tval)  \
+    OPENCV_HAL_IMPL_AVX512_CMP_FLT(v_ne, _CMP_NEQ_UQ, _Tpvec, sufcmp, sufset, tval)  \
     OPENCV_HAL_IMPL_AVX512_CMP_FLT(v_lt,  _CMP_LT_OQ,  _Tpvec, sufcmp, sufset, tval) \
     OPENCV_HAL_IMPL_AVX512_CMP_FLT(v_gt,  _CMP_GT_OQ,  _Tpvec, sufcmp, sufset, tval) \
     OPENCV_HAL_IMPL_AVX512_CMP_FLT(v_le, _CMP_LE_OQ,  _Tpvec, sufcmp, sufset, tval)  \
@@ -1098,19 +1098,19 @@ OPENCV_HAL_IMPL_AVX512_ROTATE_EC(v_float64x8,  pd)
 inline v_uint8x64 v_reverse(const v_uint8x64 &a)
 {
 #if CV_AVX_512VBMI
-    static const __m512i perm = _mm512_set_epi32(
+    const __m512i perm = _mm512_set_epi32(
             0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f,
             0x10111213, 0x14151617, 0x18191a1b, 0x1c1d1e1f,
             0x20212223, 0x24252627, 0x28292a2b, 0x2c2d2e2f,
             0x30313233, 0x34353637, 0x38393a3b, 0x3c3d3e3f);
     return v_uint8x64(_mm512_permutexvar_epi8(perm, a.val));
 #else
-    static const __m512i shuf = _mm512_set_epi32(
+    const __m512i shuf = _mm512_set_epi32(
             0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f,
             0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f,
             0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f,
             0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f);
-    static const __m512i perm = _mm512_set_epi64(1, 0, 3, 2, 5, 4, 7, 6);
+    const __m512i perm = _mm512_set_epi64(1, 0, 3, 2, 5, 4, 7, 6);
     __m512i vec = _mm512_shuffle_epi8(a.val, shuf);
     return v_uint8x64(_mm512_permutexvar_epi64(perm, vec));
 #endif
@@ -1122,19 +1122,19 @@ inline v_int8x64 v_reverse(const v_int8x64 &a)
 inline v_uint16x32 v_reverse(const v_uint16x32 &a)
 {
 #if CV_AVX_512VBMI
-    static const __m512i perm = _mm512_set_epi32(
+    const __m512i perm = _mm512_set_epi32(
             0x00000001, 0x00020003, 0x00040005, 0x00060007,
             0x00080009, 0x000a000b, 0x000c000d, 0x000e000f,
             0x00100011, 0x00120013, 0x00140015, 0x00160017,
             0x00180019, 0x001a001b, 0x001c001d, 0x001e001f);
     return v_uint16x32(_mm512_permutexvar_epi16(perm, a.val));
 #else
-    static const __m512i shuf = _mm512_set_epi32(
+    const __m512i shuf = _mm512_set_epi32(
             0x01000302, 0x05040706, 0x09080b0a, 0x0d0c0f0e,
             0x01000302, 0x05040706, 0x09080b0a, 0x0d0c0f0e,
             0x01000302, 0x05040706, 0x09080b0a, 0x0d0c0f0e,
             0x01000302, 0x05040706, 0x09080b0a, 0x0d0c0f0e);
-    static const __m512i perm = _mm512_set_epi64(1, 0, 3, 2, 5, 4, 7, 6);
+    const __m512i perm = _mm512_set_epi64(1, 0, 3, 2, 5, 4, 7, 6);
     __m512i vec = _mm512_shuffle_epi8(a.val, shuf);
     return v_uint16x32(_mm512_permutexvar_epi64(perm, vec));
 #endif
@@ -1145,7 +1145,7 @@ inline v_int16x32 v_reverse(const v_int16x32 &a)
 
 inline v_uint32x16 v_reverse(const v_uint32x16 &a)
 {
-    static const __m512i perm = _mm512_set_epi32(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,14, 15);
+    const __m512i perm = _mm512_set_epi32(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,14, 15);
     return v_uint32x16(_mm512_permutexvar_epi32(perm, a.val));
 }
 
@@ -1157,7 +1157,7 @@ inline v_float32x16 v_reverse(const v_float32x16 &a)
 
 inline v_uint64x8 v_reverse(const v_uint64x8 &a)
 {
-    static const __m512i perm = _mm512_set_epi64(0, 1, 2, 3, 4, 5, 6, 7);
+    const __m512i perm = _mm512_set_epi64(0, 1, 2, 3, 4, 5, 6, 7);
     return v_uint64x8(_mm512_permutexvar_epi64(perm, a.val));
 }
 
@@ -1464,12 +1464,7 @@ inline v_float32x16 v_abs(const v_float32x16& x)
 inline v_float64x8 v_abs(const v_float64x8& x)
 {
 #ifdef _mm512_abs_pd
-    #if defined __GNUC__ && (__GNUC__ < 7 || (__GNUC__ == 7 && __GNUC_MINOR__ <= 3) || (__GNUC__ == 8 && __GNUC_MINOR__ <= 2))
-        // Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87476
-        return v_float64x8(_mm512_abs_pd(_mm512_castpd_ps(x.val)));
-    #else
-        return v_float64x8(_mm512_abs_pd(x.val));
-    #endif
+    return v_float64x8(_mm512_abs_pd(x.val));
 #else
     return v_float64x8(_mm512_castsi512_pd(_mm512_and_si512(_mm512_castpd_si512(x.val),
                        _v512_set_epu64(0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF,
@@ -1521,45 +1516,53 @@ inline v_int16x32 v_absdiffs(const v_int16x32& a, const v_int16x32& b)
 ////////// Conversions /////////
 
 /** Rounding **/
+
+// vcvtps2dq/vcvtpd2dq and the truncating variants return INT_MIN ("integer indefinite") for any
+// out-of-range input, so the input is clamped from above to make the conversion saturate instead;
+// the indefinite value already is the correct saturated result for inputs below INT_MIN.
+// See cvRound()/cvFloor()/cvCeil()/cvTrunc() for the scalar counterparts and the exact bounds.
 inline v_int32x16 v_round(const v_float32x16& a)
-{ return v_int32x16(_mm512_cvtps_epi32(a.val)); }
+{ return v_int32x16(_mm512_cvtps_epi32(_mm512_min_ps(a.val, _mm512_set1_ps(CV__FLT2INT_MAX_F)))); }
 
 inline v_int32x16 v_round(const v_float64x8& a)
-{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvtpd_epi32(a.val))); }
+{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvtpd_epi32(_mm512_min_pd(a.val, _mm512_set1_pd(CV__FLT2INT_MAX_D))))); }
 
 inline v_int32x16 v_round(const v_float64x8& a, const v_float64x8& b)
-{ return v_int32x16(_v512_combine(_mm512_cvtpd_epi32(a.val), _mm512_cvtpd_epi32(b.val))); }
+{
+    __m512d hi = _mm512_set1_pd(CV__FLT2INT_MAX_D);
+    return v_int32x16(_v512_combine(_mm512_cvtpd_epi32(_mm512_min_pd(a.val, hi)), _mm512_cvtpd_epi32(_mm512_min_pd(b.val, hi))));
+}
 
 inline v_int32x16 v_trunc(const v_float32x16& a)
-{ return v_int32x16(_mm512_cvttps_epi32(a.val)); }
+{ return v_int32x16(_mm512_cvttps_epi32(_mm512_min_ps(a.val, _mm512_set1_ps(CV__FLT2INT_MAX_F)))); }
 
 inline v_int32x16 v_trunc(const v_float64x8& a)
-{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvttpd_epi32(a.val))); }
+{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvttpd_epi32(_mm512_min_pd(a.val, _mm512_set1_pd(CV__FLT2INT_MAX_D))))); }
 
 #if CVT_ROUND_MODES_IMPLEMENTED
 inline v_int32x16 v_floor(const v_float32x16& a)
-{ return v_int32x16(_mm512_cvt_roundps_epi32(a.val, _MM_FROUND_TO_NEG_INF | _MM_FROUND_NO_EXC)); }
+{ return v_int32x16(_mm512_cvt_roundps_epi32(_mm512_min_ps(a.val, _mm512_set1_ps(CV__FLT2INT_MAX_F)), _MM_FROUND_TO_NEG_INF | _MM_FROUND_NO_EXC)); }
 
 inline v_int32x16 v_floor(const v_float64x8& a)
-{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvt_roundpd_epi32(a.val, _MM_FROUND_TO_NEG_INF | _MM_FROUND_NO_EXC))); }
+{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvt_roundpd_epi32(_mm512_min_pd(a.val, _mm512_set1_pd(CV__FLT2INT_MAX_D)), _MM_FROUND_TO_NEG_INF | _MM_FROUND_NO_EXC))); }
 
 inline v_int32x16 v_ceil(const v_float32x16& a)
-{ return v_int32x16(_mm512_cvt_roundps_epi32(a.val, _MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC)); }
+{ return v_int32x16(_mm512_cvt_roundps_epi32(_mm512_min_ps(a.val, _mm512_set1_ps(CV__FLT2INT_MAX_F)), _MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC)); }
 
 inline v_int32x16 v_ceil(const v_float64x8& a)
-{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvt_roundpd_epi32(a.val, _MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC))); }
+{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvt_roundpd_epi32(_mm512_min_pd(a.val, _mm512_set1_pd(CV__FLT2INT_MAX_D)), _MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC))); }
 #else
 inline v_int32x16 v_floor(const v_float32x16& a)
-{ return v_int32x16(_mm512_cvtps_epi32(_mm512_roundscale_ps(a.val, 1))); }
+{ return v_trunc(v_float32x16(_mm512_roundscale_ps(a.val, 1))); }
 
 inline v_int32x16 v_floor(const v_float64x8& a)
-{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvtpd_epi32(_mm512_roundscale_pd(a.val, 1)))); }
+{ return v_trunc(v_float64x8(_mm512_roundscale_pd(a.val, 1))); }
 
 inline v_int32x16 v_ceil(const v_float32x16& a)
-{ return v_int32x16(_mm512_cvtps_epi32(_mm512_roundscale_ps(a.val, 2))); }
+{ return v_trunc(v_float32x16(_mm512_roundscale_ps(a.val, 2))); }
 
 inline v_int32x16 v_ceil(const v_float64x8& a)
-{ return v_int32x16(_mm512_castsi256_si512(_mm512_cvtpd_epi32(_mm512_roundscale_pd(a.val, 2)))); }
+{ return v_trunc(v_float64x8(_mm512_roundscale_pd(a.val, 2))); }
 #endif
 
 /** To float **/
@@ -1633,6 +1636,122 @@ inline v_int8x64 v512_lut_quads(const schar* tab, const int* idx)
 inline v_uint8x64 v512_lut(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v512_lut((const schar *)tab, idx)); }
 inline v_uint8x64 v512_lut_pairs(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v512_lut_pairs((const schar *)tab, idx)); }
 inline v_uint8x64 v512_lut_quads(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v512_lut_quads((const schar *)tab, idx)); }
+
+// Byte-indexed LUT: takes v_uint8x64 byte indices instead of int* indices
+// Table must have at least 256 entries (byte indices cover 0-255)
+// VBMI path uses vpermb (register-to-register), fallback uses gather
+inline v_uint8x64 v512_lut(const uchar* tab, const v_uint8x64& idx)
+{
+#if CV_AVX_512VBMI
+    const __m512i lut0 = _mm512_loadu_si512(tab);
+    const __m512i lut1 = _mm512_loadu_si512(tab + 64);
+    const __m512i lut2 = _mm512_loadu_si512(tab + 128);
+    const __m512i lut3 = _mm512_loadu_si512(tab + 192);
+
+    __m512i idx6 = _mm512_and_si512(idx.val, _mm512_set1_epi8(0x3F));
+
+    __m512i r0 = _mm512_permutexvar_epi8(idx6, lut0);
+    __m512i r1 = _mm512_permutexvar_epi8(idx6, lut1);
+    __m512i r2 = _mm512_permutexvar_epi8(idx6, lut2);
+    __m512i r3 = _mm512_permutexvar_epi8(idx6, lut3);
+
+    __mmask64 k6 = _mm512_test_epi8_mask(idx.val, _mm512_set1_epi8(0x40));
+    __mmask64 k7 = _mm512_test_epi8_mask(idx.val, _mm512_set1_epi8((char)0x80));
+
+    __m512i low  = _mm512_mask_blend_epi8(k6, r0, r1);
+    __m512i high = _mm512_mask_blend_epi8(k6, r2, r3);
+    return v_uint8x64(_mm512_mask_blend_epi8(k7, low, high));
+#else
+    uchar CV_DECL_ALIGNED(64) indices[64], result[64];
+    _mm512_store_si512((__m512i*)indices, idx.val);
+    for (int i = 0; i < 64; i++) result[i] = tab[indices[i]];
+    return v_uint8x64(_mm512_load_si512((const __m512i*)result));
+#endif
+}
+inline v_int8x64 v512_lut(const schar* tab, const v_uint8x64& idx)
+{ return v_reinterpret_as_s8(v512_lut((const uchar *)tab, idx)); }
+
+// Universal v_lut overloads for vector byte indices (aliases to v512_lut)
+inline v_uint8x64 v_lut(const uchar* tab, const v_uint8x64& idx)
+{ return v512_lut(tab, idx); }
+
+inline v_int8x64 v_lut(const schar* tab, const v_uint8x64& idx)
+{ return v512_lut(tab, idx); }
+
+// Byte-indexed pair LUT: 32 byte indices (lower half of idx) → 32 pairs = 64 bytes
+inline v_uint8x64 v512_lut_pairs(const uchar* tab, const v_uint8x64& idx)
+{
+#if CV_AVX_512VBMI
+    const __m512i lut0 = _mm512_loadu_si512(tab);
+    const __m512i lut1 = _mm512_loadu_si512(tab + 64);
+    const __m512i lut2 = _mm512_loadu_si512(tab + 128);
+    const __m512i lut3 = _mm512_loadu_si512(tab + 192);
+
+    // Expand 32 byte indices to interleaved pairs: (i0, i0+1, i1, i1+1, ...)
+    __m512i idx16 = _mm512_cvtepu8_epi16(_mm512_castsi512_si256(idx.val));
+    __m512i idx_dup = _mm512_or_si512(idx16, _mm512_slli_epi16(idx16, 8));
+    __m512i idx_pairs = _mm512_add_epi8(idx_dup, _mm512_set1_epi16(0x0100));
+
+    __m512i idx6 = _mm512_and_si512(idx_pairs, _mm512_set1_epi8(0x3F));
+
+    __m512i r0 = _mm512_permutexvar_epi8(idx6, lut0);
+    __m512i r1 = _mm512_permutexvar_epi8(idx6, lut1);
+    __m512i r2 = _mm512_permutexvar_epi8(idx6, lut2);
+    __m512i r3 = _mm512_permutexvar_epi8(idx6, lut3);
+
+    __mmask64 k6 = _mm512_test_epi8_mask(idx_pairs, _mm512_set1_epi8(0x40));
+    __mmask64 k7 = _mm512_test_epi8_mask(idx_pairs, _mm512_set1_epi8((char)0x80));
+
+    __m512i low  = _mm512_mask_blend_epi8(k6, r0, r1);
+    __m512i high = _mm512_mask_blend_epi8(k6, r2, r3);
+    return v_uint8x64(_mm512_mask_blend_epi8(k7, low, high));
+#else
+    uchar CV_DECL_ALIGNED(64) indices[64], result[64];
+    _mm512_store_si512((__m512i*)indices, idx.val);
+    for (int i = 0; i < 64; i++) result[i] = tab[indices[i]];
+    return v_uint8x64(_mm512_load_si512((const __m512i*)result));
+#endif
+}
+inline v_int8x64 v512_lut_pairs(const schar* tab, const v_uint8x64& idx)
+{ return v_reinterpret_as_s8(v512_lut_pairs((const uchar *)tab, idx)); }
+
+// Byte-indexed quad LUT: 16 byte indices (lower 16 of idx) → 16 quads = 64 bytes
+inline v_uint8x64 v512_lut_quads(const uchar* tab, const v_uint8x64& idx)
+{
+#if CV_AVX_512VBMI
+    const __m512i lut0 = _mm512_loadu_si512(tab);
+    const __m512i lut1 = _mm512_loadu_si512(tab + 64);
+    const __m512i lut2 = _mm512_loadu_si512(tab + 128);
+    const __m512i lut3 = _mm512_loadu_si512(tab + 192);
+
+    // Expand 16 byte indices to quad offsets: (i0, i0+1, i0+2, i0+3, i1, ...)
+    __m512i idx32 = _mm512_cvtepu8_epi32(_mm512_castsi512_si128(idx.val));
+    __m512i t1 = _mm512_or_si512(idx32, _mm512_slli_epi32(idx32, 8));
+    __m512i idx_bcast = _mm512_or_si512(t1, _mm512_slli_epi32(t1, 16));
+    __m512i idx_quads = _mm512_add_epi8(idx_bcast, _mm512_set1_epi32(0x03020100));
+
+    __m512i idx6 = _mm512_and_si512(idx_quads, _mm512_set1_epi8(0x3F));
+
+    __m512i r0 = _mm512_permutexvar_epi8(idx6, lut0);
+    __m512i r1 = _mm512_permutexvar_epi8(idx6, lut1);
+    __m512i r2 = _mm512_permutexvar_epi8(idx6, lut2);
+    __m512i r3 = _mm512_permutexvar_epi8(idx6, lut3);
+
+    __mmask64 k6 = _mm512_test_epi8_mask(idx_quads, _mm512_set1_epi8(0x40));
+    __mmask64 k7 = _mm512_test_epi8_mask(idx_quads, _mm512_set1_epi8((char)0x80));
+
+    __m512i low  = _mm512_mask_blend_epi8(k6, r0, r1);
+    __m512i high = _mm512_mask_blend_epi8(k6, r2, r3);
+    return v_uint8x64(_mm512_mask_blend_epi8(k7, low, high));
+#else
+    uchar CV_DECL_ALIGNED(64) indices[64], result[64];
+    _mm512_store_si512((__m512i*)indices, idx.val);
+    for (int i = 0; i < 64; i++) result[i] = tab[indices[i]];
+    return v_uint8x64(_mm512_load_si512((const __m512i*)result));
+#endif
+}
+inline v_int8x64 v512_lut_quads(const schar* tab, const v_uint8x64& idx)
+{ return v_reinterpret_as_s8(v512_lut_quads((const uchar *)tab, idx)); }
 
 inline v_int16x32 v512_lut(const short* tab, const int* idx)
 {
@@ -2177,17 +2296,30 @@ void v_rshr_pack_store(short* ptr, const v_int32x16& a)
 
 // 64
 // Non-saturating pack
-inline v_uint32x16 v_pack(const v_uint64x8& a, const v_uint64x8& b)
-{ return v_uint32x16(_v512_combine(_mm512_cvtepi64_epi32(a.val), _mm512_cvtepi64_epi32(b.val))); }
-
+// AVX-512 narrows with saturation natively: vpmovsqd / vpmovusqd.
 inline v_int32x16 v_pack(const v_int64x8& a, const v_int64x8& b)
-{ return v_reinterpret_as_s32(v_pack(v_reinterpret_as_u64(a), v_reinterpret_as_u64(b))); }
+{ return v_int32x16(_v512_combine(_mm512_cvtsepi64_epi32(a.val), _mm512_cvtsepi64_epi32(b.val))); }
+
+inline v_uint32x16 v_pack(const v_uint64x8& a, const v_uint64x8& b)
+{ return v_uint32x16(_v512_combine(_mm512_cvtusepi64_epi32(a.val), _mm512_cvtusepi64_epi32(b.val))); }
+
+// s64 -> u32: clamp the negatives to zero first, then narrow as unsigned
+inline v_uint32x16 v_pack_u(const v_int64x8& a, const v_int64x8& b)
+{
+    __m512i zero = _mm512_setzero_si512();
+    __m256i lo = _mm512_cvtusepi64_epi32(_mm512_max_epi64(a.val, zero));
+    __m256i hi = _mm512_cvtusepi64_epi32(_mm512_max_epi64(b.val, zero));
+    return v_uint32x16(_v512_combine(lo, hi));
+}
+
+inline void v_pack_store(int* ptr, const v_int64x8& a)
+{ _mm256_storeu_si256((__m256i*)ptr, _mm512_cvtsepi64_epi32(a.val)); }
 
 inline void v_pack_store(unsigned* ptr, const v_uint64x8& a)
-{ _mm256_storeu_si256((__m256i*)ptr, _mm512_cvtepi64_epi32(a.val)); }
+{ _mm256_storeu_si256((__m256i*)ptr, _mm512_cvtusepi64_epi32(a.val)); }
 
-inline void v_pack_store(int* ptr, const v_int64x8& b)
-{ v_pack_store((unsigned*)ptr, v_reinterpret_as_u64(b)); }
+inline void v_pack_u_store(unsigned* ptr, const v_int64x8& a)
+{ _mm256_storeu_si256((__m256i*)ptr, _mm512_cvtusepi64_epi32(_mm512_max_epi64(a.val, _mm512_setzero_si512()))); }
 
 template<int n> inline
 v_uint32x16 v_rshr_pack(const v_uint64x8& a, const v_uint64x8& b)
@@ -2283,7 +2415,7 @@ OPENCV_HAL_IMPL_AVX512_EXTRACT_N(v_float64x8, double)
 template<int i>
 inline v_uint32x16 v_broadcast_element(v_uint32x16 a)
 {
-    static const __m512i perm = _mm512_set1_epi32((char)i);
+    const __m512i perm = _mm512_set1_epi32((char)i);
     return v_uint32x16(_mm512_permutexvar_epi32(perm, a.val));
 }
 

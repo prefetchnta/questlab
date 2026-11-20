@@ -51,7 +51,7 @@
 
 #include "opencv2/core.hpp"
 
-#if defined _MSC_VER && _MSC_VER >= 1200
+#if defined _MSC_VER
 #ifndef NOMINMAX
 #define NOMINMAX // fix https://github.com/opencv/opencv/issues/17548
 #endif
@@ -69,6 +69,9 @@
 
 namespace cv
 {
+
+template<typename _Tp> class Quat;
+template<typename _Tp> class Affine3;
 
 /** @addtogroup core_eigen
 These functions are provided for OpenCV-Eigen interoperability. They convert `Mat`
@@ -97,7 +100,7 @@ Mat a_mat;
 eigen2cv(a_tensor, a_mat);
 \endcode
 */
-template <typename _Tp, int _layout> static inline
+template <typename _Tp, int _layout> inline
 void eigen2cv( const Eigen::Tensor<_Tp, 3, _layout> &src, OutputArray dst )
 {
     if( !(_layout & Eigen::RowMajorBit) )
@@ -129,7 +132,7 @@ Eigen::Tensor<float, 3, Eigen::RowMajor> a_tensor(...);
 cv2eigen(a_mat, a_tensor);
 \endcode
 */
-template <typename _Tp, int _layout> static inline
+template <typename _Tp, int _layout> inline
 void cv2eigen( const Mat &src, Eigen::Tensor<_Tp, 3, _layout> &dst )
 {
     if( !(_layout & Eigen::RowMajorBit) )
@@ -173,7 +176,7 @@ Mat a_mat(2, 2, CV_32FC3, arr);
 Eigen::TensorMap<Eigen::Tensor<float, 3, Eigen::RowMajor>> a_tensormap = cv2eigen_tensormap<float>(a_mat);
 \endcode
 */
-template <typename _Tp> static inline
+template <typename _Tp> inline
 Eigen::TensorMap<Eigen::Tensor<_Tp, 3, Eigen::RowMajor>> cv2eigen_tensormap(InputArray src)
 {
     Mat mat = src.getMat();
@@ -182,7 +185,7 @@ Eigen::TensorMap<Eigen::Tensor<_Tp, 3, Eigen::RowMajor>> cv2eigen_tensormap(Inpu
 }
 #endif // OPENCV_EIGEN_TENSOR_SUPPORT
 
-template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> static inline
+template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> inline
 void eigen2cv( const Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& src, OutputArray dst )
 {
     if( !(src.Flags & Eigen::RowMajorBit) )
@@ -200,7 +203,7 @@ void eigen2cv( const Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCo
 }
 
 // Matx case
-template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> static inline
+template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> inline
 void eigen2cv( const Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& src,
                Matx<_Tp, _rows, _cols>& dst )
 {
@@ -214,7 +217,7 @@ void eigen2cv( const Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCo
     }
 }
 
-template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> static inline
+template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> inline
 void cv2eigen( const Mat& src,
                Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& dst )
 {
@@ -242,7 +245,7 @@ void cv2eigen( const Mat& src,
 }
 
 // Matx case
-template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> static inline
+template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols> inline
 void cv2eigen( const Matx<_Tp, _rows, _cols>& src,
                Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& dst )
 {
@@ -260,7 +263,7 @@ void cv2eigen( const Matx<_Tp, _rows, _cols>& src,
     }
 }
 
-template<typename _Tp>  static inline
+template<typename _Tp>  inline
 void cv2eigen( const Mat& src,
                Eigen::Matrix<_Tp, Eigen::Dynamic, Eigen::Dynamic>& dst )
 {
@@ -287,7 +290,7 @@ void cv2eigen( const Mat& src,
     }
 }
 
-template<typename _Tp>  static inline
+template<typename _Tp>  inline
 void cv2eigen( const Mat& src,
                Eigen::Matrix<_Tp, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& dst )
 {
@@ -299,7 +302,7 @@ void cv2eigen( const Mat& src,
 }
 
 // Matx case
-template<typename _Tp, int _rows, int _cols> static inline
+template<typename _Tp, int _rows, int _cols> inline
 void cv2eigen( const Matx<_Tp, _rows, _cols>& src,
                Eigen::Matrix<_Tp, Eigen::Dynamic, Eigen::Dynamic>& dst )
 {
@@ -318,7 +321,7 @@ void cv2eigen( const Matx<_Tp, _rows, _cols>& src,
     }
 }
 
-template<typename _Tp, int _rows, int _cols> static inline
+template<typename _Tp, int _rows, int _cols> inline
 void cv2eigen( const Matx<_Tp, _rows, _cols>& src,
                Eigen::Matrix<_Tp, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& dst )
 {
@@ -329,7 +332,7 @@ void cv2eigen( const Matx<_Tp, _rows, _cols>& src,
     Mat(src).copyTo(_dst);
 }
 
-template<typename _Tp> static inline
+template<typename _Tp> inline
 void cv2eigen( const Mat& src,
                Eigen::Matrix<_Tp, Eigen::Dynamic, 1>& dst )
 {
@@ -354,7 +357,7 @@ void cv2eigen( const Mat& src,
 }
 
 // Matx case
-template<typename _Tp, int _rows> static inline
+template<typename _Tp, int _rows> inline
 void cv2eigen( const Matx<_Tp, _rows, 1>& src,
                Eigen::Matrix<_Tp, Eigen::Dynamic, 1>& dst )
 {
@@ -375,7 +378,7 @@ void cv2eigen( const Matx<_Tp, _rows, 1>& src,
 }
 
 
-template<typename _Tp> static inline
+template<typename _Tp> inline
 void cv2eigen( const Mat& src,
                Eigen::Matrix<_Tp, 1, Eigen::Dynamic>& dst )
 {
@@ -399,7 +402,7 @@ void cv2eigen( const Mat& src,
 }
 
 //Matx
-template<typename _Tp, int _cols> static inline
+template<typename _Tp, int _cols> inline
 void cv2eigen( const Matx<_Tp, 1, _cols>& src,
                Eigen::Matrix<_Tp, 1, Eigen::Dynamic>& dst )
 {
@@ -417,6 +420,46 @@ void cv2eigen( const Matx<_Tp, 1, _cols>& src,
         Mat(src).copyTo(_dst);
     }
 }
+
+#if defined(EIGEN_GEOMETRY_MODULE_H)
+/** @brief Converts an Eigen::Quaternion to a cv::Quat.
+*/
+template<typename _Tp, int _options> inline
+void eigen2cv( const Eigen::Quaternion<_Tp, _options>& src, Quat<_Tp>& dst )
+{
+    dst.w = src.w();
+    dst.x = src.x();
+    dst.y = src.y();
+    dst.z = src.z();
+}
+
+/** @brief Converts a cv::Quat to an Eigen::Quaternion.
+*/
+template<typename _Tp, int _options> inline
+void cv2eigen( const Quat<_Tp>& src, Eigen::Quaternion<_Tp, _options>& dst )
+{
+    dst.w() = src.w;
+    dst.x() = src.x;
+    dst.y() = src.y;
+    dst.z() = src.z;
+}
+
+/** @brief Converts an Eigen::Transform (Isometry) to a cv::Affine3.
+*/
+template<typename _Tp, int _options> inline
+void eigen2cv( const Eigen::Transform<_Tp, 3, Eigen::Isometry, _options>& src, Affine3<_Tp>& dst )
+{
+    eigen2cv(src.matrix(), dst.matrix);
+}
+
+/** @brief Converts a cv::Affine3 to an Eigen::Transform (Isometry).
+*/
+template<typename _Tp, int _options> inline
+void cv2eigen( const Affine3<_Tp>& src, Eigen::Transform<_Tp, 3, Eigen::Isometry, _options>& dst )
+{
+    cv2eigen(src.matrix, dst.matrix());
+}
+#endif
 
 //! @}
 

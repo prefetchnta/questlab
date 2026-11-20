@@ -165,7 +165,12 @@ enum ReduceTypes { REDUCE_SUM = 0, //!< the output is the sum of all rows/column
                    REDUCE_AVG = 1, //!< the output is the mean vector of all rows/columns of the matrix.
                    REDUCE_MAX = 2, //!< the output is the maximum (column/row-wise) of all rows/columns of the matrix.
                    REDUCE_MIN = 3,  //!< the output is the minimum (column/row-wise) of all rows/columns of the matrix.
-                   REDUCE_SUM2 = 4  //!< the output is the sum of all squared rows/columns of the matrix.
+                   REDUCE_SUM2 = 4, //!< the output is the sum of all squared rows/columns of the matrix.
+                   REDUCE_PROD = 5, //!< the output is the product of the elements.
+                   REDUCE_L1 = 6,   //!< the output is the sum of the absolute values.
+                   REDUCE_L2 = 7,   //!< the output is the square root of the sum of the squares.
+                   REDUCE_LOG_SUM = 8,     //!< the output is the logarithm of the sum.
+                   REDUCE_LOG_SUM_EXP = 9  //!< the output is log(sum(exp(x))), computed without overflow.
                  };
 
 /** @brief Swaps two matrices
@@ -794,7 +799,6 @@ In Python, multi-channel input is not supported at all due to a limitation in th
 binding generation process (there is no way to set minLoc and maxLoc to NULL). A
 workaround is to operate on each channel individually or to use NumPy to achieve the same
 functionality.
-@note CV_16F/CV_16BF/CV_Bool/CV_64U/CV_64S/CV_32U are not supported for src.
 @param src input single-channel array.
 @param minVal pointer to the returned minimum value; NULL is used if not required.
 @param maxVal pointer to the returned maximum value; NULL is used if not required.
@@ -852,7 +856,6 @@ a single-row or single-column matrix. In OpenCV (following MATLAB) each array ha
 dimensions, i.e. single-column matrix is Mx1 matrix (and therefore minIdx/maxIdx will be
 (i1,0)/(i2,0)) and single-row matrix is 1xN matrix (and therefore minIdx/maxIdx will be
 (0,j1)/(0,j2)).
-@note CV_16F/CV_16BF/CV_Bool/CV_64U/CV_64S/CV_32U are not supported for src.
 @param src input single-channel array.
 @param minVal pointer to the returned minimum value; NULL is used if not required.
 @param maxVal pointer to the returned maximum value; NULL is used if not required.
@@ -892,7 +895,8 @@ The following code demonstrates its usage for a single channel matrix.
 And the following code demonstrates its usage for a two-channel matrix.
 @snippet snippets/core_reduce.cpp example2
 
-@param src input 2D matrix.
+@param src input matrix. It may also be n-dimensional, then @p dim is the axis to reduce and the
+output keeps it with size 1 (see the cv::ReduceParams overload).
 @param dst output vector. Its size and type is defined by dim and dtype parameters.
 @param dim dimension index along which the matrix is reduced. 0 means that the matrix is reduced to
 a single row. 1 means that the matrix is reduced to a single column.
@@ -902,6 +906,53 @@ otherwise, its type will be CV_MAKE_TYPE(CV_MAT_DEPTH(dtype), src.channels()).
 @sa repeat, reduceArgMin, reduceArgMax
 */
 CV_EXPORTS_W void reduce(InputArray src, OutputArray dst, int dim, int rtype, int dtype = -1);
+
+/** @brief The reduction that the n-dimensional #reduce performs.
+
+Everything the call needs besides the input and the output arrays, in one struct, so that further
+options can be added without changing the signature.
+
+@sa reduce
+*/
+struct CV_EXPORTS_W_SIMPLE ReduceParams
+{
+    CV_WRAP ReduceParams(int rtype = REDUCE_SUM, const std::vector<int>& axes = std::vector<int>(),
+                         bool keepdims = true, int dtype = -1);
+
+    //! reduction operation, one of #ReduceTypes.
+    CV_PROP_RW int rtype;
+    //! axes to reduce; negative values count from the end; an empty vector means all the axes.
+    CV_PROP_RW std::vector<int> axes;
+    //! whether to keep the reduced axes as axes of size 1.
+    CV_PROP_RW bool keepdims;
+    //! depth of the output; when negative, the output has the depth of the input. The result is
+    //! converted to it with saturation.
+    CV_PROP_RW int dtype;
+};
+
+/** @brief Reduces an n-dimensional array over the given axes.
+
+Every output element is the reduction (see #ReduceTypes) of the input elements that differ only in
+the reduced axes. The channels are reduced independently, so the output has as many channels as the
+input. The input may be non-continuous (e.g. a sub-array) and of any depth.
+
+The accumulation is done in the source type for #REDUCE_MAX and #REDUCE_MIN (in float for 16-bit
+floating-point types) and in float or double for the other operations (double for 32- and 64-bit
+integers, for CV_64F, and when the output depth is CV_64F).
+
+@code{.cpp}
+    Mat blob(std::vector<int>{1, 256, 80, 80}, CV_32F), channelMeans;
+    cv::reduce(blob, channelMeans, {REDUCE_AVG, {2, 3}});   // -> 1x256x1x1
+@endcode
+
+@param src input array.
+@param dst output array. With ReduceParams::keepdims, it has the shape of src with the reduced axes
+set to 1; otherwise the reduced axes are removed (reducing all the axes then gives a 0-dimensional
+array).
+@param params the reduction operation and the axes to reduce over, see cv::ReduceParams.
+@sa ReduceParams, sum, mean, minMaxIdx
+*/
+CV_EXPORTS_W void reduce(InputArray src, OutputArray dst, const ReduceParams& params);
 
 /** @brief Creates one multi-channel array out of several single-channel ones.
 
@@ -1083,11 +1134,102 @@ around both axes.
 CV_EXPORTS_W void flip(InputArray src, OutputArray dst, int flipCode);
 
 /** @brief Flips a n-dimensional at given axis
+ *
+ * The input may be multi-channel and non-continuous (e.g. a sub-array); the channels of each
+ * element are kept together. In-place operation (src and dst sharing data) is supported.
  *  @param src input array
  *  @param dst output array that has the same shape of src
- *  @param axis axis that performs a flip on. 0 <= axis < src.dims.
+ *  @param axis axis that performs a flip on. -src.dims <= axis < src.dims.
  */
 CV_EXPORTS_W void flipND(InputArray src, OutputArray dst, int axis);
+
+/** @brief Removes axes of size 1 from an n-dimensional array.
+ *
+ * The elements are not changed. When called in place (dst is src) on a continuous array, only the
+ * header changes; otherwise the elements are copied into dst (Mat::reshape gives a view without
+ * copying). The channels of the elements are kept, the axes are the array dimensions. The same holds
+ * for unsqueeze, flatten and reshape.
+ * @param src input array
+ * @param dst output array
+ * @param axes axes to remove, each of size 1; negative values count from the end.
+ * When empty, all the axes of size 1 are removed.
+ * @sa unsqueeze, MatShape::squeeze
+ */
+CV_EXPORTS_W void squeeze(InputArray src, OutputArray dst, const std::vector<int>& axes = std::vector<int>());
+
+/** @brief Inserts axes of size 1 into an n-dimensional array.
+ * @param src input array
+ * @param dst output array with src.dims + axes.size() dimensions
+ * @param axes positions of the new axes in dst; negative values count from the end of dst.
+ * @sa squeeze, MatShape::unsqueeze
+ */
+CV_EXPORTS_W void unsqueeze(InputArray src, OutputArray dst, const std::vector<int>& axes);
+
+/** @brief Merges consecutive axes of an n-dimensional array into one.
+ *
+ * With the default arguments the result is 1-dimensional.
+ * @param src input array
+ * @param dst output array
+ * @param startAxis first axis to merge; negative values count from the end.
+ * @param endAxis last axis to merge (inclusive); negative values count from the end.
+ * @sa MatShape::flatten
+ */
+CV_EXPORTS_W void flatten(InputArray src, OutputArray dst, int startAxis = 0, int endAxis = -1);
+
+/** @brief Changes the shape of an n-dimensional array.
+ *
+ * One element of newShape may be -1, it is then inferred from the number of elements. An element
+ * equal to 0 copies the corresponding axis of src, unless allowZero is set, in which case it is a
+ * zero-size axis (the ONNX Reshape convention).
+ * @param src input array
+ * @param dst output array
+ * @param newShape the new shape
+ * @param allowZero treat 0 in newShape as a size instead of "same as src"
+ * @sa MatShape::reshape, Mat::reshape
+ */
+CV_EXPORTS_W void reshape(InputArray src, OutputArray dst, const std::vector<int>& newShape, bool allowZero = false);
+
+/** @brief Concatenates n-dimensional arrays along the given axis.
+ *
+ * All the arrays must have the same type and number of dimensions, and the same size along every
+ * axis except @p axis. The arrays may be multi-channel and non-continuous; the channels of each
+ * element are kept together, so @p axis refers to the array dimensions, not to the channels.
+ * For 2D arrays concat(src, 0, dst) is equivalent to vconcat() and concat(src, 1, dst) to hconcat().
+ * @param src input arrays
+ * @param axis axis to concatenate along; -dims <= axis < dims
+ * @param dst output array
+ * @sa split, hconcat, vconcat
+ */
+CV_EXPORTS_W void concat(InputArrayOfArrays src, int axis, OutputArray dst);
+
+/** @brief Splits an n-dimensional array into several arrays along the given axis.
+ *
+ * This is the inverse of concat(). The two-argument split() is a different operation: it separates
+ * the channels of the elements, while this one cuts the array along one of its dimensions.
+ * @param src input array; may be multi-channel and non-continuous
+ * @param axis axis to split along; -src.dims <= axis < src.dims
+ * @param sizes size of each output array along @p axis; the values must sum up to src.size[axis]
+ * @param dst output arrays, one per element of @p sizes
+ * @sa concat
+ */
+CV_EXPORTS_W void split(InputArray src, int axis, const std::vector<int>& sizes, OutputArrayOfArrays dst);
+
+/** @brief Copies a strided slice of an n-dimensional array.
+ *
+ * Along axis i the output takes the elements src[starts[i]], src[starts[i] + steps[i]], ...
+ * up to, but not including, ends[i]. Axes past starts.size() are copied whole.
+ * Unlike Python, the indices are absolute: negative values are not counted from the end.
+ * For a positive step, 0 <= start, end <= src.size[i]. For a negative step,
+ * -1 <= start, end < src.size[i], and end == -1 means "down to and including element 0".
+ * When all the steps are 1, `Mat(src, ranges)` gives the same result without copying.
+ * @param src input array; may be multi-channel and non-continuous
+ * @param starts first index along each sliced axis
+ * @param ends end index (exclusive) along each sliced axis
+ * @param steps step along each sliced axis (non-zero, may be negative); empty means all ones
+ * @param dst output array of the same type as src
+ */
+CV_EXPORTS_W void slice(InputArray src, const std::vector<int>& starts, const std::vector<int>& ends,
+                        const std::vector<int>& steps, OutputArray dst);
 
 /** @brief Broadcast the given Mat to the given shape.
  * @param src input array
@@ -1102,6 +1244,20 @@ CV_EXPORTS_W void broadcast(InputArray src, InputArray shape, OutputArray dst);
  * @param dst output array that has the given shape
  */
 CV_EXPORTS void broadcast(InputArray src, const MatShape& shape, OutputArray dst);
+
+/** @brief Evaluate a broadcasting element-wise expression over the input arrays.
+
+The expression is a small std::format-like string over placeholders `{0}`, `{1}`, ... (the entries of
+@p inputs), C-style arithmetic / comparison / bitwise operators, type-cast and math function calls
+(`uint8(...)`, `min`, `max`, `absdiff`, `pow`, ...), `;`-separated named temporaries and a
+parenthesized tuple for multiple results. All operands broadcast against each other (numpy rules,
+channels innermost) and the whole expression is fused into a single traversal of the data.
+
+@param expr the expression string, e.g. `"{0} * 2.5 + {1}"` or `"({0} + {1}, {0} - {1})"`.
+@param inputs the arrays bound to `{0}`, `{1}`, ...
+@param outputs receives one array per top-level result (one entry, or several for a tuple).
+*/
+CV_EXPORTS_W void texpr(const String& expr, InputArrayOfArrays inputs, OutputArrayOfArrays outputs);
 
 enum RotateFlags {
     ROTATE_90_CLOCKWISE = 0, //!<Rotate 90 degrees clockwise
@@ -1145,6 +1301,16 @@ horizontal axis.
   */
 CV_EXPORTS Mat repeat(const Mat& src, int ny, int nx);
 
+/** @brief Repeats an n-dimensional array along each axis.
+ *
+ * dst.size[i] == src.size[i]*repeats[i], the n-dimensional counterpart of the two-axis form above.
+ * It matches numpy.tile and ONNX Tile for arrays of the same rank.
+ * @param src input array; may be multi-channel and non-continuous
+ * @param repeats number of copies along each axis; must have src.dims non-negative elements
+ * @param dst output array of the same type as src
+ */
+CV_EXPORTS_W void repeat(InputArray src, const std::vector<int>& repeats, OutputArray dst);
+
 /** @brief Applies horizontal concatenation to given matrices.
 
 The function horizontally concatenates two or more cv::Mat matrices (with the same number of rows).
@@ -1169,12 +1335,12 @@ The function horizontally concatenates two or more cv::Mat matrices (with the sa
 CV_EXPORTS void hconcat(const Mat* src, size_t nsrc, OutputArray dst);
 /** @overload
  @code{.cpp}
-    cv::Mat_<float> A = (cv::Mat_<float>(3, 2) << 1, 4,
+    cv::Mat_<float> A = cv::Mat_<float>({3, 2}, { 1, 4,
                                                   2, 5,
-                                                  3, 6);
-    cv::Mat_<float> B = (cv::Mat_<float>(3, 2) << 7, 10,
+                                                  3, 6 });
+    cv::Mat_<float> B = cv::Mat_<float>({3, 2}, { 7, 10,
                                                   8, 11,
-                                                  9, 12);
+                                                  9, 12 });
 
     cv::Mat C;
     cv::hconcat(A, B, C);
@@ -1231,12 +1397,12 @@ The function vertically concatenates two or more cv::Mat matrices (with the same
 CV_EXPORTS void vconcat(const Mat* src, size_t nsrc, OutputArray dst);
 /** @overload
  @code{.cpp}
-    cv::Mat_<float> A = (cv::Mat_<float>(3, 2) << 1, 7,
+    cv::Mat_<float> A = cv::Mat_<float>({3, 2}, { 1, 7,
                                                   2, 8,
-                                                  3, 9);
-    cv::Mat_<float> B = (cv::Mat_<float>(3, 2) << 4, 10,
+                                                  3, 9 });
+    cv::Mat_<float> B = cv::Mat_<float>({3, 2}, { 4, 10,
                                                   5, 11,
-                                                  6, 12);
+                                                  6, 12 });
 
     cv::Mat C;
     cv::vconcat(A, B, C);
@@ -1666,16 +1832,16 @@ CV_EXPORTS_W bool checkRange(InputArray a, bool quiet = true, CV_OUT Point* pos 
 /** @brief Replaces NaNs (Not-a-Number values) in a matrix with the specified value.
 
 This function modifies the input matrix in-place.
-The input matrix must be of type `CV_32F` or `CV_64F`; other types are not supported.
+The input matrix must be of type `CV_16F`, `CV_16BF`, `CV_32F` or `CV_64F`; other types are not supported.
 
-@param a Input/output matrix (CV_32F or CV_64F type).
+@param a Input/output matrix (CV_16F, CV_16BF, CV_32F or CV_64F type).
 @param val Value used to replace NaNs (defaults to 0).
 */
 CV_EXPORTS_W void patchNaNs(InputOutputArray a, double val = 0);
 
 /** @brief Generates a mask of finite float values, i.e. not NaNs nor Infs.
 
-An element is set to to 255 (all 1-bits) if all channels are finite.
+An element is set to 255 (all 1-bits) if all channels are finite.
 @param src Input matrix, should contain float or double elements of 1 to 4 channels
 @param mask Output matrix of the same size as input of type CV_8UC1
 */
@@ -1758,13 +1924,18 @@ CV_EXPORTS_W void transpose(InputArray src, OutputArray dst);
 
 /** @brief Transpose for n-dimensional matrices.
  *
- * @note Input should be continuous single-channel matrix.
+ * The input may be multi-channel and non-continuous (e.g. a sub-array); the channels of each
+ * element are kept together, so @p order permutes the array dimensions only.
  * @param src input array.
  * @param order a permutation of [0,1,..,N-1] where N is the number of axes of src.
  * The i'th axis of dst will correspond to the axis numbered order[i] of the input.
  * @param dst output array of the same type as src.
  */
-CV_EXPORTS_W void transposeND(InputArray src, const std::vector<int>& order, OutputArray dst);
+CV_EXPORTS_W void transpose(InputArray src, const std::vector<int>& order, OutputArray dst);
+
+/** @deprecated Use transpose(InputArray, const std::vector<int>&, OutputArray) instead.
+ */
+CV_DEPRECATED_EXTERNAL CV_EXPORTS_W void transposeND(InputArray src, const std::vector<int>& order, OutputArray dst);
 
 /** @brief Performs the matrix transformation of every array element.
 
@@ -3064,7 +3235,8 @@ after every attempt. The best (minimum) value is chosen and the corresponding la
 compactness value are returned by the function. Basically, you can use only the core of the
 function, set the number of attempts to 1, initialize labels each time using a custom algorithm,
 pass them with the ( flags = #KMEANS_USE_INITIAL_LABELS ) flag, and then choose the best
-(most-compact) clustering.
+(most-compact) clustering. If the value is negative, the algorithm did not succeed, most likely
+because the input contains NaN or Inf.
 */
 CV_EXPORTS_W double kmeans( InputArray data, int K, InputOutputArray bestLabels,
                             TermCriteria criteria, int attempts,
@@ -3112,7 +3284,7 @@ public:
 
 };
 
-static inline
+inline
 String& operator << (String& out, Ptr<Formatted> fmtd)
 {
     fmtd->reset();
@@ -3121,7 +3293,7 @@ String& operator << (String& out, Ptr<Formatted> fmtd)
     return out;
 }
 
-static inline
+inline
 String& operator << (String& out, const Mat& mtx)
 {
     return out << Formatter::get()->format(mtx);

@@ -46,7 +46,7 @@
 #include <vector>
 #include <opencv2/core.hpp>
 #include "opencv2/core/async.hpp"
-
+#include <opencv2/imgproc.hpp>
 #include "../dnn/version.hpp"
 
 #include <opencv2/dnn/dict.hpp>
@@ -124,8 +124,7 @@ CV__DNN_INLINE_NS_BEGIN
     enum ModelFormat {
         DNN_MODEL_GENERIC = 0, //!< Some generic model format
         DNN_MODEL_ONNX = 1, //!< ONNX model
-        DNN_MODEL_TF = 2, //!< TF model
-        DNN_MODEL_TFLITE = 3, //!< TFLite model
+        DNN_MODEL_TFLITE = 2, //!< TFLite model
     };
 
     CV_EXPORTS std::string modelFormatToString(ModelFormat modelFormat);
@@ -262,22 +261,93 @@ CV__DNN_INLINE_NS_BEGIN
     class CV_EXPORTS Graph;
     class CV_EXPORTS ActivationLayer;
 
+    /** @brief Backend-independent description of a graph operation (node).
+     *
+     * %LayerInfo carries everything needed to reason about an operation *without* executing it:
+     * its parameters (#blobs and type-specific fields of derived classes), graph wiring
+     * (#inputs / #outputs as Arg indices) and shape/type/layout inference. The new DNN graph
+     * engine stores a topologically sorted sequence of %LayerInfo nodes (see Graph::prog());
+     * executable, backend-specific instances (Layer subclasses) are constructed from an
+     * %LayerInfo during Net::finalizeNet().
+     *
+     * Each operation type registers a `static Ptr<LayerInfo> create(const LayerParams&)` factory
+     * via @ref CV_DNN_REGISTER_OP_CLASS.
+     */
+    class CV_EXPORTS_W LayerInfo
+    {
+    public:
+        LayerInfo();
+        explicit LayerInfo(const LayerParams& params);
+        virtual ~LayerInfo();
+
+        void setParamsFrom(const LayerParams& params);
+
+        //! List of learned parameters must be stored here to allow read them by using Net::getParam().
+        CV_PROP_RW std::vector<Mat> blobs;
+
+        //! Bumped when a blob is replaced; executors then re-run Layer::prepackWeights().
+        unsigned weightEpoch = 1;
+        std::vector<Arg> inputs;
+        std::vector<Arg> outputs;
+        void* netimpl = nullptr;
+
+        CV_PROP String name;
+        CV_PROP String type;
+
+        virtual std::vector<Ptr<Graph> >* subgraphs() const;
+
+        virtual int inputNameToIndex(String inputName);  // FIXIT const
+        CV_WRAP virtual int outputNameToIndex(const String& outputName);  // FIXIT const
+
+        virtual bool getMemoryShapes(const std::vector<MatShape> &inputs,
+                                     const int requiredOutputs,
+                                     std::vector<MatShape> &outputs,
+                                     std::vector<MatShape> &internals) const;
+
+        virtual void getTypes(const std::vector<MatType>& inputs,
+                              const int requiredOutputs,
+                              const int requiredInternals,
+                              std::vector<MatType>&outputs,
+                              std::vector<MatType>&internals) const;
+
+        virtual int getLayouts(const std::vector<DataLayout>& actualInputs,
+                               std::vector<DataLayout>& desiredInputs,
+                               const int requiredOutputs,
+                               std::vector<DataLayout>& outputs) const;
+
+        virtual int64 getFLOPS(const std::vector<MatShape> &inputs,
+                               const std::vector<MatShape> &outputs) const;
+
+        virtual bool updateMemoryShapes(const std::vector<MatShape> &inputs);
+
+        virtual bool alwaysSupportInplace() const;
+
+        virtual bool dynamicOutputShapes() const;
+
+        virtual bool isDataShuffling() const;
+
+        virtual void getScaleShift(Mat& scale, Mat& shift) const;
+
+        virtual void getScaleZeropoint(float& scale, int& zeropoint) const;
+
+        virtual std::ostream& dumpAttrs(std::ostream& strm, int indent) const;
+
+        virtual std::ostream& dump(std::ostream& strm, int indent, bool comma) const;
+    };
+
     /** @brief This interface class allows to build new Layers - are building blocks of networks.
+     *
+     * A %Layer is the *executable*, backend-specific counterpart of a LayerInfo node: it
+     * implements forward() (and finalize()) for a particular backend/target. In the new graph
+     * engine a %Layer is created from a LayerInfo by the executor factory; shape/type inference
+     * stays on the LayerInfo node.
      *
      * Each class, derived from Layer, must implement forward() method to compute outputs.
      * Also before using the new layer into networks you must register your layer by using one of @ref dnnLayerFactory "LayerFactory" macros.
      */
-    class CV_EXPORTS_W Layer : public Algorithm
+    class CV_EXPORTS_W Layer : public LayerInfo
     {
     public:
-
-        //! List of learned parameters must be stored here to allow read them by using Net::getParam().
-        CV_PROP_RW std::vector<Mat> blobs;
-        std::vector<Arg> inputs;
-        std::vector<Arg> outputs;
-        void* netimpl;
-
-        virtual std::vector<Ptr<Graph> >* subgraphs() const;
 
         /** @brief Computes and sets internal parameters according to inputs, outputs and blobs.
          *  @deprecated Use Layer::finalize(InputArrayOfArrays, OutputArrayOfArrays) instead
@@ -341,18 +411,6 @@ CV__DNN_INLINE_NS_BEGIN
         CV_DEPRECATED CV_WRAP void run(const std::vector<Mat> &inputs, CV_OUT std::vector<Mat> &outputs,
                                        CV_IN_OUT std::vector<Mat> &internals);
 
-        /** @brief Returns index of input blob into the input array.
-         *  @param inputName label of input blob
-         *
-         * Each layer input and output can be labeled to easily identify them using "%<layer_name%>[.output_name]" notation.
-         * This method maps label of input blob to its index into input vector.
-         */
-        virtual int inputNameToIndex(String inputName);  // FIXIT const
-        /** @brief Returns index of output blob in output array.
-         *  @see inputNameToIndex()
-         */
-        CV_WRAP virtual int outputNameToIndex(const String& outputName);  // FIXIT const
-
         /**
          * @brief Ask layer if it support specific backend for doing computations.
          * @param[in] backendId computation backend identifier.
@@ -377,6 +435,20 @@ CV__DNN_INLINE_NS_BEGIN
             void *context,
             const std::vector<Ptr<BackendWrapper>>& inputs,
             const std::vector<Ptr<BackendWrapper>>& outputs
+        );
+
+        /**
+         * @brief Returns a CUDA backend node for the new graph engine (wrapper-free).
+         *
+         * Inputs and outputs are device tensors (arrays of UMat on the CUDA allocator) carrying shape and type;
+         * only that metadata is needed to build the node, the buffers are filled later by
+         * forwardCUDA(). The default adapts the wrapper-based initCUDA() so classic-engine ops keep
+         * working. @p context is a void pointer to a CSLContext object.
+         */
+        virtual Ptr<BackendNode> initCUDA(
+            void *context,
+            InputArrayOfArrays inputs,
+            InputArrayOfArrays outputs
         );
 
         /**
@@ -419,102 +491,37 @@ CV__DNN_INLINE_NS_BEGIN
         virtual bool tryFuse(Ptr<Layer>& top);
 
         /**
-         * @brief Returns parameters of layers with channel-wise multiplication and addition.
-         * @param[out] scale Channel-wise multipliers. Total number of values should
-         *                   be equal to number of channels.
-         * @param[out] shift Channel-wise offsets. Total number of values should
-         *                   be equal to number of channels.
+         * @brief Executes the operation on the CUDA backend (new graph engine).
          *
-         * Some layers can fuse their transformations with further layers.
-         * In example, convolution + batch normalization. This way base layer
-         * use weights from layer after it. Fused layer is skipped.
-         * By default, @p scale and @p shift are empty that means layer has no
-         * element-wise multiplications or additions.
+         * Called by the engine for nodes assigned to DNN_BACKEND_CUDA. Inputs and outputs are
+         * device-resident tensors passed as arrays of UMat on the CUDA allocator; no backend wrappers are
+         * involved. The default implementation raises an error. @p workspace is an opaque pointer
+         * to a cuda4dnn::csl::Workspace (kept void* to avoid leaking internal CUDA types).
          */
-        virtual void getScaleShift(Mat& scale, Mat& shift) const;
-
-        /**
-         * @brief Returns scale and zeropoint of layers
-         * @param[out] scale Output scale
-         * @param[out] zeropoint Output zeropoint
-         *
-         * By default, @p scale is 1 and @p zeropoint is 0.
-         */
-        virtual void getScaleZeropoint(float& scale, int& zeropoint) const;
-
+        virtual void forwardCUDA(InputArrayOfArrays inputs,
+                                 OutputArrayOfArrays outputs,
+                                 void* workspace);
 
         /**
          * @brief "Detaches" all the layers, attached to particular layer.
          */
         virtual void unsetAttached();
 
-        virtual bool getMemoryShapes(const std::vector<MatShape> &inputs,
-                                     const int requiredOutputs,
-                                     std::vector<MatShape> &outputs,
-                                     std::vector<MatShape> &internals) const;
+        /** @brief One-time, shape-independent weight packing; runs once per
+         *  LayerInfo::weightEpoch, unlike finalize(). Default: no-op.
+         */
+        virtual void prepackWeights();
 
-        virtual void getTypes(const std::vector<MatType>& inputs,
-                              const int requiredOutputs,
-                              const int requiredInternals,
-                              std::vector<MatType>&outputs,
-                              std::vector<MatType>&internals) const;
-
-        // this is the method for Layer to express its attitude to the block layout
-        // or any other special form of layout. It takes
-        // layouts of the inputs and should return the desired layouts of
-        // inputs, as well as layouts of the outputs.
-        // By default, no mater what the actual inputs' layouts are,
-        // the desired inputs as well as outputs will get 'Unknown' layout values.
-        // It means that the layer can only handle non-block layout
-        // (depending on the model format, e.g. NCHW for ONNX or NHWC for TFLite)
-        // and will return tensors with non-block layout as well.
-        // Some layers could override this default behaviour:
-        // a) if they _can_ process block-layout data, like element-wise operations, or
-        // b) if they _need_ block-layout data, like convolution
-        virtual int getLayouts(const std::vector<DataLayout>& actualInputs,
-                                std::vector<DataLayout>& desiredInputs,
-                                const int requiredOutputs,
-                                std::vector<DataLayout>& outputs) const;
-
-        virtual int64 getFLOPS(const std::vector<MatShape> &inputs,
-                               const std::vector<MatShape> &outputs) const;
-
-        virtual bool updateMemoryShapes(const std::vector<MatShape> &inputs);
-
-        // returns true if the operation takes a single input and can always be performed in-place,
-        // assuming that the input is contiguous.
-        // Examples of such operations are: Reshape, Flatten, Squeeze, Unsqueeze,
-        // as well many unary element-wise operations (ReLU, Tanh, ...)
-        virtual bool alwaysSupportInplace() const;
-
-        // returns false if the shape of Layer outputs is defined only by the shapes of inputs.
-        // Sometimes the shape depends on the content of the input(s), then the method should return true.
-        // In such a rare case forward() method should take care of proper allocation of the output tensors.
-        // On the other hand, when this method returns false, the engine takes care of proper allocation of the outputs,
-        // so that forward() can assume that the outputs are already allocated.
-        virtual bool dynamicOutputShapes() const;
-
-        // returns true if the layer only rearranges data without changing values.
-        // Examples: Flatten, Reshape, Transpose, Permute, Squeeze, Unsqueeze,
-        // Concat, Split, Slice, Tile, MaxPool.
-        // Used by QDQ fusion to elide redundant dequantize-quantize pairs
-        // when the scale and zero point are the same.
-        virtual bool isDataShuffling() const;
-
-        // dumps attributes of the layer (e.g. strides, dilations in Convolution, MaxPool)
-        virtual std::ostream& dumpAttrs(std::ostream& strm, int indent) const;
-
-        // dumps information about the layer. The default implementation is usually good enough,
-        // just override dumpAttrs().
-        virtual std::ostream& dump(std::ostream& strm, int indent, bool comma) const;
-
-        CV_PROP String name; //!< Name of the layer instance, can be used for logging or other internal purposes.
-        CV_PROP String type; //!< Type name which was used for creating layer by layer factory.
         CV_PROP int preferableTarget; //!< prefer target for layer forwarding
+
+        //! Executor-side bookkeeping for per-layer (re)initialization.
+        unsigned packedWeightEpoch = 0;        //!< LayerInfo::weightEpoch prepackWeights() last ran for
+        bool finalizedOnce = false;
+        std::vector<MatShape> lastInpShapes;   //!< input shapes finalize() last ran for
+        std::vector<int> lastInpTypes;         //!< input types finalize() last ran for
 
         Layer();
         explicit Layer(const LayerParams &params);      //!< Initializes only #name, #type and #blobs fields.
-        void setParamsFrom(const LayerParams &params);  //!< Initializes only #name, #type and #blobs fields.
         virtual ~Layer();
     };
 
@@ -533,15 +540,16 @@ CV__DNN_INLINE_NS_BEGIN
         virtual bool empty() const = 0;
         virtual void clear() = 0;
         virtual std::string name() const = 0;
-        virtual const std::vector<Arg>& append(Ptr<Layer>& layer,
+        virtual const std::vector<Arg>& append(Ptr<LayerInfo>& op,
                     const std::vector<std::string>& outnames=std::vector<std::string>()) = 0;
-        virtual Arg append(Ptr<Layer>& layer, const std::string& outname=std::string()) = 0;
+        virtual Arg append(Ptr<LayerInfo>& op, const std::string& outname=std::string()) = 0;
         virtual std::ostream& dump(std::ostream& strm, int indent, bool comma) = 0;
         virtual const std::vector<Arg>& inputs() const = 0;
         virtual const std::vector<Arg>& outputs() const = 0;
         virtual void setOutputs(const std::vector<Arg>& outputs) = 0;
-        virtual const std::vector<Ptr<Layer> >& prog() const = 0;
-        virtual void setProg(const std::vector<Ptr<Layer> >& newprog) = 0;
+        virtual const std::vector<Ptr<LayerInfo> >& prog() const = 0;
+        virtual void setProg(const std::vector<Ptr<LayerInfo> >& newprog) = 0;
+        virtual int opBackend(int opidx) const = 0;
     };
 
     /** @brief This class allows to create and manipulate comprehensive artificial neural networks.
@@ -705,6 +713,10 @@ CV__DNN_INLINE_NS_BEGIN
         CV_WRAP void setInputsNames(const std::vector<String> &inputBlobNames);
 
         /** @brief Specify shape of network input.
+         *
+         * Must be called before the first forward(). With the new engine, shape computations that depend
+         * on a pinned input are folded into constants; on the CUDA backend a model left with no dynamic
+         * shapes then runs each forward() as one replayed CUDA Graph instead of one launch per layer.
          */
         CV_WRAP void setInputShape(const String &inputName, const MatShape& shape);
 
@@ -712,6 +724,13 @@ CV__DNN_INLINE_NS_BEGIN
          *  @param outputName name for layer which output is needed to get
          *  @return blob for first output of specified layer.
          *  @details By default runs forward pass for the whole network.
+         *  @note In Python, CV_16BF / CV_8F_E4M3FN / CV_8F_E4M3FNUZ output blobs are
+         *  returned as NumPy float32 arrays by default. To preserve their exact dtypes,
+         *  import the optional ml_dtypes package and call
+         *  `cv.setUseExactNumpyDtypes(True)` before forward(). This process-wide
+         *  setting affects outputs only; registered bfloat16 / float8 input arrays are
+         *  accepted regardless of it. It belongs to the application: libraries should not
+         *  change it. See @ref tutorial_py_bindings_basics for details.
          */
         CV_WRAP Mat forward(const String& outputName = String());
 
@@ -728,12 +747,14 @@ CV__DNN_INLINE_NS_BEGIN
          *  @param outputBlobs contains all output blobs for specified layer.
          *  @param outputName name for layer which output is needed to get
          *  @details If @p outputName is empty, runs forward pass for the whole network.
+         *  @note Python output dtype handling is described in forward(const String&).
          */
         CV_WRAP void forward(CV_ND OutputArrayOfArrays outputBlobs, const String& outputName = String());
 
         /** @brief Runs forward pass to compute outputs of layers listed in @p outBlobNames.
          *  @param outputBlobs contains blobs for first outputs of specified layers.
          *  @param outBlobNames names for layers which outputs are needed to get
+         *  @note Python output dtype handling is described in forward(const String&).
          */
         CV_WRAP void forward(CV_ND OutputArrayOfArrays outputBlobs,
                              const std::vector<String>& outBlobNames);
@@ -741,6 +762,7 @@ CV__DNN_INLINE_NS_BEGIN
         /** @brief Runs forward pass to compute outputs of layers listed in @p outBlobNames.
          *  @param outputBlobs contains all output blobs for each layer specified in @p outBlobNames.
          *  @param outBlobNames names for layers which outputs are needed to get
+         *  @note Python output dtype handling is described in forward(const String&).
          */
         CV_WRAP_AS(forwardAndRetrieve) void forward(CV_OUT std::vector<std::vector<Mat> >& outputBlobs,
                                                     const std::vector<String>& outBlobNames);
@@ -835,7 +857,7 @@ CV__DNN_INLINE_NS_BEGIN
         */
         CV_WRAP void setParam(int layer, int numParam, CV_ND const Mat &blob);
         /** @brief Sets the parameter blob of a layer identified by its name or output tensor name.
-         *  @param layerName layer name (classic engine) or raw ONNX output tensor name (ENGINE_NEW).
+         *  @param layerName raw ONNX output tensor name (ENGINE_OPENCV).
          *  @param numParam index of the constant weight input to update (0 = kernel, 1 = bias, etc.).
          *  @param blob the new parameter value.
          */
@@ -1016,6 +1038,12 @@ CV__DNN_INLINE_NS_BEGIN
         */
         CV_WRAP void enableWinograd(bool useWinograd);
 
+        /** @brief Enables or disables TF32 Tensor Core math for FP32 convolutions and GEMMs on DNN_TARGET_CUDA.
+         * TF32 is faster on compute capability 8.0 and newer, but rounds the inputs to a 10-bit mantissa.
+        * @param useTF32 true to allow TF32 math. The default is true; set false for exact FP32 math.
+        */
+        CV_WRAP void enableTF32(bool useTF32);
+
         /** @brief Returns overall time for inference and timings (in ticks) for layers.
          *
          * Indexes in returned vector correspond to layers ids. Some layers can be fused with others,
@@ -1034,6 +1062,17 @@ CV__DNN_INLINE_NS_BEGIN
 
         /** @brief Resets KV-Cache for all AttentionOnnxI layers */
         CV_WRAP void resetKVCache();
+
+        /** @brief Pre-allocates KV-Cache pages for up to @p maxSequenceLength tokens.
+         *
+         * Call after enableKVCache() and before the prefill forward, so no page allocation
+         * happens during generation. A hint, not a limit: going past @p maxSequenceLength
+         * still grows the cache. resetKVCache() drops the reservation.
+         *
+         * Only models whose attention imports as a single fused op (ONNX Attention,
+         * com.microsoft MultiHeadAttention / GroupQueryAttention) use the paged cache;
+         * otherwise this warns and does nothing. */
+        CV_WRAP void reserveKVCache(int maxSequenceLength);
         /** @brief Returns profiling data captured during the last forward pass.
          *
          * Entries are sorted by time in descending order. Empty vectors are returned
@@ -1083,59 +1122,14 @@ CV__DNN_INLINE_NS_BEGIN
 
     enum EngineType
     {
-        ENGINE_CLASSIC=1, //!< Force use the old dnn engine similar to 4.x branch
-        ENGINE_NEW=2,     //!< Force use the new dnn engine. The engine does not support non CPU back-ends for now.
-        ENGINE_AUTO=3,    //!< Try to use the new engine and then fall back to the classic version.
-        ENGINE_ORT=4      //!< Try to use ONNX Runtime wrapper (ONNX only, requires build with WITH_ONNXRUNTIME=ON).
+        ENGINE_AUTO=0,    //!< Automatically select the engine. Currently resolves to ENGINE_OPENCV; the mapping may change as more engines are added.
+        ENGINE_OPENCV=1,  //!< Use OpenCV's built-in DNN engine. Does not support non-CPU back-ends for now.
+        ENGINE_ORT=2      //!< Use the ONNX Runtime wrapper (ONNX only, requires build with WITH_ONNXRUNTIME=ON).
     };
-
-    /** @brief Reads a network model stored in <a href="https://www.tensorflow.org/">TensorFlow</a> framework's format.
-      * @param model  path to the .pb file with binary protobuf description of the network architecture
-      * @param config path to the .pbtxt file that contains text graph definition in protobuf format.
-      *               Resulting Net object is built by text graph using weights from a binary one that
-      *               let us make it more flexible.
-      * @param engine select DNN engine to be used. With auto selection the new engine is used.
-      * @param extraOutputs specify model outputs explicitly, in addition to the outputs the graph analyzer finds.
-      * Please pay attention that the new DNN does not support non-CPU back-ends for now.
-      * @returns Net object.
-      */
-    CV_EXPORTS_W Net readNetFromTensorflow(CV_WRAP_FILE_PATH const String &model,
-                                           CV_WRAP_FILE_PATH const String &config = String(),
-                                           int engine=ENGINE_AUTO,
-                                           const std::vector<String>& extraOutputs = std::vector<String>());
-
-    /** @brief Reads a network model stored in <a href="https://www.tensorflow.org/">TensorFlow</a> framework's format.
-      * @param bufferModel buffer containing the content of the pb file
-      * @param bufferConfig buffer containing the content of the pbtxt file
-      * @param engine select DNN engine to be used. With auto selection the new engine is used.
-      * @param extraOutputs specify model outputs explicitly, in addition to the outputs the graph analyzer finds.
-      * Please pay attention that the new DNN does not support non-CPU back-ends for now.
-      * @returns Net object.
-      */
-    CV_EXPORTS_W Net readNetFromTensorflow(const std::vector<uchar>& bufferModel,
-                                           const std::vector<uchar>& bufferConfig = std::vector<uchar>(),
-                                           int engine=ENGINE_AUTO,
-                                           const std::vector<String>& extraOutputs = std::vector<String>());
-
-    /** @brief Reads a network model stored in <a href="https://www.tensorflow.org/">TensorFlow</a> framework's format.
-      * @details This is an overloaded member function, provided for convenience.
-      * It differs from the above function only in what argument(s) it accepts.
-      * @param bufferModel buffer containing the content of the pb file
-      * @param lenModel length of bufferModel
-      * @param bufferConfig buffer containing the content of the pbtxt file
-      * @param lenConfig length of bufferConfig
-      * @param engine select DNN engine to be used. With auto selection the new engine is used.
-      * @param extraOutputs specify model outputs explicitly, in addition to the outputs the graph analyzer finds.
-      * Please pay attention that the new DNN does not support non-CPU back-ends for now.
-      */
-    CV_EXPORTS Net readNetFromTensorflow(const char *bufferModel, size_t lenModel,
-                                         const char *bufferConfig = NULL, size_t lenConfig = 0,
-                                         int engine=ENGINE_AUTO,
-                                         const std::vector<String>& extraOutputs = std::vector<String>());
 
     /** @brief Reads a network model stored in <a href="https://www.tensorflow.org/lite">TFLite</a> framework's format.
       * @param model  path to the .tflite file with binary flatbuffers description of the network architecture
-      * @param engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+      * @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
       * Please pay attention that the new DNN does not support non-CPU back-ends for now.
       * @returns Net object.
       */
@@ -1143,7 +1137,7 @@ CV__DNN_INLINE_NS_BEGIN
 
     /** @brief Reads a network model stored in <a href="https://www.tensorflow.org/lite">TFLite</a> framework's format.
       * @param bufferModel buffer containing the content of the tflite file
-      * @param engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+      * @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
       * Please pay attention that the new DNN does not support non-CPU back-ends for now.
       * @returns Net object.
       */
@@ -1154,7 +1148,7 @@ CV__DNN_INLINE_NS_BEGIN
       * It differs from the above function only in what argument(s) it accepts.
       * @param bufferModel buffer containing the content of the tflite file
       * @param lenModel length of bufferModel
-      * @param engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+      * @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
       * Please pay attention that the new DNN does not support non-CPU back-ends for now.
       */
     CV_EXPORTS Net readNetFromTFLite(const char *bufferModel, size_t lenModel, int engine=ENGINE_AUTO);
@@ -1163,21 +1157,18 @@ CV__DNN_INLINE_NS_BEGIN
       * @brief Read deep learning network represented in one of the supported formats.
       * @param[in] model Binary file contains trained weights. The following file
       *                  extensions are expected for models from different frameworks:
-      *                  * `*.pb` (TensorFlow, https://www.tensorflow.org/)
       *                  * `*.bin` | `*.onnx` (OpenVINO, https://software.intel.com/openvino-toolkit)
       *                  * `*.onnx` (ONNX, https://onnx.ai/)
       * @param[in] config Text file contains network configuration. It could be a
       *                   file with the following extensions:
-      *                  * `*.pbtxt` (TensorFlow, https://www.tensorflow.org/)
       *                  * `*.xml` (OpenVINO, https://software.intel.com/openvino-toolkit)
       * @param[in] framework Explicit framework name tag to determine a format.
-      * @param[in] engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+      * @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
       * Please pay attention that the new DNN does not support non-CPU back-ends for now.
-      * Use ENGINE_CLASSIC if you want to use other back-ends.
       * @returns Net object.
       *
       * This function automatically detects an origin framework of trained model
-      * and calls an appropriate function such @ref readNetFromTensorflow, @ref readNetFromONNX.
+      * and calls an appropriate function such @ref readNetFromONNX.
       * An order of @p model and @p config arguments does not matter.
       */
      CV_EXPORTS_W Net readNet(CV_WRAP_FILE_PATH const String& model,
@@ -1192,9 +1183,8 @@ CV__DNN_INLINE_NS_BEGIN
       * @param[in] framework    Name of origin framework.
       * @param[in] bufferModel  A buffer with a content of binary file with weights
       * @param[in] bufferConfig A buffer with a content of text file contains network configuration.
-      * @param engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+      * @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
       * Please pay attention that the new DNN does not support non-CPU back-ends for now.
-      * Use ENGINE_CLASSIC if you want to use other back-ends.
       * @returns Net object.
       */
      CV_EXPORTS_W Net readNet(const String& framework, const std::vector<uchar>& bufferModel,
@@ -1237,17 +1227,37 @@ CV__DNN_INLINE_NS_BEGIN
 
     /** @brief Reads a network model <a href="https://onnx.ai/">ONNX</a>.
      *  @param onnxFile path to the .onnx file with text description of the network architecture.
-     *  @param engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+     *  @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
      *  Please pay attention that the new DNN does not support non-CPU back-ends for now.
      *  @returns Network object that ready to do forward, throw an exception in failure cases.
      */
     CV_EXPORTS_W Net readNetFromONNX(CV_WRAP_FILE_PATH const String &onnxFile, int engine=ENGINE_AUTO);
 
+    /** @brief Reads a network model <a href="https://onnx.ai/">ONNX</a>, optionally
+     *  memory-mapping the weights that are held in external data files.
+     *  @param onnxFile path to the .onnx file with text description of the network architecture.
+     *  @param engine select DNN engine to be used, as in the overload above.
+     *  @param mapExternalData true maps each initializer's byte range into the address space with
+     *  the platform's memory-mapping call rather than reading the bytes into memory:
+     *  CreateFileMapping() with MapViewOfFile() on Windows, mmap() on Linux, Android, macOS, iOS
+     *  and other Unix-like platforms. The pages are faulted in on demand, so the data files must
+     *  stay in place and unmodified for as long as the Net is alive; the overload above reads
+     *  them, so only a caller that passes true here takes on that requirement. A platform that
+     *  supplies no mapping of its own reads the data instead and reports that in the log, as does
+     *  a file the platform refuses to map. Where OpenCV is built without filesystem support, such
+     *  as Emscripten or WinRT, external data is not supported at all, with or without this flag.
+     *  OPENCV_DNN_ONNX_MMAP_EXTERNAL_DATA, an environment variable read once when the first model
+     *  is loaded, forces reading for every model when set to 0.
+     *  @returns Network object that ready to do forward, throw an exception in failure cases.
+     */
+    CV_EXPORTS_W Net readNetFromONNX(CV_WRAP_FILE_PATH const String &onnxFile, int engine,
+                                     bool mapExternalData);
+
     /** @brief Reads a network model from <a href="https://onnx.ai/">ONNX</a>
      *         in-memory buffer.
      *  @param buffer memory address of the first byte of the buffer.
      *  @param sizeBuffer size of the buffer.
-     *  @param engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+     *  @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
      *  @returns Network object that ready to do forward, throw an exception
      *        in failure cases.
      */
@@ -1256,7 +1266,7 @@ CV__DNN_INLINE_NS_BEGIN
     /** @brief Reads a network model from <a href="https://onnx.ai/">ONNX</a>
      *         in-memory buffer.
      *  @param buffer in-memory buffer that stores the ONNX model bytes.
-     *  @param engine select DNN engine to be used. With auto selection the new engine is used first and falls back to classic.
+     *  @param engine select DNN engine to be used. ENGINE_AUTO (the default) resolves to ENGINE_OPENCV; ENGINE_ORT selects the ONNX Runtime wrapper (ONNX models only, requires WITH_ONNXRUNTIME=ON).
      *  Please pay attention that the new DNN does not support non-CPU back-ends for now.
      *  @returns Network object that ready to do forward, throw an exception
      *        in failure cases.
@@ -1280,6 +1290,7 @@ CV__DNN_INLINE_NS_BEGIN
      *  in 3-channel image is necessary.
      *  @param crop flag which indicates whether image will be cropped after resize or not
      *  @param ddepth Depth of output blob. Choose CV_32F or CV_8U.
+     *  @param interpolation resize interpolation mode. Default: INTER_LINEAR.
      *  @details if @p crop is true, input image is resized so one side after resize is equal to corresponding
      *  dimension in @p size and another one is equal or larger. Then, crop from the center is performed.
      *  If @p crop is false, direct resize without cropping and preserving aspect ratio is performed.
@@ -1290,7 +1301,7 @@ CV__DNN_INLINE_NS_BEGIN
      */
     CV_EXPORTS_W Mat blobFromImage(InputArray image, double scalefactor=1.0, const Size& size = Size(),
                                    const Scalar& mean = Scalar(), bool swapRB=false, bool crop=false,
-                                   int ddepth=CV_32F);
+                                   int ddepth=CV_32F, int interpolation=cv::INTER_LINEAR);
 
     /** @brief Creates 4-dimensional blob from image.
      *  @details This is an overloaded member function, provided for convenience.
@@ -1298,7 +1309,8 @@ CV__DNN_INLINE_NS_BEGIN
      */
     CV_EXPORTS void blobFromImage(InputArray image, OutputArray blob, double scalefactor=1.0,
                                   const Size& size = Size(), const Scalar& mean = Scalar(),
-                                  bool swapRB=false, bool crop=false, int ddepth=CV_32F);
+                                  bool swapRB=false, bool crop=false, int ddepth=CV_32F,
+                                  int interpolation=cv::INTER_LINEAR);
 
 
     /** @brief Creates 4-dimensional blob from series of images. Optionally resizes and
@@ -1313,6 +1325,7 @@ CV__DNN_INLINE_NS_BEGIN
      *  in 3-channel image is necessary.
      *  @param crop flag which indicates whether image will be cropped after resize or not
      *  @param ddepth Depth of output blob. Choose CV_32F or CV_8U.
+     *  @param interpolation resize interpolation mode. Default: INTER_LINEAR.
      *  @details if @p crop is true, input image is resized so one side after resize is equal to corresponding
      *  dimension in @p size and another one is equal or larger. Then, crop from the center is performed.
      *  If @p crop is false, direct resize without cropping and preserving aspect ratio is performed.
@@ -1323,7 +1336,7 @@ CV__DNN_INLINE_NS_BEGIN
      */
     CV_EXPORTS_W Mat blobFromImages(InputArrayOfArrays images, double scalefactor=1.0,
                                     Size size = Size(), const Scalar& mean = Scalar(), bool swapRB=false, bool crop=false,
-                                    int ddepth=CV_32F);
+                                    int ddepth=CV_32F, int interpolation=cv::INTER_LINEAR);
 
     /** @brief Creates 4-dimensional blob from series of images.
      *  @details This is an overloaded member function, provided for convenience.
@@ -1332,7 +1345,7 @@ CV__DNN_INLINE_NS_BEGIN
     CV_EXPORTS void blobFromImages(InputArrayOfArrays images, OutputArray blob,
                                    double scalefactor=1.0, Size size = Size(),
                                    const Scalar& mean = Scalar(), bool swapRB=false, bool crop=false,
-                                   int ddepth=CV_32F);
+                                   int ddepth=CV_32F, int interpolation=cv::INTER_LINEAR);
 
     /**
      * @brief Enum of image processing mode.
@@ -1363,7 +1376,8 @@ CV__DNN_INLINE_NS_BEGIN
         CV_WRAP Image2BlobParams();
         CV_WRAP Image2BlobParams(const Scalar& scalefactor, const Size& size = Size(), const Scalar& mean = Scalar(),
                             bool swapRB = false, int ddepth = CV_32F, DataLayout datalayout = DNN_LAYOUT_NCHW,
-                            ImagePaddingMode mode = dnn::DNN_PMODE_NULL, Scalar borderValue = 0.0);
+                            ImagePaddingMode mode = dnn::DNN_PMODE_NULL, Scalar borderValue = 0.0,
+                            int interpolation = cv::INTER_LINEAR);
 
         CV_PROP_RW Scalar scalefactor; //!< scalefactor multiplier for input image values.
         CV_PROP_RW Size size;    //!< Spatial size for output image.
@@ -1373,11 +1387,15 @@ CV__DNN_INLINE_NS_BEGIN
         CV_PROP_RW DataLayout datalayout; //!< Order of output dimensions. Choose DNN_LAYOUT_NCHW or DNN_LAYOUT_NHWC.
         CV_PROP_RW dnn::ImagePaddingMode paddingmode;   //!< Image padding mode. @see ImagePaddingMode.
         CV_PROP_RW Scalar borderValue;   //!< Value used in padding mode for padding.
+        CV_PROP_RW int interpolation;    //!< Interpolation mode for resize. INTER_LINEAR by default
 
         /** @brief Get rectangle coordinates in original image system from rectangle in blob coordinates.
          *  @param rBlob rect in blob coordinates.
          *  @param size original input image size.
          *  @returns rectangle in original image coordinates.
+         *  @note If the `size` member is empty, the @p size argument is used as the blob size, as in
+         *  @ref blobFromImagesWithParams. For a batch created with an empty `size` member, the blob size is the size
+         *  of the first image, so set the member to that size before mapping rects of the other images.
          */
         CV_WRAP Rect blobRectToImageRect(const Rect &rBlob, const Size &size);
 
@@ -1385,6 +1403,9 @@ CV__DNN_INLINE_NS_BEGIN
          *  @param rBlob rect in blob coordinates.
          *  @param rImg result rect in image coordinates.
          *  @param size original input image size.
+         *  @note If the `size` member is empty, the @p size argument is used as the blob size, as in
+         *  @ref blobFromImagesWithParams. For a batch created with an empty `size` member, the blob size is the size
+         *  of the first image, so set the member to that size before mapping rects of the other images.
          */
         CV_WRAP void blobRectsToImageRects(const std::vector<Rect> &rBlob, CV_OUT std::vector<Rect>& rImg, const Size& size);
     };
@@ -1426,14 +1447,6 @@ CV__DNN_INLINE_NS_BEGIN
      *  of the blob (batch size). Every image has a number of channels equals to the second dimension of the blob (depth).
      */
     CV_EXPORTS_W void imagesFromBlob(const cv::Mat& blob_, OutputArrayOfArrays images_);
-
-    /** @brief Create a text representation for a binary network stored in protocol buffer format.
-     *  @param[in] model  A path to binary network.
-     *  @param[in] output A path to output text file to be created.
-     *
-     *  @note To reduce output file size, trained weights are not included.
-     */
-    CV_EXPORTS_W void writeTextGraph(CV_WRAP_FILE_PATH const String& model, CV_WRAP_FILE_PATH const String& output);
 
     /** @brief Performs non maximum suppression given boxes and corresponding scores.
 
@@ -1615,6 +1628,9 @@ CV__DNN_INLINE_NS_BEGIN
 
          /// @sa Net::enableWinograd
          CV_WRAP Model& enableWinograd(bool useWinograd);
+
+         /// @sa Net::enableTF32
+         CV_WRAP Model& enableTF32(bool useTF32);
 
          CV_DEPRECATED_EXTERNAL
          operator Net&() const { return getNetwork_(); }
@@ -2084,28 +2100,48 @@ public:
     /**
      * @brief Load a tokenizer from a model directory.
      *
-     * Expects the directory to contain:
-     *  - `config.json` with field `model_type` with value "gpt2" or "gpt4".
+     * Accepts either the model directory or the path to its `config.json`. The
+     * directory must contain:
+     *  - `config.json`. An optional `method` field (one of: BPE, Gemma, SentencePiece,
+     *    Unigram, WordPiece) selects the family; without it the family is detected from
+     *    `tokenizer.json`, so a stock Hugging Face config works unmodified.
      *  - `tokenizer.json` produced by the corresponding model family.
      *
-     * The argument is a path prefix; this function concatenates file
-     * names directly (e.g. `model_dir` + "config.json"), so `model_dir` must
-     * end with an appropriate path separator.
-     *
-     * @param model_config  Path to config.json for model.
-     * @return A Tokenizer ready for use. Throws cv::Exception if files are missing or `model_type` is unsupported.
+     * @param model_config  Model directory, or the path to its config.json.
+     * @return A Tokenizer ready for use. Throws cv::Exception if files are missing or `method` is unsupported.
      */
     CV_WRAP static Tokenizer load(CV_WRAP_FILE_PATH const std::string& model_config);
 
     /**
-     * @brief Encode UTF-8 text to token ids (special tokens currently disabled).
+     * @brief Encode UTF-8 text to token ids.
      *
-     * Calls the underlying `CoreBPE::encode` with an empty allowed-special set.
+     * Special-token text in @p text is recognized and mapped to its own id, and any
+     * wrapper the model's post_processor declares (e.g. BERT's `[CLS]`/`[SEP]`) is
+     * applied.
      *
      * @param text  UTF-8 input string.
      * @return Vector of token ids (32-bit ids narrowed to int for convenience).
      */
     CV_WRAP std::vector<int> encode(const std::string& text);
+
+    /**
+     * @brief Encode several text chunks as one sequence.
+     *
+     * The chunks are laid out the way the model's own post_processor declares a pair of
+     * sequences, repeated for as many chunks as are given. For a BERT-family tokenizer
+     * that is `[CLS] textChunks[0] [SEP] textChunks[1] [SEP] ... textChunks[N-1] [SEP]`;
+     * for T5 it is `textChunks[0] </s> textChunks[1] </s> ...`. Whatever the template
+     * puts between its two sequences is repeated between every neighbouring pair.
+     *
+     * A single chunk is encoded exactly like encode(const std::string&). Two or more
+     * require a tokenizer whose `post_processor` declares a `pair` template: BERT and
+     * ALBERT, T5 and Gemma do; byte-level BPE models such as GPT-2 do not, and throw.
+     *
+     * @param textChunks  UTF-8 input chunks; must not be empty.
+     * @return Vector of token ids. Throws cv::Exception if @p textChunks is empty, or if
+     *         it holds more than one chunk and the loaded tokenizer has no pair template.
+     */
+    CV_WRAP std::vector<int> encode(const std::vector<std::string>& textChunks);
 
     CV_WRAP std::string decode(const std::vector<int>& tokens);
     struct Impl;

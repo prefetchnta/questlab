@@ -11,9 +11,19 @@
 #include "opencv2/ptcloud/odometry.hpp"
 #include "opencv2/ptcloud/odometry_frame.hpp"
 #include "opencv2/ptcloud/odometry_settings.hpp"
+#include "opencv2/ptcloud/slam.hpp"
+#include "opencv2/ptcloud/viz3d.hpp"
 
 /**
-@defgroup ptcloud Point Clound Processing
+@defgroup ptcloud Point Cloud Processing
+
+Point-cloud and mesh processing: reading/writing point clouds and meshes,
+triangle rasterization, octree partitioning, and RGB-D / volumetric 3D
+reconstruction (odometry, TSDF volumes).
+
+@{
+    @defgroup ptcloud_rgbd RGB-D and Volumetric Reconstruction
+@}
 */
 
 //! @addtogroup ptcloud
@@ -51,6 +61,183 @@ CV_EXPORTS_W void loadPointCloud(const String &filename, OutputArray vertices, O
  * @param rgb per-vertex colors, each value contains 3 floats
  */
 CV_EXPORTS_W void savePointCloud(const String &filename, InputArray vertices, InputArray normals = noArray(), InputArray rgb = noArray());
+
+/** @brief Removes statistical outliers from a point cloud.
+ *
+ * For each point the mean distance to its @p meanK nearest neighbors is computed. Points whose
+ * mean distance exceeds `global_mean + stddevMulThresh * global_stddev` are treated as outliers
+ * and dropped. This targets sparse noise scattered around the surface.
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param outputCloud Output filtered point cloud, Nx1 CV_32FC3.
+ * @param meanK Number of nearest neighbors used to estimate the mean distance of each point.
+ * @param stddevMulThresh Standard-deviation multiplier for the distance threshold.
+ * @param keptIndices Optional output, indices (CV_32S) into the input cloud of the points that were kept.
+ */
+CV_EXPORTS_W void removeStatisticalOutliers(InputArray inputCloud, OutputArray outputCloud,
+        int meanK = 20, double stddevMulThresh = 2.0, OutputArray keptIndices = noArray());
+
+/** @brief Removes radius outliers from a point cloud.
+ *
+ * Any point that has fewer than @p minNeighbors other points within @p radius is treated as an
+ * isolated outlier and dropped.
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param outputCloud Output filtered point cloud, Nx1 CV_32FC3.
+ * @param radius Search radius.
+ * @param minNeighbors Minimum number of neighbors (not counting the point itself) required to keep a point.
+ * @param keptIndices Optional output, indices (CV_32S) into the input cloud of the points that were kept.
+ */
+CV_EXPORTS_W void removeRadiusOutliers(InputArray inputCloud, OutputArray outputCloud,
+        double radius, int minNeighbors = 16, OutputArray keptIndices = noArray());
+
+/** @brief Flips point-cloud normals so that they face a given viewpoint.
+ *
+ * Each normal whose direction points away from @p viewpoint is negated. Useful when the sensor
+ * position is known. Estimate the normals first with cv::normalEstimate.
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param normals Per-point normals to orient in place, Nx1 CV_32FC3 (as from cv::normalEstimate).
+ * @param viewpoint Point the normals should face towards (e.g. the camera center).
+ */
+CV_EXPORTS_W void orientNormals(InputArray inputCloud, InputOutputArray normals, const Point3f& viewpoint);
+
+/** @brief Orients point-cloud normals consistently across the whole cloud.
+ *
+ * Builds a Riemannian graph over the k nearest neighbors (edge weight 1 - |n_i . n_j|), computes
+ * its minimum spanning tree with cv::buildMST, and propagates a consistent sign along the tree
+ * from a seed point (Hoppe et al. 1992). If the neighbor graph is disconnected the normals are
+ * oriented outward about the centroid instead. Estimate the normals first with cv::normalEstimate.
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param normals Per-point normals to orient in place, Nx1 CV_32FC3 (as from cv::normalEstimate).
+ * @param k Number of nearest neighbors used to build the graph.
+ */
+CV_EXPORTS_W void orientNormalsConsistent(InputArray inputCloud, InputOutputArray normals, int k = 30);
+
+/** @brief Estimates the median spacing between neighboring points of a point cloud.
+ *
+ * Returns the median distance from a sampled set of points to their nearest neighbor. Useful for
+ * picking a ball radius for cv::createMeshBPA.
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @return Median nearest-neighbor distance, or 0 if the cloud has fewer than 2 points.
+ */
+CV_EXPORTS_W float estimateMedianSpacing(InputArray inputCloud);
+
+/** @brief Reconstructs a triangle mesh from an oriented point cloud using Ball-Pivoting.
+ *
+ * Implements the Ball-Pivoting Algorithm @cite Bernardini1999 : a ball of a given radius is
+ * rolled over the points; whenever it rests on three points without containing any other, those
+ * points form a triangle. Several radii are used in ascending order so larger balls bridge the
+ * gaps left by smaller ones. The algorithm is interpolating — the mesh vertices are the input
+ * points — so estimate and orient the normals first (cv::normalEstimate, cv::orientNormalsConsistent).
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param normals Per-point normals, Nx1 CV_32FC3 (same count as the cloud).
+ * @param vertices Output mesh vertices (a copy of the input points), Nx1 CV_32FC3.
+ * @param triangles Output triangle vertex indices, Mx3 CV_32S.
+ * @param radii Optional ball radii (1D CV_32F/CV_64F). If empty, radii are derived from
+ *              cv::estimateMedianSpacing as {1x, 2x, 4x} the median spacing.
+ */
+CV_EXPORTS_W void createMeshBPA(InputArray inputCloud, InputArray normals, OutputArray vertices,
+        OutputArray triangles, InputArray radii = noArray());
+
+/** @brief Computes the axis-aligned bounding box (AABB) of a point cloud.
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param minBound Output minimum corner (x,y,z), 3x1 CV_32F.
+ * @param maxBound Output maximum corner (x,y,z), 3x1 CV_32F.
+ */
+CV_EXPORTS_W void boundingBox3D(InputArray inputCloud, OutputArray minBound, OutputArray maxBound);
+
+/** @brief Computes a PCA-based oriented bounding box (OBB) of a point cloud.
+ *
+ * The box axes are the principal axes of the cloud (covariance eigenvectors). This is the common
+ * practical OBB (as in Open3D); it is not guaranteed to be the minimum-volume OBB.
+ * A point p is inside the box iff `abs(axes * (p - center))` is `<= halfExtents` component-wise.
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param center Output box center (x,y,z), 3x1 CV_32F.
+ * @param axes Output 3x3 CV_32F; each row is a unit box axis.
+ * @param halfExtents Output half-size along each axis, 3x1 CV_32F.
+ */
+CV_EXPORTS_W void orientedBoundingBox3D(InputArray inputCloud, OutputArray center, OutputArray axes,
+        OutputArray halfExtents);
+
+/** @brief Computes an approximate minimum enclosing sphere of a point cloud (Ritter's algorithm).
+ *
+ * @param inputCloud Input point cloud, 3-channel float array (CV_32FC3), or an Nx3 / 3xN CV_32F matrix.
+ * @param center Output sphere center (x,y,z), 3x1 CV_32F.
+ * @return Sphere radius, or 0 if the cloud is empty.
+ */
+CV_EXPORTS_W double approxEnclosingSphere3D(InputArray inputCloud, OutputArray center);
+
+/** @brief Column layout of a decoded 3D Gaussian Splatting scene.
+ *
+ * A decoded scene is a CV_32F matrix with one row per Gaussian and #GAUSSIAN_SPLAT_STRIDE columns.
+ */
+enum GaussianSplatLayout
+{
+    GAUSSIAN_SPLAT_STRIDE = 13, //!< Floats per Gaussian, i.e. the width of a decoded scene.
+    GAUSSIAN_SPLAT_POS    = 0,  //!< First column of the position, 3 floats: x, y, z.
+    GAUSSIAN_SPLAT_COV    = 3,  //!< First column of the covariance upper triangle, 6 floats: xx, xy, xz, yy, yz, zz.
+    GAUSSIAN_SPLAT_RGB    = 9,  //!< First column of the color, 3 floats in [0, 1].
+    GAUSSIAN_SPLAT_ALPHA  = 12  //!< Column of the opacity, 1 float in [0, 1].
+};
+
+/** @brief Returns the PLY vertex property names cv::loadGaussianSplats reads by default.
+ *
+ * The order of the names is the column order cv::decodeGaussianSplats expects. Pass a renamed copy
+ * of this list to cv::loadGaussianSplats to read a scene whose exporter spells the properties
+ * differently, keeping the same order.
+ */
+CV_EXPORTS_W std::vector<String> getGaussianSplatPlyPropNames();
+
+/** @brief Decodes 3D Gaussian Splatting attributes into a renderable scene.
+ *
+ * Scales are exponentiated, opacity is put through a sigmoid, the quaternion and scales are
+ * combined into a 3D covariance, and the zeroth order harmonic is evaluated to an RGB color.
+ *
+ * Use this when the attributes do not come from a file cv::loadGaussianSplats can open, for
+ * instance when they are held in memory, arrive from a training run, or are read from a resource
+ * on a platform without filesystem access.
+ *
+ * @param attributes CV_32F matrix with one row per Gaussian and one column per name of
+ * cv::getGaussianSplatPlyPropNames, in that order.
+ * @param splats Decoded scene, see #GaussianSplatLayout.
+ */
+CV_EXPORTS_W void decodeGaussianSplats(InputArray attributes, OutputArray splats);
+
+/** @brief Decodes the contents of a `.splat` file into a renderable scene.
+ *
+ * A `.splat` file is a headerless array of 32 byte records, one per Gaussian, holding position,
+ * scale, color and rotation. The values are already activated, so only the covariance is built.
+ * Being headerless makes this the in memory counterpart of cv::loadGaussianSplats for platforms
+ * without filesystem access, or for scenes shipped as application resources.
+ *
+ * @param buf CV_8U buffer holding the bytes of a `.splat` file.
+ * @param splats Decoded scene, see #GaussianSplatLayout.
+ */
+CV_EXPORTS_W void decodeGaussianSplatsPacked(InputArray buf, OutputArray splats);
+
+/** @brief Loads a 3D Gaussian Splatting scene from a PLY or `.splat` file.
+ *
+ * Requires a trained scene, i.e. a PLY whose vertices carry `f_dc_0..2`, `opacity`, `scale_0..2`
+ * and `rot_0..3` alongside `x`, `y`, `z`, or a `.splat` file of 32 byte records. Higher order
+ * `f_rest_*` harmonics are ignored.
+ *
+ * The attributes are decoded on load, see cv::decodeGaussianSplats and
+ * cv::decodeGaussianSplatsPacked.
+ *
+ * @param filename Name of the file, the format is chosen from its extension.
+ * @param splats Decoded scene in the layout cv::viz3d::showGaussianSplats expects, see
+ * #GaussianSplatLayout, or empty on failure.
+ * @param ply_properties Vertex property names to read from a PLY file, in the column order of
+ * cv::getGaussianSplatPlyPropNames. Empty selects that default list. Unused for `.splat` files.
+ */
+CV_EXPORTS_W void loadGaussianSplats(const String &filename, OutputArray splats,
+                                     const std::vector<String> &ply_properties = std::vector<String>());
 
 /** @brief Loads a mesh from a file.
  *

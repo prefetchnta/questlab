@@ -14,6 +14,7 @@
 // Copyright (C) 2009, Willow Garage Inc., all rights reserved.
 // Copyright (C) 2013, OpenCV Foundation, all rights reserved.
 // Copyright (C) 2015, Itseez Inc., all rights reserved.
+// Copyright (C) 2026, Advanced Micro Devices, Inc., all rights reserved.
 // Third party copyrights are property of their respective owners.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -606,33 +607,58 @@ void v_rshr_pack_store(short* ptr, const v_int32x4& a)
 }
 
 
-// [a0 0 | b0 0]  [a1 0 | b1 0]
-inline v_uint32x4 v_pack(const v_uint64x2& a, const v_uint64x2& b)
+// Gather the low and the high 32-bit halves of a and b as [a0 a1 b0 b1].
+// SSE2 has no 64-bit compare, so the saturation below is decided on the high halves alone, which
+// only ever needs 32-bit compares.
+#define OPENCV_HAL_SSE_SPLIT64(a, b, lo, hi)     __m128 lo##_af = _mm_castsi128_ps(a), lo##_bf = _mm_castsi128_ps(b);     __m128i lo = _mm_castps_si128(_mm_shuffle_ps(lo##_af, lo##_bf, _MM_SHUFFLE(2,0,2,0)));     __m128i hi = _mm_castps_si128(_mm_shuffle_ps(lo##_af, lo##_bf, _MM_SHUFFLE(3,1,3,1)))
+
+// mask ? a : b, per 32-bit lane
+inline __m128i _v_sse_select(__m128i mask, __m128i a, __m128i b)
 {
-    __m128i v0 = _mm_unpacklo_epi32(a.val, b.val); // a0 a1 0 0
-    __m128i v1 = _mm_unpackhi_epi32(a.val, b.val); // b0 b1 0 0
-    return v_uint32x4(_mm_unpacklo_epi32(v0, v1));
+#if CV_SSE4_1
+    return _mm_blendv_epi8(b, a, mask);
+#else
+    return _mm_or_si128(_mm_and_si128(mask, a), _mm_andnot_si128(mask, b));
+#endif
 }
 
-inline void v_pack_store(unsigned* ptr, const v_uint64x2& a)
-{
-    __m128i a1 = _mm_shuffle_epi32(a.val, _MM_SHUFFLE(0, 2, 2, 0));
-    _mm_storel_epi64((__m128i*)ptr, a1);
-}
-
-// [a0 0 | b0 0]  [a1 0 | b1 0]
+// s64 -> s32: the value fits exactly when hi == sext(lo); otherwise clamp to INT_MIN / INT_MAX
+// according to the sign, which sext(hi) already carries.
 inline v_int32x4 v_pack(const v_int64x2& a, const v_int64x2& b)
 {
-    __m128i v0 = _mm_unpacklo_epi32(a.val, b.val); // a0 a1 0 0
-    __m128i v1 = _mm_unpackhi_epi32(a.val, b.val); // b0 b1 0 0
-    return v_int32x4(_mm_unpacklo_epi32(v0, v1));
+    OPENCV_HAL_SSE_SPLIT64(a.val, b.val, lo, hi);
+    __m128i fits = _mm_cmpeq_epi32(hi, _mm_srai_epi32(lo, 31));
+    __m128i sat  = _mm_xor_si128(_mm_srai_epi32(hi, 31), _mm_set1_epi32(INT_MAX));
+    return v_int32x4(_v_sse_select(fits, lo, sat));
+}
+
+// u64 -> u32: fits exactly when hi == 0, else UINT_MAX
+inline v_uint32x4 v_pack(const v_uint64x2& a, const v_uint64x2& b)
+{
+    OPENCV_HAL_SSE_SPLIT64(a.val, b.val, lo, hi);
+    __m128i fits = _mm_cmpeq_epi32(hi, _mm_setzero_si128());
+    return v_uint32x4(_v_sse_select(fits, lo, _mm_set1_epi32(-1)));
+}
+
+// s64 -> u32: hi == 0 keeps lo, hi < 0 clamps to 0, hi > 0 clamps to UINT_MAX - and the
+// cmpgt result is exactly 0 / all-ones, so it doubles as the saturated value.
+inline v_uint32x4 v_pack_u(const v_int64x2& a, const v_int64x2& b)
+{
+    OPENCV_HAL_SSE_SPLIT64(a.val, b.val, lo, hi);
+    __m128i zero = _mm_setzero_si128();
+    __m128i fits = _mm_cmpeq_epi32(hi, zero);
+    __m128i sat  = _mm_cmpgt_epi32(hi, zero);
+    return v_uint32x4(_v_sse_select(fits, lo, sat));
 }
 
 inline void v_pack_store(int* ptr, const v_int64x2& a)
-{
-    __m128i a1 = _mm_shuffle_epi32(a.val, _MM_SHUFFLE(0, 2, 2, 0));
-    _mm_storel_epi64((__m128i*)ptr, a1);
-}
+{ _mm_storel_epi64((__m128i*)ptr, v_pack(a, a).val); }
+
+inline void v_pack_store(unsigned* ptr, const v_uint64x2& a)
+{ _mm_storel_epi64((__m128i*)ptr, v_pack(a, a).val); }
+
+inline void v_pack_u_store(unsigned* ptr, const v_int64x2& a)
+{ _mm_storel_epi64((__m128i*)ptr, v_pack_u(a, a).val); }
 
 template<int n> inline
 v_uint32x4 v_rshr_pack(const v_uint64x2& a, const v_uint64x2& b)
@@ -1882,8 +1908,8 @@ OPENCV_HAL_IMPL_SSE_SELECT(v_uint16x8, OPENCV_HAL_NOP, OPENCV_HAL_NOP, epi8)
 OPENCV_HAL_IMPL_SSE_SELECT(v_int16x8, OPENCV_HAL_NOP, OPENCV_HAL_NOP, epi8)
 OPENCV_HAL_IMPL_SSE_SELECT(v_uint32x4, _mm_castps_si128, _mm_castsi128_ps, ps)
 OPENCV_HAL_IMPL_SSE_SELECT(v_int32x4, _mm_castps_si128, _mm_castsi128_ps, ps)
-// OPENCV_HAL_IMPL_SSE_SELECT(v_uint64x2, TBD, TBD, pd)
-// OPENCV_HAL_IMPL_SSE_SELECT(v_int64x2, TBD, TBD, ps)
+OPENCV_HAL_IMPL_SSE_SELECT(v_uint64x2, _mm_castpd_si128, _mm_castsi128_pd, pd)
+OPENCV_HAL_IMPL_SSE_SELECT(v_int64x2, _mm_castpd_si128, _mm_castsi128_pd, pd)
 OPENCV_HAL_IMPL_SSE_SELECT(v_float32x4, OPENCV_HAL_NOP, OPENCV_HAL_NOP, ps)
 OPENCV_HAL_IMPL_SSE_SELECT(v_float64x2, OPENCV_HAL_NOP, OPENCV_HAL_NOP, pd)
 
@@ -1901,8 +1927,8 @@ OPENCV_HAL_IMPL_SSE_SELECT(v_uint16x8, si128)
 OPENCV_HAL_IMPL_SSE_SELECT(v_int16x8, si128)
 OPENCV_HAL_IMPL_SSE_SELECT(v_uint32x4, si128)
 OPENCV_HAL_IMPL_SSE_SELECT(v_int32x4, si128)
-// OPENCV_HAL_IMPL_SSE_SELECT(v_uint64x2, si128)
-// OPENCV_HAL_IMPL_SSE_SELECT(v_int64x2, si128)
+OPENCV_HAL_IMPL_SSE_SELECT(v_uint64x2, si128)
+OPENCV_HAL_IMPL_SSE_SELECT(v_int64x2, si128)
 OPENCV_HAL_IMPL_SSE_SELECT(v_float32x4, ps)
 OPENCV_HAL_IMPL_SSE_SELECT(v_float64x2, pd)
 #endif
@@ -1977,7 +2003,7 @@ OPENCV_HAL_IMPL_SSE_UNPACKS(v_float64x2, pd, _mm_castpd_si128, _mm_castsi128_pd)
 inline v_uint8x16 v_reverse(const v_uint8x16 &a)
 {
 #if CV_SSSE3
-    static const __m128i perm = _mm_setr_epi8(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+    const __m128i perm = _mm_setr_epi8(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
     return v_uint8x16(_mm_shuffle_epi8(a.val, perm));
 #else
     uchar CV_DECL_ALIGNED(32) d[16];
@@ -1992,7 +2018,7 @@ inline v_int8x16 v_reverse(const v_int8x16 &a)
 inline v_uint16x8 v_reverse(const v_uint16x8 &a)
 {
 #if CV_SSSE3
-    static const __m128i perm = _mm_setr_epi8(14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1);
+    const __m128i perm = _mm_setr_epi8(14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1);
     return v_uint16x8(_mm_shuffle_epi8(a.val, perm));
 #else
     __m128i r = _mm_shuffle_epi32(a.val, _MM_SHUFFLE(0, 1, 2, 3));
@@ -2033,53 +2059,65 @@ inline _Tpvec v_extract(const _Tpvec& a, const _Tpvec& b)
     return v_rotate_right<s>(a, b);
 }
 
+
+// cvtps2dq/cvtpd2dq and the truncating variants return INT_MIN ("integer indefinite") for any
+// out-of-range input, so the input is clamped to make the conversion saturate instead. The lower
+// bound is only needed by v_floor, where the subsequent "-1" correction could wrap INT_MIN around;
+// for the other functions the indefinite value already is the correct saturated result.
+// NaN is not handled: the result is unspecified.
+// See cvRound()/cvFloor()/cvCeil()/cvTrunc() for the scalar counterparts and the exact bounds.
 inline v_int32x4 v_round(const v_float32x4& a)
-{ return v_int32x4(_mm_cvtps_epi32(a.val)); }
+{ return v_int32x4(_mm_cvtps_epi32(_mm_min_ps(a.val, _mm_set1_ps(CV__FLT2INT_MAX_F)))); }
 
 inline v_int32x4 v_floor(const v_float32x4& a)
 {
-    __m128i a1 = _mm_cvtps_epi32(a.val);
-    __m128i mask = _mm_castps_si128(_mm_cmpgt_ps(_mm_cvtepi32_ps(a1), a.val));
+    __m128 v = _mm_min_ps(_mm_max_ps(_mm_set1_ps(CV__FLT2INT_MIN_F), a.val), _mm_set1_ps(CV__FLT2INT_MAX_F));
+    __m128i a1 = _mm_cvtps_epi32(v);
+    __m128i mask = _mm_castps_si128(_mm_cmpgt_ps(_mm_cvtepi32_ps(a1), v));
     return v_int32x4(_mm_add_epi32(a1, mask));
 }
 
 inline v_int32x4 v_ceil(const v_float32x4& a)
 {
-    __m128i a1 = _mm_cvtps_epi32(a.val);
-    __m128i mask = _mm_castps_si128(_mm_cmpgt_ps(a.val, _mm_cvtepi32_ps(a1)));
+    __m128 v = _mm_min_ps(a.val, _mm_set1_ps(CV__FLT2INT_MAX_F));
+    __m128i a1 = _mm_cvtps_epi32(v);
+    __m128i mask = _mm_castps_si128(_mm_cmpgt_ps(v, _mm_cvtepi32_ps(a1)));
     return v_int32x4(_mm_sub_epi32(a1, mask));
 }
 
 inline v_int32x4 v_trunc(const v_float32x4& a)
-{ return v_int32x4(_mm_cvttps_epi32(a.val)); }
+{ return v_int32x4(_mm_cvttps_epi32(_mm_min_ps(a.val, _mm_set1_ps(CV__FLT2INT_MAX_F)))); }
 
 inline v_int32x4 v_round(const v_float64x2& a)
-{ return v_int32x4(_mm_cvtpd_epi32(a.val)); }
+{ return v_int32x4(_mm_cvtpd_epi32(_mm_min_pd(a.val, _mm_set1_pd(CV__FLT2INT_MAX_D)))); }
 
 inline v_int32x4 v_round(const v_float64x2& a, const v_float64x2& b)
 {
-    __m128i ai = _mm_cvtpd_epi32(a.val), bi = _mm_cvtpd_epi32(b.val);
+    __m128d hi = _mm_set1_pd(CV__FLT2INT_MAX_D);
+    __m128i ai = _mm_cvtpd_epi32(_mm_min_pd(a.val, hi)), bi = _mm_cvtpd_epi32(_mm_min_pd(b.val, hi));
     return v_int32x4(_mm_unpacklo_epi64(ai, bi));
 }
 
 inline v_int32x4 v_floor(const v_float64x2& a)
 {
-    __m128i a1 = _mm_cvtpd_epi32(a.val);
-    __m128i mask = _mm_castpd_si128(_mm_cmpgt_pd(_mm_cvtepi32_pd(a1), a.val));
+    __m128d v = _mm_min_pd(_mm_max_pd(_mm_set1_pd(CV__FLT2INT_MIN_D), a.val), _mm_set1_pd(CV__FLT2INT_MAX_D));
+    __m128i a1 = _mm_cvtpd_epi32(v);
+    __m128i mask = _mm_castpd_si128(_mm_cmpgt_pd(_mm_cvtepi32_pd(a1), v));
     mask = _mm_srli_si128(_mm_slli_si128(mask, 4), 8); // m0 m0 m1 m1 => m0 m1 0 0
     return v_int32x4(_mm_add_epi32(a1, mask));
 }
 
 inline v_int32x4 v_ceil(const v_float64x2& a)
 {
-    __m128i a1 = _mm_cvtpd_epi32(a.val);
-    __m128i mask = _mm_castpd_si128(_mm_cmpgt_pd(a.val, _mm_cvtepi32_pd(a1)));
+    __m128d v = _mm_min_pd(a.val, _mm_set1_pd(CV__FLT2INT_MAX_D));
+    __m128i a1 = _mm_cvtpd_epi32(v);
+    __m128i mask = _mm_castpd_si128(_mm_cmpgt_pd(v, _mm_cvtepi32_pd(a1)));
     mask = _mm_srli_si128(_mm_slli_si128(mask, 4), 8); // m0 m0 m1 m1 => m0 m1 0 0
     return v_int32x4(_mm_sub_epi32(a1, mask));
 }
 
 inline v_int32x4 v_trunc(const v_float64x2& a)
-{ return v_int32x4(_mm_cvttpd_epi32(a.val)); }
+{ return v_int32x4(_mm_cvttpd_epi32(_mm_min_pd(a.val, _mm_set1_pd(CV__FLT2INT_MAX_D)))); }
 
 #define OPENCV_HAL_IMPL_SSE_TRANSPOSE4x4(_Tpvec, suffix, cast_from, cast_to) \
 inline void v_transpose4x4(const _Tpvec& a0, const _Tpvec& a1, \
@@ -3070,71 +3108,55 @@ inline v_float64x2 v_cvt_f64(const v_int64x2& v)
 
 inline v_int8x16 v_lut(const schar* tab, const int* idx)
 {
-#if defined(_MSC_VER)
-    return v_int8x16(_mm_setr_epi8(tab[idx[0]], tab[idx[1]], tab[idx[ 2]], tab[idx[ 3]], tab[idx[ 4]], tab[idx[ 5]], tab[idx[ 6]], tab[idx[ 7]],
-                                   tab[idx[8]], tab[idx[9]], tab[idx[10]], tab[idx[11]], tab[idx[12]], tab[idx[13]], tab[idx[14]], tab[idx[15]]));
-#else
-    return v_int8x16(_mm_setr_epi64(
-                        _mm_setr_pi8(tab[idx[0]], tab[idx[1]], tab[idx[ 2]], tab[idx[ 3]], tab[idx[ 4]], tab[idx[ 5]], tab[idx[ 6]], tab[idx[ 7]]),
-                        _mm_setr_pi8(tab[idx[8]], tab[idx[9]], tab[idx[10]], tab[idx[11]], tab[idx[12]], tab[idx[13]], tab[idx[14]], tab[idx[15]])
-                    ));
-#endif
+    return v_int8x16(tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]],
+                     tab[idx[4]], tab[idx[5]], tab[idx[6]], tab[idx[7]],
+                     tab[idx[8]], tab[idx[9]], tab[idx[10]], tab[idx[11]],
+                     tab[idx[12]], tab[idx[13]], tab[idx[14]], tab[idx[15]]);
 }
 inline v_int8x16 v_lut_pairs(const schar* tab, const int* idx)
 {
-#if defined(_MSC_VER)
-    return v_int8x16(_mm_setr_epi16(*(const short*)(tab + idx[0]), *(const short*)(tab + idx[1]), *(const short*)(tab + idx[2]), *(const short*)(tab + idx[3]),
-                                    *(const short*)(tab + idx[4]), *(const short*)(tab + idx[5]), *(const short*)(tab + idx[6]), *(const short*)(tab + idx[7])));
-#else
-    return v_int8x16(_mm_setr_epi64(
-                        _mm_setr_pi16(*(const short*)(tab + idx[0]), *(const short*)(tab + idx[1]), *(const short*)(tab + idx[2]), *(const short*)(tab + idx[3])),
-                        _mm_setr_pi16(*(const short*)(tab + idx[4]), *(const short*)(tab + idx[5]), *(const short*)(tab + idx[6]), *(const short*)(tab + idx[7]))
-                    ));
-#endif
+    return v_int8x16(tab[idx[0]], tab[idx[0] + 1], tab[idx[1]], tab[idx[1] + 1],
+                     tab[idx[2]], tab[idx[2] + 1], tab[idx[3]], tab[idx[3] + 1],
+                     tab[idx[4]], tab[idx[4] + 1], tab[idx[5]], tab[idx[5] + 1],
+                     tab[idx[6]], tab[idx[6] + 1], tab[idx[7]], tab[idx[7] + 1]);
 }
 inline v_int8x16 v_lut_quads(const schar* tab, const int* idx)
 {
-#if defined(_MSC_VER)
-    return v_int8x16(_mm_setr_epi32(*(const int*)(tab + idx[0]), *(const int*)(tab + idx[1]),
-                                    *(const int*)(tab + idx[2]), *(const int*)(tab + idx[3])));
-#else
-    return v_int8x16(_mm_setr_epi64(
-                        _mm_setr_pi32(*(const int*)(tab + idx[0]), *(const int*)(tab + idx[1])),
-                        _mm_setr_pi32(*(const int*)(tab + idx[2]), *(const int*)(tab + idx[3]))
-                    ));
-#endif
+    return v_int8x16(
+        tab[idx[0]], tab[idx[0] + 1], tab[idx[0] + 2], tab[idx[0] + 3],
+        tab[idx[1]], tab[idx[1] + 1], tab[idx[1] + 2], tab[idx[1] + 3],
+        tab[idx[2]], tab[idx[2] + 1], tab[idx[2] + 2], tab[idx[2] + 3],
+        tab[idx[3]], tab[idx[3] + 1], tab[idx[3] + 2], tab[idx[3] + 3]);
 }
 inline v_uint8x16 v_lut(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut((const schar *)tab, idx)); }
 inline v_uint8x16 v_lut_pairs(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_pairs((const schar *)tab, idx)); }
 inline v_uint8x16 v_lut_quads(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_quads((const schar *)tab, idx)); }
 
+inline v_uint8x16 v_lut(const uchar* tab, const v_uint8x16& idx)
+{
+    uchar CV_DECL_ALIGNED(16) indices[16], result[16];
+    _mm_store_si128((__m128i*)indices, idx.val);
+    for (int i = 0; i < 16; i++) result[i] = tab[indices[i]];
+    return v_uint8x16(_mm_load_si128((const __m128i*)result));
+}
+inline v_int8x16 v_lut(const schar* tab, const v_uint8x16& idx)
+{ return v_reinterpret_as_s8(v_lut((const uchar*)tab, idx)); }
+
 inline v_int16x8 v_lut(const short* tab, const int* idx)
 {
-#if defined(_MSC_VER)
-    return v_int16x8(_mm_setr_epi16(tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]],
-                                    tab[idx[4]], tab[idx[5]], tab[idx[6]], tab[idx[7]]));
-#else
-    return v_int16x8(_mm_setr_epi64(
-                        _mm_setr_pi16(tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]),
-                        _mm_setr_pi16(tab[idx[4]], tab[idx[5]], tab[idx[6]], tab[idx[7]])
-                    ));
-#endif
+    return v_int16x8(tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]],
+                     tab[idx[4]], tab[idx[5]], tab[idx[6]], tab[idx[7]]);
 }
 inline v_int16x8 v_lut_pairs(const short* tab, const int* idx)
 {
-#if defined(_MSC_VER)
-    return v_int16x8(_mm_setr_epi32(*(const int*)(tab + idx[0]), *(const int*)(tab + idx[1]),
-                                    *(const int*)(tab + idx[2]), *(const int*)(tab + idx[3])));
-#else
-    return v_int16x8(_mm_setr_epi64(
-                        _mm_setr_pi32(*(const int*)(tab + idx[0]), *(const int*)(tab + idx[1])),
-                        _mm_setr_pi32(*(const int*)(tab + idx[2]), *(const int*)(tab + idx[3]))
-                    ));
-#endif
+    return v_int16x8(tab[idx[0]], tab[idx[0] + 1], tab[idx[1]], tab[idx[1] + 1],
+                     tab[idx[2]], tab[idx[2] + 1], tab[idx[3]], tab[idx[3] + 1]);
 }
 inline v_int16x8 v_lut_quads(const short* tab, const int* idx)
 {
-    return v_int16x8(_mm_set_epi64x(*(const int64_t*)(tab + idx[1]), *(const int64_t*)(tab + idx[0])));
+    return v_int16x8(tab[idx[0]], tab[idx[0] + 1], tab[idx[0] + 2],
+                     tab[idx[0] + 3], tab[idx[1]], tab[idx[1] + 1],
+                     tab[idx[1] + 2], tab[idx[1] + 3]);
 }
 inline v_uint16x8 v_lut(const ushort* tab, const int* idx) { return v_reinterpret_as_u16(v_lut((const short *)tab, idx)); }
 inline v_uint16x8 v_lut_pairs(const ushort* tab, const int* idx) { return v_reinterpret_as_u16(v_lut_pairs((const short *)tab, idx)); }
@@ -3142,15 +3164,7 @@ inline v_uint16x8 v_lut_quads(const ushort* tab, const int* idx) { return v_rein
 
 inline v_int32x4 v_lut(const int* tab, const int* idx)
 {
-#if defined(_MSC_VER)
-    return v_int32x4(_mm_setr_epi32(tab[idx[0]], tab[idx[1]],
-                                    tab[idx[2]], tab[idx[3]]));
-#else
-    return v_int32x4(_mm_setr_epi64(
-                        _mm_setr_pi32(tab[idx[0]], tab[idx[1]]),
-                        _mm_setr_pi32(tab[idx[2]], tab[idx[3]])
-                    ));
-#endif
+    return v_int32x4(tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]]);
 }
 inline v_int32x4 v_lut_pairs(const int* tab, const int* idx)
 {

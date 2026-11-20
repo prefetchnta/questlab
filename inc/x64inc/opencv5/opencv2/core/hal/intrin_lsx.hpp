@@ -6,6 +6,7 @@
 #define OPENCV_HAL_INTRIN_LSX_HPP
 
 #include <lsxintrin.h>
+#include <climits>
 
 #define CV_SIMD128 1
 #define CV_SIMD128_64F 1
@@ -746,6 +747,8 @@ OPENCV_HAL_IMPL_LSX_SELECT(v_uint16x8)
 OPENCV_HAL_IMPL_LSX_SELECT(v_int16x8)
 OPENCV_HAL_IMPL_LSX_SELECT(v_uint32x4)
 OPENCV_HAL_IMPL_LSX_SELECT(v_int32x4)
+OPENCV_HAL_IMPL_LSX_SELECT(v_uint64x2)
+OPENCV_HAL_IMPL_LSX_SELECT(v_int64x2)
 
 inline v_float32x4 v_select(const v_float32x4 &mask, const v_float32x4 &a, const v_float32x4 &b)
 { return v_float32x4(__lsx_vbitsel_v((__m128i)b.val, (__m128i)a.val, (__m128i)mask.val)); }
@@ -797,8 +800,8 @@ OPENCV_HAL_IMPL_LSX_CMP_OP_64BIT(v_int64x2, d)
     { return _Tpvec(__lsx_##suffix##_##ssuffix(a.val, b.val)); }           \
 
 #define OPENCV_HAL_IMPL_LSX_CMP_OP_FLT(_Tpvec, ssuffix)                    \
-    OPENCV_HAL_IMPL_LSX_CMP_FLT(v_eq, vfcmp_ceq, _Tpvec, ssuffix)          \
-    OPENCV_HAL_IMPL_LSX_CMP_FLT(v_ne, vfcmp_cne, _Tpvec, ssuffix)          \
+    OPENCV_HAL_IMPL_LSX_CMP_FLT(v_eq, vfcmp_ceq,  _Tpvec, ssuffix)         \
+    OPENCV_HAL_IMPL_LSX_CMP_FLT(v_ne, vfcmp_cune, _Tpvec, ssuffix)         \
     OPENCV_HAL_IMPL_LSX_CMP_FLT(v_lt,  vfcmp_clt, _Tpvec, ssuffix)         \
     OPENCV_HAL_IMPL_LSX_CMP_FLT(v_le, vfcmp_cle, _Tpvec, ssuffix)          \
 
@@ -1447,6 +1450,16 @@ inline v_uint8x16 v_lut_pairs(const uchar* tab, const int* idx)
 inline v_uint8x16 v_lut_quads(const uchar* tab, const int* idx)
 { return v_reinterpret_as_u8(v_lut_quads((const schar*)tab, idx)); }
 
+inline v_uint8x16 v_lut(const uchar* tab, const v_uint8x16& idx)
+{
+    uchar CV_DECL_ALIGNED(16) indices[16], result[16];
+    __lsx_vst(idx.val, indices, 0);
+    for (int i = 0; i < 16; i++) result[i] = tab[indices[i]];
+    return v_uint8x16(__lsx_vld(result, 0));
+}
+inline v_int8x16 v_lut(const schar* tab, const v_uint8x16& idx)
+{ return v_reinterpret_as_s8(v_lut((const uchar*)tab, idx)); }
+
 inline v_int16x8 v_lut(const short* tab, const int* idx)
 {
     return v_int16x8(_v128_setr_h(tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]],
@@ -1956,17 +1969,14 @@ void v_rshr_pack_store(short* ptr, const v_int32x4& a)
 
 // 64
 // Non-saturaing pack
-inline v_uint32x4 v_pack(const v_uint64x2& a, const v_uint64x2& b)
+// truncating narrows, kept private: v_pack()/v_pack_u() below saturate like every other width
+inline v_uint32x4 v_pack_trunc(const v_uint64x2& a, const v_uint64x2& b)
 { return v_uint32x4(__lsx_vpickev_w(b.val, a.val)); }
 
-inline v_int32x4 v_pack(const v_int64x2& a, const v_int64x2& b)
-{ return v_reinterpret_as_s32(v_pack(v_reinterpret_as_u64(a), v_reinterpret_as_u64(b))); }
+inline v_int32x4 v_pack_trunc(const v_int64x2& a, const v_int64x2& b)
+{ return v_reinterpret_as_s32(v_pack_trunc(v_reinterpret_as_u64(a), v_reinterpret_as_u64(b))); }
 
-inline void v_pack_store(unsigned* ptr, const v_uint64x2& a)
-{ __lsx_vstelm_d(__lsx_vshuf4i_w(a.val, 0x08), ptr, 0, 0); }
-
-inline void v_pack_store(int *ptr, const v_int64x2& a)
-{ v_pack_store((unsigned*)ptr, v_reinterpret_as_u64(a)); }
+OPENCV_HAL_IMPL_SATURATING_PACK_64(v_int64x2, v_uint64x2, v_int32x4, v_uint32x4, v_setall_s32, v_pack_trunc, v_pack_trunc)
 
 template<int n> inline
 v_uint32x4 v_rshr_pack(const v_uint64x2& a, const v_uint64x2& b)

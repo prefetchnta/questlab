@@ -6,7 +6,6 @@
 #define OPENCV_2D_HPP
 
 #include "opencv2/core.hpp"
-#include "opencv2/core/utils/logger.hpp"
 
 namespace cv {
 
@@ -827,6 +826,9 @@ CV_EXPORTS_W double contourArea( InputArray contour, bool oriented = false );
  * non-zero pixels of gray-scale image.
  *
  * @param array Input gray-scale image or 2D point set, stored in std::vector or Mat.
+ *
+ * @note Point coordinates that the resulting Rect cannot represent - outside of the int range,
+ * or infinite - are saturated to INT_MIN / INT_MAX, and its width and height are clamped to INT_MAX.
  */
 CV_EXPORTS_W Rect boundingRect( InputArray array );
 

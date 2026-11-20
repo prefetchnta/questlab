@@ -292,7 +292,7 @@ OPENCV_HAL_IMPL_REINTERPRET_INT(uint64, int64)
 OPENCV_HAL_IMPL_REINTERPRET_INT(int64, int64)
 OPENCV_HAL_IMPL_REINTERPRET_INT(double, int64)
 
-static const unsigned char popCountTable[] =
+static constexpr unsigned char popCountTable[] =
 {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
@@ -462,14 +462,7 @@ inline v_int16x8 v_pack(const v_int32x4& a, const v_int32x4& b)
     v128_t b2 = wasm_v128_bitselect(minval, b1, wasm_i32x4_lt(b1, minval));
     return v_int16x8(wasm_i8x16_shuffle(a2, b2, 0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29));
 }
-inline v_uint32x4 v_pack(const v_uint64x2& a, const v_uint64x2& b)
-{
-    return v_uint32x4(wasm_i8x16_shuffle(a.val, b.val, 0,1,2,3,8,9,10,11,16,17,18,19,24,25,26,27));
-}
-inline v_int32x4 v_pack(const v_int64x2& a, const v_int64x2& b)
-{
-    return v_int32x4(wasm_i8x16_shuffle(a.val, b.val, 0,1,2,3,8,9,10,11,16,17,18,19,24,25,26,27));
-}
+
 inline v_uint8x16 v_pack_u(const v_int16x8& a, const v_int16x8& b)
 {
     v128_t maxval = wasm_i16x8_splat(255);
@@ -631,24 +624,6 @@ inline void v_pack_store(short* ptr, const v_int32x4& a)
     short t_ptr[8];
     wasm_v128_store(t_ptr, r);
     for (int i=0; i<4; ++i) {
-        ptr[i] = t_ptr[i];
-    }
-}
-inline void v_pack_store(unsigned* ptr, const v_uint64x2& a)
-{
-    v128_t r = wasm_i8x16_shuffle(a.val, a.val, 0,1,2,3,8,9,10,11,0,1,2,3,8,9,10,11);
-    unsigned t_ptr[4];
-    wasm_v128_store(t_ptr, r);
-    for (int i=0; i<2; ++i) {
-        ptr[i] = t_ptr[i];
-    }
-}
-inline void v_pack_store(int* ptr, const v_int64x2& a)
-{
-    v128_t r = wasm_i8x16_shuffle(a.val, a.val, 0,1,2,3,8,9,10,11,0,1,2,3,8,9,10,11);
-    int t_ptr[4];
-    wasm_v128_store(t_ptr, r);
-    for (int i=0; i<2; ++i) {
         ptr[i] = t_ptr[i];
     }
 }
@@ -1854,6 +1829,17 @@ OPENCV_HAL_IMPL_WASM_SELECT(v_int64x2)
 OPENCV_HAL_IMPL_WASM_SELECT(v_float32x4)
 OPENCV_HAL_IMPL_WASM_SELECT(v_float64x2)
 
+// truncating narrows, kept private: v_pack()/v_pack_u() below saturate like every other width
+inline v_uint32x4 v_pack_trunc(const v_uint64x2& a, const v_uint64x2& b)
+{
+    return v_uint32x4(wasm_i8x16_shuffle(a.val, b.val, 0,1,2,3,8,9,10,11,16,17,18,19,24,25,26,27));
+}
+inline v_int32x4 v_pack_trunc(const v_int64x2& a, const v_int64x2& b)
+{
+    return v_int32x4(wasm_i8x16_shuffle(a.val, b.val, 0,1,2,3,8,9,10,11,16,17,18,19,24,25,26,27));
+}
+OPENCV_HAL_IMPL_SATURATING_PACK_64(v_int64x2, v_uint64x2, v_int32x4, v_uint32x4, v_setall_s32, v_pack_trunc, v_pack_trunc)
+
 #define OPENCV_HAL_IMPL_WASM_EXPAND(_Tpvec, _Tpwvec, _Tp, intrin)    \
 inline void v_expand(const _Tpvec& a, _Tpwvec& b0, _Tpwvec& b1)      \
 {                                                                    \
@@ -1928,23 +1914,33 @@ inline _Tpvec v_extract(const _Tpvec& a, const _Tpvec& b)
     return v_rotate_right<s>(a, b);
 }
 
+// i32x4.trunc_sat_f32x4 saturates, but the "-1"/"+1" corrections in v_floor/v_ceil could wrap the
+// saturated INT_MIN/INT_MAX around, so the input is clamped to the int32 range first.
+// See cvRound() and friends for the exact bounds.
+static inline v128_t wasm_clamp_to_s32_f32x4(v128_t a)
+{
+    return wasm_f32x4_max(wasm_f32x4_min(a, wasm_f32x4_splat(CV__FLT2INT_MAX_F)), wasm_f32x4_splat(CV__FLT2INT_MIN_F));
+}
+
 inline v_int32x4 v_round(const v_float32x4& a)
 {
-    v128_t h = wasm_f32x4_splat(0.5);
-    return v_int32x4(wasm_i32x4_trunc_saturate_f32x4(wasm_f32x4_add(a.val, h)));
+    // f32x4.nearest rounds half to even, like cvRound()
+    return v_int32x4(wasm_i32x4_trunc_saturate_f32x4(wasm_f32x4_nearest(wasm_clamp_to_s32_f32x4(a.val))));
 }
 
 inline v_int32x4 v_floor(const v_float32x4& a)
 {
-    v128_t a1 = wasm_i32x4_trunc_saturate_f32x4(a.val);
-    v128_t mask = wasm_f32x4_lt(a.val, wasm_f32x4_convert_i32x4(a1));
+    v128_t v = wasm_clamp_to_s32_f32x4(a.val);
+    v128_t a1 = wasm_i32x4_trunc_saturate_f32x4(v);
+    v128_t mask = wasm_f32x4_lt(v, wasm_f32x4_convert_i32x4(a1));
     return v_int32x4(wasm_i32x4_add(a1, mask));
 }
 
 inline v_int32x4 v_ceil(const v_float32x4& a)
 {
-    v128_t a1 = wasm_i32x4_trunc_saturate_f32x4(a.val);
-    v128_t mask = wasm_f32x4_gt(a.val, wasm_f32x4_convert_i32x4(a1));
+    v128_t v = wasm_clamp_to_s32_f32x4(a.val);
+    v128_t a1 = wasm_i32x4_trunc_saturate_f32x4(v);
+    v128_t mask = wasm_f32x4_gt(v, wasm_f32x4_convert_i32x4(a1));
     return v_int32x4(wasm_i32x4_sub(a1, mask));
 }
 
@@ -1967,7 +1963,7 @@ inline v_int32x4 func(const v_float64x2& a) \
 OPENCV_HAL_IMPL_WASM_MATH_FUNC(v_round, cvRound)
 OPENCV_HAL_IMPL_WASM_MATH_FUNC(v_floor, cvFloor)
 OPENCV_HAL_IMPL_WASM_MATH_FUNC(v_ceil, cvCeil)
-OPENCV_HAL_IMPL_WASM_MATH_FUNC(v_trunc, int)
+OPENCV_HAL_IMPL_WASM_MATH_FUNC(v_trunc, cvTrunc)
 
 inline v_int32x4 v_round(const v_float64x2& a, const v_float64x2& b)
 {
@@ -2580,6 +2576,16 @@ inline v_int8x16 v_lut_quads(const schar* tab, const int* idx)
 inline v_uint8x16 v_lut(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut((const schar *)tab, idx)); }
 inline v_uint8x16 v_lut_pairs(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_pairs((const schar *)tab, idx)); }
 inline v_uint8x16 v_lut_quads(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_quads((const schar *)tab, idx)); }
+
+inline v_uint8x16 v_lut(const uchar* tab, const v_uint8x16& idx)
+{
+    uchar CV_DECL_ALIGNED(16) indices[16], result[16];
+    wasm_v128_store(indices, idx.val);
+    for (int i = 0; i < 16; i++) result[i] = tab[indices[i]];
+    return v_uint8x16(wasm_v128_load(result));
+}
+inline v_int8x16 v_lut(const schar* tab, const v_uint8x16& idx)
+{ return v_reinterpret_as_s8(v_lut((const uchar*)tab, idx)); }
 
 inline v_int16x8 v_lut(const short* tab, const int* idx)
 {

@@ -753,6 +753,57 @@ public:
     CV_WRAP virtual String getDefaultName() const CV_OVERRIDE;
 };
 
+/** @brief XFeat feature detector and descriptor, based on a DNN model.
+
+XFeat is a compact learned local-feature extractor. This class wraps an ONNX export through
+cv::dnn::Net and exposes score-map detections with 64-D float descriptors under the standard
+cv::Feature2D interface.
+
+The class assumes the ONNX model has a single grayscale input tensor N×1×H×W in [0, 1] and
+returns descriptor and score maps. The descriptor map must have 64 channels, and the keypoint
+logit map must have either 64 channels (no extra class) or 65 channels, where the last channel
+is treated as a dustbin/background class used only in softmax normalization. Images are resized
+with preserved aspect ratio and padded to the configured network input size.
+ */
+class CV_EXPORTS_W XFeat : public Feature2D
+{
+public:
+    /** @brief Creates an XFeat detector.
+    @param modelPath Path to the XFeat ONNX model.
+    @param maxKeypoints Maximum number of keypoints to return per image. The strongest
+                        responses are kept; -1 keeps all detections.
+    @param scoreThreshold Discard keypoints with network score not greater than this value.
+    @param inputSize Input size fed to the network, default Size(640, 640).
+    @param backendId DNN backend identifier (see cv::dnn::Backend); 0 = DNN_BACKEND_DEFAULT.
+    @param targetId  DNN target identifier (see cv::dnn::Target);  0 = DNN_TARGET_CPU.
+    */
+    CV_WRAP static Ptr<XFeat> create(const String& modelPath,
+                                     int maxKeypoints = -1,
+                                     float scoreThreshold = 0.5f,
+                                     const Size& inputSize = Size(640, 640),
+                                     int backendId = 0,
+                                     int targetId = 0);
+
+    /** @brief Creates an XFeat detector from an in-memory model buffer. */
+    CV_WRAP_AS(createFromMemory) static Ptr<XFeat> create(const std::vector<uchar>& bufferModel,
+                                     int maxKeypoints = -1,
+                                     float scoreThreshold = 0.5f,
+                                     const Size& inputSize = Size(640, 640),
+                                     int backendId = 0,
+                                     int targetId = 0);
+
+    CV_WRAP virtual void setMaxKeypoints(int maxKeypoints) = 0;
+    CV_WRAP virtual int  getMaxKeypoints() const = 0;
+
+    CV_WRAP virtual void  setScoreThreshold(float threshold) = 0;
+    CV_WRAP virtual float getScoreThreshold() const = 0;
+
+    CV_WRAP virtual void setInputSize(const Size& inputSize) = 0;
+    CV_WRAP virtual Size getInputSize() const = 0;
+
+    CV_WRAP virtual String getDefaultName() const CV_OVERRIDE;
+};
+
 #endif // HAVE_OPENCV_DNN || CV_DOXYGEN
 
 /** @brief Class for extracting blobs from an image. :
@@ -859,7 +910,7 @@ public:
         CV_WRAP Params();
         CV_PROP_RW Size inputSize;              //!< Input image size for the network, default 640x640
         CV_PROP_RW bool normalizeDescriptors;   //!< Whether to L2-normalize descriptors, default true
-        CV_PROP_RW int engine;                  //!< DNN engine type (dnn::EngineType), default ENGINE_NEW
+        CV_PROP_RW int engine;                  //!< DNN engine type (dnn::EngineType), default ENGINE_AUTO
         CV_PROP_RW int backend;                 //!< DNN backend, default DNN_BACKEND_DEFAULT
         CV_PROP_RW int target;                  //!< DNN target, default DNN_TARGET_CPU
     };
@@ -997,6 +1048,19 @@ public:
     /** @brief Returns true if the descriptor matcher supports masking permissible matches.
      */
     CV_WRAP virtual bool isMaskSupported() const = 0;
+
+    /** @brief Provides keypoint and image-size context for matchers that need it (e.g. LightGlueMatcher).
+
+    Must be called before match()/knnMatch()/radiusMatch() for matchers that require this context.
+    Matchers that don't need it (e.g. BFMatcher, FlannBasedMatcher) ignore the call.
+
+    @param queryKpts Query image keypoints.
+    @param trainKpts Train image keypoints.
+    @param queryImageSize Size of the query image (width, height).
+    @param trainImageSize Size of the train image (width, height).
+    */
+    CV_WRAP virtual void setImagePairInfo(const std::vector<KeyPoint>& queryKpts, const std::vector<KeyPoint>& trainKpts,
+                                          Size queryImageSize = Size(), Size trainImageSize = Size());
 
     /** @brief Trains a descriptor matcher
 
@@ -1220,7 +1284,7 @@ public:
 
     virtual ~BFMatcher() {}
 
-    virtual bool isMaskSupported() const CV_OVERRIDE { return true; }
+    virtual bool isMaskSupported() const CV_OVERRIDE { return !crossCheck; }
 
     /** @brief Brute-force matcher create method.
     @param normType One of NORM_L1, NORM_L2, NORM_HAMMING, NORM_HAMMING2. L1 and L2 norms are
@@ -1296,16 +1360,30 @@ protected:
 
 #endif
 
+//! LightGlue model variant (namespace-scoped like dnn::EngineType)
+enum LightGlueType
+{
+    LG_ALIKED = 0,  //!< ALIKED model: keypoints normalized to [-1, 1]
+    LG_DISK = 1     //!< DISK model:  keypoints normalized to [ 0, 1]
+};
+
+//! Keypoint normalization applied by LightGlueMatcher to pixel coordinates, see LightGlueMatcher::setKeypointNormalization()
+enum LightGlueNormalization
+{
+    LG_NORM_MODEL = 0,    //!< Per-axis mapping implied by the LightGlueType given at creation (default)
+    LG_NORM_MAX_SIDE = 1  //!< LightGlue reference mapping \f$(p - size / 2) / (\max(W, H) / 2)\f$, keeps the image aspect ratio
+};
+
 /** @brief LightGlue feature matcher.
 
-LightGlue is a CNN-based feature matcher, as described in @cite Lindenberger23 . It takes
+LightGlue is an attention-based feature matcher, as described in @cite Lindenberger23 . It takes
 keypoint locations and descriptors from two images and directly predicts match pairs. Unlike
-traditional matchers that compute descriptor distances, LightGlue uses attention mechanisms
-to produce confidence scores for each potential match pair.
+traditional matchers that compute descriptor distances, LightGlue produces confidence scores
+for each potential match pair.
 
-The matcher extends DescriptorMatcher and supports the standard match(), knnMatch(), and
-radiusMatch() interfaces. Context (keypoints and image sizes) must be provided via
-setPairInfo() before matching.
+The matcher extends DescriptorMatcher and supports match() and knnMatch() with k=1.
+Context (keypoints and image sizes) must be provided via setPairInfo() or setImagePairInfo()
+before matching. radiusMatch() is not supported.
 */
 class CV_EXPORTS_W LightGlueMatcher : public DescriptorMatcher
 {
@@ -1319,8 +1397,9 @@ public:
     @param scoreThreshold Match confidence threshold.
     @param backend DNN backend
     @param target DNN target
+    @param type Model variant: LG_ALIKED (default) or LG_DISK.
     */
-    CV_WRAP static Ptr<LightGlueMatcher> create(const String& modelPath, float scoreThreshold = 0.0f, int backend = 0, int target = 0);
+    CV_WRAP static Ptr<LightGlueMatcher> create(const String& modelPath, float scoreThreshold = 0.0f, int backend = 0, int target = 0, int type = LG_ALIKED);
 
 #ifdef HAVE_OPENCV_DNN
     /** @brief Creates LightGlueMatcher from in-memory model data.
@@ -1328,20 +1407,23 @@ public:
     @param scoreThreshold Match confidence threshold.
     @param backend DNN backend
     @param target DNN target
+    @param type Model variant: LG_ALIKED (default) or LG_DISK.
     */
-    CV_WRAP_AS(createFromMemory) static Ptr<LightGlueMatcher> create(const std::vector<uchar>& modelData, float scoreThreshold = 0.0f, int backend = 0, int target = 0);
+    CV_WRAP_AS(createFromMemory) static Ptr<LightGlueMatcher> create(const std::vector<uchar>& modelData, float scoreThreshold = 0.0f, int backend = 0, int target = 0, int type = LG_ALIKED);
 #endif
 
     /** @brief Sets the keypoint and image size context for the next match() call.
 
     This provides the spatial context that LightGlue needs in addition to descriptors.
-    Must be called before match()/knnMatch()/radiusMatch() unless using automatic context
-    from in-process ALIKED instances.
+    Must be called before match()/knnMatch(), or use setImagePairInfo().
+    Pixel coordinates are normalized according to the LightGlueType selected at creation, or as
+    selected by setKeypointNormalization().
+    For keypoints already normalized for that model, leave the corresponding image size empty.
 
     @param queryKpts Query image keypoints (Nx2 float matrix with x,y coordinates).
     @param trainKpts Train image keypoints (Nx2 float matrix with x,y coordinates).
-    @param queryImageSize Size of the query image (width, height).
-    @param trainImageSize Size of the train image (width, height).
+    @param queryImageSize Size of the query image, or Size() for normalized query keypoints.
+    @param trainImageSize Size of the train image, or Size() for normalized train keypoints.
     */
     CV_WRAP virtual void setPairInfo(InputArray queryKpts, InputArray trainKpts,
                                      Size queryImageSize = Size(), Size trainImageSize = Size()) = 0;
@@ -1349,6 +1431,29 @@ public:
     /** @brief Clears stored pair context information.
     */
     CV_WRAP virtual void clearPairInfo() = 0;
+
+    /** @brief Selects how pixel keypoints passed with an image size are normalized.
+
+    The default, LG_NORM_MODEL, keeps the per-axis mapping implied by the LightGlueType given at
+    creation. LG_NORM_MAX_SIDE applies the mapping of the LightGlue reference implementation, which
+    shifts by half the image size and divides both axes by half the longer side. Use it for models
+    exported from the reference forward without their own normalization, e.g. XFeat's LighterGlue.
+    For square images the two mappings coincide for LG_ALIKED.
+
+    The setting does not affect keypoints passed with an empty image size, and it is kept by clone().
+    @param normalization One of LightGlueNormalization.
+    */
+    CV_WRAP virtual void setKeypointNormalization(int normalization) = 0;
+
+    /** @brief Returns the keypoint normalization, one of LightGlueNormalization.
+    */
+    CV_WRAP virtual int getKeypointNormalization() const = 0;
+
+    /** @brief Convenience overload of setPairInfo() taking keypoints directly.
+    Uses the same model-specific normalization and image size convention as setPairInfo().
+    */
+    CV_WRAP void setImagePairInfo(const std::vector<KeyPoint>& queryKpts, const std::vector<KeyPoint>& trainKpts,
+                                  Size queryImageSize = Size(), Size trainImageSize = Size()) CV_OVERRIDE;
 };
 
 //! @} features_match

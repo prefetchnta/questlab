@@ -3,6 +3,7 @@
 // of this distribution and at http://opencv.org/license.html
 
 // Copyright (C) 2015, PingTouGe Semiconductor Co., Ltd., all rights reserved.
+// Copyright (C) 2026, Advanced Micro Devices, Inc., all rights reserved.
 
 #ifndef OPENCV_HAL_INTRIN_RISCVV_HPP
 #define OPENCV_HAL_INTRIN_RISCVV_HPP
@@ -1625,6 +1626,16 @@ inline v_uint8x16 v_lut(const uchar* tab, const int* idx) { return v_reinterpret
 inline v_uint8x16 v_lut_pairs(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_pairs((schar*)tab, idx)); }
 inline v_uint8x16 v_lut_quads(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_quads((schar*)tab, idx)); }
 
+inline v_uint8x16 v_lut(const uchar* tab, const v_uint8x16& idx)
+{
+    uchar CV_DECL_ALIGNED(16) indices[16], result[16];
+    vse8_v_u8m1(indices, idx.val, 16);
+    for (int i = 0; i < 16; i++) result[i] = tab[indices[i]];
+    return v_uint8x16(vle8_v_u8m1(result, 16));
+}
+inline v_int8x16 v_lut(const schar* tab, const v_uint8x16& idx)
+{ return v_reinterpret_as_s8(v_lut((const uchar*)tab, idx)); }
+
 inline v_int16x8 v_lut(const short* tab, const int* idx)
 {
 #if 0
@@ -1918,10 +1929,11 @@ void v_rshr_pack_store(_Type* ptr, const v_##_Tp2##x##num2& a) \
 }
 OPENCV_HAL_IMPL_RISCVV_PACKS(int8, int16, i16, 8, i8, 16, vnclip_wx, vnclip_wx, signed char, 8)
 OPENCV_HAL_IMPL_RISCVV_PACKS(int16, int32, i32, 4, i16, 8, vnclip_wx, vnclip_wx, signed short, 16)
-OPENCV_HAL_IMPL_RISCVV_PACKS(int32, int64, i64, 2, i32, 4, vnclip_wx, vnsra_wx, int, 32)
+OPENCV_HAL_IMPL_RISCVV_PACKS(int32, int64, i64, 2, i32, 4, vnclip_wx, vnclip_wx, int, 32)
 OPENCV_HAL_IMPL_RISCVV_PACKS(uint8, uint16, u16, 8, u8, 16, vnclipu_wx, vnclipu_wx, unsigned char, 8)
 OPENCV_HAL_IMPL_RISCVV_PACKS(uint16, uint32, u32, 4, u16, 8, vnclipu_wx, vnclipu_wx, unsigned short, 16)
-OPENCV_HAL_IMPL_RISCVV_PACKS(uint32, uint64, u64, 2, u32, 4, vnclipu_wx, vnsrl_wx, unsigned int, 32)
+// 64->32 saturates like every other width now: vnclip/vnclipu, not the truncating vnsra/vnsrl
+OPENCV_HAL_IMPL_RISCVV_PACKS(uint32, uint64, u64, 2, u32, 4, vnclipu_wx, vnclipu_wx, unsigned int, 32)
 
 // pack boolean
 inline v_uint8x16 v_pack_b(const v_uint16x8& a, const v_uint16x8& b)
@@ -2010,6 +2022,7 @@ void v_rshr_pack_u_store(_Tp* ptr, const v_int##tp2##x##num2& a) \
 }
 OPENCV_HAL_IMPL_RISCVV_PACK_U(8, 16, 16, 8, unsigned char )
 OPENCV_HAL_IMPL_RISCVV_PACK_U(16, 8, 32, 4, unsigned short)
+OPENCV_HAL_IMPL_RISCVV_PACK_U(32, 4, 64, 2, unsigned int  )
 
 
 // saturating multiply 8-bit, 16-bit
@@ -2026,7 +2039,7 @@ OPENCV_HAL_IMPL_RISCVV_MUL_SAT(v_int16x8,  32, vwmul_vv_i32m2, vnclip_wx_i16m1)
 OPENCV_HAL_IMPL_RISCVV_MUL_SAT(v_uint16x8, 32, vwmulu_vv_u32m2, vnclipu_wx_u16m1)
 
 
-static const signed char popCountTable[256] =
+static constexpr signed char popCountTable[256] =
 {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
@@ -2305,6 +2318,8 @@ OPENCV_HAL_IMPL_RISCVV_SELECT(v_int32x4,  i32m1, vbool32_t, 4, vmsne_vx_i32m1_b3
 OPENCV_HAL_IMPL_RISCVV_SELECT(v_uint8x16, u8m1, vbool8_t, 16, vmsne_vx_u8m1_b8)
 OPENCV_HAL_IMPL_RISCVV_SELECT(v_uint16x8, u16m1, vbool16_t, 8, vmsne_vx_u16m1_b16)
 OPENCV_HAL_IMPL_RISCVV_SELECT(v_uint32x4, u32m1, vbool32_t, 4, vmsne_vx_u32m1_b32)
+OPENCV_HAL_IMPL_RISCVV_SELECT(v_int64x2,  i64m1, vbool64_t, 2, vmsne_vx_i64m1_b64)
+OPENCV_HAL_IMPL_RISCVV_SELECT(v_uint64x2, u64m1, vbool64_t, 2, vmsne_vx_u64m1_b64)
 inline v_float32x4 v_select(const v_float32x4& mask, const v_float32x4& a, const v_float32x4& b)
 {
     return v_float32x4(vmerge_vvm_f32m1(vmfne_vf_f32m1_b32(mask.val, 0, 4), b.val, a.val, 4));

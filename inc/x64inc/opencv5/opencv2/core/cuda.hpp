@@ -500,16 +500,8 @@ public:
     GpuMatND(const GpuMatND&) = default;
     GpuMatND& operator=(const GpuMatND&) = default;
 
-#if defined(__GNUC__) && __GNUC__ < 5
-    // error: function '...' defaulted on its first declaration with an exception-specification
-    // that differs from the implicit declaration '...'
-
     GpuMatND(GpuMatND&&) = default;
     GpuMatND& operator=(GpuMatND&&) = default;
-#else
-    GpuMatND(GpuMatND&&) noexcept = default;
-    GpuMatND& operator=(GpuMatND&&) noexcept = default;
-#endif
 
     void upload(InputArray src);
     void upload(InputArray src, Stream& stream);
@@ -1342,6 +1334,18 @@ private:
 
 CV_EXPORTS_W void printCudaDeviceInfo(int device);
 CV_EXPORTS_W void printShortCudaDeviceInfo(int device);
+
+/** @brief Returns the MatAllocator that backs cv::UMat with CUDA device memory
+@note
+  Assign it to @ref cv::UMat::allocator "UMat::allocator" before the data is allocated. Host
+  and device copies are kept in sync with synchronous cudaMemcpy calls and the buffers are
+  always packed and continuous. The allocator provides device storage only: no cv:: function
+  dispatches to CUDA for UMat input, and because the T-API branch tests only whether OpenCL
+  is active it would hand the CUDA pointer to the OpenCL driver, so
+  cv::ocl::setUseOpenCL(false) is required. UMatUsageFlags are ignored.
+@return the allocator, or NULL when OpenCV is built without CUDA support
+*/
+CV_EXPORTS MatAllocator* getCudaAllocator();
 
 //! @} cudacore_init
 

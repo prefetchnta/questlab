@@ -445,18 +445,19 @@ OPENCV_HAL_IMPL_VSX_PACK(v_uint16x8, ushort, v_uint32x4, unsigned int, unsigned 
 OPENCV_HAL_IMPL_VSX_PACK(v_int16x8, short, v_int32x4, unsigned int, int,
                          vec_sra, vec_packs, vec_add, pack)
 
+// 64->32 saturates like every other width now: vec_packs, not the truncating vec_pack
 OPENCV_HAL_IMPL_VSX_PACK(v_uint32x4, uint, v_uint64x2, unsigned long long, unsigned long long,
-                         vec_sr, vec_pack, vec_add, pack)
+                         vec_sr, vec_packs, vec_add, pack)
 OPENCV_HAL_IMPL_VSX_PACK(v_int32x4, int, v_int64x2, unsigned long long, long long,
-                         vec_sra, vec_pack, vec_add, pack)
+                         vec_sra, vec_packs, vec_add, pack)
 
 OPENCV_HAL_IMPL_VSX_PACK(v_uint8x16, uchar, v_int16x8, unsigned short, short,
                          vec_sra, vec_packsu, vec_adds, pack_u)
 OPENCV_HAL_IMPL_VSX_PACK(v_uint16x8, ushort, v_int32x4, unsigned int, int,
                          vec_sra, vec_packsu, vec_add, pack_u)
-// Following variant is not implemented on other platforms:
-//OPENCV_HAL_IMPL_VSX_PACK(v_uint32x4, uint, v_int64x2, unsigned long long, long long,
-//                         vec_sra, vec_packsu, vec_add, pack_u)
+// now implemented on every backend, so no longer commented out
+OPENCV_HAL_IMPL_VSX_PACK(v_uint32x4, uint, v_int64x2, unsigned long long, long long,
+                         vec_sra, vec_packsu, vec_add, pack_u)
 
 // pack boolean
 inline v_uint8x16 v_pack_b(const v_uint16x8& a, const v_uint16x8& b)
@@ -571,14 +572,14 @@ inline v_int16x8 v_mul_hi(const v_int16x8& a, const v_int16x8& b)
 {
     vec_int4 p0 = vec_mule(a.val, b.val);
     vec_int4 p1 = vec_mulo(a.val, b.val);
-    static const vec_uchar16 perm = {2, 3, 18, 19, 6, 7, 22, 23, 10, 11, 26, 27, 14, 15, 30, 31};
+    const vec_uchar16 perm = {2, 3, 18, 19, 6, 7, 22, 23, 10, 11, 26, 27, 14, 15, 30, 31};
     return v_int16x8(vec_perm(vec_short8_c(p0), vec_short8_c(p1), perm));
 }
 inline v_uint16x8 v_mul_hi(const v_uint16x8& a, const v_uint16x8& b)
 {
     vec_uint4 p0 = vec_mule(a.val, b.val);
     vec_uint4 p1 = vec_mulo(a.val, b.val);
-    static const vec_uchar16 perm = {2, 3, 18, 19, 6, 7, 22, 23, 10, 11, 26, 27, 14, 15, 30, 31};
+    const vec_uchar16 perm = {2, 3, 18, 19, 6, 7, 22, 23, 10, 11, 26, 27, 14, 15, 30, 31};
     return v_uint16x8(vec_perm(vec_ushort8_c(p0), vec_ushort8_c(p1), perm));
 }
 
@@ -643,6 +644,8 @@ OPENCV_HAL_IMPL_VSX_SELECT(v_uint16x8, vec_bshort8_c)
 OPENCV_HAL_IMPL_VSX_SELECT(v_int16x8, vec_bshort8_c)
 OPENCV_HAL_IMPL_VSX_SELECT(v_uint32x4, vec_bint4_c)
 OPENCV_HAL_IMPL_VSX_SELECT(v_int32x4, vec_bint4_c)
+OPENCV_HAL_IMPL_VSX_SELECT(v_uint64x2, vec_bdword2_c)
+OPENCV_HAL_IMPL_VSX_SELECT(v_int64x2, vec_bdword2_c)
 OPENCV_HAL_IMPL_VSX_SELECT(v_float32x4, vec_bint4_c)
 OPENCV_HAL_IMPL_VSX_SELECT(v_float64x2, vec_bdword2_c)
 
@@ -749,7 +752,7 @@ OPENCV_IMPL_VSX_ROTATE_64_2RG_LR(v_int64x2)
 /* Reverse */
 inline v_uint8x16 v_reverse(const v_uint8x16 &a)
 {
-    static const vec_uchar16 perm = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    const vec_uchar16 perm = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     vec_uchar16 vec = (vec_uchar16)a.val;
     return v_uint8x16(vec_perm(vec, vec, perm));
 }
@@ -759,7 +762,7 @@ inline v_int8x16 v_reverse(const v_int8x16 &a)
 
 inline v_uint16x8 v_reverse(const v_uint16x8 &a)
 {
-    static const vec_uchar16 perm = {14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1};
+    const vec_uchar16 perm = {14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1};
     vec_uchar16 vec = (vec_uchar16)a.val;
     return v_reinterpret_as_u16(v_uint8x16(vec_perm(vec, vec, perm)));
 }
@@ -769,7 +772,7 @@ inline v_int16x8 v_reverse(const v_int16x8 &a)
 
 inline v_uint32x4 v_reverse(const v_uint32x4 &a)
 {
-    static const vec_uchar16 perm = {12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3};
+    const vec_uchar16 perm = {12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3};
     vec_uchar16 vec = (vec_uchar16)a.val;
     return v_reinterpret_as_u32(v_uint8x16(vec_perm(vec, vec, perm)));
 }
@@ -782,7 +785,7 @@ inline v_float32x4 v_reverse(const v_float32x4 &a)
 
 inline v_uint64x2 v_reverse(const v_uint64x2 &a)
 {
-    static const vec_uchar16 perm = {8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7};
+    const vec_uchar16 perm = {8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7};
     vec_uchar16 vec = (vec_uchar16)a.val;
     return v_reinterpret_as_u64(v_uint8x16(vec_perm(vec, vec, perm)));
 }
@@ -954,7 +957,7 @@ inline v_uint64x2 v_popcount(const v_int64x2& a)
 /** Mask **/
 inline int v_signmask(const v_uint8x16& a)
 {
-    static const vec_uchar16 qperm = {120, 112, 104, 96, 88, 80, 72, 64, 56, 48, 40, 32, 24, 16, 8, 0};
+    const vec_uchar16 qperm = {120, 112, 104, 96, 88, 80, 72, 64, 56, 48, 40, 32, 24, 16, 8, 0};
     return vec_extract((vec_int4)vec_vbpermq(v_reinterpret_as_u8(a).val, qperm), 2);
 }
 inline int v_signmask(const v_int8x16& a)
@@ -962,7 +965,7 @@ inline int v_signmask(const v_int8x16& a)
 
 inline int v_signmask(const v_int16x8& a)
 {
-    static const vec_uchar16 qperm = {112, 96, 80, 64, 48, 32, 16, 0, 128, 128, 128, 128, 128, 128, 128, 128};
+    const vec_uchar16 qperm = {112, 96, 80, 64, 48, 32, 16, 0, 128, 128, 128, 128, 128, 128, 128, 128};
     return vec_extract((vec_int4)vec_vbpermq(v_reinterpret_as_u8(a).val, qperm), 2);
 }
 inline int v_signmask(const v_uint16x8& a)
@@ -970,7 +973,7 @@ inline int v_signmask(const v_uint16x8& a)
 
 inline int v_signmask(const v_int32x4& a)
 {
-    static const vec_uchar16 qperm = {96, 64, 32, 0, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128};
+    const vec_uchar16 qperm = {96, 64, 32, 0, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128};
     return vec_extract((vec_int4)vec_vbpermq(v_reinterpret_as_u8(a).val, qperm), 2);
 }
 inline int v_signmask(const v_uint32x4& a)
@@ -1175,6 +1178,16 @@ inline v_uint8x16 v_lut(const uchar* tab, const int* idx) { return v_reinterpret
 inline v_uint8x16 v_lut_pairs(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_pairs((const schar*)tab, idx)); }
 inline v_uint8x16 v_lut_quads(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_quads((const schar*)tab, idx)); }
 
+inline v_uint8x16 v_lut(const uchar* tab, const v_uint8x16& idx)
+{
+    uchar CV_DECL_ALIGNED(16) indices[16], result[16];
+    vsx_st(idx.val, 0, indices);
+    for (int i = 0; i < 16; i++) result[i] = tab[indices[i]];
+    return v_uint8x16(vsx_ld(0, result));
+}
+inline v_int8x16 v_lut(const schar* tab, const v_uint8x16& idx)
+{ return v_reinterpret_as_s8(v_lut((const uchar*)tab, idx)); }
+
 inline v_int16x8 v_lut(const short* tab, const int* idx)
 {
     return v_int16x8(tab[idx[0]], tab[idx[1]], tab[idx[2]], tab[idx[3]], tab[idx[4]], tab[idx[5]], tab[idx[6]], tab[idx[7]]);
@@ -1294,7 +1307,7 @@ inline void v_lut_deinterleave(const double* tab, const v_int32x4& idxvec, v_flo
 
 inline v_int8x16 v_interleave_pairs(const v_int8x16& vec)
 {
-    static const vec_uchar16 perm = {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15};
+    const vec_uchar16 perm = {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15};
     return v_int8x16(vec_perm(vec.val, vec.val, perm));
 }
 inline v_uint8x16 v_interleave_pairs(const v_uint8x16& vec)
@@ -1302,7 +1315,7 @@ inline v_uint8x16 v_interleave_pairs(const v_uint8x16& vec)
 
 inline v_int8x16 v_interleave_quads(const v_int8x16& vec)
 {
-    static const vec_uchar16 perm = {0, 4, 1, 5, 2, 6, 3, 7, 8, 12, 9, 13, 10, 14, 11, 15};
+    const vec_uchar16 perm = {0, 4, 1, 5, 2, 6, 3, 7, 8, 12, 9, 13, 10, 14, 11, 15};
     return v_int8x16(vec_perm(vec.val, vec.val, perm));
 }
 inline v_uint8x16 v_interleave_quads(const v_uint8x16& vec)
@@ -1310,7 +1323,7 @@ inline v_uint8x16 v_interleave_quads(const v_uint8x16& vec)
 
 inline v_int16x8 v_interleave_pairs(const v_int16x8& vec)
 {
-    static const vec_uchar16 perm = {0,1, 4,5, 2,3, 6,7, 8,9, 12,13, 10,11, 14,15};
+    const vec_uchar16 perm = {0,1, 4,5, 2,3, 6,7, 8,9, 12,13, 10,11, 14,15};
     return v_int16x8(vec_perm(vec.val, vec.val, perm));
 }
 inline v_uint16x8 v_interleave_pairs(const v_uint16x8& vec)
@@ -1318,7 +1331,7 @@ inline v_uint16x8 v_interleave_pairs(const v_uint16x8& vec)
 
 inline v_int16x8 v_interleave_quads(const v_int16x8& vec)
 {
-    static const vec_uchar16 perm = {0,1, 8,9, 2,3, 10,11, 4,5, 12,13, 6,7, 14,15};
+    const vec_uchar16 perm = {0,1, 8,9, 2,3, 10,11, 4,5, 12,13, 6,7, 14,15};
     return v_int16x8(vec_perm(vec.val, vec.val, perm));
 }
 inline v_uint16x8 v_interleave_quads(const v_uint16x8& vec)
@@ -1326,7 +1339,7 @@ inline v_uint16x8 v_interleave_quads(const v_uint16x8& vec)
 
 inline v_int32x4 v_interleave_pairs(const v_int32x4& vec)
 {
-    static const vec_uchar16 perm = {0,1,2,3, 8,9,10,11, 4,5,6,7, 12,13,14,15};
+    const vec_uchar16 perm = {0,1,2,3, 8,9,10,11, 4,5,6,7, 12,13,14,15};
     return v_int32x4(vec_perm(vec.val, vec.val, perm));
 }
 inline v_uint32x4 v_interleave_pairs(const v_uint32x4& vec)
@@ -1336,7 +1349,7 @@ inline v_float32x4 v_interleave_pairs(const v_float32x4& vec)
 
 inline v_int8x16 v_pack_triplets(const v_int8x16& vec)
 {
-    static const vec_uchar16 perm = {0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 15, 15, 15};
+    const vec_uchar16 perm = {0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 15, 15, 15};
     return v_int8x16(vec_perm(vec.val, vec.val, perm));
 }
 inline v_uint8x16 v_pack_triplets(const v_uint8x16& vec)
@@ -1344,7 +1357,7 @@ inline v_uint8x16 v_pack_triplets(const v_uint8x16& vec)
 
 inline v_int16x8 v_pack_triplets(const v_int16x8& vec)
 {
-    static const vec_uchar16 perm = {0,1, 2,3, 4,5, 8,9, 10,11, 12,13, 14,15, 14,15};
+    const vec_uchar16 perm = {0,1, 2,3, 4,5, 8,9, 10,11, 12,13, 14,15, 14,15};
     return v_int16x8(vec_perm(vec.val, vec.val, perm));
 }
 inline v_uint16x8 v_pack_triplets(const v_uint16x8& vec)

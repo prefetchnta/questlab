@@ -14,6 +14,7 @@
 // Copyright (C) 2009, Willow Garage Inc., all rights reserved.
 // Copyright (C) 2013, OpenCV Foundation, all rights reserved.
 // Copyright (C) 2015, Itseez Inc., all rights reserved.
+// Copyright (C) 2026, Advanced Micro Devices, Inc., all rights reserved.
 // Third party copyrights are property of their respective owners.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -286,7 +287,8 @@ Most of these operations return only one value.
 
 Different type conversions and casts:
 
-- Rounding: @ref v_round, @ref v_floor, @ref v_ceil, @ref v_trunc,
+- Rounding: @ref v_round, @ref v_floor, @ref v_ceil, @ref v_trunc (all saturate to the int32 range,
+  see @ref cvRound and friends for the exact bounds; the result for NaN is unspecified),
 - To float: @ref v_cvt_f32, @ref v_cvt_f64
 - Reinterpret: @ref v_reinterpret_as_u8, @ref v_reinterpret_as_s8, ...
 
@@ -589,43 +591,43 @@ enum {
 /** @brief Add values
 
 For all types. */
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_add(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_add(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
 
 /** @brief Subtract values
 
 For all types. */
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_sub(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_sub(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
 
 /** @brief Multiply values
 
 For 16- and 32-bit integer types and floating types. */
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_mul(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_mul(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
 
 /** @brief Divide values
 
 For floating types only. */
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_div(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_div(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
 
 
 /** @brief Bitwise AND
 
 Only for integer types. */
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_and(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_and(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
 
 /** @brief Bitwise OR
 
 Only for integer types. */
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_or(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_or(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
 
 /** @brief Bitwise XOR
 
 Only for integer types.*/
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_xor(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_xor(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b);
 
 /** @brief Bitwise NOT
 
 Only for integer types.*/
-template<typename _Tp, int n> CV_INLINE v_reg<_Tp, n> v_not(const v_reg<_Tp, n>& a);
+template<typename _Tp, int n> inline v_reg<_Tp, n> v_not(const v_reg<_Tp, n>& a);
 
 
 #ifndef CV_DOXYGEN
@@ -666,7 +668,7 @@ CV__HAL_INTRIN_IMPL_BIN_OP(*, v_mul)
 CV__HAL_INTRIN_EXPAND_WITH_FP_TYPES(CV__HAL_INTRIN_IMPL_BIN_OP_, /, v_div)
 
 #define CV__HAL_INTRIN_IMPL_BIT_OP_(_Tp, bit_op, func) \
-template<int n> CV_INLINE \
+template<int n> inline \
 v_reg<_Tp, n> func(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b) \
 { \
     v_reg<_Tp, n> c; \
@@ -687,7 +689,7 @@ CV__HAL_INTRIN_IMPL_BIT_OP(|, v_or)
 CV__HAL_INTRIN_IMPL_BIT_OP(^, v_xor)
 
 #define CV__HAL_INTRIN_IMPL_BITWISE_NOT_(_Tp, dummy, dummy2) \
-template<int n> CV_INLINE \
+template<int n> inline \
 v_reg<_Tp, n> v_not(const v_reg<_Tp, n>& a) \
 { \
     v_reg<_Tp, n> c; \
@@ -867,7 +869,7 @@ Scheme:
 For all types except 64-bit integer and 64-bit floating point types. */
 OPENCV_HAL_IMPL_REDUCE_MINMAX_FUNC(v_reduce_max, std::max)
 
-static const unsigned char popCountTable[] =
+static constexpr unsigned char popCountTable[] =
 {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
@@ -2545,7 +2547,7 @@ template<int n> inline v_reg<int, n> v_trunc(const v_reg<float, n>& a)
 {
     v_reg<int, n> c;
     for( int i = 0; i < n; i++ )
-        c.s[i] = (int)(a.s[i]);
+        c.s[i] = cvTrunc(a.s[i]);
     return c;
 }
 
@@ -2591,7 +2593,7 @@ template<int n> inline v_reg<int, n*2> v_trunc(const v_reg<double, n>& a)
     v_reg<int, n*2> c;
     for( int i = 0; i < n; i++ )
     {
-        c.s[i] = (int)(a.s[i]);
+        c.s[i] = cvTrunc(a.s[i]);
         c.s[i+n] = 0;
     }
     return c;
@@ -2639,7 +2641,7 @@ template<int n> inline v_reg<float, n*2> v_cvt_f32(const v_reg<double, n>& a, co
 /** @brief Convert lower half to double
 
 Supported input type is cv::v_int32. */
-template<int n> CV_INLINE v_reg<double, n/2> v_cvt_f64(const v_reg<int, n>& a)
+template<int n> inline v_reg<double, n/2> v_cvt_f64(const v_reg<int, n>& a)
 {
     v_reg<double, (n/2)> c;
     for( int i = 0; i < (n/2); i++ )
@@ -2650,7 +2652,7 @@ template<int n> CV_INLINE v_reg<double, n/2> v_cvt_f64(const v_reg<int, n>& a)
 /** @brief Convert to double high part of vector
 
 Supported input type is cv::v_int32. */
-template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<int, n>& a)
+template<int n> inline v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<int, n>& a)
 {
     v_reg<double, (n/2)> c;
     for( int i = 0; i < (n/2); i++ )
@@ -2661,7 +2663,7 @@ template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<int, n
 /** @brief Convert lower half to double
 
 Supported input type is cv::v_float32. */
-template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64(const v_reg<float, n>& a)
+template<int n> inline v_reg<double, (n/2)> v_cvt_f64(const v_reg<float, n>& a)
 {
     v_reg<double, (n/2)> c;
     for( int i = 0; i < (n/2); i++ )
@@ -2672,7 +2674,7 @@ template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64(const v_reg<float, n>& 
 /** @brief Convert to double high part of vector
 
 Supported input type is cv::v_float32. */
-template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<float, n>& a)
+template<int n> inline v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<float, n>& a)
 {
     v_reg<double, (n/2)> c;
     for( int i = 0; i < (n/2); i++ )
@@ -2683,7 +2685,7 @@ template<int n> CV_INLINE v_reg<double, (n/2)> v_cvt_f64_high(const v_reg<float,
 /** @brief Convert to double
 
 Supported input type is cv::v_int64. */
-template<int n> CV_INLINE v_reg<double, n> v_cvt_f64(const v_reg<int64, n>& a)
+template<int n> inline v_reg<double, n> v_cvt_f64(const v_reg<int64, n>& a)
 {
     v_reg<double, n> c;
     for( int i = 0; i < n; i++ )
@@ -2713,6 +2715,16 @@ template<typename _Tp> inline v_reg<_Tp, simd128_width / sizeof(_Tp)> v_lut_quad
         c.s[i] = tab[idx[i / 4] + i % 4];
     return c;
 }
+
+template<int n> inline v_reg<uchar, n> v_lut(const uchar* tab, const v_reg<uchar, n>& idx)
+{
+    v_reg<uchar, n> c;
+    for( int i = 0; i < n; i++ )
+        c.s[i] = tab[idx.s[i]];
+    return c;
+}
+template<int n> inline v_reg<schar, n> v_lut(const schar* tab, const v_reg<uchar, n>& idx)
+{ return v_reinterpret_as_s8(v_lut((const uchar*)tab, idx)); }
 
 template<int n> inline v_reg<int, n> v_lut(const int* tab, const v_reg<int, n>& idx)
 {
@@ -3039,17 +3051,18 @@ template<int n> inline v_reg<_Tpn, 2*n> v_##pack_suffix(const v_reg<_Tp, n>& a, 
 //! converts to corresponding unsigned type.
 //!
 //! - pack: for 16-, 32- and 64-bit integer input types
-//! - pack_u: for 16- and 32-bit signed integer input types
+//! - pack_u: for 16-, 32- and 64-bit signed integer input types
 //!
-//! @note All variants except 64-bit use saturation.
+//! @note All variants use saturation.
 OPENCV_HAL_IMPL_C_PACK(ushort, uchar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK(short, schar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK(unsigned, ushort, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK(int, short, pack, saturate_cast)
-OPENCV_HAL_IMPL_C_PACK(uint64, unsigned, pack, static_cast)
-OPENCV_HAL_IMPL_C_PACK(int64, int, pack, static_cast)
+OPENCV_HAL_IMPL_C_PACK(uint64, unsigned, pack, saturate_cast)
+OPENCV_HAL_IMPL_C_PACK(int64, int, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK(short, uchar, pack_u, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK(int, ushort, pack_u, saturate_cast)
+OPENCV_HAL_IMPL_C_PACK(int64, unsigned, pack_u, saturate_cast)
 //! @}
 
 //! @brief Helper macro
@@ -3074,17 +3087,18 @@ template<int shift, int n> inline v_reg<_Tpn, 2*n> v_rshr_##pack_suffix(const v_
 //! type and returned in the result vector. Variant with _u_ suffix converts to unsigned type.
 //!
 //! - pack: for 16-, 32- and 64-bit integer input types
-//! - pack_u: for 16- and 32-bit signed integer input types
+//! - pack_u: for 16-, 32- and 64-bit signed integer input types
 //!
-//! @note All variants except 64-bit use saturation.
+//! @note All variants use saturation.
 OPENCV_HAL_IMPL_C_RSHR_PACK(ushort, uchar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_RSHR_PACK(short, schar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_RSHR_PACK(unsigned, ushort, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_RSHR_PACK(int, short, pack, saturate_cast)
-OPENCV_HAL_IMPL_C_RSHR_PACK(uint64, unsigned, pack, static_cast)
-OPENCV_HAL_IMPL_C_RSHR_PACK(int64, int, pack, static_cast)
+OPENCV_HAL_IMPL_C_RSHR_PACK(uint64, unsigned, pack, saturate_cast)
+OPENCV_HAL_IMPL_C_RSHR_PACK(int64, int, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_RSHR_PACK(short, uchar, pack_u, saturate_cast)
 OPENCV_HAL_IMPL_C_RSHR_PACK(int, ushort, pack_u, saturate_cast)
+OPENCV_HAL_IMPL_C_RSHR_PACK(int64, unsigned, pack_u, saturate_cast)
 //! @}
 
 //! @brief Helper macro
@@ -3104,17 +3118,18 @@ template<int n> inline void v_##pack_suffix##_store(_Tpn* ptr, const v_reg<_Tp, 
 //! Variant with _u_ suffix converts to corresponding unsigned type.
 //!
 //! - pack: for 16-, 32- and 64-bit integer input types
-//! - pack_u: for 16- and 32-bit signed integer input types
+//! - pack_u: for 16-, 32- and 64-bit signed integer input types
 //!
-//! @note All variants except 64-bit use saturation.
+//! @note All variants use saturation.
 OPENCV_HAL_IMPL_C_PACK_STORE(ushort, uchar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK_STORE(short, schar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK_STORE(unsigned, ushort, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK_STORE(int, short, pack, saturate_cast)
-OPENCV_HAL_IMPL_C_PACK_STORE(uint64, unsigned, pack, static_cast)
-OPENCV_HAL_IMPL_C_PACK_STORE(int64, int, pack, static_cast)
+OPENCV_HAL_IMPL_C_PACK_STORE(uint64, unsigned, pack, saturate_cast)
+OPENCV_HAL_IMPL_C_PACK_STORE(int64, int, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK_STORE(short, uchar, pack_u, saturate_cast)
 OPENCV_HAL_IMPL_C_PACK_STORE(int, ushort, pack_u, saturate_cast)
+OPENCV_HAL_IMPL_C_PACK_STORE(int64, unsigned, pack_u, saturate_cast)
 //! @}
 
 //! @brief Helper macro
@@ -3134,9 +3149,9 @@ template<int shift, int n> inline void v_rshr_##pack_suffix##_store(_Tpn* ptr, c
 //! memory. Variant with _u_ suffix converts to unsigned type.
 //!
 //! - pack: for 16-, 32- and 64-bit integer input types
-//! - pack_u: for 16- and 32-bit signed integer input types
+//! - pack_u: for 16-, 32- and 64-bit signed integer input types
 //!
-//! @note All variants except 64-bit use saturation.
+//! @note All variants use saturation.
 OPENCV_HAL_IMPL_C_RSHR_PACK_STORE(ushort, uchar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_RSHR_PACK_STORE(short, schar, pack, saturate_cast)
 OPENCV_HAL_IMPL_C_RSHR_PACK_STORE(unsigned, ushort, pack, saturate_cast)

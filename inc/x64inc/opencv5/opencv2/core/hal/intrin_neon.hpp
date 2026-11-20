@@ -14,6 +14,7 @@
 // Copyright (C) 2009, Willow Garage Inc., all rights reserved.
 // Copyright (C) 2013, OpenCV Foundation, all rights reserved.
 // Copyright (C) 2015, Itseez Inc., all rights reserved.
+// Copyright (C) 2026, Advanced Micro Devices, Inc., all rights reserved.
 // Third party copyrights are property of their respective owners.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -501,11 +502,14 @@ OPENCV_HAL_IMPL_NEON_PACK(v_uint8x16, uchar, uint8x8_t, u8, v_uint16x8, pack, vq
 OPENCV_HAL_IMPL_NEON_PACK(v_int8x16, schar, int8x8_t, s8, v_int16x8, pack, vqmovn_s16, vqrshrn_n_s16)
 OPENCV_HAL_IMPL_NEON_PACK(v_uint16x8, ushort, uint16x4_t, u16, v_uint32x4, pack, vqmovn_u32, vqrshrn_n_u32)
 OPENCV_HAL_IMPL_NEON_PACK(v_int16x8, short, int16x4_t, s16, v_int32x4, pack, vqmovn_s32, vqrshrn_n_s32)
-OPENCV_HAL_IMPL_NEON_PACK(v_uint32x4, unsigned, uint32x2_t, u32, v_uint64x2, pack, vmovn_u64, vrshrn_n_u64)
-OPENCV_HAL_IMPL_NEON_PACK(v_int32x4, int, int32x2_t, s32, v_int64x2, pack, vmovn_s64, vrshrn_n_s64)
+// 64->32 saturates like every other width: vqmovn/vqmovun rather than the plain vmovn, which
+// truncated. The compiler folds vqmovn_* + vcombine into sqxtn/sqxtn2 (uqxtn, sqxtun) on ARM64.
+OPENCV_HAL_IMPL_NEON_PACK(v_uint32x4, unsigned, uint32x2_t, u32, v_uint64x2, pack, vqmovn_u64, vqrshrn_n_u64)
+OPENCV_HAL_IMPL_NEON_PACK(v_int32x4, int, int32x2_t, s32, v_int64x2, pack, vqmovn_s64, vqrshrn_n_s64)
 
 OPENCV_HAL_IMPL_NEON_PACK(v_uint8x16, uchar, uint8x8_t, u8, v_int16x8, pack_u, vqmovun_s16, vqrshrun_n_s16)
 OPENCV_HAL_IMPL_NEON_PACK(v_uint16x8, ushort, uint16x4_t, u16, v_int32x4, pack_u, vqmovun_s32, vqrshrun_n_s32)
+OPENCV_HAL_IMPL_NEON_PACK(v_uint32x4, unsigned, uint32x2_t, u32, v_int64x2, pack_u, vqmovun_s64, vqrshrun_n_s64)
 
 // pack boolean
 inline v_uint8x16 v_pack_b(const v_uint16x8& a, const v_uint16x8& b)
@@ -836,14 +840,14 @@ inline v_uint32x4 v_dotprod_expand(const v_uint8x16& a, const v_uint8x16& b,
 
 inline v_int32x4 v_dotprod_expand(const v_int8x16& a, const v_int8x16& b)
 {
-    int16x8_t p0  = vmull_s8(vget_low_s8(a.val), vget_low_s8(b.val));
-    int16x8_t p1  = vmull_s8(vget_high_s8(a.val), vget_high_s8(b.val));
-    int16x8_t uzp1, uzp2;
-    _v128_unzip(p0, p1, uzp1, uzp2);
-    int16x8_t sum = vaddq_s16(uzp1, uzp2);
-    int16x4_t uzpl1, uzpl2;
-    _v128_unzip(vget_low_s16(sum), vget_high_s16(sum), uzpl1, uzpl2);
-    return v_int32x4(vaddl_s16(uzpl1, uzpl2));
+    int32x4_t s0 = vpaddlq_s16(vmull_s8(vget_low_s8(a.val), vget_low_s8(b.val)));
+    int32x4_t s1 = vpaddlq_s16(vmull_s8(vget_high_s8(a.val), vget_high_s8(b.val)));
+#if CV_NEON_AARCH64
+    return v_int32x4(vpaddq_s32(s0, s1));
+#else // #if CV_NEON_AARCH64
+    return v_int32x4(vcombine_s32(vpadd_s32(vget_low_s32(s0), vget_high_s32(s0)),
+                                   vpadd_s32(vget_low_s32(s1), vget_high_s32(s1))));
+#endif // #if CV_NEON_AARCH64
 }
 inline v_int32x4 v_dotprod_expand(const v_int8x16& a, const v_int8x16& b,
                                   const v_int32x4& c)
@@ -1987,6 +1991,8 @@ OPENCV_HAL_IMPL_NEON_SELECT(v_float16x8, f16, u16)
 OPENCV_HAL_IMPL_NEON_SELECT(v_uint32x4, u32, u32)
 OPENCV_HAL_IMPL_NEON_SELECT(v_int32x4, s32, u32)
 OPENCV_HAL_IMPL_NEON_SELECT(v_float32x4, f32, u32)
+OPENCV_HAL_IMPL_NEON_SELECT(v_uint64x2, u64, u64)
+OPENCV_HAL_IMPL_NEON_SELECT(v_int64x2, s64, u64)
 #if CV_SIMD128_64F
 OPENCV_HAL_IMPL_NEON_SELECT(v_float64x2, f64, u64)
 #endif
@@ -2236,9 +2242,7 @@ inline v_int16x8 v_floor(const v_float16x8 &a)
 
 inline v_int16x8 v_ceil(const v_float16x8 &a)
 {
-    int16x8_t a1 = vcvtq_s16_f16(a.val);
-    uint16x8_t mask = vcgtq_f16(a.val, vcvtq_f16_s16(a1));
-    return v_int16x8(vsubq_s16(a1, vreinterpretq_s16_u16(mask)));
+    return v_int16x8(vcvtpq_s16_f16(a.val));
 }
 
 inline v_int16x8 v_trunc(const v_float16x8 &a)
@@ -2252,14 +2256,7 @@ inline v_int32x4 v_round(const v_float32x4& a)
 {
     float32x4_t a_ = a.val;
     int32x4_t result;
-#if defined _MSC_VER
     result = vcvtnq_s32_f32(a_);
-#else
-    __asm__ ("fcvtns %0.4s, %1.4s"
-             : "=w"(result)
-             : "w"(a_)
-             : /* No clobbers */);
-#endif
     return v_int32x4(result);
 }
 #else
@@ -2275,56 +2272,54 @@ inline v_int32x4 v_floor(const v_float32x4& a)
 #if __ARM_ARCH > 7
     return v_int32x4(vcvtmq_s32_f32(a.val));
 #else
+    // vcvtq saturates; the correction must saturate too, otherwise INT_MIN-1 wraps around
     int32x4_t a1 = vcvtq_s32_f32(a.val);
     uint32x4_t mask = vcgtq_f32(vcvtq_f32_s32(a1), a.val);
-    return v_int32x4(vaddq_s32(a1, vreinterpretq_s32_u32(mask)));
+    return v_int32x4(vqaddq_s32(a1, vreinterpretq_s32_u32(mask)));
 #endif
 }
 
 inline v_int32x4 v_ceil(const v_float32x4& a)
 {
+#if __ARM_ARCH > 7
+    return v_int32x4(vcvtpq_s32_f32(a.val));
+#else
+    // vcvtq saturates; the correction must saturate too, otherwise INT_MAX+1 wraps around
     int32x4_t a1 = vcvtq_s32_f32(a.val);
     uint32x4_t mask = vcgtq_f32(a.val, vcvtq_f32_s32(a1));
-    return v_int32x4(vsubq_s32(a1, vreinterpretq_s32_u32(mask)));
+    return v_int32x4(vqsubq_s32(a1, vreinterpretq_s32_u32(mask)));
+#endif
 }
 
 inline v_int32x4 v_trunc(const v_float32x4& a)
 { return v_int32x4(vcvtq_s32_f32(a.val)); }
 
+
 #if CV_SIMD128_64F
+// fcvt* saturate to the int64 range; the narrowing to int32 must saturate too (vqmovn), a plain vmovn would wrap
 inline v_int32x4 v_round(const v_float64x2& a)
 {
-    static const int32x2_t zero = vdup_n_s32(0);
-    return v_int32x4(vcombine_s32(vmovn_s64(vcvtnq_s64_f64(a.val)), zero));
+    return v_int32x4(vcombine_s32(vqmovn_s64(vcvtnq_s64_f64(a.val)), vdup_n_s32(0)));
 }
 
 inline v_int32x4 v_round(const v_float64x2& a, const v_float64x2& b)
 {
-    return v_int32x4(vcombine_s32(vmovn_s64(vcvtnq_s64_f64(a.val)), vmovn_s64(vcvtnq_s64_f64(b.val))));
+    return v_int32x4(vcombine_s32(vqmovn_s64(vcvtnq_s64_f64(a.val)), vqmovn_s64(vcvtnq_s64_f64(b.val))));
 }
 
 inline v_int32x4 v_floor(const v_float64x2& a)
 {
-    static const int32x2_t zero = vdup_n_s32(0);
-    int64x2_t a1 = vcvtq_s64_f64(a.val);
-    uint64x2_t mask = vcgtq_f64(vcvtq_f64_s64(a1), a.val);
-    a1 = vaddq_s64(a1, vreinterpretq_s64_u64(mask));
-    return v_int32x4(vcombine_s32(vmovn_s64(a1), zero));
+    return v_int32x4(vcombine_s32(vqmovn_s64(vcvtmq_s64_f64(a.val)), vdup_n_s32(0)));
 }
 
 inline v_int32x4 v_ceil(const v_float64x2& a)
 {
-    static const int32x2_t zero = vdup_n_s32(0);
-    int64x2_t a1 = vcvtq_s64_f64(a.val);
-    uint64x2_t mask = vcgtq_f64(a.val, vcvtq_f64_s64(a1));
-    a1 = vsubq_s64(a1, vreinterpretq_s64_u64(mask));
-    return v_int32x4(vcombine_s32(vmovn_s64(a1), zero));
+    return v_int32x4(vcombine_s32(vqmovn_s64(vcvtpq_s64_f64(a.val)), vdup_n_s32(0)));
 }
 
 inline v_int32x4 v_trunc(const v_float64x2& a)
 {
-    static const int32x2_t zero = vdup_n_s32(0);
-    return v_int32x4(vcombine_s32(vmovn_s64(vcvtaq_s64_f64(a.val)), zero));
+    return v_int32x4(vcombine_s32(vqmovn_s64(vcvtq_s64_f64(a.val)), vdup_n_s32(0)));
 }
 #endif
 
@@ -2616,12 +2611,14 @@ inline v_float32x4 v_cvt_f32(const v_float64x2& a, const v_float64x2& b)
 
 inline v_float64x2 v_cvt_f64(const v_int32x4& a)
 {
-    return v_float64x2(vcvt_f64_f32(vcvt_f32_s32(vget_low_s32(a.val))));
+    // sxtl + scvtf: EXACT over the whole int32 range, same 2 instructions as the former
+    // f32 round-trip (vcvt_f32_s32 + vcvt_f64_f32), which silently lost bits for |x| > 2^24
+    return v_float64x2(vcvtq_f64_s64(vmovl_s32(vget_low_s32(a.val))));
 }
 
 inline v_float64x2 v_cvt_f64_high(const v_int32x4& a)
 {
-    return v_float64x2(vcvt_f64_f32(vcvt_f32_s32(vget_high_s32(a.val))));
+    return v_float64x2(vcvtq_f64_s64(vmovl_s32(vget_high_s32(a.val))));
 }
 
 inline v_float64x2 v_cvt_f64(const v_float32x4& a)
@@ -2713,6 +2710,48 @@ inline v_int8x16 v_lut_quads(const schar* tab, const int* idx)
 inline v_uint8x16 v_lut(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut((schar*)tab, idx)); }
 inline v_uint8x16 v_lut_pairs(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_pairs((schar*)tab, idx)); }
 inline v_uint8x16 v_lut_quads(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v_lut_quads((schar*)tab, idx)); }
+
+inline v_uint8x16 v_lut(const uchar* tab, const v_uint8x16& idx)
+{
+#if CV_NEON_AARCH64
+    uint8x16_t index = idx.val;
+    uint8x16_t idx6 = vandq_u8(index, vdupq_n_u8(0x3F));
+
+    uint8x16x4_t t0, t1, t2, t3;
+    t0.val[0] = vld1q_u8(tab);       t0.val[1] = vld1q_u8(tab + 16);
+    t0.val[2] = vld1q_u8(tab + 32);  t0.val[3] = vld1q_u8(tab + 48);
+    uint8x16_t r0 = vqtbl4q_u8(t0, idx6);
+
+    t1.val[0] = vld1q_u8(tab + 64);  t1.val[1] = vld1q_u8(tab + 80);
+    t1.val[2] = vld1q_u8(tab + 96);  t1.val[3] = vld1q_u8(tab + 112);
+    uint8x16_t r1 = vqtbl4q_u8(t1, idx6);
+
+    t2.val[0] = vld1q_u8(tab + 128); t2.val[1] = vld1q_u8(tab + 144);
+    t2.val[2] = vld1q_u8(tab + 160); t2.val[3] = vld1q_u8(tab + 176);
+    uint8x16_t r2 = vqtbl4q_u8(t2, idx6);
+
+    t3.val[0] = vld1q_u8(tab + 192); t3.val[1] = vld1q_u8(tab + 208);
+    t3.val[2] = vld1q_u8(tab + 224); t3.val[3] = vld1q_u8(tab + 240);
+    uint8x16_t r3 = vqtbl4q_u8(t3, idx6);
+
+    uint8x16_t bit6 = vtstq_u8(index, vdupq_n_u8(0x40));
+    uint8x16_t low  = vbslq_u8(bit6, r1, r0);
+    uint8x16_t high = vbslq_u8(bit6, r3, r2);
+
+    uint8x16_t bit7 = vtstq_u8(index, vdupq_n_u8(0x80));
+    return v_uint8x16(vbslq_u8(bit7, high, low));
+#else
+    uchar CV_DECL_ALIGNED(16) indices[16], result[16];
+    vst1q_u8(indices, idx.val);
+    for (int i = 0; i < 16; i++) result[i] = tab[indices[i]];
+    return v_uint8x16(vld1q_u8(result));
+#endif
+}
+
+inline v_int8x16 v_lut(const schar* tab, const v_uint8x16& idx)
+{
+    return v_reinterpret_as_s8(v_lut((const uchar*)tab, idx));
+}
 
 inline v_int16x8 v_lut(const short* tab, const int* idx)
 {

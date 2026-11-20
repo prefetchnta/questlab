@@ -38,6 +38,8 @@
 //! @cond IGNORED
 
 #include <algorithm>
+#include <random>
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <limits.h>
@@ -52,7 +54,6 @@
 #else
 #include <map>
 #endif
-#include <math.h>
 #include <stddef.h>
 
 #include "dynamic_bitset.h"
@@ -205,7 +206,7 @@ public:
     void add(Matrix<ElementType> dataset)
     {
 #if USE_UNORDERED_MAP
-        buckets_space_.rehash((buckets_space_.size() + dataset.rows) * 1.2);
+        buckets_space_.rehash(std::llround((buckets_space_.size() + dataset.rows) * 1.2));
 #endif
         // Add the features to the table
         for (unsigned int i = 0; i < dataset.rows; ++i) add(i, dataset[i]);
@@ -362,7 +363,8 @@ inline LshTable<unsigned char>::LshTable(unsigned int feature_size, unsigned int
 #ifndef OPENCV_FLANN_USE_STD_RAND
     cv::randShuffle(indices);
 #else
-    std::random_shuffle(indices.begin(), indices.end());
+    std::mt19937 std_rng(12345);
+    std::shuffle(indices.begin(), indices.end(), std_rng);
 #endif
 
     // Generate a random set of order of subsignature_size_ bits
@@ -490,7 +492,7 @@ inline LshStats LshTable<unsigned char>::getStats() const
          != end; )
         if (*iterator < bin_end) {
             if (is_new_bin) {
-                stats.size_histogram_.push_back(std::vector<unsigned int>(3, 0));
+                stats.size_histogram_.emplace_back(3, 0);
                 stats.size_histogram_.back()[0] = bin_start;
                 stats.size_histogram_.back()[1] = bin_end - 1;
                 is_new_bin = false;

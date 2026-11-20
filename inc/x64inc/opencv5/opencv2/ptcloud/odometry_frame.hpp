@@ -9,6 +9,9 @@
 
 namespace cv
 {
+
+//! @addtogroup ptcloud_rgbd
+//! @{
 /** Indicates what pyramid is to access using getPyramidAt() method:
 */
 
@@ -47,7 +50,7 @@ public:
      * @param normals A user-provided normals to the depth surface, should be CV_32FC4
      */
     CV_WRAP explicit OdometryFrame(InputArray depth = noArray(), InputArray image = noArray(), InputArray mask = noArray(), InputArray normals = noArray());
-    ~OdometryFrame() {};
+    ~OdometryFrame() {}
 
     /**
      * @brief Get the original user-provided BGR/Gray image
@@ -104,5 +107,7 @@ public:
     class Impl;
     Ptr<Impl> impl;
 };
+//! @}
+
 }
 #endif // !OPENCV_3D_ODOMETRY_FRAME_HPP

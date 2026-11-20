@@ -90,11 +90,9 @@ namespace cv { namespace debug_build_guard { } using namespace debug_build_guard
 
 #ifdef CV_Func
 // keep current value (through OpenCV port file)
-#elif defined __GNUC__ || (defined (__cpluscplus) && (__cpluscplus >= 201103))
+#elif defined __GNUC__ || defined __clang__ || defined __cplusplus
 #define CV_Func __func__
-#elif defined __clang__ && (__clang_minor__ * 100 + __clang_major__ >= 305)
-#define CV_Func __func__
-#elif defined(__STDC_VERSION__) && (__STDC_VERSION >= 199901)
+#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 #define CV_Func __func__
 #elif defined _MSC_VER
 #define CV_Func __FUNCTION__
@@ -114,36 +112,12 @@ namespace cv { namespace debug_build_guard { } using namespace debug_build_guard
 #define CVAUX_CONCAT_EXP(a, b) a##b
 #define CVAUX_CONCAT(a, b) CVAUX_CONCAT_EXP(a,b)
 
-#if defined(__clang__)
-#  ifndef __has_extension
-#    define __has_extension __has_feature /* compatibility, for older versions of clang */
-#  endif
-#  if __has_extension(cxx_static_assert)
-#    define CV_StaticAssert(condition, reason)    static_assert((condition), reason " " #condition)
-#  elif __has_extension(c_static_assert)
-#    define CV_StaticAssert(condition, reason)    _Static_assert((condition), reason " " #condition)
-#  endif
-#elif defined(__GNUC__)
-#  if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L)
-#    define CV_StaticAssert(condition, reason)    static_assert((condition), reason " " #condition)
-#  endif
-#elif defined(_MSC_VER)
-#  if _MSC_VER >= 1600 /* MSVC 10 */
-#    define CV_StaticAssert(condition, reason)    static_assert((condition), reason " " #condition)
-#  endif
-#endif
-#ifndef CV_StaticAssert
-#  if !defined(__clang__) && defined(__GNUC__) && (__GNUC__*100 + __GNUC_MINOR__ > 302)
-#    define CV_StaticAssert(condition, reason) ({ extern int __attribute__((error("CV_StaticAssert: " reason " " #condition))) CV_StaticAssert(); ((condition) ? 0 : CV_StaticAssert()); })
-#  else
-namespace cv {
-     template <bool x> struct CV_StaticAssert_failed;
-     template <> struct CV_StaticAssert_failed<true> { enum { val = 1 }; };
-     template<int x> struct CV_StaticAssert_test {};
-}
-#    define CV_StaticAssert(condition, reason)\
-       typedef cv::CV_StaticAssert_test< sizeof(cv::CV_StaticAssert_failed< static_cast<bool>(condition) >) > CVAUX_CONCAT(CV_StaticAssert_failed_at_, __LINE__)
-#  endif
+#if defined(__cplusplus) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+#  define CV_StaticAssert(condition, reason) static_assert((condition), reason " " #condition)
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#  define CV_StaticAssert(condition, reason) _Static_assert((condition), reason " " #condition)
+#else
+#  define CV_StaticAssert(condition, reason)
 #endif
 
 // Suppress warning "-Wdeprecated-declarations" / C4996
@@ -220,7 +194,7 @@ namespace cv {
 #endif
 
 #ifndef CV_ALWAYS_INLINE
-#if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+#if defined(__GNUC__)
 #define CV_ALWAYS_INLINE inline __attribute__((always_inline))
 #elif defined(_MSC_VER)
 #define CV_ALWAYS_INLINE __forceinline
@@ -437,7 +411,7 @@ Cv64suf;
 #ifndef CV_EXPORTS
 # if (defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined(CVAPI_EXPORTS)
 #   define CV_EXPORTS __declspec(dllexport)
-# elif defined __GNUC__ && __GNUC__ >= 4 && (defined(CVAPI_EXPORTS) || defined(__APPLE__))
+# elif defined __GNUC__ && (defined(CVAPI_EXPORTS) || defined(__APPLE__))
 #   define CV_EXPORTS __attribute__ ((visibility ("default")))
 # endif
 #endif
@@ -521,7 +495,11 @@ Cv64suf;
     CV_16U - 2 bytes
     ...
 */
-#define CV_ELEM_SIZE1(type) ((int)((0x4881228442211ULL >> (CV_MAT_DEPTH(type) * 4)) & 15))
+// '& 15' == '- 16' for depth in [16,31] here, but avoids a spurious MSVC C4293 on this ternary.
+#define CV_ELEM_SIZE1(type) \
+    ((int)((CV_MAT_DEPTH(type) < 16 \
+        ? (0x1114881228442211ULL >> ((CV_MAT_DEPTH(type) & 15) * 4)) \
+        : (0x0000000000000001ULL >> ((CV_MAT_DEPTH(type) & 15) * 4))) & 15))
 
 #define CV_ELEM_SIZE(type) (CV_MAT_CN(type)*CV_ELEM_SIZE1(type))
 
@@ -594,68 +572,68 @@ __CV_ENUM_CLASS_EXPOSE_1(EnumType, MEMBER_CONST);                               
 __CV_EXPAND(__CV_ENUM_CLASS_EXPOSE_8(EnumType, __VA_ARGS__));                                         \
 
 #define __CV_ENUM_FLAGS_LOGICAL_NOT(EnumType)                                                         \
-static inline bool operator!(const EnumType& val)                                                     \
+inline bool operator!(const EnumType& val)                                                     \
 {                                                                                                     \
     typedef std::underlying_type<EnumType>::type UnderlyingType;                                      \
     return !static_cast<UnderlyingType>(val);                                                         \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_LOGICAL_NOT_EQ(Arg1Type, Arg2Type)                                            \
-static inline bool operator!=(const Arg1Type& a, const Arg2Type& b)                                   \
+inline bool operator!=(const Arg1Type& a, const Arg2Type& b)                                   \
 {                                                                                                     \
     return static_cast<int>(a) != static_cast<int>(b);                                                \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_LOGICAL_EQ(Arg1Type, Arg2Type)                                                \
-static inline bool operator==(const Arg1Type& a, const Arg2Type& b)                                   \
+inline bool operator==(const Arg1Type& a, const Arg2Type& b)                                   \
 {                                                                                                     \
     return static_cast<int>(a) == static_cast<int>(b);                                                \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_BITWISE_NOT(EnumType)                                                         \
-static inline EnumType operator~(const EnumType& val)                                                 \
+inline EnumType operator~(const EnumType& val)                                                 \
 {                                                                                                     \
     typedef std::underlying_type<EnumType>::type UnderlyingType;                                      \
     return static_cast<EnumType>(~static_cast<UnderlyingType>(val));                                  \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_BITWISE_OR(EnumType, Arg1Type, Arg2Type)                                      \
-static inline EnumType operator|(const Arg1Type& a, const Arg2Type& b)                                \
+inline EnumType operator|(const Arg1Type& a, const Arg2Type& b)                                \
 {                                                                                                     \
     typedef std::underlying_type<EnumType>::type UnderlyingType;                                      \
     return static_cast<EnumType>(static_cast<UnderlyingType>(a) | static_cast<UnderlyingType>(b));    \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_BITWISE_AND(EnumType, Arg1Type, Arg2Type)                                     \
-static inline EnumType operator&(const Arg1Type& a, const Arg2Type& b)                                \
+inline EnumType operator&(const Arg1Type& a, const Arg2Type& b)                                \
 {                                                                                                     \
     typedef std::underlying_type<EnumType>::type UnderlyingType;                                      \
     return static_cast<EnumType>(static_cast<UnderlyingType>(a) & static_cast<UnderlyingType>(b));    \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_BITWISE_XOR(EnumType, Arg1Type, Arg2Type)                                     \
-static inline EnumType operator^(const Arg1Type& a, const Arg2Type& b)                                \
+inline EnumType operator^(const Arg1Type& a, const Arg2Type& b)                                \
 {                                                                                                     \
     typedef std::underlying_type<EnumType>::type UnderlyingType;                                      \
     return static_cast<EnumType>(static_cast<UnderlyingType>(a) ^ static_cast<UnderlyingType>(b));    \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_BITWISE_OR_EQ(EnumType, Arg1Type)                                             \
-static inline EnumType& operator|=(EnumType& _this, const Arg1Type& val)                              \
+inline EnumType& operator|=(EnumType& _this, const Arg1Type& val)                              \
 {                                                                                                     \
     _this = static_cast<EnumType>(static_cast<int>(_this) | static_cast<int>(val));                   \
     return _this;                                                                                     \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_BITWISE_AND_EQ(EnumType, Arg1Type)                                            \
-static inline EnumType& operator&=(EnumType& _this, const Arg1Type& val)                              \
+inline EnumType& operator&=(EnumType& _this, const Arg1Type& val)                              \
 {                                                                                                     \
     _this = static_cast<EnumType>(static_cast<int>(_this) & static_cast<int>(val));                   \
     return _this;                                                                                     \
 }                                                                                                     \
 
 #define __CV_ENUM_FLAGS_BITWISE_XOR_EQ(EnumType, Arg1Type)                                            \
-static inline EnumType& operator^=(EnumType& _this, const Arg1Type& val)                              \
+inline EnumType& operator^=(EnumType& _this, const Arg1Type& val)                              \
 {                                                                                                     \
     _this = static_cast<EnumType>(static_cast<int>(_this) ^ static_cast<int>(val));                   \
     return _this;                                                                                     \
@@ -725,27 +703,16 @@ __CV_ENUM_FLAGS_BITWISE_XOR_EQ   (EnumType, EnumType)                           
 
 #ifdef CV_XADD
   // allow to use user-defined macro
+#elif defined __clang__ && !defined __EMSCRIPTEN__ && !defined __INTEL_COMPILER
+#  define CV_XADD(addr, delta) __c11_atomic_fetch_add((_Atomic(int)*)(addr), delta, __ATOMIC_ACQ_REL)
 #elif defined __GNUC__ || defined __clang__
-#  if defined __clang__ && __clang_major__ >= 3 && !defined __EMSCRIPTEN__ && !defined __INTEL_COMPILER
-#    ifdef __ATOMIC_ACQ_REL
-#      define CV_XADD(addr, delta) __c11_atomic_fetch_add((_Atomic(int)*)(addr), delta, __ATOMIC_ACQ_REL)
-#    else
-#      define CV_XADD(addr, delta) __atomic_fetch_add((_Atomic(int)*)(addr), delta, 4)
-#    endif
-#  else
-#    if defined __ATOMIC_ACQ_REL && !defined __clang__
-       // version for gcc >= 4.7
-#      define CV_XADD(addr, delta) (int)__atomic_fetch_add((unsigned*)(addr), (unsigned)(delta), __ATOMIC_ACQ_REL)
-#    else
-#      define CV_XADD(addr, delta) (int)__sync_fetch_and_add((unsigned*)(addr), (unsigned)(delta))
-#    endif
-#  endif
+#  define CV_XADD(addr, delta) (int)__atomic_fetch_add((unsigned*)(addr), (unsigned)(delta), __ATOMIC_ACQ_REL)
 #elif defined _MSC_VER && !defined RC_INVOKED
 #  include <intrin.h>
 #  define CV_XADD(addr, delta) (int)_InterlockedExchangeAdd((long volatile*)addr, delta)
 #else
   #ifdef OPENCV_FORCE_UNSAFE_XADD
-    CV_INLINE int CV_XADD(int* addr, int delta) { int tmp = *addr; *addr += delta; return tmp; }
+    inline int CV_XADD(int* addr, int delta) { int tmp = *addr; *addr += delta; return tmp; }
   #else
     #error "OpenCV: can't define safe CV_XADD macro for current platform (unsupported). Define CV_XADD macro through custom port header (see OPENCV_INCLUDE_PORT_FILE)"
   #endif
@@ -781,20 +748,9 @@ __CV_ENUM_FLAGS_BITWISE_XOR_EQ   (EnumType, EnumType)                           
 #    else
 #       define CV_NODISCARD_STD [[nodiscard]]
 #    endif
-#  elif __cplusplus >= 201703L
+#  else
 //   available when compiler is C++17 compliant
 #    define CV_NODISCARD_STD [[nodiscard]]
-#  elif defined(__INTEL_COMPILER)
-     // see above, available when C++17 is enabled
-#  elif defined(_MSC_VER) && _MSC_VER >= 1911 && _MSVC_LANG >= 201703L
-//   available with VS2017 v15.3+ with /std:c++17 or higher; works on functions and classes
-#    define CV_NODISCARD_STD [[nodiscard]]
-#  elif defined(__GNUC__) && (((__GNUC__ * 100) + __GNUC_MINOR__) >= 700) && (__cplusplus >= 201103L)
-//   available with GCC 7.0+; works on functions, works or silently fails on classes
-#    define CV_NODISCARD_STD [[nodiscard]]
-#  elif defined(__GNUC__) && (((__GNUC__ * 100) + __GNUC_MINOR__) >= 408) && (__cplusplus >= 201103L)
-//   available with GCC 4.8+ but it usually does nothing and can fail noisily -- therefore not used
-//   define CV_NODISCARD_STD [[gnu::warn_unused_result]]
 #  endif
 #endif
 #ifndef CV_NODISCARD_STD
@@ -806,21 +762,11 @@ __CV_ENUM_FLAGS_BITWISE_XOR_EQ   (EnumType, EnumType)                           
 *                                    C++ 11                                              *
 \****************************************************************************************/
 #ifdef __cplusplus
-// MSVC was stuck at __cplusplus == 199711L for a long time, even where it supports C++11,
-// so check _MSC_VER instead. See:
-// <https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus>
-#  if defined(_MSC_VER)
-#    if _MSC_VER < 1800
-#      error "OpenCV 4.x+ requires enabled C++11 support"
-#    endif
-#  elif __cplusplus < 201103L
-#    error "OpenCV 4.x+ requires enabled C++11 support"
+#  if __cplusplus < 201103L && !(defined(_MSC_VER) && _MSVC_LANG >= 201103L)
+#    error "OpenCV 5.x+ requires enabled C++11 support"
 #  endif
 #endif
 
-#ifndef CV_CXX11
-#  define CV_CXX11 1
-#endif
 
 #ifndef CV_OVERRIDE
 #  define CV_OVERRIDE override
@@ -979,13 +925,95 @@ protected:
     ushort w;
 };
 
+namespace fp8_detail {
+
+// IEEE 754 default rounding, same as cv::hfloat and every hardware FP8 convert.
+inline unsigned roundNearestEven(unsigned full, int shift)
+{
+    if (shift <= 0) return full << (-shift);
+    unsigned q = full >> shift, rem = full & ((1u << shift) - 1), half = 1u << (shift - 1);
+    if (rem > half || (rem == half && (q & 1))) q++;
+    return q;
+}
+inline float pow2(int n) { Cv32suf s; s.u = (unsigned)((n + 127) << 23); return s.f; }
+
+// E4M3 encode; no inf, bias/fnuz select E4M3FN vs E4M3FNUZ.
+// saturate (default): overflow and inf clamp to max finite, otherwise they become NaN.
+inline uchar encodeE4M3(float x, int bias, bool fnuz, bool saturate = true)
+{
+    Cv32suf in; in.f = x;
+    unsigned u = in.u, sign = (u >> 31) & 1, e = (u >> 23) & 0xFF, m = u & 0x7FFFFF;
+    const unsigned sbit = sign << 7;
+    const unsigned nanc = fnuz ? 0x80u : (sbit | 0x7Fu);
+    const unsigned maxfin = sbit | (fnuz ? 0x7Fu : 0x7Eu);              // 240 (FNUZ) / 448 (FN)
+    const unsigned ovc = saturate ? maxfin : nanc;
+    if (e == 0xFF) return (uchar)(m != 0 ? nanc : ovc);                 // NaN stays NaN, inf saturates
+    if (e == 0 && m == 0) return (uchar)(fnuz ? 0u : sbit);
+    int newexp = (int)e - 127 + bias;
+    const unsigned full = (1u << 23) | m;
+    if (newexp <= 0)                                                    // subnormal
+    {
+        const int shift = 20 + (1 - newexp);
+        unsigned mant = (shift >= 32) ? 0u : roundNearestEven(full, shift);
+        return (uchar)(mant == 0 ? (fnuz ? 0u : sbit) : (sbit | mant));
+    }
+    unsigned rounded = roundNearestEven(full, 20);
+    if (rounded & 16u) { rounded >>= 1; newexp++; }                     // carry into exponent
+    const unsigned mant = rounded & 7u;
+    const bool ov = fnuz ? ((unsigned)newexp > 15)
+                         : ((unsigned)newexp > 15 || ((unsigned)newexp == 15 && mant == 7));
+    if (ov) return (uchar)ovc;
+    return (uchar)(sbit | ((unsigned)newexp << 3) | mant);
+}
+
+inline float decodeE4M3(uchar b, int bias, bool fnuz)
+{
+    const unsigned sign = ((unsigned)b >> 7) & 1, exp = ((unsigned)b >> 3) & 15, man = (unsigned)b & 7;
+    const float s = sign ? -1.f : 1.f;
+    Cv32suf qn; qn.u = sign ? 0xFFC00000u : 0x7FC00000u;
+    if (fnuz) { if ((unsigned)b == 0x80u) return qn.f; }
+    else if (exp == 15) { if (man == 7) return qn.f; }
+    if (exp == 0) return s * (float)man * pow2(1 - bias - 3);
+    return s * (1.0f + (float)man / 8.0f) * pow2((int)exp - bias);
+}
+
+} // namespace fp8_detail
+
+struct fp8_t     // E4M3FN: bias 7, no inf, max 448
+{
+    fp8_t() : b(0) {}
+    explicit fp8_t(float x) : b(fp8_detail::encodeE4M3(x, 7, false)) {}
+    fp8_t(float x, bool saturate) : b(fp8_detail::encodeE4M3(x, 7, false, saturate)) {}
+    operator float() const { return table()[b]; }
+    static const float* decodeLUT() { return table(); }
+protected:
+    uchar b;
+private:
+    static const float* table()
+    { static const struct T { float v[256]; T() { for (int i = 0; i < 256; i++) v[i] = fp8_detail::decodeE4M3((uchar)i, 7, false); } } t; return t.v; }
+};
+
+struct fp8a_t    // E4M3FNUZ: bias 8, no inf, single NaN, no -0, max 240
+{
+    fp8a_t() : b(0) {}
+    explicit fp8a_t(float x) : b(fp8_detail::encodeE4M3(x, 8, true)) {}
+    fp8a_t(float x, bool saturate) : b(fp8_detail::encodeE4M3(x, 8, true, saturate)) {}
+    operator float() const { return table()[b]; }
+    static const float* decodeLUT() { return table(); }
+protected:
+    uchar b;
+private:
+    static const float* table()
+    { static const struct T { float v[256]; T() { for (int i = 0; i < 256; i++) v[i] = fp8_detail::decodeE4M3((uchar)i, 8, true); } } t; return t.v; }
+};
+
 }
 #endif
 
 /** @brief Constructs the 'fourcc' code, used in video codecs and many other places.
     Simply call it with 4 chars like `CV_FOURCC('I', 'Y', 'U', 'V')`
 */
-CV_INLINE int CV_FOURCC(char c1, char c2, char c3, char c4)
+inline int CV_FOURCC(char c1, char c2, char c3, char c4)
 {
     return (c1 & 255) + ((c2 & 255) << 8) + ((c3 & 255) << 16) + ((c4 & 255) << 24);
 }

@@ -10,13 +10,16 @@
 namespace cv
 {
 
+//! @addtogroup ptcloud_rgbd
+//! @{
+
 class CV_EXPORTS_W_SIMPLE OdometrySettings
 {
 public:
     CV_WRAP OdometrySettings();
     OdometrySettings(const OdometrySettings&);
     OdometrySettings& operator=(const OdometrySettings&);
-    ~OdometrySettings() {};
+    ~OdometrySettings() {}
     CV_WRAP void setCameraMatrix(InputArray val);
     CV_WRAP void getCameraMatrix(OutputArray val) const;
     CV_WRAP void setIterCounts(InputArray val);
@@ -60,6 +63,8 @@ public:
 private:
     Ptr<Impl> impl;
 };
+
+//! @}
 
 }
 #endif //OPENCV_3D_ODOMETRY_SETTINGS_HPP

@@ -894,6 +894,8 @@ OPENCV_HAL_IMPL_AVX_SELECT(v_uint16x16, epi8)
 OPENCV_HAL_IMPL_AVX_SELECT(v_int16x16,  epi8)
 OPENCV_HAL_IMPL_AVX_SELECT(v_uint32x8,  epi8)
 OPENCV_HAL_IMPL_AVX_SELECT(v_int32x8,   epi8)
+OPENCV_HAL_IMPL_AVX_SELECT(v_uint64x4,  epi8)
+OPENCV_HAL_IMPL_AVX_SELECT(v_int64x4,   epi8)
 OPENCV_HAL_IMPL_AVX_SELECT(v_float32x8, ps)
 OPENCV_HAL_IMPL_AVX_SELECT(v_float64x4, pd)
 
@@ -949,7 +951,7 @@ OPENCV_HAL_IMPL_AVX_CMP_OP_64BIT(v_int64x4)
 
 #define OPENCV_HAL_IMPL_AVX_CMP_OP_FLT(_Tpvec, suffix)               \
     OPENCV_HAL_IMPL_AVX_CMP_FLT(v_eq, _CMP_EQ_OQ,  _Tpvec, suffix)   \
-    OPENCV_HAL_IMPL_AVX_CMP_FLT(v_ne, _CMP_NEQ_OQ, _Tpvec, suffix)   \
+    OPENCV_HAL_IMPL_AVX_CMP_FLT(v_ne, _CMP_NEQ_UQ, _Tpvec, suffix)   \
     OPENCV_HAL_IMPL_AVX_CMP_FLT(v_lt,  _CMP_LT_OQ,  _Tpvec, suffix)  \
     OPENCV_HAL_IMPL_AVX_CMP_FLT(v_gt,  _CMP_GT_OQ,  _Tpvec, suffix)  \
     OPENCV_HAL_IMPL_AVX_CMP_FLT(v_le, _CMP_LE_OQ,  _Tpvec, suffix)   \
@@ -1081,7 +1083,7 @@ OPENCV_HAL_IMPL_AVX_ROTATE_CAST(v_rotate_right, v_float64x4, _mm256_castsi256_pd
 /** Reverse **/
 inline v_uint8x32 v_reverse(const v_uint8x32 &a)
 {
-    static const __m256i perm = _mm256_setr_epi8(
+    const __m256i perm = _mm256_setr_epi8(
             15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
             15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
     __m256i vec = _mm256_shuffle_epi8(a.val, perm);
@@ -1093,7 +1095,7 @@ inline v_int8x32 v_reverse(const v_int8x32 &a)
 
 inline v_uint16x16 v_reverse(const v_uint16x16 &a)
 {
-    static const __m256i perm = _mm256_setr_epi8(
+    const __m256i perm = _mm256_setr_epi8(
             14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1,
             14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1);
     __m256i vec = _mm256_shuffle_epi8(a.val, perm);
@@ -1105,7 +1107,7 @@ inline v_int16x16 v_reverse(const v_int16x16 &a)
 
 inline v_uint32x8 v_reverse(const v_uint32x8 &a)
 {
-    static const __m256i perm = _mm256_setr_epi32(7, 6, 5, 4, 3, 2, 1, 0);
+    const __m256i perm = _mm256_setr_epi32(7, 6, 5, 4, 3, 2, 1, 0);
     return v_uint32x8(_mm256_permutevar8x32_epi32(a.val, perm));
 }
 
@@ -1502,32 +1504,38 @@ inline v_int16x16 v_absdiffs(const v_int16x16& a, const v_int16x16& b)
 ////////// Conversions /////////
 
 /** Rounding **/
+
+// vcvtps2dq/vcvtpd2dq and the truncating variants return INT_MIN ("integer indefinite") for any
+// out-of-range input, so the input is clamped from above to make the conversion saturate instead;
+// the indefinite value already is the correct saturated result for inputs below INT_MIN.
+// See cvRound()/cvFloor()/cvCeil()/cvTrunc() for the scalar counterparts and the exact bounds.
 inline v_int32x8 v_round(const v_float32x8& a)
-{ return v_int32x8(_mm256_cvtps_epi32(a.val)); }
+{ return v_int32x8(_mm256_cvtps_epi32(_mm256_min_ps(a.val, _mm256_set1_ps(CV__FLT2INT_MAX_F)))); }
 
 inline v_int32x8 v_round(const v_float64x4& a)
-{ return v_int32x8(_mm256_castsi128_si256(_mm256_cvtpd_epi32(a.val))); }
+{ return v_int32x8(_mm256_castsi128_si256(_mm256_cvtpd_epi32(_mm256_min_pd(a.val, _mm256_set1_pd(CV__FLT2INT_MAX_D))))); }
 
 inline v_int32x8 v_round(const v_float64x4& a, const v_float64x4& b)
 {
-    __m128i ai = _mm256_cvtpd_epi32(a.val), bi = _mm256_cvtpd_epi32(b.val);
+    __m256d hi = _mm256_set1_pd(CV__FLT2INT_MAX_D);
+    __m128i ai = _mm256_cvtpd_epi32(_mm256_min_pd(a.val, hi)), bi = _mm256_cvtpd_epi32(_mm256_min_pd(b.val, hi));
     return v_int32x8(_v256_combine(ai, bi));
 }
 
 inline v_int32x8 v_trunc(const v_float32x8& a)
-{ return v_int32x8(_mm256_cvttps_epi32(a.val)); }
+{ return v_int32x8(_mm256_cvttps_epi32(_mm256_min_ps(a.val, _mm256_set1_ps(CV__FLT2INT_MAX_F)))); }
 
 inline v_int32x8 v_trunc(const v_float64x4& a)
-{ return v_int32x8(_mm256_castsi128_si256(_mm256_cvttpd_epi32(a.val))); }
+{ return v_int32x8(_mm256_castsi128_si256(_mm256_cvttpd_epi32(_mm256_min_pd(a.val, _mm256_set1_pd(CV__FLT2INT_MAX_D))))); }
 
 inline v_int32x8 v_floor(const v_float32x8& a)
-{ return v_int32x8(_mm256_cvttps_epi32(_mm256_floor_ps(a.val))); }
+{ return v_trunc(v_float32x8(_mm256_floor_ps(a.val))); }
 
 inline v_int32x8 v_floor(const v_float64x4& a)
 { return v_trunc(v_float64x4(_mm256_floor_pd(a.val))); }
 
 inline v_int32x8 v_ceil(const v_float32x8& a)
-{ return v_int32x8(_mm256_cvttps_epi32(_mm256_ceil_ps(a.val))); }
+{ return v_trunc(v_float32x8(_mm256_ceil_ps(a.val))); }
 
 inline v_int32x8 v_ceil(const v_float64x4& a)
 { return v_trunc(v_float64x4(_mm256_ceil_pd(a.val))); }
@@ -1602,6 +1610,20 @@ inline v_int8x32 v256_lut_quads(const schar* tab, const int* idx)
 inline v_uint8x32 v256_lut(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v256_lut((const schar *)tab, idx)); }
 inline v_uint8x32 v256_lut_pairs(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v256_lut_pairs((const schar *)tab, idx)); }
 inline v_uint8x32 v256_lut_quads(const uchar* tab, const int* idx) { return v_reinterpret_as_u8(v256_lut_quads((const schar *)tab, idx)); }
+
+inline v_uint8x32 v256_lut(const uchar* tab, const v_uint8x32& idx)
+{
+    uchar CV_DECL_ALIGNED(32) indices[32], result[32];
+    _mm256_store_si256((__m256i*)indices, idx.val);
+    for (int i = 0; i < 32; i++) result[i] = tab[indices[i]];
+    return v_uint8x32(_mm256_load_si256((const __m256i*)result));
+}
+inline v_int8x32 v256_lut(const schar* tab, const v_uint8x32& idx)
+{ return v_reinterpret_as_s8(v256_lut((const uchar *)tab, idx)); }
+
+
+inline v_uint8x32 v_lut(const uchar* tab, const v_uint8x32& idx) { return v256_lut(tab, idx); }
+inline v_int8x32 v_lut(const schar* tab, const v_uint8x32& idx) { return v256_lut(tab, idx); }
 
 inline v_int16x16 v256_lut(const short* tab, const int* idx)
 {
@@ -2171,25 +2193,49 @@ void v_rshr_pack_store(short* ptr, const v_int32x8& a)
 
 // 64
 // Non-saturating pack
+// Low and high 32-bit halves of a and b, within each 128-bit lane: [a0 a1 b0 b1 | a2 a3 b2 b3].
+// The saturation below is decided on the high halves alone, so only 32-bit compares are needed.
+#define OPENCV_HAL_AVX2_SPLIT64(a, b, lo, hi)     __m256 lo##_af = _mm256_castsi256_ps(a), lo##_bf = _mm256_castsi256_ps(b);     __m256i lo = _mm256_castps_si256(_mm256_shuffle_ps(lo##_af, lo##_bf, _MM_SHUFFLE(2,0,2,0)));     __m256i hi = _mm256_castps_si256(_mm256_shuffle_ps(lo##_af, lo##_bf, _MM_SHUFFLE(3,1,3,1)))
+
+// the shuffle above works per 128-bit lane, so restore the a0..a3 b0..b3 order afterwards
+#define OPENCV_HAL_AVX2_FIX64(r) _mm256_permute4x64_epi64(r, _MM_SHUFFLE(3,1,2,0))
+
+// s64 -> s32: fits exactly when hi == sext(lo), else INT_MIN / INT_MAX by sign
+inline v_int32x8 v_pack(const v_int64x4& a, const v_int64x4& b)
+{
+    OPENCV_HAL_AVX2_SPLIT64(a.val, b.val, lo, hi);
+    __m256i fits = _mm256_cmpeq_epi32(hi, _mm256_srai_epi32(lo, 31));
+    __m256i sat  = _mm256_xor_si256(_mm256_srai_epi32(hi, 31), _mm256_set1_epi32(INT_MAX));
+    return v_int32x8(OPENCV_HAL_AVX2_FIX64(_mm256_blendv_epi8(sat, lo, fits)));
+}
+
+// u64 -> u32: fits exactly when hi == 0, else UINT_MAX
 inline v_uint32x8 v_pack(const v_uint64x4& a, const v_uint64x4& b)
 {
-    __m256i a0 = _mm256_shuffle_epi32(a.val, _MM_SHUFFLE(0, 0, 2, 0));
-    __m256i b0 = _mm256_shuffle_epi32(b.val, _MM_SHUFFLE(0, 0, 2, 0));
-    __m256i ab = _mm256_unpacklo_epi64(a0, b0); // a0, a1, b0, b1, a2, a3, b2, b3
-    return v_uint32x8(_v256_shuffle_odd_64(ab));
+    OPENCV_HAL_AVX2_SPLIT64(a.val, b.val, lo, hi);
+    __m256i fits = _mm256_cmpeq_epi32(hi, _mm256_setzero_si256());
+    return v_uint32x8(OPENCV_HAL_AVX2_FIX64(_mm256_blendv_epi8(_mm256_set1_epi32(-1), lo, fits)));
 }
 
-inline v_int32x8 v_pack(const v_int64x4& a, const v_int64x4& b)
-{ return v_reinterpret_as_s32(v_pack(v_reinterpret_as_u64(a), v_reinterpret_as_u64(b))); }
+// s64 -> u32: hi == 0 keeps lo, hi < 0 clamps to 0, hi > 0 clamps to UINT_MAX - and cmpgt
+// yields exactly 0 / all-ones, so it doubles as the saturated value.
+inline v_uint32x8 v_pack_u(const v_int64x4& a, const v_int64x4& b)
+{
+    OPENCV_HAL_AVX2_SPLIT64(a.val, b.val, lo, hi);
+    __m256i zero = _mm256_setzero_si256();
+    __m256i fits = _mm256_cmpeq_epi32(hi, zero);
+    __m256i sat  = _mm256_cmpgt_epi32(hi, zero);
+    return v_uint32x8(OPENCV_HAL_AVX2_FIX64(_mm256_blendv_epi8(sat, lo, fits)));
+}
+
+inline void v_pack_store(int* ptr, const v_int64x4& a)
+{ v_store_low(ptr, v_pack(a, a)); }
 
 inline void v_pack_store(unsigned* ptr, const v_uint64x4& a)
-{
-    __m256i a0 = _mm256_shuffle_epi32(a.val, _MM_SHUFFLE(0, 0, 2, 0));
-    v_store_low(ptr, v_uint32x8(_v256_shuffle_odd_64(a0)));
-}
+{ v_store_low(ptr, v_pack(a, a)); }
 
-inline void v_pack_store(int* ptr, const v_int64x4& b)
-{ v_pack_store((unsigned*)ptr, v_reinterpret_as_u64(b)); }
+inline void v_pack_u_store(unsigned* ptr, const v_int64x4& a)
+{ v_store_low(ptr, v_pack_u(a, a)); }
 
 template<int n> inline
 v_uint32x8 v_rshr_pack(const v_uint64x4& a, const v_uint64x4& b)
@@ -2340,7 +2386,7 @@ inline double v_extract_n(v_float64x4 v)
 template<int i>
 inline v_uint32x8 v_broadcast_element(v_uint32x8 a)
 {
-    static const __m256i perm = _mm256_set1_epi32((char)i);
+    const __m256i perm = _mm256_set1_epi32((char)i);
     return v_uint32x8(_mm256_permutevar8x32_epi32(a.val, perm));
 }
 

@@ -36,6 +36,7 @@
 
 /* NVIDIA CUDA Deep Neural Network (cuDNN) API*/
 /* #undef HAVE_CUDNN */
+/* #undef HAVE_CUDNNJIT */
 
 /* NVIDIA CUDA Fast Fourier Transform (FFT) API*/
 /* #undef HAVE_CUFFT */
@@ -109,6 +110,9 @@
 /* PNG codec */
 /* #undef HAVE_SPNG */
 
+/* HarfBuzz text shaping */
+#define HAVE_HARFBUZZ
+
 /* Posix threads (pthreads) */
 /* #undef HAVE_PTHREAD */
 
@@ -144,6 +148,9 @@
 #define OPENCV_TRACE
 
 /* The font "uni" (WQY MicroHei) is available */
-#define HAVE_UNIFONT
+/* #undef HAVE_UNIFONT */
+
+/* Rubik Italic font is compiled into imgproc as the built-in "italic" font */
+/* #undef HAVE_ITALICFONT */
 
 #endif // OPENCV_CVCONFIG_H_INCLUDED

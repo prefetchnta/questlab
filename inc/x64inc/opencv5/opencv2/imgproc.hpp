@@ -372,6 +372,32 @@ enum FloodFillFlags {
     FLOODFILL_MASK_ONLY   = 1 << 17
 };
 
+/** @brief Porter-Duff compositing operators used by cv::alphaComposite.
+
+The names and the semantics follow [W3C Compositing and Blending Level 1](https://www.w3.org/TR/compositing-1/),
+which is also what Cairo and Skia implement. Every operator is a pair of per-pixel weights
+\f$F_a\f$ (applied to the overlay, the *source*) and \f$F_b\f$ (applied to the background, the
+*destination*), combined in premultiplied alpha space:
+\f[C_o = C_s F_a + C_b F_b, \qquad \alpha_o = \alpha_s F_a + \alpha_b F_b\f]
+The weights are listed below for each operator in terms of the source alpha \f$\alpha_s\f$ and the
+destination alpha \f$\alpha_b\f$.
+*/
+enum AlphaCompositeOperations {
+    ALPHA_COMPOSITE_CLEAR     = 0,  //!< \f$F_a = 0\f$, \f$F_b = 0\f$. Erases both images.
+    ALPHA_COMPOSITE_SOURCE    = 1,  //!< \f$F_a = 1\f$, \f$F_b = 0\f$. Keeps the overlay only (W3C `copy`).
+    ALPHA_COMPOSITE_DEST      = 2,  //!< \f$F_a = 0\f$, \f$F_b = 1\f$. Keeps the background only.
+    ALPHA_COMPOSITE_OVER      = 3,  //!< \f$F_a = 1\f$, \f$F_b = 1 - \alpha_s\f$. Draws the overlay on top (W3C `source-over`).
+    ALPHA_COMPOSITE_DEST_OVER = 4,  //!< \f$F_a = 1 - \alpha_b\f$, \f$F_b = 1\f$. Draws the overlay underneath.
+    ALPHA_COMPOSITE_IN        = 5,  //!< \f$F_a = \alpha_b\f$, \f$F_b = 0\f$. Keeps the overlay where the background is opaque.
+    ALPHA_COMPOSITE_DEST_IN   = 6,  //!< \f$F_a = 0\f$, \f$F_b = \alpha_s\f$. Keeps the background where the overlay is opaque.
+    ALPHA_COMPOSITE_OUT       = 7,  //!< \f$F_a = 1 - \alpha_b\f$, \f$F_b = 0\f$. Keeps the overlay where the background is transparent.
+    ALPHA_COMPOSITE_DEST_OUT  = 8,  //!< \f$F_a = 0\f$, \f$F_b = 1 - \alpha_s\f$. Keeps the background where the overlay is transparent.
+    ALPHA_COMPOSITE_ATOP      = 9,  //!< \f$F_a = \alpha_b\f$, \f$F_b = 1 - \alpha_s\f$. Draws the overlay on top, clipped to the background's shape.
+    ALPHA_COMPOSITE_DEST_ATOP = 10, //!< \f$F_a = 1 - \alpha_b\f$, \f$F_b = \alpha_s\f$. Draws the background on top, clipped to the overlay's shape.
+    ALPHA_COMPOSITE_XOR       = 11, //!< \f$F_a = 1 - \alpha_b\f$, \f$F_b = 1 - \alpha_s\f$. Keeps the non-overlapping parts of both.
+    ALPHA_COMPOSITE_PLUS      = 12  //!< \f$F_a = 1\f$, \f$F_b = 1\f$. Adds the two, clamped (W3C `lighter`, Cairo `OPERATOR_ADD`).
+};
+
 //! @} imgproc_misc
 
 //! @addtogroup imgproc_shape
@@ -863,7 +889,12 @@ enum ColorConversionCodes {
     COLOR_RGBA2YUV_YUNV = COLOR_RGBA2YUV_YUY2, //!< synonym to YUY2
     COLOR_BGRA2YUV_YUNV = COLOR_BGRA2YUV_YUY2, //!< synonym to YUY2
 
-    COLOR_COLORCVT_MAX  = 155
+    COLOR_BGR2Oklab     = 155, //!< [8U/32F] convert RGB/BGR to perceptual Oklab, @ref color_convert_rgb_oklab "color conversions"
+    COLOR_RGB2Oklab     = 156, //!< [8U/32F]
+    COLOR_Oklab2BGR     = 157, //!< [8U/32F]
+    COLOR_Oklab2RGB     = 158, //!< [8U/32F]
+
+    COLOR_COLORCVT_MAX  = 159
 };
 
 //! @addtogroup imgproc_shape
@@ -1213,7 +1244,7 @@ CV_EXPORTS_W Mat getGaborKernel( Size ksize, double sigma, double theta, double 
                                  double gamma, double psi = CV_PI*0.5, int ktype = CV_64F );
 
 //! returns "magic" border value for erosion and dilation. It is automatically transformed to Scalar::all(-DBL_MAX) for dilation.
-static inline Scalar morphologyDefaultBorderValue() { return Scalar::all(DBL_MAX); }
+inline Scalar morphologyDefaultBorderValue() { return Scalar::all(DBL_MAX); }
 
 /** @brief Returns a structuring element of the specified size and shape for morphological operations.
 
@@ -1635,6 +1666,10 @@ largest value is used to find initial segments of strong edges. See
 \f$=\sqrt{(dI/dx)^2 + (dI/dy)^2}\f$ should be used to calculate the image gradient magnitude (
 L2gradient=true ), or whether the default \f$L_1\f$ norm \f$=|dI/dx|+|dI/dy|\f$ is enough (
 L2gradient=false ).
+For efficiency, when L2gradient=true the implementation compares the squared
+gradient magnitude \f$(dI/dx)^2 + (dI/dy)^2\f$ against the squared thresholds
+instead of computing the square root; the resulting edge map is the same as if
+the \f$L_2\f$ norm were computed directly.
  */
 CV_EXPORTS_W void Canny( InputArray image, OutputArray edges,
                          double threshold1, double threshold2,
@@ -1653,6 +1688,10 @@ Finds edges in an image using the Canny algorithm with custom image gradient.
 \f$=\sqrt{(dI/dx)^2 + (dI/dy)^2}\f$ should be used to calculate the image gradient magnitude (
 L2gradient=true ), or whether the default \f$L_1\f$ norm \f$=|dI/dx|+|dI/dy|\f$ is enough (
 L2gradient=false ).
+For efficiency, when L2gradient=true the implementation compares the squared
+gradient magnitude \f$(dI/dx)^2 + (dI/dy)^2\f$ against the squared thresholds
+instead of computing the square root; the resulting edge map is the same as if
+the \f$L_2\f$ norm were computed directly.
  */
 CV_EXPORTS_W void Canny( InputArray dx, InputArray dy,
                          OutputArray edges,
@@ -2178,9 +2217,11 @@ with the WARP_RELATIVE_MAP flag :
 where values of pixels with non-integer coordinates are computed using one of available
 interpolation methods. \f$map_x\f$ and \f$map_y\f$ can be encoded as separate floating-point maps
 in \f$map_1\f$ and \f$map_2\f$ respectively, or interleaved floating-point maps of \f$(x,y)\f$ in
-\f$map_1\f$, or fixed-point maps created by using #convertMaps. The reason you might want to
-convert from floating to fixed-point representations of a map is that they can yield much faster
-(\~2x) remapping operations. In the converted case, \f$map_1\f$ contains pairs (cvFloor(x),
+\f$map_1\f$, or fixed-point maps created by using #convertMaps. Fixed-point maps
+use a more compact representation, which can reduce memory bandwidth and benefit
+repeated remap calls that reuse the same map. Performance gains vary by hardware
+and are typically modest; measure before converting. In the converted case,
+\f$map_1\f$ contains pairs (cvFloor(x),
 cvFloor(y)) and \f$map_2\f$ contains indices in a table of interpolation coefficients.
 
 This function cannot operate in-place.
@@ -2189,7 +2230,7 @@ This function cannot operate in-place.
 @param dst Destination image. It has the same size as map1 and the same type as src .
 @param map1 The first map of either (x,y) points or just x values having the type CV_16SC2 ,
 CV_32FC1, or CV_32FC2. See #convertMaps for details on converting a floating point
-representation to fixed-point for speed.
+representation to fixed-point.
 @param map2 The second map of y values having the type CV_16UC1, CV_32FC1, or none (empty map
 if map1 is (x,y) points), respectively.
 @param interpolation Interpolation method (see #InterpolationFlags). The methods #INTER_AREA
@@ -2376,19 +2417,16 @@ computes the corresponding coordinates in the source image (that is, in the orig
 \text{newCameraMatrix}\\
 x  \leftarrow (u - {c'}_x)/{f'}_x  \\
 y  \leftarrow (v - {c'}_y)/{f'}_y  \\
-
 \\\text{Undistortion}
 \\\scriptsize{\textit{though equation shown is for radial undistortion, function implements cv::undistortPoints()}}\\
 r^2  \leftarrow x^2 + y^2 \\
 \theta \leftarrow \frac{1 + k_1 r^2 + k_2 r^4 + k_3 r^6}{1 + k_4 r^2 + k_5 r^4 + k_6 r^6}\\
 x' \leftarrow \frac{x}{\theta} \\
 y'  \leftarrow \frac{y}{\theta} \\
-
 \\\text{Rectification}\\
 {[X\,Y\,W]} ^T  \leftarrow R*[x' \, y' \, 1]^T  \\
 x''  \leftarrow X/W  \\
 y''  \leftarrow Y/W  \\
-
 \\\text{cameraMatrix}\\
 map_x(u,v)  \leftarrow x'' f_x + c_x  \\
 map_y(u,v)  \leftarrow y'' f_y + c_y
@@ -2430,7 +2468,7 @@ float initWideAngleProjMap(InputArray cameraMatrix, InputArray distCoeffs,
                            Size imageSize, int destImageWidth,
                            int m1type, OutputArray map1, OutputArray map2,
                            enum UndistortTypes projType = PROJ_SPHERICAL_EQRECT, double alpha = 0);
-static inline
+inline
 float initWideAngleProjMap(InputArray cameraMatrix, InputArray distCoeffs,
                            Size imageSize, int destImageWidth,
                            int m1type, OutputArray map1, OutputArray map2,
@@ -3473,6 +3511,52 @@ CV_EXPORTS int floodFill( InputOutputArray image,
 //! @param dst It is created if it does not have the same size and type with src1.
 CV_EXPORTS_W void blendLinear(InputArray src1, InputArray src2, InputArray weights1, InputArray weights2, OutputArray dst);
 
+/** @brief Composites two images according to their alpha channels, using a Porter-Duff operator.
+
+The default operator, #ALPHA_COMPOSITE_OVER, draws overlay on top of background and blends the two
+according to overlay's alpha channel, so that partially-transparent pixels mix smoothly into the
+background with no fringing at the edges. This is what is usually wanted when pasting an RGBA
+sprite, an antialiased glyph or a segmentation mask onto a picture. The other operators of
+#AlphaCompositeOperations select the rest of the Porter-Duff set, for instance
+#ALPHA_COMPOSITE_ATOP to clip the overlay to the background's shape, or #ALPHA_COMPOSITE_DEST_OUT
+to punch a hole in the background.
+
+Only the compositing operator is configurable. The blend mode is always *normal*: the overlay's
+color is taken as-is and is never mixed with the background's color the way the separable blend
+modes of the same specification (multiply, screen, overlay, darken, and so on) do. Blend modes are
+a separate axis and are not implemented here.
+
+All operators are evaluated in premultiplied alpha space, where each one reduces to a pair of
+per-pixel weights \f$F_a\f$, \f$F_b\f$ listed in #AlphaCompositeOperations:
+\f[C_o = C_s F_a + C_b F_b, \qquad \alpha_o = \alpha_s F_a + \alpha_b F_b\f]
+with \f$C_s, \alpha_s\f$ taken from overlay and \f$C_b, \alpha_b\f$ from background. Inputs that
+carry straight (unassociated) alpha are premultiplied on entry and the result is un-premultiplied
+on exit. Both steps reuse #cvtColor with #COLOR_RGBA2mRGBA and #COLOR_mRGBA2RGBA, so alphaComposite
+follows exactly the same alpha conventions as those conversions.
+
+@param overlay 8-bit 4-channel image (RGBA or BGRA; channel order does not matter as long as it
+matches background) acting as the source of the operator; must be the same size as background.
+@param background 8-bit 3-channel or 4-channel image acting as the destination of the operator. A
+4-channel background contributes its own alpha to the blend, using the same straight/premultiplied
+convention as overlay, and dst has 4 channels holding the composited alpha \f$\alpha_o\f$. A
+3-channel background is taken to be fully opaque (\f$\alpha_b = 1\f$) and dst has 3 channels;
+since such a dst cannot store \f$\alpha_o\f$, the alpha is dropped and the premultiplied color is
+written, which is what Cairo does when the target surface has no alpha channel. Operators whose
+result is not opaque (#ALPHA_COMPOSITE_CLEAR, #ALPHA_COMPOSITE_OUT, #ALPHA_COMPOSITE_XOR and
+others) therefore darken toward black on a 3-channel background; pass a 4-channel background to
+keep the alpha.
+@param dst output image, created with the same size and type as background. It may be the same
+array as background.
+@param op compositing operator, one of #AlphaCompositeOperations.
+@param premultiplied false (the default) if overlay's alpha (and background's, when it has one) is
+straight/unassociated, as produced by e.g. `imread(..., IMREAD_UNCHANGED)`; true if it is already
+premultiplied, which skips the internal conversion.
+
+@sa cvtColor, COLOR_RGBA2mRGBA, COLOR_mRGBA2RGBA, blendLinear, addWeighted
+*/
+CV_EXPORTS_W void alphaComposite(InputArray overlay, InputArray background, OutputArray dst,
+                                 int op = ALPHA_COMPOSITE_OVER, bool premultiplied = false);
+
 //! @} imgproc_misc
 
 //! @addtogroup imgproc_color_conversions
@@ -4308,8 +4392,17 @@ public:
     /** @brief loads default font */
     CV_WRAP FontFace();
     /** @brief loads font at the specified path or with specified name.
-       @param fontPathOrName either path to the custom font or the name of embedded font: "sans", "italic" or "uni".
-          Empty fontPathOrName means the default embedded font.
+       @param fontPathOrName either path to a custom font file (.ttf/.otf, optionally gzip-compressed)
+          or the name of one of the built-in font slots:
+          - "sans": the default font (Rubik, always compiled in);
+          - "italic": Rubik Italic, compiled in only if OpenCV was built with WITH_ITALICFONT=ON;
+            otherwise it can be provided with setBuiltinFont(), and if it is not available,
+            "italic" silently resolves to "sans";
+          - "uni": WenQuanYi Micro Hei (CJK), compiled in only with WITH_UNIFONT=ON; otherwise
+            provide it with setBuiltinFont(), or loading fails.
+          The built-in slots also serve as the fallback chain: characters missing from the
+          user's font are taken from "sans", then "italic", then "uni".
+          Empty fontPathOrName means the default embedded font ("sans").
     */
     CV_WRAP FontFace(const String& fontPathOrName);
 
@@ -4327,6 +4420,23 @@ public:
     */
     CV_WRAP bool setInstance(const std::vector<int>& params);
     CV_WRAP bool getInstance(CV_OUT std::vector<int>& params) const;
+
+    /** @brief Provides or replaces one of the built-in font slots with an external font file.
+        @param fontName the slot: "sans", "italic" or "uni".
+        @param fontPath path to a .ttf/.otf font (optionally gzip-compressed, e.g. `.ttf.gz`).
+          An empty path restores the compiled-in font of that slot (if any), otherwise the slot
+          becomes empty.
+        @return false if the slot name is unknown or the font file cannot be loaded (the
+          registry is left unchanged).
+
+        This is the way to get CJK text or a true italic when OpenCV is built without
+        WITH_UNIFONT / WITH_ITALICFONT (the defaults), e.g.
+        `cv::FontFace::setBuiltinFont("uni", "/usr/share/fonts/NotoSansCJK-Regular.ttc")`.
+        The registered font participates in the automatic fallback chain like the compiled-in
+        one would. The change is global (all threads) and applies to FontFace objects created
+        afterwards; existing FontFace objects keep the font they were created with.
+    */
+    CV_WRAP static bool setBuiltinFont(const String& fontName, const String& fontPath);
 
     struct Impl;
 
