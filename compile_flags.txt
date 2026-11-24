@@ -1,0 +1,9 @@
+-I../CrHack/inc
+-I../CrHack/inc/l3rd/dxsdk
+-DNDEBUG
+-DUNICODE
+-D_UNICODE
+-fshort-wchar
+-fsigned-char
+-ffunction-sections
+-fdata-sections
